@@ -1,0 +1,7 @@
+[
+  {"name":"ELF","passive":"Gain 40% rune cooldown reduction.","cooldownModifiers":{"runeCDR":0.6}},
+  {"name":"HIGH ELF","passive":"Reduces Weapon Art cooldown by 25%.","cooldownModifiers":{"weaponArtCDR":0.75}},
+  {"name":"KITSUNE","passive":"Gain +2 Jump Boost, 10% Movement Speed and +10% Attack Speed.","statModifiers":{"jumpBoost":2,"speedBoost":10,"attackSpeed":10}},
+  {"name":"DRAGON BLOODED","passive":"Gain 50% Warding and 10 Protection.","statModifiers":{"warding":50,"protection":10}},
+  {"name":"HALF-ORK","passive":"Gain 10 armor penetration.","statModifiers":{"armorPenetration":10}}
+]
