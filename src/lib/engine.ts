@@ -130,6 +130,41 @@ function applyEnchantmentsToSlot(
   return { stats, perks }
 }
 
+// ─── Perk Effectiveness ───────────────────────────────────────────────────────
+
+// Perks that are NOT affected by Perk Effectiveness:
+// - All perks that come exclusively from enchantment effects
+// - Specific named exemptions
+const ENCHANT_EFFECT_PERK_NAMES = new Set(
+  (enchantmentsRaw as Enchantment[]).flatMap(e => e.effects.map(ef => ef.name))
+)
+
+const PERK_EFFECTIVENESS_EXEMPT = new Set([
+  ...ENCHANT_EFFECT_PERK_NAMES,
+  "Luminescent Fervor",
+  "Valor",
+  "Spirit Commune",
+  "Channeled Weapon",
+  "Quickcast",
+  "Thief Training",
+  "Vampire",
+])
+
+export function applyPerkEffectiveness(
+  perks: Record<string, number>,
+  perkEffectivenessStacks: number
+): Record<string, number> {
+  if (perkEffectivenessStacks <= 0) return perks
+  const multiplier = Math.pow(1.1, perkEffectivenessStacks)
+  const result: Record<string, number> = {}
+  for (const [name, value] of Object.entries(perks)) {
+    result[name] = PERK_EFFECTIVENESS_EXEMPT.has(name)
+      ? value
+      : value * multiplier
+  }
+  return result
+}
+
 // ─── Main calculator ──────────────────────────────────────────────────────────
 
 export interface BuildResult {
@@ -185,9 +220,9 @@ export function calcBuild(state: BuildState): BuildResult {
     if (part.perkName) basePerksForSlot[part.perkName] = 1
 
     const enchNames = state.enchantments[enchSlot]
-    const result = applyEnchantmentsToSlot(part.stats as StatMap, basePerksForSlot, enchNames)
-    addStats(result.stats)
-    for (const [k, v] of Object.entries(result.perks)) {
+    const slotResult = applyEnchantmentsToSlot(part.stats as StatMap, basePerksForSlot, enchNames)
+    addStats(slotResult.stats)
+    for (const [k, v] of Object.entries(slotResult.perks)) {
       perks[k] = (perks[k] ?? 0) + v
     }
   }
@@ -198,9 +233,9 @@ export function calcBuild(state: BuildState): BuildResult {
     if (ring) {
       const basePerksForRing: Record<string, number> = ring.perkName
         ? { [ring.perkName]: ring.perkStacks ?? 1 } : {}
-      const result = applyEnchantmentsToSlot(ring.stats, basePerksForRing, state.enchantments.ring)
-      addStats(result.stats)
-      for (const [k, v] of Object.entries(result.perks)) {
+      const slotResult = applyEnchantmentsToSlot(ring.stats, basePerksForRing, state.enchantments.ring)
+      addStats(slotResult.stats)
+      for (const [k, v] of Object.entries(slotResult.perks)) {
         perks[k] = (perks[k] ?? 0) + v
       }
     }
@@ -212,25 +247,44 @@ export function calcBuild(state: BuildState): BuildResult {
     if (rune) {
       const basePerksForRune: Record<string, number> = rune.perkName
         ? { [rune.perkName]: rune.perkStacks ?? 1 } : {}
-      const result = applyEnchantmentsToSlot(rune.stats, basePerksForRune, state.enchantments.rune)
-      addStats(result.stats)
-      for (const [k, v] of Object.entries(result.perks)) {
+      const slotResult = applyEnchantmentsToSlot(rune.stats, basePerksForRune, state.enchantments.rune)
+      addStats(slotResult.stats)
+      for (const [k, v] of Object.entries(slotResult.perks)) {
         perks[k] = (perks[k] ?? 0) + v
       }
     }
   }
 
-  // Round and filter zeros
+  // Round stats and filter zeros
   const finalStats: StatMap = {}
   for (const [k, v] of Object.entries(stats)) {
     const rounded = Math.round((v + Number.EPSILON) * 100) / 100
     if (rounded !== 0) finalStats[k as StatKey] = rounded
   }
 
-  const finalPerks: Record<string, number> = {}
+  // Count Cursed enchantment stacks across all slots (each Cursed = +1 to perk effectiveness)
+  const cursedStacks = Object.values(state.enchantments)
+    .flat()
+    .filter(name => name === "Cursed")
+    .length
+
+  // Collect Perk Effectiveness stacks (from Warped effect) + Cursed enchantment stacks
+  const perkEffectivenessStacks = (perks["Perk Effectiveness"] ?? 0) + cursedStacks
+
+  // Round perks and filter zeros
+  let finalPerks: Record<string, number> = {}
   for (const [k, v] of Object.entries(perks)) {
     const rounded = Math.round((v + Number.EPSILON) * 100) / 100
     if (rounded !== 0) finalPerks[k] = rounded
+  }
+
+  // Apply Perk Effectiveness multiplier (Warped enchant and similar)
+  if (perkEffectivenessStacks > 0) {
+    finalPerks = applyPerkEffectiveness(finalPerks, perkEffectivenessStacks)
+    // Re-round after multiplier
+    for (const k of Object.keys(finalPerks)) {
+      finalPerks[k] = Math.round((finalPerks[k] + Number.EPSILON) * 100) / 100
+    }
   }
 
   return { stats: finalStats, perks: finalPerks }

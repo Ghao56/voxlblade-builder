@@ -31,11 +31,36 @@
 
   $: enchantCount = Object.values($build.enchantments).flat().filter(Boolean).length
 
-  // Detail cards
+  // Detail cards — enchantments merged into their parent slot card
+  interface EnchantInfo {
+    name: string
+    effects: Array<{name: string; amount: number}>
+    notes: string | undefined
+  }
+
   interface DetailCard {
-    title: string; label: string; description?: string
-    stats: Record<string,number>; perks: Array<{name:string;amount:number}>
+    title: string
+    label: string
+    description?: string
+    stats: Record<string, number>
+    perks: Array<{name: string; amount: number}>
     extras?: string[]
+    enchants?: EnchantInfo[]
+  }
+
+  function getEnchantInfos(slot: EnchantSlot): EnchantInfo[] {
+    return $build.enchantments[slot]
+      .filter(Boolean)
+      .map(name => {
+        const e = getEnchant(name)
+        if (!e) return null
+        return {
+          name,
+          effects: e.effects.map(ef => ({ name: ef.name, amount: ef.value })),
+          notes: e.additionalNotes,
+        }
+      })
+      .filter((x): x is EnchantInfo => x !== null) as EnchantInfo[]
   }
 
   $: detailCards = (() => {
@@ -58,54 +83,46 @@
       perks: rank.perks ?? []
     })
 
-    const armorDefs: Array<[string, "Helmet"|"Chestplate"|"Leggings", string]> = [
-      [$build.helmet, "Helmet", "Helmet"],
-      [$build.chestplate, "Chestplate", "Chestplate"],
-      [$build.leggings, "Leggings", "Leggings"],
+    function buildLabel(baseName: string, enchSlot: EnchantSlot): string {
+      const enchNames = $build.enchantments[enchSlot].filter(Boolean)
+      return enchNames.length > 0 ? `${enchNames.join(" ")} ${baseName}` : baseName
+    }
+
+    const armorDefs: Array<[string, "Helmet"|"Chestplate"|"Leggings", EnchantSlot, string]> = [
+      [$build.helmet, "Helmet", "helmet", "Helmet"],
+      [$build.chestplate, "Chestplate", "chestplate", "Chestplate"],
+      [$build.leggings, "Leggings", "leggings", "Leggings"],
     ]
-    for (const [name, type, label] of armorDefs) {
+    for (const [name, type, enchSlot, label] of armorDefs) {
       if (!name) continue
       const part = getArmorPart(name, type)
       if (part) cards.push({
-        title: label, label: name,
+        title: label, label: buildLabel(name, enchSlot),
         description: part.description,
         stats: part.stats as Record<string,number>,
-        perks: part.perkName ? [{name: part.perkName, amount: 1}] : []
+        perks: part.perkName ? [{name: part.perkName, amount: 1}] : [],
+        enchants: getEnchantInfos(enchSlot),
       })
     }
 
     const ring = getRing($build.ring)
     if (ring) cards.push({
-      title: "Ring", label: ring.name,
+      title: "Ring", label: buildLabel(ring.name, "ring"),
       description: ring.description,
       stats: ring.stats as Record<string,number>,
-      perks: ring.perkName ? [{name: ring.perkName, amount: ring.perkStacks ?? 1}] : []
+      perks: ring.perkName ? [{name: ring.perkName, amount: ring.perkStacks ?? 1}] : [],
+      enchants: getEnchantInfos("ring"),
     })
 
     const rune = getRune($build.rune)
     if (rune) cards.push({
-      title: "Rune", label: rune.name,
+      title: "Rune", label: buildLabel(rune.name, "rune"),
       description: rune.description,
       stats: rune.stats as Record<string,number>,
       perks: rune.perkName ? [{name: rune.perkName, amount: rune.perkStacks ?? 1}] : [],
-      extras: [`Cooldown: ${rune.cooldown}s`]
+      extras: [`Cooldown: ${rune.cooldown}s`],
+      enchants: getEnchantInfos("rune"),
     })
-
-    const enchSlots: EnchantSlot[] = ["helmet","chestplate","leggings","ring","rune"]
-    for (const slot of enchSlots) {
-      for (const ename of $build.enchantments[slot]) {
-        if (!ename) continue
-        const e = getEnchant(ename)
-        if (!e) continue
-        cards.push({
-          title: `Enchant (${slot})`, label: e.name,
-          description: e.description,
-          stats: {},
-          perks: e.effects.map(ef => ({name: ef.name, amount: ef.value})),
-          extras: e.additionalNotes ? [e.additionalNotes] : []
-        })
-      }
-    }
 
     return cards
   })()
@@ -257,6 +274,13 @@
                 <div class="detail-head">
                   <span class="detail-type">{card.title}</span>
                   <span class="detail-name">{card.label}</span>
+                  {#if card.enchants && card.enchants.length > 0}
+                    <div class="detail-enchant-tags">
+                      {#each card.enchants as enc}
+                        <span class="enchant-tag">{enc.name}</span>
+                      {/each}
+                    </div>
+                  {/if}
                 </div>
                 {#if card.description}
                   <p class="detail-desc">{card.description}</p>
@@ -276,7 +300,7 @@
                     {/each}
                   </div>
                 {/if}
-                {#if card.perks.length}
+                {#if card.perks.length || (card.enchants && card.enchants.some(e => e.effects.length > 0))}
                   <div class="perk-list">
                     {#each card.perks as p}
                       <div class="perk-row">
@@ -284,6 +308,19 @@
                         <span class="perk-val">+{p.amount}</span>
                       </div>
                     {/each}
+                    {#if card.enchants}
+                      {#each card.enchants as enc}
+                        {#each enc.effects as ef}
+                          <div class="perk-row perk-row--enchant">
+                            <span>{ef.name}</span>
+                            <span class="perk-val perk-val--enchant">+{ef.amount}</span>
+                          </div>
+                        {/each}
+                        {#if enc.notes}
+                          <p class="detail-extra">{enc.notes}</p>
+                        {/if}
+                      {/each}
+                    {/if}
                   </div>
                 {/if}
               </div>
@@ -351,6 +388,7 @@
     --accent-dim: rgba(74,222,128,0.12);
     --accent2: #f59e0b;
     --accent2-dim: rgba(245,158,11,0.12);
+    --accent3: #a78bfa;
     --neg: #f87171;
     --radius: 14px;
     --radius-sm: 8px;
@@ -622,6 +660,24 @@
     color: var(--ink);
   }
 
+  .detail-enchant-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 4px;
+  }
+
+  .enchant-tag {
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: rgba(167,139,250,0.12);
+    border: 1px solid rgba(167,139,250,0.25);
+    color: var(--accent3);
+    letter-spacing: 0.04em;
+  }
+
   .detail-desc {
     font-size: 0.78rem;
     color: var(--ink-muted);
@@ -653,11 +709,34 @@
     white-space: nowrap;
   }
 
-  /* negative stat value */
   :global(.stat-val.neg) { color: var(--neg); }
 
   /* ── Perk rows ── */
-  .perk-list { display: flex; flex-direction: column; gap: 6px; }
+  .perk-list { display: flex; flex-direction: column; gap: 4px; }
+
+  .perk-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.82rem;
+    padding: 4px 6px;
+    border-radius: 5px;
+  }
+
+  /* Enchant-sourced perk rows inside detail cards get a subtle tint */
+  .perk-row--enchant {
+    background: rgba(167,139,250,0.06);
+  }
+
+  .perk-val {
+    font-weight: 700;
+    color: var(--accent2);
+    white-space: nowrap;
+  }
+
+  .perk-val--enchant {
+    color: var(--accent3);
+  }
 
   .perk-card {
     background: var(--surface2);
@@ -669,20 +748,7 @@
     gap: 4px;
   }
 
-  .perk-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.82rem;
-  }
-
   .perk-name { font-weight: 600; }
-
-  .perk-val {
-    font-weight: 700;
-    color: var(--accent2);
-    white-space: nowrap;
-  }
 
   .perk-desc {
     font-size: 0.74rem;

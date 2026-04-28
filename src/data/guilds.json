@@ -1,1 +1,20 @@
-[{"name":"Gladiator","ranks":[{"rank":1,"stats":{"speedBoost":5,"physicalDefense":10,"fireDefense":50},"perks":[{"name":"Gladiatorial Rage","amount":1}]},{"rank":2,"stats":{"speedBoost":6.25,"physicalDefense":12.5,"fireDefense":62.5},"perks":[{"name":"Fury","amount":1},{"name":"Gladiatorial Rage","amount":2}]},{"rank":3,"stats":{"speedBoost":7.5,"physicalDefense":15,"fireDefense":75},"perks":[{"name":"Fury","amount":2},{"name":"Gladiatorial Rage","amount":3}]}]},{"name":"Cleric","ranks":[{"rank":1,"stats":{"hexDefense":20,"holyDefense":15},"perks":[{"name":"Blessing","amount":2},{"name":"Heal Boost","amount":2},{"name":"Luminescent Fervor","amount":1}]},{"rank":2,"stats":{"hexDefense":25,"holyDefense":18.75},"perks":[{"name":"Blessing","amount":2},{"name":"Heal Boost","amount":4},{"name":"Luminescent Fervor","amount":2}]},{"rank":3,"stats":{"hexDefense":30,"holyDefense":22.5},"perks":[{"name":"Blessing","amount":2},{"name":"Heal Boost","amount":6},{"name":"Luminescent Fervor","amount":3}]}]}]
+[
+    {"name":"Gladiator","ranks":[
+        {"rank":1,"stats":{"speedBoost":5,"physicalDefense":10,"fireDefense":50},"perks":[{"name":"Gladiatorial Rage","amount":1}]},
+        {"rank":2,"stats":{"speedBoost":6.25,"physicalDefense":12.5,"fireDefense":62.5},"perks":[{"name":"Fury","amount":1},{"name":"Gladiatorial Rage","amount":2}]},
+        {"rank":3,"stats":{"speedBoost":7.5,"physicalDefense":15,"fireDefense":75},"perks":[{"name":"Fury","amount":2},{"name":"Gladiatorial Rage","amount":3}]}
+        ]
+    },
+    {"name": "Cursed","ranks": [
+        {"rank": 1,"stats": {"hexDefense": -50},"perks": [{"name": "Cursed","amount": 1}],"description": "Most perk potency is increased. You now have the ability to absorb Binded Corruptions into Stored Corruptions by destroying them in your Inventory."},
+        {"rank": 2,"stats": {"hexDefense": -50},"perks": [{"name": "Cursed","amount": 2}],"description": "Most perk potency is increased. You now have the ability to absorb Binded Corruptions into Stored Corruptions by destroying them in your Inventory."},
+        {"rank": 3,"stats": {"hexDefense": -50},"perks": [{"name": "Cursed","amount": 3}],"description": "Most perk potency is increased. You now have the ability to absorb Binded Corruptions into Stored Corruptions by destroying them in your Inventory."}
+        ]
+    },
+    {"name":"Cleric","ranks":[
+        {"rank":1,"stats":{"hexDefense":20,"holyDefense":15},"perks":[{"name":"Blessing","amount":2},{"name":"Heal Boost","amount":2},{"name":"Luminescent Fervor","amount":1}]},
+        {"rank":2,"stats":{"hexDefense":25,"holyDefense":18.75},"perks":[{"name":"Blessing","amount":2},{"name":"Heal Boost","amount":4},{"name":"Luminescent Fervor","amount":2}]},
+        {"rank":3,"stats":{"hexDefense":30,"holyDefense":22.5},"perks":[{"name":"Blessing","amount":2},{"name":"Heal Boost","amount":6},{"name":"Luminescent Fervor","amount":3}]}
+        ]
+    }
+]
