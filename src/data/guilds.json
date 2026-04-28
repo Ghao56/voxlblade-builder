@@ -6,9 +6,9 @@
         ]
     },
     {"name": "Cursed","ranks": [
-        {"rank": 1,"stats": {"hexDefense": -50},"perks": [{"name": "Cursed","amount": 1}],"description": "Most perk potency is increased. You now have the ability to absorb Binded Corruptions into Stored Corruptions by destroying them in your Inventory."},
-        {"rank": 2,"stats": {"hexDefense": -50},"perks": [{"name": "Cursed","amount": 2}],"description": "Most perk potency is increased. You now have the ability to absorb Binded Corruptions into Stored Corruptions by destroying them in your Inventory."},
-        {"rank": 3,"stats": {"hexDefense": -50},"perks": [{"name": "Cursed","amount": 3}],"description": "Most perk potency is increased. You now have the ability to absorb Binded Corruptions into Stored Corruptions by destroying them in your Inventory."}
+        {"rank": 1,"stats": {"hexDefense": -50},"perks": [{"name": "Cursed","amount": 1}]},
+        {"rank": 2,"stats": {"hexDefense": -50},"perks": [{"name": "Cursed","amount": 2}]},
+        {"rank": 3,"stats": {"hexDefense": -50},"perks": [{"name": "Cursed","amount": 3}]}
         ]
     },
     {"name":"Cleric","ranks":[

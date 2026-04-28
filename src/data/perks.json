@@ -8,6 +8,8 @@
   {"name":"Blessing","description":"Healing now has a low chance to apply various unmodified Buffs at varying potency.","tags":["Buff","Defensive"]},
   {"name":"Heal Boost","description":"You gain bonus healing.","tags":["Buff","Defensive"]},
   {"name":"Luminescent Fervor","description":"Healing Allies grants the Buff 'Luminescent Fervor'. 'Luminescent Fervor' grants additional Holy Damage Type that counts as your Damage for Kill Credit.","tags":["Buff","Damage Boost"]},
+  {"name":"Cursed","description":"Most perk potency is increased. You now have the ability to absorb Binded Corruptions into Stored Corruptions by destroying them in your Inventory.","tags":["Guild"]},
+  {"name":"Brawny","description":"Converts a portion of all positive boosts to physical boost.","tags":["Enchantment"]},
   {"name":"Brawny","description":"Converts a portion of all positive boosts to physical boost.","tags":["Enchantment"]},
   {"name":"Contained","description":"Both debuff and buff duration are increased.","tags":["Enchantment"]},
   {"name":"Dark One","description":"Debuffs last longer on you, but in turn you gain increased damage while afflicted with them.","tags":["Enchantment"]},
@@ -28,4 +30,5 @@
   {"name":"Undead Might","description":"Weapon arts and runes gain bonus damage but you take self damage when hitting an opponent with a rune or weapon art.","tags":["Enchantment"]},
   {"name":"Wall","description":"While blocking, give nearby allies a buff that redirects some of the damage they take to you.","tags":["Enchantment"]},
   {"name":"Wildfire","description":"DoTs deal their damage in an AoE.","tags":["Enchantment"]}
+  
 ]

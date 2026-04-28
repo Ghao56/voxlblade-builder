@@ -1,12 +1,12 @@
 <script lang="ts">
   import { build, result } from './lib/store'
   import {
-    races, guilds, armors, rings, runes, enchantments,
+    races, guilds, armors, rings, runes,
     getGuild, getArmorPart, getRing, getRune, getEnchant, getPerk,
-    formatStat, formatLabel
+    formatStat, formatLabel, applyEnchantmentsToSlot
   } from './lib/engine'
   import EnchantRow from './lib/components/EnchantRow.svelte'
-  import type { EnchantSlot } from './lib/types'
+  import type { EnchantSlot, StatMap } from './lib/types'
 
   // Guild rank options
   $: guildData = getGuild($build.guild)
@@ -31,10 +31,8 @@
 
   $: enchantCount = Object.values($build.enchantments).flat().filter(Boolean).length
 
-  // Detail cards — enchantments merged into their parent slot card
   interface EnchantInfo {
     name: string
-    effects: Array<{name: string; amount: number}>
     notes: string | undefined
   }
 
@@ -43,7 +41,7 @@
     label: string
     description?: string
     stats: Record<string, number>
-    perks: Array<{name: string; amount: number}>
+    perks: Array<{ name: string; amount: number; fromEnchant: boolean }>
     extras?: string[]
     enchants?: EnchantInfo[]
   }
@@ -54,13 +52,51 @@
       .map(name => {
         const e = getEnchant(name)
         if (!e) return null
-        return {
-          name,
-          effects: e.effects.map(ef => ({ name: ef.name, amount: ef.value })),
-          notes: e.additionalNotes,
-        }
+        return { name, notes: e.additionalNotes }
       })
-      .filter((x): x is EnchantInfo => x !== null) as EnchantInfo[]
+      .filter((x): x is EnchantInfo => x !== null)
+  }
+
+  function buildSlotCard(
+    title: string,
+    label: string,
+    description: string,
+    baseStats: StatMap,
+    basePerks: Record<string, number>,
+    enchSlot: EnchantSlot,
+    extras?: string[]
+  ): DetailCard {
+    const enchNames = $build.enchantments[enchSlot]
+    const slotResult = applyEnchantmentsToSlot(baseStats, basePerks, enchNames)
+
+    const filteredStats: Record<string, number> = {}
+    for (const [k, v] of Object.entries(slotResult.stats)) {
+      const rounded = Math.round((v + Number.EPSILON) * 100) / 100
+      if (rounded !== 0) filteredStats[k] = rounded
+    }
+
+    const perks = Object.entries(slotResult.perks)
+      .filter(([, v]) => v !== 0)
+      .map(([name, amount]) => ({
+        name,
+        amount: Math.round((amount + Number.EPSILON) * 100) / 100,
+        fromEnchant: basePerks[name] == null
+      }))
+
+    return {
+      title,
+      label,
+      description,
+      stats: filteredStats,
+      perks,
+      extras,
+      enchants: getEnchantInfos(enchSlot),
+    }
+  }
+
+  function buildEnchantLabel(baseName: string, enchSlot: EnchantSlot): string {
+    const enchNames = $build.enchantments[enchSlot].filter(Boolean)
+    return enchNames.length > 0 ? `${enchNames.join(" ")} ${baseName}` : baseName
   }
 
   $: detailCards = (() => {
@@ -70,7 +106,7 @@
     if (race) cards.push({
       title: "Race", label: race.name,
       description: race.passive,
-      stats: (race.statModifiers ?? {}) as Record<string,number>,
+      stats: (race.statModifiers ?? {}) as Record<string, number>,
       perks: []
     })
 
@@ -79,50 +115,58 @@
     if (guild && rank) cards.push({
       title: "Guild", label: `${guild.name} R${rank.rank}`,
       description: "",
-      stats: (rank.stats ?? {}) as Record<string,number>,
-      perks: rank.perks ?? []
+      stats: (rank.stats ?? {}) as Record<string, number>,
+      perks: (rank.perks ?? []).map(p => ({ ...p, fromEnchant: false }))
     })
 
-    function buildLabel(baseName: string, enchSlot: EnchantSlot): string {
-      const enchNames = $build.enchantments[enchSlot].filter(Boolean)
-      return enchNames.length > 0 ? `${enchNames.join(" ")} ${baseName}` : baseName
-    }
-
-    const armorDefs: Array<[string, "Helmet"|"Chestplate"|"Leggings", EnchantSlot, string]> = [
+    const armorDefs: Array<[string, "Helmet" | "Chestplate" | "Leggings", EnchantSlot, string]> = [
       [$build.helmet, "Helmet", "helmet", "Helmet"],
       [$build.chestplate, "Chestplate", "chestplate", "Chestplate"],
       [$build.leggings, "Leggings", "leggings", "Leggings"],
     ]
-    for (const [name, type, enchSlot, label] of armorDefs) {
+    for (const [name, type, enchSlot, title] of armorDefs) {
       if (!name) continue
       const part = getArmorPart(name, type)
-      if (part) cards.push({
-        title: label, label: buildLabel(name, enchSlot),
-        description: part.description,
-        stats: part.stats as Record<string,number>,
-        perks: part.perkName ? [{name: part.perkName, amount: 1}] : [],
-        enchants: getEnchantInfos(enchSlot),
-      })
+      if (!part) continue
+      const basePerks: Record<string, number> = part.perkName ? { [part.perkName]: 1 } : {}
+      cards.push(buildSlotCard(
+        title,
+        buildEnchantLabel(name, enchSlot),
+        part.description,
+        part.stats as StatMap,
+        basePerks,
+        enchSlot
+      ))
     }
 
     const ring = getRing($build.ring)
-    if (ring) cards.push({
-      title: "Ring", label: buildLabel(ring.name, "ring"),
-      description: ring.description,
-      stats: ring.stats as Record<string,number>,
-      perks: ring.perkName ? [{name: ring.perkName, amount: ring.perkStacks ?? 1}] : [],
-      enchants: getEnchantInfos("ring"),
-    })
+    if (ring) {
+      const basePerks: Record<string, number> = ring.perkName
+        ? { [ring.perkName]: ring.perkStacks ?? 1 } : {}
+      cards.push(buildSlotCard(
+        "Ring",
+        buildEnchantLabel(ring.name, "ring"),
+        ring.description,
+        ring.stats,
+        basePerks,
+        "ring"
+      ))
+    }
 
     const rune = getRune($build.rune)
-    if (rune) cards.push({
-      title: "Rune", label: buildLabel(rune.name, "rune"),
-      description: rune.description,
-      stats: rune.stats as Record<string,number>,
-      perks: rune.perkName ? [{name: rune.perkName, amount: rune.perkStacks ?? 1}] : [],
-      extras: [`Cooldown: ${rune.cooldown}s`],
-      enchants: getEnchantInfos("rune"),
-    })
+    if (rune) {
+      const basePerks: Record<string, number> = rune.perkName
+        ? { [rune.perkName]: rune.perkStacks ?? 1 } : {}
+      cards.push(buildSlotCard(
+        "Rune",
+        buildEnchantLabel(rune.name, "rune"),
+        rune.description,
+        rune.stats,
+        basePerks,
+        "rune",
+        [`Cooldown: ${rune.cooldown}s`]
+      ))
+    }
 
     return cards
   })()
@@ -131,14 +175,7 @@
 <div class="app">
   <header>
     <div class="header-text">
-      <p class="eyebrow">Loadout Lab</p>
-      <h1>VoxlBlade<span class="accent">Builder</span></h1>
-      <p class="subhead">Race · Guild · Armor · Ring · Rune · Enchantments</p>
-    </div>
-    <div class="header-chips">
-      <span class="chip">{statRows.length} stats</span>
-      <span class="chip chip-accent">{perkRows.length} perks</span>
-      <span class="chip">{enchantCount} enchants</span>
+      <h1>Voxl<span class="accent">Builder</span></h1>
     </div>
   </header>
 
@@ -241,27 +278,6 @@
 
     <!-- ── RIGHT PANEL: Results ── -->
     <main class="results">
-
-      <!-- Summary bar -->
-      <div class="summary-bar">
-        <div class="summary-pill">
-          <span class="pill-label">Race</span>
-          <strong>{$build.race || "—"}</strong>
-        </div>
-        <div class="summary-pill">
-          <span class="pill-label">Guild</span>
-          <strong>{$build.guild ? `${$build.guild} R${$build.guildRank}` : "—"}</strong>
-        </div>
-        <div class="summary-pill">
-          <span class="pill-label">Armor</span>
-          <strong>{armorLabel}</strong>
-        </div>
-        <div class="summary-pill summary-pill--dark">
-          <span class="pill-label">Build</span>
-          <strong>{statRows.length}s / {perkRows.length}p / {enchantCount}e</strong>
-        </div>
-      </div>
-
       <!-- Details grid -->
       <div class="panel">
         <h3 class="panel-title">Selection Details</h3>
@@ -295,33 +311,29 @@
                     {#each Object.entries(card.stats).filter(([,v]) => v !== 0) as [k,v]}
                       <div class="stat-row">
                         <span>{formatLabel(k)}</span>
-                        <span class="stat-val">{formatStat(k, v as number)}</span>
+                        <span class="stat-val" class:neg={v < 0}>{formatStat(k, v as number)}</span>
                       </div>
                     {/each}
                   </div>
                 {/if}
-                {#if card.perks.length || (card.enchants && card.enchants.some(e => e.effects.length > 0))}
+                {#if card.perks.length}
                   <div class="perk-list">
                     {#each card.perks as p}
-                      <div class="perk-row">
+                      <div class="perk-row" class:perk-row--enchant={p.fromEnchant}>
                         <span>{p.name}</span>
-                        <span class="perk-val">+{p.amount}</span>
+                        <span class="perk-val" class:perk-val--enchant={p.fromEnchant}>
+                          +{p.amount}
+                        </span>
                       </div>
                     {/each}
-                    {#if card.enchants}
-                      {#each card.enchants as enc}
-                        {#each enc.effects as ef}
-                          <div class="perk-row perk-row--enchant">
-                            <span>{ef.name}</span>
-                            <span class="perk-val perk-val--enchant">+{ef.amount}</span>
-                          </div>
-                        {/each}
-                        {#if enc.notes}
-                          <p class="detail-extra">{enc.notes}</p>
-                        {/if}
-                      {/each}
-                    {/if}
                   </div>
+                {/if}
+                {#if card.enchants}
+                  {#each card.enchants as enc}
+                    {#if enc.notes}
+                      <p class="detail-extra">{enc.notes}</p>
+                    {/if}
+                  {/each}
                 {/if}
               </div>
             {/each}
@@ -340,7 +352,7 @@
               {#each statRows as [k,v]}
                 <div class="stat-row">
                   <span>{formatLabel(k)}</span>
-                  <span class="stat-val">{formatStat(k, v)}</span>
+                  <span class="stat-val" class:neg={v < 0}>{formatStat(k, v)}</span>
                 </div>
               {/each}
             </div>
@@ -411,7 +423,6 @@
     padding: 24px clamp(14px, 3vw, 32px) 60px;
   }
 
-  /* ── Header ── */
   header {
     display: flex;
     align-items: flex-end;
@@ -436,14 +447,6 @@
     pointer-events: none;
   }
 
-  .eyebrow {
-    font-size: 0.68rem;
-    text-transform: uppercase;
-    letter-spacing: 0.25em;
-    color: var(--accent);
-    font-weight: 700;
-    margin-bottom: 8px;
-  }
 
   h1 {
     font-family: var(--font-display);
@@ -455,39 +458,7 @@
 
   .accent { color: var(--accent); }
 
-  .subhead {
-    margin-top: 8px;
-    color: var(--ink-muted);
-    font-size: 0.88rem;
-    letter-spacing: 0.05em;
-  }
 
-  .header-chips {
-    display: flex;
-    gap: 8px;
-    flex-shrink: 0;
-    position: relative;
-    z-index: 1;
-  }
-
-  .chip {
-    padding: 6px 14px;
-    border-radius: 999px;
-    background: var(--surface3);
-    border: 1px solid var(--border-strong);
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    color: var(--ink-muted);
-  }
-
-  .chip-accent {
-    background: var(--accent-dim);
-    border-color: rgba(74,222,128,0.25);
-    color: var(--accent);
-  }
-
-  /* ── Layout ── */
   .workspace {
     display: grid;
     grid-template-columns: 340px 1fr;
@@ -495,7 +466,6 @@
     align-items: start;
   }
 
-  /* ── Controls ── */
   .controls-panel {
     position: sticky;
     top: 16px;
@@ -524,11 +494,7 @@
   .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
   .full-width { grid-column: 1/-1; }
 
-  .field {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-  }
+  .field { display: flex; flex-direction: column; gap: 5px; }
 
   .field span, label span {
     font-size: 0.67rem;
@@ -555,51 +521,13 @@
     transition: border-color 0.15s;
   }
 
-  select:focus {
-    outline: none;
-    border-color: rgba(74,222,128,0.4);
-  }
+  select:focus { outline: none; border-color: rgba(74,222,128,0.4); }
 
-  /* ── Enchant rows ── */
   .enchant-stack { display: flex; flex-direction: column; gap: 8px; }
 
-  /* ── Results ── */
   .results { display: flex; flex-direction: column; gap: 14px; }
 
-  .summary-bar {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-  }
 
-  .summary-pill {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 14px 16px;
-  }
-
-  .summary-pill--dark {
-    background: var(--surface2);
-    border-color: var(--border-strong);
-  }
-
-  .pill-label {
-    display: block;
-    font-size: 0.65rem;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    color: var(--ink-muted);
-    font-weight: 700;
-    margin-bottom: 4px;
-  }
-
-  .summary-pill strong {
-    font-size: 0.95rem;
-    font-weight: 600;
-    line-height: 1.3;
-    word-break: break-word;
-  }
 
   .panel {
     background: var(--surface);
@@ -617,13 +545,8 @@
     margin-bottom: 14px;
   }
 
-  .two-col {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-  }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
-  /* ── Detail cards ── */
   .detail-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
@@ -640,11 +563,7 @@
     gap: 8px;
   }
 
-  .detail-head {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
+  .detail-head { display: flex; flex-direction: column; gap: 2px; }
 
   .detail-type {
     font-size: 0.62rem;
@@ -654,18 +573,9 @@
     font-weight: 700;
   }
 
-  .detail-name {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--ink);
-  }
+  .detail-name { font-size: 0.9rem; font-weight: 600; color: var(--ink); }
 
-  .detail-enchant-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    margin-top: 4px;
-  }
+  .detail-enchant-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
 
   .enchant-tag {
     font-size: 0.65rem;
@@ -678,18 +588,9 @@
     letter-spacing: 0.04em;
   }
 
-  .detail-desc {
-    font-size: 0.78rem;
-    color: var(--ink-muted);
-    line-height: 1.45;
-  }
+  .detail-desc { font-size: 0.78rem; color: var(--ink-muted); line-height: 1.45; }
+  .detail-extra { font-size: 0.75rem; color: var(--accent2); }
 
-  .detail-extra {
-    font-size: 0.75rem;
-    color: var(--accent2);
-  }
-
-  /* ── Stat rows ── */
   .stat-list { display: flex; flex-direction: column; gap: 4px; }
 
   .stat-row {
@@ -703,15 +604,9 @@
     font-size: 0.8rem;
   }
 
-  .stat-val {
-    font-weight: 700;
-    color: var(--accent);
-    white-space: nowrap;
-  }
+  .stat-val { font-weight: 700; color: var(--accent); white-space: nowrap; }
+  .stat-val.neg { color: var(--neg); }
 
-  :global(.stat-val.neg) { color: var(--neg); }
-
-  /* ── Perk rows ── */
   .perk-list { display: flex; flex-direction: column; gap: 4px; }
 
   .perk-row {
@@ -723,20 +618,10 @@
     border-radius: 5px;
   }
 
-  /* Enchant-sourced perk rows inside detail cards get a subtle tint */
-  .perk-row--enchant {
-    background: rgba(167,139,250,0.06);
-  }
+  .perk-row--enchant { background: rgba(167,139,250,0.06); }
 
-  .perk-val {
-    font-weight: 700;
-    color: var(--accent2);
-    white-space: nowrap;
-  }
-
-  .perk-val--enchant {
-    color: var(--accent3);
-  }
+  .perk-val { font-weight: 700; color: var(--accent2); white-space: nowrap; }
+  .perk-val--enchant { color: var(--accent3); }
 
   .perk-card {
     background: var(--surface2);
@@ -749,29 +634,16 @@
   }
 
   .perk-name { font-weight: 600; }
+  .perk-desc { font-size: 0.74rem; color: var(--ink-muted); line-height: 1.4; }
+  .empty { color: var(--ink-muted); font-style: italic; font-size: 0.85rem; }
 
-  .perk-desc {
-    font-size: 0.74rem;
-    color: var(--ink-muted);
-    line-height: 1.4;
-  }
-
-  .empty {
-    color: var(--ink-muted);
-    font-style: italic;
-    font-size: 0.85rem;
-  }
-
-  /* ── Responsive ── */
   @media (max-width: 1100px) {
     .workspace { grid-template-columns: 1fr; }
     .controls-panel { position: static; }
-    .summary-bar { grid-template-columns: repeat(2, 1fr); }
   }
 
   @media (max-width: 640px) {
     .two-col { grid-template-columns: 1fr; }
-    .summary-bar { grid-template-columns: 1fr 1fr; }
     .grid-3 { grid-template-columns: 1fr 1fr; }
     header { flex-direction: column; align-items: flex-start; }
   }

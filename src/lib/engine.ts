@@ -60,7 +60,7 @@ function normalizeModifiers(m: StatModifier | StatModifier[]): StatModifier[] {
   return Array.isArray(m) ? m : [m]
 }
 
-function applyEnchantmentsToSlot(
+export function applyEnchantmentsToSlot(
   baseStats: StatMap,
   basePerks: Record<string, number>,
   enchantNames: string[]
@@ -132,15 +132,14 @@ function applyEnchantmentsToSlot(
 
 // ─── Perk Effectiveness ───────────────────────────────────────────────────────
 
-// Perks that are NOT affected by Perk Effectiveness:
-// - All perks that come exclusively from enchantment effects
-// - Specific named exemptions
+// Perks that are NOT affected by Perk Effectiveness or Cursed multiplier
 const ENCHANT_EFFECT_PERK_NAMES = new Set(
   (enchantmentsRaw as Enchantment[]).flatMap(e => e.effects.map(ef => ef.name))
 )
 
 const PERK_EFFECTIVENESS_EXEMPT = new Set([
   ...ENCHANT_EFFECT_PERK_NAMES,
+  "Cursed",
   "Luminescent Fervor",
   "Valor",
   "Spirit Commune",
@@ -152,10 +151,12 @@ const PERK_EFFECTIVENESS_EXEMPT = new Set([
 
 export function applyPerkEffectiveness(
   perks: Record<string, number>,
-  perkEffectivenessStacks: number
+  perkEffectivenessStacks: number,
+  cursedStacks: number
 ): Record<string, number> {
-  if (perkEffectivenessStacks <= 0) return perks
-  const multiplier = Math.pow(1.1, perkEffectivenessStacks)
+  if (perkEffectivenessStacks <= 0 && cursedStacks <= 0) return perks
+  // Each source uses (1 + stacks * 0.1) formula, multiplied together
+  const multiplier = (1 + perkEffectivenessStacks * 0.1) * (1 + cursedStacks * 0.1)
   const result: Record<string, number> = {}
   for (const [name, value] of Object.entries(perks)) {
     result[name] = PERK_EFFECTIVENESS_EXEMPT.has(name)
@@ -262,14 +263,9 @@ export function calcBuild(state: BuildState): BuildResult {
     if (rounded !== 0) finalStats[k as StatKey] = rounded
   }
 
-  // Count Cursed enchantment stacks across all slots (each Cursed = +1 to perk effectiveness)
-  const cursedStacks = Object.values(state.enchantments)
-    .flat()
-    .filter(name => name === "Cursed")
-    .length
-
-  // Collect Perk Effectiveness stacks (from Warped effect) + Cursed enchantment stacks
-  const perkEffectivenessStacks = (perks["Perk Effectiveness"] ?? 0) + cursedStacks
+  // Cursed stacks come from guild perk, Perk Effectiveness from Warped enchant effect
+  const cursedStacks = perks["Cursed"] ?? 0
+  const perkEffectivenessStacks = perks["Perk Effectiveness"] ?? 0
 
   // Round perks and filter zeros
   let finalPerks: Record<string, number> = {}
@@ -278,10 +274,9 @@ export function calcBuild(state: BuildState): BuildResult {
     if (rounded !== 0) finalPerks[k] = rounded
   }
 
-  // Apply Perk Effectiveness multiplier (Warped enchant and similar)
-  if (perkEffectivenessStacks > 0) {
-    finalPerks = applyPerkEffectiveness(finalPerks, perkEffectivenessStacks)
-    // Re-round after multiplier
+  // Apply Perk Effectiveness multiplier
+  if (perkEffectivenessStacks > 0 || cursedStacks > 0) {
+    finalPerks = applyPerkEffectiveness(finalPerks, perkEffectivenessStacks, cursedStacks)
     for (const k of Object.keys(finalPerks)) {
       finalPerks[k] = Math.round((finalPerks[k] + Number.EPSILON) * 100) / 100
     }
