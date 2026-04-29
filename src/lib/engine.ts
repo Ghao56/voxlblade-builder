@@ -60,6 +60,11 @@ function normalizeModifiers(m: StatModifier | StatModifier[]): StatModifier[] {
   return Array.isArray(m) ? m : [m]
 }
 
+/**
+ * Apply enchantments to a slot.
+ * Order: right-to-left (index 2 → 1 → 0), so slot 0 (leftmost) applies last
+ * and has the "final say" as the primary enchant.
+ */
 export function applyEnchantmentsToSlot(
   baseStats: StatMap,
   basePerks: Record<string, number>,
@@ -68,7 +73,10 @@ export function applyEnchantmentsToSlot(
   const stats = { ...baseStats }
   const perks = { ...basePerks }
 
-  for (const name of enchantNames) {
+  // Apply right-to-left: [2, 1, 0]
+  const ordered = [...enchantNames].reverse()
+
+  for (const name of ordered) {
     if (!name) continue
     const e = getEnchant(name)
     if (!e) continue
@@ -132,7 +140,6 @@ export function applyEnchantmentsToSlot(
 
 // ─── Perk Effectiveness ───────────────────────────────────────────────────────
 
-// Perks that are NOT affected by Perk Effectiveness or Cursed multiplier
 const ENCHANT_EFFECT_PERK_NAMES = new Set(
   (enchantmentsRaw as Enchantment[]).flatMap(e => e.effects.map(ef => ef.name))
 )
@@ -155,7 +162,6 @@ export function applyPerkEffectiveness(
   cursedStacks: number
 ): Record<string, number> {
   if (perkEffectivenessStacks <= 0 && cursedStacks <= 0) return perks
-  // Each source uses (1 + stacks * 0.1) formula, multiplied together
   const multiplier = (1 + perkEffectivenessStacks * 0.1) * (1 + cursedStacks * 0.1)
   const result: Record<string, number> = {}
   for (const [name, value] of Object.entries(perks)) {
@@ -263,18 +269,15 @@ export function calcBuild(state: BuildState): BuildResult {
     if (rounded !== 0) finalStats[k as StatKey] = rounded
   }
 
-  // Cursed stacks come from guild perk, Perk Effectiveness from Warped enchant effect
   const cursedStacks = perks["Cursed"] ?? 0
   const perkEffectivenessStacks = perks["Perk Effectiveness"] ?? 0
 
-  // Round perks and filter zeros
   let finalPerks: Record<string, number> = {}
   for (const [k, v] of Object.entries(perks)) {
     const rounded = Math.round((v + Number.EPSILON) * 100) / 100
     if (rounded !== 0) finalPerks[k] = rounded
   }
 
-  // Apply Perk Effectiveness multiplier
   if (perkEffectivenessStacks > 0 || cursedStacks > 0) {
     finalPerks = applyPerkEffectiveness(finalPerks, perkEffectivenessStacks, cursedStacks)
     for (const k of Object.keys(finalPerks)) {
@@ -303,6 +306,17 @@ export function isExclusiveEnchant(e: Enchantment | undefined): boolean {
   return e?.stacking === "exclusive"
 }
 
+/**
+ * Enforce rules for a single enchant slot's 3 selections:
+ *
+ * 1. Exclusive enchant → clears all other slots, occupies slot 0 only.
+ * 2. No duplicates across slots — when a slot is changed, clear any other
+ *    slot that already has the same enchant name.
+ * 3. Cascade: slot 1 requires slot 0 filled; slot 2 requires slot 1 filled.
+ *    (Gaps are not allowed — shift values left if needed.)
+ *
+ * changedIndex: which slot the user just edited (0, 1, or 2).
+ */
 export function enforceEnchantSlot(
   selections: [string, string, string],
   changedIndex: number
@@ -310,20 +324,27 @@ export function enforceEnchantSlot(
   let s: [string, string, string] = [...selections] as [string, string, string]
   const changed = s[changedIndex]
 
-  // Remove duplicates
+  // 1. If the newly set value is non-empty, remove it from every OTHER slot
   if (changed) {
-    const dupIdx = s.findIndex((v, i) => v === changed && i !== changedIndex)
-    if (dupIdx !== -1) s[changedIndex] = ""
+    for (let i = 0; i < 3; i++) {
+      if (i !== changedIndex && s[i] === changed) {
+        s[i] = ""
+      }
+    }
   }
 
+  // 2. If any slot is exclusive, it must be alone in slot 0
   const exclusiveIdx = s.findIndex(n => isExclusiveEnchant(getEnchant(n)))
   if (exclusiveIdx !== -1) {
-    return [s[exclusiveIdx], "", ""]
+    const exclusiveName = s[exclusiveIdx]
+    return [exclusiveName, "", ""]
   }
 
-  // Cascade: no gaps
-  if (!s[0]) s = ["", "", ""]
-  else if (!s[1]) s[2] = ""
-
-  return s
+  // 3. Cascade — compact leftward so there are no gaps
+  const filled = s.filter(Boolean)
+  return [
+    filled[0] ?? "",
+    filled[1] ?? "",
+    filled[2] ?? "",
+  ]
 }

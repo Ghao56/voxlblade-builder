@@ -7,14 +7,41 @@
   export let label: string
 
   $: selections = $build.enchantments[slot]
-  $: hasExclusive = selections.some(n => isExclusiveEnchant(getEnchant(n)))
+
+  // Which enchants are already picked in other slots (for filtering)
+  $: usedNames = new Set(selections.filter(Boolean))
 
   const opts = enchantments.map(e => ({ value: e.name, label: e.name }))
 
+  // Slot i is visible if:
+  // - i === 0: always
+  // - i === 1: slot 0 is filled AND not exclusive
+  // - i === 2: slot 1 is filled AND slot 0 is not exclusive
+  $: slot0Exclusive = isExclusiveEnchant(getEnchant(selections[0]))
+
   function visible(i: number): boolean {
     if (i === 0) return true
-    if (hasExclusive) return false
-    return Boolean(selections[i - 1])
+    if (slot0Exclusive) return false
+    if (i === 1) return Boolean(selections[0])
+    if (i === 2) return Boolean(selections[0]) && Boolean(selections[1])
+    return false
+  }
+
+  function handleChange(i: 0 | 1 | 2, value: string) {
+    // If user picks an exclusive on slot 1 or 2, move it to slot 0 and clear rest
+    if (value && isExclusiveEnchant(getEnchant(value)) && i !== 0) {
+      setEnchantment(slot, 0, value)
+      setEnchantment(slot, 1, "")
+      setEnchantment(slot, 2, "")
+      return
+    }
+    setEnchantment(slot, i, value)
+  }
+
+  // Options for each slot — exclude names already chosen in OTHER slots
+  function optsFor(i: number) {
+    const others = new Set(selections.filter((v, idx) => idx !== i && Boolean(v)))
+    return opts.filter(o => !others.has(o.value))
   }
 </script>
 
@@ -25,10 +52,10 @@
       {#if visible(i)}
         <select
           value={selections[i]}
-          on:change={e => setEnchantment(slot, i as 0|1|2, (e.target as HTMLSelectElement).value)}
+          on:change={e => handleChange(i as 0|1|2, (e.target as HTMLSelectElement).value)}
         >
           <option value="">—</option>
-          {#each opts as opt}
+          {#each optsFor(i) as opt}
             <option value={opt.value}>{opt.label}</option>
           {/each}
         </select>
