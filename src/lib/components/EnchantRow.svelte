@@ -18,6 +18,8 @@
   // - i === 1: slot 0 is filled AND not exclusive
   // - i === 2: slot 1 is filled AND slot 0 is not exclusive
   $: slot0Exclusive = isExclusiveEnchant(getEnchant(selections[0]))
+  $: show1 = !slot0Exclusive && Boolean(selections[0])
+  $: show2 = !slot0Exclusive && Boolean(selections[0]) && Boolean(selections[1])
 
   function visible(i: number): boolean {
     if (i === 0) return true
@@ -49,7 +51,7 @@
   <span class="row-label">{label}</span>
   <div class="row-selects">
     {#each [0, 1, 2] as i}
-      {#if visible(i)}
+      {#if i === 0 || (i === 1 && show1) || (i === 2 && show2)}
         <select
           value={selections[i]}
           on:change={e => handleChange(i as 0|1|2, (e.target as HTMLSelectElement).value)}

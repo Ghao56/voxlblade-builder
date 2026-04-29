@@ -109,6 +109,19 @@ export function applyEnchantmentsToSlot(
       }
     }
 
+    if(es.defenseStats) {
+      const mods = normalizeModifiers(es.defenseStats  as StatModifier | StatModifier[])
+      const defenseKeys = STAT_KEYS.filter(k => k.endsWith('Defense'))
+      for (const key of Object.keys(stats) as StatKey[]) {
+        const v = stats[key] ?? 0
+        if (v>0 && defenseKeys.includes(key)) {
+          let nv = v
+          for (const mod of mods) nv = applyMod(nv, mod)
+          stats[key] = nv
+        }
+      }
+    }
+
     // perks modifier
     if (es.perks) {
       const mods = normalizeModifiers(es.perks as StatModifier | StatModifier[])
@@ -141,7 +154,7 @@ export function applyEnchantmentsToSlot(
 // ─── Perk Effectiveness ───────────────────────────────────────────────────────
 
 const ENCHANT_EFFECT_PERK_NAMES = new Set(
-  (enchantmentsRaw as Enchantment[]).flatMap(e => e.effects.map(ef => ef.name))
+  (enchantmentsRaw as Enchantment[]).flatMap(e => (e.effects ?? []).map(ef => ef.name))
 )
 
 const PERK_EFFECTIVENESS_EXEMPT = new Set([
