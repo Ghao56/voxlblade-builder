@@ -8,11 +8,9 @@
   import EnchantRow from './lib/components/EnchantRow.svelte'
   import type { EnchantSlot, StatMap } from './lib/types'
 
-  // Guild rank options
   $: guildData = getGuild($build.guild)
   $: rankOptions = guildData?.ranks.map(r => ({ value: String(r.rank), label: `Rank ${r.rank}` })) ?? []
 
-  // Stat rows for display
   $: statRows = Object.entries($result.stats)
     .filter(([,v]) => v !== 0)
     .sort(([a],[b]) => a.localeCompare(b))
@@ -21,20 +19,7 @@
     .filter(([,v]) => v > 0)
     .sort(([a],[b]) => a.localeCompare(b))
 
-  // Summary
-  $: armorLabel = (() => {
-    const names = [$build.helmet, $build.chestplate, $build.leggings].filter(Boolean)
-    if (!names.length) return "None"
-    const uniq = [...new Set(names)]
-    return uniq.length === 1 ? uniq[0] : "Mixed"
-  })()
-
-  $: enchantCount = Object.values($build.enchantments).flat().filter(Boolean).length
-
-  interface EnchantInfo {
-    name: string
-    notes: string | undefined
-  }
+  interface EnchantInfo { name: string; notes: string | undefined }
 
   interface DetailCard {
     title: string
@@ -58,23 +43,17 @@
   }
 
   function buildSlotCard(
-    title: string,
-    label: string,
-    description: string,
-    baseStats: StatMap,
-    basePerks: Record<string, number>,
-    enchSlot: EnchantSlot,
-    extras?: string[]
+    title: string, label: string, description: string,
+    baseStats: StatMap, basePerks: Record<string, number>,
+    enchSlot: EnchantSlot, extras?: string[]
   ): DetailCard {
     const enchNames = $build.enchantments[enchSlot]
     const slotResult = applyEnchantmentsToSlot(baseStats, basePerks, enchNames)
-
     const filteredStats: Record<string, number> = {}
     for (const [k, v] of Object.entries(slotResult.stats)) {
       const rounded = Math.round((v + Number.EPSILON) * 100) / 100
       if (rounded !== 0) filteredStats[k] = rounded
     }
-
     const perks = Object.entries(slotResult.perks)
       .filter(([, v]) => v !== 0)
       .map(([name, amount]) => ({
@@ -82,16 +61,7 @@
         amount: Math.round((amount + Number.EPSILON) * 100) / 100,
         fromEnchant: basePerks[name] == null
       }))
-
-    return {
-      title,
-      label,
-      description,
-      stats: filteredStats,
-      perks,
-      extras,
-      enchants: getEnchantInfos(enchSlot),
-    }
+    return { title, label, description, stats: filteredStats, perks, extras, enchants: getEnchantInfos(enchSlot) }
   }
 
   function buildEnchantLabel(baseName: string, enchSlot: EnchantSlot): string {
@@ -99,9 +69,9 @@
     return enchNames.length > 0 ? `${enchNames.join(" ")} ${baseName}` : baseName
   }
 
-  $: detailCards = (() => {
+  // Separate: identity cards (Race + Guild) vs gear cards
+  $: identityCards = (() => {
     const cards: DetailCard[] = []
-
     const race = races.find(r => r.name === $build.race)
     if (race) cards.push({
       title: "Race", label: race.name,
@@ -109,7 +79,6 @@
       stats: (race.statModifiers ?? {}) as Record<string, number>,
       perks: []
     })
-
     const guild = getGuild($build.guild)
     const rank = guild?.ranks.find(r => r.rank === $build.guildRank)
     if (guild && rank) cards.push({
@@ -118,7 +87,11 @@
       stats: (rank.stats ?? {}) as Record<string, number>,
       perks: (rank.perks ?? []).map(p => ({ ...p, fromEnchant: false }))
     })
+    return cards
+  })()
 
+  $: gearCards = (() => {
+    const cards: DetailCard[] = []
     const armorDefs: Array<[string, "Helmet" | "Chestplate" | "Leggings", EnchantSlot, string]> = [
       [$build.helmet, "Helmet", "helmet", "Helmet"],
       [$build.chestplate, "Chestplate", "chestplate", "Chestplate"],
@@ -129,47 +102,22 @@
       const part = getArmorPart(name, type)
       if (!part) continue
       const basePerks: Record<string, number> = part.perkName ? { [part.perkName]: 1 } : {}
-      cards.push(buildSlotCard(
-        title,
-        buildEnchantLabel(name, enchSlot),
-        part.description,
-        part.stats as StatMap,
-        basePerks,
-        enchSlot
-      ))
+      cards.push(buildSlotCard(title, buildEnchantLabel(name, enchSlot), part.description, part.stats as StatMap, basePerks, enchSlot))
     }
-
     const ring = getRing($build.ring)
     if (ring) {
-      const basePerks: Record<string, number> = ring.perkName
-        ? { [ring.perkName]: ring.perkStacks ?? 1 } : {}
-      cards.push(buildSlotCard(
-        "Ring",
-        buildEnchantLabel(ring.name, "ring"),
-        ring.description,
-        ring.stats,
-        basePerks,
-        "ring"
-      ))
+      const basePerks: Record<string, number> = ring.perkName ? { [ring.perkName]: ring.perkStacks ?? 1 } : {}
+      cards.push(buildSlotCard("Ring", buildEnchantLabel(ring.name, "ring"), ring.description, ring.stats, basePerks, "ring"))
     }
-
     const rune = getRune($build.rune)
     if (rune) {
-      const basePerks: Record<string, number> = rune.perkName
-        ? { [rune.perkName]: rune.perkStacks ?? 1 } : {}
-      cards.push(buildSlotCard(
-        "Rune",
-        buildEnchantLabel(rune.name, "rune"),
-        rune.description,
-        rune.stats,
-        basePerks,
-        "rune",
-        [`Cooldown: ${rune.cooldown}s`]
-      ))
+      const basePerks: Record<string, number> = rune.perkName ? { [rune.perkName]: rune.perkStacks ?? 1 } : {}
+      cards.push(buildSlotCard("Rune", buildEnchantLabel(rune.name, "rune"), rune.description, rune.stats, basePerks, "rune", [`Cooldown: ${rune.cooldown}s`]))
     }
-
     return cards
   })()
+
+  $: hasDetails = identityCards.length > 0 || gearCards.length > 0
 </script>
 
 <div class="app">
@@ -180,12 +128,11 @@
   </header>
 
   <div class="workspace">
-    <!-- ── LEFT PANEL: Controls ── -->
     <aside class="controls-panel">
 
       <section class="control-section">
         <h2>Core</h2>
-        <div class="grid-2">
+        <div class="core-stack">
           <label class="field">
             <span>Race</span>
             <select bind:value={$build.race}>
@@ -194,26 +141,30 @@
               {/each}
             </select>
           </label>
-          <label class="field">
-            <span>Guild</span>
-            <select bind:value={$build.guild}
-              on:change={() => build.update(s => ({...s, guildRank: 1}))}>
-              <option value="">—</option>
-              {#each guilds as g}
-                <option value={g.name}>{g.name}</option>
-              {/each}
-            </select>
-          </label>
-          <label class="field full-width">
-            <span>Guild Rank</span>
-            <select
-              value={String($build.guildRank)}
-              on:change={e => build.update(s => ({...s, guildRank: Number((e.target as HTMLSelectElement).value)}))}>
-              {#each rankOptions as opt}
-                <option value={opt.value}>{opt.label}</option>
-              {/each}
-            </select>
-          </label>
+          <div class="guild-rank-row">
+            <label class="field guild-field">
+              <span>Guild</span>
+              <select bind:value={$build.guild}
+                on:change={() => build.update(s => ({...s, guildRank: 1}))}>
+                <option value="">—</option>
+                {#each guilds as g}
+                  <option value={g.name}>{g.name}</option>
+                {/each}
+              </select>
+            </label>
+            {#if rankOptions.length > 0}
+              <label class="field rank-field">
+                <span>Rank</span>
+                <select
+                  value={String($build.guildRank)}
+                  on:change={e => build.update(s => ({...s, guildRank: Number((e.target as HTMLSelectElement).value)}))}>
+                  {#each rankOptions as opt}
+                    <option value={opt.value}>{opt.label}</option>
+                  {/each}
+                </select>
+              </label>
+            {/if}
+          </div>
         </div>
       </section>
 
@@ -277,67 +228,107 @@
 
     </aside>
 
-    <!-- ── RIGHT PANEL: Results ── -->
     <main class="results">
-      <!-- Details grid -->
+
+      <!-- Selection Details -->
       <div class="panel">
         <h3 class="panel-title">Selection Details</h3>
-        {#if detailCards.length === 0}
+        {#if !hasDetails}
           <p class="empty">Pick options to see details.</p>
         {:else}
-          <div class="detail-grid">
-            {#each detailCards as card}
-              <div class="detail-card">
-                <div class="detail-head">
-                  <span class="detail-type">{card.title}</span>
-                  <span class="detail-name">{card.label}</span>
-                  {#if card.enchants && card.enchants.length > 0}
-                    <div class="detail-enchant-tags">
-                      {#each card.enchants as enc}
-                        <span class="enchant-tag">{enc.name}</span>
-                      {/each}
+          <div class="detail-layout">
+            <!-- Left column: Race + Guild stacked -->
+            {#if identityCards.length > 0}
+              <div class="identity-col">
+                {#each identityCards as card}
+                  <div class="detail-card">
+                    <div class="detail-head">
+                      <span class="detail-type">{card.title}</span>
+                      <span class="detail-name">{card.label}</span>
                     </div>
-                  {/if}
-                </div>
-                {#if card.description}
-                  <p class="detail-desc">{card.description}</p>
-                {/if}
-                {#if card.extras?.length}
-                  {#each card.extras as ex}
-                    <p class="detail-extra">{ex}</p>
-                  {/each}
-                {/if}
-                {#if Object.keys(card.stats).length}
-                  <div class="stat-list">
-                    {#each Object.entries(card.stats).filter(([,v]) => v !== 0) as [k,v]}
-                      <div class="stat-row">
-                        <span>{formatLabel(k)}</span>
-                        <span class="stat-val" class:neg={v < 0}>{formatStat(k, v as number)}</span>
-                      </div>
-                    {/each}
-                  </div>
-                {/if}
-                {#if card.perks.length}
-                  <div class="perk-list">
-                    {#each card.perks as p}
-                      <div class="perk-row" class:perk-row--enchant={p.fromEnchant}>
-                        <span>{p.name}</span>
-                        <span class="perk-val" class:perk-val--enchant={p.fromEnchant}>
-                          +{p.amount}
-                        </span>
-                      </div>
-                    {/each}
-                  </div>
-                {/if}
-                {#if card.enchants}
-                  {#each card.enchants as enc}
-                    {#if enc.notes}
-                      <p class="detail-extra">{enc.notes}</p>
+                    {#if card.description}
+                      <p class="detail-desc">{card.description}</p>
                     {/if}
-                  {/each}
-                {/if}
+                    {#if Object.keys(card.stats).length}
+                      <div class="stat-list">
+                        {#each Object.entries(card.stats).filter(([,v]) => v !== 0) as [k,v]}
+                          <div class="stat-row">
+                            <span>{formatLabel(k)}</span>
+                            <span class="stat-val" class:neg={v < 0}>{formatStat(k, v as number)}</span>
+                          </div>
+                        {/each}
+                      </div>
+                    {/if}
+                    {#if card.perks.length}
+                      <div class="perk-list">
+                        {#each card.perks as p}
+                          <div class="perk-row" class:perk-row--enchant={p.fromEnchant}>
+                            <span>{p.name}</span>
+                            <span class="perk-val" class:perk-val--enchant={p.fromEnchant}>+{p.amount}</span>
+                          </div>
+                        {/each}
+                      </div>
+                    {/if}
+                  </div>
+                {/each}
               </div>
-            {/each}
+            {/if}
+
+            <!-- Remaining: gear cards in auto grid -->
+            {#if gearCards.length > 0}
+              <div class="gear-grid">
+                {#each gearCards as card}
+                  <div class="detail-card">
+                    <div class="detail-head">
+                      <span class="detail-type">{card.title}</span>
+                      <span class="detail-name">{card.label}</span>
+                      {#if card.enchants && card.enchants.length > 0}
+                        <div class="detail-enchant-tags">
+                          {#each card.enchants as enc}
+                            <span class="enchant-tag">{enc.name}</span>
+                          {/each}
+                        </div>
+                      {/if}
+                    </div>
+                    {#if card.description}
+                      <p class="detail-desc">{card.description}</p>
+                    {/if}
+                    {#if card.extras?.length}
+                      {#each card.extras as ex}
+                        <p class="detail-extra">{ex}</p>
+                      {/each}
+                    {/if}
+                    {#if Object.keys(card.stats).length}
+                      <div class="stat-list">
+                        {#each Object.entries(card.stats).filter(([,v]) => v !== 0) as [k,v]}
+                          <div class="stat-row">
+                            <span>{formatLabel(k)}</span>
+                            <span class="stat-val" class:neg={v < 0}>{formatStat(k, v as number)}</span>
+                          </div>
+                        {/each}
+                      </div>
+                    {/if}
+                    {#if card.perks.length}
+                      <div class="perk-list">
+                        {#each card.perks as p}
+                          <div class="perk-row" class:perk-row--enchant={p.fromEnchant}>
+                            <span>{p.name}</span>
+                            <span class="perk-val" class:perk-val--enchant={p.fromEnchant}>+{p.amount}</span>
+                          </div>
+                        {/each}
+                      </div>
+                    {/if}
+                    {#if card.enchants}
+                      {#each card.enchants as enc}
+                        {#if enc.notes}
+                          <p class="detail-extra">{enc.notes}</p>
+                        {/if}
+                      {/each}
+                    {/if}
+                  </div>
+                {/each}
+              </div>
+            {/if}
           </div>
         {/if}
       </div>
@@ -398,9 +389,7 @@
     --ink: #e8e4da;
     --ink-muted: #8a8d85;
     --accent: #4ade80;
-    --accent-dim: rgba(74,222,128,0.12);
     --accent2: #f59e0b;
-    --accent2-dim: rgba(245,158,11,0.12);
     --accent3: #a78bfa;
     --neg: #f87171;
     --radius: 14px;
@@ -440,14 +429,12 @@
 
   header::before {
     content: "";
-    position: absolute;
-    inset: 0;
+    position: absolute; inset: 0;
     background:
       radial-gradient(ellipse at 90% 0%, rgba(74,222,128,0.07) 0%, transparent 50%),
       radial-gradient(ellipse at 10% 100%, rgba(245,158,11,0.05) 0%, transparent 40%);
     pointer-events: none;
   }
-
 
   h1 {
     font-family: var(--font-display);
@@ -458,7 +445,6 @@
   }
 
   .accent { color: var(--accent); }
-
 
   .workspace {
     display: grid;
@@ -491,9 +477,14 @@
     margin-bottom: 12px;
   }
 
+  /* Core */
+  .core-stack { display: flex; flex-direction: column; gap: 10px; }
+  .guild-rank-row { display: flex; gap: 8px; align-items: flex-end; }
+  .guild-field { flex: 1; min-width: 0; }
+  .rank-field { flex: 0 0 76px; }
+
   .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-  .full-width { grid-column: 1/-1; }
 
   .field { display: flex; flex-direction: column; gap: 5px; }
 
@@ -528,8 +519,6 @@
 
   .results { display: flex; flex-direction: column; gap: 14px; }
 
-
-
   .panel {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -546,11 +535,24 @@
     margin-bottom: 14px;
   }
 
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  /* Detail layout: identity col (Race+Guild stacked) + gear grid */
+  .detail-layout {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
 
-  .detail-grid {
+  .identity-col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 0 0 200px;
+  }
+
+  .gear-grid {
+    flex: 1;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
     gap: 10px;
   }
 
@@ -591,6 +593,8 @@
 
   .detail-desc { font-size: 0.78rem; color: var(--ink-muted); line-height: 1.45; }
   .detail-extra { font-size: 0.75rem; color: var(--accent2); }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
   .stat-list { display: flex; flex-direction: column; gap: 4px; }
 
@@ -643,9 +647,15 @@
     .controls-panel { position: static; }
   }
 
+  @media (max-width: 768px) {
+    .detail-layout { flex-direction: column; }
+    .identity-col { flex: none; width: 100%; flex-direction: row; }
+  }
+
   @media (max-width: 640px) {
     .two-col { grid-template-columns: 1fr; }
     .grid-3 { grid-template-columns: 1fr 1fr; }
     header { flex-direction: column; align-items: flex-start; }
+    .identity-col { flex-direction: column; }
   }
 </style>
