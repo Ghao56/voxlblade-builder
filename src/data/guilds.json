@@ -1,8 +1,8 @@
 [
     {"name":"Gladiator","ranks":[
-        {"rank":1,"stats":{"speedBoost":5,"physicalDefense":10,"fireDefense":50},"perks":[{"name":"Gladiatorial Rage","amount":1}]},
-        {"rank":2,"stats":{"speedBoost":6.25,"physicalDefense":12.5,"fireDefense":62.5},"perks":[{"name":"Fury","amount":1},{"name":"Gladiatorial Rage","amount":2}]},
-        {"rank":3,"stats":{"speedBoost":7.5,"physicalDefense":15,"fireDefense":75},"perks":[{"name":"Fury","amount":2},{"name":"Gladiatorial Rage","amount":3}]}
+        {"rank":1,"stats":{"speedBoost":5,"physicalDefense":10,"heatResistance":50},"perks":[{"name":"Gladiatorial Rage","amount":1}]},
+        {"rank":2,"stats":{"speedBoost":6.25,"physicalDefense":12.5,"heatResistance":62.5},"perks":[{"name":"Fury","amount":1},{"name":"Gladiatorial Rage","amount":2}]},
+        {"rank":3,"stats":{"speedBoost":7.5,"physicalDefense":15,"heatResistance":75},"perks":[{"name":"Fury","amount":2},{"name":"Gladiatorial Rage","amount":3}]}
         ]
     },
     {"name": "Cursed","ranks": [
@@ -15,6 +15,42 @@
         {"rank":1,"stats":{"hexDefense":20,"holyDefense":15},"perks":[{"name":"Blessing","amount":2},{"name":"Heal Boost","amount":2},{"name":"Luminescent Fervor","amount":1}]},
         {"rank":2,"stats":{"hexDefense":25,"holyDefense":18.75},"perks":[{"name":"Blessing","amount":2},{"name":"Heal Boost","amount":4},{"name":"Luminescent Fervor","amount":2}]},
         {"rank":3,"stats":{"hexDefense":30,"holyDefense":22.5},"perks":[{"name":"Blessing","amount":2},{"name":"Heal Boost","amount":6},{"name":"Luminescent Fervor","amount":3}]}
+        ]
+    },
+    {"name": "Scholar","ranks": [
+        {"rank": 1,"stats": {"magicDefense": 20,"warding": 10},"perks": [{ "name": "Channeled Weapon", "amount": 1 },{ "name": "Quickcast", "amount": 1 },{ "name": "Caster", "amount": 1 }]},
+        {"rank": 2,"stats": {"magicDefense": 25,"warding": 12.5},"perks": [{ "name": "Channeled Weapon", "amount": 2 },{ "name": "Quickcast", "amount": 2 },{ "name": "Caster", "amount": 1 }]},
+        {"rank": 3,"stats": {"magicDefense": 30,"warding": 15},"perks": [{ "name": "Channeled Weapon", "amount": 3 },{ "name": "Quickcast", "amount": 3 },{ "name": "Caster", "amount": 1 }]}
+        ]
+    },
+    {"name": "Knight","ranks": [
+        {"rank": 1,"stats": {"magicDefense": 20,"physicalDefense": 20,"protection": 10,"warding": 20,"tenacity": 0.4,"coldResistance": 100},"perks": [{ "name": "Valor", "amount": 1 },{ "name": "Hardened Will", "amount": 1 }]},
+        {"rank": 2,"stats": {"magicDefense": 25,"physicalDefense": 25,"protection": 12.5,"warding": 25,"tenacity": 0.5,"coldResistance": 125},"perks": [{ "name": "Valor", "amount": 2 },{ "name": "Hardened Will", "amount": 2 }]},
+        {"rank": 3,"stats": {"magicDefense": 30,"physicalDefense": 30,"protection": 15,"warding": 30,"tenacity": 0.6,"coldResistance": 150},"perks": [{ "name": "Valor", "amount": 3 },{ "name": "Hardened Will", "amount": 3 }]}
+        ]
+    },
+    {"name": "Thief","ranks": [
+        {"rank": 1,"stats": {"speedBoost": 10,"jumpBoost": 3,"protection": -10},"perks": [{ "name": "Thief Training", "amount": 1 },{ "name": "Stealth", "amount": 1 }]},
+        {"rank": 2,"stats": {"speedBoost": 12.5,"jumpBoost": 3.75,"protection": -10},"perks": [{ "name": "Thief Training", "amount": 2 },{ "name": "Stealth", "amount": 1 }]},
+        {"rank": 3,"stats": {"speedBoost": 15,"jumpBoost": 4.5,"protection": -10},"perks": [{ "name": "Thief Training", "amount": 3 },{ "name": "Stealth", "amount": 1 }]}
+        ]
+    },
+    {"name": "Draconic","ranks": [
+        {"rank": 1,"stats": {"tenacity": 0.2,"coldResistance": 200,"heatResistance": 200},"perks": [{ "name": "Draconic Blood", "amount": 1 },{ "name": "Draconic Runes", "amount": 1 }]},
+        {"rank": 2,"stats": {"tenacity": 0.25,"coldResistance": 250,"heatResistance": 250},"perks": [{ "name": "Draconic Blood", "amount": 2 },{ "name": "Draconic Runes", "amount": 2 }]},
+        {"rank": 3,"stats": {"tenacity": 0.3,"coldResistance": 300,"heatResistance": 300},"perks": [{ "name": "Draconic Blood", "amount": 3 },{ "name": "Draconic Runes", "amount": 3 }]}
+        ]
+    },
+    {"name": "Monk","ranks": [
+        {"rank": 1,"stats": {"speedBoost": 5,"protection": 5,"warding": 10,"coldResistance": 150,"heatResistance": 150},"perks": [{ "name": "Spirit Commune", "amount": 1 }]},
+        {"rank": 2,"stats": {"speedBoost": 6.25,"protection": 6.25,"warding": 12.5,"coldResistance": 187.5,"heatResistance": 187.5},"perks": [{ "name": "Spirit Commune", "amount": 2 }]},
+        {"rank": 3,"stats": {"speedBoost": 7.5,"protection": 7.5,"warding": 15,"coldResistance": 225,"heatResistance": 225},"perks": [{ "name": "Spirit Commune", "amount": 3 }]}
+        ]
+    },
+    {"name": "Vampire","ranks": [
+        {"rank": 1,"stats": {"speedBoost": 6,"jumpBoost": 1,"hexDefense": 20,"holyDefense": -100,"physicalDefense": 3,"coldResistance": 50},"perks": [{ "name": "Lifesteal", "amount": 1 },{ "name": "Vampire", "amount": 1 }]},
+        {"rank": 2,"stats": {"speedBoost": 7.5,"jumpBoost": 1.25,"hexDefense": 25,"holyDefense": -100,"physicalDefense": 3.75,"coldResistance": 62.5},"perks": [{ "name": "Lifesteal", "amount": 2 },{ "name": "Vampire", "amount": 2 }]},
+        {"rank": 3,"stats": {"speedBoost": 9,"jumpBoost": 1.5,"hexDefense": 30,"holyDefense": -100,"physicalDefense": 4.5,"coldResistance": 75},"perks": [{ "name": "Lifesteal", "amount": 3 },{ "name": "Vampire", "amount": 3 }]}
         ]
     }
 ]

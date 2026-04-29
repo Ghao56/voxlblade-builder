@@ -6,7 +6,8 @@ export const STAT_CONFIG = {
   warding: "percent", physicalDefense: "percent", magicDefense: "percent",
   airDefense: "percent", earthDefense: "percent", waterDefense: "percent",
   fireDefense: "percent", hexDefense: "percent", holyDefense: "percent",
-  protection: "flat", tenacity: "flat", armorPenetration: "flat", jumpBoost: "flat"
+  protection: "flat", tenacity: "flat", armorPenetration: "flat", jumpBoost: "flat",
+  heatResistance: "percent", coldResistance: "percent",
 } as const
 
 export type StatKey = keyof typeof STAT_CONFIG

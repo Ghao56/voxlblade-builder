@@ -9,7 +9,7 @@
   import type { EnchantSlot, StatMap } from './lib/types'
 
   $: guildData = getGuild($build.guild)
-  $: rankOptions = guildData?.ranks.map(r => ({ value: String(r.rank), label: `Rank ${r.rank}` })) ?? []
+  $: rankOptions = guildData?.ranks.map(r => ({ value: String(r.rank), label: `${r.rank}` })) ?? []
 
   $: statRows = Object.entries($result.stats)
     .filter(([,v]) => v !== 0)
