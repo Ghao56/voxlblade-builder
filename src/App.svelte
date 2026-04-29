@@ -198,6 +198,7 @@
             <span>Guild</span>
             <select bind:value={$build.guild}
               on:change={() => build.update(s => ({...s, guildRank: 1}))}>
+              <option value="">—</option>
               {#each guilds as g}
                 <option value={g.name}>{g.name}</option>
               {/each}

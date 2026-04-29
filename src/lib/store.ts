@@ -4,7 +4,7 @@ import { calcBuild, races, guilds, enforceEnchantSlot } from './engine'
 
 export const build = writable<BuildState>({
   race: races[0]?.name ?? "",
-  guild: guilds[0]?.name ?? "",
+  guild: "",
   guildRank: 1,
   helmet: "",
   chestplate: "",
