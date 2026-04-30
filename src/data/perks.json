@@ -1,12 +1,21 @@
 [
   {
-    "name": "Perk 1",
-    "description": "Description for Perk 1",
-    "tags": ["Tag1", "Tag2"]
+    "name": "Adaptive Plate",
+    "description": "Taking an identical Type of Damage twice will activate a temporary holy bubble that grants Damage Reduction. Gain additional Damage Reduction against the specific Damage Types that triggered it. | Tags = Defensive, Armor",
+    "tags": [
+      "Defensive",
+      "Armor"
+    ]
   },
   {
-    "name": "Perk 2",
-    "description": "Description for Perk 2",
-    "tags": ["Tag3"]
+    "name": "Aggressive Personality",
+    "description": "Finishers of Hammers in specific that slam the ground gains a Damage Boost, larger Hitbox, and Taunts on hit.",
+    "tags": [
+      "Offensive",
+      "Damage Boost",
+      "Debuff",
+      "Finisher",
+      "Weapon"
+    ]
   }
 ]
