@@ -17,7 +17,11 @@ export const build = writable<BuildState>({
     leggings: ["","",""],
     ring: ["","",""],
     rune: ["","",""],
-  }
+  },
+  infusionHelmet: "",
+  infusionChestplate: "",
+  infusionLeggings: "",
+  infusionRing: "",
 })
 
 export const result = derived(build, $b => calcBuild($b))

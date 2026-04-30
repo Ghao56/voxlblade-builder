@@ -126,7 +126,6 @@
       </div>
     {/if}
 
-    <!-- Slot 2 — không có indicator -->
     {#if show2}
       <div class="slot-row slot-row--sub">
         <select value={selections[2]}
@@ -148,7 +147,6 @@
   .row-selects { display: flex; flex-direction: column; gap: 5px; }
 
   .slot-row { display: flex; gap: 5px; align-items: center; }
-  /* Slot 1/2 lùi vào bằng đúng width nút toggle (26px + 5px gap) */
   .slot-row--sub { padding-left: 31px; }
 
   .cat-toggle {

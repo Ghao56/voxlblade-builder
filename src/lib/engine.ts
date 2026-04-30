@@ -185,6 +185,22 @@ export function applyPerkEffectiveness(
   return result
 }
 
+// ─── Infusion helper ──────────────────────────────────────────────────────────
+
+/**
+ * Apply an infusion slot: stats are halved, perks are kept as-is (no enchants).
+ */
+export function applyInfusion(
+  baseStats: StatMap,
+  basePerks: Record<string, number>
+): { stats: StatMap; perks: Record<string, number> } {
+  const stats: StatMap = {}
+  for (const [k, v] of Object.entries(baseStats)) {
+    if (v != null) stats[k as StatKey] = v * 0.5
+  }
+  return { stats, perks: { ...basePerks } }
+}
+
 // ─── Main calculator ──────────────────────────────────────────────────────────
 
 export interface BuildResult {
@@ -272,6 +288,51 @@ export function calcBuild(state: BuildState): BuildResult {
       for (const [k, v] of Object.entries(slotResult.perks)) {
         perks[k] = (perks[k] ?? 0) + v
       }
+    }
+  }
+
+  // ── Infusion slots ──────────────────────────────────────────────────────────
+  // Helmet infusion
+  if (state.infusionHelmet) {
+    const part = getArmorPart(state.infusionHelmet, "Helmet")
+    if (part) {
+      const basePerks: Record<string, number> = part.perkName ? { [part.perkName]: 1 } : {}
+      const inf = applyInfusion(part.stats as StatMap, basePerks)
+      addStats(inf.stats)
+      for (const [k, v] of Object.entries(inf.perks)) perks[k] = (perks[k] ?? 0) + v
+    }
+  }
+
+  // Chestplate infusion
+  if (state.infusionChestplate) {
+    const part = getArmorPart(state.infusionChestplate, "Chestplate")
+    if (part) {
+      const basePerks: Record<string, number> = part.perkName ? { [part.perkName]: 1 } : {}
+      const inf = applyInfusion(part.stats as StatMap, basePerks)
+      addStats(inf.stats)
+      for (const [k, v] of Object.entries(inf.perks)) perks[k] = (perks[k] ?? 0) + v
+    }
+  }
+
+  // Leggings infusion
+  if (state.infusionLeggings) {
+    const part = getArmorPart(state.infusionLeggings, "Leggings")
+    if (part) {
+      const basePerks: Record<string, number> = part.perkName ? { [part.perkName]: 1 } : {}
+      const inf = applyInfusion(part.stats as StatMap, basePerks)
+      addStats(inf.stats)
+      for (const [k, v] of Object.entries(inf.perks)) perks[k] = (perks[k] ?? 0) + v
+    }
+  }
+
+  // Ring infusion
+  if (state.infusionRing) {
+    const ring = getRing(state.infusionRing)
+    if (ring) {
+      const basePerks: Record<string, number> = ring.perkName ? { [ring.perkName]: ring.perkStacks ?? 1 } : {}
+      const inf = applyInfusion(ring.stats, basePerks)
+      addStats(inf.stats)
+      for (const [k, v] of Object.entries(inf.perks)) perks[k] = (perks[k] ?? 0) + v
     }
   }
 

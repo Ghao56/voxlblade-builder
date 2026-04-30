@@ -76,4 +76,9 @@ export interface BuildState {
   ring: string
   rune: string
   enchantments: Record<EnchantSlot, [string, string, string]>
+  // Infusion slots — same item pool as main slots, no enchants, stats halved, perks unchanged
+  infusionHelmet: string
+  infusionChestplate: string
+  infusionLeggings: string
+  infusionRing: string
 }
