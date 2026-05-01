@@ -1,9 +1,9 @@
 <script lang="ts">
   import { build, result } from './lib/store'
   import {
-    races, guilds, armors, rings, runes,
-    getGuild, getArmorPart, getRing, getRune, getEnchant, getPerk,
-    formatStat, formatLabel, applyEnchantmentsToSlot, applyInfusion
+    races, guilds, armors, rings, runes, blades, handles,
+    getGuild, getArmorPart, getRing, getRune, getEnchant, getPerk, getBlade, getHandle,
+    formatStat, formatLabel, applyEnchantmentsToSlot, applyInfusion, calcWeapon
   } from './lib/engine'
   import EnchantRow from './lib/components/EnchantRow.svelte'
   import type { EnchantSlot, StatMap } from './lib/types'
@@ -19,6 +19,31 @@
     .filter(([,v]) => v > 0)
     .sort(([a],[b]) => a.localeCompare(b))
 
+  // ── Weapon filters ──────────────────────────────────────────────────────────
+  let bladeFilterTier: string = ""
+  let bladeFilterType: string = ""
+  let handleFilterTier: string = ""
+  let handleFilterType: string = ""
+
+  const bladeTiers = [1,2,3,4,5]
+  const bladeTypes = ["Small Blade","Medium Blade","Heavy Blade","Hammer Head"]
+  const handleTiers = [1,2,3,4,5]
+  const handleTypes = ["Medium Handle","Long Handle","Pole"]
+
+  $: filteredBlades = blades.filter(b =>
+    (!bladeFilterTier || b.tier === Number(bladeFilterTier)) &&
+    (!bladeFilterType || b.bladeType === bladeFilterType)
+  )
+  $: filteredHandles = handles.filter(h =>
+    (!handleFilterTier || h.tier === Number(handleFilterTier)) &&
+    (!handleFilterType || h.handleType === handleFilterType)
+  )
+
+  $: weaponResult = ($build.weaponBlade || $build.weaponHandle)
+    ? calcWeapon($build.weaponBlade, $build.weaponHandle)
+    : null
+
+  // ── Detail cards ────────────────────────────────────────────────────────────
   interface EnchantInfo { name: string; notes: string | undefined }
 
   interface DetailCard {
@@ -118,7 +143,6 @@
   $: slotGroups = (() => {
     const groups: SlotGroup[] = []
 
-    // Helmet
     if ($build.helmet) {
       const part = getArmorPart($build.helmet, "Helmet")
       if (part) {
@@ -136,7 +160,6 @@
       }
     }
 
-    // Chestplate
     if ($build.chestplate) {
       const part = getArmorPart($build.chestplate, "Chestplate")
       if (part) {
@@ -154,7 +177,6 @@
       }
     }
 
-    // Leggings
     if ($build.leggings) {
       const part = getArmorPart($build.leggings, "Leggings")
       if (part) {
@@ -172,7 +194,6 @@
       }
     }
 
-    // Ring
     if ($build.ring) {
       const ring = getRing($build.ring)
       if (ring) {
@@ -190,7 +211,6 @@
       }
     }
 
-    // Rune — no infusion slot yet
     if ($build.rune) {
       const rune = getRune($build.rune)
       if (rune) {
@@ -206,6 +226,14 @@
   })()
 
   $: hasDetails = identityCards.length > 0 || slotGroups.length > 0
+
+  // ── Damage type / scaling label helpers ────────────────────────────────────
+  function formatDmgTypeLabel(key: string): string {
+    return key.charAt(0).toUpperCase() + key.slice(1) + " Type"
+  }
+  function formatScalingLabel(key: string): string {
+    return key.charAt(0).toUpperCase() + key.slice(1) + " Scaling"
+  }
 </script>
 
 <div class="app">
@@ -255,7 +283,7 @@
         </div>
       </section>
 
-      <!-- Armor: each slot stacks main → enchant → infusion -->
+      <!-- Armor -->
       <section class="control-section">
         <h2>Armor</h2>
         <div class="slot-stack">
@@ -339,7 +367,7 @@
         </div>
       </section>
 
-      <!-- Items: Ring + Rune with enchant + infusion -->
+      <!-- Items: Ring + Rune -->
       <section class="control-section">
         <h2>Items</h2>
         <div class="slot-stack">
@@ -382,7 +410,6 @@
               <div class="sub-row enchant-sub">
                 <EnchantRow slot="rune" label="Enchant" />
               </div>
-              <!-- Rune Infusion: reserved for future, shown disabled -->
               <div class="sub-row infusion-sub infusion-sub--disabled">
                 <label class="field">
                   <span class="inf-span">⬡ Infusion</span>
@@ -397,9 +424,257 @@
         </div>
       </section>
 
+      <!-- Weapon: Blade + Handle -->
+      <section class="control-section weapon-section">
+        <h2>Weapon</h2>
+        <div class="slot-stack">
+
+          <!-- Blade -->
+          <div class="slot-block">
+            <div class="weapon-part-label">
+              <span class="weapon-icon">⚔</span>
+              <span class="weapon-part-title">Blade</span>
+            </div>
+            <!-- Blade filters -->
+            <div class="weapon-filters">
+              <label class="field filter-field">
+                <span>Tier</span>
+                <select bind:value={bladeFilterTier}
+                  on:change={() => { if (filteredBlades.findIndex(b => b.name === $build.weaponBlade) === -1) build.update(s => ({...s, weaponBlade: ""})) }}>
+                  <option value="">All</option>
+                  {#each bladeTiers as t}<option value={String(t)}>Tier {t}</option>{/each}
+                </select>
+              </label>
+              <label class="field filter-field">
+                <span>Type</span>
+                <select bind:value={bladeFilterType}
+                  on:change={() => { if (filteredBlades.findIndex(b => b.name === $build.weaponBlade) === -1) build.update(s => ({...s, weaponBlade: ""})) }}>
+                  <option value="">All</option>
+                  {#each bladeTypes as t}<option value={t}>{t}</option>{/each}
+                </select>
+              </label>
+            </div>
+            <label class="field">
+              <span>Select Blade</span>
+              <select bind:value={$build.weaponBlade}
+                on:change={e => build.update(s => ({...s, weaponBlade: (e.target as HTMLSelectElement).value}))}>
+                <option value="">—</option>
+                {#each filteredBlades as b}
+                  <option value={b.name}>[T{b.tier}] {b.name} ({b.bladeType})</option>
+                {/each}
+              </select>
+            </label>
+          </div>
+
+          <div class="slot-divider weapon-divider">
+            <span class="weapon-divider-text">+</span>
+          </div>
+
+          <!-- Handle -->
+          <div class="slot-block">
+            <div class="weapon-part-label">
+              <span class="weapon-icon">🪵</span>
+              <span class="weapon-part-title">Handle</span>
+            </div>
+            <!-- Handle filters -->
+            <div class="weapon-filters">
+              <label class="field filter-field">
+                <span>Tier</span>
+                <select bind:value={handleFilterTier}
+                  on:change={() => { if (filteredHandles.findIndex(h => h.name === $build.weaponHandle) === -1) build.update(s => ({...s, weaponHandle: ""})) }}>
+                  <option value="">All</option>
+                  {#each handleTiers as t}<option value={String(t)}>Tier {t}</option>{/each}
+                </select>
+              </label>
+              <label class="field filter-field">
+                <span>Type</span>
+                <select bind:value={handleFilterType}
+                  on:change={() => { if (filteredHandles.findIndex(h => h.name === $build.weaponHandle) === -1) build.update(s => ({...s, weaponHandle: ""})) }}>
+                  <option value="">All</option>
+                  {#each handleTypes as t}<option value={t}>{t}</option>{/each}
+                </select>
+              </label>
+            </div>
+            <label class="field">
+              <span>Select Handle</span>
+              <select bind:value={$build.weaponHandle}
+                on:change={e => build.update(s => ({...s, weaponHandle: (e.target as HTMLSelectElement).value}))}>
+                <option value="">—</option>
+                {#each filteredHandles as h}
+                  <option value={h.name}>[T{h.tier}] {h.name} ({h.handleType})</option>
+                {/each}
+              </select>
+            </label>
+          </div>
+
+        </div>
+      </section>
+
     </aside>
 
     <main class="results">
+
+      <!-- Weapon Panel -->
+      {#if weaponResult}
+        <div class="panel weapon-panel">
+          <h3 class="panel-title">Weapon</h3>
+          <div class="weapon-result-layout">
+
+            <!-- Blade card -->
+            {#if weaponResult.bladeName}
+              {@const blade = getBlade(weaponResult.bladeName)}
+              <div class="detail-card weapon-card weapon-card--blade">
+                <div class="detail-head">
+                  <span class="detail-type weapon-type-label">Blade · {weaponResult.bladeType}</span>
+                  <span class="detail-name">{weaponResult.bladeName}</span>
+                  <div class="weapon-tier-badge">T{blade?.tier}</div>
+                </div>
+                {#if blade?.description}
+                  <p class="detail-desc">{blade.description}</p>
+                {/if}
+                <!-- Blade stats -->
+                {#if blade && Object.keys(blade.stats).length}
+                  <div class="stat-list">
+                    {#each Object.entries(blade.stats).filter(([,v]) => v !== 0) as [k,v]}
+                      <div class="stat-row">
+                        <span>{formatLabel(k)}</span>
+                        <span class="stat-val" class:neg={v < 0}>{formatStat(k, v as number)}</span>
+                      </div>
+                    {/each}
+                  </div>
+                {/if}
+                <!-- Attack Speed -->
+                {#if blade?.attackSpeed != null}
+                  <div class="weapon-meta-row">
+                    <span class="weapon-meta-label">Attack Speed</span>
+                    <span class="weapon-meta-val">{blade.attackSpeed}×</span>
+                  </div>
+                {/if}
+                <!-- Damage Types -->
+                {#if Object.keys(weaponResult.damageTypes).length}
+                  <div class="weapon-section-label">Damage Types</div>
+                  <div class="damage-type-grid">
+                    {#each Object.entries(weaponResult.damageTypes) as [k, v]}
+                      <div class="damage-type-pill">
+                        <span class="dt-name">{formatDmgTypeLabel(k)}</span>
+                        <span class="dt-val">{v}×</span>
+                      </div>
+                    {/each}
+                  </div>
+                {/if}
+                <!-- Scalings -->
+                {#if Object.keys(weaponResult.scalings).length}
+                  <div class="weapon-section-label">Scalings</div>
+                  <div class="scaling-grid">
+                    {#each Object.entries(weaponResult.scalings) as [k, v]}
+                      <div class="scaling-pill">
+                        <span class="sc-name">{formatScalingLabel(k)}</span>
+                        <span class="sc-val">{v}</span>
+                      </div>
+                    {/each}
+                  </div>
+                {/if}
+                <!-- Perk -->
+                {#if blade?.perkName}
+                  <div class="perk-list">
+                    <div class="perk-row">
+                      <span>{blade.perkName}</span>
+                      <span class="perk-val">+{blade.perkStacks ?? 1}</span>
+                    </div>
+                  </div>
+                {/if}
+              </div>
+            {:else}
+              <div class="detail-card weapon-card weapon-card--empty">
+                <p class="empty">No blade selected.</p>
+              </div>
+            {/if}
+
+            <!-- Combine indicator -->
+            <div class="weapon-combine">
+              <div class="weapon-combine-line"></div>
+              <div class="weapon-combine-icon">⚔</div>
+              <div class="weapon-combine-line"></div>
+            </div>
+
+            <!-- Handle card -->
+            {#if weaponResult.handleName}
+              {@const handle = getHandle(weaponResult.handleName)}
+              <div class="detail-card weapon-card weapon-card--handle">
+                <div class="detail-head">
+                  <span class="detail-type weapon-type-label weapon-type-label--handle">Handle · {weaponResult.handleType}</span>
+                  <span class="detail-name">{weaponResult.handleName}</span>
+                  <div class="weapon-tier-badge weapon-tier-badge--handle">T{handle?.tier}</div>
+                </div>
+                {#if handle?.description}
+                  <p class="detail-desc">{handle.description}</p>
+                {/if}
+                {#if handle && Object.keys(handle.stats).length}
+                  <div class="stat-list">
+                    {#each Object.entries(handle.stats).filter(([,v]) => v !== 0) as [k,v]}
+                      <div class="stat-row">
+                        <span>{formatLabel(k)}</span>
+                        <span class="stat-val" class:neg={v < 0}>{formatStat(k, v as number)}</span>
+                      </div>
+                    {/each}
+                  </div>
+                {/if}
+                {#if handle?.attackSpeed != null}
+                  <div class="weapon-meta-row">
+                    <span class="weapon-meta-label">Attack Speed</span>
+                    <span class="weapon-meta-val">{handle.attackSpeed}×</span>
+                  </div>
+                {/if}
+                {#if handle?.perkName}
+                  <div class="perk-list">
+                    <div class="perk-row">
+                      <span>{handle.perkName}</span>
+                      <span class="perk-val">+{handle.perkStacks ?? 1}</span>
+                    </div>
+                  </div>
+                {/if}
+              </div>
+            {:else}
+              <div class="detail-card weapon-card weapon-card--empty">
+                <p class="empty">No handle selected.</p>
+              </div>
+            {/if}
+
+            <!-- Combined result card -->
+            {#if weaponResult.bladeName && weaponResult.handleName}
+              <div class="weapon-combined-card">
+                <div class="weapon-combined-header">
+                  <span class="weapon-combined-title">Combined Weapon</span>
+                  <span class="weapon-combined-speed">
+                    ⚡ {weaponResult.attackSpeed}× Attack Speed
+                  </span>
+                </div>
+                {#if Object.keys(weaponResult.stats).length}
+                  <div class="stat-list">
+                    {#each Object.entries(weaponResult.stats).filter(([,v]) => v !== 0) as [k,v]}
+                      <div class="stat-row">
+                        <span>{formatLabel(k)}</span>
+                        <span class="stat-val" class:neg={v < 0}>{formatStat(k, v as number)}</span>
+                      </div>
+                    {/each}
+                  </div>
+                {/if}
+                {#if Object.keys(weaponResult.perks).length}
+                  <div class="perk-list">
+                    {#each Object.entries(weaponResult.perks) as [name, amount]}
+                      <div class="perk-row">
+                        <span>{name}</span>
+                        <span class="perk-val">+{amount}</span>
+                      </div>
+                    {/each}
+                  </div>
+                {/if}
+              </div>
+            {/if}
+
+          </div>
+        </div>
+      {/if}
 
       <!-- Selection Details -->
       <div class="panel">
@@ -409,7 +684,6 @@
         {:else}
           <div class="detail-layout">
 
-            <!-- Left: Race + Guild -->
             {#if identityCards.length > 0}
               <div class="identity-col">
                 {#each identityCards as card}
@@ -446,13 +720,10 @@
               </div>
             {/if}
 
-            <!-- Right: slot columns — main card + infusion card directly below -->
             {#if slotGroups.length > 0}
               <div class="gear-grid">
                 {#each slotGroups as group}
                   <div class="slot-col">
-
-                    <!-- Main card -->
                     <div class="detail-card">
                       <div class="detail-head">
                         <span class="detail-type">{group.main.title}</span>
@@ -500,7 +771,6 @@
                       {/if}
                     </div>
 
-                    <!-- Infusion card directly below, visually connected -->
                     {#if group.infusion}
                       <div class="inf-bridge">
                         <span class="inf-bridge-line"></span>
@@ -609,6 +879,9 @@
     --infusion: #38bdf8;
     --infusion-border: rgba(56,189,248,0.22);
     --neg: #f87171;
+    --weapon-blade: #fb923c;
+    --weapon-handle: #34d399;
+    --weapon-combined: #fbbf24;
     --radius: 14px;
     --radius-sm: 8px;
     --font-display: 'Georgia', 'Times New Roman', serif;
@@ -691,6 +964,62 @@
     margin-bottom: 12px;
   }
 
+  /* Weapon section styling */
+  .weapon-section {
+    border-color: rgba(251,146,60,0.18);
+    background: linear-gradient(160deg, var(--surface) 60%, rgba(251,146,60,0.04) 100%);
+  }
+  .weapon-section h2 {
+    color: var(--weapon-blade);
+  }
+
+  .weapon-part-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+  .weapon-icon { font-size: 0.85rem; }
+  .weapon-part-title {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--weapon-blade);
+    font-weight: 700;
+  }
+  .slot-block:nth-child(3) .weapon-part-title { color: var(--weapon-handle); }
+
+  .weapon-filters {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+  .filter-field span {
+    font-size: 0.6rem !important;
+    color: var(--ink-muted) !important;
+  }
+  .filter-field select {
+    font-size: 0.75rem;
+    padding: 5px 22px 5px 8px;
+  }
+
+  .weapon-divider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: auto;
+    padding: 4px 0;
+    background: none;
+  }
+  .weapon-divider-text {
+    font-size: 1rem;
+    color: var(--weapon-blade);
+    opacity: 0.5;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
   .core-stack { display: flex; flex-direction: column; gap: 10px; }
   .guild-rank-row { display: flex; gap: 8px; align-items: flex-end; }
   .guild-field { flex: 1; min-width: 0; }
@@ -728,11 +1057,7 @@
   .slot-block { display: flex; flex-direction: column; gap: 6px; padding: 10px 0; }
   .slot-divider { height: 1px; background: var(--border); }
 
-  /* Sub-rows: enchant + infusion indented with left border */
-  .sub-row {
-    padding-left: 10px;
-    margin-left: 2px;
-  }
+  .sub-row { padding-left: 10px; margin-left: 2px; }
   .enchant-sub { border-left: 2px solid rgba(74,222,128,0.2); }
   .infusion-sub { border-left: 2px solid var(--infusion-border); }
   .infusion-sub--disabled { opacity: 0.3; pointer-events: none; }
@@ -763,6 +1088,160 @@
     margin-bottom: 14px;
   }
 
+  /* ── Weapon Panel ─────────────────────────────────── */
+  .weapon-panel {
+    border-color: rgba(251,146,60,0.18);
+    background: linear-gradient(160deg, var(--surface) 50%, rgba(251,146,60,0.04) 100%);
+  }
+  .weapon-panel .panel-title { color: var(--weapon-blade); }
+
+  .weapon-result-layout {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 10px;
+    align-items: start;
+  }
+
+  /* Make combined card span full width */
+  .weapon-combined-card {
+    grid-column: 1 / -1;
+    background: linear-gradient(135deg, rgba(251,191,36,0.08) 0%, rgba(251,146,60,0.06) 100%);
+    border: 1px solid rgba(251,191,36,0.22);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .weapon-combined-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .weapon-combined-title {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--weapon-combined);
+    font-weight: 700;
+  }
+  .weapon-combined-speed {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--weapon-combined);
+    background: rgba(251,191,36,0.1);
+    padding: 3px 8px;
+    border-radius: 999px;
+    border: 1px solid rgba(251,191,36,0.2);
+  }
+
+  .weapon-combine {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 20px;
+    gap: 6px;
+  }
+  .weapon-combine-line {
+    width: 1px;
+    flex: 1;
+    min-height: 20px;
+    background: rgba(251,146,60,0.25);
+  }
+  .weapon-combine-icon {
+    font-size: 1rem;
+    color: var(--weapon-blade);
+    opacity: 0.6;
+    flex-shrink: 0;
+  }
+
+  .weapon-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .weapon-card--blade { border-color: rgba(251,146,60,0.22); }
+  .weapon-card--handle { border-color: rgba(52,211,153,0.22); }
+  .weapon-card--empty { border-style: dashed; opacity: 0.4; }
+
+  .weapon-type-label { color: var(--weapon-blade) !important; }
+  .weapon-type-label--handle { color: var(--weapon-handle) !important; }
+
+  .weapon-tier-badge {
+    display: inline-block;
+    font-size: 0.62rem;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(251,146,60,0.12);
+    border: 1px solid rgba(251,146,60,0.25);
+    color: var(--weapon-blade);
+    letter-spacing: 0.06em;
+    margin-top: 2px;
+    width: fit-content;
+  }
+  .weapon-tier-badge--handle {
+    background: rgba(52,211,153,0.12);
+    border-color: rgba(52,211,153,0.25);
+    color: var(--weapon-handle);
+  }
+
+  .weapon-meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 8px;
+    border-radius: 5px;
+    background: var(--surface3);
+    font-size: 0.78rem;
+  }
+  .weapon-meta-label { color: var(--ink-muted); }
+  .weapon-meta-val { font-weight: 700; color: var(--accent2); }
+
+  .weapon-section-label {
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-muted);
+    font-weight: 700;
+    margin-top: 2px;
+  }
+
+  .damage-type-grid, .scaling-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .damage-type-pill {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 7px;
+    border-radius: 999px;
+    background: rgba(251,146,60,0.1);
+    border: 1px solid rgba(251,146,60,0.2);
+    font-size: 0.7rem;
+  }
+  .dt-name { color: var(--ink-muted); }
+  .dt-val { font-weight: 700; color: var(--weapon-blade); }
+
+  .scaling-pill {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 7px;
+    border-radius: 999px;
+    background: rgba(167,139,250,0.1);
+    border: 1px solid rgba(167,139,250,0.2);
+    font-size: 0.7rem;
+  }
+  .sc-name { color: var(--ink-muted); }
+  .sc-val { font-weight: 700; color: var(--accent3); }
+
+  /* ── Selection Details ──────────────────────────────── */
   .detail-layout {
     display: flex;
     gap: 10px;
@@ -776,7 +1255,6 @@
     gap: 10px;
   }
 
-  /* gear-grid: auto columns, each cell is a slot-col */
   .gear-grid {
     flex: 1;
     display: grid;
@@ -785,32 +1263,17 @@
     align-items: start;
   }
 
-  /* slot-col: stacks main card + bridge + infusion card */
-  .slot-col {
-    display: flex;
-    flex-direction: column;
-  }
+  .slot-col { display: flex; flex-direction: column; }
 
-  /* Bridge between main and infusion card */
   .inf-bridge {
     display: flex;
     align-items: center;
     gap: 4px;
     padding: 2px 12px;
   }
-  .inf-bridge-line {
-    flex: 1;
-    height: 1px;
-    background: var(--infusion-border);
-  }
-  .inf-bridge-icon {
-    font-size: 0.7rem;
-    color: var(--infusion);
-    opacity: 0.6;
-    flex-shrink: 0;
-  }
+  .inf-bridge-line { flex: 1; height: 1px; background: var(--infusion-border); }
+  .inf-bridge-icon { font-size: 0.7rem; color: var(--infusion); opacity: 0.6; flex-shrink: 0; }
 
-  /* Cards */
   .detail-card {
     background: var(--surface2);
     border: 1px solid var(--border);
@@ -850,13 +1313,7 @@
 
   .detail-desc { font-size: 0.78rem; color: var(--ink-muted); line-height: 1.45; }
   .detail-extra { font-size: 0.75rem; color: var(--accent2); }
-
-  .infusion-note {
-    font-size: 0.65rem;
-    color: var(--infusion);
-    opacity: 0.5;
-    letter-spacing: 0.04em;
-  }
+  .infusion-note { font-size: 0.65rem; color: var(--infusion); opacity: 0.5; letter-spacing: 0.04em; }
 
   .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
@@ -907,6 +1364,16 @@
   @media (max-width: 1100px) {
     .workspace { grid-template-columns: 1fr; }
     .controls-panel { position: static; }
+  }
+  @media (max-width: 900px) {
+    .weapon-result-layout {
+      grid-template-columns: 1fr;
+    }
+    .weapon-combine {
+      flex-direction: row;
+      padding-top: 0;
+    }
+    .weapon-combine-line { width: 40px; height: 1px; min-height: unset; }
   }
   @media (max-width: 768px) {
     .detail-layout { flex-direction: column; }

@@ -1,6 +1,7 @@
 import type {
   Race, Guild, GuildRank, Armor, ArmorPart, Ring, Rune,
-  Enchantment, Perk, StatMap, StatKey, StatModifier, EnchantSlot, BuildState
+  Enchantment, Perk, StatMap, StatKey, StatModifier, EnchantSlot, BuildState,
+  WeaponBlade, WeaponHandle
 } from './types'
 import { STAT_KEYS, PERCENT_STATS } from './types'
 
@@ -11,6 +12,8 @@ import ringsRaw from '../data/rings.json'
 import runesRaw from '../data/runes.json'
 import enchantmentsRaw from '../data/enchantments.json'
 import perksRaw from '../data/perks.json'
+import bladesRaw from '../data/blades.json'
+import handlesRaw from '../data/handles.json'
 
 export const races: Race[] = racesRaw as Race[]
 export const guilds: Guild[] = guildsRaw as Guild[]
@@ -18,6 +21,8 @@ export const perks: Perk[] = perksRaw as Perk[]
 export const rings: Ring[] = ringsRaw as Ring[]
 export const runes: Rune[] = runesRaw as Rune[]
 export const enchantments: Enchantment[] = enchantmentsRaw as Enchantment[]
+export const blades: WeaponBlade[] = bladesRaw as WeaponBlade[]
+export const handles: WeaponHandle[] = handlesRaw as WeaponHandle[]
 
 export const armors: Armor[] = (armorsRaw as any[]).map(a => ({
   name: a.name,
@@ -36,12 +41,16 @@ const ENCHANT_MAP = Object.fromEntries(enchantments.map(e => [e.name, e]))
 const RING_MAP = Object.fromEntries(rings.map(r => [r.name, r]))
 const RUNE_MAP = Object.fromEntries(runes.map(r => [r.name, r]))
 const ARMOR_MAP = Object.fromEntries(armors.map(a => [a.name, a]))
+const BLADE_MAP = Object.fromEntries(blades.map(b => [b.name, b]))
+const HANDLE_MAP = Object.fromEntries(handles.map(h => [h.name, h]))
 
 export function getPerk(name: string) { return PERK_MAP[name] }
 export function getEnchant(name: string) { return ENCHANT_MAP[name] }
 export function getRing(name: string) { return RING_MAP[name] }
 export function getRune(name: string) { return RUNE_MAP[name] }
 export function getArmor(name: string) { return ARMOR_MAP[name] }
+export function getBlade(name: string) { return BLADE_MAP[name] }
+export function getHandle(name: string) { return HANDLE_MAP[name] }
 export function getArmorPart(name: string, type: ArmorPart["type"]) {
   return getArmor(name)?.parts.find(p => p.type === type)
 }
@@ -201,6 +210,92 @@ export function applyInfusion(
   return { stats, perks: { ...basePerks } }
 }
 
+// ─── Weapon helpers ───────────────────────────────────────────────────────────
+
+export interface WeaponResult {
+  bladeName: string
+  handleName: string
+  bladeType: string
+  handleType: string
+  tier: number
+  stats: StatMap
+  perks: Record<string, number>
+  attackSpeed: number
+  damageTypes: Record<string, number>
+  scalings: Record<string, number>
+}
+
+export function calcWeapon(bladeName: string, handleName: string): WeaponResult | null {
+  const blade = getBlade(bladeName)
+  const handle = getHandle(handleName)
+  if (!blade && !handle) return null
+
+  const stats: StatMap = {}
+  const perks: Record<string, number> = {}
+  let attackSpeed = 1.0
+
+  function addStats(s: StatMap | undefined) {
+    if (!s) return
+    for (const [k, v] of Object.entries(s)) {
+      if (v == null) continue
+      const key = k as StatKey
+      stats[key] = (stats[key] ?? 0) + v
+    }
+  }
+
+  if (blade) {
+    addStats(blade.stats)
+    if (blade.attackSpeed != null) attackSpeed *= blade.attackSpeed
+    if (blade.perkName) perks[blade.perkName] = (perks[blade.perkName] ?? 0) + (blade.perkStacks ?? 1)
+  }
+
+  if (handle) {
+    addStats(handle.stats)
+    if (handle.attackSpeed != null) attackSpeed *= handle.attackSpeed
+    if (handle.perkName) perks[handle.perkName] = (perks[handle.perkName] ?? 0) + (handle.perkStacks ?? 1)
+  }
+
+  // Damage type multipliers (from blade)
+  const damageTypes: Record<string, number> = {}
+  if (blade) {
+    const dtKeys = ["trueType","physicalType","magicType","fireType","waterType","earthType","airType","hexType","holyType","summonType"]
+    for (const key of dtKeys) {
+      const v = (blade as any)[key]
+      if (v != null && v !== 0) damageTypes[key.replace("Type", "")] = v
+    }
+  }
+
+  // Scalings (from blade)
+  const scalings: Record<string, number> = {}
+  if (blade) {
+    const scaleKeys = ["dexterityScaling","physicalScaling","magicScaling","fireScaling","waterScaling","earthScaling","airScaling","hexScaling","holyScaling","summonScaling"]
+    for (const key of scaleKeys) {
+      const v = (blade as any)[key]
+      if (v != null && v !== 0) scalings[key.replace("Scaling", "")] = v
+    }
+  }
+
+  // Round stats
+  const finalStats: StatMap = {}
+  for (const [k, v] of Object.entries(stats)) {
+    const rounded = Math.round((v + Number.EPSILON) * 100) / 100
+    if (rounded !== 0) finalStats[k as StatKey] = rounded
+  }
+
+  return {
+    bladeName: blade?.name ?? "",
+    handleName: handle?.name ?? "",
+    bladeType: blade?.bladeType ?? "",
+    handleType: handle?.handleType ?? "",
+    tier: Math.max(blade?.tier ?? 1, handle?.tier ?? 1),
+    stats: finalStats,
+    perks,
+    attackSpeed: Math.round(attackSpeed * 100) / 100,
+    damageTypes,
+    scalings
+  }
+}
+
 // ─── Main calculator ──────────────────────────────────────────────────────────
 
 export interface BuildResult {
@@ -291,8 +386,23 @@ export function calcBuild(state: BuildState): BuildResult {
     }
   }
 
+  // ── Weapon ──────────────────────────────────────────────────────────────────
+  if (state.weaponBlade) {
+    const blade = getBlade(state.weaponBlade)
+    if (blade) {
+      addStats(blade.stats)
+      if (blade.perkName) perks[blade.perkName] = (perks[blade.perkName] ?? 0) + (blade.perkStacks ?? 1)
+    }
+  }
+  if (state.weaponHandle) {
+    const handle = getHandle(state.weaponHandle)
+    if (handle) {
+      addStats(handle.stats)
+      if (handle.perkName) perks[handle.perkName] = (perks[handle.perkName] ?? 0) + (handle.perkStacks ?? 1)
+    }
+  }
+
   // ── Infusion slots ──────────────────────────────────────────────────────────
-  // Helmet infusion
   if (state.infusionHelmet) {
     const part = getArmorPart(state.infusionHelmet, "Helmet")
     if (part) {
@@ -303,7 +413,6 @@ export function calcBuild(state: BuildState): BuildResult {
     }
   }
 
-  // Chestplate infusion
   if (state.infusionChestplate) {
     const part = getArmorPart(state.infusionChestplate, "Chestplate")
     if (part) {
@@ -314,7 +423,6 @@ export function calcBuild(state: BuildState): BuildResult {
     }
   }
 
-  // Leggings infusion
   if (state.infusionLeggings) {
     const part = getArmorPart(state.infusionLeggings, "Leggings")
     if (part) {
@@ -325,7 +433,6 @@ export function calcBuild(state: BuildState): BuildResult {
     }
   }
 
-  // Ring infusion
   if (state.infusionRing) {
     const ring = getRing(state.infusionRing)
     if (ring) {
@@ -381,15 +488,7 @@ export function isExclusiveEnchant(e: Enchantment | undefined): boolean {
 }
 
 /**
- * Enforce rules for a single enchant slot's 3 selections:
- *
- * 1. Exclusive enchant → clears all other slots, occupies slot 0 only.
- * 2. No duplicates across slots — when a slot is changed, clear any other
- *    slot that already has the same enchant name.
- * 3. Cascade: slot 1 requires slot 0 filled; slot 2 requires slot 1 filled.
- *    (Gaps are not allowed — shift values left if needed.)
- *
- * changedIndex: which slot the user just edited (0, 1, or 2).
+ * Enforce rules for a single enchant slot's 3 selections.
  */
 export function enforceEnchantSlot(
   selections: [string, string, string],
@@ -398,7 +497,6 @@ export function enforceEnchantSlot(
   let s: [string, string, string] = [...selections] as [string, string, string]
   const changed = s[changedIndex]
 
-  // 1. If the newly set value is non-empty, remove it from every OTHER slot
   if (changed) {
     for (let i = 0; i < 3; i++) {
       if (i !== changedIndex && s[i] === changed) {
@@ -407,14 +505,12 @@ export function enforceEnchantSlot(
     }
   }
 
-  // 2. If any slot is exclusive, it must be alone in slot 0
   const exclusiveIdx = s.findIndex(n => isExclusiveEnchant(getEnchant(n)))
   if (exclusiveIdx !== -1) {
     const exclusiveName = s[exclusiveIdx]
     return [exclusiveName, "", ""]
   }
 
-  // 3. Cascade — compact leftward so there are no gaps
   const filled = s.filter(Boolean)
   return [
     filled[0] ?? "",

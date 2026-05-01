@@ -66,6 +66,55 @@ export interface Perk { name: string; description: string; tags: string[] }
 
 export type EnchantSlot = "helmet" | "chestplate" | "leggings" | "ring" | "rune"
 
+// ── Weapon Types ─────────────────────────────────────────────────────────────
+
+export type BladeType = "Small Blade" | "Medium Blade" | "Heavy Blade" | "Hammer Head"
+export type HandleType = "Medium Handle" | "Long Handle" | "Pole"
+
+export interface WeaponBlade {
+  name: string
+  tier: 1 | 2 | 3 | 4 | 5
+  bladeType: BladeType
+  description: string
+  stats: StatMap
+  attackSpeed?: number
+  // Damage type multipliers
+  trueType?: number
+  physicalType?: number
+  magicType?: number
+  fireType?: number
+  waterType?: number
+  earthType?: number
+  airType?: number
+  hexType?: number
+  holyType?: number
+  summonType?: number
+  // Scalings
+  dexterityScaling?: number
+  physicalScaling?: number
+  magicScaling?: number
+  fireScaling?: number
+  waterScaling?: number
+  earthScaling?: number
+  airScaling?: number
+  hexScaling?: number
+  holyScaling?: number
+  summonScaling?: number
+  perkName?: string
+  perkStacks?: number
+}
+
+export interface WeaponHandle {
+  name: string
+  tier: 1 | 2 | 3 | 4 | 5
+  handleType: HandleType
+  description: string
+  stats: StatMap
+  attackSpeed?: number
+  perkName?: string
+  perkStacks?: number
+}
+
 export interface BuildState {
   race: string
   guild: string
@@ -81,4 +130,7 @@ export interface BuildState {
   infusionChestplate: string
   infusionLeggings: string
   infusionRing: string
+  // Weapon
+  weaponBlade: string
+  weaponHandle: string
 }
