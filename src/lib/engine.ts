@@ -217,12 +217,90 @@ export interface WeaponResult {
   handleName: string
   bladeType: string
   handleType: string
+  weaponType: string
+  finalWeaponType: string
+  weaponModifier: string
   tier: number
   stats: StatMap
   perks: Record<string, number>
   attackSpeed: number
   damageTypes: Record<string, number>
   scalings: Record<string, number>
+}
+
+const WEAPON_TYPE_MAP: Record<string, Record<string, string>> = {
+  "Medium Handle": {
+    "Small Blade":  "Dagger",
+    "Medium Blade": "1-Handed Sword",
+    "Heavy Blade":  "Unbalanced Sword",
+    "Hammer Head":  "Mallet",
+  },
+  "Long Handle": {
+    "Small Blade":  "Dagger",
+    "Medium Blade": "2-Handed Sword",
+    "Heavy Blade":  "Greatsword",
+    "Hammer Head":  "Mallet",
+  },
+  "Pole": {
+    "Small Blade":  "Spear",
+    "Medium Blade": "Spear",
+    "Heavy Blade":  "Great Spear",
+    "Hammer Head":  "War Hammer",
+  },
+}
+
+export function getWeaponType(handleType: string, bladeType: string): string {
+  return WEAPON_TYPE_MAP[handleType]?.[bladeType] ?? "Weapon"
+}
+
+/**
+ * Resolve the final weapon type accounting for perk overrides.
+ * Returns { base, final, modifier } where modifier is the perk/ring that changed the type.
+ */
+export function resolveWeaponType(
+  handleType: string,
+  bladeType: string,
+  perks: Record<string, number>
+): { base: string; final: string; modifier: string } {
+  const base = getWeaponType(handleType, bladeType)
+
+  // Dual Wielding (all handles treated as Medium Handle for this perk)
+  if ((perks["Dual Wielding"] ?? 0) > 0) {
+    if (bladeType === "Small Blade")  return { base, final: "Dual Wielding Daggers", modifier: "Dual Wielding" }
+    if (bladeType === "Medium Blade") return { base, final: "Dual Swords",           modifier: "Dual Wielding" }
+    if (bladeType === "Heavy Blade")  return { base, final: "Dual Unbalanced Swords",modifier: "Dual Wielding" }
+    if (bladeType === "Hammer Head")  return { base, final: "Dual Mallets",          modifier: "Dual Wielding" }
+  }
+
+  // Lance perk
+  if ((perks["Lance"] ?? 0) > 0) {
+    if (handleType === "Long Handle" || handleType === "Medium Handle")
+      return { base, final: "Lance", modifier: "Lance" }
+  }
+
+  // Duelist Stance — only with Medium Blade
+  if ((perks["Duelist Stance"] ?? 0) > 0 && bladeType === "Medium Blade") {
+    return { base, final: "Rapier", modifier: "Duelist Stance" }
+  }
+
+  // Saw Stance — only with Medium Blade
+  if ((perks["Saw Stance"] ?? 0) > 0 && bladeType === "Medium Blade") {
+    return { base, final: "Chainsaw", modifier: "Saw Stance" }
+  }
+
+  // Kama Blades — with Dagger or Spear
+  if ((perks["Kama Blades"] ?? 0) > 0) {
+    if (base === "Dagger") return { base, final: "Dual Kamas", modifier: "Kama Blades" }
+    if (base === "Spear")  return { base, final: "Scythe",     modifier: "Kama Blades" }
+  }
+
+  // Locked And Loaded (ring perk) — Fists → Dual Guns, anything else → Side Gun added
+  if ((perks["Locked And Loaded"] ?? 0) > 0) {
+    if (base === "Fists") return { base, final: "Dual Guns",        modifier: "Locked And Loaded" }
+    return               { base, final: `${base} + Side Gun`,      modifier: "Locked And Loaded" }
+  }
+
+  return { base, final: base, modifier: "" }
 }
 
 export function calcWeapon(bladeName: string, handleName: string): WeaponResult | null {
@@ -232,7 +310,7 @@ export function calcWeapon(bladeName: string, handleName: string): WeaponResult 
 
   const stats: StatMap = {}
   const perks: Record<string, number> = {}
-  let attackSpeed = 1.0
+  const speedParts: number[] = []
 
   function addStats(s: StatMap | undefined) {
     if (!s) return
@@ -245,15 +323,19 @@ export function calcWeapon(bladeName: string, handleName: string): WeaponResult 
 
   if (blade) {
     addStats(blade.stats)
-    if (blade.attackSpeed != null) attackSpeed *= blade.attackSpeed
+    if (blade.attackSpeed != null) speedParts.push(blade.attackSpeed)
     if (blade.perkName) perks[blade.perkName] = (perks[blade.perkName] ?? 0) + (blade.perkStacks ?? 1)
   }
 
   if (handle) {
     addStats(handle.stats)
-    if (handle.attackSpeed != null) attackSpeed *= handle.attackSpeed
+    if (handle.attackSpeed != null) speedParts.push(handle.attackSpeed)
     if (handle.perkName) perks[handle.perkName] = (perks[handle.perkName] ?? 0) + (handle.perkStacks ?? 1)
   }
+
+  const attackSpeed = speedParts.length > 0
+    ? speedParts.reduce((a, b) => a + b, 0) / speedParts.length
+    : 1.0
 
   // Damage type multipliers (from blade)
   const damageTypes: Record<string, number> = {}
@@ -282,11 +364,20 @@ export function calcWeapon(bladeName: string, handleName: string): WeaponResult 
     if (rounded !== 0) finalStats[k as StatKey] = rounded
   }
 
+  const bladeType = blade?.bladeType ?? ""
+  const handleType = handle?.handleType ?? ""
+  const resolved = (bladeType && handleType)
+    ? resolveWeaponType(handleType, bladeType, perks)
+    : { base: "", final: "", modifier: "" }
+
   return {
     bladeName: blade?.name ?? "",
     handleName: handle?.name ?? "",
-    bladeType: blade?.bladeType ?? "",
-    handleType: handle?.handleType ?? "",
+    bladeType,
+    handleType,
+    weaponType: resolved.base,
+    finalWeaponType: resolved.final,
+    weaponModifier: resolved.modifier,
     tier: Math.max(blade?.tier ?? 1, handle?.tier ?? 1),
     stats: finalStats,
     perks,

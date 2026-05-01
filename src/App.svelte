@@ -288,80 +288,74 @@
         <h2>Armor</h2>
         <div class="slot-stack">
 
-          <div class="slot-block">
-            <label class="field">
-              <span>Helmet</span>
-              <select bind:value={$build.helmet}>
-                <option value="">—</option>
-                {#each armors as a}<option value={a.name}>{a.name}</option>{/each}
-              </select>
-            </label>
-            {#if $build.helmet}
-              <div class="sub-row enchant-sub">
-                <EnchantRow slot="helmet" label="Enchant" />
-              </div>
-              <div class="sub-row infusion-sub">
-                <label class="field">
-                  <span class="inf-span">⬡ Infusion</span>
-                  <select bind:value={$build.infusionHelmet} class="infusion-select">
-                    <option value="">—</option>
-                    {#each armors as a}<option value={a.name}>{a.name}</option>{/each}
-                  </select>
-                </label>
-              </div>
-            {/if}
+          <div class="slot-block slot-block--2col">
+            <div class="slot-left">
+              <label class="field">
+                <span>Helmet</span>
+                <select bind:value={$build.helmet}>
+                  <option value="">—</option>
+                  {#each armors as a}<option value={a.name}>{a.name}</option>{/each}
+                </select>
+              </label>
+              <label class="field">
+                <span class="inf-span">⬡ Infusion</span>
+                <select bind:value={$build.infusionHelmet} class="infusion-select">
+                  <option value="">—</option>
+                  {#each armors as a}<option value={a.name}>{a.name}</option>{/each}
+                </select>
+              </label>
+            </div>
+            <div class="slot-right">
+              <EnchantRow slot="helmet" label="Enchant" />
+            </div>
           </div>
 
           <div class="slot-divider"></div>
 
-          <div class="slot-block">
-            <label class="field">
-              <span>Chestplate</span>
-              <select bind:value={$build.chestplate}>
-                <option value="">—</option>
-                {#each armors as a}<option value={a.name}>{a.name}</option>{/each}
-              </select>
-            </label>
-            {#if $build.chestplate}
-              <div class="sub-row enchant-sub">
-                <EnchantRow slot="chestplate" label="Enchant" />
-              </div>
-              <div class="sub-row infusion-sub">
-                <label class="field">
-                  <span class="inf-span">⬡ Infusion</span>
-                  <select bind:value={$build.infusionChestplate} class="infusion-select">
-                    <option value="">—</option>
-                    {#each armors as a}<option value={a.name}>{a.name}</option>{/each}
-                  </select>
-                </label>
-              </div>
-            {/if}
+          <div class="slot-block slot-block--2col">
+            <div class="slot-left">
+              <label class="field">
+                <span>Chestplate</span>
+                <select bind:value={$build.chestplate}>
+                  <option value="">—</option>
+                  {#each armors as a}<option value={a.name}>{a.name}</option>{/each}
+                </select>
+              </label>
+              <label class="field">
+                <span class="inf-span">⬡ Infusion</span>
+                <select bind:value={$build.infusionChestplate} class="infusion-select">
+                  <option value="">—</option>
+                  {#each armors as a}<option value={a.name}>{a.name}</option>{/each}
+                </select>
+              </label>
+            </div>
+            <div class="slot-right">
+              <EnchantRow slot="chestplate" label="Enchant" />
+            </div>
           </div>
 
           <div class="slot-divider"></div>
 
-          <div class="slot-block">
-            <label class="field">
-              <span>Leggings</span>
-              <select bind:value={$build.leggings}>
-                <option value="">—</option>
-                {#each armors as a}<option value={a.name}>{a.name}</option>{/each}
-              </select>
-            </label>
-            {#if $build.leggings}
-              <div class="sub-row enchant-sub">
-                <EnchantRow slot="leggings" label="Enchant" />
-              </div>
-              <div class="sub-row infusion-sub">
-                <label class="field">
-                  <span class="inf-span">⬡ Infusion</span>
-                  <select bind:value={$build.infusionLeggings} class="infusion-select">
-                    <option value="">—</option>
-                    {#each armors as a}<option value={a.name}>{a.name}</option>{/each}
-                  </select>
-                </label>
-              </div>
-            {/if}
+          <div class="slot-block slot-block--2col">
+            <div class="slot-left">
+              <label class="field">
+                <span>Leggings</span>
+                <select bind:value={$build.leggings}>
+                  <option value="">—</option>
+                  {#each armors as a}<option value={a.name}>{a.name}</option>{/each}
+                </select>
+              </label>
+              <label class="field">
+                <span class="inf-span">⬡ Infusion</span>
+                <select bind:value={$build.infusionLeggings} class="infusion-select">
+                  <option value="">—</option>
+                  {#each armors as a}<option value={a.name}>{a.name}</option>{/each}
+                </select>
+              </label>
+            </div>
+            <div class="slot-right">
+              <EnchantRow slot="leggings" label="Enchant" />
+            </div>
           </div>
 
         </div>
@@ -372,53 +366,49 @@
         <h2>Items</h2>
         <div class="slot-stack">
 
-          <div class="slot-block">
-            <label class="field">
-              <span>Ring</span>
-              <select bind:value={$build.ring}>
-                <option value="">—</option>
-                {#each rings as r}<option value={r.name}>{r.name}</option>{/each}
-              </select>
-            </label>
-            {#if $build.ring}
-              <div class="sub-row enchant-sub">
-                <EnchantRow slot="ring" label="Enchant" />
-              </div>
-              <div class="sub-row infusion-sub">
-                <label class="field">
-                  <span class="inf-span">⬡ Infusion</span>
-                  <select bind:value={$build.infusionRing} class="infusion-select">
-                    <option value="">—</option>
-                    {#each rings as r}<option value={r.name}>{r.name}</option>{/each}
-                  </select>
-                </label>
-              </div>
-            {/if}
+          <div class="slot-block slot-block--2col">
+            <div class="slot-left">
+              <label class="field">
+                <span>Ring</span>
+                <select bind:value={$build.ring}>
+                  <option value="">—</option>
+                  {#each rings as r}<option value={r.name}>{r.name}</option>{/each}
+                </select>
+              </label>
+              <label class="field">
+                <span class="inf-span">⬡ Infusion</span>
+                <select bind:value={$build.infusionRing} class="infusion-select">
+                  <option value="">—</option>
+                  {#each rings as r}<option value={r.name}>{r.name}</option>{/each}
+                </select>
+              </label>
+            </div>
+            <div class="slot-right">
+              <EnchantRow slot="ring" label="Enchant" />
+            </div>
           </div>
 
           <div class="slot-divider"></div>
 
-          <div class="slot-block">
-            <label class="field">
-              <span>Rune</span>
-              <select bind:value={$build.rune}>
-                <option value="">—</option>
-                {#each runes as r}<option value={r.name}>{r.name}</option>{/each}
-              </select>
-            </label>
-            {#if $build.rune}
-              <div class="sub-row enchant-sub">
-                <EnchantRow slot="rune" label="Enchant" />
-              </div>
-              <div class="sub-row infusion-sub infusion-sub--disabled">
-                <label class="field">
-                  <span class="inf-span">⬡ Infusion</span>
-                  <select disabled class="infusion-select">
-                    <option value="">Coming soon</option>
-                  </select>
-                </label>
-              </div>
-            {/if}
+          <div class="slot-block slot-block--2col">
+            <div class="slot-left">
+              <label class="field">
+                <span>Rune</span>
+                <select bind:value={$build.rune}>
+                  <option value="">—</option>
+                  {#each runes as r}<option value={r.name}>{r.name}</option>{/each}
+                </select>
+              </label>
+              <label class="field">
+                <span class="inf-span" style="opacity:0.35">⬡ Infusion</span>
+                <select disabled class="infusion-select" style="opacity:0.3;cursor:not-allowed">
+                  <option value="">Coming soon</option>
+                </select>
+              </label>
+            </div>
+            <div class="slot-right">
+              <EnchantRow slot="rune" label="Enchant" />
+            </div>
           </div>
 
         </div>
@@ -529,20 +519,6 @@
                   <span class="detail-name">{weaponResult.bladeName}</span>
                   <div class="weapon-tier-badge">T{blade?.tier}</div>
                 </div>
-                {#if blade?.description}
-                  <p class="detail-desc">{blade.description}</p>
-                {/if}
-                <!-- Blade stats -->
-                {#if blade && Object.keys(blade.stats).length}
-                  <div class="stat-list">
-                    {#each Object.entries(blade.stats).filter(([,v]) => v !== 0) as [k,v]}
-                      <div class="stat-row">
-                        <span>{formatLabel(k)}</span>
-                        <span class="stat-val" class:neg={v < 0}>{formatStat(k, v as number)}</span>
-                      </div>
-                    {/each}
-                  </div>
-                {/if}
                 <!-- Attack Speed -->
                 {#if blade?.attackSpeed != null}
                   <div class="weapon-meta-row">
@@ -570,6 +546,17 @@
                       <div class="scaling-pill">
                         <span class="sc-name">{formatScalingLabel(k)}</span>
                         <span class="sc-val">{v}</span>
+                      </div>
+                    {/each}
+                  </div>
+                {/if}
+                <!-- Blade stats -->
+                {#if blade && Object.keys(blade.stats).length}
+                  <div class="stat-list">
+                    {#each Object.entries(blade.stats).filter(([,v]) => v !== 0) as [k,v]}
+                      <div class="stat-row">
+                        <span>{formatLabel(k)}</span>
+                        <span class="stat-val" class:neg={v < 0}>{formatStat(k, v as number)}</span>
                       </div>
                     {/each}
                   </div>
@@ -606,8 +593,11 @@
                   <span class="detail-name">{weaponResult.handleName}</span>
                   <div class="weapon-tier-badge weapon-tier-badge--handle">T{handle?.tier}</div>
                 </div>
-                {#if handle?.description}
-                  <p class="detail-desc">{handle.description}</p>
+                {#if handle?.attackSpeed != null}
+                  <div class="weapon-meta-row">
+                    <span class="weapon-meta-label">Attack Speed</span>
+                    <span class="weapon-meta-val">{handle.attackSpeed}×</span>
+                  </div>
                 {/if}
                 {#if handle && Object.keys(handle.stats).length}
                   <div class="stat-list">
@@ -617,12 +607,6 @@
                         <span class="stat-val" class:neg={v < 0}>{formatStat(k, v as number)}</span>
                       </div>
                     {/each}
-                  </div>
-                {/if}
-                {#if handle?.attackSpeed != null}
-                  <div class="weapon-meta-row">
-                    <span class="weapon-meta-label">Attack Speed</span>
-                    <span class="weapon-meta-val">{handle.attackSpeed}×</span>
                   </div>
                 {/if}
                 {#if handle?.perkName}
@@ -640,15 +624,58 @@
               </div>
             {/if}
 
+            <!-- Arrow separator -->
+            {#if weaponResult.bladeName && weaponResult.handleName}
+              <div class="weapon-combine weapon-combine--arrow">
+                <div class="weapon-combine-line"></div>
+                <div class="weapon-combine-icon">→</div>
+                <div class="weapon-combine-line"></div>
+              </div>
+            {:else}
+              <div></div>
+            {/if}
+
             <!-- Combined result card -->
             {#if weaponResult.bladeName && weaponResult.handleName}
               <div class="weapon-combined-card">
                 <div class="weapon-combined-header">
-                  <span class="weapon-combined-title">Combined Weapon</span>
+                  <div class="weapon-combined-left">
+                    <span class="weapon-combined-title">Combined Weapon</span>
+                    {#if weaponResult.finalWeaponType}
+                      <span class="weapon-type-badge">{weaponResult.finalWeaponType}</span>
+                    {/if}
+                    {#if weaponResult.weaponModifier}
+                      <span class="weapon-modifier-badge">via {weaponResult.weaponModifier}</span>
+                    {/if}
+                  </div>
                   <span class="weapon-combined-speed">
                     ⚡ {weaponResult.attackSpeed}× Attack Speed
                   </span>
                 </div>
+                <!-- Damage Types -->
+                {#if Object.keys(weaponResult.damageTypes).length}
+                  <div class="weapon-section-label">Damage Types</div>
+                  <div class="damage-type-grid">
+                    {#each Object.entries(weaponResult.damageTypes) as [k, v]}
+                      <div class="damage-type-pill">
+                        <span class="dt-name">{formatDmgTypeLabel(k)}</span>
+                        <span class="dt-val">{v}×</span>
+                      </div>
+                    {/each}
+                  </div>
+                {/if}
+                <!-- Scalings -->
+                {#if Object.keys(weaponResult.scalings).length}
+                  <div class="weapon-section-label">Scalings</div>
+                  <div class="scaling-grid">
+                    {#each Object.entries(weaponResult.scalings) as [k, v]}
+                      <div class="scaling-pill">
+                        <span class="sc-name">{formatScalingLabel(k)}</span>
+                        <span class="sc-val">{v}</span>
+                      </div>
+                    {/each}
+                  </div>
+                {/if}
                 {#if Object.keys(weaponResult.stats).length}
                   <div class="stat-list">
                     {#each Object.entries(weaponResult.stats).filter(([,v]) => v !== 0) as [k,v]}
@@ -987,7 +1014,7 @@
     color: var(--weapon-blade);
     font-weight: 700;
   }
-  .slot-block:nth-child(3) .weapon-part-title { color: var(--weapon-handle); }
+  .slot-block:nth-child(3) .weapon-part-title { color: var(--weapon-blade); }
 
   .weapon-filters {
     display: grid;
@@ -1055,12 +1082,24 @@
   /* ── Slot stack in sidebar ─────────────────────────── */
   .slot-stack { display: flex; flex-direction: column; }
   .slot-block { display: flex; flex-direction: column; gap: 6px; padding: 10px 0; }
-  .slot-divider { height: 1px; background: var(--border); }
 
-  .sub-row { padding-left: 10px; margin-left: 2px; }
-  .enchant-sub { border-left: 2px solid rgba(74,222,128,0.2); }
-  .infusion-sub { border-left: 2px solid var(--infusion-border); }
-  .infusion-sub--disabled { opacity: 0.3; pointer-events: none; }
+  .slot-block--2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    align-items: start;
+  }
+  .slot-left {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .slot-right {
+    border-left: 1px solid var(--border);
+    padding-left: 10px;
+  }
+
+  .slot-divider { height: 1px; background: var(--border); }
 
   .inf-span { color: var(--infusion) !important; opacity: 0.9; }
 
@@ -1097,14 +1136,12 @@
 
   .weapon-result-layout {
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    grid-template-columns: 1fr auto 1fr auto 1fr;
     gap: 10px;
     align-items: start;
   }
 
-  /* Make combined card span full width */
   .weapon-combined-card {
-    grid-column: 1 / -1;
     background: linear-gradient(135deg, rgba(251,191,36,0.08) 0%, rgba(251,146,60,0.06) 100%);
     border: 1px solid rgba(251,191,36,0.22);
     border-radius: var(--radius-sm);
@@ -1120,12 +1157,38 @@
     flex-wrap: wrap;
     gap: 8px;
   }
+  .weapon-combined-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
   .weapon-combined-title {
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.16em;
     color: var(--weapon-combined);
     font-weight: 700;
+  }
+  .weapon-type-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 2px 9px;
+    border-radius: 999px;
+    background: rgba(251,146,60,0.12);
+    border: 1px solid rgba(251,146,60,0.28);
+    color: var(--weapon-blade);
+    letter-spacing: 0.04em;
+  }
+  .weapon-modifier-badge {
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(167,139,250,0.1);
+    border: 1px solid rgba(167,139,250,0.25);
+    color: var(--accent3);
+    letter-spacing: 0.04em;
   }
   .weapon-combined-speed {
     font-size: 0.8rem;
@@ -1168,7 +1231,7 @@
   .weapon-card--empty { border-style: dashed; opacity: 0.4; }
 
   .weapon-type-label { color: var(--weapon-blade) !important; }
-  .weapon-type-label--handle { color: var(--weapon-handle) !important; }
+  .weapon-type-label--handle { color: var(--weapon-blade) !important; }
 
   .weapon-tier-badge {
     display: inline-block;
@@ -1184,9 +1247,9 @@
     width: fit-content;
   }
   .weapon-tier-badge--handle {
-    background: rgba(52,211,153,0.12);
-    border-color: rgba(52,211,153,0.25);
-    color: var(--weapon-handle);
+    background: rgba(251,146,60,0.12);
+    border-color: rgba(251,146,60,0.25);
+    color: var(--weapon-blade);
   }
 
   .weapon-meta-row {
@@ -1365,7 +1428,18 @@
     .workspace { grid-template-columns: 1fr; }
     .controls-panel { position: static; }
   }
-  @media (max-width: 900px) {
+  @media (max-width: 1100px) {
+    .weapon-result-layout {
+      grid-template-columns: 1fr auto 1fr;
+    }
+    .weapon-combined-card {
+      grid-column: 1 / -1;
+    }
+    .weapon-combine--arrow {
+      display: none;
+    }
+  }
+  @media (max-width: 700px) {
     .weapon-result-layout {
       grid-template-columns: 1fr;
     }
