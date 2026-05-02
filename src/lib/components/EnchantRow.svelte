@@ -12,10 +12,13 @@
 
   function toggleCat() {
     cat = cat === 'unAscended' ? 'Ascended' : 'unAscended'
-    // Clear all 3 slots when switching category
-    setEnchantment(slot, 0, '')
-    setEnchantment(slot, 1, '')
-    setEnchantment(slot, 2, '')
+    build.update(s => ({
+      ...s,
+      enchantments: {
+        ...s.enchantments,
+        [slot]: ['', '', ''] as [string, string, string]
+      }
+    }))
   }
 
   function set(i: 0|1|2, value: string) {

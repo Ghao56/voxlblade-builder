@@ -234,6 +234,17 @@
   function formatScalingLabel(key: string): string {
     return key.charAt(0).toUpperCase() + key.slice(1) + " Scaling"
   }
+
+  // ── Summary weapon label ────────────────────────────────────────────────────
+  $: summaryWeaponLabel = (() => {
+    if (weaponResult?.finalWeaponType) return weaponResult.finalWeaponType
+    return 'Fists'
+  })()
+
+  $: summaryWeaponSub = (() => {
+    if (!weaponResult) return ''
+    return [weaponResult.bladeName, weaponResult.handleName].filter(Boolean).join(' + ')
+  })()
 </script>
 
 <div class="app">
@@ -425,7 +436,6 @@
               <span class="weapon-icon">⚔</span>
               <span class="weapon-part-title">Blade</span>
             </div>
-            <!-- Blade filters -->
             <div class="weapon-filters">
               <label class="field filter-field">
                 <span>Tier</span>
@@ -466,7 +476,6 @@
               <span class="weapon-icon">🪵</span>
               <span class="weapon-part-title">Handle</span>
             </div>
-            <!-- Handle filters -->
             <div class="weapon-filters">
               <label class="field filter-field">
                 <span>Tier</span>
@@ -504,6 +513,175 @@
 
     <main class="results">
 
+      <!-- ══ BUILD SUMMARY ══════════════════════════════════════════════════ -->
+      <div class="panel summary-panel">
+        <h3 class="panel-title summary-title">Build Summary</h3>
+        <div class="summary-layout">
+
+          <!--
+            Row 0 (conditional): Weapon Type — spans all 5 cols, only shown when blade+handle selected
+            Row 1: InfHelmet | Helmet | Blade | Handle | (empty)
+            Row 2: InfChest  | Chest  | InfRing | Ring | Race
+            Row 3: InfLegs   | Legs   | InfRune | Rune | Guild
+          -->
+          <div class="summary-grid">
+
+            <!-- Weapon Type row — full width, only when weapon selected -->
+            {#if weaponResult}
+              <div class="sg-cell sg-weapon sg-span10">
+                <span class="sg-label">⚔ Weapon Type</span>
+                <span class="sg-value">{summaryWeaponLabel}</span>
+                {#if summaryWeaponSub}
+                  <span class="sg-sub">{summaryWeaponSub}</span>
+                {/if}
+                {#if weaponResult?.attackSpeed != null}
+                  <span class="sg-badge">⚡ {weaponResult.attackSpeed}× spd</span>
+                {/if}
+              </div>
+            {/if}
+
+            <!-- Row 1: InfHelmet | Helmet | Blade | Handle | (empty) -->
+            <div class="sg-cell sg-infusion sg-span2" class:sg-empty={!$build.infusionHelmet}>
+              <span class="sg-label">⬡ Inf. Helmet</span>
+              <span class="sg-value">{$build.infusionHelmet || 'No infused helmet'}</span>
+            </div>
+
+            <div class="sg-cell sg-armor sg-span2" class:sg-empty={!$build.helmet}>
+              <span class="sg-label">Helmet</span>
+              <span class="sg-value">{$build.helmet || 'No helmet'}</span>
+              {#if $build.helmet && $build.enchantments.helmet.some(Boolean)}
+                <span class="sg-ench">{$build.enchantments.helmet.filter(Boolean).join(' · ')}</span>
+              {/if}
+            </div>
+
+            <div class="sg-cell sg-blade sg-span3" class:sg-empty={!$build.weaponBlade}>
+              <span class="sg-label">⚔ Blade</span>
+              <span class="sg-value">{$build.weaponBlade || 'No blade'}</span>
+              {#if weaponResult?.bladeType}
+                <span class="sg-sub">{weaponResult.bladeType}</span>
+              {/if}
+            </div>
+
+            <div class="sg-cell sg-handle sg-span3" class:sg-empty={!$build.weaponHandle}>
+              <span class="sg-label">🪵 Handle</span>
+              <span class="sg-value">{$build.weaponHandle || 'No handle'}</span>
+              {#if weaponResult?.handleType}
+                <span class="sg-sub">{weaponResult.handleType}</span>
+              {/if}
+            </div>
+
+            <!-- Row 2: InfChest | Chest | InfRing | Ring | Race -->
+            <div class="sg-cell sg-infusion sg-span2" class:sg-empty={!$build.infusionChestplate}>
+              <span class="sg-label">⬡ Inf. Chestplate</span>
+              <span class="sg-value">{$build.infusionChestplate || 'No infused chestplate'}</span>
+            </div>
+
+            <div class="sg-cell sg-armor sg-span2" class:sg-empty={!$build.chestplate}>
+              <span class="sg-label">Chestplate</span>
+              <span class="sg-value">{$build.chestplate || 'No chestplate'}</span>
+              {#if $build.chestplate && $build.enchantments.chestplate.some(Boolean)}
+                <span class="sg-ench">{$build.enchantments.chestplate.filter(Boolean).join(' · ')}</span>
+              {/if}
+            </div>
+
+            <div class="sg-cell sg-infusion sg-span2" class:sg-empty={!$build.infusionRing}>
+              <span class="sg-label">⬡ Inf. Ring</span>
+              <span class="sg-value">{$build.infusionRing || 'No infused ring'}</span>
+            </div>
+
+            <div class="sg-cell sg-item sg-span2" class:sg-empty={!$build.ring}>
+              <span class="sg-label">Ring</span>
+              <span class="sg-value">{$build.ring || 'No ring'}</span>
+              {#if $build.ring && $build.enchantments.ring.some(Boolean)}
+                <span class="sg-ench">{$build.enchantments.ring.filter(Boolean).join(' · ')}</span>
+              {/if}
+            </div>
+
+            <div class="sg-cell sg-race sg-span2">
+              <span class="sg-label">Race</span>
+              <span class="sg-value">{$build.race || '—'}</span>
+              {#if $build.race}
+                {@const race = races.find(r => r.name === $build.race)}
+                {#if race?.passive}
+                  <span class="sg-sub">{race.passive.length > 40 ? race.passive.slice(0,40)+'…' : race.passive}</span>
+                {/if}
+              {/if}
+            </div>
+
+            <!-- Row 3: InfLegs | Legs | InfRune | Rune | Guild -->
+            <div class="sg-cell sg-infusion sg-span2" class:sg-empty={!$build.infusionLeggings}>
+              <span class="sg-label">⬡ Inf. Leggings</span>
+              <span class="sg-value">{$build.infusionLeggings || 'No infused leggings'}</span>
+            </div>
+
+            <div class="sg-cell sg-armor sg-span2" class:sg-empty={!$build.leggings}>
+              <span class="sg-label">Leggings</span>
+              <span class="sg-value">{$build.leggings || 'No leggings'}</span>
+              {#if $build.leggings && $build.enchantments.leggings.some(Boolean)}
+                <span class="sg-ench">{$build.enchantments.leggings.filter(Boolean).join(' · ')}</span>
+              {/if}
+            </div>
+
+            <div class="sg-cell sg-infusion sg-span2" style="opacity:0.3">
+              <span class="sg-label">⬡ Inf. Rune</span>
+              <span class="sg-value">Coming soon</span>
+            </div>
+
+            <div class="sg-cell sg-item sg-span2" class:sg-empty={!$build.rune}>
+              <span class="sg-label">Rune</span>
+              <span class="sg-value">{$build.rune || 'No rune'}</span>
+              {#if $build.rune && $build.enchantments.rune.some(Boolean)}
+                <span class="sg-ench">{$build.enchantments.rune.filter(Boolean).join(' · ')}</span>
+              {/if}
+            </div>
+
+            <div class="sg-cell sg-guild sg-span2" class:sg-empty={!$build.guild}>
+              <span class="sg-label">Guild</span>
+              <span class="sg-value">{$build.guild || '—'}</span>
+              {#if $build.guild}
+                <span class="sg-sub">Rank {$build.guildRank}</span>
+              {/if}
+            </div>
+
+          </div>
+
+          <!-- Right: combined stats + perks -->
+          <div class="summary-stats">
+            <div class="ss-header">Stats &amp; Perks</div>
+
+            {#if statRows.length === 0 && perkRows.length === 0}
+              <p class="empty ss-empty">No stats yet.</p>
+            {:else}
+              {#if statRows.length}
+                <div class="ss-section">
+                  {#each statRows as [k, v]}
+                    <div class="ss-row">
+                      <span class="ss-key">{formatLabel(k)}</span>
+                      <span class="ss-val" class:neg={v < 0}>{formatStat(k, v)}</span>
+                    </div>
+                  {/each}
+                </div>
+              {/if}
+
+              {#if perkRows.length}
+                {#if statRows.length}
+                  <div class="ss-divider"></div>
+                {/if}
+                <div class="ss-section">
+                  {#each perkRows as [name, count]}
+                    <div class="ss-row ss-perk-row">
+                      <span class="ss-key">{name}</span>
+                      <span class="ss-val ss-perk-val">+{Math.round(count * 100) / 100}</span>
+                    </div>
+                  {/each}
+                </div>
+              {/if}
+            {/if}
+          </div>
+
+        </div>
+      </div>
+
       <!-- Weapon Panel -->
       {#if weaponResult}
         <div class="panel weapon-panel">
@@ -519,14 +697,12 @@
                   <span class="detail-name">{weaponResult.bladeName}</span>
                   <div class="weapon-tier-badge">T{blade?.tier}</div>
                 </div>
-                <!-- Attack Speed -->
                 {#if blade?.attackSpeed != null}
                   <div class="weapon-meta-row">
                     <span class="weapon-meta-label">Attack Speed</span>
                     <span class="weapon-meta-val">{blade.attackSpeed}×</span>
                   </div>
                 {/if}
-                <!-- Damage Types -->
                 {#if Object.keys(weaponResult.damageTypes).length}
                   <div class="weapon-section-label">Damage Types</div>
                   <div class="damage-type-grid">
@@ -538,7 +714,6 @@
                     {/each}
                   </div>
                 {/if}
-                <!-- Scalings -->
                 {#if Object.keys(weaponResult.scalings).length}
                   <div class="weapon-section-label">Scalings</div>
                   <div class="scaling-grid">
@@ -550,7 +725,6 @@
                     {/each}
                   </div>
                 {/if}
-                <!-- Blade stats -->
                 {#if blade && Object.keys(blade.stats).length}
                   <div class="stat-list">
                     {#each Object.entries(blade.stats).filter(([,v]) => v !== 0) as [k,v]}
@@ -561,7 +735,6 @@
                     {/each}
                   </div>
                 {/if}
-                <!-- Perk -->
                 {#if blade?.perkName}
                   <div class="perk-list">
                     <div class="perk-row">
@@ -652,7 +825,6 @@
                     ⚡ {weaponResult.attackSpeed}× Attack Speed
                   </span>
                 </div>
-                <!-- Damage Types -->
                 {#if Object.keys(weaponResult.damageTypes).length}
                   <div class="weapon-section-label">Damage Types</div>
                   <div class="damage-type-grid">
@@ -664,7 +836,6 @@
                     {/each}
                   </div>
                 {/if}
-                <!-- Scalings -->
                 {#if Object.keys(weaponResult.scalings).length}
                   <div class="weapon-section-label">Scalings</div>
                   <div class="scaling-grid">
@@ -991,14 +1162,11 @@
     margin-bottom: 12px;
   }
 
-  /* Weapon section styling */
   .weapon-section {
     border-color: rgba(251,146,60,0.18);
     background: linear-gradient(160deg, var(--surface) 60%, rgba(251,146,60,0.04) 100%);
   }
-  .weapon-section h2 {
-    color: var(--weapon-blade);
-  }
+  .weapon-section h2 { color: var(--weapon-blade); }
 
   .weapon-part-label {
     display: flex;
@@ -1014,7 +1182,6 @@
     color: var(--weapon-blade);
     font-weight: 700;
   }
-  .slot-block:nth-child(3) .weapon-part-title { color: var(--weapon-blade); }
 
   .weapon-filters {
     display: grid;
@@ -1022,14 +1189,8 @@
     gap: 6px;
     margin-bottom: 6px;
   }
-  .filter-field span {
-    font-size: 0.6rem !important;
-    color: var(--ink-muted) !important;
-  }
-  .filter-field select {
-    font-size: 0.75rem;
-    padding: 5px 22px 5px 8px;
-  }
+  .filter-field span { font-size: 0.6rem !important; color: var(--ink-muted) !important; }
+  .filter-field select { font-size: 0.75rem; padding: 5px 22px 5px 8px; }
 
   .weapon-divider {
     display: flex;
@@ -1079,7 +1240,6 @@
   }
   select:focus { outline: none; border-color: rgba(74,222,128,0.4); }
 
-  /* ── Slot stack in sidebar ─────────────────────────── */
   .slot-stack { display: flex; flex-direction: column; }
   .slot-block { display: flex; flex-direction: column; gap: 6px; padding: 10px 0; }
 
@@ -1089,20 +1249,12 @@
     gap: 10px;
     align-items: start;
   }
-  .slot-left {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .slot-right {
-    border-left: 1px solid var(--border);
-    padding-left: 10px;
-  }
+  .slot-left { display: flex; flex-direction: column; gap: 6px; }
+  .slot-right { border-left: 1px solid var(--border); padding-left: 10px; }
 
   .slot-divider { height: 1px; background: var(--border); }
 
   .inf-span { color: var(--infusion) !important; opacity: 0.9; }
-
   .infusion-select {
     border-color: var(--infusion-border) !important;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2338bdf8' d='M1 1l5 5 5-5'/%3E%3C/svg%3E") !important;
@@ -1126,6 +1278,169 @@
     font-weight: 700;
     margin-bottom: 14px;
   }
+
+  /* ══ BUILD SUMMARY ══════════════════════════════════════════════════════════ */
+  .summary-panel {
+    border-color: rgba(74,222,128,0.13);
+    background: linear-gradient(160deg, var(--surface) 60%, rgba(74,222,128,0.03) 100%);
+  }
+  .summary-title { color: var(--accent); }
+
+  .summary-layout {
+    display: grid;
+    grid-template-columns: 1fr 240px;
+    gap: 12px;
+    align-items: start;
+  }
+
+  /* 5-column grid: InfArmor | Armor | WeaponType | Col4 | Col5 */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 6px;
+  }
+  .sg-span10 { grid-column: span 10; }
+  .sg-span3  { grid-column: span 3; }
+  .sg-span2  { grid-column: span 2; }
+
+  .sg-cell {
+    border-radius: 8px;
+    padding: 9px 11px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-height: 60px;
+    transition: opacity 0.15s;
+  }
+  .sg-empty { opacity: 0.38; }
+
+  .sg-weapon {
+    background: linear-gradient(135deg, rgba(251,146,60,0.16), rgba(251,191,36,0.1));
+    border: 1px solid rgba(251,146,60,0.26);
+  }
+  .sg-armor {
+    background: linear-gradient(135deg, rgba(74,222,128,0.1), rgba(74,222,128,0.05));
+    border: 1px solid rgba(74,222,128,0.18);
+  }
+  .sg-infusion {
+    background: linear-gradient(135deg, rgba(56,189,248,0.1), rgba(56,189,248,0.05));
+    border: 1px solid rgba(56,189,248,0.2);
+  }
+  .sg-blade {
+    background: linear-gradient(135deg, rgba(251,146,60,0.12), rgba(251,146,60,0.06));
+    border: 1px solid rgba(251,146,60,0.22);
+  }
+  .sg-handle {
+    background: linear-gradient(135deg, rgba(52,211,153,0.12), rgba(52,211,153,0.06));
+    border: 1px solid rgba(52,211,153,0.22);
+  }
+  .sg-item {
+    background: linear-gradient(135deg, rgba(167,139,250,0.1), rgba(167,139,250,0.05));
+    border: 1px solid rgba(167,139,250,0.18);
+  }
+  .sg-race {
+    background: linear-gradient(135deg, rgba(56,189,248,0.1), rgba(56,189,248,0.05));
+    border: 1px solid rgba(56,189,248,0.18);
+  }
+  .sg-guild {
+    background: linear-gradient(135deg, rgba(245,158,11,0.12), rgba(245,158,11,0.06));
+    border: 1px solid rgba(245,158,11,0.22);
+  }
+
+  .sg-label {
+    font-size: 0.59rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-weight: 700;
+    opacity: 0.6;
+  }
+  .sg-weapon .sg-label  { color: var(--weapon-blade); }
+  .sg-armor  .sg-label  { color: var(--accent); }
+  .sg-infusion .sg-label { color: var(--infusion); }
+  .sg-blade  .sg-label  { color: var(--weapon-blade); }
+  .sg-handle .sg-label  { color: var(--weapon-handle); }
+  .sg-item   .sg-label  { color: var(--accent3); }
+  .sg-race   .sg-label  { color: var(--infusion); }
+  .sg-guild  .sg-label  { color: var(--accent2); }
+
+  .sg-value {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .sg-sub {
+    font-size: 0.67rem;
+    color: var(--ink-muted);
+    line-height: 1.3;
+    margin-top: 1px;
+  }
+  .sg-ench {
+    font-size: 0.62rem;
+    color: var(--accent3);
+    opacity: 0.75;
+    margin-top: 1px;
+  }
+  .sg-badge {
+    display: inline-block;
+    font-size: 0.62rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: rgba(251,191,36,0.12);
+    border: 1px solid rgba(251,191,36,0.22);
+    color: var(--weapon-combined);
+    margin-top: 3px;
+    width: fit-content;
+  }
+
+  /* Stats panel on the right */
+  .summary-stats {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  .summary-stats::-webkit-scrollbar { width: 4px; }
+  .summary-stats::-webkit-scrollbar-track { background: transparent; }
+  .summary-stats::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
+
+  .ss-header {
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--ink-muted);
+    font-weight: 700;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2px;
+  }
+
+  .ss-section { display: flex; flex-direction: column; gap: 2px; }
+  .ss-divider { height: 1px; background: var(--border); margin: 4px 0; }
+
+  .ss-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding: 3px 5px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    transition: background 0.1s;
+  }
+  .ss-row:hover { background: var(--surface3); }
+
+  .ss-key { color: var(--ink-muted); }
+  .ss-val { font-weight: 700; color: var(--accent); white-space: nowrap; }
+  .ss-val.neg { color: var(--neg); }
+  .ss-perk-val { color: var(--accent2); }
+  .ss-empty { font-size: 0.8rem; }
 
   /* ── Weapon Panel ─────────────────────────────────── */
   .weapon-panel {
@@ -1221,17 +1536,12 @@
     flex-shrink: 0;
   }
 
-  .weapon-card {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .weapon-card--blade { border-color: rgba(251,146,60,0.22); }
+  .weapon-card { display: flex; flex-direction: column; gap: 8px; }
+  .weapon-card--blade  { border-color: rgba(251,146,60,0.22); }
   .weapon-card--handle { border-color: rgba(52,211,153,0.22); }
-  .weapon-card--empty { border-style: dashed; opacity: 0.4; }
+  .weapon-card--empty  { border-style: dashed; opacity: 0.4; }
 
   .weapon-type-label { color: var(--weapon-blade) !important; }
-  .weapon-type-label--handle { color: var(--weapon-blade) !important; }
 
   .weapon-tier-badge {
     display: inline-block;
@@ -1246,11 +1556,6 @@
     margin-top: 2px;
     width: fit-content;
   }
-  .weapon-tier-badge--handle {
-    background: rgba(251,146,60,0.12);
-    border-color: rgba(251,146,60,0.25);
-    color: var(--weapon-blade);
-  }
 
   .weapon-meta-row {
     display: flex;
@@ -1262,7 +1567,7 @@
     font-size: 0.78rem;
   }
   .weapon-meta-label { color: var(--ink-muted); }
-  .weapon-meta-val { font-weight: 700; color: var(--accent2); }
+  .weapon-meta-val   { font-weight: 700; color: var(--accent2); }
 
   .weapon-section-label {
     font-size: 0.62rem;
@@ -1273,50 +1578,29 @@
     margin-top: 2px;
   }
 
-  .damage-type-grid, .scaling-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-  }
+  .damage-type-grid, .scaling-grid { display: flex; flex-wrap: wrap; gap: 4px; }
   .damage-type-pill {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 3px 7px;
-    border-radius: 999px;
-    background: rgba(251,146,60,0.1);
-    border: 1px solid rgba(251,146,60,0.2);
+    display: flex; align-items: center; gap: 4px;
+    padding: 3px 7px; border-radius: 999px;
+    background: rgba(251,146,60,0.1); border: 1px solid rgba(251,146,60,0.2);
     font-size: 0.7rem;
   }
   .dt-name { color: var(--ink-muted); }
-  .dt-val { font-weight: 700; color: var(--weapon-blade); }
+  .dt-val  { font-weight: 700; color: var(--weapon-blade); }
 
   .scaling-pill {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 3px 7px;
-    border-radius: 999px;
-    background: rgba(167,139,250,0.1);
-    border: 1px solid rgba(167,139,250,0.2);
+    display: flex; align-items: center; gap: 4px;
+    padding: 3px 7px; border-radius: 999px;
+    background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.2);
     font-size: 0.7rem;
   }
   .sc-name { color: var(--ink-muted); }
-  .sc-val { font-weight: 700; color: var(--accent3); }
+  .sc-val  { font-weight: 700; color: var(--accent3); }
 
   /* ── Selection Details ──────────────────────────────── */
-  .detail-layout {
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-  }
+  .detail-layout { display: flex; gap: 10px; align-items: flex-start; }
 
-  .identity-col {
-    flex: 0 0 200px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
+  .identity-col { flex: 0 0 200px; display: flex; flex-direction: column; gap: 10px; }
 
   .gear-grid {
     flex: 1;
@@ -1328,12 +1612,7 @@
 
   .slot-col { display: flex; flex-direction: column; }
 
-  .inf-bridge {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 2px 12px;
-  }
+  .inf-bridge { display: flex; align-items: center; gap: 4px; padding: 2px 12px; }
   .inf-bridge-line { flex: 1; height: 1px; background: var(--infusion-border); }
   .inf-bridge-icon { font-size: 0.7rem; color: var(--infusion); opacity: 0.6; flex-shrink: 0; }
 
@@ -1364,17 +1643,12 @@
 
   .detail-enchant-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
   .enchant-tag {
-    font-size: 0.65rem;
-    font-weight: 600;
-    padding: 2px 7px;
-    border-radius: 999px;
-    background: rgba(167,139,250,0.12);
-    border: 1px solid rgba(167,139,250,0.25);
-    color: var(--accent3);
-    letter-spacing: 0.04em;
+    font-size: 0.65rem; font-weight: 600; padding: 2px 7px; border-radius: 999px;
+    background: rgba(167,139,250,0.12); border: 1px solid rgba(167,139,250,0.25);
+    color: var(--accent3); letter-spacing: 0.04em;
   }
 
-  .detail-desc { font-size: 0.78rem; color: var(--ink-muted); line-height: 1.45; }
+  .detail-desc  { font-size: 0.78rem; color: var(--ink-muted); line-height: 1.45; }
   .detail-extra { font-size: 0.75rem; color: var(--accent2); }
   .infusion-note { font-size: 0.65rem; color: var(--infusion); opacity: 0.5; letter-spacing: 0.04em; }
 
@@ -1382,14 +1656,9 @@
 
   .stat-list { display: flex; flex-direction: column; gap: 4px; }
   .stat-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 8px;
-    border-radius: 6px;
-    background: var(--surface3);
-    font-size: 0.8rem;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 8px; padding: 6px 8px; border-radius: 6px;
+    background: var(--surface3); font-size: 0.8rem;
   }
   .stat-row--infusion { background: rgba(56,189,248,0.06); }
 
@@ -1400,54 +1669,41 @@
 
   .perk-list { display: flex; flex-direction: column; gap: 4px; }
   .perk-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.82rem;
-    padding: 4px 6px;
-    border-radius: 5px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.82rem; padding: 4px 6px; border-radius: 5px;
   }
   .perk-row--enchant { background: rgba(167,139,250,0.06); }
   .perk-val { font-weight: 700; color: var(--accent2); white-space: nowrap; }
   .perk-val--enchant { color: var(--accent3); }
 
   .perk-card {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 8px 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 10px;
+    display: flex; flex-direction: column; gap: 4px;
   }
   .perk-name { font-weight: 600; }
   .perk-desc { font-size: 0.74rem; color: var(--ink-muted); line-height: 1.4; }
   .empty { color: var(--ink-muted); font-style: italic; font-size: 0.85rem; }
 
+  /* ── Responsive ─────────────────────────────────────── */
   @media (max-width: 1100px) {
     .workspace { grid-template-columns: 1fr; }
     .controls-panel { position: static; }
   }
   @media (max-width: 1100px) {
-    .weapon-result-layout {
-      grid-template-columns: 1fr auto 1fr;
-    }
-    .weapon-combined-card {
-      grid-column: 1 / -1;
-    }
-    .weapon-combine--arrow {
-      display: none;
-    }
+    .weapon-result-layout { grid-template-columns: 1fr auto 1fr; }
+    .weapon-combined-card { grid-column: 1 / -1; }
+    .weapon-combine--arrow { display: none; }
+  }
+  @media (max-width: 900px) {
+    .summary-layout { grid-template-columns: 1fr; }
+    .summary-stats { max-height: none; }
   }
   @media (max-width: 700px) {
-    .weapon-result-layout {
-      grid-template-columns: 1fr;
-    }
-    .weapon-combine {
-      flex-direction: row;
-      padding-top: 0;
-    }
+    .weapon-result-layout { grid-template-columns: 1fr; }
+    .weapon-combine { flex-direction: row; padding-top: 0; }
     .weapon-combine-line { width: 40px; height: 1px; min-height: unset; }
+    .summary-grid { grid-template-columns: repeat(3, 1fr); }
   }
   @media (max-width: 768px) {
     .detail-layout { flex-direction: column; }
@@ -1456,5 +1712,6 @@
   @media (max-width: 640px) {
     .two-col { grid-template-columns: 1fr; }
     header { flex-direction: column; align-items: flex-start; }
+    .summary-grid { grid-template-columns: repeat(2, 1fr); }
   }
 </style>
