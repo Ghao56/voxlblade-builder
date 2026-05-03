@@ -69,11 +69,6 @@ function normalizeModifiers(m: StatModifier | StatModifier[]): StatModifier[] {
   return Array.isArray(m) ? m : [m]
 }
 
-/**
- * Apply enchantments to a slot.
- * Order: right-to-left (index 2 → 1 → 0), so slot 0 (leftmost) applies last
- * and has the "final say" as the primary enchant.
- */
 export function applyEnchantmentsToSlot(
   baseStats: StatMap,
   basePerks: Record<string, number>,
@@ -82,7 +77,6 @@ export function applyEnchantmentsToSlot(
   const stats = { ...baseStats }
   const perks = { ...basePerks }
 
-  // Apply right-to-left: [2, 1, 0]
   const ordered = [...enchantNames].reverse()
 
   for (const name of ordered) {
@@ -92,7 +86,6 @@ export function applyEnchantmentsToSlot(
 
     const es = e.stats
 
-    // positiveStats: multiply all positive values
     if (es.positiveStats) {
       const mods = normalizeModifiers(es.positiveStats as StatModifier | StatModifier[])
       for (const key of Object.keys(stats) as StatKey[]) {
@@ -105,7 +98,6 @@ export function applyEnchantmentsToSlot(
       }
     }
 
-    // negativeStats: multiply all negative values
     if (es.negativeStats) {
       const mods = normalizeModifiers(es.negativeStats as StatModifier | StatModifier[])
       for (const key of Object.keys(stats) as StatKey[]) {
@@ -131,7 +123,6 @@ export function applyEnchantmentsToSlot(
       }
     }
 
-    // perks modifier
     if (es.perks) {
       const mods = normalizeModifiers(es.perks as StatModifier | StatModifier[])
       for (const perkName of Object.keys(perks)) {
@@ -141,7 +132,6 @@ export function applyEnchantmentsToSlot(
       }
     }
 
-    // specific stat keys
     for (const [key, modifier] of Object.entries(es)) {
       if (!modifier || ["positiveStats","negativeStats","perks"].includes(key)) continue
       if (!STAT_KEYS.includes(key as StatKey)) continue
@@ -151,7 +141,6 @@ export function applyEnchantmentsToSlot(
       stats[key as StatKey] = v
     }
 
-    // effects → perks
     for (const eff of e.effects) {
       perks[eff.name] = (perks[eff.name] ?? 0) + eff.value
     }
@@ -196,9 +185,6 @@ export function applyPerkEffectiveness(
 
 // ─── Infusion helper ──────────────────────────────────────────────────────────
 
-/**
- * Apply an infusion slot: stats are halved, perks are kept as-is (no enchants).
- */
 export function applyInfusion(
   baseStats: StatMap,
   basePerks: Record<string, number>
@@ -250,21 +236,18 @@ const WEAPON_TYPE_MAP: Record<string, Record<string, string>> = {
 }
 
 export function getWeaponType(handleType: string, bladeType: string): string {
-  return WEAPON_TYPE_MAP[handleType]?.[bladeType] ?? "Weapon"
+  return WEAPON_TYPE_MAP[handleType]?.[bladeType] ?? ""
 }
 
-/**
- * Resolve the final weapon type accounting for perk overrides.
- * Returns { base, final, modifier } where modifier is the perk/ring that changed the type.
- */
 export function resolveWeaponType(
   handleType: string,
   bladeType: string,
   perks: Record<string, number>
 ): { base: string; final: string; modifier: string } {
   const base = getWeaponType(handleType, bladeType)
+  if (!base) return { base: "", final: "", modifier: "" }
 
-  // Dual Wielding (all handles treated as Medium Handle for this perk)
+  // Dual Wielding
   if ((perks["Dual Wielding"] ?? 0) > 0) {
     if (bladeType === "Small Blade")  return { base, final: "Dual Wielding Daggers", modifier: "Dual Wielding" }
     if (bladeType === "Medium Blade") return { base, final: "Dual Swords",           modifier: "Dual Wielding" }
@@ -278,26 +261,20 @@ export function resolveWeaponType(
       return { base, final: "Lance", modifier: "Lance" }
   }
 
-  // Duelist Stance — only with Medium Blade
+  // Duelist Stance
   if ((perks["Duelist Stance"] ?? 0) > 0 && bladeType === "Medium Blade") {
     return { base, final: "Rapier", modifier: "Duelist Stance" }
   }
 
-  // Saw Stance — only with Medium Blade
+  // Saw Stance
   if ((perks["Saw Stance"] ?? 0) > 0 && bladeType === "Medium Blade") {
     return { base, final: "Chainsaw", modifier: "Saw Stance" }
   }
 
-  // Kama Blades — with Dagger or Spear
+  // Kama Blades
   if ((perks["Kama Blades"] ?? 0) > 0) {
     if (base === "Dagger") return { base, final: "Dual Kamas", modifier: "Kama Blades" }
     if (base === "Spear")  return { base, final: "Scythe",     modifier: "Kama Blades" }
-  }
-
-  // Locked And Loaded (ring perk) — Fists → Dual Guns, anything else → Side Gun added
-  if ((perks["Locked And Loaded"] ?? 0) > 0) {
-    if (base === "Fists") return { base, final: "Dual Guns",        modifier: "Locked And Loaded" }
-    return               { base, final: `${base} + Side Gun`,      modifier: "Locked And Loaded" }
   }
 
   return { base, final: base, modifier: "" }
@@ -337,7 +314,6 @@ export function calcWeapon(bladeName: string, handleName: string): WeaponResult 
     ? speedParts.reduce((a, b) => a + b, 0) / speedParts.length
     : 1.0
 
-  // Damage type multipliers (from blade)
   const damageTypes: Record<string, number> = {}
   if (blade) {
     const dtKeys = ["trueType","physicalType","magicType","fireType","waterType","earthType","airType","hexType","holyType","summonType"]
@@ -347,7 +323,6 @@ export function calcWeapon(bladeName: string, handleName: string): WeaponResult 
     }
   }
 
-  // Scalings (from blade)
   const scalings: Record<string, number> = {}
   if (blade) {
     const scaleKeys = ["dexterityScaling","physicalScaling","magicScaling","fireScaling","waterScaling","earthScaling","airScaling","hexScaling","holyScaling","summonScaling"]
@@ -357,7 +332,6 @@ export function calcWeapon(bladeName: string, handleName: string): WeaponResult 
     }
   }
 
-  // Round stats
   const finalStats: StatMap = {}
   for (const [k, v] of Object.entries(stats)) {
     const rounded = Math.round((v + Number.EPSILON) * 100) / 100
@@ -477,7 +451,7 @@ export function calcBuild(state: BuildState): BuildResult {
     }
   }
 
-  // ── Weapon ──────────────────────────────────────────────────────────────────
+  // Weapon
   if (state.weaponBlade) {
     const blade = getBlade(state.weaponBlade)
     if (blade) {
@@ -493,7 +467,7 @@ export function calcBuild(state: BuildState): BuildResult {
     }
   }
 
-  // ── Infusion slots ──────────────────────────────────────────────────────────
+  // Infusion slots
   if (state.infusionHelmet) {
     const part = getArmorPart(state.infusionHelmet, "Helmet")
     if (part) {
@@ -578,9 +552,6 @@ export function isExclusiveEnchant(e: Enchantment | undefined): boolean {
   return e?.stacking === "exclusive"
 }
 
-/**
- * Enforce rules for a single enchant slot's 3 selections.
- */
 export function enforceEnchantSlot(
   selections: [string, string, string],
   changedIndex: number

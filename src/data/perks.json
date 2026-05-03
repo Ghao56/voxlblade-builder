@@ -17,5 +17,3655 @@
       "Finisher",
       "Weapon"
     ]
+  },
+  {
+    "name": "Air Barrier",
+    "description": "Release a small shockwave of Air around yourself when Blocking an attack. Has a Proc Coefficient and no Cooldown. | Tags = Defensive, Offensive, Weapon",
+    "tags": [
+      "Defensive",
+      "Offensive",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Air Pressure",
+    "description": "Dealing Air Damage builds up the Buff Air Pressure, the maximum of which scales on perk amount. | Tags = Defensive, Buff, Offensive, Rune Activated, Rune, Armor",
+    "tags": [
+      "Defensive",
+      "Buff",
+      "Offensive",
+      "Rune Activated",
+      "Rune",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Apollo Boost",
+    "description": "Using a Rune launches you vertically with a shockwave. Enemies hit by the shockwave are Taunted. The shockwave counts as Rune Damage.",
+    "tags": [
+      "Offensive",
+      "Debuff",
+      "Rune Activated",
+      "Rune",
+      "Mobility",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Artillery Mage",
+    "description": "Your LMB's and RMB's are replaced with ranged blasts and beams. | Tags = Stance Change, Weapon",
+    "tags": [
+      "Stance Change",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Barbed Flurry",
+    "description": "Reapplying Bleed on enemies already Bleeding also deals a small amount of Damage, which scales on your Physical and Dexterity Boosts.",
+    "tags": [
+      "Offensive",
+      "Debuff",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Barbskin",
+    "description": "Take heavily reduced damage from Bleed and gain Damage Reduction during so. Inflicting Bleed will cause yourself to Bleed for 5 seconds. Grants Bleed Potency.",
+    "tags": [
+      "Defensive",
+      "Debuff",
+      "Self-Debuff",
+      "Bleed Potency",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Basic Spirit",
+    "description": "Release your Spiritual Energy with an RMB as a multi-hit Finisher.",
+    "tags": [
+      "Offensive",
+      "Finisher",
+      "Spirit (Monk)",
+      "Guardbreak",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Bastion Ballista",
+    "description": "Gain a Neutral Status called Arrows, Hitting an opponent from longer ranges will shoot an arrow at them, the amount increasing the further you are. Scales on Dexterity and Earth, with a 0.1 second Cooldown. Arrows restore after not firing for a bit.",
+    "tags": [
+      "Offensive",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Bastion Bless",
+    "description": "All Buffs you gain or grant are granted a potency buff. Additionally, healing grants either Regeneration or Reinforce at a low chance.",
+    "tags": [
+      "Buff",
+      "RNG",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Beastial Rage",
+    "description": "On kill or Poisebreak, gain Rage, remove all Debuffs, and slightly heal. Rage now increases your movement speed.",
+    "tags": [
+      "Buff",
+      "Damage Boost",
+      "Healing",
+      "Poise",
+      "Weapon",
+      "Cleanse"
+    ]
+  },
+  {
+    "name": "Bellowing Ember",
+    "description": "At below a certain HP threshold, gain a Damage Boost with a chance to apply Burn when dealing any Damage. Fire Damage in specific gains yet another Damage Boost.",
+    "tags": [
+      "Damage Boost",
+      "Debuff",
+      "RNG",
+      "Incomplete",
+      "Armor",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Berserking Strength",
+    "description": "Gain a hefty Attack Speed boost with Unbalanced Weaponry alongside a slight Damage Boost.",
+    "tags": [
+      "Damage Boost",
+      "Attack Speed",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Blastshield",
+    "description": "Release a shockwave of Earth upon taking Damage. Has a Cooldown.",
+    "tags": [
+      "Defensive",
+      "Offensive",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Blazing Finisher",
+    "description": "Landing a Finisher on an opponent with your Burn removes it in exchange for creating a small AoE of Fire Damage around them. Has a short Cooldown.",
+    "tags": [
+      "Offensive",
+      "Finisher",
+      "Guardbreak",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Bleed Potency",
+    "description": "Increases the damage of the bleed status by x%",
+    "tags": [
+      "Bleed Potency",
+      "Debuff",
+      "Armor",
+      "Weapon",
+      "Ring"
+    ]
+  },
+  {
+    "name": "Blessing",
+    "description": "Healing now has a low chance to apply various unmodified Buffs at varying potency.",
+    "tags": [
+      "Buff",
+      "RNG",
+      "Ring",
+      "Guild",
+      "Armor",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Blood Lust",
+    "description": "Hitting an opponent with Bleed grants the Buff Bloodlust. Maximum Potency of the Buff Bloodlust depends on perk amount.",
+    "tags": [
+      "Attack Speed",
+      "Buff",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Blood Rush",
+    "description": "Your minions, when below a certain HP threshold, gains Rage and Tenacity.",
+    "tags": [
+      "Buff",
+      "Summoner",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Blood Thirsty",
+    "description": "Hitting an opponent with your Bleed removes it in exchange for a Damage Boost and a slight heal. Grants Bleed potency.",
+    "tags": [
+      "Damage Boost",
+      "Healing",
+      "Bleed Potency",
+      "Armor",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Blub Blub",
+    "description": "Your hits have a chance to repeat with a portion of their strength as Water Damage after a short delay.",
+    "tags": [
+      "Offensive",
+      "Damage Boost",
+      "RNG",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Bombardier",
+    "description": "All hits have a chance to create an explosion. You too are hit by this explosion, but at heavily reduced Damage and Stun.",
+    "tags": [
+      "Offensive",
+      "RNG",
+      "Guardbreak",
+      "Self-Damage",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Bomber Charge",
+    "description": "The Retaliate Weapon Art now grants less Defensive utility, but instead scales off of your missing HP, Holy, and Magic Boosts. Additionally, you can now act freely during the charging phase.",
+    "tags": [
+      "Weapon Art",
+      "Guardbreak",
+      "Armor",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Bomber Satchel",
+    "description": "On hit with a Weapon Art, gain a stack of the neutral status Beenades. Beenades stacks are consumed by the Beenade Rune to throw additional projectiles.",
+    "tags": [
+      "Weapon Art",
+      "Rune Activated",
+      "Rune-Item"
+    ]
+  },
+  {
+    "name": "Bomber Spirit",
+    "description": "Release your Spiritual Energy with an RMB, which will launch four Bomber projectiles that causes large explosions. Additionally, grants the Buff Bursting.",
+    "tags": [
+      "Spirit (Monk)",
+      "Offensive",
+      "Buff",
+      "Guardbreak",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Bounce Momentum",
+    "description": "Jumping whilst possessing Bounce will grant you the Buff Tongue Shot for a brief duration. Tongue Shot causes you to lash at an enemy with a tongue upon using a Finisher, Stunning and rendering them temporarily immobile. Additionally increases the duration of Bounce.",
+    "tags": [
+      "Offensive",
+      "Finisher",
+      "Buff",
+      "Guardbreak",
+      "Ring",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Bowldur Spirit",
+    "description": "Release your Spiritual Energy with an RMB, which encases yourself in a Spiritual Bowldur that grants Damage Reduction as well as enhancing your LMB's and RMB's.",
+    "tags": [
+      "Spirit (Monk)",
+      "Offensive",
+      "Guardbreak",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Brawny",
+    "description": "Converts a portion of other positive, offensive Boosts to Physical Boost.",
+    "tags": [
+      "Stat Boost",
+      "Enchantment"
+    ]
+  },
+  {
+    "name": "Buckler",
+    "description": "Grants an equal amount of the perk Parry. If using a one-handed weapon, also gain a cosmetic buckler in your offhand.",
+    "tags": [
+      "Defensive",
+      "Ring"
+    ]
+  },
+  {
+    "name": "Bulfrogg Spirit",
+    "description": "Release your Spiritual Energy with an RMB, which summons a Spiritual Bulfrogg that renders all nearby enemies immobile with a hefty Stun.",
+    "tags": [
+      "Spirit (Monk)",
+      "Offensive",
+      "Guardbreak",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Bulwark",
+    "description": "Ignore Stuns from Attacks below a certain threshold after accounting for modifiers. You gain a Damage Reduction against said Attacks.",
+    "tags": [
+      "Defensive",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Bumblz Spirit",
+    "description": "Release your Spiritual Energy by summoning any minion, which then summons 4 more of.",
+    "tags": [
+      "Spirit (Monk)",
+      "Summoner",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Buni Spirit",
+    "description": "Release your Spiritual Energy with an RMB, which showers all nearby enemies in a flurry of kicks. All hits count as Finishers.",
+    "tags": [
+      "Spirit (Monk)",
+      "Offensive",
+      "Finisher",
+      "Guardbreak",
+      "Mobility",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Burn Potency",
+    "description": "Increases the damage of the burn status",
+    "tags": [
+      "Burn Potency",
+      "Debuff",
+      "Armor",
+      "Weapon",
+      "Ring"
+    ]
+  },
+  {
+    "name": "Caci King Spirit",
+    "description": "Release your Spiritual Energy by holding down your Rune key, which renders you incapable of many but grants rapid Regeneration. Additionally, release disco pulses whilst doing so, which grants the Buff King's Luck to all nearby Allies. Ruler of the Sands is guaranteed to activate whilst under the effects of King's Luck.",
+    "tags": [
+      "Spirit (Monk)",
+      "Buff",
+      "Crit",
+      "Defensive",
+      "RNG",
+      "Rune Activated",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Caci Spirit",
+    "description": "Release your Spiritual Energy with an RMB, which causes you to fires off a flurry of thorns before slamming the ground thrice. Every hit inflicts Bleed.",
+    "tags": [
+      "Spirit (Monk)",
+      "Offensive",
+      "Debuff",
+      "Guardbreak",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Cannonball",
+    "description": "Any minion you summon is stored, visible as an effect on your left hand. Using your RMB launches them forward in a damaging cannonball that releases them in an explosion. Additionally, your minions have a larger zone before they return to you.",
+    "tags": [
+      "Summoner",
+      "Offensive",
+      "Guardbreak",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Carapace",
+    "description": "Gain low Protection scaling off of your Earth Boost. Additionally, gain sizable Damage Reduction and Stun Immunity if you have remaining Shield.",
+    "tags": [
+      "Defensive",
+      "Stat Boost",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Carrying Winds",
+    "description": "Take and deal more Knockback with Attacks. Additionally, moves that qualify as 'High Knockback' gains a Damage Boost and an Air Boost-scaling crit chance bonus.",
+    "tags": [
+      "Damage Boost",
+      "Crit",
+      "Stat Boost",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Caster",
+    "description": "Gain Rune and Weapon Art Cooldown reduction, with diminishing returns.",
+    "tags": [
+      "Cooldown Reduction",
+      "Weapon Art",
+      "Rune",
+      "Ring",
+      "Guild",
+      "Armor",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Caustic Slow",
+    "description": "The Slow debuff in specific now deals a True Damage DoT that scales with Poison Potency. Grants Poison Potency.",
+    "tags": [
+      "Debuff",
+      "Poison Potency",
+      "Incomplete",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Cauterize",
+    "description": "All instances of Burn you inflict on opponents now instead applies Singed. Singed counts as Burn for all related effects, but instead does a burst of Fire Damage on first application rather than over time.",
+    "tags": [
+      "Offensive",
+      "Debuff",
+      "Weapon",
+      "Incomplete"
+    ]
+  },
+  {
+    "name": "Channeled Depths",
+    "description": "Gain a passively ramping, neutral Channeled Depths status. Cap and ramping speed increases with perk amount.",
+    "tags": [
+      "Damage Boost",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Channeled Weapon",
+    "description": "All damage you deal now gains slight Magic Damage Type. Additionally, reduces Weapon Art Cooldown.",
+    "tags": [
+      "Cooldown Reduction",
+      "Weapon Art",
+      "Damage Boost",
+      "Guild"
+    ]
+  },
+  {
+    "name": "Cinder Soul",
+    "description": "While afflicted with burn, it instead heals you and increases your movement speed. Additionally killing enemies afflicts Burn to yourself. Grants Burn Potency.",
+    "tags": [
+      "Healing",
+      "Self-Debuff",
+      "Burn Potency",
+      "Mobility",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Civilian",
+    "description": "Not equipping your weapon for 3 seconds or longer heavily boosts Rune Damage. Additionally, you can now Block without equipping your weapon.",
+    "tags": [
+      "Rune",
+      "Damage Boost",
+      "Defensive",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Cleansed Blade",
+    "description": "Using the Cleanse Weapon Art specifically grants you the Buff Oceanic Blade.",
+    "tags": [
+      "Weapon Art Activated",
+      "Healing",
+      "Stat Boost",
+      "Buff",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Cleave",
+    "description": "Widen the Hitbox of all your Finishers, which also now inflicts Shatter. Additionally, gain a Damage Boost against opponents with Shatter.",
+    "tags": [
+      "Offensive",
+      "Finisher",
+      "Debuff",
+      "Damage Boost",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Colossus",
+    "description": "Increases the size of your character, Poise Damage dealt, innate Stun Resistance, and the hitboxes of your RMB's and LMB's. You are unable to use Mounts.",
+    "tags": [
+      "Defensive",
+      "Poise",
+      "Ring"
+    ]
+  },
+  {
+    "name": "Concealed Edge",
+    "description": "Standing in shadows grants a universal Hex Damage Type, as well as increasing the range of your LMB's and RMB's.",
+    "tags": [
+      "Offensive",
+      "Damage Boost",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Concussion",
+    "description": "Gain a Poise Damage Boost and bonus Stun based on your Tenacity.",
+    "tags": [
+      "Poise",
+      "Incomplete",
+      "Ring"
+    ]
+  },
+  {
+    "name": "Contained",
+    "description": "Both Debuff and Buff durations on self are increased. Does not affect neutral statuses.",
+    "tags": [
+      "Buff",
+      "Self-Debuff",
+      "Enchantment"
+    ]
+  },
+  {
+    "name": "Cosmic Ray",
+    "description": "Your RMB is changed to a ranged beam.",
+    "tags": [
+      "Stance Change",
+      "Finisher",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Counting Sheep",
+    "description": "Your Finishers inflicts Slowness on hit. Additionally, deal more Poise Damage to opponents with Slowness.",
+    "tags": [
+      "Debuff",
+      "Poise",
+      "Finisher",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Crimson Tithe",
+    "description": "After using your Weapon Art, consume a percentage of your current HP as True Damage to release an AoE heal that tethers all affected. Tethered Allies are additionally healed over time.",
+    "tags": [
+      "Healing",
+      "Weapon Art Activated",
+      "Self-Damage",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Critical Healing",
+    "description": "Healing now has a chance to crit for more. Chance scales with Holy Boost.",
+    "tags": [
+      "Heal Boost",
+      "Crit",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Critical Master",
+    "description": "All your crits now count as Guardbreaks. Additionally, crits gain a small Damage Boost.",
+    "tags": [
+      "Crit",
+      "Crit Damage",
+      "Damage Boost",
+      "Guardbreak",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Croakernaut Spirit",
+    "description": "Release your Spiritual Energy with an RMB, which summons Spiritual Croakernauts that grants Reinforce to all nearby Allies.",
+    "tags": [
+      "Spirit (Monk)",
+      "Buff",
+      "Defensive",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Crushing Pressure",
+    "description": "Gain Armor Penetration. Additionally, gain corresponding Armor Penetration scaling off of said specific Defenses of the opponent.",
+    "tags": [
+      "Damage Boost",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Cryo Engine",
+    "description": "Gain a chance to inflict Frostbite on hits as well as converting all your Slows to it. Frostbite slows the opponent and additionally increases Air and Water Damage taken by a flat amount. Applying Frostbite grants you Tailwind.",
+    "tags": [
+      "Buff",
+      "Debuff",
+      "RNG",
+      "Damage Boost",
+      "Mobility",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Curse Rip",
+    "description": "Hits against a Debuffed opponent gains Lifesteal as well as a Damage Boost that scales on the amount of unique ones on them.",
+    "tags": [
+      "Debuff",
+      "Healing",
+      "Damage Boost",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Cursed",
+    "description": "Most perk potency is increased. You now have the ability to absorb Binded Corruptions into Stored Corruptions by Destroying them in your Inventory.",
+    "tags": [
+      "Stat Boost",
+      "Guild"
+    ]
+  },
+  {
+    "name": "Cursed Bark",
+    "description": "Gain a small chance to inflict a random Debuff against Attackers, guaranteed if you are not Blocking. Gain Damage Reduction against opponents with Debuffs that scales on the amount of unique ones on them.",
+    "tags": [
+      "Defensive",
+      "Debuff",
+      "RNG",
+      "Armor",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Cursed Experiment",
+    "description": "Using your Rune below 50% HP grants the Buffs Regeneration, Critical Boost, and Hexigen at high potency, but inflicts you with the Slowness afterwards.",
+    "tags": [
+      "Rune Activated",
+      "Buff",
+      "Healing",
+      "Self-Debuff",
+      "Damage Boost",
+      "Crit",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Cursed Flames",
+    "description": "Burn you apply now gains a Weakening effect, with an extended duration. Additionally, it now deals and scales half as Hex.",
+    "tags": [
+      "Debuff",
+      "Burn Potency",
+      "Incomplete",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Cut Down",
+    "description": "Gain a Damage Boost scaling on how much % of HP the opponent has remaining.",
+    "tags": [
+      "Damage Boost",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Dark Harvest",
+    "description": "A hit against opponents at or below 50% Guardbreaks them and deals a high amount of additional Hex Damage, alongside a slight heal. Has a Cooldown per opponent.",
+    "tags": [
+      "Offensive",
+      "Healing",
+      "Guardbreak",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Dark Magic",
+    "description": "All sources of Magic Damage gains a small amount of Hex Damage Type. Take Hex self-damage when this triggers.",
+    "tags": [
+      "Damage Boost",
+      "Self-Damage",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Dark One",
+    "description": "Increase the duration of Debuffs on self, but gain a Damage Boost for each unique Debuff you're afflicted with.",
+    "tags": [
+      "Self-Debuff",
+      "Damage Boost",
+      "Enchantment"
+    ]
+  },
+  {
+    "name": "Darkening Hex",
+    "description": "Hex Damage has a chance to increase the potency and duration of most Debuffs.",
+    "tags": [
+      "Debuff",
+      "RNG",
+      "Incomplete",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Deathmist Slash",
+    "description": "Finishers sends out an additional Slash that deals Water Damage whilst healing and Cleansing other Allies. The user isn't Cleansed, and heals much less from said slash. The healing is halved if the Attack does not connect.",
+    "tags": [
+      "Offensive",
+      "Healing",
+      "Finisher",
+      "Armor",
+      "Cleanse"
+    ]
+  },
+  {
+    "name": "Deep Spider Spirit",
+    "description": "Release your Spiritual Energy by using a Rune, which inflicts you with Poison and the unique neutral status Anti-Venom of equal duration. Anti-Venom also increases the duration of all Poison by 50%.",
+    "tags": [
+      "Spirit (Monk)",
+      "Rune Activated",
+      "Self-Debuff",
+      "Defensive",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Deepcrystal Calling",
+    "description": "Cleansing Debuffs on other Allies creates a stationary Deepcrystal which periodically releases minor heals. 10 second Cooldown.",
+    "tags": [
+      "Healing",
+      "Armor",
+      "Cleanse"
+    ]
+  },
+  {
+    "name": "Defensive Stance",
+    "description": "Become incapable of being Guardbroken, though with no additional innate Damage Reduction. Additionally, Gain Damage Reduction against Taunted opponents.",
+    "tags": [
+      "Defensive",
+      "Debuff",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Delta Drill",
+    "description": "Your M1 Finisher is repeated once per perk at a faster speed, but with less Damage and Proc Coefficient.",
+    "tags": [
+      "Finisher",
+      "Attack Speed",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Deltabit",
+    "description": "Replaces the Finisher of your LMB combo with your RMB instead. Additionally, Finishers gain a Damage Boost.",
+    "tags": [
+      "Finisher",
+      "Damage Boost",
+      "Ring"
+    ]
+  },
+  {
+    "name": "Dire Buni Spirit",
+    "description": "Release your Spiritual Energy with an RMB, which causes you to teleport to a nearby opponent with an instantaneous headbutt that deals partial True Damage. Counts as a Finisher.",
+    "tags": [
+      "Spirit (Monk)",
+      "Finisher",
+      "Guardbreak",
+      "Offensive",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Directive",
+    "description": "Your minions only swap Aggro when landing an RMB or using a Rune. The RMB causes your minions to focus solely on that opponent whilst gaining a Damage Boost in the process. The Rune causes your minions to each attack a random mob nearby whilst gaining Reinforce.",
+    "tags": [
+      "Damage Boost",
+      "Buff",
+      "Rune Activated",
+      "Finisher",
+      "Summoner",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Divine Crash",
+    "description": "RMB'ing whilst in the air teleports you down to the floor in an explosion. Scales on Holy and Air as well as your distance from the floor.",
+    "tags": [
+      "Offensive",
+      "Finisher",
+      "Guardbreak",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Divine Intervention",
+    "description": "Most Buffs and Heals applied to you are copied to your minions.",
+    "tags": [
+      "Summoner",
+      "Healing",
+      "Buff",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Divinity",
+    "description": "Most Finishers reduces the Cooldown of your Weapon Art by a percentage.",
+    "tags": [
+      "Weapon Art",
+      "Cooldown Reduction",
+      "Finisher",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Dominating",
+    "description": "Gain a Poise Damage Multiplier against enemies with Taunt.",
+    "tags": [
+      "Debuff",
+      "Poise",
+      "Rune-Item"
+    ]
+  },
+  {
+    "name": "Draconic Blood",
+    "description": "Your Rune Infusion is locked into a Draconic Ability from the Draconic Shrine. Additional of this perk increases the Damage of your Draconic abilities. If you are not Dragon-Blooded, your Abilities are significantly weaker.",
+    "tags": [
+      "Rune",
+      "Offensive",
+      "Buff",
+      "Debuff",
+      "Healing",
+      "Guardbreak",
+      "Damage Boost",
+      "Guild"
+    ]
+  },
+  {
+    "name": "Draconic Runes",
+    "description": "All Runes gain additional Elemental Damage Type based on your Draconic Color.",
+    "tags": [
+      "Rune",
+      "Damage Boost",
+      "Guild"
+    ]
+  },
+  {
+    "name": "Dragigator Spirit",
+    "description": "Release your Spiritual Energy with an RMB, which summons a Spiritual Dragigator to perform their Flame Blast. Inflicts Burn.",
+    "tags": [
+      "Spirit (Monk)",
+      "Offensive",
+      "Debuff",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Dragon Breath",
+    "description": "Finishers release a blast of fire that deals minor Fire Damage and inflicts Burn. Additionally, gain a Damage Boost against opponents with Burn.",
+    "tags": [
+      "Offensive",
+      "Debuff",
+      "Finisher",
+      "Damage Boost",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Dragon State",
+    "description": "Being above a certain HP threshold makes your LMB's and RMB's send out one additional wave of damaging Magic. Scales with Dexterity, Magic and Holy, with a default Proc Coefficient.",
+    "tags": [
+      "Offensive",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Drone",
+    "description": "Your minions gain a non-regenerating Shield. Minions with Shield gains Stun and Knockback immunity.",
+    "tags": [
+      "Summoner",
+      "Ring",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Dual Wielding",
+    "description": "If you're using a one handed, unmodified weapon type, it changes to its corresponding dual wielding stance.",
+    "tags": [
+      "Stance Change",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Duelist Stance",
+    "description": "If you're using a one handed sword, your weapon type changes to Rapier.",
+    "tags": [
+      "Stance Change",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Echo Blast",
+    "description": "Summoning a minion shoots a damaging tornado at a nearby mob, automatically Aggro'ing the minion.",
+    "tags": [
+      "Offensive",
+      "Summoner",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Echo Incineration",
+    "description": "Half of your Fire Damage is converted into Air Damage and vise versa. Additionally, you have a chance to release a fiery tornado on hit that deals Fire and Air Damage whilst inflicting Burn. Grants Burn potency.",
+    "tags": [
+      "Offensive",
+      "Debuff",
+      "RNG",
+      "Burn Potency",
+      "Guardbreak",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Emergency Exit",
+    "description": "Getting hit whilst not blocking grants high potency Tailwind and slight Reinforce.",
+    "tags": [
+      "Buff",
+      "Defensive",
+      "Ring",
+      "Mobility"
+    ]
+  },
+  {
+    "name": "Emotional",
+    "description": "Having only Buffs lowers your Weapon Art Cooldown and grants it additional Hex Damage Type, whilst having only Debuffs grants all attacks bonus Fire Damage Type and Attack Speed. Having both increases all healing.",
+    "tags": [
+      "Weapon Art",
+      "Cooldown Reduction",
+      "Heal Boost",
+      "Damage Boost",
+      "Buff",
+      "Self-Debuff",
+      "Attack Speed",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Endless Despair",
+    "description": "Heavily increase Debuff Duration and slightly increase Debuff potency.",
+    "tags": [
+      "Debuff",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Energize",
+    "description": "Hitting enemies visibly builds up energy on your weapon, with an indication at max. At max, heavily boost all Weapon Art Damage, consuming all charges.",
+    "tags": [
+      "Weapon Art",
+      "Damage Boost",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Engine",
+    "description": "Your Speed Boost as well as the Tailwind Buff increases your Attack Speed.",
+    "tags": [
+      "Attack Speed",
+      "Stat Boost",
+      "Buff",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Equipment Farmer",
+    "description": "Removes crafting materials from mob drops, making it easier to obtain equipment.",
+    "tags": [
+      "RNG",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Erosion",
+    "description": "Earth Type Damage has a chance to inflict Shatter.",
+    "tags": [
+      "Debuff",
+      "RNG",
+      "Ring"
+    ]
+  },
+  {
+    "name": "Essence Ray",
+    "description": "The Magical Ray Weapon Art in specific is converted into an Essence Ray that shoots out of your forehead, which auto-aims at an eligible opponent furthest from you. You can act freely during this process.",
+    "tags": [
+      "Weapon Art",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Essence Totem",
+    "description": "Using your Weapon Art releases pulses of healing around yourself, the duration of which scales on the Cooldown of your Weapon Art. Scales on Earth and Holy.",
+    "tags": [
+      "Healing",
+      "Weapon Art Activated",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Executioner",
+    "description": "Gain a Damage Boost scaling on how much % of HP the opponent has lost.",
+    "tags": [
+      "Damage Boost",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Exhaust",
+    "description": "During and after a short duration of using your Weapon Art, every hit is guaranteed to apply Burn.",
+    "tags": [
+      "Weapon Art Activated",
+      "Buff",
+      "Debuff",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Explosive Charge",
+    "description": "Weapon Arts causes a self-damaging explosion on hit. Additional points of this perk increase the size and Stun of the explosion.",
+    "tags": [
+      "Offensive",
+      "Weapon Art",
+      "Guardbreak",
+      "Self-damage",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Explosive Honey",
+    "description": "Finishers that hit cause a ring of honey to burst out, which applies Sticky and deals a small amount of Damage. Additionally, gain a Damage Boost against opponents with Sticky.",
+    "tags": [
+      "Offensive",
+      "Debuff",
+      "Finisher",
+      "Damage Boost",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Extinguish",
+    "description": "Your Water Damage removes Burn on enemies it hits, but gains a large Damage Boost. Healing a Burning ally will cleanse the Burn specifically and increase the heal for them.",
+    "tags": [
+      "Damage Boost",
+      "Heal Boost",
+      "Debuff",
+      "Ring",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Extra Layers",
+    "description": "Multiplies your Protection and Warding.",
+    "tags": [
+      "Stat Boost",
+      "Defensive",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Fell Rush",
+    "description": "Inflicting any Debuff links you to the opponent. RMB'ing with a clear line of sight to said opponent will teleport you to them, dealing damage. If you also possess the perk Divine Crash, both are combined into a stronger variant.",
+    "tags": [
+      "Offensive",
+      "Debuff",
+      "Guardbreak",
+      "Mobility",
+      "Incomplete",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Ferocity",
+    "description": "Tenacity grants a Damage Multiplier.",
+    "tags": [
+      "Damage Boost",
+      "Stat Boost",
+      "Enchantment"
+    ]
+  },
+  {
+    "name": "Fiery Pursuit",
+    "description": "Dash forward once per perk prior to activating your Weapon Art. This dash Guardbreaks, applies Burn, and grants Iframes. Counts as Weapon Art Damage.",
+    "tags": [
+      "Weapon Art Activated",
+      "Weapon Art",
+      "Offensive",
+      "Debuff",
+      "Guardbreak",
+      "Defensive",
+      "Mobility",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Final Act",
+    "description": "Using a Rune teleports all your minions back to you with a small explosion. Deaggros the opponent.",
+    "tags": [
+      "Rune Activated",
+      "Summoner",
+      "Offensive",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Flash Strike",
+    "description": "Successfully Parrying an attack briefly grants the Buff Flash Strike for a brief duration. Flash Strike dramatically increases your Attack Speed.",
+    "tags": [
+      "Buff",
+      "Attack Speed",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Flowing Crits",
+    "description": "Air Boost contributes to your crit chance.",
+    "tags": [
+      "Crit",
+      "Crit Damage",
+      "Stat Boost",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Forgotten Chivalry",
+    "description": "Weapon Arts or Runes that hits consumes all Reinforce you have to gain additional Holy Damage Type, Stun, and Poise Damage. Does not scale on the strength of the consumed Reinforce.",
+    "tags": [
+      "Weapon Art",
+      "Rune",
+      "Damage Boost",
+      "Poise",
+      "Buff",
+      "Incomplete",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Fractured Energy",
+    "description": "Convert all your crit chance 1:1 to a chance to inflict the debuff Fractured. Fractured stores a portion of all Damage you deal against the opponent for 5 seconds before repeating it as Magic and Earth Damage. Does not convert guaranteed crits.",
+    "tags": [
+      "Crit",
+      "Offensive",
+      "RNG",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Fragrance Aura",
+    "description": "Heals with a Proc Coefficient or from consumables grants you the neutral status Fragrant Aura.",
+    "tags": [
+      "Buff",
+      "Healing",
+      "Debuff",
+      "Offensive",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Fragrant Flesh",
+    "description": "Dealing Water Type Damage has a chance to make you Bleed. If you're already Bleeding, instead gain Regeneration.",
+    "tags": [
+      "Buff",
+      "RNG",
+      "Healing",
+      "Self-Debuff",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Frenzy",
+    "description": "Rage grants a Movement Speed and universal Damage Multiplier, but cuts healing recieved in half and also multiplies Damage taken.",
+    "tags": [
+      "Buff",
+      "Damage Boost",
+      "Mobility",
+      "Enchantment"
+    ]
+  },
+  {
+    "name": "Frequent Flier",
+    "description": "Gain a Damage Boost whilst airborne. Hold Space while midair to activate an indefinite slow fall.",
+    "tags": [
+      "Damage Boost",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Frostbite",
+    "description": "Gain a chance to inflict Slowness on hit. Additionally, gain a Damage Boost against opponents with either Slowness or Frostbite.",
+    "tags": [
+      "Debuff",
+      "Damage Boost",
+      "RNG",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Frozen Heart",
+    "description": "Increases Physical and Magic Defense as well as Warding scaling on your Cold Resistance.",
+    "tags": [
+      "Stat Boost",
+      "Defensive",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Frozen Waste",
+    "description": "Blocking an Attack causes an AoE that inflicts Slowness and deals very high Stun and Poise Damage.",
+    "tags": [
+      "Defensive",
+      "Offensive",
+      "Debuff",
+      "Poise",
+      "Guardbreak",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Fungal Prototype",
+    "description": "Weapon Arts or Runes that hit creates a lingering cloud of Poison that inflicts Poison and deals Hex Damage over time. The damage scales on which created it.",
+    "tags": [
+      "Weapon Art Activated",
+      "Weapon Art",
+      "Rune Activated",
+      "Rune",
+      "Debuff",
+      "Poison Potency",
+      "Offensive",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Fury",
+    "description": "Increases the duration of all forms of Rage.",
+    "tags": [
+      "Buff",
+      "Guild",
+      "Weapon",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Future Sight",
+    "description": "After going a short while without being hit, gain a stack of Autododge. Additionally, dodging an attack via an external source will temporarily restore this perk's own Autododge briefly.",
+    "tags": [
+      "Defensive",
+      "Ring"
+    ]
+  },
+  {
+    "name": "Gale Bursts",
+    "description": "Most Finishers sends out an equal amount of air missiles with reduced Proc Coefficient.",
+    "tags": [
+      "Offensive",
+      "Finisher",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Gaseous Smash",
+    "description": "Weapon attacks that slams into itself or the floor creates a cloud of lingering Poison, which inflicts Poison and deals Hex Damage over time.",
+    "tags": [
+      "Offensive",
+      "Debuff",
+      "Incomplete",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Gelid Lance",
+    "description": "When you inflict Slowness, also inflict Bleed. Grants Water scaling to Bleed, and gain a Damage Boost against Bleeding opponents. Grants Bleed Potency.",
+    "tags": [
+      "Debuff",
+      "Damage Boost",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Ghastly Rot",
+    "description": "Gain a high chance to inflict the Ghastly Rot Debuff on hit. Ghastly Rot causes any Attack against the opponent to have a chance to inflict Poison. Additionally, your Poison now deals True Damage instead of Hex.",
+    "tags": [
+      "Debuff",
+      "RNG",
+      "Incomplete",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Glacial Buildup",
+    "description": "Dealing damage applies ice crystals which add small water damage and flat poise damage to your attacks, upon reaching enough stacks or poise breaking the opponent shatter the crystals deal damage and high poise damage.",
+    "tags": [
+      "Offensive",
+      "Poise",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Gladiatorial Rage",
+    "description": "Halves Rage Rune Cooldown and adds a flat potency increase to all sources and forms of Rage. Rage duration is increased on kill only, and gain Armor Penetration scaling off of your highest offensive Boost.",
+    "tags": [
+      "Buff",
+      "Cooldown Reduction",
+      "Damage Boost",
+      "Guild"
+    ]
+  },
+  {
+    "name": "Glyph Conduit",
+    "description": "Upon landing an RMB or using a Rune, gain the Buff Glyph Conduit.",
+    "tags": [
+      "Buff",
+      "Finisher",
+      "Damage Boost",
+      "Rune Activated",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Gnawing Poison",
+    "description": "Using a Finisher bites all enemies you have Poisoned, dealing a burst of Hex Damage. Has a Cooldown and a Proc Coefficient. Grants Poison Potency.",
+    "tags": [
+      "Offensive",
+      "Debuff",
+      "Finisher",
+      "Poison Potency",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Golden Crits",
+    "description": "40% of crits has a chance to have their Damage increased even further.",
+    "tags": [
+      "Crit",
+      "Damage Boost",
+      "RNG",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Golem Guillotine",
+    "description": "Finishers that slam the ground creates a fissure-like shockwave that reaches ahead and behind yourself, dealing Earth Damage.",
+    "tags": [
+      "Offensive",
+      "Finisher",
+      "Guardbreak",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Gorecast",
+    "description": "Weapon Arts that deal Magic or Physical Damage inflicts Bleed, and Weapon Arts gain a Damage Boost against Bleeding opponents. Grants Bleed Potency.",
+    "tags": [
+      "Weapon Art Activated",
+      "Weapon Art",
+      "Debuff",
+      "Damage Boost",
+      "Bleed Potency",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Grandmagic Guard",
+    "description": "Blocking creates a shielding bubble that knocks away enemies with minor Magic Damage whilst granting all Allies Magic Reinforce.",
+    "tags": [
+      "Defensive",
+      "Buff",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Gravitational Enforcer",
+    "description": "Pull opponents towards you with high Stun and Shatter infliction prior to activating your RMB, but increases RMB Cooldown.",
+    "tags": [
+      "Offensive",
+      "Debuff",
+      "Finisher",
+      "Guardbreak",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Gravity Well",
+    "description": "Create an inverse shockwave that pulls in enemies towards you prior to Weapon Art or Rune activation.",
+    "tags": [
+      "Weapon Art Activated",
+      "Rune Activated",
+      "Offensive",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Gremlin Spirit",
+    "description": "Release your Spiritual Energy by inflicting Bleed, causing a giant spear to land on the opponent after a delay. Guardbreaks and has a Proc Coefficient.",
+    "tags": [
+      "Spirit (Monk)",
+      "Offensive",
+      "Debuff",
+      "Guardbreak",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Grounded Despair",
+    "description": "Jumping and landing creates a small Hex shockwave, inflicting yourself with the Debuff Despair. The shockwave has a Proc Coefficient.",
+    "tags": [
+      "Offensive",
+      "Self-Debuff",
+      "Damage Boost",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Guardian Spin",
+    "description": "Empowers the Spin Weapon Art in specific with Bastion Energy, increasing its Damage and Range significantly.",
+    "tags": [
+      "Offensive",
+      "Weapon Art",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Guiding Winds",
+    "description": "Constantly moving activates a state that steadily builds up potencies of Tailwind and similarily grants a ramping Damage Boost.",
+    "tags": [
+      "Buff",
+      "Damage Boost",
+      "Mobility",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Hardened Will",
+    "description": "Low chance to heavily reduce Damage taken and ignore all Stun from an external Attack.",
+    "tags": [
+      "Defensive",
+      "RNG",
+      "Guild",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Heal Boost",
+    "description": "You gain bonus healing.",
+    "tags": [
+      "Heal Boost",
+      "Enchantment",
+      "Guild"
+    ]
+  },
+  {
+    "name": "Healing Arts",
+    "description": "Using a Weapon Art or Rune grants Regeneration, the duration of which scales on the Cooldown of the activator. Weapon Arts' account for only the Cooldown after Modifiers, while Runes account before Modifiers.",
+    "tags": [
+      "Buff",
+      "Weapon Art Activated",
+      "Rune Activated",
+      "Healing",
+      "Ring",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Heat Drill",
+    "description": "Converts the Lunge and Barrage Weapon Arts in specific into a teleporting dash followed by fiery explosions.",
+    "tags": [
+      "Weapon Art",
+      "Offensive",
+      "Debuff",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Heavy Gravitate",
+    "description": "Hitting an opponent with either Earth or Magic Damage from a Weapon Art or Rune applies the debuff Heavy Gravity. Heavy Gravity reduces movement speed, and can be consumed upon using your RMB to deal Damage and heavy Poise Damage.",
+    "tags": [
+      "Weapon Art Activated",
+      "Rune Activated",
+      "Debuff",
+      "Poise",
+      "Finisher",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Heavy Slate",
+    "description": "Ignore Knockback from Attacks below a certain threshold of Stun after accounting for modifiers, after which you release a burst of Earth. Has a 0.5 second Cooldown.",
+    "tags": [
+      "Defensive",
+      "Offensive",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Heightened Reflexes",
+    "description": "On kill or Poisebreak, gain a stack of the Buff Autoparry. Autoparry automatically activates whilst Blocking, and has increased Stun if you possess the perk Parry itself.",
+    "tags": [
+      "Defensive",
+      "Buff",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Hemorrhage",
+    "description": "Hitting a Bleeding opponent adds a Damage and Poise Damage Boost, Stun, and a small amount of True Damage Type.",
+    "tags": [
+      "Debuff",
+      "Damage Boost",
+      "Poise",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Hex Ray",
+    "description": "Inflicting Debuffs that possesses a Weakening effect fires a ray of Hex at them. Has no Cooldown",
+    "tags": [
+      "Offensive",
+      "Debuff",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Hex Shield",
+    "description": "Every 10 seconds, gain a stack of the neutral status Hex Shield per perk amount.",
+    "tags": [
+      "Buff",
+      "Healing",
+      "Damage Boost",
+      "Enchantment"
+    ]
+  },
+  {
+    "name": "Highlander",
+    "description": "Weapon Arts and Runes gain a Damage Boost and slight Armor Piercing.",
+    "tags": [
+      "Weapon Art",
+      "Rune",
+      "Damage Boost",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Holy Tides",
+    "description": "Cleansing a Debuff on any Ally applies Regeneration. Additionally, all heals you receive or grant gains bonus Water and Holy Scaling.",
+    "tags": [
+      "Healing",
+      "Heal Boost",
+      "Buff",
+      "Stat Boost",
+      "Weapon",
+      "Cleanse"
+    ]
+  },
+  {
+    "name": "Honey Arts",
+    "description": "Using a Weapon Art fires a blast of honey that deals Damage to mobs nearby, which inflicts Sticky. The amount of mobs it can target increases with Cooldown.",
+    "tags": [
+      "Weapon Art Activated",
+      "Debuff",
+      "Incomplete",
+      "Ring",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Honey Gather",
+    "description": "Gain Lifesteal against opponents with Sticky.",
+    "tags": [
+      "Healing",
+      "Debuff",
+      "Ring"
+    ]
+  },
+  {
+    "name": "Hypnotist",
+    "description": "Weapon Arts and Runes inflicts the debuff Hypnotized. Hypnotized decreases Armor against all Magic Damage Types, and renders the applier incapable of drawing Aggro of the victim.",
+    "tags": [
+      "Weapon Art Activated",
+      "Rune Activated",
+      "Debuff",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Ice Barge",
+    "description": "Speed reductions from Slowing effects and Stuns are reduced, and gain a Damage Reduction whilst inflicted with them. Additionally, your run is not cancelled by said Stuns, and gain Slowness for a short duration upon your Block being hit.",
+    "tags": [
+      "Defensive",
+      "Self-Debuff",
+      "Incomplete",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Ice Burst",
+    "description": "Applying Shatter creates an icicle burst that inflicts brief Bleed and does Water and Physical Damage in a radius.",
+    "tags": [
+      "Offensive",
+      "Debuff",
+      "Poise",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Icestorm",
+    "description": "Landing 10 hits in a short timeframe creates an ice storm to orbit around you, which inflicts Slow. Does not possess a Proc Coefficient.",
+    "tags": [
+      "Offensive",
+      "Debuff",
+      "Armor",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Ichor Spark",
+    "description": "Gain a chance to create a damaging red chain lightning on hit, which Lifesteals. Additionally, allows you to hold RMB to charge and fire a large, ranged slash attack.",
+    "tags": [
+      "Offensive",
+      "Debuff",
+      "RNG",
+      "Finisher",
+      "Guardbreak",
+      "Self-Damage",
+      "Incomplete",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Ignition",
+    "description": "Gain a small chance to inflict Burn and deal bonus Fire Damage on hit. Grants Burn potency.",
+    "tags": [
+      "Offensive",
+      "Debuff",
+      "RNG",
+      "Burn Potency",
+      "Incomplete",
+      "Ring",
+      "Weapon",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Immovable",
+    "description": "Reduce received Knockback and increase Physical Defense scaling off of your Tenacity.",
+    "tags": [
+      "Stat Boost",
+      "Defensive",
+      "Incomplete",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Infection",
+    "description": "When Poison inflicted by you ticks down, it deals slight Hex Damage and applies Poison to a nearby, non-poisoned opponent. Grants Poison Potency.",
+    "tags": [
+      "Debuff",
+      "Poison Potency",
+      "Ring"
+    ]
+  },
+  {
+    "name": "Inhuman Swings",
+    "description": "Your LMB's and RMB's Attack Speed scales with the average value of your Physical and Dexterity Boost.",
+    "tags": [
+      "Stat Boost",
+      "Offensive",
+      "Attack Speed",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Inoculation",
+    "description": "Taking direct, self-inflicted damage heals you for a portion of said damage added with a flat value.",
+    "tags": [
+      "Healing",
+      "Self-Damage",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Inspiration",
+    "description": "LMB's and RMB's that land releases pulses that slightly heal and grants the Buff Inspiration. The pulse does not possess a Proc Coefficient and the heal is doubly as effective on minions.",
+    "tags": [
+      "Buff",
+      "Healing",
+      "Damage Boost",
+      "Summoner",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Investigator",
+    "description": "Makes you really good at investigating.",
+    "tags": [
+      "Armor"
+    ]
+  },
+  {
+    "name": "Iron Bounce",
+    "description": "Have a chance to gain Bounce on LMB's and RMB's. Additionally, gain Reinforce when gaining Bounce.",
+    "tags": [
+      "Defensive",
+      "Buff",
+      "RNG",
+      "Incomplete",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Iron Slayer Spirit",
+    "description": "Release your Spiritual Energy in the form of an Iron Slayer's roar by gaining Rage, which doubles the Rage's duration and increases its potency by a flat 0.2. The roar inflicts Weakeness.",
+    "tags": [
+      "Spirit (Monk)",
+      "Buff",
+      "Debuff",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Juggernaut",
+    "description": "Gain a Damage Boost alongside Stun and Knockback Resistance scaling off of your negative Speed and Attack Speed Boosts. Has no effect if they are positive.",
+    "tags": [
+      "Stat Boost",
+      "Damage Boost",
+      "Defensive",
+      "Incomplete",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Kama Blades",
+    "description": "If you're using a dagger, your weapon type changes to dual kamas. If you're using a spear, your weapon type becomes a scythe.",
+    "tags": [
+      "Stance Change",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Kindling",
+    "description": "Your Burn damage is much higher, but has a much shorter duration.",
+    "tags": [
+      "Damage Boost",
+      "Debuff",
+      "Incomplete",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Lance",
+    "description": "If you’re using a greatsword or unbalanced sword, then your weapon changes into a lance.",
+    "tags": [
+      "Stance Change",
+      "Incomplete",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Life Drinker",
+    "description": "Gain Lifesteal on damage done by DoTs. Additionally, increase the duration of all DoTs.",
+    "tags": [
+      "Debuff",
+      "Healing",
+      "Enchantment"
+    ]
+  },
+  {
+    "name": "Lifesteal",
+    "description": "Heal for a portion of Damage dealt.",
+    "tags": [
+      "Healing",
+      "Enchantment",
+      "Guild"
+    ]
+  },
+  {
+    "name": "Light Bearer",
+    "description": "Hits with LMB's or RMB's has a chance to release a healing pulse. Possesses a Proc Coefficient.",
+    "tags": [
+      "Healing",
+      "RNG",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Lithic Veil",
+    "description": "Healing any Ally grants the Buff Lithic Veil. Lithic Veil grants flat Physical Damage and Stun Reduction.",
+    "tags": [
+      "Buff",
+      "Healing",
+      "Defensive",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Locked And Loaded",
+    "description": "If you're using a one handed weapon type, gain a gun in your offhand that replaces your RMB. Possesses unique interactions at multiple of the perk, and with the Monk guild.",
+    "tags": [
+      "Stance Change",
+      "Ring"
+    ]
+  },
+  {
+    "name": "Lodestone Barrage",
+    "description": "Using a Rune fires a barrage of rocks at nearby mobs. The amount of rocks fired scales on the base Cooldown.",
+    "tags": [
+      "Rune Activated",
+      "Offensive",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Lucky",
+    "description": "If most chance-based effects fails to proc, reroll it at a reduced percentage up to (perk amount) of times. However, grants reduced innate Protection, Warding, and Tenacity.",
+    "tags": [
+      "RNG",
+      "Ring"
+    ]
+  },
+  {
+    "name": "Luminescent Fervor",
+    "description": "Healing Allies grants the Buff Luminescent Fervor. Luminescent Fervor grants additional Holy Damage Type that counts as your Damage for Kill Credit.",
+    "tags": [
+      "Buff",
+      "Damage Boost",
+      "Offensive",
+      "Healing",
+      "Incomplete",
+      "Guild"
+    ]
+  },
+  {
+    "name": "Mage Rage",
+    "description": "Rage now applies on Pure Magic Type Damage, and grants Rune Cooldown Reduction. Additionally, slightly multiplies your Rage Potency.",
+    "tags": [
+      "Buff",
+      "Cooldown Reduction",
+      "Rune",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Mageling Spirit",
+    "description": "Release your Spiritual Energy by using a Weapon Art or Rune, which resets the cooldown of the activator. Additionally, this envelopes your character in a protective Mageling that Blocks Attacks and performs its Radial Burst.",
+    "tags": [
+      "Spirit (Monk)",
+      "Defensive",
+      "Rune",
+      "Rune Activated",
+      "Weapon Art",
+      "Weapon Art Activated",
+      "Cooldown Reduction",
+      "Guardbreak",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Magic Circuit",
+    "description": "Using a Rune emits damaging chain lightning from your character. The strength of the lightning scales on the Cooldown.",
+    "tags": [
+      "Offensive",
+      "Rune Activated",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Magic Guard",
+    "description": "Release a shockwave of strong Magic Damage when you Block an attack. Has a Proc Coefficient and a Cooldown.",
+    "tags": [
+      "Defensive",
+      "Offensive",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Magic Surge",
+    "description": "You have a chance to reset your Weapon Art cooldown on Weapon Art usage. Each failed reset increases the chance of the next.",
+    "tags": [
+      "Weapon Art",
+      "Cooldown Reduction",
+      "RNG",
+      "Enchantment"
+    ]
+  },
+  {
+    "name": "Marsh Flow",
+    "description": "Each individual hit of a Finisher has a chance to grant Regeneration. Additionally, having Regeneration grants a Damage Boost.",
+    "tags": [
+      "Buff",
+      "RNG",
+      "Healing",
+      "Finisher",
+      "Damage Boost",
+      "Armor",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Melting Shred",
+    "description": "All DoTs now gain additional True Damage Type. Additionally, opponents inflicted with your DoTs are also inflicted with the Debuff Anti Heal. Anti Heal reduces any and all incoming healing",
+    "tags": [
+      "Debuff",
+      "Damage Boost",
+      "Enchantment"
+    ]
+  },
+  {
+    "name": "Melting Slime",
+    "description": "The Sticky Debuff you apply now causes the mob to take 20% more Fire and Earth Damage, alongside a Fire/Earth and Poise Damage DoT that scales with Fire and Earth boost.",
+    "tags": [
+      "Offensive",
+      "Debuff",
+      "Damage Boost",
+      "Poise",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Mine",
+    "description": "Your RMB is replaced with a string of pickaxe-like Finisher Attacks that can be held down, the last hit of which inflicts Shatter. Overrides other RMB-modifying perks.",
+    "tags": [
+      "Stance Change",
+      "Debuff",
+      "Finisher",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Minion Absorption",
+    "description": "Minions summoned are instantly consumed to grant the Buff Minion Absorbed if you don't possess it already. Minion Absorbed heals you based on the strength of the consumed minion, and grants a Damage Boost equal to a portion of your Summon Boost.",
+    "tags": [
+      "Buff",
+      "Damage Boost",
+      "Summoner",
+      "Healing",
+      "Incomplete",
+      "Enchantment"
+    ]
+  },
+  {
+    "name": "Money Smart",
+    "description": "Gain extra Voxos on kill, and gain a Damage Boost scaling on how much Voxos you have. Maxes out at the Voxos limit.",
+    "tags": [
+      "Damage Boost",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Mortal Will",
+    "description": "Finishers gain increased Holy Scaling and Holy Damage Type.",
+    "tags": [
+      "Stat Boost",
+      "Finisher",
+      "Damage Boost",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Mounted Defense",
+    "description": "While mounted on the Glacial Snapper Mount specifically, you gain Damage Reduction.",
+    "tags": [
+      "Defensive",
+      "Summoner",
+      "Rune-Item"
+    ]
+  },
+  {
+    "name": "Mycotic Bloom",
+    "description": "Enemies you have Poisoned are inflicted with Slow over 50%. Enemies below 50% take more damage from Poison instead.",
+    "tags": [
+      "Debuff",
+      "Ring"
+    ]
+  },
+  {
+    "name": "Ocean Song",
+    "description": "Using your Weapon Art creates a brief area around yourself that cleanses and heals Allies. Scales on Water, Dexterity, and the cooldown of your Weapon Art.",
+    "tags": [
+      "Weapon Art Activated",
+      "Healing",
+      "Armor",
+      "Cleanse"
+    ]
+  },
+  {
+    "name": "Oceans Rage",
+    "description": "Rage now applies on Water Type Damage, and increases incoming healing. Additionally, slightly multiplies your Rage Potency.",
+    "tags": [
+      "Heal Boost",
+      "Buff",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Packaged Power",
+    "description": "Gain a Damage and Outgoing Healing Boost based on how full your Inventory is. Maxes out at 250 items.",
+    "tags": [
+      "Damage Boost",
+      "Heal Boost",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Pain Distribution",
+    "description": "A portion of your Damage taken is divided between all your minions as Hex Damage. Additionally, your minions have increased HP.",
+    "tags": [
+      "Defensive",
+      "Summoner",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Parry",
+    "description": "Perform a Parry before Blocking, which can defend against Guardbreaks. However, a missed Parry increases your Block Cooldown.",
+    "tags": [
+      "Defensive",
+      "Ring",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Penance",
+    "description": "Gain a Damage Boost scaling on how little HP you have left, which maxes out at 25%. Additionally, whilst at 25% or lower, all hits have a 50% chance to inflict Bleed.",
+    "tags": [
+      "Damage Boost",
+      "Debuff",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Perfection",
+    "description": "Dodging or parrying, grants a stack of the Buff Perfection, it increases your speed, critical chance and damage. Taking damage that wasnt parried or dodged reduces a stack.",
+    "tags": [
+      "Buff",
+      "Damage Boost",
+      "Crit",
+      "Crit Damage",
+      "Defensive",
+      "Enchantment",
+      "Mobility"
+    ]
+  },
+  {
+    "name": "Perk Effectiveness",
+    "description": "Increases the potency of most perks.",
+    "tags": [
+      "Stat Boost",
+      "Enchantment"
+    ]
+  },
+  {
+    "name": "Phalanx Stab",
+    "description": "Finishers are faster and gains one additional stab that has a chance to inflict Bleed.",
+    "tags": [
+      "Finisher",
+      "Offensive",
+      "Debuff",
+      "Attack Speed",
+      "Ring"
+    ]
+  },
+  {
+    "name": "Phantom Pain",
+    "description": "All attacks now repeats a portion of their Damage after a short delay. Does not possess a Proc Coefficient.",
+    "tags": [
+      "Offensive",
+      "Damage Boost",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Photosynthesis",
+    "description": "Gain a boost to your Holy and Earth Damage as well as healing whilst standing in Sunlight.",
+    "tags": [
+      "Damage Boost",
+      "Heal Boost",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Piercer",
+    "description": "Finishers now output their damage entirely as True Damage, and gains a Damage Boost. If your weapon type is specifically a one-handed sword, spear, dagger, fists, or rapier, the Damage Boost is doubly as effective.",
+    "tags": [
+      "Damage Boost",
+      "Finisher",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Poison Acceleration",
+    "description": "Being Poisoned grants a Speed and Attack Speed Boost, alongside Weapon Art and Rune Cooldown Reduction.",
+    "tags": [
+      "Attack Speed",
+      "Cooldown Reduction",
+      "Weapon Art",
+      "Rune",
+      "Self-Debuff",
+      "Mobility",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Poison Potency",
+    "description": "Increases the damage of the poisoned status",
+    "tags": [
+      "Poison Potency",
+      "Debuff",
+      "Armor",
+      "Weapon",
+      "Ring"
+    ]
+  },
+  {
+    "name": "Poisonous",
+    "description": "Gain a small chance to inflict Poison and deal bonus Hex Damage on hit.",
+    "tags": [
+      "Debuff",
+      "RNG",
+      "Incomplete",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Possession",
+    "description": "Hitting a mob with a Weapon Art or Rune marks them for Possession. If the mob is killed with the mark, and you possess enough of a combination of this perk and Summon Boost, they can revive as your minion.",
+    "tags": [
+      "Weapon Art Activated",
+      "Rune Activated",
+      "Debuff",
+      "Summoner",
+      "Incomplete",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Potion Chugger",
+    "description": "Increases the speed at which you drink potions, and increases their effectiveness by 10% per. | Tags = Heal Boost, Buff, Debuff, Self-Debuff, Incomplete, Armor",
+    "tags": [
+      "Heal Boost",
+      "Buff",
+      "Debuff",
+      "Self-Debuff",
+      "Incomplete",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Power Inhale",
+    "description": "You can now hold your Weapon Art key to charge prior to activation, which increases the speed of the Weapon Art. Additionally, if held to completion, teleport to the nearest opponent in front of you, dealing some additional damage.",
+    "tags": [
+      "Weapon Art",
+      "Attack Speed",
+      "Offensive",
+      "Guardbreak",
+      "Ring",
+      "Mobility"
+    ]
+  },
+  {
+    "name": "Power Surge",
+    "description": "Hitting enemies with LMB's and RMB's lowers your Rune Cooldown by a flat amount, once per attack.",
+    "tags": [
+      "Cooldown Reduction",
+      "Rune",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Primal",
+    "description": "Heavily reduce crit chance. But crit chance is additionally converted into a raw Damage Multiplier.",
+    "tags": [
+      "Damage Boost",
+      "Crit",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Propelling Fun",
+    "description": "Jumping creates an air current that grants all Allies the Buff Cloudpush. Cloudpush grants bonus Air Damage Type that counts as your damage. Whilst afflicted with Burn, jumping actiavtes Cinderpull' instead which grants bonus Fire Damage Type.",
+    "tags": [
+      "Damage Boost",
+      "Buff",
+      "Self-Debuff",
+      "Offensive",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Protector Spirit",
+    "description": "Gain a miniature Bastion Spirit that assists with LMB and RMB damage at above half HP, but instead reduces incoming Damage and Stun with a Cooldown when below. Both effects are active at once at higher perk amounts.",
+    "tags": [
+      "Offensive",
+      "Defensive",
+      "Ring"
+    ]
+  },
+  {
+    "name": "Proto Tech",
+    "description": "Ocassionally emit Poison chain lightning from your character.",
+    "tags": [
+      "Debuff",
+      "RNG",
+      "Incomplete",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Pulverizing Rush",
+    "description": "Continuing to hold LMB after the last hit of your LMB combo will cause you to repeatedly slam the ground as you move. This creates an AoE of Damage but disables Blocking, Weapon Art and Rune usage, as well as having a lower Proc Coefficient.",
+    "tags": [
+      "Offensive",
+      "Incomplete",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Pure Rot",
+    "description": "Cleanses no longer removes Debuffs, but instead grants any Ally the Buff Rotted.",
+    "tags": [
+      "Buff",
+      "Debuff",
+      "Weapon",
+      "Cleanse"
+    ]
+  },
+  {
+    "name": "Pursuit",
+    "description": "Reduces the damage of your LMB combo. In turn, removes all Knockback from it, and replaces the Finisher with a loop back to the first hit of your combo.",
+    "tags": [
+      "Offensive",
+      "Finisher",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Pyre Bloom",
+    "description": "Upon using a Weapon Art, summon a stationary Pyrebloom minion that shoots igniting fireballs at nearby opponents. Their damage counts as Weapon Art damage, and shares the same Buffs as you. If the Weapon Art summoned a minion, spawn an additional Pyrebloom. Grants Burn potency.",
+    "tags": [
+      "Weapon Art Activated",
+      "Weapon Art",
+      "Debuff",
+      "Offensive",
+      "Burn Potency",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Quake",
+    "description": "Gain a small chance to create an Earth shockwave around the mob you hit, dealing additional Earth Damage and Stun alongside Knockback.",
+    "tags": [
+      "Offensive",
+      "RNG",
+      "Guardbreak",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Quarry",
+    "description": "Hitting an opponent builds up the neutral status Hidden Treasure on them. At 4 stacks of this status, deal a burst of Holy and Physical Damage. Has a Cooldown per opponent.",
+    "tags": [
+      "Offensive",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Queen Bumblz Spirit",
+    "description": "Release your Spiritual Energy upon summoning a minion in the form of a Spiritual Queen Bee, which hovers over your character and fires blasts of honey at nearby enemies. The honey blasts inflicts Sticky and possesses a Proc Coefficient.",
+    "tags": [
+      "Spirit (Monk)",
+      "Offensive",
+      "Summoner",
+      "Debuff",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Queens Guard",
+    "description": "Your minions gain a HP and Speed Boost. Additionally, gain Reinforce when you summon a minion.",
+    "tags": [
+      "Defensive",
+      "Buff",
+      "Summoner",
+      "Incomplete",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Queens Power",
+    "description": "Upon summoning a minion, grants the Buff Queens Power.",
+    "tags": [
+      "Summoner",
+      "Buff",
+      "Damage Boost",
+      "Attack Speed",
+      "Stat Boost",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Quick Witted",
+    "description": "Increases your Dexterity Boost scaling off of your Speed Boost.",
+    "tags": [
+      "Stat Boost",
+      "Ring",
+      "Armor",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Quickcast",
+    "description": "Cast most Weapon Arts much faster. Additionally, take slightly reduced Stun whilst actively using a Weapon Art.",
+    "tags": [
+      "Weapon Art",
+      "Attack Speed",
+      "Guild"
+    ]
+  },
+  {
+    "name": "Quickdraw",
+    "description": "Upon equipping your weapon, gain a neutral status titled Quickdraw for a brief duration.",
+    "tags": [
+      "Weapon Art",
+      "Rune",
+      "Damage Boost",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Quicksand",
+    "description": "Using your Weapon Art creates a pool of quicksand, which deals continous damage. Half the hits count as Weapon Art Damage, and has a reduced Proc Coefficient.",
+    "tags": [
+      "Weapon Art Activated",
+      "Weapon Art",
+      "Offensive",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Rabbits Foot",
+    "description": "Small chance to dodge incoming Damage. Additionally, increases IFrames of your base Roll.",
+    "tags": [
+      "Defensive",
+      "RNG",
+      "Ring",
+      "Armor",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Radiance",
+    "description": "Most heals now deal Holy Damage in a radius, which is affected by your Holy Boost and Outgoing Healing modifiers.",
+    "tags": [
+      "Offensive",
+      "Healing",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Raging Bounce",
+    "description": "Gain a Damage Boost when under the effects of Bounce.",
+    "tags": [
+      "Buff",
+      "Damage Boost",
+      "Armor",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Rainstorm",
+    "description": "Gain a chance to create a Raindrop in the general vicinity on hit, which cleanses and heals Allies but Damages opponents.",
+    "tags": [
+      "Offensive",
+      "RNG",
+      "Healing",
+      "Enchantment",
+      "Cleanse"
+    ]
+  },
+  {
+    "name": "Reaper",
+    "description": "Gain a Damage Boost against enemies with Debuffs. Scales on the amount of unique Debuffs the opponent has, alongside perk amount.",
+    "tags": [
+      "Damage Boost",
+      "Debuff",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Reinforced Block",
+    "description": "Decreases Damage taken from an Attack that failed to Guardbreak you.",
+    "tags": [
+      "Defensive",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Rejuvenating Flame",
+    "description": "Passively heal other Allies around you scaling on perk amount and Fire Boost, and grant them the Cinder Surge Buff. The effectiveness of both are multiplied if you are Burning. The passive heal lacks a Proc Coefficient.",
+    "tags": [
+      "Healing",
+      "Buff",
+      "Damage Boost",
+      "Self-Debuff",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Revel In Death",
+    "description": "Whenever a minion of yours dies, gain a heal based off of their base HP. Said heal is reduced if they were not actively killed.",
+    "tags": [
+      "Healing",
+      "Summoner",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Rider",
+    "description": "Whilst mounted, gain a Damage Boost and reduce incoming Stun by a flat amount.",
+    "tags": [
+      "Damage Boost",
+      "Summoner",
+      "Rune",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Righted Wrongs",
+    "description": "Gain Dexterity and Speed Boost scaling off of all of your negative stats combined. Negative Physical and Magic Defenses in specific are taken into account doubly.",
+    "tags": [
+      "Stat Boost",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Roaring Heads",
+    "description": "Gain a high chance on hit to self-inflict a variety of Debuffs. Each unique Debuff grants an Attack Speed Bonus, and every tenth self-inflicted Debuff releases a roar that deals damage and Stuns. Additionally, gain a large amount of negative Warding, but reduce the effects of Weakeness and Shatter.",
+    "tags": [
+      "Self-Debuff",
+      "Attack Speed",
+      "Offensive",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Rocky Body",
+    "description": "Increases your Physical Defense scaling off of your Earth Boost.",
+    "tags": [
+      "Stat Boost",
+      "Defensive",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Roguent Spirit",
+    "description": "Release your Spiritual Energy with your RMB, which throws a spray of splinters in front of you. These splinters are guaranteed to crit and only takes partial Spiritual Energy to use, but can only be activated at max stacks.",
+    "tags": [
+      "Spirit (Monk)",
+      "Offensive",
+      "Weapon",
+      "Crit"
+    ]
+  },
+  {
+    "name": "Rotating Blades",
+    "description": "Your LMB's and RMB's hit twice as much, but have slightly reduced Damage and Proc Coefficient.",
+    "tags": [
+      "Offensive",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Royal Finisher",
+    "description": "Release a damaging wave of Magic once per Finisher.",
+    "tags": [
+      "Offensive",
+      "Finisher",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Royal Parry",
+    "description": "A successful Parry grants you the buff Critical Boost. Critting due to the effects of said Buff will add an additional Damage Boost.",
+    "tags": [
+      "Defensive",
+      "Damage Boost",
+      "Crit",
+      "Buff",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Ruler Of The Sands",
+    "description": "Using a Weapon Art or Rune has a chance to summon a sandnado, the chance of which scales on the base Cooldown.",
+    "tags": [
+      "Offensive",
+      "Weapon Art Activated",
+      "Rune Activated",
+      "RNG",
+      "Weapon",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Runic Blades",
+    "description": "Weapon Arts or Runes marks the opponent with the debuff Runic Blades. Hits against said opponent launches Magical Blades at them, with a very short Cooldown.",
+    "tags": [
+      "Offensive",
+      "Weapon Art Activated",
+      "Rune Activated",
+      "Debuff",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Runic Winds",
+    "description": "Using a Rune grants Tailwind. Additionally, gain Rune Cooldown Reduction whilst under the effects of Tailwind.",
+    "tags": [
+      "Buff",
+      "Rune Activated",
+      "Cooldown Reduction",
+      "Rune",
+      "Mobility",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Sacred Grounds",
+    "description": "Using a Rune causes a holy cross to fall after a short delay, which heals and grants Reinforce. Scales on Holy, Magic, and the Cooldown of said Rune.",
+    "tags": [
+      "Healing",
+      "Buff",
+      "Rune Activated",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Sacrificial Summoning",
+    "description": "Reduces the decay rate of minions, but applies Poison to yourself on summon. Additionally, taking Hex Damage heals all your minions for a percentage of their Max HP.",
+    "tags": [
+      "Summoner",
+      "Self-Debuff",
+      "Healing",
+      "Incomplete",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Sandy Wounds",
+    "description": "Bleed now instead scales on Air and Earth, and scales better. Additionally, Bleed has a longer Duration.",
+    "tags": [
+      "Stat Boost",
+      "Debuff",
+      "Incomplete",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Savage Combo",
+    "description": "Each LMB grants the following hit of the combo a Damage Boost. Resets after the LMB combo ends or repeats.",
+    "tags": [
+      "Damage Boost",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Saw Heart",
+    "description": "If you're using an unmodified fist Weapon type, your hands grow chainsaw blades, modifying your Weapon type to Chain Fists that has an innate chance to apply Shatter and Bleed on LMB's and RMB's.",
+    "tags": [
+      "Stance Change",
+      "Debuff",
+      "RNG",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Saw Stance",
+    "description": "If you're using an unmodified, two-handed sword weapon type, your weapon type changes to a Chainsaw stance that has an innate chance to inflict Shatter and Bleed on LMB's and RMB's.",
+    "tags": [
+      "Stance Change",
+      "Debuff",
+      "RNG",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Scourge",
+    "description": "Gain a chance for any hit to count as a Guardbreak and gain a Damage Boost. Additionally, True Damage becomes affected by Rage.",
+    "tags": [
+      "RNG",
+      "Damage Boost",
+      "Buff",
+      "Guardbreak",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Screeching Sound",
+    "description": "Blocking an Attack has a chance to create a small shockwave of Air that deals slight Damage, Stuns, and Taunts nearby opponents.",
+    "tags": [
+      "Defensive",
+      "Offensive",
+      "Debuff",
+      "RNG",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Seismic Momentum",
+    "description": "Your crit chance and Damage now scales on your Earth Boost instead of Dexterity Boost.",
+    "tags": [
+      "Stat Boost",
+      "Crit",
+      "Crit Damage",
+      "Armor",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Serrated Edge",
+    "description": "Finishers gain a Damage Boost and inflicts Bleed.",
+    "tags": [
+      "Debuff",
+      "Finisher",
+      "Damage Boost",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Shamanic Flow",
+    "description": "LMB's and RMB's slightly lowers the Cooldown of your Weapon Art on hit, once per attack.",
+    "tags": [
+      "Weapon Art",
+      "Cooldown Reduction",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Sharp Claws",
+    "description": "Guardbreaks inflicts Bleed and the Debuff Wound. Wound causes Bleed to gain additional True Damage Type as well as slight Stun. Grants Bleed Potency.",
+    "tags": [
+      "Debuff",
+      "Guardbreak",
+      "Bleed Potency",
+      "Ring",
+      "Armor",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Sharp Crits",
+    "description": "Physical Boost contributes to your crit chance. Additionally, crits gain slight Armor Piercing.",
+    "tags": [
+      "Stat Boost",
+      "Crit",
+      "Crit Damage",
+      "Damage Boost",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Sharpshooter",
+    "description": "Gain a Damage Boost when striking enemies from range.",
+    "tags": [
+      "Damage Boost",
+      "Ring"
+    ]
+  },
+  {
+    "name": "Shattering Justice",
+    "description": "Hitting a Poisebroken opponent, or breaking the Guard of a Blocking opponent, inflicts strong Shatter and Stuns for longer.",
+    "tags": [
+      "Debuff",
+      "Guardbreak",
+      "Poise",
+      "Weapon",
+      "Incomplete"
+    ]
+  },
+  {
+    "name": "Shielding Gong",
+    "description": "Finishers that land with Allies nearby creates a small burst that grants low duration and potency Reinforce. Additionally, Reinforce now grants Knockback Resistance.",
+    "tags": [
+      "Buff",
+      "Finisher",
+      "Defensive",
+      "Armor",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Sickly Sweetness",
+    "description": "Gain a chance to inflict Sticky against Attackers. Gain Damage Reduction against opponents inflicted with Sticky.",
+    "tags": [
+      "Defensive",
+      "Debuff",
+      "RNG",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Sickness",
+    "description": "Gain a chance to sneeze randomly, dealing Damage as well as inflicting a green variant of Sticky. Green Sticky increases all Hex Damage taken by 20%.",
+    "tags": [
+      "Offensive",
+      "Debuff",
+      "RNG",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Siphoning Rot",
+    "description": "Heal when others take Damage from your Poison. Grants Poison Potency.",
+    "tags": [
+      "Debuff",
+      "Healing",
+      "Poison Potency",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Slayer Rage",
+    "description": "The Rage and Weakening Roar Runes in specific can now be held down, which deals Hex Damage to you and around yourself and grants ramping Rage to self or Weakening to opponents.",
+    "tags": [
+      "Buff",
+      "Debuff",
+      "Rune",
+      "Offensive",
+      "Guardbreak",
+      "Self-Damage",
+      "Ring"
+    ]
+  },
+  {
+    "name": "Slow Leak",
+    "description": "Bleed you inflict lasts much longer. Grants Bleed Potency.",
+    "tags": [
+      "Debuff",
+      "Bleed Potency",
+      "Armor",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Smoldering",
+    "description": "Using a Weapon Art applies Burn to yourself. While Burning, gain a Damage Boost.",
+    "tags": [
+      "Damage Boost",
+      "Self-Debuff",
+      "Weapon Art Activated",
+      "Armor",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Snoeman Spirit",
+    "description": "Release your Spiritual Energy with an RMB, which conjures a much larger ice storm around yourself.",
+    "tags": [
+      "Spirit (Monk)",
+      "Debuff",
+      "Offensive",
+      "Guardbreak",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Solar Light",
+    "description": "Converts the Lesser Heal Weapon Art in specific to a holdable beam of light from above, which targets the Ally closest to your cursor excluding minions. Said beam of light enhances in attributes when standing in the Sun, or when under the effects of the Buff Sun Blessed.",
+    "tags": [
+      "Healing",
+      "Weapon Art",
+      "Incomplete",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Spark",
+    "description": "Crit Damage gains a large, additive Damage Boost if the opponent is Burning.",
+    "tags": [
+      "Damage Boost",
+      "Crit Damage",
+      "Debuff",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Spell Piercer",
+    "description": "Upon critting with a Weapon Art or Rune, deal bonus Damage and ignore 100% of the opponent's Defenses.",
+    "tags": [
+      "Crit",
+      "Weapon Art",
+      "Rune",
+      "Damage Boost",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Spell Slinger",
+    "description": "Magic Boost contributes to your crit chance.",
+    "tags": [
+      "Stat Boost",
+      "Crit",
+      "Crit Damage",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Spellshield",
+    "description": "Gain Protection based on your Magic Boost and Defense.",
+    "tags": [
+      "Stat Boost",
+      "Defensive",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Spirit Commune",
+    "description": "LMB's, RMB's, mob kills and Poisebreaks grants Spiritual Energy. Spiritual Energy can be released in various forms, depending on the glove.",
+    "tags": [
+      "Spirit (Monk)",
+      "Guild"
+    ]
+  },
+  {
+    "name": "Spirit Winds",
+    "description": "The Tailwind Buff grants you a universal Damage Boost. Additionally a portion of all Air Type Damage is converted to Magic Type Damage during so.",
+    "tags": [
+      "Buff",
+      "Damage Boost",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Splinter",
+    "description": "Crits inflict brief Bleed, has increased Stun, and deal more damage to bleeding opponents. Grants Bleed Potency.",
+    "tags": [
+      "Crit",
+      "Debuff",
+      "Bleed Potency",
+      "Crit Damage",
+      "Damage Boost",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Spore Burst",
+    "description": "Finisher that land releases a burst of spores which inflicts Poison to opponents and yourself. Additionally, take heavily reduced damage from Poison. Grants Poison Potency.",
+    "tags": [
+      "Debuff",
+      "Finisher",
+      "Self-Debuff",
+      "Poison Potency",
+      "Incomplete",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Spore Trooper",
+    "description": "Gain a neutral, ramping status titled Stored Sporelings , the maximum of which scales on perk amount. Additionally, more of this perk increases the size of the Sporelings.",
+    "tags": [
+      "Summoner",
+      "Incomplete",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Spring Powered",
+    "description": "Gain a Damage Boost scaling off of your Jump Boost. Additionally, using your base Roll grants brief Bounce.",
+    "tags": [
+      "Damage Boost",
+      "Buff",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Spring Step",
+    "description": "Using a Weapon Art grants you Bounce.",
+    "tags": [
+      "Buff",
+      "Weapon Art Activated",
+      "Armor",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Springblast",
+    "description": "Being under the effects of Bounce causes your Finishers to create an explosion. Additionally, Blocking attacks has a chance to grant Bounce.",
+    "tags": [
+      "Offensive",
+      "Buff",
+      "RNG",
+      "Finisher",
+      "Guardbreak",
+      "Incomplete",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Standoff",
+    "description": "Whilst standing still, gain a ramping Damage Boost. Additionally, landing hits also grants ramping Regeneration.",
+    "tags": [
+      "Buff",
+      "Damage Boost",
+      "Healing",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Star Barrage",
+    "description": "Using a Weapon Art grants you the Buff Star Mode for a brief duration. Star Mode greatly increases Attack Speed.",
+    "tags": [
+      "Buff",
+      "Attack Speed",
+      "Weapon Art Activated",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Star Friendship",
+    "description": "Healing an Ally grants them the Buff Friendship. Friendship grants high Weapon Art Cooldown reduction, and is consumed after activation.",
+    "tags": [
+      "Healing",
+      "Buff",
+      "Weapon Art",
+      "Cooldown Reduction",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Star Struck",
+    "description": "LMB's and RMB's that lands has a very high chance to shoot a star of varying Damage Types and Scalings at the opponent. Has a lowered Proc Coefficient.",
+    "tags": [
+      "Offensive",
+      "RNG",
+      "Incomplete",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Static Buildup",
+    "description": "Hitting enemies visibly builds up a yellow charge on your Weapon. Landing an RMB calls down multiple lightning strikes, the amount of which scales off of your charge.",
+    "tags": [
+      "Offensive",
+      "Finisher",
+      "Guardbreak",
+      "Incomplete",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Stealth",
+    "description": "Lowers your detection range for opponents, and gain a chance not to draw Aggro on hit. Additionally, gain a Damage Boost against enemies that aren't targeting you.",
+    "tags": [
+      "Damage Boost",
+      "Guild",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Steam Charge",
+    "description": "Inflicting Burn on either yourself or an opponent ramps up the neutral status Steam Buildup. At max stacks, your RMB is instead replaced with a gargantuan blast of steam that counts as a Finisher.",
+    "tags": [
+      "Offensive",
+      "Finisher",
+      "Debuff",
+      "Guardbreak",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Steam Powered",
+    "description": "Gain a universal Damage Boost scaling off of your Air Boost, but in turn gain a chance to take minor Fire Damage and set yourself on Fire upon dealing any.",
+    "tags": [
+      "Stat Boost",
+      "Damage Boost",
+      "RNG",
+      "Self-Debuff",
+      "Self-Damage",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Sticky Guard",
+    "description": "Gain Reinforce when hitting an opponent with Sticky.",
+    "tags": [
+      "Defensive",
+      "Buff",
+      "Debuff",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Sticky Summons",
+    "description": "Your minions gain Magic Defense and a chance to inflict Sticky on hit.",
+    "tags": [
+      "Summoner",
+      "Debuff",
+      "RNG",
+      "Armor",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Sticky Swings",
+    "description": "Gain a chance to inflict Sticky on LMB's and RMB's, and gain a Damage Bonus against enemies with Sticky. Additionally, convert all instances of Slowness you inflict to Sticky instead.",
+    "tags": [
+      "Debuff",
+      "RNG",
+      "Damage Boost",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Stone Weapon",
+    "description": "Grants a hefty amount of Earth Damage Type on your Weapon, but reduces Attack Speed accordingly. This reduction can be mitigated by Earth Boost.",
+    "tags": [
+      "Damage Boost",
+      "Attack Speed",
+      "Incomplete",
+      "Enchantment"
+    ]
+  },
+  {
+    "name": "Stoneskin",
+    "description": "Gain high Damage Reduction and Hyperarmor whilst casting a Weapon Art, and for a short duration afterwards.",
+    "tags": [
+      "Defensive",
+      "Weapon Art Activated",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Stored Corruption",
+    "description": "Increases the duration of Debuffs you inflict and receive. Additionally, all Damage you receive is granted a small Multiplier.",
+    "tags": [
+      "Debuff",
+      "Self-Debuff",
+      "Guild"
+    ]
+  },
+  {
+    "name": "Storm Caster",
+    "description": "Your LMB's and RMB's are replaced with chained lightning blasts.",
+    "tags": [
+      "Stance Change",
+      "Offensive",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Storm Rend",
+    "description": "Gain a chance to create chain lighting and inflict the DebuffElectrical Rend on hit. Electrical Rend reduces Armor and Stun Resistance by a small amount.",
+    "tags": [
+      "Offensive",
+      "Debuff",
+      "RNG",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Stormcaller",
+    "description": "Gain a low chance to strike enemies with lightning on hit.",
+    "tags": [
+      "Offensive",
+      "RNG",
+      "Guardbreak",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Stratos Winds",
+    "description": "Your LMB's and RMB's are replaced with ranged Tornadoes.",
+    "tags": [
+      "Stance Change",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Strong Tides",
+    "description": "Increases your Water Boost based on your Physical Boost.",
+    "tags": [
+      "Stat Boost",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Sunburn",
+    "description": "Gain a universal Damage Boost against Burning opponents. If an attack contains Holy Damage Type, gain yet another Damage Boost, and a chance to inflict Burn.",
+    "tags": [
+      "Debuff",
+      "RNG",
+      "Damage Boost",
+      "Burn Potency",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Swarm",
+    "description": "Doubles the amount of summoned minions, but they are overall weaker. Additionally, increases your Summon Cap by 1 and reduces the weakening penalty per perk.",
+    "tags": [
+      "Summoner",
+      "Armor",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Sweet Tooth",
+    "description": "Your minions gain a stacking chance to apply Sticky. Their hits against enemies already inflicted with Sticky removes it, but will deal bonus Damage and heal them for a % of their max HP.",
+    "tags": [
+      "Debuff",
+      "Summoner",
+      "Healing",
+      "RNG",
+      "Enchantment"
+    ]
+  },
+  {
+    "name": "Swift Guard",
+    "description": "Increases your Physical Defense scaling off of your Dexterity Boost. Additionally, gain Reinforce when you Dodge an Attack.",
+    "tags": [
+      "Stat Boost",
+      "Defensive",
+      "Buff",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Tailwind",
+    "description": "Using your Weapon Art grants the Buff Tailwind. Additionally, increases the potency of all Tailwind, regardless of source.",
+    "tags": [
+      "Buff",
+      "Weapon Art Activated",
+      "Mobility",
+      "Ring",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Tectonic Heat",
+    "description": "Gain a chance on hit to spout a magma ball out of the opponent. Gains a massive chance boost on a Guardbreaking Attack.",
+    "tags": [
+      "Offensive",
+      "Guardbreak",
+      "RNG",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Tempest",
+    "description": "Launch a tornado on most hits of Finishers with greatly reduced Proc Coefficient.",
+    "tags": [
+      "Offensive",
+      "Finisher",
+      "Enchantment"
+    ]
+  },
+  {
+    "name": "Thief Training",
+    "description": "Damage dealt whilst standing behind an opponent will always crit and gain a Damage Boost, but crits deal less damage than usual when below 3 of this perk. If an attack would've crit regardless, gain another Damage Boost. Additionally, halve your base Roll cooldown and improves its attributes.",
+    "tags": [
+      "Offensive",
+      "Damage Boost",
+      "Crit",
+      "Crit Damage",
+      "Guild"
+    ]
+  },
+  {
+    "name": "Thorns",
+    "description": "Gain a chance to release thorns that deals light Damage and applies Bleed when you are hit, guaranteed if you are Blocking. Grants Bleed Potency.",
+    "tags": [
+      "Defensive",
+      "Debuff",
+      "RNG",
+      "Bleed Potency",
+      "Weapon",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Toadzerker Spirit",
+    "description": "Release your Spiritual Energy with an RMB, which conjurers a Spiritual Toadzerker that leaps into the air before slamming down in a large AoE. Additionally, grants Rage and Bounce on activation.",
+    "tags": [
+      "Spirit (Monk)",
+      "Offensive",
+      "Buff",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Torpedo Barrage",
+    "description": "Gain stacks of the neutral status Torpedos when hitting an opponent. Hitting an opponent with a Weapon Art or Rune begins to drain your Torpedos until empty, dealing Physical and Water Damage.",
+    "tags": [
+      "Offensive",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Toxin Caster",
+    "description": "Magic Damage from Weapon Arts or Runes Poisons the opponent. Additionally, Weapon Arts and Runes gains a Damage Boost scaling off of your Poison Potency.",
+    "tags": [
+      "Weapon Art",
+      "Rune",
+      "Debuff",
+      "Damage Boost",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Toxin Transfer",
+    "description": "Hitting an opponent whilst Poisoned inflicts Poison and adds a small amount of Hex Damage Type. Grants Poison Potency.",
+    "tags": [
+      "Debuff",
+      "Self-Debuff",
+      "Damage Boost",
+      "Poison Potency",
+      "Armor",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Trickster",
+    "description": "A high chance to reflect Debuffs inflicted on you back at the inflictor at an increased potency. Grants Poison, Burn, and Bleed Potency.",
+    "tags": [
+      "Defensive",
+      "Debuff",
+      "RNG",
+      "Poison Potency",
+      "Burn Potency",
+      "Bleed Potency",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Trophy Hunter",
+    "description": "Removes equipment from mob drops, making it easier to obtain crafting materials.",
+    "tags": [
+      "RNG",
+      "Armor"
+    ]
+  },
+  {
+    "name": "True Balance",
+    "description": "Your Hex and Holy Boosts are averaged out, then increased by 66%. All healing is now boosted scaling off of your Hex Boost, and all Damage is now boosted scaling off of your Holy Boost. Additionally, applying a Debuff grants you a corresponding Buff.",
+    "tags": [
+      "Stat Boost",
+      "Damage Boost",
+      "Heal Boost",
+      "Buff",
+      "Debuff",
+      "Armor"
+    ]
+  },
+  {
+    "name": "True Moon",
+    "description": "Converts a portion of Magic Damage Type to True Damage Type. Additionally, gain a chance to shoot a True Damage moon at the opponent on hit. Has a heavily reduced Proc Coefficient.",
+    "tags": [
+      "Offensive",
+      "RNG",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Trusty Servant",
+    "description": "Minions no longer decay and gains a Damage, Health and Tenacity Multiplier, but you may only have one minion at a time. Additional points of this perk makes your minions larger, increasing their attributes.",
+    "tags": [
+      "Summoner",
+      "Incomplete",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Turtle",
+    "description": "One-fifth chance per perk to automatically Block a non-Guardbreaking Attack.",
+    "tags": [
+      "Defensive",
+      "RNG",
+      "Enchantment"
+    ]
+  },
+  {
+    "name": "Undead Might",
+    "description": "Weapon Arts and Runes gain a sizable Damage Boost, but take Earth and Hex self damage if it lands.",
+    "tags": [
+      "Weapon Art",
+      "Rune",
+      "Damage Boost",
+      "Self-Damage",
+      "Enchantment"
+    ]
+  },
+  {
+    "name": "Undying Rot",
+    "description": "Poison instead heals you and grants Damage Reduction.",
+    "tags": [
+      "Healing",
+      "Self-Debuff",
+      "Defensive",
+      "Poison Potency",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Unmoving",
+    "description": "Attackers take Stun and Poise Damage based on your Tenacity. Additionally, constantly inflict yourself with Slow.",
+    "tags": [
+      "Defensive",
+      "Poise",
+      "Self-Debuff",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Untethered",
+    "description": "Heavily reduce all movement restrictions from various actions.",
+    "tags": [
+      "Mobility",
+      "Incomplete",
+      "Ring"
+    ]
+  },
+  {
+    "name": "Valor",
+    "description": "If you're using a one handed weapon or spear, gain a shield in your offhand which further reduces damage taken through Block. Additionally, Weapon Arts inflict Taunt, and gain a Damage Boost against Taunted enemies.",
+    "tags": [
+      "Defensive",
+      "Weapon Art",
+      "Debuff",
+      "Damage Boost",
+      "Guild"
+    ]
+  },
+  {
+    "name": "Vampire",
+    "description": "Gain a Damage Boost and Reduction in the shadows. However, said Damage Boost is halved, Damage Reduction completely lost, and recieve half as much healing overall whilst in Sunlight. Additionally, lose the ability to heal in inns, but instead heal from killing or Poisebreaking mobs.",
+    "tags": [
+      "Defensive",
+      "Healing",
+      "Damage Boost",
+      "Poise",
+      "Guild"
+    ]
+  },
+  {
+    "name": "Vapor Aegis",
+    "description": "The Reinforce Buff in specific grants you immense Damage Reduction against Fire and Water Type Damage. Additionally, increases the duration of Reinforce.",
+    "tags": [
+      "Defensive",
+      "Buff",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Vassals Croak",
+    "description": "Gain a Damage Boost scaling on the amount of active minions. When your minions die, gain a stack of the neutral status Last Croak. Last Croak grants Rage to you on consumption.",
+    "tags": [
+      "Damage Boost",
+      "Buff",
+      "Offensive",
+      "Finisher",
+      "Summoner",
+      "Guardbreak",
+      "Ring"
+    ]
+  },
+  {
+    "name": "Venom Eater",
+    "description": "Landing a hit on an opponent with your Poison removes it in exchange for a guaranteed crit, Bonus Damage, and a slight heal. However, reduce overall Crit Damage at low perk amounts.",
+    "tags": [
+      "Crit",
+      "Crit Damage",
+      "Debuff",
+      "Healing",
+      "Damage Boost",
+      "Poison Potency",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Venom Spitter",
+    "description": "Your Finishers shoots out a venomous blast that inflicts Poison. Additionally, gain a Damage Boost against Poisoned opponents.",
+    "tags": [
+      "Offensive",
+      "Debuff",
+      "Finisher",
+      "Damage Boost",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Vicious Edge",
+    "description": "Gain a chance to inflict Bleed on LMB's and RMB's. Gain a Damage Bonus against Bleeding opponents.",
+    "tags": [
+      "Debuff",
+      "RNG",
+      "Damage Boost",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Vile Presence",
+    "description": "Passively deal low Hex Damage to nearby mobs.",
+    "tags": [
+      "Offensive",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Virulent Core",
+    "description": "Your LMB's and RMB's are replaced with poisonous blasts that inflicts Poison.",
+    "tags": [
+      "Stance Change",
+      "Debuff",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Vital Mist",
+    "description": "All sources of Lifesteal are instead consumed to build up charges of the neutral status Vital Mist. Vital Mist is passively consumed to heal Allies in an AoE and, at or above 50 charge, gains increased AoE and grants Tailwind. This doubles the consumption of the status, alongside when Blocking.",
+    "tags": [
+      "Buff",
+      "Healing",
+      "Mobility",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Vital Strikes",
+    "description": "Increase crit Damage.",
+    "tags": [
+      "Crit Damage",
+      "Damage Boost",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Void Contract",
+    "description": "Occasionally mark a random mob nearby, which expires after a short period or a couple of hits. Can only be consumed by the applicant, but counts as a Debuff for others.",
+    "tags": [
+      "Debuff",
+      "RNG",
+      "Damage Boost",
+      "Ring"
+    ]
+  },
+  {
+    "name": "Void Rage",
+    "description": "Rage additionally grants bonus Hex Damage Type to all sources of Damage, as well as granting Stun Resistance.",
+    "tags": [
+      "Buff",
+      "Damage Boost",
+      "Ring",
+      "Armor",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Void Root Spirit",
+    "description": "Release your Spiritual Energy with an RMB, conjuring a Spiritual Void Root to barrage enemies with bites that have a chance to inflict random Debuffs on hit.",
+    "tags": [
+      "Spirit (Monk)",
+      "Offensive",
+      "Debuff",
+      "Weapon",
+      "RNG"
+    ]
+  },
+  {
+    "name": "Volatile Shell",
+    "description": "When your Shield is depleted completely, cause a poisonous explosion that scales on Protection and Hex Boost. Additionally, Shield now absorbs a larger percentage of damage received.",
+    "tags": [
+      "Defensive",
+      "Offensive",
+      "Debuff",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Voltaic Body",
+    "description": "Using your Weapon Art grants you the Buff Voltaic Body, but increases your Rune Cooldown. The potency of the Buff Voltaic Body increases each activation, and is reduced every second.",
+    "tags": [
+      "Buff",
+      "Weapon Art Activated",
+      "Rune Activated",
+      "Offensive",
+      "Armor",
+      "Guardbreak"
+    ]
+  },
+  {
+    "name": "Wall",
+    "description": "Blocking releases pulses around yourself that grants other Allies the neutral status Redirect. Redirect sends a portion of most Damage they take to you.",
+    "tags": [
+      "Buff",
+      "Defensive",
+      "Enchantment"
+    ]
+  },
+  {
+    "name": "Warden Of Many",
+    "description": "Gaining Reinforce grants your minions Autoblock, scaling off of the duration of said Reinforce.",
+    "tags": [
+      "Buff",
+      "Summoner",
+      "Incomplete",
+      "Ring",
+      "Defensive"
+    ]
+  },
+  {
+    "name": "Warding Tides",
+    "description": "Abilities that can cleanse Debuffs now also grants Reinforce.",
+    "tags": [
+      "Defensive",
+      "Buff",
+      "Armor",
+      "Cleanse"
+    ]
+  },
+  {
+    "name": "Wave Rider",
+    "description": "Gain a ramping Wave Rider status, which can be accelerated by healing any Ally with a cleansing heal and maxes out at 100. At max, your next Weapon Art or RMB will be empowered by water. If it empowered your Weapon Art, largely reduce its Cooldown once in addition.",
+    "tags": [
+      "Weapon Art Activated",
+      "Healing",
+      "Offensive",
+      "Cooldown Reduction",
+      "Weapon Art",
+      "Finisher",
+      "Weapon",
+      "Cleanse"
+    ]
+  },
+  {
+    "name": "Weakening",
+    "description": "Small chance to apply Weakeness on hit.",
+    "tags": [
+      "Debuff",
+      "RNG",
+      "Ring",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Weight Distribution",
+    "description": "Your Physical and Dexterity Boosts are averaged out, then slightly multiplied. Additionally, makes your LMB's and RMB's slow you less whilst Attacking.",
+    "tags": [
+      "Stat Boost",
+      "Mobility",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Weighty Slam",
+    "description": "Converts the Slam Weapon Art in specific into a meaty, jumping slam. This modified Slam gains Hyperarmor during Windup, a Damage Boost, and only does Physical Damage.",
+    "tags": [
+      "Offensive",
+      "Weapon Art",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Whirl Foot",
+    "description": "Increases your Speed Boost scaling off of your Air Boost, and gain a chance to Dodge based on your movement speed. Additionally, gain Tailwind when you Dodge an Attack.",
+    "tags": [
+      "Stat Boost",
+      "Defensive",
+      "Buff",
+      "Incomplete",
+      "Armor",
+      "Mobility"
+    ]
+  },
+  {
+    "name": "Whirlwind",
+    "description": "Converts all Tailwind to the buff Whirlwind, with an increased duration. Whirlwind. Additionally, using a Weapon Art or Rune release a wind slash around yourself that inflicts Bleed.",
+    "tags": [
+      "Buff",
+      "Weapon Art",
+      "Rune",
+      "Cooldown Reduction",
+      "Debuff",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Wild Bolt",
+    "description": "Enhances every aspect of the the Laser Weapon Art in specific, but causes it to become a random Elemental Damage Type (except True) and inflict a random Debuff on hit.",
+    "tags": [
+      "Offensive",
+      "Weapon Art",
+      "Debuff",
+      "RNG",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Wildfire",
+    "description": "Most DoTs deals their damage in an AoE.",
+    "tags": [
+      "Offensive",
+      "Debuff",
+      "Enchantment"
+    ]
+  },
+  {
+    "name": "Wind Drill",
+    "description": "Replaces your base Roll with a controllable, gravity-defying dash that releases pulses of damage as it goes.",
+    "tags": [
+      "Offensive",
+      "Armor",
+      "Mobility"
+    ]
+  },
+  {
+    "name": "Wind Walker",
+    "description": "While under the effects of Tailwind, your Weapon Arts deal increased Knockback and gains some Armor Penetration. Additionally, Tailwind lasts longer.",
+    "tags": [
+      "Buff",
+      "Offensive",
+      "Weapon Art",
+      "Damage Boost",
+      "Armor"
+    ]
+  },
+  {
+    "name": "Winter Woof Spirit",
+    "description": "Release your Spiritual Energy with a howl on RMB as two Spiritual Winter Woofs, which causes you to inflict Bleed with each hit. The howl inflicts Shatter.",
+    "tags": [
+      "Spirit (Monk)",
+      "Debuff",
+      "Offensive",
+      "Guardbreak",
+      "Weapon"
+    ]
+  },
+  {
+    "name": "Woof Spirit",
+    "description": "Release your Spiritual Energy as a large howl on RMB, which inflicts Weakness.",
+    "tags": [
+      "Spirit (Monk)",
+      "Debuff",
+      "Offensive",
+      "Guardbreak",
+      "Weapon",
+      "Healing"
+    ]
+  },
+  {
+    "name": "Wrathful Crits",
+    "description": "When you crit, gain Rage for a brief duration.",
+    "tags": [
+      "Crit",
+      "Buff",
+      "Armor"
+    ]
   }
 ]

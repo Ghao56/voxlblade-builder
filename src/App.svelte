@@ -58,7 +58,7 @@
   }
 
   interface SlotGroup {
-    main: DetailCard
+    main: DetailCard | null
     infusion: DetailCard | null
   }
 
@@ -143,74 +143,103 @@
   $: slotGroups = (() => {
     const groups: SlotGroup[] = []
 
-    if ($build.helmet) {
-      const part = getArmorPart($build.helmet, "Helmet")
-      if (part) {
-        const bp: Record<string, number> = part.perkName ? { [part.perkName]: 1 } : {}
-        const main = buildSlotCard("Helmet", buildEnchantLabel($build.helmet, "helmet"), part.description, part.stats as StatMap, bp, "helmet")
-        let infusion: DetailCard | null = null
-        if ($build.infusionHelmet) {
-          const ip = getArmorPart($build.infusionHelmet, "Helmet")
-          if (ip) {
-            const ibp: Record<string, number> = ip.perkName ? { [ip.perkName]: 1 } : {}
-            infusion = buildInfusionCard("Infusion Helmet", $build.infusionHelmet, ip.description, ip.stats as StatMap, ibp)
-          }
+    // Helmet
+    if ($build.helmet || $build.infusionHelmet) {
+      let main: DetailCard | null = null
+      let infusion: DetailCard | null = null
+
+      if ($build.helmet) {
+        const part = getArmorPart($build.helmet, "Helmet")
+        if (part) {
+          const bp: Record<string, number> = part.perkName ? { [part.perkName]: 1 } : {}
+          main = buildSlotCard("Helmet", buildEnchantLabel($build.helmet, "helmet"), part.description, part.stats as StatMap, bp, "helmet")
         }
-        groups.push({ main, infusion })
       }
+
+      if ($build.infusionHelmet) {
+        const ip = getArmorPart($build.infusionHelmet, "Helmet")
+        if (ip) {
+          const ibp: Record<string, number> = ip.perkName ? { [ip.perkName]: 1 } : {}
+          infusion = buildInfusionCard("Infusion Helmet", $build.infusionHelmet, ip.description, ip.stats as StatMap, ibp)
+        }
+      }
+
+      if (main || infusion) groups.push({ main, infusion })
     }
 
-    if ($build.chestplate) {
-      const part = getArmorPart($build.chestplate, "Chestplate")
-      if (part) {
-        const bp: Record<string, number> = part.perkName ? { [part.perkName]: 1 } : {}
-        const main = buildSlotCard("Chestplate", buildEnchantLabel($build.chestplate, "chestplate"), part.description, part.stats as StatMap, bp, "chestplate")
-        let infusion: DetailCard | null = null
-        if ($build.infusionChestplate) {
-          const ip = getArmorPart($build.infusionChestplate, "Chestplate")
-          if (ip) {
-            const ibp: Record<string, number> = ip.perkName ? { [ip.perkName]: 1 } : {}
-            infusion = buildInfusionCard("Infusion Chestplate", $build.infusionChestplate, ip.description, ip.stats as StatMap, ibp)
-          }
+    // Chestplate
+    if ($build.chestplate || $build.infusionChestplate) {
+      let main: DetailCard | null = null
+      let infusion: DetailCard | null = null
+
+      if ($build.chestplate) {
+        const part = getArmorPart($build.chestplate, "Chestplate")
+        if (part) {
+          const bp: Record<string, number> = part.perkName ? { [part.perkName]: 1 } : {}
+          main = buildSlotCard("Chestplate", buildEnchantLabel($build.chestplate, "chestplate"), part.description, part.stats as StatMap, bp, "chestplate")
         }
-        groups.push({ main, infusion })
       }
+
+      if ($build.infusionChestplate) {
+        const ip = getArmorPart($build.infusionChestplate, "Chestplate")
+        if (ip) {
+          const ibp: Record<string, number> = ip.perkName ? { [ip.perkName]: 1 } : {}
+          infusion = buildInfusionCard("Infusion Chestplate", $build.infusionChestplate, ip.description, ip.stats as StatMap, ibp)
+        }
+      }
+
+      if (main || infusion) groups.push({ main, infusion })
     }
 
-    if ($build.leggings) {
-      const part = getArmorPart($build.leggings, "Leggings")
-      if (part) {
-        const bp: Record<string, number> = part.perkName ? { [part.perkName]: 1 } : {}
-        const main = buildSlotCard("Leggings", buildEnchantLabel($build.leggings, "leggings"), part.description, part.stats as StatMap, bp, "leggings")
-        let infusion: DetailCard | null = null
-        if ($build.infusionLeggings) {
-          const ip = getArmorPart($build.infusionLeggings, "Leggings")
-          if (ip) {
-            const ibp: Record<string, number> = ip.perkName ? { [ip.perkName]: 1 } : {}
-            infusion = buildInfusionCard("Infusion Leggings", $build.infusionLeggings, ip.description, ip.stats as StatMap, ibp)
-          }
+    // Leggings
+    if ($build.leggings || $build.infusionLeggings) {
+      let main: DetailCard | null = null
+      let infusion: DetailCard | null = null
+
+      if ($build.leggings) {
+        const part = getArmorPart($build.leggings, "Leggings")
+        if (part) {
+          const bp: Record<string, number> = part.perkName ? { [part.perkName]: 1 } : {}
+          main = buildSlotCard("Leggings", buildEnchantLabel($build.leggings, "leggings"), part.description, part.stats as StatMap, bp, "leggings")
         }
-        groups.push({ main, infusion })
       }
+
+      if ($build.infusionLeggings) {
+        const ip = getArmorPart($build.infusionLeggings, "Leggings")
+        if (ip) {
+          const ibp: Record<string, number> = ip.perkName ? { [ip.perkName]: 1 } : {}
+          infusion = buildInfusionCard("Infusion Leggings", $build.infusionLeggings, ip.description, ip.stats as StatMap, ibp)
+        }
+      }
+
+      if (main || infusion) groups.push({ main, infusion })
     }
 
-    if ($build.ring) {
-      const ring = getRing($build.ring)
-      if (ring) {
-        const bp: Record<string, number> = ring.perkName ? { [ring.perkName]: ring.perkStacks ?? 1 } : {}
-        const main = buildSlotCard("Ring", buildEnchantLabel(ring.name, "ring"), ring.description, ring.stats, bp, "ring")
-        let infusion: DetailCard | null = null
-        if ($build.infusionRing) {
-          const ir = getRing($build.infusionRing)
-          if (ir) {
-            const ibp: Record<string, number> = ir.perkName ? { [ir.perkName]: ir.perkStacks ?? 1 } : {}
-            infusion = buildInfusionCard("Infusion Ring", $build.infusionRing, ir.description, ir.stats, ibp)
-          }
+    // Ring
+    if ($build.ring || $build.infusionRing) {
+      let main: DetailCard | null = null
+      let infusion: DetailCard | null = null
+
+      if ($build.ring) {
+        const ring = getRing($build.ring)
+        if (ring) {
+          const bp: Record<string, number> = ring.perkName ? { [ring.perkName]: ring.perkStacks ?? 1 } : {}
+          main = buildSlotCard("Ring", buildEnchantLabel(ring.name, "ring"), ring.description, ring.stats, bp, "ring")
         }
-        groups.push({ main, infusion })
       }
+
+      if ($build.infusionRing) {
+        const ir = getRing($build.infusionRing)
+        if (ir) {
+          const ibp: Record<string, number> = ir.perkName ? { [ir.perkName]: ir.perkStacks ?? 1 } : {}
+          infusion = buildInfusionCard("Infusion Ring", $build.infusionRing, ir.description, ir.stats, ibp)
+        }
+      }
+
+      if (main || infusion) groups.push({ main, infusion })
     }
 
+    // Rune
     if ($build.rune) {
       const rune = getRune($build.rune)
       if (rune) {
@@ -237,8 +266,9 @@
 
   // ── Summary weapon label ────────────────────────────────────────────────────
   $: summaryWeaponLabel = (() => {
-    if (weaponResult?.finalWeaponType) return weaponResult.finalWeaponType
-    return 'Fists'
+    if (weaponResult?.bladeName && weaponResult?.handleName && weaponResult.finalWeaponType)
+      return weaponResult.finalWeaponType
+    return 'None'
   })()
 
   $: summaryWeaponSub = (() => {
@@ -309,7 +339,7 @@
                 </select>
               </label>
               <label class="field">
-                <span class="inf-span">⬡ Infusion</span>
+                <span class="inf-span">Infusion</span>
                 <select bind:value={$build.infusionHelmet} class="infusion-select">
                   <option value="">—</option>
                   {#each armors as a}<option value={a.name}>{a.name}</option>{/each}
@@ -333,7 +363,7 @@
                 </select>
               </label>
               <label class="field">
-                <span class="inf-span">⬡ Infusion</span>
+                <span class="inf-span">Infusion</span>
                 <select bind:value={$build.infusionChestplate} class="infusion-select">
                   <option value="">—</option>
                   {#each armors as a}<option value={a.name}>{a.name}</option>{/each}
@@ -357,7 +387,7 @@
                 </select>
               </label>
               <label class="field">
-                <span class="inf-span">⬡ Infusion</span>
+                <span class="inf-span">Infusion</span>
                 <select bind:value={$build.infusionLeggings} class="infusion-select">
                   <option value="">—</option>
                   {#each armors as a}<option value={a.name}>{a.name}</option>{/each}
@@ -387,7 +417,7 @@
                 </select>
               </label>
               <label class="field">
-                <span class="inf-span">⬡ Infusion</span>
+                <span class="inf-span">Infusion</span>
                 <select bind:value={$build.infusionRing} class="infusion-select">
                   <option value="">—</option>
                   {#each rings as r}<option value={r.name}>{r.name}</option>{/each}
@@ -411,7 +441,7 @@
                 </select>
               </label>
               <label class="field">
-                <span class="inf-span" style="opacity:0.35">⬡ Infusion</span>
+                <span class="inf-span" style="opacity:0.35">Infusion</span>
                 <select disabled class="infusion-select" style="opacity:0.3;cursor:not-allowed">
                   <option value="">Coming soon</option>
                 </select>
@@ -433,7 +463,6 @@
           <!-- Blade -->
           <div class="slot-block">
             <div class="weapon-part-label">
-              <span class="weapon-icon">⚔</span>
               <span class="weapon-part-title">Blade</span>
             </div>
             <div class="weapon-filters">
@@ -473,7 +502,6 @@
           <!-- Handle -->
           <div class="slot-block">
             <div class="weapon-part-label">
-              <span class="weapon-icon">🪵</span>
               <span class="weapon-part-title">Handle</span>
             </div>
             <div class="weapon-filters">
@@ -513,36 +541,30 @@
 
     <main class="results">
 
-      <!-- ══ BUILD SUMMARY ══════════════════════════════════════════════════ -->
+      <!-- BUILD SUMMARY -->
       <div class="panel summary-panel">
         <h3 class="panel-title summary-title">Build Summary</h3>
         <div class="summary-layout">
 
-          <!--
-            Row 0 (conditional): Weapon Type — spans all 5 cols, only shown when blade+handle selected
-            Row 1: InfHelmet | Helmet | Blade | Handle | (empty)
-            Row 2: InfChest  | Chest  | InfRing | Ring | Race
-            Row 3: InfLegs   | Legs   | InfRune | Rune | Guild
-          -->
           <div class="summary-grid">
 
-            <!-- Weapon Type row — full width, only when weapon selected -->
+            <!-- Weapon Type row — always shown when weapon panel open -->
             {#if weaponResult}
               <div class="sg-cell sg-weapon sg-span10">
-                <span class="sg-label">⚔ Weapon Type</span>
+                <span class="sg-label">Weapon Type</span>
                 <span class="sg-value">{summaryWeaponLabel}</span>
                 {#if summaryWeaponSub}
                   <span class="sg-sub">{summaryWeaponSub}</span>
                 {/if}
-                {#if weaponResult?.attackSpeed != null}
-                  <span class="sg-badge">⚡ {weaponResult.attackSpeed}× spd</span>
+                {#if weaponResult?.attackSpeed != null && weaponResult.bladeName && weaponResult.handleName}
+                  <span class="sg-badge">{weaponResult.attackSpeed}x spd</span>
                 {/if}
               </div>
             {/if}
 
-            <!-- Row 1: InfHelmet | Helmet | Blade | Handle | (empty) -->
+            <!-- Row 1: InfHelmet | Helmet | Blade | Handle -->
             <div class="sg-cell sg-infusion sg-span2" class:sg-empty={!$build.infusionHelmet}>
-              <span class="sg-label">⬡ Inf. Helmet</span>
+              <span class="sg-label">Inf. Helmet</span>
               <span class="sg-value">{$build.infusionHelmet || 'No infused helmet'}</span>
             </div>
 
@@ -555,7 +577,7 @@
             </div>
 
             <div class="sg-cell sg-blade sg-span3" class:sg-empty={!$build.weaponBlade}>
-              <span class="sg-label">⚔ Blade</span>
+              <span class="sg-label">Blade</span>
               <span class="sg-value">{$build.weaponBlade || 'No blade'}</span>
               {#if weaponResult?.bladeType}
                 <span class="sg-sub">{weaponResult.bladeType}</span>
@@ -563,7 +585,7 @@
             </div>
 
             <div class="sg-cell sg-handle sg-span3" class:sg-empty={!$build.weaponHandle}>
-              <span class="sg-label">🪵 Handle</span>
+              <span class="sg-label">Handle</span>
               <span class="sg-value">{$build.weaponHandle || 'No handle'}</span>
               {#if weaponResult?.handleType}
                 <span class="sg-sub">{weaponResult.handleType}</span>
@@ -572,7 +594,7 @@
 
             <!-- Row 2: InfChest | Chest | InfRing | Ring | Race -->
             <div class="sg-cell sg-infusion sg-span2" class:sg-empty={!$build.infusionChestplate}>
-              <span class="sg-label">⬡ Inf. Chestplate</span>
+              <span class="sg-label">Inf. Chestplate</span>
               <span class="sg-value">{$build.infusionChestplate || 'No infused chestplate'}</span>
             </div>
 
@@ -585,7 +607,7 @@
             </div>
 
             <div class="sg-cell sg-infusion sg-span2" class:sg-empty={!$build.infusionRing}>
-              <span class="sg-label">⬡ Inf. Ring</span>
+              <span class="sg-label">Inf. Ring</span>
               <span class="sg-value">{$build.infusionRing || 'No infused ring'}</span>
             </div>
 
@@ -610,7 +632,7 @@
 
             <!-- Row 3: InfLegs | Legs | InfRune | Rune | Guild -->
             <div class="sg-cell sg-infusion sg-span2" class:sg-empty={!$build.infusionLeggings}>
-              <span class="sg-label">⬡ Inf. Leggings</span>
+              <span class="sg-label">Inf. Leggings</span>
               <span class="sg-value">{$build.infusionLeggings || 'No infused leggings'}</span>
             </div>
 
@@ -623,7 +645,7 @@
             </div>
 
             <div class="sg-cell sg-infusion sg-span2" style="opacity:0.3">
-              <span class="sg-label">⬡ Inf. Rune</span>
+              <span class="sg-label">Inf. Rune</span>
               <span class="sg-value">Coming soon</span>
             </div>
 
@@ -645,42 +667,47 @@
 
           </div>
 
-          <!-- Right: combined stats + perks -->
+          <!-- Right: stats only -->
           <div class="summary-stats">
-            <div class="ss-header">Stats &amp; Perks</div>
+            <div class="ss-header">Stats</div>
 
-            {#if statRows.length === 0 && perkRows.length === 0}
+            {#if statRows.length === 0}
               <p class="empty ss-empty">No stats yet.</p>
             {:else}
-              {#if statRows.length}
-                <div class="ss-section">
-                  {#each statRows as [k, v]}
-                    <div class="ss-row">
-                      <span class="ss-key">{formatLabel(k)}</span>
-                      <span class="ss-val" class:neg={v < 0}>{formatStat(k, v)}</span>
-                    </div>
-                  {/each}
-                </div>
-              {/if}
-
-              {#if perkRows.length}
-                {#if statRows.length}
-                  <div class="ss-divider"></div>
-                {/if}
-                <div class="ss-section">
-                  {#each perkRows as [name, count]}
-                    <div class="ss-row ss-perk-row">
-                      <span class="ss-key">{name}</span>
-                      <span class="ss-val ss-perk-val">+{Math.round(count * 100) / 100}</span>
-                    </div>
-                  {/each}
-                </div>
-              {/if}
+              <div class="ss-section">
+                {#each statRows as [k, v]}
+                  <div class="ss-row">
+                    <span class="ss-key">{formatLabel(k)}</span>
+                    <span class="ss-val" class:neg={v < 0}>{formatStat(k, v)}</span>
+                  </div>
+                {/each}
+              </div>
             {/if}
           </div>
 
         </div>
       </div>
+
+      <!-- Perks & Effects (directly under Build Summary) -->
+      {#if perkRows.length > 0}
+        <div class="panel perks-panel">
+          <h3 class="panel-title perks-title">Perks &amp; Effects</h3>
+          <div class="perks-grid">
+            {#each perkRows as [name, count]}
+              {@const perk = getPerk(name)}
+              <div class="perk-card">
+                <div class="perk-row">
+                  <span class="perk-name">{name}</span>
+                  <span class="perk-val">+{Math.round(count * 100) / 100}</span>
+                </div>
+                {#if perk?.description}
+                  <p class="perk-desc">{perk.description}</p>
+                {/if}
+              </div>
+            {/each}
+          </div>
+        </div>
+      {/if}
 
       <!-- Weapon Panel -->
       {#if weaponResult}
@@ -700,7 +727,7 @@
                 {#if blade?.attackSpeed != null}
                   <div class="weapon-meta-row">
                     <span class="weapon-meta-label">Attack Speed</span>
-                    <span class="weapon-meta-val">{blade.attackSpeed}×</span>
+                    <span class="weapon-meta-val">{blade.attackSpeed}x</span>
                   </div>
                 {/if}
                 {#if Object.keys(weaponResult.damageTypes).length}
@@ -709,7 +736,7 @@
                     {#each Object.entries(weaponResult.damageTypes) as [k, v]}
                       <div class="damage-type-pill">
                         <span class="dt-name">{formatDmgTypeLabel(k)}</span>
-                        <span class="dt-val">{v}×</span>
+                        <span class="dt-val">{v}x</span>
                       </div>
                     {/each}
                   </div>
@@ -753,7 +780,7 @@
             <!-- Combine indicator -->
             <div class="weapon-combine">
               <div class="weapon-combine-line"></div>
-              <div class="weapon-combine-icon">⚔</div>
+              <div class="weapon-combine-icon">+</div>
               <div class="weapon-combine-line"></div>
             </div>
 
@@ -769,7 +796,7 @@
                 {#if handle?.attackSpeed != null}
                   <div class="weapon-meta-row">
                     <span class="weapon-meta-label">Attack Speed</span>
-                    <span class="weapon-meta-val">{handle.attackSpeed}×</span>
+                    <span class="weapon-meta-val">{handle.attackSpeed}x</span>
                   </div>
                 {/if}
                 {#if handle && Object.keys(handle.stats).length}
@@ -816,13 +843,15 @@
                     <span class="weapon-combined-title">Combined Weapon</span>
                     {#if weaponResult.finalWeaponType}
                       <span class="weapon-type-badge">{weaponResult.finalWeaponType}</span>
+                    {:else}
+                      <span class="weapon-type-badge weapon-type-badge--none">None</span>
                     {/if}
                     {#if weaponResult.weaponModifier}
                       <span class="weapon-modifier-badge">via {weaponResult.weaponModifier}</span>
                     {/if}
                   </div>
                   <span class="weapon-combined-speed">
-                    ⚡ {weaponResult.attackSpeed}× Attack Speed
+                    {weaponResult.attackSpeed}x Attack Speed
                   </span>
                 </div>
                 {#if Object.keys(weaponResult.damageTypes).length}
@@ -831,7 +860,7 @@
                     {#each Object.entries(weaponResult.damageTypes) as [k, v]}
                       <div class="damage-type-pill">
                         <span class="dt-name">{formatDmgTypeLabel(k)}</span>
-                        <span class="dt-val">{v}×</span>
+                        <span class="dt-val">{v}x</span>
                       </div>
                     {/each}
                   </div>
@@ -919,144 +948,107 @@
             {/if}
 
             {#if slotGroups.length > 0}
-              <div class="gear-grid">
-                {#each slotGroups as group}
-                  <div class="slot-col">
-                    <div class="detail-card">
-                      <div class="detail-head">
-                        <span class="detail-type">{group.main.title}</span>
-                        <span class="detail-name">{group.main.label}</span>
-                        {#if group.main.enchants && group.main.enchants.length > 0}
-                          <div class="detail-enchant-tags">
-                            {#each group.main.enchants as enc}
-                              <span class="enchant-tag">{enc.name}</span>
-                            {/each}
-                          </div>
-                        {/if}
-                      </div>
-                      {#if group.main.description}
-                        <p class="detail-desc">{group.main.description}</p>
-                      {/if}
-                      {#if group.main.extras?.length}
-                        {#each group.main.extras as ex}
-                          <p class="detail-extra">{ex}</p>
-                        {/each}
-                      {/if}
-                      {#if Object.keys(group.main.stats).length}
-                        <div class="stat-list">
-                          {#each Object.entries(group.main.stats).filter(([,v]) => v !== 0) as [k,v]}
-                            <div class="stat-row">
-                              <span>{formatLabel(k)}</span>
-                              <span class="stat-val" class:neg={v < 0}>{formatStat(k, v as number)}</span>
-                            </div>
-                          {/each}
-                        </div>
-                      {/if}
-                      {#if group.main.perks.length}
-                        <div class="perk-list">
-                          {#each group.main.perks as p}
-                            <div class="perk-row" class:perk-row--enchant={p.fromEnchant}>
-                              <span>{p.name}</span>
-                              <span class="perk-val" class:perk-val--enchant={p.fromEnchant}>+{p.amount}</span>
-                            </div>
-                          {/each}
-                        </div>
-                      {/if}
-                      {#if group.main.enchants}
-                        {#each group.main.enchants as enc}
-                          {#if enc.notes}<p class="detail-extra">{enc.notes}</p>{/if}
-                        {/each}
-                      {/if}
-                    </div>
+  <div class="gear-grid">
+    {#each slotGroups as group}
+      <div class="slot-col">
 
-                    {#if group.infusion}
-                      <div class="inf-bridge">
-                        <span class="inf-bridge-line"></span>
-                        <span class="inf-bridge-icon">⬡</span>
-                        <span class="inf-bridge-line"></span>
-                      </div>
-                      <div class="detail-card detail-card--infusion">
-                        <div class="detail-head">
-                          <span class="detail-type detail-type--infusion">{group.infusion.title}</span>
-                          <span class="detail-name">{group.infusion.label}</span>
-                        </div>
-                        {#if group.infusion.description}
-                          <p class="detail-desc">{group.infusion.description}</p>
-                        {/if}
-                        {#if Object.keys(group.infusion.stats).length}
-                          <div class="stat-list">
-                            {#each Object.entries(group.infusion.stats).filter(([,v]) => v !== 0) as [k,v]}
-                              <div class="stat-row stat-row--infusion">
-                                <span>{formatLabel(k)}</span>
-                                <span class="stat-val stat-val--infusion" class:neg={v < 0}>{formatStat(k, v as number)}</span>
-                              </div>
-                            {/each}
-                          </div>
-                        {/if}
-                        {#if group.infusion.perks.length}
-                          <div class="perk-list">
-                            {#each group.infusion.perks as p}
-                              <div class="perk-row">
-                                <span>{p.name}</span>
-                                <span class="perk-val">+{p.amount}</span>
-                              </div>
-                            {/each}
-                          </div>
-                        {/if}
-                        <div class="infusion-note">Stats ×0.5 · Perks full</div>
-                      </div>
-                    {/if}
-
+        {#if group.main}
+          <div class="detail-card">
+            <div class="detail-head">
+              <span class="detail-type">{group.main.title}</span>
+              <span class="detail-name">{group.main.label}</span>
+              {#if group.main.enchants && group.main.enchants.length > 0}
+                <div class="detail-enchant-tags">
+                  {#each group.main.enchants as enc}
+                    <span class="enchant-tag">{enc.name}</span>
+                  {/each}
+                </div>
+              {/if}
+            </div>
+            {#if group.main.description}
+              <p class="detail-desc">{group.main.description}</p>
+            {/if}
+            {#if group.main.extras?.length}
+              {#each group.main.extras as ex}
+                <p class="detail-extra">{ex}</p>
+              {/each}
+            {/if}
+            {#if Object.keys(group.main.stats).length}
+              <div class="stat-list">
+                {#each Object.entries(group.main.stats).filter(([,v]) => v !== 0) as [k,v]}
+                  <div class="stat-row">
+                    <span>{formatLabel(k)}</span>
+                    <span class="stat-val" class:neg={v < 0}>{formatStat(k, v as number)}</span>
                   </div>
                 {/each}
               </div>
             {/if}
+            {#if group.main.perks.length}
+              <div class="perk-list">
+                {#each group.main.perks as p}
+                  <div class="perk-row" class:perk-row--enchant={p.fromEnchant}>
+                    <span>{p.name}</span>
+                    <span class="perk-val" class:perk-val--enchant={p.fromEnchant}>+{p.amount}</span>
+                  </div>
+                {/each}
+              </div>
+            {/if}
+            {#if group.main.enchants}
+              {#each group.main.enchants as enc}
+                {#if enc.notes}<p class="detail-extra">{enc.notes}</p>{/if}
+              {/each}
+            {/if}
+          </div>
+        {/if}
+
+        {#if group.infusion}
+          {#if group.main}
+            <div class="inf-bridge">
+              <span class="inf-bridge-line"></span>
+              <span class="inf-bridge-icon">inf</span>
+              <span class="inf-bridge-line"></span>
+            </div>
+          {/if}
+          <div class="detail-card detail-card--infusion">
+            <div class="detail-head">
+              <span class="detail-type detail-type--infusion">{group.infusion.title}</span>
+              <span class="detail-name">{group.infusion.label}</span>
+            </div>
+            {#if group.infusion.description}
+              <p class="detail-desc">{group.infusion.description}</p>
+            {/if}
+            {#if Object.keys(group.infusion.stats).length}
+              <div class="stat-list">
+                {#each Object.entries(group.infusion.stats).filter(([,v]) => v !== 0) as [k,v]}
+                  <div class="stat-row stat-row--infusion">
+                    <span>{formatLabel(k)}</span>
+                    <span class="stat-val stat-val--infusion" class:neg={v < 0}>{formatStat(k, v as number)}</span>
+                  </div>
+                {/each}
+              </div>
+            {/if}
+            {#if group.infusion.perks.length}
+              <div class="perk-list">
+                {#each group.infusion.perks as p}
+                  <div class="perk-row">
+                    <span>{p.name}</span>
+                    <span class="perk-val">+{p.amount}</span>
+                  </div>
+                {/each}
+              </div>
+            {/if}
+            <div class="infusion-note">Stats x0.5 · Perks full</div>
+          </div>
+        {/if}
+
+      </div>
+    {/each}
+  </div>
+{/if}
 
           </div>
         {/if}
       </div>
-
-      <!-- Stats + Perks -->
-      <div class="two-col">
-        <div class="panel">
-          <h3 class="panel-title">Combined Stats</h3>
-          {#if statRows.length === 0}
-            <p class="empty">No stats yet.</p>
-          {:else}
-            <div class="stat-list">
-              {#each statRows as [k,v]}
-                <div class="stat-row">
-                  <span>{formatLabel(k)}</span>
-                  <span class="stat-val" class:neg={v < 0}>{formatStat(k, v)}</span>
-                </div>
-              {/each}
-            </div>
-          {/if}
-        </div>
-
-        <div class="panel">
-          <h3 class="panel-title">Perks &amp; Effects</h3>
-          {#if perkRows.length === 0}
-            <p class="empty">No perks yet.</p>
-          {:else}
-            <div class="perk-list">
-              {#each perkRows as [name, count]}
-                {@const perk = getPerk(name)}
-                <div class="perk-card">
-                  <div class="perk-row">
-                    <span class="perk-name">{name}</span>
-                    <span class="perk-val">+{Math.round(count * 100) / 100}</span>
-                  </div>
-                  {#if perk}
-                    <p class="perk-desc">{perk.description}</p>
-                  {/if}
-                </div>
-              {/each}
-            </div>
-          {/if}
-        </div>
-      </div>
-
     </main>
   </div>
 </div>
@@ -1131,7 +1123,6 @@
   }
   .accent { color: var(--accent); }
 
-  /* ── Layout ────────────────────────────────────────── */
   .workspace {
     display: grid;
     grid-template-columns: 340px 1fr;
@@ -1174,7 +1165,6 @@
     gap: 6px;
     margin-bottom: 6px;
   }
-  .weapon-icon { font-size: 0.85rem; }
   .weapon-part-title {
     font-size: 0.68rem;
     text-transform: uppercase;
@@ -1261,7 +1251,6 @@
   }
   .infusion-select:focus { border-color: rgba(56,189,248,0.45) !important; outline: none; }
 
-  /* ── Results ────────────────────────────────────────── */
   .results { display: flex; flex-direction: column; gap: 14px; }
 
   .panel {
@@ -1279,7 +1268,7 @@
     margin-bottom: 14px;
   }
 
-  /* ══ BUILD SUMMARY ══════════════════════════════════════════════════════════ */
+  /* BUILD SUMMARY */
   .summary-panel {
     border-color: rgba(74,222,128,0.13);
     background: linear-gradient(160deg, var(--surface) 60%, rgba(74,222,128,0.03) 100%);
@@ -1293,7 +1282,6 @@
     align-items: start;
   }
 
-  /* 5-column grid: InfArmor | Armor | WeaponType | Col4 | Col5 */
   .summary-grid {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
@@ -1394,7 +1382,6 @@
     width: fit-content;
   }
 
-  /* Stats panel on the right */
   .summary-stats {
     background: var(--surface2);
     border: 1px solid var(--border);
@@ -1422,7 +1409,6 @@
   }
 
   .ss-section { display: flex; flex-direction: column; gap: 2px; }
-  .ss-divider { height: 1px; background: var(--border); margin: 4px 0; }
 
   .ss-row {
     display: flex;
@@ -1439,10 +1425,9 @@
   .ss-key { color: var(--ink-muted); }
   .ss-val { font-weight: 700; color: var(--accent); white-space: nowrap; }
   .ss-val.neg { color: var(--neg); }
-  .ss-perk-val { color: var(--accent2); }
   .ss-empty { font-size: 0.8rem; }
 
-  /* ── Weapon Panel ─────────────────────────────────── */
+  /* Weapon Panel */
   .weapon-panel {
     border-color: rgba(251,146,60,0.18);
     background: linear-gradient(160deg, var(--surface) 50%, rgba(251,146,60,0.04) 100%);
@@ -1494,6 +1479,11 @@
     border: 1px solid rgba(251,146,60,0.28);
     color: var(--weapon-blade);
     letter-spacing: 0.04em;
+  }
+  .weapon-type-badge--none {
+    background: rgba(138,141,133,0.1);
+    border-color: rgba(138,141,133,0.2);
+    color: var(--ink-muted);
   }
   .weapon-modifier-badge {
     font-size: 0.65rem;
@@ -1597,7 +1587,7 @@
   .sc-name { color: var(--ink-muted); }
   .sc-val  { font-weight: 700; color: var(--accent3); }
 
-  /* ── Selection Details ──────────────────────────────── */
+  /* Selection Details */
   .detail-layout { display: flex; gap: 10px; align-items: flex-start; }
 
   .identity-col { flex: 0 0 200px; display: flex; flex-direction: column; gap: 10px; }
@@ -1614,7 +1604,7 @@
 
   .inf-bridge { display: flex; align-items: center; gap: 4px; padding: 2px 12px; }
   .inf-bridge-line { flex: 1; height: 1px; background: var(--infusion-border); }
-  .inf-bridge-icon { font-size: 0.7rem; color: var(--infusion); opacity: 0.6; flex-shrink: 0; }
+  .inf-bridge-icon { font-size: 0.6rem; color: var(--infusion); opacity: 0.6; flex-shrink: 0; text-transform: uppercase; letter-spacing: 0.1em; }
 
   .detail-card {
     background: var(--surface2);
@@ -1652,7 +1642,16 @@
   .detail-extra { font-size: 0.75rem; color: var(--accent2); }
   .infusion-note { font-size: 0.65rem; color: var(--infusion); opacity: 0.5; letter-spacing: 0.04em; }
 
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .perks-panel {
+    border-color: rgba(245,158,11,0.13);
+    background: linear-gradient(160deg, var(--surface) 60%, rgba(245,158,11,0.03) 100%);
+  }
+  .perks-title { color: var(--accent2); }
+  .perks-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
 
   .stat-list { display: flex; flex-direction: column; gap: 4px; }
   .stat-row {
@@ -1677,15 +1676,15 @@
   .perk-val--enchant { color: var(--accent3); }
 
   .perk-card {
-    background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 8px; padding: 8px 10px;
-    display: flex; flex-direction: column; gap: 4px;
+    display: flex; flex-direction: column; gap: 2px;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--border);
   }
+  .perk-card:last-child { border-bottom: none; }
   .perk-name { font-weight: 600; }
   .perk-desc { font-size: 0.74rem; color: var(--ink-muted); line-height: 1.4; }
   .empty { color: var(--ink-muted); font-style: italic; font-size: 0.85rem; }
 
-  /* ── Responsive ─────────────────────────────────────── */
   @media (max-width: 1100px) {
     .workspace { grid-template-columns: 1fr; }
     .controls-panel { position: static; }
@@ -1710,7 +1709,6 @@
     .identity-col { flex: none; width: 100%; }
   }
   @media (max-width: 640px) {
-    .two-col { grid-template-columns: 1fr; }
     header { flex-direction: column; align-items: flex-start; }
     .summary-grid { grid-template-columns: repeat(2, 1fr); }
   }
