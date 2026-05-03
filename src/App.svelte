@@ -3,7 +3,8 @@
   import {
     races, guilds, armors, rings, runes, blades, handles,
     getGuild, getArmorPart, getRing, getRune, getEnchant, getPerk, getBlade, getHandle,
-    formatStat, formatLabel, applyEnchantmentsToSlot, applyInfusion, calcWeapon
+    formatStat, formatLabel, applyEnchantmentsToSlot, applyInfusion, calcWeapon,
+    checkHybrid, SHRINE_MULTIPLIERS
   } from './lib/engine'
   import EnchantRow from './lib/components/EnchantRow.svelte'
   import type { EnchantSlot, StatMap } from './lib/types'
@@ -18,6 +19,9 @@
   $: perkRows = Object.entries($result.perks)
     .filter(([,v]) => v > 0)
     .sort(([a],[b]) => a.localeCompare(b))
+
+  // ── Shrine of Balance — driven by store ────────────────────────────────────
+  $: shrineActive = $build.shrineActive
 
   // ── Weapon filters ──────────────────────────────────────────────────────────
   let bladeFilterTier: string = ""
@@ -40,7 +44,7 @@
   )
 
   $: weaponResult = ($build.weaponBlade || $build.weaponHandle)
-    ? calcWeapon($build.weaponBlade, $build.weaponHandle)
+    ? calcWeapon($build.weaponBlade, $build.weaponHandle, shrineActive)
     : null
 
   // ── Detail cards ────────────────────────────────────────────────────────────
@@ -58,7 +62,7 @@
   }
 
   interface SlotGroup {
-    main: DetailCard | null
+    main: DetailCard
     infusion: DetailCard | null
   }
 
@@ -143,103 +147,74 @@
   $: slotGroups = (() => {
     const groups: SlotGroup[] = []
 
-    // Helmet
-    if ($build.helmet || $build.infusionHelmet) {
-      let main: DetailCard | null = null
-      let infusion: DetailCard | null = null
-
-      if ($build.helmet) {
-        const part = getArmorPart($build.helmet, "Helmet")
-        if (part) {
-          const bp: Record<string, number> = part.perkName ? { [part.perkName]: 1 } : {}
-          main = buildSlotCard("Helmet", buildEnchantLabel($build.helmet, "helmet"), part.description, part.stats as StatMap, bp, "helmet")
+    if ($build.helmet) {
+      const part = getArmorPart($build.helmet, "Helmet")
+      if (part) {
+        const bp: Record<string, number> = part.perkName ? { [part.perkName]: 1 } : {}
+        const main = buildSlotCard("Helmet", buildEnchantLabel($build.helmet, "helmet"), part.description, part.stats as StatMap, bp, "helmet")
+        let infusion: DetailCard | null = null
+        if ($build.infusionHelmet) {
+          const ip = getArmorPart($build.infusionHelmet, "Helmet")
+          if (ip) {
+            const ibp: Record<string, number> = ip.perkName ? { [ip.perkName]: 1 } : {}
+            infusion = buildInfusionCard("Infusion Helmet", $build.infusionHelmet, ip.description, ip.stats as StatMap, ibp)
+          }
         }
+        groups.push({ main, infusion })
       }
-
-      if ($build.infusionHelmet) {
-        const ip = getArmorPart($build.infusionHelmet, "Helmet")
-        if (ip) {
-          const ibp: Record<string, number> = ip.perkName ? { [ip.perkName]: 1 } : {}
-          infusion = buildInfusionCard("Infusion Helmet", $build.infusionHelmet, ip.description, ip.stats as StatMap, ibp)
-        }
-      }
-
-      if (main || infusion) groups.push({ main, infusion })
     }
 
-    // Chestplate
-    if ($build.chestplate || $build.infusionChestplate) {
-      let main: DetailCard | null = null
-      let infusion: DetailCard | null = null
-
-      if ($build.chestplate) {
-        const part = getArmorPart($build.chestplate, "Chestplate")
-        if (part) {
-          const bp: Record<string, number> = part.perkName ? { [part.perkName]: 1 } : {}
-          main = buildSlotCard("Chestplate", buildEnchantLabel($build.chestplate, "chestplate"), part.description, part.stats as StatMap, bp, "chestplate")
+    if ($build.chestplate) {
+      const part = getArmorPart($build.chestplate, "Chestplate")
+      if (part) {
+        const bp: Record<string, number> = part.perkName ? { [part.perkName]: 1 } : {}
+        const main = buildSlotCard("Chestplate", buildEnchantLabel($build.chestplate, "chestplate"), part.description, part.stats as StatMap, bp, "chestplate")
+        let infusion: DetailCard | null = null
+        if ($build.infusionChestplate) {
+          const ip = getArmorPart($build.infusionChestplate, "Chestplate")
+          if (ip) {
+            const ibp: Record<string, number> = ip.perkName ? { [ip.perkName]: 1 } : {}
+            infusion = buildInfusionCard("Infusion Chestplate", $build.infusionChestplate, ip.description, ip.stats as StatMap, ibp)
+          }
         }
+        groups.push({ main, infusion })
       }
-
-      if ($build.infusionChestplate) {
-        const ip = getArmorPart($build.infusionChestplate, "Chestplate")
-        if (ip) {
-          const ibp: Record<string, number> = ip.perkName ? { [ip.perkName]: 1 } : {}
-          infusion = buildInfusionCard("Infusion Chestplate", $build.infusionChestplate, ip.description, ip.stats as StatMap, ibp)
-        }
-      }
-
-      if (main || infusion) groups.push({ main, infusion })
     }
 
-    // Leggings
-    if ($build.leggings || $build.infusionLeggings) {
-      let main: DetailCard | null = null
-      let infusion: DetailCard | null = null
-
-      if ($build.leggings) {
-        const part = getArmorPart($build.leggings, "Leggings")
-        if (part) {
-          const bp: Record<string, number> = part.perkName ? { [part.perkName]: 1 } : {}
-          main = buildSlotCard("Leggings", buildEnchantLabel($build.leggings, "leggings"), part.description, part.stats as StatMap, bp, "leggings")
+    if ($build.leggings) {
+      const part = getArmorPart($build.leggings, "Leggings")
+      if (part) {
+        const bp: Record<string, number> = part.perkName ? { [part.perkName]: 1 } : {}
+        const main = buildSlotCard("Leggings", buildEnchantLabel($build.leggings, "leggings"), part.description, part.stats as StatMap, bp, "leggings")
+        let infusion: DetailCard | null = null
+        if ($build.infusionLeggings) {
+          const ip = getArmorPart($build.infusionLeggings, "Leggings")
+          if (ip) {
+            const ibp: Record<string, number> = ip.perkName ? { [ip.perkName]: 1 } : {}
+            infusion = buildInfusionCard("Infusion Leggings", $build.infusionLeggings, ip.description, ip.stats as StatMap, ibp)
+          }
         }
+        groups.push({ main, infusion })
       }
-
-      if ($build.infusionLeggings) {
-        const ip = getArmorPart($build.infusionLeggings, "Leggings")
-        if (ip) {
-          const ibp: Record<string, number> = ip.perkName ? { [ip.perkName]: 1 } : {}
-          infusion = buildInfusionCard("Infusion Leggings", $build.infusionLeggings, ip.description, ip.stats as StatMap, ibp)
-        }
-      }
-
-      if (main || infusion) groups.push({ main, infusion })
     }
 
-    // Ring
-    if ($build.ring || $build.infusionRing) {
-      let main: DetailCard | null = null
-      let infusion: DetailCard | null = null
-
-      if ($build.ring) {
-        const ring = getRing($build.ring)
-        if (ring) {
-          const bp: Record<string, number> = ring.perkName ? { [ring.perkName]: ring.perkStacks ?? 1 } : {}
-          main = buildSlotCard("Ring", buildEnchantLabel(ring.name, "ring"), ring.description, ring.stats, bp, "ring")
+    if ($build.ring) {
+      const ring = getRing($build.ring)
+      if (ring) {
+        const bp: Record<string, number> = ring.perkName ? { [ring.perkName]: ring.perkStacks ?? 1 } : {}
+        const main = buildSlotCard("Ring", buildEnchantLabel(ring.name, "ring"), ring.description, ring.stats, bp, "ring")
+        let infusion: DetailCard | null = null
+        if ($build.infusionRing) {
+          const ir = getRing($build.infusionRing)
+          if (ir) {
+            const ibp: Record<string, number> = ir.perkName ? { [ir.perkName]: ir.perkStacks ?? 1 } : {}
+            infusion = buildInfusionCard("Infusion Ring", $build.infusionRing, ir.description, ir.stats, ibp)
+          }
         }
+        groups.push({ main, infusion })
       }
-
-      if ($build.infusionRing) {
-        const ir = getRing($build.infusionRing)
-        if (ir) {
-          const ibp: Record<string, number> = ir.perkName ? { [ir.perkName]: ir.perkStacks ?? 1 } : {}
-          infusion = buildInfusionCard("Infusion Ring", $build.infusionRing, ir.description, ir.stats, ibp)
-        }
-      }
-
-      if (main || infusion) groups.push({ main, infusion })
     }
 
-    // Rune
     if ($build.rune) {
       const rune = getRune($build.rune)
       if (rune) {
@@ -321,6 +296,108 @@
               </label>
             {/if}
           </div>
+        </div>
+      </section>
+
+      <!-- Weapon: Blade + Handle -->
+      <section class="control-section weapon-section">
+        <h2>Weapon</h2>
+
+        <!-- Shrine of Balance toggle -->
+        <div class="shrine-toggle-row">
+          <button
+            class="shrine-btn"
+            class:shrine-btn--active={shrineActive}
+            on:click={() => build.update(s => ({...s, shrineActive: !s.shrineActive}))}
+            title="Increase Scalings and Stat Boosts inversely proportional to weapon part Tier"
+          >
+            <span class="shrine-icon">⚖</span>
+            <span class="shrine-label">Shrine of Balance</span>
+            <span class="shrine-state">{shrineActive ? 'ON' : 'OFF'}</span>
+          </button>
+          {#if shrineActive}
+            <div class="shrine-hint">
+              T1×3.0 · T2×1.7 · T3×1.4 · T4×1.1 · T5×1.0
+            </div>
+          {/if}
+        </div>
+
+        <div class="slot-stack">
+
+          <!-- Blade -->
+          <div class="slot-block">
+            <div class="weapon-part-label">
+              <span class="weapon-part-title">Blade</span>
+            </div>
+            <div class="weapon-filters">
+              <label class="field filter-field">
+                <span>Tier</span>
+                <select bind:value={bladeFilterTier}
+                  on:change={() => { if (filteredBlades.findIndex(b => b.name === $build.weaponBlade) === -1) build.update(s => ({...s, weaponBlade: ""})) }}>
+                  <option value="">All</option>
+                  {#each bladeTiers as t}<option value={String(t)}>Tier {t}</option>{/each}
+                </select>
+              </label>
+              <label class="field filter-field">
+                <span>Type</span>
+                <select bind:value={bladeFilterType}
+                  on:change={() => { if (filteredBlades.findIndex(b => b.name === $build.weaponBlade) === -1) build.update(s => ({...s, weaponBlade: ""})) }}>
+                  <option value="">All</option>
+                  {#each bladeTypes as t}<option value={t}>{t}</option>{/each}
+                </select>
+              </label>
+            </div>
+            <label class="field">
+              <span>Select Blade</span>
+              <select bind:value={$build.weaponBlade}
+                on:change={e => build.update(s => ({...s, weaponBlade: (e.target as HTMLSelectElement).value}))}>
+                <option value="">—</option>
+                {#each filteredBlades as b}
+                  <option value={b.name}>[T{b.tier}] {b.name} ({b.bladeType})</option>
+                {/each}
+              </select>
+            </label>
+          </div>
+
+          <div class="slot-divider weapon-divider">
+            <span class="weapon-divider-text">+</span>
+          </div>
+
+          <!-- Handle -->
+          <div class="slot-block">
+            <div class="weapon-part-label">
+              <span class="weapon-part-title">Handle</span>
+            </div>
+            <div class="weapon-filters">
+              <label class="field filter-field">
+                <span>Tier</span>
+                <select bind:value={handleFilterTier}
+                  on:change={() => { if (filteredHandles.findIndex(h => h.name === $build.weaponHandle) === -1) build.update(s => ({...s, weaponHandle: ""})) }}>
+                  <option value="">All</option>
+                  {#each handleTiers as t}<option value={String(t)}>Tier {t}</option>{/each}
+                </select>
+              </label>
+              <label class="field filter-field">
+                <span>Type</span>
+                <select bind:value={handleFilterType}
+                  on:change={() => { if (filteredHandles.findIndex(h => h.name === $build.weaponHandle) === -1) build.update(s => ({...s, weaponHandle: ""})) }}>
+                  <option value="">All</option>
+                  {#each handleTypes as t}<option value={t}>{t}</option>{/each}
+                </select>
+              </label>
+            </div>
+            <label class="field">
+              <span>Select Handle</span>
+              <select bind:value={$build.weaponHandle}
+                on:change={e => build.update(s => ({...s, weaponHandle: (e.target as HTMLSelectElement).value}))}>
+                <option value="">—</option>
+                {#each filteredHandles as h}
+                  <option value={h.name}>[T{h.tier}] {h.name} ({h.handleType})</option>
+                {/each}
+              </select>
+            </label>
+          </div>
+
         </div>
       </section>
 
@@ -450,88 +527,6 @@
             <div class="slot-right">
               <EnchantRow slot="rune" label="Enchant" />
             </div>
-          </div>
-
-        </div>
-      </section>
-
-      <!-- Weapon: Blade + Handle -->
-      <section class="control-section weapon-section">
-        <h2>Weapon</h2>
-        <div class="slot-stack">
-
-          <!-- Blade -->
-          <div class="slot-block">
-            <div class="weapon-part-label">
-              <span class="weapon-part-title">Blade</span>
-            </div>
-            <div class="weapon-filters">
-              <label class="field filter-field">
-                <span>Tier</span>
-                <select bind:value={bladeFilterTier}
-                  on:change={() => { if (filteredBlades.findIndex(b => b.name === $build.weaponBlade) === -1) build.update(s => ({...s, weaponBlade: ""})) }}>
-                  <option value="">All</option>
-                  {#each bladeTiers as t}<option value={String(t)}>Tier {t}</option>{/each}
-                </select>
-              </label>
-              <label class="field filter-field">
-                <span>Type</span>
-                <select bind:value={bladeFilterType}
-                  on:change={() => { if (filteredBlades.findIndex(b => b.name === $build.weaponBlade) === -1) build.update(s => ({...s, weaponBlade: ""})) }}>
-                  <option value="">All</option>
-                  {#each bladeTypes as t}<option value={t}>{t}</option>{/each}
-                </select>
-              </label>
-            </div>
-            <label class="field">
-              <span>Select Blade</span>
-              <select bind:value={$build.weaponBlade}
-                on:change={e => build.update(s => ({...s, weaponBlade: (e.target as HTMLSelectElement).value}))}>
-                <option value="">—</option>
-                {#each filteredBlades as b}
-                  <option value={b.name}>[T{b.tier}] {b.name} ({b.bladeType})</option>
-                {/each}
-              </select>
-            </label>
-          </div>
-
-          <div class="slot-divider weapon-divider">
-            <span class="weapon-divider-text">+</span>
-          </div>
-
-          <!-- Handle -->
-          <div class="slot-block">
-            <div class="weapon-part-label">
-              <span class="weapon-part-title">Handle</span>
-            </div>
-            <div class="weapon-filters">
-              <label class="field filter-field">
-                <span>Tier</span>
-                <select bind:value={handleFilterTier}
-                  on:change={() => { if (filteredHandles.findIndex(h => h.name === $build.weaponHandle) === -1) build.update(s => ({...s, weaponHandle: ""})) }}>
-                  <option value="">All</option>
-                  {#each handleTiers as t}<option value={String(t)}>Tier {t}</option>{/each}
-                </select>
-              </label>
-              <label class="field filter-field">
-                <span>Type</span>
-                <select bind:value={handleFilterType}
-                  on:change={() => { if (filteredHandles.findIndex(h => h.name === $build.weaponHandle) === -1) build.update(s => ({...s, weaponHandle: ""})) }}>
-                  <option value="">All</option>
-                  {#each handleTypes as t}<option value={t}>{t}</option>{/each}
-                </select>
-              </label>
-            </div>
-            <label class="field">
-              <span>Select Handle</span>
-              <select bind:value={$build.weaponHandle}
-                on:change={e => build.update(s => ({...s, weaponHandle: (e.target as HTMLSelectElement).value}))}>
-                <option value="">—</option>
-                {#each filteredHandles as h}
-                  <option value={h.name}>[T{h.tier}] {h.name} ({h.handleType})</option>
-                {/each}
-              </select>
-            </label>
           </div>
 
         </div>
@@ -741,23 +736,39 @@
                     {/each}
                   </div>
                 {/if}
-                {#if Object.keys(weaponResult.scalings).length}
+                {#if Object.keys(weaponResult.bladeRawScalings).length}
                   <div class="weapon-section-label">Scalings</div>
                   <div class="scaling-grid">
-                    {#each Object.entries(weaponResult.scalings) as [k, v]}
-                      <div class="scaling-pill">
+                    {#each Object.entries(weaponResult.bladeRawScalings) as [k, rawVal]}
+                      {@const finalVal = weaponResult.bladeFinalScalings[k] ?? rawVal}
+                      {@const boosted = weaponResult.shrineActive && finalVal !== rawVal}
+                      <div class="scaling-pill" class:scaling-pill--boosted={boosted}>
                         <span class="sc-name">{formatScalingLabel(k)}</span>
-                        <span class="sc-val">{v}</span>
+                        {#if boosted}
+                          <span class="sc-val-old">{rawVal}</span>
+                          <span class="sc-val sc-val--new">{finalVal}</span>
+                        {:else}
+                          <span class="sc-val">{rawVal}</span>
+                        {/if}
                       </div>
                     {/each}
                   </div>
                 {/if}
                 {#if blade && Object.keys(blade.stats).length}
                   <div class="stat-list">
-                    {#each Object.entries(blade.stats).filter(([,v]) => v !== 0) as [k,v]}
-                      <div class="stat-row">
+                    {#each Object.entries(blade.stats).filter(([,v]) => v !== 0) as [k, rawVal]}
+                      {@const finalVal = weaponResult.bladeFinalStats[k as any] ?? rawVal}
+                      {@const boosted = weaponResult.shrineActive && finalVal !== rawVal}
+                      <div class="stat-row" class:stat-row--boosted={boosted}>
                         <span>{formatLabel(k)}</span>
-                        <span class="stat-val" class:neg={v < 0}>{formatStat(k, v as number)}</span>
+                        <div class="stat-val-group">
+                          {#if boosted}
+                            <span class="stat-val stat-val-ghost" class:neg={rawVal < 0}>{formatStat(k, rawVal as number)}</span>
+                            <span class="stat-val stat-val--new" class:neg={finalVal < 0}>{formatStat(k, finalVal as number)}</span>
+                          {:else}
+                            <span class="stat-val" class:neg={rawVal < 0}>{formatStat(k, rawVal as number)}</span>
+                          {/if}
+                        </div>
                       </div>
                     {/each}
                   </div>
@@ -799,12 +810,39 @@
                     <span class="weapon-meta-val">{handle.attackSpeed}x</span>
                   </div>
                 {/if}
+                {#if Object.keys(weaponResult.handleRawScalings).length}
+                  <div class="weapon-section-label">Scalings</div>
+                  <div class="scaling-grid">
+                    {#each Object.entries(weaponResult.handleRawScalings) as [k, rawVal]}
+                      {@const finalVal = weaponResult.handleFinalScalings[k] ?? rawVal}
+                      {@const boosted = weaponResult.shrineActive && finalVal !== rawVal}
+                      <div class="scaling-pill" class:scaling-pill--boosted={boosted}>
+                        <span class="sc-name">{formatScalingLabel(k)}</span>
+                        {#if boosted}
+                          <span class="sc-val-old">{rawVal}</span>
+                          <span class="sc-val sc-val--new">{finalVal}</span>
+                        {:else}
+                          <span class="sc-val">{rawVal}</span>
+                        {/if}
+                      </div>
+                    {/each}
+                  </div>
+                {/if}
                 {#if handle && Object.keys(handle.stats).length}
                   <div class="stat-list">
-                    {#each Object.entries(handle.stats).filter(([,v]) => v !== 0) as [k,v]}
-                      <div class="stat-row">
+                    {#each Object.entries(handle.stats).filter(([,v]) => v !== 0) as [k, rawVal]}
+                      {@const finalVal = weaponResult.handleFinalStats[k as any] ?? rawVal}
+                      {@const boosted = weaponResult.shrineActive && finalVal !== rawVal}
+                      <div class="stat-row" class:stat-row--boosted={boosted}>
                         <span>{formatLabel(k)}</span>
-                        <span class="stat-val" class:neg={v < 0}>{formatStat(k, v as number)}</span>
+                        <div class="stat-val-group">
+                          {#if boosted}
+                            <span class="stat-val stat-val-ghost" class:neg={rawVal < 0}>{formatStat(k, rawVal as number)}</span>
+                            <span class="stat-val stat-val--new" class:neg={finalVal < 0}>{formatStat(k, finalVal as number)}</span>
+                          {:else}
+                            <span class="stat-val" class:neg={rawVal < 0}>{formatStat(k, rawVal as number)}</span>
+                          {/if}
+                        </div>
                       </div>
                     {/each}
                   </div>
@@ -849,6 +887,13 @@
                     {#if weaponResult.weaponModifier}
                       <span class="weapon-modifier-badge">via {weaponResult.weaponModifier}</span>
                     {/if}
+                    {#if weaponResult.hybridActive}
+                      <span class="weapon-modifier-badge weapon-modifier-badge--hybrid" title="Different scalings detected: all scaling values ×1.5">Hybrid</span>
+                    {/if}
+                    {#if weaponResult.shrineActive}
+                      {@const blade = getBlade(weaponResult.bladeName)}
+                      {@const handle = getHandle(weaponResult.handleName)}
+                    {/if}
                   </div>
                   <span class="weapon-combined-speed">
                     {weaponResult.attackSpeed}x Attack Speed
@@ -866,7 +911,13 @@
                   </div>
                 {/if}
                 {#if Object.keys(weaponResult.scalings).length}
-                  <div class="weapon-section-label">Scalings</div>
+                  <div class="weapon-section-label">
+                    Scalings
+                    {#if weaponResult.shrineActive}
+                      {@const blade = getBlade(weaponResult.bladeName)}
+                      {@const handle = getHandle(weaponResult.handleName)}
+                    {/if}
+                  </div>
                   <div class="scaling-grid">
                     {#each Object.entries(weaponResult.scalings) as [k, v]}
                       <div class="scaling-pill">
@@ -948,103 +999,98 @@
             {/if}
 
             {#if slotGroups.length > 0}
-  <div class="gear-grid">
-    {#each slotGroups as group}
-      <div class="slot-col">
+              <div class="gear-grid">
+                {#each slotGroups as group}
+                  <div class="slot-col">
+                    <div class="detail-card">
+                      <div class="detail-head">
+                        <span class="detail-type">{group.main.title}</span>
+                        <span class="detail-name">{group.main.label}</span>
+                        {#if group.main.enchants && group.main.enchants.length > 0}
+                          <div class="detail-enchant-tags">
+                            {#each group.main.enchants as enc}
+                              <span class="enchant-tag">{enc.name}</span>
+                            {/each}
+                          </div>
+                        {/if}
+                      </div>
+                      {#if group.main.description}
+                        <p class="detail-desc">{group.main.description}</p>
+                      {/if}
+                      {#if group.main.extras?.length}
+                        {#each group.main.extras as ex}
+                          <p class="detail-extra">{ex}</p>
+                        {/each}
+                      {/if}
+                      {#if Object.keys(group.main.stats).length}
+                        <div class="stat-list">
+                          {#each Object.entries(group.main.stats).filter(([,v]) => v !== 0) as [k,v]}
+                            <div class="stat-row">
+                              <span>{formatLabel(k)}</span>
+                              <span class="stat-val" class:neg={v < 0}>{formatStat(k, v as number)}</span>
+                            </div>
+                          {/each}
+                        </div>
+                      {/if}
+                      {#if group.main.perks.length}
+                        <div class="perk-list">
+                          {#each group.main.perks as p}
+                            <div class="perk-row" class:perk-row--enchant={p.fromEnchant}>
+                              <span>{p.name}</span>
+                              <span class="perk-val" class:perk-val--enchant={p.fromEnchant}>+{p.amount}</span>
+                            </div>
+                          {/each}
+                        </div>
+                      {/if}
+                      {#if group.main.enchants}
+                        {#each group.main.enchants as enc}
+                          {#if enc.notes}<p class="detail-extra">{enc.notes}</p>{/if}
+                        {/each}
+                      {/if}
+                    </div>
 
-        {#if group.main}
-          <div class="detail-card">
-            <div class="detail-head">
-              <span class="detail-type">{group.main.title}</span>
-              <span class="detail-name">{group.main.label}</span>
-              {#if group.main.enchants && group.main.enchants.length > 0}
-                <div class="detail-enchant-tags">
-                  {#each group.main.enchants as enc}
-                    <span class="enchant-tag">{enc.name}</span>
-                  {/each}
-                </div>
-              {/if}
-            </div>
-            {#if group.main.description}
-              <p class="detail-desc">{group.main.description}</p>
-            {/if}
-            {#if group.main.extras?.length}
-              {#each group.main.extras as ex}
-                <p class="detail-extra">{ex}</p>
-              {/each}
-            {/if}
-            {#if Object.keys(group.main.stats).length}
-              <div class="stat-list">
-                {#each Object.entries(group.main.stats).filter(([,v]) => v !== 0) as [k,v]}
-                  <div class="stat-row">
-                    <span>{formatLabel(k)}</span>
-                    <span class="stat-val" class:neg={v < 0}>{formatStat(k, v as number)}</span>
-                  </div>
-                {/each}
-              </div>
-            {/if}
-            {#if group.main.perks.length}
-              <div class="perk-list">
-                {#each group.main.perks as p}
-                  <div class="perk-row" class:perk-row--enchant={p.fromEnchant}>
-                    <span>{p.name}</span>
-                    <span class="perk-val" class:perk-val--enchant={p.fromEnchant}>+{p.amount}</span>
-                  </div>
-                {/each}
-              </div>
-            {/if}
-            {#if group.main.enchants}
-              {#each group.main.enchants as enc}
-                {#if enc.notes}<p class="detail-extra">{enc.notes}</p>{/if}
-              {/each}
-            {/if}
-          </div>
-        {/if}
+                    {#if group.infusion}
+                      <div class="inf-bridge">
+                        <span class="inf-bridge-line"></span>
+                        <span class="inf-bridge-icon">inf</span>
+                        <span class="inf-bridge-line"></span>
+                      </div>
+                      <div class="detail-card detail-card--infusion">
+                        <div class="detail-head">
+                          <span class="detail-type detail-type--infusion">{group.infusion.title}</span>
+                          <span class="detail-name">{group.infusion.label}</span>
+                        </div>
+                        {#if group.infusion.description}
+                          <p class="detail-desc">{group.infusion.description}</p>
+                        {/if}
+                        {#if Object.keys(group.infusion.stats).length}
+                          <div class="stat-list">
+                            {#each Object.entries(group.infusion.stats).filter(([,v]) => v !== 0) as [k,v]}
+                              <div class="stat-row stat-row--infusion">
+                                <span>{formatLabel(k)}</span>
+                                <span class="stat-val stat-val--infusion" class:neg={v < 0}>{formatStat(k, v as number)}</span>
+                              </div>
+                            {/each}
+                          </div>
+                        {/if}
+                        {#if group.infusion.perks.length}
+                          <div class="perk-list">
+                            {#each group.infusion.perks as p}
+                              <div class="perk-row">
+                                <span>{p.name}</span>
+                                <span class="perk-val">+{p.amount}</span>
+                              </div>
+                            {/each}
+                          </div>
+                        {/if}
+                        <div class="infusion-note">Stats x0.5 · Perks full</div>
+                      </div>
+                    {/if}
 
-        {#if group.infusion}
-          {#if group.main}
-            <div class="inf-bridge">
-              <span class="inf-bridge-line"></span>
-              <span class="inf-bridge-icon">inf</span>
-              <span class="inf-bridge-line"></span>
-            </div>
-          {/if}
-          <div class="detail-card detail-card--infusion">
-            <div class="detail-head">
-              <span class="detail-type detail-type--infusion">{group.infusion.title}</span>
-              <span class="detail-name">{group.infusion.label}</span>
-            </div>
-            {#if group.infusion.description}
-              <p class="detail-desc">{group.infusion.description}</p>
-            {/if}
-            {#if Object.keys(group.infusion.stats).length}
-              <div class="stat-list">
-                {#each Object.entries(group.infusion.stats).filter(([,v]) => v !== 0) as [k,v]}
-                  <div class="stat-row stat-row--infusion">
-                    <span>{formatLabel(k)}</span>
-                    <span class="stat-val stat-val--infusion" class:neg={v < 0}>{formatStat(k, v as number)}</span>
                   </div>
                 {/each}
               </div>
             {/if}
-            {#if group.infusion.perks.length}
-              <div class="perk-list">
-                {#each group.infusion.perks as p}
-                  <div class="perk-row">
-                    <span>{p.name}</span>
-                    <span class="perk-val">+{p.amount}</span>
-                  </div>
-                {/each}
-              </div>
-            {/if}
-            <div class="infusion-note">Stats x0.5 · Perks full</div>
-          </div>
-        {/if}
-
-      </div>
-    {/each}
-  </div>
-{/if}
 
           </div>
         {/if}
@@ -1685,6 +1731,70 @@
   .perk-desc { font-size: 0.74rem; color: var(--ink-muted); line-height: 1.4; }
   .empty { color: var(--ink-muted); font-style: italic; font-size: 0.85rem; }
 
+  .stat-val-group { display: flex; align-items: center; gap: 5px; }
+  .stat-val-ghost { font-weight: 400; opacity: 0.35; font-size: 0.72rem; text-decoration: line-through; color: var(--ink-muted) !important; }
+  .stat-val--new { color: var(--weapon-combined) !important; font-weight: 800; }
+  .stat-row--boosted { background: rgba(251,191,36,0.05); }
+
+  .sc-val-old { font-size: 0.65rem; opacity: 0.35; text-decoration: line-through; color: var(--ink-muted); margin-right: 2px; }
+  .sc-val--new { color: var(--weapon-combined) !important; font-weight: 800; }
+  .scaling-pill--boosted { border-color: rgba(251,191,36,0.3); background: rgba(251,191,36,0.08); }
+
+  /* Shrine of Balance toggle */
+  .shrine-toggle-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .shrine-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid rgba(251,146,60,0.2);
+    border-radius: var(--radius-sm);
+    color: var(--ink-muted);
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.18s;
+    text-align: left;
+  }
+  .shrine-btn:hover {
+    border-color: rgba(251,146,60,0.4);
+    background: rgba(251,146,60,0.06);
+  }
+  .shrine-btn--active {
+    background: linear-gradient(135deg, rgba(251,191,36,0.12), rgba(251,146,60,0.08));
+    border-color: rgba(251,191,36,0.45);
+    color: var(--weapon-combined);
+  }
+  .shrine-icon { font-size: 1rem; flex-shrink: 0; opacity: 0.8; }
+  .shrine-label { flex: 1; font-weight: 600; letter-spacing: 0.02em; }
+  .shrine-state {
+    font-size: 0.65rem; font-weight: 800; letter-spacing: 0.14em;
+    padding: 2px 7px; border-radius: 999px;
+    background: rgba(251,146,60,0.1); border: 1px solid rgba(251,146,60,0.2);
+    color: var(--weapon-blade);
+  }
+  .shrine-btn--active .shrine-state {
+    background: rgba(251,191,36,0.18);
+    border-color: rgba(251,191,36,0.35);
+    color: var(--weapon-combined);
+  }
+  .shrine-hint {
+    font-size: 0.65rem; color: var(--weapon-combined); opacity: 0.65;
+    text-align: center; letter-spacing: 0.04em; padding: 0 2px;
+  }
+
+
+  /* Modifier badge variants */
+  .weapon-modifier-badge--hybrid {
+    background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.25); color: #10b981;
+  }
   @media (max-width: 1100px) {
     .workspace { grid-template-columns: 1fr; }
     .controls-panel { position: static; }

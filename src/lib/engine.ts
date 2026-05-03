@@ -211,7 +211,73 @@ export interface WeaponResult {
   perks: Record<string, number>
   attackSpeed: number
   damageTypes: Record<string, number>
+  bladeRawScalings: Record<string, number>
+  handleRawScalings: Record<string, number>
+  bladeRawStats: StatMap
+  handleRawStats: StatMap
+  bladeFinalScalings: Record<string, number>
+  handleFinalScalings: Record<string, number>
+  bladeFinalStats: StatMap
+  handleFinalStats: StatMap
   scalings: Record<string, number>
+  shrineActive: boolean
+  hybridActive: boolean
+}
+
+// Shrine of Balance: multiplier by tier
+export const SHRINE_MULTIPLIERS: Record<number, number> = {
+  1: 3.0,
+  2: 1.7,
+  3: 1.4,
+  4: 1.1,
+  5: 1.0,
+}
+
+// Shrine: apply to scalings and positive stats of a blade by its tier
+export function applyShrineToScalings(
+  scalings: Record<string, number>,
+  tier: number
+): Record<string, number> {
+  const mult = SHRINE_MULTIPLIERS[tier] ?? 1.0
+  if (mult === 1.0) return { ...scalings }
+  const result: Record<string, number> = {}
+  for (const [k, v] of Object.entries(scalings)) {
+    result[k] = Math.round((v * mult + Number.EPSILON) * 100) / 100
+  }
+  return result
+}
+
+export function applyShrineToStats(
+  stats: StatMap,
+  tier: number
+): StatMap {
+  const mult = SHRINE_MULTIPLIERS[tier] ?? 1.0
+  if (mult === 1.0) return { ...stats }
+  const result: StatMap = {}
+  for (const [k, v] of Object.entries(stats)) {
+    if (v == null) continue
+    // Only boost positive stats (stat boosts)
+    result[k as StatKey] = v > 0
+      ? Math.round((v * mult + Number.EPSILON) * 100) / 100
+      : v
+  }
+  return result
+}
+
+// Hybrid: true when blade and handle each have at least one scaling key, and they differ
+export function checkHybrid(
+  blade: WeaponBlade | undefined,
+  handle: WeaponHandle | undefined
+): boolean {
+  if (!blade || !handle) return false
+  const scaleKeys = ["dexterityScaling","physicalScaling","magicScaling","fireScaling","waterScaling","earthScaling","airScaling","hexScaling","holyScaling","summonScaling"]
+  const bladeScalings = new Set(scaleKeys.filter(k => (blade as any)[k] != null && (blade as any)[k] !== 0))
+  const handleScalings = new Set(scaleKeys.filter(k => (handle as any)[k] != null && (handle as any)[k] !== 0))
+  if (bladeScalings.size === 0 || handleScalings.size === 0) return false
+  // Check if they have different scaling keys
+  for (const k of bladeScalings) { if (!handleScalings.has(k)) return true }
+  for (const k of handleScalings) { if (!bladeScalings.has(k)) return true }
+  return false
 }
 
 const WEAPON_TYPE_MAP: Record<string, Record<string, string>> = {
@@ -280,32 +346,24 @@ export function resolveWeaponType(
   return { base, final: base, modifier: "" }
 }
 
-export function calcWeapon(bladeName: string, handleName: string): WeaponResult | null {
+export function calcWeapon(
+  bladeName: string,
+  handleName: string,
+  shrineActive: boolean = false
+): WeaponResult | null {
   const blade = getBlade(bladeName)
   const handle = getHandle(handleName)
   if (!blade && !handle) return null
 
-  const stats: StatMap = {}
   const perks: Record<string, number> = {}
   const speedParts: number[] = []
 
-  function addStats(s: StatMap | undefined) {
-    if (!s) return
-    for (const [k, v] of Object.entries(s)) {
-      if (v == null) continue
-      const key = k as StatKey
-      stats[key] = (stats[key] ?? 0) + v
-    }
-  }
-
   if (blade) {
-    addStats(blade.stats)
     if (blade.attackSpeed != null) speedParts.push(blade.attackSpeed)
     if (blade.perkName) perks[blade.perkName] = (perks[blade.perkName] ?? 0) + (blade.perkStacks ?? 1)
   }
 
   if (handle) {
-    addStats(handle.stats)
     if (handle.attackSpeed != null) speedParts.push(handle.attackSpeed)
     if (handle.perkName) perks[handle.perkName] = (perks[handle.perkName] ?? 0) + (handle.perkStacks ?? 1)
   }
@@ -323,17 +381,73 @@ export function calcWeapon(bladeName: string, handleName: string): WeaponResult 
     }
   }
 
-  const scalings: Record<string, number> = {}
+  const scaleKeys = ["dexterityScaling","physicalScaling","magicScaling","fireScaling","waterScaling","earthScaling","airScaling","hexScaling","holyScaling","summonScaling"]
+
+  // Per-part raw scalings
+  const bladeRawScalings: Record<string, number> = {}
+  const handleRawScalings: Record<string, number> = {}
   if (blade) {
-    const scaleKeys = ["dexterityScaling","physicalScaling","magicScaling","fireScaling","waterScaling","earthScaling","airScaling","hexScaling","holyScaling","summonScaling"]
     for (const key of scaleKeys) {
       const v = (blade as any)[key]
-      if (v != null && v !== 0) scalings[key.replace("Scaling", "")] = v
+      if (v != null && v !== 0) bladeRawScalings[key.replace("Scaling", "")] = v
+    }
+  }
+  if (handle) {
+    for (const key of scaleKeys) {
+      const v = (handle as any)[key]
+      if (v != null && v !== 0) handleRawScalings[key.replace("Scaling", "")] = v
     }
   }
 
+  // Per-part raw stats (before shrine)
+  const bladeRawStats: StatMap = blade ? { ...(blade.stats as StatMap) } : {}
+  const handleRawStats: StatMap = handle ? { ...(handle.stats as StatMap) } : {}
+
+  // Per-part final scalings (after shrine, before hybrid)
+  const bladeFinalScalings = shrineActive && blade
+    ? applyShrineToScalings(bladeRawScalings, blade.tier)
+    : { ...bladeRawScalings }
+  const handleFinalScalings = shrineActive && handle
+    ? applyShrineToScalings(handleRawScalings, handle.tier)
+    : { ...handleRawScalings }
+
+  // Per-part final stats (after shrine)
+  const bladeFinalStats: StatMap = shrineActive && blade
+    ? applyShrineToStats(blade.stats as StatMap, blade.tier)
+    : { ...bladeRawStats }
+  const handleFinalStats: StatMap = shrineActive && handle
+    ? applyShrineToStats(handle.stats as StatMap, handle.tier)
+    : { ...handleRawStats }
+
+  // Hybrid check
+  const hybridActive = checkHybrid(blade, handle)
+
+  // Combined scalings = blade + handle shrined, then hybrid
+  const mergedScalings: Record<string, number> = {}
+  for (const [k, v] of Object.entries(bladeFinalScalings)) mergedScalings[k] = (mergedScalings[k] ?? 0) + v
+  for (const [k, v] of Object.entries(handleFinalScalings)) mergedScalings[k] = (mergedScalings[k] ?? 0) + v
+  for (const k of Object.keys(mergedScalings)) mergedScalings[k] = Math.round((mergedScalings[k] + Number.EPSILON) * 100) / 100
+
+  const scalings: Record<string, number> = { ...mergedScalings }
+  if (hybridActive) {
+    for (const k of Object.keys(scalings)) {
+      scalings[k] = Math.round((scalings[k] * 1.5 + Number.EPSILON) * 100) / 100
+    }
+  }
+
+  // Combined stats use shrine-applied per-part stats
+  const combinedStats: StatMap = {}
+  function mergeStats(s: StatMap) {
+    for (const [k, v] of Object.entries(s)) {
+      if (v == null) continue
+      combinedStats[k as StatKey] = (combinedStats[k as StatKey] ?? 0) + v
+    }
+  }
+  mergeStats(bladeFinalStats)
+  mergeStats(handleFinalStats)
+
   const finalStats: StatMap = {}
-  for (const [k, v] of Object.entries(stats)) {
+  for (const [k, v] of Object.entries(combinedStats)) {
     const rounded = Math.round((v + Number.EPSILON) * 100) / 100
     if (rounded !== 0) finalStats[k as StatKey] = rounded
   }
@@ -357,7 +471,17 @@ export function calcWeapon(bladeName: string, handleName: string): WeaponResult 
     perks,
     attackSpeed: Math.round(attackSpeed * 100) / 100,
     damageTypes,
-    scalings
+    bladeRawScalings,
+    handleRawScalings,
+    bladeRawStats,
+    handleRawStats,
+    bladeFinalScalings,
+    handleFinalScalings,
+    bladeFinalStats,
+    handleFinalStats,
+    scalings,
+    shrineActive,
+    hybridActive,
   }
 }
 
@@ -455,14 +579,20 @@ export function calcBuild(state: BuildState): BuildResult {
   if (state.weaponBlade) {
     const blade = getBlade(state.weaponBlade)
     if (blade) {
-      addStats(blade.stats)
+      const bladeStats = state.shrineActive
+        ? applyShrineToStats(blade.stats as StatMap, blade.tier)
+        : blade.stats as StatMap
+      addStats(bladeStats)
       if (blade.perkName) perks[blade.perkName] = (perks[blade.perkName] ?? 0) + (blade.perkStacks ?? 1)
     }
   }
   if (state.weaponHandle) {
     const handle = getHandle(state.weaponHandle)
     if (handle) {
-      addStats(handle.stats)
+      const handleStats = state.shrineActive
+        ? applyShrineToStats(handle.stats as StatMap, handle.tier)
+        : handle.stats as StatMap
+      addStats(handleStats)
       if (handle.perkName) perks[handle.perkName] = (perks[handle.perkName] ?? 0) + (handle.perkStacks ?? 1)
     }
   }

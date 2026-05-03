@@ -24,6 +24,7 @@ export const build = writable<BuildState>({
   infusionRing: "",
   weaponBlade: "",
   weaponHandle: "",
+  shrineActive: true,
 })
 
 export const result = derived(build, $b => calcBuild($b))

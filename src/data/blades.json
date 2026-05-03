@@ -1,5 +1,5 @@
 [
-  {"name":"Basic Blade","tier":1,"bladeType":"Small Blade","stats":{"physicalBoost":5},"trueType":1,"physicalType":1},
+  {"name":"Basic Blade","tier":1,"bladeType":"Small Blade","stats":{"physicalBoost":5},"trueType":1,"physicalType":1, "attackSpeed":1.1, "physicalScaling":0.4},
   {"name":"Prism Blade","tier":1,"bladeType":"Medium Blade","stats":{"magicBoost":5,"fireBoost":5,"waterBoost":5,"airBoost":5,"hexBoost":5,"holyBoost":5},"trueType":1,"magicType":0.6,"fireType":0.3,"waterType":0.3,"airType":0.3,"hexType":0.3,"holyType":0.3},
   {"name":"Air Blade","tier":1,"bladeType":"Small Blade","stats":{"airBoost":12,"speedBoost":5},"trueType":1,"airType":0.8},
   {"name":"Starlight Greatblade","tier":5,"bladeType":"Heavy Blade","stats":{"holyBoost":5,"hexBoost":5,"magicBoost":5,"fireBoost":5,"waterBoost":5,"airBoost":5},"attackSpeed":1,"trueType":1.2,"holyScaling":0.4,"hexScaling":0.4,"magicScaling":0.4,"fireScaling":0.4,"waterScaling":0.4,"airScaling":0.4,"perkName":"Star Struck","perkStacks":1}

@@ -78,7 +78,6 @@ export interface WeaponBlade {
   description: string
   stats: StatMap
   attackSpeed?: number
-  // Damage type multipliers
   trueType?: number
   physicalType?: number
   magicType?: number
@@ -89,7 +88,6 @@ export interface WeaponBlade {
   hexType?: number
   holyType?: number
   summonType?: number
-  // Scalings
   dexterityScaling?: number
   physicalScaling?: number
   magicScaling?: number
@@ -111,6 +109,16 @@ export interface WeaponHandle {
   description: string
   stats: StatMap
   attackSpeed?: number
+  dexterityScaling?: number
+  physicalScaling?: number
+  magicScaling?: number
+  fireScaling?: number
+  waterScaling?: number
+  earthScaling?: number
+  airScaling?: number
+  hexScaling?: number
+  holyScaling?: number
+  summonScaling?: number
   perkName?: string
   perkStacks?: number
 }
@@ -125,12 +133,11 @@ export interface BuildState {
   ring: string
   rune: string
   enchantments: Record<EnchantSlot, [string, string, string]>
-  // Infusion slots — same item pool as main slots, no enchants, stats halved, perks unchanged
   infusionHelmet: string
   infusionChestplate: string
   infusionLeggings: string
   infusionRing: string
-  // Weapon
   weaponBlade: string
   weaponHandle: string
+  shrineActive: boolean
 }
