@@ -1,0 +1,11 @@
+[
+  {"name":"Basic Essence","tier":1,"essenceType":"Monk Essence","description":"A simple spiritual essence.","stats":{"dexterityBoost":3},"attackSpeed":1.05,"physicalScaling":0.3},
+  {"name":"Fire Essence","tier":2,"essenceType":"Monk Essence","description":"An essence burning with fire energy.","stats":{"fireBoost":15,"speedBoost":4},"attackSpeed":1.0,"fireScaling":0.4},
+  {"name":"Water Essence","tier":2,"essenceType":"Monk Essence","description":"A flowing essence of water energy.","stats":{"waterBoost":15,"holyBoost":5},"attackSpeed":1.05,"waterScaling":0.4},
+  {"name":"Earth Essence","tier":3,"essenceType":"Monk Essence","description":"A grounded essence of earth and stone.","stats":{"earthBoost":18,"physicalBoost":8},"attackSpeed":0.95,"earthScaling":0.4,"physicalScaling":0.3},
+  {"name":"Air Essence","tier":3,"essenceType":"Monk Essence","description":"A light essence of wind and sky.","stats":{"airBoost":18,"speedBoost":8,"jumpBoost":2},"attackSpeed":1.2,"airScaling":0.4},
+  {"name":"Hex Essence","tier":3,"essenceType":"Monk Essence","description":"A dark essence of cursed power.","stats":{"hexBoost":18,"magicBoost":5},"attackSpeed":1.0,"hexScaling":0.4},
+  {"name":"King's Essence","tier":4,"essenceType":"Monk Essence","description":"The royal essence of the Caci King.","stats":{"physicalBoost":15,"magicBoost":15,"summonBoost":20},"attackSpeed":1.0,"summonScaling":0.4,"magicScaling":0.3,"perkName":"Caci King Spirit","perkStacks":1},
+  {"name":"Nexus Essence","tier":4,"essenceType":"Monk Essence","description":"Connects all elemental forces.","stats":{"magicBoost":25,"summonBoost":20},"attackSpeed":0.9,"magicScaling":0.4},
+  {"name":"Starweave Essence","tier":5,"essenceType":"Monk Essence","description":"Woven from starlight threads.","stats":{"magicBoost":30,"holyBoost":15,"summonBoost":15},"attackSpeed":0.95,"holyScaling":0.4,"perkName":"Starweave","perkStacks":1}
+]

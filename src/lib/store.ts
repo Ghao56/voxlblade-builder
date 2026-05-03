@@ -24,6 +24,8 @@ export const build = writable<BuildState>({
   infusionRing: "",
   weaponBlade: "",
   weaponHandle: "",
+  monkGlove: "",
+  monkEssence: "",
   shrineActive: true,
 })
 

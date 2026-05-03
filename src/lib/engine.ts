@@ -1,7 +1,7 @@
 import type {
   Race, Guild, GuildRank, Armor, ArmorPart, Ring, Rune,
   Enchantment, Perk, StatMap, StatKey, StatModifier, EnchantSlot, BuildState,
-  WeaponBlade, WeaponHandle
+  WeaponBlade, WeaponHandle, MonkGlove, MonkEssence
 } from './types'
 import { STAT_KEYS, PERCENT_STATS } from './types'
 
@@ -14,6 +14,8 @@ import enchantmentsRaw from '../data/enchantments.json'
 import perksRaw from '../data/perks.json'
 import bladesRaw from '../data/blades.json'
 import handlesRaw from '../data/handles.json'
+import glovesRaw from '../data/gloves.json'
+import essencesRaw from '../data/essences.json'
 
 export const races: Race[] = racesRaw as Race[]
 export const guilds: Guild[] = guildsRaw as Guild[]
@@ -23,6 +25,8 @@ export const runes: Rune[] = runesRaw as Rune[]
 export const enchantments: Enchantment[] = enchantmentsRaw as Enchantment[]
 export const blades: WeaponBlade[] = bladesRaw as WeaponBlade[]
 export const handles: WeaponHandle[] = handlesRaw as WeaponHandle[]
+export const gloves: MonkGlove[] = glovesRaw as MonkGlove[]
+export const essences: MonkEssence[] = essencesRaw as MonkEssence[]
 
 export const armors: Armor[] = (armorsRaw as any[]).map(a => ({
   name: a.name,
@@ -43,6 +47,8 @@ const RUNE_MAP = Object.fromEntries(runes.map(r => [r.name, r]))
 const ARMOR_MAP = Object.fromEntries(armors.map(a => [a.name, a]))
 const BLADE_MAP = Object.fromEntries(blades.map(b => [b.name, b]))
 const HANDLE_MAP = Object.fromEntries(handles.map(h => [h.name, h]))
+const GLOVE_MAP = Object.fromEntries(gloves.map(g => [g.name, g]))
+const ESSENCE_MAP = Object.fromEntries(essences.map(e => [e.name, e]))
 
 export function getPerk(name: string) { return PERK_MAP[name] }
 export function getEnchant(name: string) { return ENCHANT_MAP[name] }
@@ -51,12 +57,18 @@ export function getRune(name: string) { return RUNE_MAP[name] }
 export function getArmor(name: string) { return ARMOR_MAP[name] }
 export function getBlade(name: string) { return BLADE_MAP[name] }
 export function getHandle(name: string) { return HANDLE_MAP[name] }
+export function getGlove(name: string) { return GLOVE_MAP[name] }
+export function getEssence(name: string) { return ESSENCE_MAP[name] }
 export function getArmorPart(name: string, type: ArmorPart["type"]) {
   return getArmor(name)?.parts.find(p => p.type === type)
 }
 export function getGuild(name: string) { return guilds.find(g => g.name === name) }
 export function getGuildRank(guild: Guild, rank: number): GuildRank | undefined {
   return guild.ranks.find(r => r.rank === rank)
+}
+
+export function isMonkGuild(guildName: string): boolean {
+  return guildName === "Monk"
 }
 
 // ─── Enchantment logic ────────────────────────────────────────────────────────
@@ -196,35 +208,8 @@ export function applyInfusion(
   return { stats, perks: { ...basePerks } }
 }
 
-// ─── Weapon helpers ───────────────────────────────────────────────────────────
+// ─── Shared weapon calculation helpers ────────────────────────────────────────
 
-export interface WeaponResult {
-  bladeName: string
-  handleName: string
-  bladeType: string
-  handleType: string
-  weaponType: string
-  finalWeaponType: string
-  weaponModifier: string
-  tier: number
-  stats: StatMap
-  perks: Record<string, number>
-  attackSpeed: number
-  damageTypes: Record<string, number>
-  bladeRawScalings: Record<string, number>
-  handleRawScalings: Record<string, number>
-  bladeRawStats: StatMap
-  handleRawStats: StatMap
-  bladeFinalScalings: Record<string, number>
-  handleFinalScalings: Record<string, number>
-  bladeFinalStats: StatMap
-  handleFinalStats: StatMap
-  scalings: Record<string, number>
-  shrineActive: boolean
-  hybridActive: boolean
-}
-
-// Shrine of Balance: multiplier by tier
 export const SHRINE_MULTIPLIERS: Record<number, number> = {
   1: 3.0,
   2: 1.7,
@@ -233,7 +218,6 @@ export const SHRINE_MULTIPLIERS: Record<number, number> = {
   5: 1.0,
 }
 
-// Shrine: apply to scalings and positive stats of a blade by its tier
 export function applyShrineToScalings(
   scalings: Record<string, number>,
   tier: number
@@ -256,7 +240,6 @@ export function applyShrineToStats(
   const result: StatMap = {}
   for (const [k, v] of Object.entries(stats)) {
     if (v == null) continue
-    // Only boost positive stats (stat boosts)
     result[k as StatKey] = v > 0
       ? Math.round((v * mult + Number.EPSILON) * 100) / 100
       : v
@@ -264,21 +247,21 @@ export function applyShrineToStats(
   return result
 }
 
-// Hybrid: true when blade and handle each have at least one scaling key, and they differ
 export function checkHybrid(
-  blade: WeaponBlade | undefined,
-  handle: WeaponHandle | undefined
+  part1: { [key: string]: any } | undefined,
+  part2: { [key: string]: any } | undefined
 ): boolean {
-  if (!blade || !handle) return false
+  if (!part1 || !part2) return false
   const scaleKeys = ["dexterityScaling","physicalScaling","magicScaling","fireScaling","waterScaling","earthScaling","airScaling","hexScaling","holyScaling","summonScaling"]
-  const bladeScalings = new Set(scaleKeys.filter(k => (blade as any)[k] != null && (blade as any)[k] !== 0))
-  const handleScalings = new Set(scaleKeys.filter(k => (handle as any)[k] != null && (handle as any)[k] !== 0))
-  if (bladeScalings.size === 0 || handleScalings.size === 0) return false
-  // Check if they have different scaling keys
-  for (const k of bladeScalings) { if (!handleScalings.has(k)) return true }
-  for (const k of handleScalings) { if (!bladeScalings.has(k)) return true }
+  const scalings1 = new Set(scaleKeys.filter(k => part1[k] != null && part1[k] !== 0))
+  const scalings2 = new Set(scaleKeys.filter(k => part2[k] != null && part2[k] !== 0))
+  if (scalings1.size === 0 || scalings2.size === 0) return false
+  for (const k of scalings1) { if (!scalings2.has(k)) return true }
+  for (const k of scalings2) { if (!scalings1.has(k)) return true }
   return false
 }
+
+// ─── Standard weapon type resolution ─────────────────────────────────────────
 
 const WEAPON_TYPE_MAP: Record<string, Record<string, string>> = {
   "Medium Handle": {
@@ -313,7 +296,6 @@ export function resolveWeaponType(
   const base = getWeaponType(handleType, bladeType)
   if (!base) return { base: "", final: "", modifier: "" }
 
-  // Dual Wielding
   if ((perks["Dual Wielding"] ?? 0) > 0) {
     if (bladeType === "Small Blade")  return { base, final: "Dual Wielding Daggers", modifier: "Dual Wielding" }
     if (bladeType === "Medium Blade") return { base, final: "Dual Swords",           modifier: "Dual Wielding" }
@@ -321,23 +303,19 @@ export function resolveWeaponType(
     if (bladeType === "Hammer Head")  return { base, final: "Dual Mallets",          modifier: "Dual Wielding" }
   }
 
-  // Lance perk
   if ((perks["Lance"] ?? 0) > 0) {
     if (handleType === "Long Handle" || handleType === "Medium Handle")
       return { base, final: "Lance", modifier: "Lance" }
   }
 
-  // Duelist Stance
   if ((perks["Duelist Stance"] ?? 0) > 0 && bladeType === "Medium Blade") {
     return { base, final: "Rapier", modifier: "Duelist Stance" }
   }
 
-  // Saw Stance
   if ((perks["Saw Stance"] ?? 0) > 0 && bladeType === "Medium Blade") {
     return { base, final: "Chainsaw", modifier: "Saw Stance" }
   }
 
-  // Kama Blades
   if ((perks["Kama Blades"] ?? 0) > 0) {
     if (base === "Dagger") return { base, final: "Dual Kamas", modifier: "Kama Blades" }
     if (base === "Spear")  return { base, final: "Scythe",     modifier: "Kama Blades" }
@@ -346,26 +324,109 @@ export function resolveWeaponType(
   return { base, final: base, modifier: "" }
 }
 
-export function calcWeapon(
-  bladeName: string,
-  handleName: string,
-  shrineActive: boolean = false
+// ─── Monk weapon type resolution ──────────────────────────────────────────────
+
+const MONK_WEAPON_TYPE_MAP: Record<string, Record<string, string>> = {
+  "Monk Essence": {
+    "Gloves": "Fists",
+    "Shield": "Shield",
+  },
+}
+
+export function getMonkWeaponType(essenceType: string, gloveType: string): string {
+  return MONK_WEAPON_TYPE_MAP[essenceType]?.[gloveType] ?? "Fists"
+}
+
+export function resolveMonkWeaponType(
+  essenceType: string,
+  gloveType: string,
+  perks: Record<string, number>
+): { base: string; final: string; modifier: string } {
+  const base = getMonkWeaponType(essenceType, gloveType)
+
+  // Saw Heart perk: Fists → Chain Fists
+  if ((perks["Saw Heart"] ?? 0) > 0 && base === "Fists") {
+    return { base, final: "Chain Fists", modifier: "Saw Heart" }
+  }
+
+  // Locked And Loaded: adds gun offhand info
+  if ((perks["Locked And Loaded"] ?? 0) > 0 && base === "Fists") {
+    return { base, final: "Fists + Gun", modifier: "Locked And Loaded" }
+  }
+
+  return { base, final: base, modifier: "" }
+}
+
+// ─── Shared WeaponResult interface ───────────────────────────────────────────
+
+export interface WeaponResult {
+  // Parts
+  part1Name: string
+  part2Name: string
+  part1TypeLabel: string  // "Blade" or "Glove"
+  part2TypeLabel: string  // "Handle" or "Essence"
+  part1Type: string       // bladeType or gloveType
+  part2Type: string       // handleType or essenceType
+  isMonk: boolean
+  // Weapon result
+  weaponType: string
+  finalWeaponType: string
+  weaponModifier: string
+  tier: number
+  stats: StatMap
+  perks: Record<string, number>
+  attackSpeed: number
+  damageTypes: Record<string, number>
+  part1RawScalings: Record<string, number>
+  part2RawScalings: Record<string, number>
+  part1RawStats: StatMap
+  part2RawStats: StatMap
+  part1FinalScalings: Record<string, number>
+  part2FinalScalings: Record<string, number>
+  part1FinalStats: StatMap
+  part2FinalStats: StatMap
+  scalings: Record<string, number>
+  shrineActive: boolean
+  hybridActive: boolean
+  // Legacy compat aliases
+  bladeName: string
+  handleName: string
+  bladeType: string
+  handleType: string
+  bladeRawScalings: Record<string, number>
+  handleRawScalings: Record<string, number>
+  bladeRawStats: StatMap
+  handleRawStats: StatMap
+  bladeFinalScalings: Record<string, number>
+  handleFinalScalings: Record<string, number>
+  bladeFinalStats: StatMap
+  handleFinalStats: StatMap
+}
+
+// ─── Generic weapon calc (works for both blade+handle and glove+essence) ──────
+
+function calcWeaponGeneric(
+  part1: WeaponBlade | MonkGlove | null,
+  part2: WeaponHandle | MonkEssence | null,
+  part1TypeLabel: string,
+  part2TypeLabel: string,
+  part1TypeKey: string,
+  part2TypeKey: string,
+  isMonk: boolean,
+  shrineActive: boolean
 ): WeaponResult | null {
-  const blade = getBlade(bladeName)
-  const handle = getHandle(handleName)
-  if (!blade && !handle) return null
+  if (!part1 && !part2) return null
 
   const perks: Record<string, number> = {}
   const speedParts: number[] = []
 
-  if (blade) {
-    if (blade.attackSpeed != null) speedParts.push(blade.attackSpeed)
-    if (blade.perkName) perks[blade.perkName] = (perks[blade.perkName] ?? 0) + (blade.perkStacks ?? 1)
+  if (part1) {
+    if (part1.attackSpeed != null) speedParts.push(part1.attackSpeed)
+    if (part1.perkName) perks[part1.perkName] = (perks[part1.perkName] ?? 0) + (part1.perkStacks ?? 1)
   }
-
-  if (handle) {
-    if (handle.attackSpeed != null) speedParts.push(handle.attackSpeed)
-    if (handle.perkName) perks[handle.perkName] = (perks[handle.perkName] ?? 0) + (handle.perkStacks ?? 1)
+  if (part2) {
+    if (part2.attackSpeed != null) speedParts.push(part2.attackSpeed)
+    if (part2.perkName) perks[part2.perkName] = (perks[part2.perkName] ?? 0) + (part2.perkStacks ?? 1)
   }
 
   const attackSpeed = speedParts.length > 0
@@ -373,59 +434,53 @@ export function calcWeapon(
     : 1.0
 
   const damageTypes: Record<string, number> = {}
-  if (blade) {
+  if (part1) {
     const dtKeys = ["trueType","physicalType","magicType","fireType","waterType","earthType","airType","hexType","holyType","summonType"]
     for (const key of dtKeys) {
-      const v = (blade as any)[key]
+      const v = (part1 as any)[key]
       if (v != null && v !== 0) damageTypes[key.replace("Type", "")] = v
     }
   }
 
   const scaleKeys = ["dexterityScaling","physicalScaling","magicScaling","fireScaling","waterScaling","earthScaling","airScaling","hexScaling","holyScaling","summonScaling"]
 
-  // Per-part raw scalings
-  const bladeRawScalings: Record<string, number> = {}
-  const handleRawScalings: Record<string, number> = {}
-  if (blade) {
+  const part1RawScalings: Record<string, number> = {}
+  const part2RawScalings: Record<string, number> = {}
+  if (part1) {
     for (const key of scaleKeys) {
-      const v = (blade as any)[key]
-      if (v != null && v !== 0) bladeRawScalings[key.replace("Scaling", "")] = v
+      const v = (part1 as any)[key]
+      if (v != null && v !== 0) part1RawScalings[key.replace("Scaling", "")] = v
     }
   }
-  if (handle) {
+  if (part2) {
     for (const key of scaleKeys) {
-      const v = (handle as any)[key]
-      if (v != null && v !== 0) handleRawScalings[key.replace("Scaling", "")] = v
+      const v = (part2 as any)[key]
+      if (v != null && v !== 0) part2RawScalings[key.replace("Scaling", "")] = v
     }
   }
 
-  // Per-part raw stats (before shrine)
-  const bladeRawStats: StatMap = blade ? { ...(blade.stats as StatMap) } : {}
-  const handleRawStats: StatMap = handle ? { ...(handle.stats as StatMap) } : {}
+  const part1RawStats: StatMap = part1 ? { ...(part1.stats as StatMap) } : {}
+  const part2RawStats: StatMap = part2 ? { ...(part2.stats as StatMap) } : {}
 
-  // Per-part final scalings (after shrine, before hybrid)
-  const bladeFinalScalings = shrineActive && blade
-    ? applyShrineToScalings(bladeRawScalings, blade.tier)
-    : { ...bladeRawScalings }
-  const handleFinalScalings = shrineActive && handle
-    ? applyShrineToScalings(handleRawScalings, handle.tier)
-    : { ...handleRawScalings }
+  const part1FinalScalings = shrineActive && part1
+    ? applyShrineToScalings(part1RawScalings, part1.tier)
+    : { ...part1RawScalings }
+  const part2FinalScalings = shrineActive && part2
+    ? applyShrineToScalings(part2RawScalings, part2.tier)
+    : { ...part2RawScalings }
 
-  // Per-part final stats (after shrine)
-  const bladeFinalStats: StatMap = shrineActive && blade
-    ? applyShrineToStats(blade.stats as StatMap, blade.tier)
-    : { ...bladeRawStats }
-  const handleFinalStats: StatMap = shrineActive && handle
-    ? applyShrineToStats(handle.stats as StatMap, handle.tier)
-    : { ...handleRawStats }
+  const part1FinalStats: StatMap = shrineActive && part1
+    ? applyShrineToStats(part1.stats as StatMap, part1.tier)
+    : { ...part1RawStats }
+  const part2FinalStats: StatMap = shrineActive && part2
+    ? applyShrineToStats(part2.stats as StatMap, part2.tier)
+    : { ...part2RawStats }
 
-  // Hybrid check
-  const hybridActive = checkHybrid(blade, handle)
+  const hybridActive = checkHybrid(part1 ?? undefined, part2 ?? undefined)
 
-  // Combined scalings = blade + handle shrined, then hybrid
   const mergedScalings: Record<string, number> = {}
-  for (const [k, v] of Object.entries(bladeFinalScalings)) mergedScalings[k] = (mergedScalings[k] ?? 0) + v
-  for (const [k, v] of Object.entries(handleFinalScalings)) mergedScalings[k] = (mergedScalings[k] ?? 0) + v
+  for (const [k, v] of Object.entries(part1FinalScalings)) mergedScalings[k] = (mergedScalings[k] ?? 0) + v
+  for (const [k, v] of Object.entries(part2FinalScalings)) mergedScalings[k] = (mergedScalings[k] ?? 0) + v
   for (const k of Object.keys(mergedScalings)) mergedScalings[k] = Math.round((mergedScalings[k] + Number.EPSILON) * 100) / 100
 
   const scalings: Record<string, number> = { ...mergedScalings }
@@ -435,7 +490,6 @@ export function calcWeapon(
     }
   }
 
-  // Combined stats use shrine-applied per-part stats
   const combinedStats: StatMap = {}
   function mergeStats(s: StatMap) {
     for (const [k, v] of Object.entries(s)) {
@@ -443,8 +497,8 @@ export function calcWeapon(
       combinedStats[k as StatKey] = (combinedStats[k as StatKey] ?? 0) + v
     }
   }
-  mergeStats(bladeFinalStats)
-  mergeStats(handleFinalStats)
+  mergeStats(part1FinalStats)
+  mergeStats(part2FinalStats)
 
   const finalStats: StatMap = {}
   for (const [k, v] of Object.entries(combinedStats)) {
@@ -452,37 +506,102 @@ export function calcWeapon(
     if (rounded !== 0) finalStats[k as StatKey] = rounded
   }
 
-  const bladeType = blade?.bladeType ?? ""
-  const handleType = handle?.handleType ?? ""
-  const resolved = (bladeType && handleType)
-    ? resolveWeaponType(handleType, bladeType, perks)
-    : { base: "", final: "", modifier: "" }
+  const p1Type = (part1 as any)?.[part1TypeKey] ?? ""
+  const p2Type = (part2 as any)?.[part2TypeKey] ?? ""
 
-  return {
-    bladeName: blade?.name ?? "",
-    handleName: handle?.name ?? "",
-    bladeType,
-    handleType,
-    weaponType: resolved.base,
-    finalWeaponType: resolved.final,
-    weaponModifier: resolved.modifier,
-    tier: Math.max(blade?.tier ?? 1, handle?.tier ?? 1),
+  let weaponType = ""
+  let finalWeaponType = ""
+  let weaponModifier = ""
+
+  if (p1Type && p2Type) {
+    if (isMonk) {
+      const resolved = resolveMonkWeaponType(p2Type, p1Type, perks)
+      weaponType = resolved.base
+      finalWeaponType = resolved.final
+      weaponModifier = resolved.modifier
+    } else {
+      const resolved = resolveWeaponType(p2Type, p1Type, perks)
+      weaponType = resolved.base
+      finalWeaponType = resolved.final
+      weaponModifier = resolved.modifier
+    }
+  }
+
+  const result: WeaponResult = {
+    part1Name: part1?.name ?? "",
+    part2Name: part2?.name ?? "",
+    part1TypeLabel,
+    part2TypeLabel,
+    part1Type: p1Type,
+    part2Type: p2Type,
+    isMonk,
+    weaponType,
+    finalWeaponType,
+    weaponModifier,
+    tier: Math.max(part1?.tier ?? 1, part2?.tier ?? 1),
     stats: finalStats,
     perks,
     attackSpeed: Math.round(attackSpeed * 100) / 100,
     damageTypes,
-    bladeRawScalings,
-    handleRawScalings,
-    bladeRawStats,
-    handleRawStats,
-    bladeFinalScalings,
-    handleFinalScalings,
-    bladeFinalStats,
-    handleFinalStats,
+    part1RawScalings,
+    part2RawScalings,
+    part1RawStats,
+    part2RawStats,
+    part1FinalScalings,
+    part2FinalScalings,
+    part1FinalStats,
+    part2FinalStats,
     scalings,
     shrineActive,
     hybridActive,
+    // Legacy aliases
+    bladeName: part1?.name ?? "",
+    handleName: part2?.name ?? "",
+    bladeType: p1Type,
+    handleType: p2Type,
+    bladeRawScalings: part1RawScalings,
+    handleRawScalings: part2RawScalings,
+    bladeRawStats: part1RawStats,
+    handleRawStats: part2RawStats,
+    bladeFinalScalings: part1FinalScalings,
+    handleFinalScalings: part2FinalScalings,
+    bladeFinalStats: part1FinalStats,
+    handleFinalStats: part2FinalStats,
   }
+
+  return result
+}
+
+export function calcWeapon(
+  bladeName: string,
+  handleName: string,
+  shrineActive: boolean = false
+): WeaponResult | null {
+  const blade = bladeName ? getBlade(bladeName) : null
+  const handle = handleName ? getHandle(handleName) : null
+  if (!blade && !handle) return null
+  return calcWeaponGeneric(
+    blade ?? null, handle ?? null,
+    "Blade", "Handle",
+    "bladeType", "handleType",
+    false, shrineActive
+  )
+}
+
+export function calcMonkWeapon(
+  gloveName: string,
+  essenceName: string,
+  shrineActive: boolean = false
+): WeaponResult | null {
+  const glove = gloveName ? getGlove(gloveName) : null
+  const essence = essenceName ? getEssence(essenceName) : null
+  if (!glove && !essence) return null
+  return calcWeaponGeneric(
+    glove ?? null, essence ?? null,
+    "Glove", "Essence",
+    "gloveType", "essenceType",
+    true, shrineActive
+  )
 }
 
 // ─── Main calculator ──────────────────────────────────────────────────────────
@@ -575,25 +694,51 @@ export function calcBuild(state: BuildState): BuildResult {
     }
   }
 
-  // Weapon
-  if (state.weaponBlade) {
-    const blade = getBlade(state.weaponBlade)
-    if (blade) {
-      const bladeStats = state.shrineActive
-        ? applyShrineToStats(blade.stats as StatMap, blade.tier)
-        : blade.stats as StatMap
-      addStats(bladeStats)
-      if (blade.perkName) perks[blade.perkName] = (perks[blade.perkName] ?? 0) + (blade.perkStacks ?? 1)
+  const monk = isMonkGuild(state.guild)
+
+  if (monk) {
+    // Monk weapon: Glove + Essence
+    if (state.monkGlove) {
+      const glove = getGlove(state.monkGlove)
+      if (glove) {
+        const gloveStats = state.shrineActive
+          ? applyShrineToStats(glove.stats as StatMap, glove.tier)
+          : glove.stats as StatMap
+        addStats(gloveStats)
+        if (glove.perkName) perks[glove.perkName] = (perks[glove.perkName] ?? 0) + (glove.perkStacks ?? 1)
+      }
     }
-  }
-  if (state.weaponHandle) {
-    const handle = getHandle(state.weaponHandle)
-    if (handle) {
-      const handleStats = state.shrineActive
-        ? applyShrineToStats(handle.stats as StatMap, handle.tier)
-        : handle.stats as StatMap
-      addStats(handleStats)
-      if (handle.perkName) perks[handle.perkName] = (perks[handle.perkName] ?? 0) + (handle.perkStacks ?? 1)
+    if (state.monkEssence) {
+      const essence = getEssence(state.monkEssence)
+      if (essence) {
+        const essenceStats = state.shrineActive
+          ? applyShrineToStats(essence.stats as StatMap, essence.tier)
+          : essence.stats as StatMap
+        addStats(essenceStats)
+        if (essence.perkName) perks[essence.perkName] = (perks[essence.perkName] ?? 0) + (essence.perkStacks ?? 1)
+      }
+    }
+  } else {
+    // Standard weapon: Blade + Handle
+    if (state.weaponBlade) {
+      const blade = getBlade(state.weaponBlade)
+      if (blade) {
+        const bladeStats = state.shrineActive
+          ? applyShrineToStats(blade.stats as StatMap, blade.tier)
+          : blade.stats as StatMap
+        addStats(bladeStats)
+        if (blade.perkName) perks[blade.perkName] = (perks[blade.perkName] ?? 0) + (blade.perkStacks ?? 1)
+      }
+    }
+    if (state.weaponHandle) {
+      const handle = getHandle(state.weaponHandle)
+      if (handle) {
+        const handleStats = state.shrineActive
+          ? applyShrineToStats(handle.stats as StatMap, handle.tier)
+          : handle.stats as StatMap
+        addStats(handleStats)
+        if (handle.perkName) perks[handle.perkName] = (perks[handle.perkName] ?? 0) + (handle.perkStacks ?? 1)
+      }
     }
   }
 
