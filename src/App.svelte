@@ -6,8 +6,9 @@
     getBlade, getHandle, getGlove, getEssence,
     formatStat, formatLabel, applyEnchantmentsToSlot, applyInfusion,
     calcWeapon, calcMonkWeapon, isMonkGuild,
-    checkHybrid, SHRINE_MULTIPLIERS
-  } from './lib/engine'
+    checkHybrid, SHRINE_MULTIPLIERS,
+    type CDRResult
+} from './lib/engine'
   import EnchantRow from './lib/components/EnchantRow.svelte'
   import type { EnchantSlot, StatMap } from './lib/types'
 
@@ -22,6 +23,14 @@
   $: perkRows = Object.entries($result.perks)
     .filter(([,v]) => v > 0)
     .sort(([a],[b]) => a.localeCompare(b))
+
+  $: cdr = $result.cdr
+  $: hasRuneCDR = cdr.runeCDR < 1.0 || cdr.runeSetCD != null
+  $: hasWaCDR   = cdr.waCDR   < 1.0
+    function formatCD(base: number, cdr: CDRResult) {
+      const effectiveBase = cdr.runeSetCD ?? base
+      return `${Math.floor(effectiveBase * cdr.runeCDR)}s`
+    }
 
   // ── Shrine of Balance ──────────────────────────────────────────────────────
   $: shrineActive = $build.shrineActive
@@ -233,7 +242,11 @@
       if (rune) {
         const bp: Record<string, number> = rune.perkName ? { [rune.perkName]: rune.perkStacks ?? 1 } : {}
         groups.push({
-          main: buildSlotCard("Rune", buildEnchantLabel(rune.name, "rune"), rune.description, rune.stats, bp, "rune", [`Cooldown: ${rune.cooldown}s`]),
+          main: buildSlotCard("Rune", buildEnchantLabel(rune.name, "rune"), rune.description, rune.stats, bp, "rune", 
+            hasRuneCDR 
+              ? [`Base CD: ${rune.cooldown}s → ${formatCD(rune.cooldown, cdr)}`]
+              : [`Cooldown: ${rune.cooldown}s`]
+          ),
           infusion: null
         })
       }
@@ -745,8 +758,18 @@
               {#if $build.rune}
                 {@const rune = runes.find(r => r.name === $build.rune)}
                 {#if rune}
-                  <span class="sg-sub">CD: {rune.cooldown}s</span>
+                  {#if hasRuneCDR}
+                  <span class="sg-cd-row">
+                    <span class="sg-cd-base">{rune.cooldown}s</span>
+                    <span class="sg-cd-arrow">→</span>
+                    <span class="sg-cd-final">{formatCD(rune.cooldown, cdr)}</span>
+                  </span>
+                  {:else}
+                    <span class="sg-sub">CD: {rune.cooldown}s</span>
+                  {/if}
                 {/if}
+
+
                 {#if $build.enchantments.rune.some(Boolean)}
                   <span class="sg-ench">{$build.enchantments.rune.filter(Boolean).join(' · ')}</span>
                 {/if}
@@ -1115,6 +1138,44 @@
                         {#each group.main.extras as ex}
                           <p class="detail-extra">{ex}</p>
                         {/each}
+                      {/if}
+                      {#if group.main.title === 'Rune' && (hasRuneCDR || cdr.runeSetCD != null)}
+                        <div class="cdr-block">
+                          <div class="cdr-block-header">
+                            <span class="cdr-icon">⏱</span>
+                            <span class="cdr-title">Rune CDR Breakdown</span>
+                          </div>
+
+                          {#if cdr.runeSetCD != null}
+                            <!-- Set CD override -->
+                            <div class="cdr-step">
+                              <span class="cdr-source">Gladiatorial Rage</span>
+                              <span class="cdr-mult">Sets CD = {cdr.runeSetCD}s</span>
+                            </div>
+                          {/if}
+
+                          {#each cdr.runeBreakdown as step}
+                            <div class="cdr-step">
+                              <span class="cdr-source">{step.source}</span>
+                              <span class="cdr-mult">-{step.pct}%</span>
+                            </div>
+                          {/each}
+
+                          {#each runes.filter(r => r.name === $build.rune).slice(0,1) as rune}
+                            <div class="cdr-result">
+                              {#if cdr.runeSetCD != null}
+                                <span class="cdr-cd-old">{rune.cooldown}s</span>
+                                <span class="cdr-arrow">→</span>
+                                <span class="cdr-cd-old">{cdr.runeSetCD}s</span>
+                                <span class="cdr-arrow">→</span>
+                              {:else}
+                                <span class="cdr-cd-old">{rune.cooldown}s</span>
+                                <span class="cdr-arrow">→</span>
+                              {/if}
+                              <span class="cdr-cd-new">{formatCD(rune.cooldown, cdr)}</span>
+                            </div>
+                          {/each}
+                        </div>
                       {/if}
                       {#if Object.keys(group.main.stats).length}
                         <div class="stat-list">
@@ -1527,4 +1588,21 @@
     header { flex-direction: column; align-items: flex-start; }
     .summary-grid { grid-template-columns: repeat(2, 1fr); }
   }
+  /* ── CDR Display ──────────────────────────────────────────────────── */
+  .sg-cd-row { display: flex; align-items: center; gap: 4px; margin-top: 3px; flex-wrap: wrap; }
+  .sg-cd-base { font-size: 0.65rem; color: var(--ink-muted); text-decoration: line-through; opacity: 0.45; }
+  .sg-cd-arrow { font-size: 0.6rem; color: var(--ink-muted); opacity: 0.35; }
+  .sg-cd-final { font-size: 0.8rem; font-weight: 800; color: #34d399; }
+
+  .cdr-block { background: rgba(52,211,153,0.05); border: 1px solid rgba(52,211,153,0.18); border-radius: 7px; padding: 9px 11px; display: flex; flex-direction: column; gap: 5px; margin-top: 2px; }
+  .cdr-block-header { display: flex; align-items: center; gap: 5px; }
+  .cdr-icon { font-size: 0.8rem; }
+  .cdr-title { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.16em; font-weight: 700; color: #34d399; }
+  .cdr-step { display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; padding: 2px 4px; }
+  .cdr-source { color: var(--ink-muted); }
+  .cdr-mult { font-weight: 700; color: #34d399; }
+  .cdr-result { display: flex; align-items: center; gap: 7px; padding-top: 6px; border-top: 1px solid rgba(52,211,153,0.15); margin-top: 2px; }
+  .cdr-cd-old { font-size: 0.75rem; color: var(--ink-muted); text-decoration: line-through; opacity: 0.4; }
+  .cdr-arrow { font-size: 0.7rem; color: var(--ink-muted); opacity: 0.35; }
+  .cdr-cd-new { font-size: 0.95rem; font-weight: 800; color: #34d399; }
 </style>

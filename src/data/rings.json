@@ -1,1 +1,5 @@
-[{"name":"Eyering","description":"An odd barely fitting ring. It seems to be alive and twitch before you get hit.","upgrade":0,"stats":{"dexterityBoost":5,"magicBoost":5,"speedBoost":5},"perkName":"Future Sight","perkStacks":1}]
+[
+    {"name":"Eyering","description":"An odd barely fitting ring. It seems to be alive and twitch before you get hit.","upgrade":0,"stats":{"dexterityBoost":5,"magicBoost":5,"speedBoost":5},"perkName":"Future Sight","perkStacks":1},
+    {"name":"Caster Ring","description":"Magic becomes stronger when using this ring.","upgrade":0,"stats":{"magicBoost":10},"perkName":"Caster","perkStacks":1}
+
+]

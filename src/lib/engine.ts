@@ -4,6 +4,7 @@ import type {
   WeaponBlade, WeaponHandle, MonkGlove, MonkEssence
 } from './types'
 import { STAT_KEYS, PERCENT_STATS } from './types'
+import { CDR_PERK_DATA } from '../data/cdr'
 
 import racesRaw from '../data/races.json'
 import guildsRaw from '../data/guilds.json'
@@ -122,12 +123,12 @@ export function applyEnchantmentsToSlot(
       }
     }
 
-    if(es.defenseStats) {
-      const mods = normalizeModifiers(es.defenseStats  as StatModifier | StatModifier[])
+    if (es.defenseStats) {
+      const mods = normalizeModifiers(es.defenseStats as StatModifier | StatModifier[])
       const defenseKeys = STAT_KEYS.filter(k => k.endsWith('Defense'))
       for (const key of Object.keys(stats) as StatKey[]) {
         const v = stats[key] ?? 0
-        if (v>0 && defenseKeys.includes(key)) {
+        if (v > 0 && defenseKeys.includes(key)) {
           let nv = v
           for (const mod of mods) nv = applyMod(nv, mod)
           stats[key] = nv
@@ -145,7 +146,7 @@ export function applyEnchantmentsToSlot(
     }
 
     for (const [key, modifier] of Object.entries(es)) {
-      if (!modifier || ["positiveStats","negativeStats","perks"].includes(key)) continue
+      if (!modifier || ["positiveStats", "negativeStats", "perks"].includes(key)) continue
       if (!STAT_KEYS.includes(key as StatKey)) continue
       const mods = normalizeModifiers(modifier as StatModifier | StatModifier[])
       let v = stats[key as StatKey] ?? 0
@@ -208,7 +209,7 @@ export function applyInfusion(
   return { stats, perks: { ...basePerks } }
 }
 
-// ─── Shared weapon calculation helpers ────────────────────────────────────────
+// ─── Shrine of Balance ────────────────────────────────────────────────────────
 
 export const SHRINE_MULTIPLIERS: Record<number, number> = {
   1: 3.0,
@@ -344,12 +345,10 @@ export function resolveMonkWeaponType(
 ): { base: string; final: string; modifier: string } {
   const base = getMonkWeaponType(essenceType, gloveType)
 
-  // Saw Heart perk: Fists → Chain Fists
   if ((perks["Saw Heart"] ?? 0) > 0 && base === "Fists") {
     return { base, final: "Chain Fists", modifier: "Saw Heart" }
   }
 
-  // Locked And Loaded: adds gun offhand info
   if ((perks["Locked And Loaded"] ?? 0) > 0 && base === "Fists") {
     return { base, final: "Fists + Gun", modifier: "Locked And Loaded" }
   }
@@ -360,15 +359,13 @@ export function resolveMonkWeaponType(
 // ─── Shared WeaponResult interface ───────────────────────────────────────────
 
 export interface WeaponResult {
-  // Parts
   part1Name: string
   part2Name: string
-  part1TypeLabel: string  // "Blade" or "Glove"
-  part2TypeLabel: string  // "Handle" or "Essence"
-  part1Type: string       // bladeType or gloveType
-  part2Type: string       // handleType or essenceType
+  part1TypeLabel: string
+  part2TypeLabel: string
+  part1Type: string
+  part2Type: string
   isMonk: boolean
-  // Weapon result
   weaponType: string
   finalWeaponType: string
   weaponModifier: string
@@ -403,7 +400,7 @@ export interface WeaponResult {
   handleFinalStats: StatMap
 }
 
-// ─── Generic weapon calc (works for both blade+handle and glove+essence) ──────
+// ─── Generic weapon calc ──────────────────────────────────────────────────────
 
 function calcWeaponGeneric(
   part1: WeaponBlade | MonkGlove | null,
@@ -554,7 +551,6 @@ function calcWeaponGeneric(
     scalings,
     shrineActive,
     hybridActive,
-    // Legacy aliases
     bladeName: part1?.name ?? "",
     handleName: part2?.name ?? "",
     bladeType: p1Type,
@@ -604,11 +600,98 @@ export function calcMonkWeapon(
   )
 }
 
+// ─── Cooldown Reduction System ────────────────────────────────────────────────
+//
+// Stacking rules:
+//   • Same source (nhiều stack cùng perk): additive % → CD / (1 + totalPct)
+//   • Khác source: sequential multiplication
+//   • Race CDR: direct multiplier (e.g. RuneCDR: 0.6 → ×0.6)
+//
+// CDR_PERK_DATA được import từ src/data/cdr.ts — chỉnh sửa tại đó.
+
+export interface CDRStep {
+  source: string
+  pct: number        // % giảm để hiển thị, ví dụ 10 = "10%"
+  multiplier: number // giá trị nhân thực
+}
+
+export interface CDRResult {
+  runeCDR: number
+  waCDR: number
+  runeSetCD?: number
+  runeBreakdown: CDRStep[]
+  waBreakdown: CDRStep[]
+}
+
+export function calcCDR(
+  perks: Record<string, number>,
+  raceCooldownModifiers?: Record<string, number>,
+  activeRuneName?: string,
+  activeRaceName?: string
+): CDRResult {
+  const runeSteps: CDRStep[] = []
+  const waSteps: CDRStep[] = []
+  let runeSetCD: number | undefined = undefined
+
+  for (const [perkName, perkAmount] of Object.entries(perks)) {
+    const data = CDR_PERK_DATA[perkName]
+    if (!data || perkAmount <= 0) continue
+
+    // Check runeFilter match
+    const passesFilter = data.runeFilter == null
+      || (activeRuneName != null && data.runeFilter.includes(activeRuneName))
+
+    // runeSetCD — chỉ áp dụng nếu pass filter
+    if (data.runeSetCD != null && passesFilter) {
+      runeSetCD = data.runeSetCD
+      // Không push vào runeSteps — hiển thị riêng
+    }
+
+    // runePct — bỏ qua nếu không pass filter
+    if (data.runePct && passesFilter) {
+      const totalPct = data.runePct * perkAmount
+      const displayPct = Math.round(totalPct * 100)
+      const multiplier = 1 / (1 + totalPct)
+      runeSteps.push({ source: perkName, pct: displayPct, multiplier })
+    }
+
+    if (data.waPct) {
+      const totalPct = data.waPct * perkAmount
+      const displayPct = Math.round(totalPct * 100)
+      const multiplier = 1 / (1 + totalPct)
+      waSteps.push({ source: perkName, pct: displayPct, multiplier })
+    }
+  }
+
+  // Race CDR
+  if (raceCooldownModifiers) {
+    if (raceCooldownModifiers["RuneCDR"] != null) {
+      const m = raceCooldownModifiers["RuneCDR"]
+      runeSteps.push({ source: `${activeRaceName} (Race)`, pct: Math.round((1 - m) * 100), multiplier: m })
+    }
+    if (raceCooldownModifiers["weaponArtCDR"] != null) {
+      const m = raceCooldownModifiers["weaponArtCDR"]
+      waSteps.push({ source: `${activeRaceName} (Race)`, pct: Math.round((1 - m) * 100), multiplier: m })
+    }
+  }
+
+  const runeCDR = Math.round(runeSteps.reduce((acc, s) => acc * s.multiplier, 1.0) * 10000) / 10000
+  const waCDR   = Math.round(waSteps.reduce((acc, s) => acc * s.multiplier, 1.0) * 10000) / 10000
+
+  return { runeCDR, waCDR, runeSetCD, runeBreakdown: runeSteps, waBreakdown: waSteps }
+}
+
+// Floor CD xuống giây nguyên: 15.9s → 15s, 15.1s → 15s
+export function applyCD(baseCooldown: number, cdrMultiplier: number): number {
+  return Math.floor(baseCooldown * cdrMultiplier)
+}
+
 // ─── Main calculator ──────────────────────────────────────────────────────────
 
 export interface BuildResult {
   stats: StatMap
   perks: Record<string, number>
+  cdr: CDRResult
 }
 
 export function calcBuild(state: BuildState): BuildResult {
@@ -697,7 +780,6 @@ export function calcBuild(state: BuildState): BuildResult {
   const monk = isMonkGuild(state.guild)
 
   if (monk) {
-    // Monk weapon: Glove + Essence
     if (state.monkGlove) {
       const glove = getGlove(state.monkGlove)
       if (glove) {
@@ -719,7 +801,6 @@ export function calcBuild(state: BuildState): BuildResult {
       }
     }
   } else {
-    // Standard weapon: Blade + Handle
     if (state.weaponBlade) {
       const blade = getBlade(state.weaponBlade)
       if (blade) {
@@ -806,7 +887,10 @@ export function calcBuild(state: BuildState): BuildResult {
     }
   }
 
-  return { stats: finalStats, perks: finalPerks }
+  // CDR — truyền tên rune hiện tại để check runeFilter
+  const cdr = calcCDR(finalPerks, race?.cooldownModifiers, state.rune || undefined, state.race || undefined)
+
+  return { stats: finalStats, perks: finalPerks, cdr }
 }
 
 // ─── Formatting ───────────────────────────────────────────────────────────────
