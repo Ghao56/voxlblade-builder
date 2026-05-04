@@ -28,6 +28,22 @@
   $: cdr = $result.cdr
   $: hasRuneCDR = cdr.runeCDR < 1.0 || cdr.runeSetCD != null
 
+$: slot0Map = {
+  helmet: $build.enchantments.helmet[0],
+  chestplate: $build.enchantments.chestplate[0],
+  leggings: $build.enchantments.leggings[0],
+  ring: $build.enchantments.ring[0],
+  rune: $build.enchantments.rune[0]
+}
+
+  $: exclMap = {
+  helmet: isExclusiveEnchant(ge($build.enchantments.helmet[0])),
+  chestplate: isExclusiveEnchant(ge($build.enchantments.chestplate[0])),
+  leggings: isExclusiveEnchant(ge($build.enchantments.leggings[0])),
+  ring: isExclusiveEnchant(ge($build.enchantments.ring[0])),
+  rune: isExclusiveEnchant(ge($build.enchantments.rune[0]))
+}
+
   function formatCD(base: number, cdr: CDRResult) {
     const effectiveBase = cdr.runeSetCD ?? base
     return `${Math.floor(effectiveBase * cdr.runeCDR)}s`
@@ -307,6 +323,7 @@
     </button>
     {#each guilds as g}
       {@const isActive = $build.guild === g.name}
+      {@const hoveredRank = isActive ? g.ranks.find(r => r.rank === $build.guildRank) : g.ranks[0]}
       <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
       <div class="modal-item" class:modal-item--active={isActive}
         on:click={() => build.update(s => ({...s, guild: g.name, guildRank: s.guild === g.name ? s.guildRank : 1}))}>
@@ -318,15 +335,22 @@
             >Rank {rank.rank}</button>
           {/each}
         </div>
-        {#if isActive}
-          {@const activeRank = g.ranks.find(r => r.rank === $build.guildRank)}
-          {#if activeRank?.stats && Object.keys(activeRank.stats).length}
-            <div class="modal-item-stats">
-              {#each Object.entries(activeRank.stats) as [k,v]}
-                <span class="modal-stat-pill" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, v as number)}</span>
-              {/each}
-            </div>
-          {/if}
+        {#if true}
+          {@const displayRank = isActive ? g.ranks.find(r => r.rank === $build.guildRank) : g.ranks[0]}
+          {#if displayRank?.stats && Object.keys(displayRank.stats).length}
+          <div class="modal-item-stats">
+            {#each Object.entries(displayRank.stats) as [k,v]}
+              <span class="modal-stat-pill" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, v as number)}</span>
+            {/each}
+          </div>
+        {/if}
+        {#if displayRank?.perks && displayRank.perks.length}
+          <div class="modal-item-stats">
+            {#each displayRank.perks as p}
+              <span class="modal-perk-tag">{p.name} +{p.amount}</span>
+            {/each}
+          </div>
+        {/if}
         {/if}
       </div>
     {/each}
@@ -351,7 +375,7 @@
                 on:click={() => { build.update(s => ({...s, [storeKey]: a.name})) }}>
                 <span class="modal-item-name">{a.name}</span>
                 <span class="modal-item-desc">{part.description}</span>
-                {#if part.perkName}<span class="modal-perk-tag">{part.perkName}</span>{/if}
+                {#if part.perkName}<span class="modal-perk-tag">{part.perkName} +1</span>{/if}
                 <div class="modal-item-stats">
                   {#each Object.entries(part.stats).filter(([,v]) => v !== 0) as [k,v]}
                     <span class="modal-stat-pill" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, v as number)}</span>
@@ -370,8 +394,8 @@
             </button>
           </div>
           {#each [0,1,2] as i}
-            {@const slot0val = $build.enchantments[enchSlot][0]}
-            {@const excl = isExclSlot(enchSlot)}
+            {@const slot0val = slot0Map[enchSlot]}
+            {@const excl = exclMap[enchSlot]}
             {#if i === 0 || (i === 1 && !excl && !!slot0val) || (i === 2 && !excl && !!$build.enchantments[enchSlot][1])}
               <div class="enchant-slot-row">
                 <span class="enchant-slot-num">{i+1}</span>
@@ -479,7 +503,7 @@
           </div>
           {#each [0,1,2] as i}
             {@const slot0val = $build.enchantments['ring'][0]}
-            {@const excl = isExclSlot('ring')}
+            {@const excl = exclMap['ring']  }
             {#if i === 0 || (i === 1 && !excl && !!slot0val) || (i === 2 && !excl && !!$build.enchantments['ring'][1])}
               <div class="enchant-slot-row">
                 <span class="enchant-slot-num">{i+1}</span>
@@ -577,7 +601,7 @@
           </div>
           {#each [0,1,2] as i}
             {@const slot0val = $build.enchantments['rune'][0]}
-            {@const excl = isExclSlot('rune')}
+            {@const excl = exclMap['rune']}
             {#if i === 0 || (i === 1 && !excl && !!slot0val) || (i === 2 && !excl && !!$build.enchantments['rune'][1])}
               <div class="enchant-slot-row">
                 <span class="enchant-slot-num">{i+1}</span>
@@ -648,7 +672,7 @@
                 <span class="modal-tier-badge">T{b.tier}</span>
                 <span class="modal-type-badge">{b.bladeType}</span>
               </div>
-              {#if b.perkName}<span class="modal-perk-tag">{b.perkName}</span>{/if}
+              {#if b.perkName}<span class="modal-perk-tag">{b.perkName} +{b.perkStacks ?? 1}</span>{/if}
               <div class="modal-item-stats">
                 {#each Object.entries(b.stats).filter(([,v]) => v !== 0) as [k,v]}
                   <span class="modal-stat-pill" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, v as number)}</span>
@@ -683,7 +707,7 @@
                 <span class="modal-tier-badge modal-tier-badge--handle">T{h.tier}</span>
                 <span class="modal-type-badge modal-type-badge--handle">{h.handleType}</span>
               </div>
-              {#if h.perkName}<span class="modal-perk-tag">{h.perkName}</span>{/if}
+              {#if h.perkName}<span class="modal-perk-tag">{h.perkName} +{h.perkStacks ?? 1}</span>{/if}
               <div class="modal-item-stats">
                 {#each Object.entries(h.stats).filter(([,v]) => v !== 0) as [k,v]}
                   <span class="modal-stat-pill" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, v as number)}</span>
@@ -718,7 +742,7 @@
                 <span class="modal-tier-badge modal-tier-badge--glove">T{g.tier}</span>
                 <span class="modal-type-badge modal-type-badge--glove">{g.gloveType}</span>
               </div>
-              {#if g.perkName}<span class="modal-perk-tag">{g.perkName}</span>{/if}
+              {#if g.perkName}<span class="modal-perk-tag">{g.perkName} +{g.perkStacks ?? 1}</span>{/if}
               <div class="modal-item-stats">
                 {#each Object.entries(g.stats).filter(([,v]) => v !== 0) as [k,v]}
                   <span class="modal-stat-pill" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, v as number)}</span>
@@ -748,7 +772,7 @@
                 <span class="modal-item-name">{e.name}</span>
                 <span class="modal-tier-badge modal-tier-badge--essence">T{e.tier}</span>
               </div>
-              {#if e.perkName}<span class="modal-perk-tag">{e.perkName}</span>{/if}
+              {#if e.perkName}<span class="modal-perk-tag">{e.perkName} +{e.perkStacks ?? 1}</span>{/if}
               <div class="modal-item-stats">
                 {#each Object.entries(e.stats).filter(([,v]) => v !== 0) as [k,v]}
                   <span class="modal-stat-pill" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, v as number)}</span>
