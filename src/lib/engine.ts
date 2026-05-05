@@ -234,9 +234,10 @@ export function applyShrineToScalings(
 }
 
 export function applyShrineToStats(
-  stats: StatMap,
+  stats: StatMap|undefined|null,
   tier: number
 ): StatMap {
+  if (!stats) return {}
   const mult = SHRINE_MULTIPLIERS[tier] ?? 1.0
   if (mult === 1.0) return { ...stats }
   const result: StatMap = {}
@@ -469,8 +470,8 @@ function calcWeaponGeneric(
     }
   }
 
-  const part1RawStats: StatMap = part1 ? { ...(part1.stats as StatMap) } : {}
-  const part2RawStats: StatMap = part2 ? { ...(part2.stats as StatMap) } : {}
+  const part1RawStats: StatMap = part1 ? { ...(part1.stats as StatMap ?? {}) } : {}
+  const part2RawStats: StatMap = part2 ? { ...(part2.stats as StatMap ?? {}) } : {}
 
   const part1FinalScalings = shrineActive && part1
     ? applyShrineToScalings(part1RawScalings, part1.tier)
