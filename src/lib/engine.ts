@@ -259,9 +259,9 @@ export function checkHybrid(
   const scalings1 = new Set(scaleKeys.filter(k => part1[k] != null && part1[k] !== 0))
   const scalings2 = new Set(scaleKeys.filter(k => part2[k] != null && part2[k] !== 0))
   if (scalings1.size === 0 || scalings2.size === 0) return false
-  for (const k of scalings1) { if (!scalings2.has(k)) return true }
-  for (const k of scalings2) { if (!scalings1.has(k)) return true }
-  return false
+  // Hybrid chỉ khi không có scaling nào chung giữa 2 phần
+  for (const k of scalings1) { if (scalings2.has(k)) return false }
+  return true
 }
 
 // ─── Standard weapon type resolution ─────────────────────────────────────────
@@ -361,6 +361,8 @@ export function resolveMonkWeaponType(
 // ─── Shared WeaponResult interface ───────────────────────────────────────────
 
 export interface WeaponResult {
+  part1DamageTypes: Record<string, number>
+  part2DamageTypes: Record<string, number>
   part1Name: string
   part2Name: string
   part1TypeLabel: string
@@ -444,13 +446,39 @@ function calcWeaponGeneric(
     ? speedParts.reduce((a, b) => a + b, 0) / speedParts.length
     : 1.0
 
-  const damageTypes: Record<string, number> = {}
+  const dtKeys = [
+  "trueType","physicalType","magicType","fireType",
+  "waterType","earthType","airType","hexType","holyType","summonType"
+]
+
+  const part1DamageTypes: Record<string, number> = {}
+  const part2DamageTypes: Record<string, number> = {}
+
+  // lấy damage của blade
   if (part1) {
-    const dtKeys = ["trueType","physicalType","magicType","fireType","waterType","earthType","airType","hexType","holyType","summonType"]
     for (const key of dtKeys) {
       const v = (part1 as any)[key]
-      if (v != null && v !== 0) damageTypes[key.replace("Type", "")] = v
+      if (v != null && v !== 0) {
+        part1DamageTypes[key.replace("Type", "")] = v
+      }
     }
+  }
+
+  // lấy damage của handle
+  if (part2) {
+    for (const key of dtKeys) {
+      const v = (part2 as any)[key]
+      if (v != null && v !== 0) {
+        part2DamageTypes[key.replace("Type", "")] = v
+      }
+    }
+  }
+
+  // merge lại cho weapon tổng
+  const damageTypes: Record<string, number> = { ...part1DamageTypes }
+
+  for (const [k, v] of Object.entries(part2DamageTypes)) {
+    damageTypes[k] = (damageTypes[k] ?? 0) + v
   }
 
   const scaleKeys = ["dexterityScaling","physicalScaling","magicScaling","fireScaling","waterScaling","earthScaling","airScaling","hexScaling","holyScaling","summonScaling"]
@@ -539,6 +567,8 @@ function calcWeaponGeneric(
   }
 
   const result: WeaponResult = {
+    part1DamageTypes,
+    part2DamageTypes,
     part1Name: part1?.name ?? "",
     part2Name: part2?.name ?? "",
     part1TypeLabel,

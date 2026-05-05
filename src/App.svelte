@@ -754,11 +754,22 @@ $: slot0Map = {
                 <span class="modal-type-badge modal-type-badge--handle">{h.handleType}</span>
                 {#if h.attackSpeed != null}<span class="modal-cd-badge">{h.attackSpeed}x spd</span>{/if}
               </div>
+
+              {#if hAny.physicalType || hAny.magicType || hAny.fireType || hAny.waterType || hAny.airType || hAny.hexType || hAny.holyType || hAny.earthType || hAny.trueType}
+                <div class="modal-item-stats">
+                  {#each (['true','physical','magic','fire','water','air','hex','holy','earth'] as string[]) as sk}
+                    {#if hAny[`${sk}Type`]}
+                      <span class="modal-stat-pill" style="background:rgba(251,146,60,.1);border-color:rgba(251,146,60,.2);color:var(--weapon-blade)">{sk.charAt(0).toUpperCase() + sk.slice(1)} Type: {hAny[`${sk}Type`]}x</span>
+                    {/if}
+                  {/each}
+                </div>
+              {/if}
+
               {#if hAny.physicalScaling || hAny.magicScaling || hAny.fireScaling || hAny.waterScaling || hAny.airScaling || hAny.hexScaling || hAny.holyScaling || hAny.earthScaling || hAny.dexterityScaling || hAny.summonScaling}
                 <div class="modal-item-stats">
                   {#each (['physical','magic','fire','water','air','hex','holy','earth','dexterity','summon'] as StatPrefix[]) as sk}
-                    {#if h[`${sk}Scaling` as ScalingKey]}
-                      <span class="modal-stat-pill" style="background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.2);color:var(--accent3)">{sk.charAt(0).toUpperCase() + sk.slice(1)} Scaling: {h[`${sk}Scaling` as ScalingKey]}</span>
+                    {#if hAny[`${sk}Scaling` as ScalingKey]}
+                      <span class="modal-stat-pill" style="background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.2);color:var(--accent3)">{sk.charAt(0).toUpperCase() + sk.slice(1)} Scaling: {hAny[`${sk}Scaling` as ScalingKey]}</span>
                     {/if}
                   {/each}
                 </div>
@@ -806,15 +817,17 @@ $: slot0Map = {
                 <span class="modal-type-badge modal-type-badge--glove">{g.gloveType}</span>
                 {#if g.attackSpeed != null}<span class="modal-cd-badge">{g.attackSpeed}x spd</span>{/if}
               </div>
-              {#if Object.keys(gAny).some(k => k.endsWith('Type') && gAny[k])}
+
+              {#if gAny.physicalType || gAny.magicType || gAny.fireType || gAny.waterType || gAny.airType || gAny.hexType || gAny.holyType || gAny.earthType || gAny.trueType}
                 <div class="modal-item-stats">
-                  {#each (['physical','magic','fire','water','air','hex','holy','earth','dexterity','summon','true'] as string[]) as sk}
+                  {#each (['true','physical','magic','fire','water','air','hex','holy','earth'] as string[]) as sk}
                     {#if gAny[`${sk}Type`]}
                       <span class="modal-stat-pill" style="background:rgba(251,146,60,.1);border-color:rgba(251,146,60,.2);color:var(--weapon-blade)">{sk.charAt(0).toUpperCase() + sk.slice(1)} Type: {gAny[`${sk}Type`]}x</span>
                     {/if}
                   {/each}
                 </div>
               {/if}
+
               {#if gAny.physicalScaling || gAny.magicScaling || gAny.fireScaling || gAny.waterScaling || gAny.airScaling || gAny.hexScaling || gAny.holyScaling || gAny.earthScaling || gAny.dexterityScaling || gAny.summonScaling}
                 <div class="modal-item-stats">
                   {#each (['physical','magic','fire','water','air','hex','holy','earth','dexterity','summon'] as StatPrefix[]) as sk}
@@ -857,6 +870,17 @@ $: slot0Map = {
                 <span class="modal-type-badge modal-type-badge--essence">{e.essenceType}</span>
                 {#if e.attackSpeed != null}<span class="modal-cd-badge">{e.attackSpeed}x spd</span>{/if}
               </div>
+
+              {#if eAny.physicalType || eAny.magicType || eAny.fireType || eAny.waterType || eAny.airType || eAny.hexType || eAny.holyType || eAny.earthType || eAny.trueType}
+                <div class="modal-item-stats">
+                  {#each (['true','physical','magic','fire','water','air','hex','holy','earth'] as string[]) as sk}
+                    {#if eAny[`${sk}Type`]}
+                      <span class="modal-stat-pill" style="background:rgba(251,146,60,.1);border-color:rgba(251,146,60,.2);color:var(--weapon-blade)">{sk.charAt(0).toUpperCase() + sk.slice(1)} Type: {eAny[`${sk}Type`]}x</span>
+                    {/if}
+                  {/each}
+                </div>
+              {/if}
+
               {#if eAny.physicalScaling || eAny.magicScaling || eAny.fireScaling || eAny.waterScaling || eAny.airScaling || eAny.hexScaling || eAny.holyScaling || eAny.earthScaling || eAny.dexterityScaling || eAny.summonScaling}
                 <div class="modal-item-stats">
                   {#each (['physical','magic','fire','water','air','hex','holy','earth','dexterity','summon'] as StatPrefix[]) as sk}
@@ -1164,10 +1188,10 @@ $: slot0Map = {
                   <span class="weapon-meta-val">{part1Data.attackSpeed}x</span>
                 </div>
               {/if}
-              {#if Object.keys(weaponResult.damageTypes).length}
+              {#if Object.keys(weaponResult.part1DamageTypes).length}
                 <div class="weapon-section-label">Damage Types</div>
                 <div class="damage-type-grid">
-                  {#each Object.entries(weaponResult.damageTypes) as [k, v]}
+                  {#each Object.entries(weaponResult.part1DamageTypes) as [k, v]}
                     <div class="damage-type-pill"><span class="dt-name">{formatDmgTypeLabel(k)}</span><span class="dt-val">{v}x</span></div>
                   {/each}
                 </div>
@@ -1237,7 +1261,21 @@ $: slot0Map = {
                 <div class="weapon-tier-badge" class:weapon-tier-badge--handle={!isMonk} class:monk-tier-badge--essence={isMonk}>T{part2Data?.tier}</div>
               </div>
               {#if part2Data?.attackSpeed != null}
-                <div class="weapon-meta-row"><span class="weapon-meta-label">Attack Speed</span><span class="weapon-meta-val">{part2Data.attackSpeed}x</span></div>
+                <div class="weapon-meta-row">
+                <span class="weapon-meta-label">Attack Speed</span>
+                  <span class="weapon-meta-val">{part2Data.attackSpeed}x</span>
+                </div>
+              {/if}
+              {#if Object.keys(weaponResult.part2DamageTypes).length}
+                <div class="weapon-section-label">Damage Types</div>
+                <div class="damage-type-grid">
+                  {#each Object.entries(weaponResult.part2DamageTypes) as [k, v]}
+                    <div class="damage-type-pill">
+                      <span class="dt-name">{formatDmgTypeLabel(k)}</span>
+                      <span class="dt-val">{v}x</span>
+                    </div>
+                  {/each}
+                </div>
               {/if}
               {#if Object.keys(weaponResult.part2RawScalings).length}
                 <div class="weapon-section-label">Scalings</div>
