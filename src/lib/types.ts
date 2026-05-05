@@ -37,17 +37,18 @@ export interface ArmorPart {
   upgrade: number
   stats: ArmorStats
   perkName: string
+  perkAmount: number
 }
 export interface Armor { name: string; parts: ArmorPart[]; tags?: string[] }
 
 export interface Ring {
   name: string; description: string; upgrade: number
-  stats: StatMap; perkName: string; perkStacks?: number
+  stats: StatMap; perkName: string; perkAmount?: number
 }
 
 export interface Rune {
   name: string; description: string; upgrade: number
-  stats: StatMap; cooldown: number; perkName?: string; perkStacks?: number
+  stats: StatMap; cooldown: number; perkName?: string; perkAmount?: number
 }
 
 export interface StatModifier { type: "multiplier" | "addition"; value: number }
@@ -70,58 +71,31 @@ export type EnchantSlot = "helmet" | "chestplate" | "leggings" | "ring" | "rune"
 
 export type BladeType = "Small Blade" | "Medium Blade" | "Heavy Blade" | "Hammer Head"
 export type HandleType = "Medium Handle" | "Long Handle" | "Pole"
+export type StatPrefix = 'physical' | 'magic' | 'fire' | 'water' | 'air' | 'hex' | 'holy' | 'earth'| 'summon' | 'dexterity'
+export type ScalingKey = `${StatPrefix}Scaling`
 
-export interface WeaponBlade {
+export type WeaponBlade = {
   name: string
   tier: 1 | 2 | 3 | 4 | 5
-  bladeType: BladeType
-  description: string
+  bladeType: BladeType  
   stats: StatMap
   attackSpeed?: number
-  trueType?: number
-  physicalType?: number
-  magicType?: number
-  fireType?: number
-  waterType?: number
-  earthType?: number
-  airType?: number
-  hexType?: number
-  holyType?: number
-  summonType?: number
-  dexterityScaling?: number
-  physicalScaling?: number
-  magicScaling?: number
-  fireScaling?: number
-  waterScaling?: number
-  earthScaling?: number
-  airScaling?: number
-  hexScaling?: number
-  holyScaling?: number
-  summonScaling?: number
-  perkName?: string
-  perkStacks?: number
-}
 
-export interface WeaponHandle {
+  perks?: Array<{ name: string; amount: number }>
+  perkName?: string
+  perkAmount?: number
+} & Partial<Record<ScalingKey, number>>
+
+export type WeaponHandle = {
   name: string
   tier: 1 | 2 | 3 | 4 | 5
   handleType: HandleType
-  description: string
   stats: StatMap
   attackSpeed?: number
-  dexterityScaling?: number
-  physicalScaling?: number
-  magicScaling?: number
-  fireScaling?: number
-  waterScaling?: number
-  earthScaling?: number
-  airScaling?: number
-  hexScaling?: number
-  holyScaling?: number
-  summonScaling?: number
+  perks?: Array<{ name: string; amount: number }>
   perkName?: string
-  perkStacks?: number
-}
+  perkAmount?: number
+} & Partial<Record<ScalingKey, number>>
 
 // ── Monk Weapon Types (Glove/Essence) ─────────────────────────────────────────
 
@@ -132,7 +106,6 @@ export interface MonkGlove {
   name: string
   tier: 1 | 2 | 3 | 4 | 5
   gloveType: GloveType
-  description: string
   stats: StatMap
   attackSpeed?: number
   trueType?: number
@@ -156,14 +129,13 @@ export interface MonkGlove {
   holyScaling?: number
   summonScaling?: number
   perkName?: string
-  perkStacks?: number
+  perkAmount?: number
 }
 
 export interface MonkEssence {
   name: string
   tier: 1 | 2 | 3 | 4 | 5
   essenceType: EssenceType
-  description: string
   stats: StatMap
   attackSpeed?: number
   dexterityScaling?: number
@@ -177,7 +149,7 @@ export interface MonkEssence {
   holyScaling?: number
   summonScaling?: number
   perkName?: string
-  perkStacks?: number
+  perkAmount?: number
 }
 
 // ── Build State ───────────────────────────────────────────────────────────────

@@ -9,7 +9,7 @@
     type CDRResult
   } from './lib/engine'
   import { setEnchantment } from './lib/store'
-  import type { EnchantSlot, StatMap } from './lib/types'
+  import type { EnchantSlot, StatMap, StatPrefix, ScalingKey } from './lib/types'
   import { enchantments, getEnchant as ge, isExclusiveEnchant } from './lib/engine'
 
   // ── Modal state ────────────────────────────────────────────────────────────
@@ -195,11 +195,11 @@ $: slot0Map = {
       const ring = getRing($build.ring)
       const ir = $build.infusionRing ? getRing($build.infusionRing) : null
       if (ring || ir) {
-        const bp: Record<string, number> = ring?.perkName ? { [ring.perkName]: ring.perkStacks ?? 1 } : {}
+        const bp: Record<string, number> = ring?.perkName ? { [ring.perkName]: ring.perkAmount ?? 1 } : {}
         const main = ring ? buildSlotCard('Ring', buildEnchantLabel(ring.name, 'ring'), ring.description, ring.stats, bp, 'ring') : null
         let infusion: DetailCard | null = null
         if (ir) {
-          const ibp: Record<string, number> = ir.perkName ? { [ir.perkName]: ir.perkStacks ?? 1 } : {}
+          const ibp: Record<string, number> = ir.perkName ? { [ir.perkName]: ir.perkAmount ?? 1 } : {}
           infusion = buildInfusionCard('Infusion Ring', $build.infusionRing, ir.description, ir.stats, ibp)
         }
         groups.push({ main, infusion })
@@ -208,7 +208,7 @@ $: slot0Map = {
     if ($build.rune) {
       const rune = getRune($build.rune)
       if (rune) {
-        const bp: Record<string, number> = rune.perkName ? { [rune.perkName]: rune.perkStacks ?? 1 } : {}
+        const bp: Record<string, number> = rune.perkName ? { [rune.perkName]: rune.perkAmount ?? 1 } : {}
         groups.push({ main: buildSlotCard('Rune', buildEnchantLabel(rune.name, 'rune'), rune.description, rune.stats, bp, 'rune', hasRuneCDR ? [`Base CD: ${rune.cooldown}s → ${formatCD(rune.cooldown, cdr)}`] : [`Cooldown: ${rune.cooldown}s`]), infusion: null })
       }
     }
@@ -375,7 +375,7 @@ $: slot0Map = {
                 on:click={() => { build.update(s => ({...s, [storeKey]: a.name})) }}>
                 <span class="modal-item-name">{a.name}</span>
                 <span class="modal-item-desc">{part.description}</span>
-                {#if part.perkName}<span class="modal-perk-tag">{part.perkName} +1</span>{/if}
+                {#if part.perkName}<span class="modal-perk-tag">{part.perkName} +{part.perkAmount}</span>{/if}
                 <div class="modal-item-stats">
                   {#each Object.entries(part.stats).filter(([,v]) => v !== 0) as [k,v]}
                     <span class="modal-stat-pill" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, v as number)}</span>
@@ -417,7 +417,7 @@ $: slot0Map = {
         {#if $build[storeKey]}
           {@const armorPart = getArmorPart($build[storeKey], slotName as any)}
           {#if armorPart}
-            {@const bp = armorPart.perkName ? { [armorPart.perkName]: 1 } : {}}
+            {@const bp = armorPart.perkName ? { [armorPart.perkName]: armorPart.perkAmount } : {}}
             {@const preview = getLiveEnchantPreview(enchSlot, armorPart.stats as StatMap, bp)}
             {#if preview}
               <div class="modal-section-label">Preview: {$build.enchantments[enchSlot].filter(Boolean).join(' ')} {$build[storeKey]}</div>
@@ -460,7 +460,7 @@ $: slot0Map = {
                 <span class="modal-item-name">{a.name}
                 <span class="inf-label">×0.5</span></span>
                 <span class="modal-item-desc">{part.description}</span>
-                {#if part.perkName}<span class="modal-perk-tag">{part.perkName}</span>{/if}
+                {#if part.perkName}<span class="modal-perk-tag">{part.perkName} +{part.perkAmount}</span>{/if}
                 <div class="modal-item-stats">
                   {#each Object.entries(part.stats).filter(([,v]) => v !== 0) as [k,v]}
                     <span class="modal-stat-pill modal-stat-pill--inf" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, (v as number) * 0.5)}</span>
@@ -484,7 +484,7 @@ $: slot0Map = {
               on:click={() => build.update(s => ({...s, ring: r.name}))}>
               <span class="modal-item-name">{r.name}</span>
               <span class="modal-item-desc">{r.description}</span>
-              {#if r.perkName}<span class="modal-perk-tag">{r.perkName} +{r.perkStacks ?? 1}</span>{/if}
+              {#if r.perkName}<span class="modal-perk-tag">{r.perkName} +{r.perkAmount}</span>{/if}
               <div class="modal-item-stats">
                 {#each Object.entries(r.stats).filter(([,v]) => v !== 0) as [k,v]}
                   <span class="modal-stat-pill" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, v as number)}</span>
@@ -525,7 +525,7 @@ $: slot0Map = {
         {#if $build.ring}
           {@const ringData = getRing($build.ring)}
           {#if ringData}
-            {@const bp = ringData.perkName ? { [ringData.perkName]: ringData.perkStacks ?? 1 } : {}}
+            {@const bp = ringData.perkName ? { [ringData.perkName]: ringData.perkAmount ?? 1 } : {}}
             {@const preview = getLiveEnchantPreview('ring', ringData.stats, bp)}
             {#if preview}
               <div class="modal-section-label">Preview: {$build.enchantments.ring.filter(Boolean).join(' ')} {$build.ring}</div>
@@ -560,6 +560,7 @@ $: slot0Map = {
             <button class="modal-item modal-item--sm modal-item--inf" class:modal-item--active={$build.infusionRing === r.name}
               on:click={() => { build.update(s => ({...s, infusionRing: r.name})); closeModal() }}>
               <span class="modal-item-name">{r.name} <span class="inf-label">×0.5</span></span>
+              {#if r.perkName}<span class="modal-perk-tag">{r.perkName} +{r.perkAmount}</span>{/if}
               <div class="modal-item-stats">
                 {#each Object.entries(r.stats).filter(([,v]) => v !== 0) as [k,v]}
                   <span class="modal-stat-pill modal-stat-pill--inf" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, (v as number) * 0.5)}</span>
@@ -582,7 +583,7 @@ $: slot0Map = {
               <span class="modal-item-name">{r.name}</span>
               <span class="modal-item-desc">{r.description}</span>
               <span class="modal-cd-badge">CD: {r.cooldown}s</span>
-              {#if r.perkName}<span class="modal-perk-tag">{r.perkName} +{r.perkStacks ?? 1}</span>{/if}
+              {#if r.perkName}<span class="modal-perk-tag">{r.perkName} +{r.perkAmount ?? 1}</span>{/if}
               <div class="modal-item-stats">
                 {#each Object.entries(r.stats).filter(([,v]) => v !== 0) as [k,v]}
                   <span class="modal-stat-pill" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, v as number)}</span>
@@ -623,7 +624,7 @@ $: slot0Map = {
         {#if $build.rune}
           {@const runeData = getRune($build.rune)}
           {#if runeData}
-            {@const bp = runeData.perkName ? { [runeData.perkName]: runeData.perkStacks ?? 1 } : {}}
+            {@const bp = runeData.perkName ? { [runeData.perkName]: runeData.perkAmount ?? 1 } : {}}
             {@const preview = getLiveEnchantPreview('rune', runeData.stats, bp)}
             {#if preview}
               <div class="modal-section-label">Preview: {$build.enchantments.rune.filter(Boolean).join(' ')} {$build.rune}</div>
@@ -665,17 +666,50 @@ $: slot0Map = {
             <span class="modal-item-name">— None —</span>
           </button>
           {#each filteredBlades as b}
-            <button class="modal-item modal-item--sm modal-item--blade" class:modal-item--active={$build.weaponBlade === b.name}
-              on:click={() => { build.update(s => ({...s, weaponBlade: b.name})); closeModal() }}>
+            {@const bAny = b as any}
+
+            <button
+              class="modal-item modal-item--sm modal-item--blade"
+              class:modal-item--active={$build.weaponBlade === b.name}
+              on:click={() => {
+                build.update(s => ({ ...s, weaponBlade: b.name }));
+                closeModal();
+              }}
+            >
               <div class="modal-item-head">
                 <span class="modal-item-name">{b.name}</span>
                 <span class="modal-tier-badge">T{b.tier}</span>
-                <span class="modal-type-badge">{b.bladeType}</span>
+                <span class="modal-type-badge modal-type-badge--blade">{b.bladeType}</span>
               </div>
-              {#if b.perkName}<span class="modal-perk-tag">{b.perkName} +{b.perkStacks ?? 1}</span>{/if}
+
+              {#if bAny.physicalScaling || bAny.magicScaling || bAny.fireScaling || bAny.waterScaling || bAny.airScaling || bAny.hexScaling || bAny.holyScaling || bAny.earthScaling}
+                <div class="modal-item-stats">
+                  {#each (['physical','magic','fire','water','air','hex','holy','earth'] as StatPrefix[]) as sk}
+                    {#if b[`${sk}Scaling` as ScalingKey]}
+                      <span
+                        class="modal-stat-pill"
+                        style="background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.2);color:var(--accent3)"
+                      >
+                          {sk.charAt(0).toUpperCase() + sk.slice(1)} Scaling: {b[`${sk}Scaling` as ScalingKey]}</span>
+                    {/if}
+                  {/each}
+                </div>
+              {/if}
+
+              {#if bAny.perks?.length}
+                {#each bAny.perks as p}
+                  <span class="modal-perk-tag">{p.name} +{p.amount}</span>
+                {/each}
+              {/if}
+
               <div class="modal-item-stats">
-                {#each Object.entries(b.stats).filter(([,v]) => v !== 0) as [k,v]}
-                  <span class="modal-stat-pill" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, v as number)}</span>
+                {#each Object.entries(b.stats ?? {}).filter(([, v]) => v !== 0) as [k, v]}
+                  <span
+                    class="modal-stat-pill"
+                    class:neg={(v as number) < 0}
+                  >
+                    {formatLabel(k)}: {formatStat(k, v as number)}
+                  </span>
                 {/each}
               </div>
             </button>
@@ -700,6 +734,7 @@ $: slot0Map = {
             <span class="modal-item-name">— None —</span>
           </button>
           {#each filteredHandles as h}
+            {@const hAny = h as any}
             <button class="modal-item modal-item--sm modal-item--handle" class:modal-item--active={$build.weaponHandle === h.name}
               on:click={() => { build.update(s => ({...s, weaponHandle: h.name})); closeModal() }}>
               <div class="modal-item-head">
@@ -707,7 +742,7 @@ $: slot0Map = {
                 <span class="modal-tier-badge modal-tier-badge--handle">T{h.tier}</span>
                 <span class="modal-type-badge modal-type-badge--handle">{h.handleType}</span>
               </div>
-              {#if h.perkName}<span class="modal-perk-tag">{h.perkName} +{h.perkStacks ?? 1}</span>{/if}
+              {#if h.perkName}<span class="modal-perk-tag">{h.perkName} +{h.perkAmount ?? 1}</span>{/if}
               <div class="modal-item-stats">
                 {#each Object.entries(h.stats).filter(([,v]) => v !== 0) as [k,v]}
                   <span class="modal-stat-pill" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, v as number)}</span>
@@ -742,7 +777,7 @@ $: slot0Map = {
                 <span class="modal-tier-badge modal-tier-badge--glove">T{g.tier}</span>
                 <span class="modal-type-badge modal-type-badge--glove">{g.gloveType}</span>
               </div>
-              {#if g.perkName}<span class="modal-perk-tag">{g.perkName} +{g.perkStacks ?? 1}</span>{/if}
+              {#if g.perkName}<span class="modal-perk-tag">{g.perkName} +{g.perkAmount ?? 1}</span>{/if}
               <div class="modal-item-stats">
                 {#each Object.entries(g.stats).filter(([,v]) => v !== 0) as [k,v]}
                   <span class="modal-stat-pill" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, v as number)}</span>
@@ -771,8 +806,9 @@ $: slot0Map = {
               <div class="modal-item-head">
                 <span class="modal-item-name">{e.name}</span>
                 <span class="modal-tier-badge modal-tier-badge--essence">T{e.tier}</span>
+                <span class="modal-type-badge modal-type-badge--essence">{e.essenceType}</span>
               </div>
-              {#if e.perkName}<span class="modal-perk-tag">{e.perkName} +{e.perkStacks ?? 1}</span>{/if}
+              {#if e.perkName}<span class="modal-perk-tag">{e.perkName} +{e.perkAmount ?? 1}</span>{/if}
               <div class="modal-item-stats">
                 {#each Object.entries(e.stats).filter(([,v]) => v !== 0) as [k,v]}
                   <span class="modal-stat-pill" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, v as number)}</span>
@@ -1112,7 +1148,7 @@ $: slot0Map = {
                 </div>
               {/if}
               {#if part1Data?.perkName}
-                <div class="perk-list"><div class="perk-row"><span>{part1Data.perkName}</span><span class="perk-val">+{part1Data.perkStacks ?? 1}</span></div></div>
+                <div class="perk-list"><div class="perk-row"><span>{part1Data.perkName}</span><span class="perk-val">+{part1Data.perkAmount ?? 1}</span></div></div>
               {/if}
             </div>
           {:else}
@@ -1172,7 +1208,7 @@ $: slot0Map = {
                 </div>
               {/if}
               {#if part2Data?.perkName}
-                <div class="perk-list"><div class="perk-row"><span>{part2Data.perkName}</span><span class="perk-val">+{part2Data.perkStacks ?? 1}</span></div></div>
+                <div class="perk-list"><div class="perk-row"><span>{part2Data.perkName}</span><span class="perk-val">+{part2Data.perkAmount ?? 1}</span></div></div>
               {/if}
             </div>
           {:else}
@@ -1486,8 +1522,10 @@ $: slot0Map = {
   .modal-tier-badge--glove { background:rgba(232,121,249,.12); border-color:rgba(232,121,249,.25); color:var(--monk-glove); }
   .modal-tier-badge--essence { background:rgba(129,140,248,.12); border-color:rgba(129,140,248,.25); color:var(--monk-essence); }
   .modal-type-badge { font-size:.62rem; padding:2px 6px; border-radius:4px; background:var(--surface3); color:var(--ink-muted); border:1px solid var(--border); }
+  .modal-type-badge--blade { color:var(--weapon-blade); border-color:rgba(251,146,60,.2); }
   .modal-type-badge--handle { color:var(--weapon-handle); border-color:rgba(52,211,153,.2); }
   .modal-type-badge--glove { color:var(--monk-glove); border-color:rgba(232,121,249,.2); }
+  .modal-type-badge--essence { color:var(--monk-essence); border-color:rgba(129,140,248,.2); }
   .inf-label { font-size:.6rem; color:var(--infusion); font-weight:600; opacity:.7; }
 
   /* Guild rank buttons */

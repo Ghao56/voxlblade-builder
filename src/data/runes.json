@@ -1,5 +1,5 @@
 [
-    {"name":"Glacial Snapper Mount Rune","description":"Cast to mount a glacial snapper. Gain additional defense and your LMBs and weapon art are modified while riding.","upgrade":0,"stats":{"summonBoost":10},"cooldown":10,"perkName":"Mounted Defense","perkStacks":1},
+    {"name":"Glacial Snapper Mount Rune","description":"Cast to mount a glacial snapper. Gain additional defense and your LMBs and weapon art are modified while riding.","upgrade":0,"stats":{"summonBoost":10},"cooldown":10,"perkName":"Mounted Defense","perkAmount":1},
     {"name":"Cacitrops Rune","description":"Dash backwards and drop spikes on the floor!","upgrade":0,"stats":{"dexterityBoost":8,"physicalBoost":8},"cooldown":15},
     {"name": "Rage Rune","description": "Become enraged and deal more damage!","upgrade": 0,"stats": {"physicalBoost": 10},"cooldown": 60}
 ]

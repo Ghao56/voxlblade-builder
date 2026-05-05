@@ -1,10 +1,3 @@
 [
-  {"name":"Basic Gloves","tier":1,"gloveType":"Gloves","description":"Simple padded gloves.","stats":{"physicalBoost":5},"trueType":1,"physicalType":1,"attackSpeed":1.15,"physicalScaling":0.4},
-  {"name":"Iron Fists","tier":2,"gloveType":"Gloves","description":"Heavy iron plated gloves.","stats":{"physicalBoost":12,"speedBoost":-3},"trueType":1,"physicalType":1.2,"attackSpeed":1.0,"physicalScaling":0.5},
-  {"name":"Swift Wraps","tier":2,"gloveType":"Gloves","description":"Lightweight wraps built for speed.","stats":{"dexterityBoost":10,"speedBoost":5,"attackSpeed":8},"trueType":1,"physicalType":0.8,"attackSpeed":1.3,"dexterityScaling":0.4},
-  {"name":"Hex Gauntlets","tier":3,"gloveType":"Gloves","description":"Cursed gauntlets that channel dark energy.","stats":{"hexBoost":15,"magicBoost":8},"trueType":1,"hexType":0.8,"magicType":0.4,"attackSpeed":1.05,"hexScaling":0.4},
-  {"name":"Holy Wraps","tier":3,"gloveType":"Gloves","description":"Blessed wraps imbued with divine energy.","stats":{"holyBoost":15,"speedBoost":5},"trueType":1,"holyType":0.9,"attackSpeed":1.1,"holyScaling":0.4},
-  {"name":"Prism Knuckles","tier":4,"gloveType":"Gloves","description":"Knuckles that refract all elemental forces.","stats":{"magicBoost":8,"fireBoost":8,"waterBoost":8,"airBoost":8,"hexBoost":8,"holyBoost":8},"trueType":1,"magicType":0.5,"fireType":0.3,"waterType":0.3,"airType":0.3,"hexType":0.3,"holyType":0.3,"attackSpeed":1.1},
-  {"name":"Iron Slayer Gloves","tier":4,"gloveType":"Gloves","description":"Worn by the legendary Iron Slayer.","stats":{"physicalBoost":20,"speedBoost":8},"trueType":1.1,"physicalType":1.2,"attackSpeed":1.1,"physicalScaling":0.5,"perkName":"Iron Slayer Spirit","perkStacks":1},
-  {"name":"Shield Fist","tier":3,"gloveType":"Shield","description":"A reinforced shield used as a weapon.","stats":{"physicalDefense":15,"physicalBoost":8},"trueType":1,"physicalType":0.9,"attackSpeed":0.95,"physicalScaling":0.35}
+  {"name": "Basic Gloves", "tier": 1, "stats": {"physicalBoost": 10.0, "dexterityBoost": 10.0}, "gloveType": "Gloves", "physicalType": 1.0, "physicalScaling": 0.15, "dexterityScaling": 0.15, "perks": [{"name": "Marsh Flow", "amount": 1}, {"name": "Basic Spirit", "amount": 1}]}
 ]

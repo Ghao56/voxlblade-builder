@@ -37,7 +37,8 @@ export const armors: Armor[] = (armorsRaw as any[]).map(a => ({
     description: p.description ?? a.sharedPart?.description ?? "",
     upgrade: p.upgrade ?? a.sharedPart?.upgrade ?? 0,
     stats: { ...(a.sharedPart?.stats ?? {}), ...(p.stats ?? {}) },
-    perkName: p.perkName ?? a.sharedPart?.perkName ?? ""
+    perkName: p.perkName ?? a.sharedPart?.perkName ?? "",
+    perkAmount: p.perkAmount ?? a.sharedPart?.perkAmount ?? 0
   }))
 }))
 
@@ -419,11 +420,23 @@ function calcWeaponGeneric(
 
   if (part1) {
     if (part1.attackSpeed != null) speedParts.push(part1.attackSpeed)
-    if (part1.perkName) perks[part1.perkName] = (perks[part1.perkName] ?? 0) + (part1.perkStacks ?? 1)
+    if (part1.perkName) {
+      perks[part1.perkName] = (perks[part1.perkName] ?? 0) + (part1.perkAmount ?? 1)
+    }
+    const p1perks = (part1 as any).perks as Array<{name:string;amount:number}> | undefined
+    if (p1perks) {
+      for (const p of p1perks) perks[p.name] = (perks[p.name] ?? 0) + p.amount
+    }
   }
   if (part2) {
     if (part2.attackSpeed != null) speedParts.push(part2.attackSpeed)
-    if (part2.perkName) perks[part2.perkName] = (perks[part2.perkName] ?? 0) + (part2.perkStacks ?? 1)
+    if (part2.perkName) {
+      perks[part2.perkName] = (perks[part2.perkName] ?? 0) + (part2.perkAmount ?? 1)
+    }
+    const p2perks = (part2 as any).perks as Array<{name:string;amount:number}> | undefined
+    if (p2perks) {
+      for (const p of p2perks) perks[p.name] = (perks[p.name] ?? 0) + p.amount
+    }
   }
 
   const attackSpeed = speedParts.length > 0
@@ -754,7 +767,7 @@ export function calcBuild(state: BuildState): BuildResult {
     const ring = getRing(state.ring)
     if (ring) {
       const basePerksForRing: Record<string, number> = ring.perkName
-        ? { [ring.perkName]: ring.perkStacks ?? 1 } : {}
+        ? { [ring.perkName]: ring.perkAmount ?? 1 } : {}
       const slotResult = applyEnchantmentsToSlot(ring.stats, basePerksForRing, state.enchantments.ring)
       addStats(slotResult.stats)
       for (const [k, v] of Object.entries(slotResult.perks)) {
@@ -768,7 +781,7 @@ export function calcBuild(state: BuildState): BuildResult {
     const rune = getRune(state.rune)
     if (rune) {
       const basePerksForRune: Record<string, number> = rune.perkName
-        ? { [rune.perkName]: rune.perkStacks ?? 1 } : {}
+        ? { [rune.perkName]: rune.perkAmount ?? 1 } : {}
       const slotResult = applyEnchantmentsToSlot(rune.stats, basePerksForRune, state.enchantments.rune)
       addStats(slotResult.stats)
       for (const [k, v] of Object.entries(slotResult.perks)) {
@@ -787,7 +800,9 @@ export function calcBuild(state: BuildState): BuildResult {
           ? applyShrineToStats(glove.stats as StatMap, glove.tier)
           : glove.stats as StatMap
         addStats(gloveStats)
-        if (glove.perkName) perks[glove.perkName] = (perks[glove.perkName] ?? 0) + (glove.perkStacks ?? 1)
+        if (glove.perkName) perks[glove.perkName] = (perks[glove.perkName] ?? 0) + (glove.perkAmount ?? 1)
+        const gp = (glove as any).perks as Array<{name:string;amount:number}> | undefined
+        if (gp) for (const p of gp) perks[p.name] = (perks[p.name] ?? 0) + p.amount
       }
     }
     if (state.monkEssence) {
@@ -797,7 +812,9 @@ export function calcBuild(state: BuildState): BuildResult {
           ? applyShrineToStats(essence.stats as StatMap, essence.tier)
           : essence.stats as StatMap
         addStats(essenceStats)
-        if (essence.perkName) perks[essence.perkName] = (perks[essence.perkName] ?? 0) + (essence.perkStacks ?? 1)
+        if (essence.perkName) perks[essence.perkName] = (perks[essence.perkName] ?? 0) + (essence.perkAmount ?? 1)
+        const ep = (essence as any).perks as Array<{name:string;amount:number}> | undefined
+        if (ep) for (const p of ep) perks[p.name] = (perks[p.name] ?? 0) + p.amount
       }
     }
   } else {
@@ -808,7 +825,9 @@ export function calcBuild(state: BuildState): BuildResult {
           ? applyShrineToStats(blade.stats as StatMap, blade.tier)
           : blade.stats as StatMap
         addStats(bladeStats)
-        if (blade.perkName) perks[blade.perkName] = (perks[blade.perkName] ?? 0) + (blade.perkStacks ?? 1)
+        if (blade.perkName) perks[blade.perkName] = (perks[blade.perkName] ?? 0) + (blade.perkAmount ?? 1)
+        const bp = (blade as any).perks as Array<{name:string;amount:number}> | undefined
+        if (bp) for (const p of bp) perks[p.name] = (perks[p.name] ?? 0) + p.amount
       }
     }
     if (state.weaponHandle) {
@@ -818,7 +837,9 @@ export function calcBuild(state: BuildState): BuildResult {
           ? applyShrineToStats(handle.stats as StatMap, handle.tier)
           : handle.stats as StatMap
         addStats(handleStats)
-        if (handle.perkName) perks[handle.perkName] = (perks[handle.perkName] ?? 0) + (handle.perkStacks ?? 1)
+        if (handle.perkName) perks[handle.perkName] = (perks[handle.perkName] ?? 0) + (handle.perkAmount ?? 1)
+        const hp = (handle as any).perks as Array<{name:string;amount:number}> | undefined
+        if (hp) for (const p of hp) perks[p.name] = (perks[p.name] ?? 0) + p.amount
       }
     }
   }
@@ -857,7 +878,7 @@ export function calcBuild(state: BuildState): BuildResult {
   if (state.infusionRing) {
     const ring = getRing(state.infusionRing)
     if (ring) {
-      const basePerks: Record<string, number> = ring.perkName ? { [ring.perkName]: ring.perkStacks ?? 1 } : {}
+      const basePerks: Record<string, number> = ring.perkName ? { [ring.perkName]: ring.perkAmount ?? 1 } : {}
       const inf = applyInfusion(ring.stats, basePerks)
       addStats(inf.stats)
       for (const [k, v] of Object.entries(inf.perks)) perks[k] = (perks[k] ?? 0) + v
