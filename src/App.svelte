@@ -313,7 +313,6 @@ $: slot0Map = {
         </div>
 
       <!-- GUILD MODAL -->
-      <!-- GUILD MODAL -->
 {:else if activeModal === 'guild'}
   <h2 class="modal-title">Select Guild</h2>
   <div class="modal-list">
@@ -326,7 +325,8 @@ $: slot0Map = {
       {@const hoveredRank = isActive ? g.ranks.find(r => r.rank === $build.guildRank) : g.ranks[0]}
       <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
       <div class="modal-item" class:modal-item--active={isActive}
-        on:click={() => build.update(s => ({...s, guild: g.name, guildRank: s.guild === g.name ? s.guildRank : 1}))}>
+        on:click={() => { build.update(s => ({...s, guild: g.name, guildRank: s.guild === g.name ? s.guildRank : 3})); closeModal() }}>
+        
         <span class="modal-item-name">{g.name}</span>
         <div class="modal-rank-row">
           {#each g.ranks as rank}
@@ -680,11 +680,22 @@ $: slot0Map = {
                 <span class="modal-item-name">{b.name}</span>
                 <span class="modal-tier-badge">T{b.tier}</span>
                 <span class="modal-type-badge modal-type-badge--blade">{b.bladeType}</span>
+                {#if b.attackSpeed != null}<span class="modal-cd-badge">{b.attackSpeed}x spd</span>{/if}
               </div>
 
-              {#if bAny.physicalScaling || bAny.magicScaling || bAny.fireScaling || bAny.waterScaling || bAny.airScaling || bAny.hexScaling || bAny.holyScaling || bAny.earthScaling}
+              {#if bAny.physicalType || bAny.magicType || bAny.fireType || bAny.waterType || bAny.airType || bAny.hexType || bAny.holyType || bAny.earthType || bAny.trueType}
                 <div class="modal-item-stats">
-                  {#each (['physical','magic','fire','water','air','hex','holy','earth'] as StatPrefix[]) as sk}
+                  {#each (['true','physical','magic','fire','water','air','hex','holy','earth'] as string[]) as sk}
+                    {#if bAny[`${sk}Type`]}
+                      <span class="modal-stat-pill" style="background:rgba(251,146,60,.1);border-color:rgba(251,146,60,.2);color:var(--weapon-blade)">{sk.charAt(0).toUpperCase() + sk.slice(1)} Type: {bAny[`${sk}Type`]}x</span>
+                    {/if}
+                  {/each}
+                </div>
+              {/if}
+
+              {#if bAny.physicalScaling || bAny.magicScaling || bAny.fireScaling || bAny.waterScaling || bAny.airScaling || bAny.hexScaling || bAny.holyScaling || bAny.earthScaling || bAny.dexterityScaling || bAny.summonScaling}
+                <div class="modal-item-stats">
+                  {#each (['physical','magic','fire','water','air','hex','holy','earth','dexterity','summon'] as StatPrefix[]) as sk}
                     {#if b[`${sk}Scaling` as ScalingKey]}
                       <span
                         class="modal-stat-pill"
@@ -735,14 +746,30 @@ $: slot0Map = {
           </button>
           {#each filteredHandles as h}
             {@const hAny = h as any}
-            <button class="modal-item modal-item--sm modal-item--handle" class:modal-item--active={$build.weaponHandle === h.name}
+              <button class="modal-item modal-item--sm modal-item--handle" class:modal-item--active={$build.weaponHandle === h.name}
               on:click={() => { build.update(s => ({...s, weaponHandle: h.name})); closeModal() }}>
               <div class="modal-item-head">
                 <span class="modal-item-name">{h.name}</span>
                 <span class="modal-tier-badge modal-tier-badge--handle">T{h.tier}</span>
                 <span class="modal-type-badge modal-type-badge--handle">{h.handleType}</span>
+                {#if h.attackSpeed != null}<span class="modal-cd-badge">{h.attackSpeed}x spd</span>{/if}
               </div>
-              {#if h.perkName}<span class="modal-perk-tag">{h.perkName} +{h.perkAmount ?? 1}</span>{/if}
+              {#if hAny.physicalScaling || hAny.magicScaling || hAny.fireScaling || hAny.waterScaling || hAny.airScaling || hAny.hexScaling || hAny.holyScaling || hAny.earthScaling || hAny.dexterityScaling || hAny.summonScaling}
+                <div class="modal-item-stats">
+                  {#each (['physical','magic','fire','water','air','hex','holy','earth','dexterity','summon'] as StatPrefix[]) as sk}
+                    {#if h[`${sk}Scaling` as ScalingKey]}
+                      <span class="modal-stat-pill" style="background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.2);color:var(--accent3)">{sk.charAt(0).toUpperCase() + sk.slice(1)} Scaling: {h[`${sk}Scaling` as ScalingKey]}</span>
+                    {/if}
+                  {/each}
+                </div>
+              {/if}
+              
+              {#if hAny.perks?.length}
+                {#each hAny.perks as h}
+                  <span class="modal-perk-tag">{h .name} +{h.amount}</span>
+                {/each}
+              {/if}
+              
               <div class="modal-item-stats">
                 {#each Object.entries(h.stats).filter(([,v]) => v !== 0) as [k,v]}
                   <span class="modal-stat-pill" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, v as number)}</span>
@@ -770,13 +797,33 @@ $: slot0Map = {
             <span class="modal-item-name">— None —</span>
           </button>
           {#each filteredGloves as g}
-            <button class="modal-item modal-item--sm modal-item--glove" class:modal-item--active={$build.monkGlove === g.name}
+          {@const gAny = g as any}
+              <button class="modal-item modal-item--sm modal-item--glove" class:modal-item--active={$build.monkGlove === g.name}
               on:click={() => { build.update(s => ({...s, monkGlove: g.name})); closeModal() }}>
               <div class="modal-item-head">
                 <span class="modal-item-name">{g.name}</span>
                 <span class="modal-tier-badge modal-tier-badge--glove">T{g.tier}</span>
                 <span class="modal-type-badge modal-type-badge--glove">{g.gloveType}</span>
+                {#if g.attackSpeed != null}<span class="modal-cd-badge">{g.attackSpeed}x spd</span>{/if}
               </div>
+              {#if Object.keys(gAny).some(k => k.endsWith('Type') && gAny[k])}
+                <div class="modal-item-stats">
+                  {#each (['physical','magic','fire','water','air','hex','holy','earth','dexterity','summon','true'] as string[]) as sk}
+                    {#if gAny[`${sk}Type`]}
+                      <span class="modal-stat-pill" style="background:rgba(251,146,60,.1);border-color:rgba(251,146,60,.2);color:var(--weapon-blade)">{sk.charAt(0).toUpperCase() + sk.slice(1)} Type: {gAny[`${sk}Type`]}x</span>
+                    {/if}
+                  {/each}
+                </div>
+              {/if}
+              {#if gAny.physicalScaling || gAny.magicScaling || gAny.fireScaling || gAny.waterScaling || gAny.airScaling || gAny.hexScaling || gAny.holyScaling || gAny.earthScaling || gAny.dexterityScaling || gAny.summonScaling}
+                <div class="modal-item-stats">
+                  {#each (['physical','magic','fire','water','air','hex','holy','earth','dexterity','summon'] as StatPrefix[]) as sk}
+                    {#if gAny[`${sk}Scaling` as ScalingKey]}
+                      <span class="modal-stat-pill" style="background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.2);color:var(--accent3)">{sk.charAt(0).toUpperCase() + sk.slice(1)} Scaling: {gAny[`${sk}Scaling` as ScalingKey]}</span>
+                    {/if}
+                  {/each}
+                </div>
+              {/if}
               {#if g.perkName}<span class="modal-perk-tag">{g.perkName} +{g.perkAmount ?? 1}</span>{/if}
               <div class="modal-item-stats">
                 {#each Object.entries(g.stats).filter(([,v]) => v !== 0) as [k,v]}
@@ -801,13 +848,24 @@ $: slot0Map = {
             <span class="modal-item-name">— None —</span>
           </button>
           {#each filteredEssences as e}
-            <button class="modal-item modal-item--sm modal-item--essence" class:modal-item--active={$build.monkEssence === e.name}
+            {@const eAny = e as any}
+              <button class="modal-item modal-item--sm modal-item--essence" class:modal-item--active={$build.monkEssence === e.name}
               on:click={() => { build.update(s => ({...s, monkEssence: e.name})); closeModal() }}>
               <div class="modal-item-head">
                 <span class="modal-item-name">{e.name}</span>
                 <span class="modal-tier-badge modal-tier-badge--essence">T{e.tier}</span>
                 <span class="modal-type-badge modal-type-badge--essence">{e.essenceType}</span>
+                {#if e.attackSpeed != null}<span class="modal-cd-badge">{e.attackSpeed}x spd</span>{/if}
               </div>
+              {#if eAny.physicalScaling || eAny.magicScaling || eAny.fireScaling || eAny.waterScaling || eAny.airScaling || eAny.hexScaling || eAny.holyScaling || eAny.earthScaling || eAny.dexterityScaling || eAny.summonScaling}
+                <div class="modal-item-stats">
+                  {#each (['physical','magic','fire','water','air','hex','holy','earth','dexterity','summon'] as StatPrefix[]) as sk}
+                    {#if eAny[`${sk}Scaling` as ScalingKey]}
+                      <span class="modal-stat-pill" style="background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.2);color:var(--accent3)">{sk.charAt(0).toUpperCase() + sk.slice(1)} Scaling: {eAny[`${sk}Scaling` as ScalingKey]}</span>
+                    {/if}
+                  {/each}
+                </div>
+              {/if}
               {#if e.perkName}<span class="modal-perk-tag">{e.perkName} +{e.perkAmount ?? 1}</span>{/if}
               <div class="modal-item-stats">
                 {#each Object.entries(e.stats).filter(([,v]) => v !== 0) as [k,v]}
@@ -1147,8 +1205,15 @@ $: slot0Map = {
                   {/each}
                 </div>
               {/if}
-              {#if part1Data?.perkName}
-                <div class="perk-list"><div class="perk-row"><span>{part1Data.perkName}</span><span class="perk-val">+{part1Data.perkAmount ?? 1}</span></div></div>
+              {#if part1Data?.perkName || (part1Data as any)?.perks?.length}
+                <div class="perk-list">
+                  {#if part1Data?.perkName}
+                    <div class="perk-row">...</div>
+                  {/if}
+                  {#each ((part1Data as any)?.perks ?? []) as p}
+                    <div class="perk-row"><span>{p.name}</span><span class="perk-val">+{p.amount}</span></div>
+                  {/each}
+                </div>
               {/if}
             </div>
           {:else}
@@ -1207,8 +1272,15 @@ $: slot0Map = {
                   {/each}
                 </div>
               {/if}
-              {#if part2Data?.perkName}
-                <div class="perk-list"><div class="perk-row"><span>{part2Data.perkName}</span><span class="perk-val">+{part2Data.perkAmount ?? 1}</span></div></div>
+              {#if part2Data?.perkName || (part2Data as any)?.perks?.length}
+                <div class="perk-list">
+                  {#if part2Data?.perkName}
+                    <div class="perk-row"><span>{part2Data.perkName}</span><span class="perk-val">+{part2Data.perkAmount ?? 1}</span></div>
+                  {/if}
+                  {#each ((part2Data as any)?.perks ?? []) as p}
+                    <div class="perk-row"><span>{p.name}</span><span class="perk-val">+{p.amount}</span></div>
+                  {/each}
+                </div>
               {/if}
             </div>
           {:else}
