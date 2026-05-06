@@ -11,6 +11,7 @@
   import { setEnchantment } from './lib/store'
   import type { EnchantSlot, StatMap, StatPrefix, ScalingKey } from './lib/types'
   import { enchantments, getEnchant as ge, isExclusiveEnchant } from './lib/engine'
+  import EnchantSelect from './lib/EnchantSelect.svelte'
 
   // ── Modal state ────────────────────────────────────────────────────────────
   type ModalType = 'race' | 'guild' | 'armor-helmet' | 'armor-chestplate' | 'armor-leggings' | 'infusion-helmet' | 'infusion-chestplate' | 'infusion-leggings' | 'ring' | 'infusion-ring' | 'rune' | 'blade' | 'handle' | 'glove' | 'essence' | null
@@ -68,6 +69,14 @@
     build.update(s => ({ ...s, enchantments: { ...s.enchantments, [slot]: ['','',''] as [string,string,string] } }))
   }
 
+  function swapEnchantments(slot: EnchantSlot, i: 0|1|2, j: 0|1|2) {
+    build.update(s => {
+      const next = [...s.enchantments[slot]] as [string,string,string]
+      ;[next[i], next[j]] = [next[j], next[i]]
+      return { ...s, enchantments: { ...s.enchantments, [slot]: next } }
+    })
+  }
+
   // ── Inline enchant reactive values ─────────────────────────────────────────
   $: iepSlot = inlineEnchantSlot
   $: iepS0 = iepSlot ? $build.enchantments[iepSlot][0] : ''
@@ -82,6 +91,7 @@
     rune:       isExclusiveEnchant(ge($build.enchantments.rune[0]))
   }
   $: iepExcl = iepSlot ? exclMap[iepSlot] : false
+  $: iepHasEnchants = !!(iepS0 || iepS1 || iepS2)
   $: iepCat = iepSlot ? enchantCats[iepSlot] : 'unAscended'
   // enchantCats được đọc trực tiếp ở đây để Svelte track dependency
   $: iepOpts0 = iepSlot ? enchantments.filter(e => e.category === enchantCats[iepSlot] && e.name !== iepS1 && e.name !== iepS2) : []
@@ -969,7 +979,7 @@
                     on:click={() => { if (iepCat !== 'Ascended') toggleEnchantCat(iepSlot) }}>
                     Ascended
                   </button>
-                  {#if hasEnchants(iepSlot)}
+                  {#if iepHasEnchants}
                     <button class="iep-clear-btn" on:click={() => clearEnchants(iepSlot)}>
                       Clear all
                     </button>
@@ -981,47 +991,48 @@
                 <!-- Slot 0 luôn hiện -->
                 <div class="iep-slot">
                   <span class="iep-slot-num">1</span>
-                  <select class="iep-select"
+                  <EnchantSelect
                     value={iepS0}
-                    on:change={e => setEnchantment(iepSlot, 0, (e.target as HTMLSelectElement).value)}
-                    on:mousemove={ev => onEnchantMove(ev, iepS0)}
-                    on:mouseleave={onEnchantLeave}>
-                    <option value="">— None —</option>
-                    {#each iepOpts0 as opt}
-                      <option value={opt.name}>{opt.name}</option>
-                    {/each}
-                  </select>
+                    options={iepOpts0}
+                    on:change={e => setEnchantment(iepSlot, 0, e.detail)}
+                  />
+                  {#if iepS0}
+                    <button class="iep-slot-clear" title="Clear slot 1"
+                      on:click={() => setEnchantment(iepSlot, 0, '')}>✕</button>
+                  {/if}
                 </div>
                 <!-- Slot 1: chỉ khi s0 có giá trị và không exclusive -->
                 {#if iepS0 && !iepExcl}
+                  <button class="iep-swap-btn" title="Swap slot 1 ↔ slot 2"
+                    on:click={() => swapEnchantments(iepSlot, 0, 1)}>⇅</button>
                   <div class="iep-slot">
                     <span class="iep-slot-num">2</span>
-                    <select class="iep-select"
+                    <EnchantSelect
                       value={iepS1}
-                      on:change={e => setEnchantment(iepSlot, 1, (e.target as HTMLSelectElement).value)}
-                      on:mousemove={ev => onEnchantMove(ev, iepS1)}
-                      on:mouseleave={onEnchantLeave}>
-                      <option value="">— None —</option>
-                      {#each iepOpts1 as opt}
-                        <option value={opt.name}>{opt.name}</option>
-                      {/each}
-                    </select>
+                      options={iepOpts1}
+                      on:change={e => setEnchantment(iepSlot, 1, e.detail)}
+                    />
+                    {#if iepS1}
+                      <button class="iep-slot-clear" title="Clear slot 2"
+                        on:click={() => setEnchantment(iepSlot, 1, '')}>✕</button>
+                    {/if}
                   </div>
                 {/if}
                 <!-- Slot 2: chỉ khi s1 có giá trị và không exclusive -->
                 {#if iepS1 && !iepExcl}
+                  <button class="iep-swap-btn" title="Swap slot 2 ↔ slot 3"
+                    on:click={() => swapEnchantments(iepSlot, 1, 2)}>⇅</button>
                   <div class="iep-slot">
                     <span class="iep-slot-num">3</span>
-                    <select class="iep-select"
+                    <EnchantSelect
                       value={iepS2}
-                      on:change={e => setEnchantment(iepSlot, 2, (e.target as HTMLSelectElement).value)}
-                      on:mousemove={ev => onEnchantMove(ev, iepS2)}
-                      on:mouseleave={onEnchantLeave}>
-                      <option value="">— None —</option>
-                      {#each iepOpts2 as opt}
-                        <option value={opt.name}>{opt.name}</option>
-                      {/each}
-                    </select>
+                      options={iepOpts2}
+                      on:change={e => setEnchantment(iepSlot, 2, e.detail)}
+                    />
+                    {#if iepS2}
+                      <button class="iep-slot-clear" title="Clear slot 3"
+                        on:click={() => setEnchantment(iepSlot, 2, '')}>✕</button>
+                    {/if}
                   </div>
                 {/if}
               </div>
@@ -1668,18 +1679,15 @@
   .iep-close-btn { width:24px; height:24px; border-radius:5px; border:1px solid var(--border); background:var(--surface3); color:var(--ink-muted); font-size:.7rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; }
   .iep-close-btn:hover { background:rgba(248,113,113,.15); color:var(--neg); border-color:rgba(248,113,113,.3); }
 
-  .iep-slots { display:flex; gap:8px; flex-wrap:wrap; align-items:flex-start; }
-  .iep-slot { display:flex; align-items:center; gap:6px; flex:1; min-width:200px; }
+  .iep-slot-clear { flex-shrink:0; width:22px; height:22px; border-radius:5px; border:1px solid rgba(248,113,113,.25); background:rgba(248,113,113,.08); color:var(--neg); font-size:.58rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; padding:0; line-height:1; }
+  .iep-slot-clear:hover { background:rgba(248,113,113,.25); border-color:rgba(248,113,113,.5); }
+
+  .iep-swap-btn { align-self:center; flex-shrink:0; width:22px; height:22px; border-radius:5px; border:1px solid rgba(167,139,250,.2); background:rgba(167,139,250,.07); color:var(--accent3); font-size:.8rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; padding:0; line-height:1; margin:0 -2px; }
+  .iep-swap-btn:hover { background:rgba(167,139,250,.2); border-color:rgba(167,139,250,.5); }
+
+  .iep-slots { display:flex; flex-direction:column; gap:4px; }
+  .iep-slot { display:flex; align-items:center; gap:6px; }
   .iep-slot-num { font-size:.65rem; font-weight:800; color:var(--accent3); width:14px; flex-shrink:0; opacity:.7; }
-  .iep-select {
-    flex:1; appearance:none; background:var(--surface); border:1px solid rgba(167,139,250,.25);
-    border-radius:7px; color:var(--ink); font-size:.8rem; padding:7px 24px 7px 10px;
-    cursor:pointer; font-family:var(--font-body);
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23a78bfa' d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
-    background-repeat:no-repeat; background-position:right 8px center;
-    transition:border-color .15s;
-  }
-  .iep-select:focus { outline:none; border-color:var(--accent3); }
   .iep-excl-note { font-size:.72rem; color:var(--accent2); margin-top:8px; padding:6px 10px; background:rgba(245,158,11,.08); border:1px solid rgba(245,158,11,.2); border-radius:6px; }
 
   /* ── Collapsible panel title buttons ── */
@@ -1834,7 +1842,6 @@
     .weapon-combine--arrow { display:none; }
     .sg-weapon-inner { flex-direction:column; gap:8px; }
     .shrine-inline { align-items:flex-start; }
-    .iep-slots { flex-direction:column; }
     .iep-slot { min-width:unset; }
   }
   @media (max-width:640px) {

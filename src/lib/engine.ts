@@ -88,55 +88,68 @@ export function applyEnchantmentsToSlot(
   basePerks: Record<string, number>,
   enchantNames: string[]
 ): { stats: StatMap; perks: Record<string, number> } {
-  const stats = { ...baseStats }
-  const perks = { ...basePerks }
+  // Multiplier-first, addition-last:
+  //   result[k] = baseValue[k] * (∏ multipliers) + (∑ additions)
+  // positiveStats / negativeStats / defenseStats only apply multipliers to
+  // the keys where base satisfies their condition; additions are accumulated
+  // independently and added at the end.
 
   const ordered = [...enchantNames].reverse()
+
+  const mult: Partial<Record<StatKey, number>> = {}
+  const add:  Partial<Record<StatKey, number>> = {}
+  const perks = { ...basePerks }
 
   for (const name of ordered) {
     if (!name) continue
     const e = getEnchant(name)
     if (!e) continue
-
     const es = e.stats
 
+    // ── positiveStats ──
     if (es.positiveStats) {
       const mods = normalizeModifiers(es.positiveStats as StatModifier | StatModifier[])
-      for (const key of Object.keys(stats) as StatKey[]) {
-        const v = stats[key] ?? 0
-        if (v > 0) {
-          let nv = v
-          for (const mod of mods) nv = applyMod(nv, mod)
-          stats[key] = nv
+      for (const key of STAT_KEYS) {
+        const base = baseStats[key] ?? 0
+        if (base > 0) {
+          for (const mod of mods) {
+            if (mod.type === 'multiplier') mult[key] = (mult[key] ?? 1) * mod.value
+            else add[key] = (add[key] ?? 0) + mod.value
+          }
         }
       }
     }
 
+    // ── negativeStats ──
     if (es.negativeStats) {
       const mods = normalizeModifiers(es.negativeStats as StatModifier | StatModifier[])
-      for (const key of Object.keys(stats) as StatKey[]) {
-        const v = stats[key] ?? 0
-        if (v < 0) {
-          let nv = v
-          for (const mod of mods) nv = applyMod(nv, mod)
-          stats[key] = nv
+      for (const key of STAT_KEYS) {
+        const base = baseStats[key] ?? 0
+        if (base < 0) {
+          for (const mod of mods) {
+            if (mod.type === 'multiplier') mult[key] = (mult[key] ?? 1) * mod.value
+            else add[key] = (add[key] ?? 0) + mod.value
+          }
         }
       }
     }
 
+    // ── defenseStats ──
     if (es.defenseStats) {
       const mods = normalizeModifiers(es.defenseStats as StatModifier | StatModifier[])
       const defenseKeys = STAT_KEYS.filter(k => k.endsWith('Defense'))
-      for (const key of Object.keys(stats) as StatKey[]) {
-        const v = stats[key] ?? 0
-        if (v > 0 && defenseKeys.includes(key)) {
-          let nv = v
-          for (const mod of mods) nv = applyMod(nv, mod)
-          stats[key] = nv
+      for (const key of defenseKeys) {
+        const base = baseStats[key] ?? 0
+        if (base !== 0) {
+          for (const mod of mods) {
+            if (mod.type === 'multiplier') mult[key] = (mult[key] ?? 1) * mod.value
+            else add[key] = (add[key] ?? 0) + mod.value
+          }
         }
       }
     }
 
+    // ── perks multiplier (kept as sequential apply, same as before) ──
     if (es.perks) {
       const mods = normalizeModifiers(es.perks as StatModifier | StatModifier[])
       for (const perkName of Object.keys(perks)) {
@@ -146,18 +159,35 @@ export function applyEnchantmentsToSlot(
       }
     }
 
+    // ── specific stat keys ──
     for (const [key, modifier] of Object.entries(es)) {
-      if (!modifier || ["positiveStats", "negativeStats", "perks"].includes(key)) continue
+      if (!modifier) continue
+      if (['positiveStats', 'negativeStats', 'defenseStats', 'perks'].includes(key)) continue
       if (!STAT_KEYS.includes(key as StatKey)) continue
       const mods = normalizeModifiers(modifier as StatModifier | StatModifier[])
-      let v = stats[key as StatKey] ?? 0
-      for (const mod of mods) v = applyMod(v, mod)
-      stats[key as StatKey] = v
+      for (const mod of mods) {
+        if (mod.type === 'multiplier') mult[key as StatKey] = (mult[key as StatKey] ?? 1) * mod.value
+        else add[key as StatKey] = (add[key as StatKey] ?? 0) + mod.value
+      }
     }
 
+    // ── enchant effects → perks ──
     for (const eff of e.effects) {
       perks[eff.name] = (perks[eff.name] ?? 0) + eff.value
     }
+  }
+
+  // ── Combine: base * multiplier + addition ──
+  const stats: StatMap = {}
+  const allKeys = new Set<StatKey>([
+    ...Object.keys(baseStats) as StatKey[],
+    ...Object.keys(mult) as StatKey[],
+    ...Object.keys(add) as StatKey[],
+  ])
+  for (const key of allKeys) {
+    const base = baseStats[key] ?? 0
+    const result = base * (mult[key] ?? 1) + (add[key] ?? 0)
+    if (result !== 0) stats[key] = result
   }
 
   return { stats, perks }
@@ -259,7 +289,6 @@ export function checkHybrid(
   const scalings1 = new Set(scaleKeys.filter(k => part1[k] != null && part1[k] !== 0))
   const scalings2 = new Set(scaleKeys.filter(k => part2[k] != null && part2[k] !== 0))
   if (scalings1.size === 0 || scalings2.size === 0) return false
-  // Hybrid chỉ khi không có scaling nào chung giữa 2 phần
   for (const k of scalings1) { if (scalings2.has(k)) return false }
   return true
 }
@@ -454,7 +483,6 @@ function calcWeaponGeneric(
   const part1DamageTypes: Record<string, number> = {}
   const part2DamageTypes: Record<string, number> = {}
 
-  // lấy damage của blade
   if (part1) {
     for (const key of dtKeys) {
       const v = (part1 as any)[key]
@@ -464,7 +492,6 @@ function calcWeaponGeneric(
     }
   }
 
-  // lấy damage của handle
   if (part2) {
     for (const key of dtKeys) {
       const v = (part2 as any)[key]
@@ -474,7 +501,6 @@ function calcWeaponGeneric(
     }
   }
 
-  // merge lại cho weapon tổng
   const damageTypes: Record<string, number> = { ...part1DamageTypes }
 
   for (const [k, v] of Object.entries(part2DamageTypes)) {
@@ -645,18 +671,11 @@ export function calcMonkWeapon(
 }
 
 // ─── Cooldown Reduction System ────────────────────────────────────────────────
-//
-// Stacking rules:
-//   • Same source (nhiều stack cùng perk): additive % → CD / (1 + totalPct)
-//   • Khác source: sequential multiplication
-//   • Race CDR: direct multiplier (e.g. RuneCDR: 0.6 → ×0.6)
-//
-// CDR_PERK_DATA được import từ src/data/cdr.ts — chỉnh sửa tại đó.
 
 export interface CDRStep {
   source: string
-  pct: number        // % giảm để hiển thị, ví dụ 10 = "10%"
-  multiplier: number // giá trị nhân thực
+  pct: number
+  multiplier: number
 }
 
 export interface CDRResult {
@@ -681,17 +700,13 @@ export function calcCDR(
     const data = CDR_PERK_DATA[perkName]
     if (!data || perkAmount <= 0) continue
 
-    // Check runeFilter match
     const passesFilter = data.runeFilter == null
       || (activeRuneName != null && data.runeFilter.includes(activeRuneName))
 
-    // runeSetCD — chỉ áp dụng nếu pass filter
     if (data.runeSetCD != null && passesFilter) {
       runeSetCD = data.runeSetCD
-      // Không push vào runeSteps — hiển thị riêng
     }
 
-    // runePct — bỏ qua nếu không pass filter
     if (data.runePct && passesFilter) {
       const totalPct = data.runePct * perkAmount
       const displayPct = Math.round(totalPct * 100)
@@ -707,7 +722,6 @@ export function calcCDR(
     }
   }
 
-  // Race CDR
   if (raceCooldownModifiers) {
     if (raceCooldownModifiers["RuneCDR"] != null) {
       const m = raceCooldownModifiers["RuneCDR"]
@@ -725,7 +739,6 @@ export function calcCDR(
   return { runeCDR, waCDR, runeSetCD, runeBreakdown: runeSteps, waBreakdown: waSteps }
 }
 
-// Floor CD xuống giây nguyên: 15.9s → 15s, 15.1s → 15s
 export function applyCD(baseCooldown: number, cdrMultiplier: number): number {
   return Math.floor(baseCooldown * cdrMultiplier)
 }
@@ -939,7 +952,6 @@ export function calcBuild(state: BuildState): BuildResult {
     }
   }
 
-  // CDR — truyền tên rune hiện tại để check runeFilter
   const cdr = calcCDR(finalPerks, race?.cooldownModifiers, state.rune || undefined, state.race || undefined)
 
   return { stats: finalStats, perks: finalPerks, cdr }

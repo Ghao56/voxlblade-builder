@@ -2,6 +2,7 @@
   import type { EnchantSlot } from '../types'
   import { build, setEnchantment } from '../store'
   import { enchantments, getEnchant, isExclusiveEnchant } from '../engine'
+  import EnchantSelect from '../EnchantSelect.svelte'
 
   export let slot: EnchantSlot
   export let label: string
@@ -25,18 +26,14 @@
     setEnchantment(slot, i, value)
   }
 
-  // Slot 0 is exclusive → hide slots 1 & 2
   $: isExclusive = isExclusiveEnchant(getEnchant(s[0]))
   $: show1 = !isExclusive && !!s[0]
   $: show2 = show1 && !!s[1]
 
-  // Options filtered to current category and excluding already-selected values
   $: catEnchants = enchantments.filter(e => e.category === cat)
 
   $: opts = (exclude1: string, exclude2: string) =>
-    catEnchants
-      .filter(e => e.name !== exclude1 && e.name !== exclude2)
-      .map(e => ({ value: e.name, label: e.name }))
+    catEnchants.filter(e => e.name !== exclude1 && e.name !== exclude2)
 
   $: opts0 = opts(s[1], s[2])
   $: opts1 = opts(s[0], s[2])
@@ -63,15 +60,6 @@
     if (e.additionalNotes) lines.push('⚠ ' + e.additionalNotes)
     return lines.join('\n')
   }
-
-  function onMove(e: MouseEvent, name: string) {
-    const text = getTooltipText(name)
-    tooltip = text
-      ? { visible: true, text, x: e.clientX + 14, y: e.clientY - 10 }
-      : { ...tooltip, visible: false }
-  }
-
-  function onLeave() { tooltip = { ...tooltip, visible: false } }
 </script>
 
 {#if tooltip.visible}
@@ -94,44 +82,32 @@
           : 'Currently: Unascended — click to switch to Ascended'}
         on:click={toggleCat}
       >{cat === 'Ascended' ? 'A' : 'U'}</button>
-      <select
+      <EnchantSelect
         value={s[0]}
-        on:change={e => set(0, (e.target as HTMLSelectElement).value)}
-        on:mousemove={e => onMove(e, s[0])}
-        on:mouseleave={onLeave}
-      >
-        <option value="">—</option>
-        {#each opts0 as o}<option value={o.value}>{o.label}</option>{/each}
-      </select>
+        options={opts0}
+        on:change={e => set(0, e.detail)}
+      />
     </div>
 
     <!-- Slot 1 -->
     {#if show1}
       <div class="slot-row slot-row--sub">
-        <select
+        <EnchantSelect
           value={s[1]}
-          on:change={e => set(1, (e.target as HTMLSelectElement).value)}
-          on:mousemove={e => onMove(e, s[1])}
-          on:mouseleave={onLeave}
-        >
-          <option value="">—</option>
-          {#each opts1 as o}<option value={o.value}>{o.label}</option>{/each}
-        </select>
+          options={opts1}
+          on:change={e => set(1, e.detail)}
+        />
       </div>
     {/if}
 
     <!-- Slot 2 -->
     {#if show2}
       <div class="slot-row slot-row--sub">
-        <select
+        <EnchantSelect
           value={s[2]}
-          on:change={e => set(2, (e.target as HTMLSelectElement).value)}
-          on:mousemove={e => onMove(e, s[2])}
-          on:mouseleave={onLeave}
-        >
-          <option value="">—</option>
-          {#each opts2 as o}<option value={o.value}>{o.label}</option>{/each}
-        </select>
+          options={opts2}
+          on:change={e => set(2, e.detail)}
+        />
       </div>
     {/if}
 
@@ -155,17 +131,6 @@
   }
   .cat-toggle:hover { border-color: rgba(74,222,128,0.35); color: #4ade80; }
   .cat-toggle.ascended { background: rgba(167,139,250,0.12); border-color: rgba(167,139,250,0.35); color: #a78bfa; }
-
-  select {
-    flex: 1; min-width: 0; appearance: none;
-    background: #1a1d1b; border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 7px; color: #e8e4da;
-    font-size: 0.78rem; padding: 7px 24px 7px 9px; cursor: pointer;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%234ade80' d='M1 1l4 4 4-4'/%3E%3C/svg%3E");
-    background-repeat: no-repeat; background-position: right 8px center;
-    font-family: inherit; transition: border-color 0.15s;
-  }
-  select:focus { outline: none; border-color: rgba(74,222,128,0.35); }
 
   :global(.enchant-tooltip) {
     position: fixed; z-index: 9999;
