@@ -19,13 +19,11 @@
   function closeModal() { activeModal = null }
 
   // ── Collapsible panels ─────────────────────────────────────────────────────
-  let showWeaponPanel = true
   let showDetailsPanel = true
   let showPerksPanel = true
   let activeDetailsTab: 'selection' | 'weapon' = 'selection'
 
   // ── Inline enchant panel ───────────────────────────────────────────────────
-  // Which slot is showing inline enchants below the grid
   let inlineEnchantSlot: EnchantSlot | null = null
   function toggleInlineEnchant(slot: EnchantSlot) {
     inlineEnchantSlot = inlineEnchantSlot === slot ? null : slot
@@ -42,7 +40,7 @@
 
   $: shrineActive = $build.shrineActive
 
-  // enchant cats per slot
+  // ── Enchant helpers ────────────────────────────────────────────────────────
   let enchantCats: Record<EnchantSlot, 'unAscended' | 'Ascended'> = {
     helmet: 'unAscended', chestplate: 'unAscended', leggings: 'unAscended',
     ring: 'unAscended', rune: 'unAscended'
@@ -58,13 +56,37 @@
     return enchantments.filter(e => e.category === cat && e.name !== exclude1 && e.name !== exclude2)
   }
 
-  function isExclSlot(slot: EnchantSlot) {
+  function isExclSlot(slot: EnchantSlot): boolean {
     return isExclusiveEnchant(ge($build.enchantments[slot][0]))
   }
 
-  function hasEnchants(slot: EnchantSlot) {
+  function hasEnchants(slot: EnchantSlot): boolean {
     return $build.enchantments[slot].some(Boolean)
   }
+
+  function clearEnchants(slot: EnchantSlot) {
+    build.update(s => ({ ...s, enchantments: { ...s.enchantments, [slot]: ['','',''] as [string,string,string] } }))
+  }
+
+  // ── Inline enchant reactive values ─────────────────────────────────────────
+  $: iepSlot = inlineEnchantSlot
+  $: iepS0 = iepSlot ? $build.enchantments[iepSlot][0] : ''
+  $: iepS1 = iepSlot ? $build.enchantments[iepSlot][1] : ''
+  $: iepS2 = iepSlot ? $build.enchantments[iepSlot][2] : ''
+  // Reactive exclusive map (same pattern as old code)
+  $: exclMap = {
+    helmet:     isExclusiveEnchant(ge($build.enchantments.helmet[0])),
+    chestplate: isExclusiveEnchant(ge($build.enchantments.chestplate[0])),
+    leggings:   isExclusiveEnchant(ge($build.enchantments.leggings[0])),
+    ring:       isExclusiveEnchant(ge($build.enchantments.ring[0])),
+    rune:       isExclusiveEnchant(ge($build.enchantments.rune[0]))
+  }
+  $: iepExcl = iepSlot ? exclMap[iepSlot] : false
+  $: iepCat = iepSlot ? enchantCats[iepSlot] : 'unAscended'
+  // enchantCats được đọc trực tiếp ở đây để Svelte track dependency
+  $: iepOpts0 = iepSlot ? enchantments.filter(e => e.category === enchantCats[iepSlot] && e.name !== iepS1 && e.name !== iepS2) : []
+  $: iepOpts1 = iepSlot ? enchantments.filter(e => e.category === enchantCats[iepSlot] && e.name !== iepS0 && e.name !== iepS2) : []
+  $: iepOpts2 = iepSlot ? enchantments.filter(e => e.category === enchantCats[iepSlot] && e.name !== iepS0 && e.name !== iepS1) : []
 
   // ── Weapon filters ─────────────────────────────────────────────────────────
   let bladeFilterTier = ''
@@ -99,6 +121,29 @@
   $: summaryWeaponLabel = weaponResult?.part1Name && weaponResult?.part2Name && weaponResult.finalWeaponType
     ? weaponResult.finalWeaponType : 'None'
   $: summaryWeaponSub = weaponResult ? [weaponResult.part1Name, weaponResult.part2Name].filter(Boolean).join(' + ') : ''
+
+  // ── Damage types per part (từ raw data, không phải weaponResult) ───────────
+  function getDamageTypes(data: any): Record<string, number> {
+    const dtKeys = ['true','physical','magic','fire','water','earth','air','hex','holy','summon']
+    const result: Record<string, number> = {}
+    for (const k of dtKeys) {
+      const v = data?.[`${k}Type`]
+      if (v != null && v !== 0) result[k] = v
+    }
+    return result
+  }
+
+  $: part1DamageTypes = (() => {
+    if (!weaponResult?.part1Name) return {}
+    const data = isMonk ? getGlove(weaponResult.part1Name) : getBlade(weaponResult.part1Name)
+    return getDamageTypes(data)
+  })()
+
+  $: part2DamageTypes = (() => {
+    if (!weaponResult?.part2Name) return {}
+    const data = isMonk ? getEssence(weaponResult.part2Name) : getHandle(weaponResult.part2Name)
+    return getDamageTypes(data)
+  })()
 
   function formatCD(base: number, cdr: CDRResult) {
     const effectiveBase = cdr.runeSetCD ?? base
@@ -250,18 +295,9 @@
   function onKeydown(e: KeyboardEvent) {
     if (e.key === 'Escape') {
       if (activeModal) closeModal()
-      else inlineEnchantSlot = null
+      else if (inlineEnchantSlot) inlineEnchantSlot = null
     }
   }
-
-  // Enchantable slots (armor slots that have gear selected)
-  const enchantableSlots: Array<{ slot: EnchantSlot; label: string; storeKey: string }> = [
-    { slot: 'helmet', label: 'Helmet', storeKey: 'helmet' },
-    { slot: 'chestplate', label: 'Chest', storeKey: 'chestplate' },
-    { slot: 'leggings', label: 'Legs', storeKey: 'leggings' },
-    { slot: 'ring', label: 'Ring', storeKey: 'ring' },
-    { slot: 'rune', label: 'Rune', storeKey: 'rune' },
-  ]
 
   function getSlotHasItem(slot: EnchantSlot): boolean {
     const s = $build
@@ -495,6 +531,24 @@
                 <span class="modal-type-badge modal-type-badge--blade">{b.bladeType}</span>
                 {#if b.attackSpeed != null}<span class="modal-cd-badge">{b.attackSpeed}x spd</span>{/if}
               </div>
+              {#if bAny.physicalType || bAny.magicType || bAny.fireType || bAny.waterType || bAny.airType || bAny.hexType || bAny.holyType || bAny.earthType || bAny.trueType}
+                <div class="modal-item-stats">
+                  {#each (['true','physical','magic','fire','water','air','hex','holy','earth'] as string[]) as sk}
+                    {#if bAny[`${sk}Type`]}
+                      <span class="modal-stat-pill" style="background:rgba(251,146,60,.1);border-color:rgba(251,146,60,.2);color:var(--weapon-blade)">{sk.charAt(0).toUpperCase() + sk.slice(1)} Type: {bAny[`${sk}Type`]}x</span>
+                    {/if}
+                  {/each}
+                </div>
+              {/if}
+              {#if bAny.physicalScaling || bAny.magicScaling || bAny.fireScaling || bAny.waterScaling || bAny.airScaling || bAny.hexScaling || bAny.holyScaling || bAny.earthScaling || bAny.dexterityScaling || bAny.summonScaling}
+                <div class="modal-item-stats">
+                  {#each (['physical','magic','fire','water','air','hex','holy','earth','dexterity','summon'] as StatPrefix[]) as sk}
+                    {#if b[`${sk}Scaling` as ScalingKey]}
+                      <span class="modal-stat-pill" style="background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.2);color:var(--accent3)">{sk.charAt(0).toUpperCase() + sk.slice(1)} Scaling: {b[`${sk}Scaling` as ScalingKey]}</span>
+                    {/if}
+                  {/each}
+                </div>
+              {/if}
               {#if bAny.perks?.length}
                 {#each bAny.perks as p}<span class="modal-perk-tag">{p.name} +{p.amount}</span>{/each}
               {/if}
@@ -534,6 +588,24 @@
                 <span class="modal-type-badge modal-type-badge--handle">{h.handleType}</span>
                 {#if h.attackSpeed != null}<span class="modal-cd-badge">{h.attackSpeed}x spd</span>{/if}
               </div>
+              {#if hAny.physicalType || hAny.magicType || hAny.fireType || hAny.waterType || hAny.airType || hAny.hexType || hAny.holyType || hAny.earthType || hAny.trueType}
+                <div class="modal-item-stats">
+                  {#each (['true','physical','magic','fire','water','air','hex','holy','earth'] as string[]) as sk}
+                    {#if hAny[`${sk}Type`]}
+                      <span class="modal-stat-pill" style="background:rgba(251,146,60,.1);border-color:rgba(251,146,60,.2);color:var(--weapon-blade)">{sk.charAt(0).toUpperCase() + sk.slice(1)} Type: {hAny[`${sk}Type`]}x</span>
+                    {/if}
+                  {/each}
+                </div>
+              {/if}
+              {#if hAny.physicalScaling || hAny.magicScaling || hAny.fireScaling || hAny.waterScaling || hAny.airScaling || hAny.hexScaling || hAny.holyScaling || hAny.earthScaling || hAny.dexterityScaling || hAny.summonScaling}
+                <div class="modal-item-stats">
+                  {#each (['physical','magic','fire','water','air','hex','holy','earth','dexterity','summon'] as StatPrefix[]) as sk}
+                    {#if hAny[`${sk}Scaling` as ScalingKey]}
+                      <span class="modal-stat-pill" style="background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.2);color:var(--accent3)">{sk.charAt(0).toUpperCase() + sk.slice(1)} Scaling: {hAny[`${sk}Scaling` as ScalingKey]}</span>
+                    {/if}
+                  {/each}
+                </div>
+              {/if}
               {#if hAny.perks?.length}
                 {#each hAny.perks as p}<span class="modal-perk-tag">{p.name} +{p.amount}</span>{/each}
               {/if}
@@ -568,6 +640,24 @@
                 <span class="modal-tier-badge modal-tier-badge--glove">T{g.tier}</span>
                 {#if g.attackSpeed != null}<span class="modal-cd-badge">{g.attackSpeed}x spd</span>{/if}
               </div>
+              {#if gAny.physicalType || gAny.magicType || gAny.fireType || gAny.waterType || gAny.airType || gAny.hexType || gAny.holyType || gAny.earthType || gAny.trueType}
+                <div class="modal-item-stats">
+                  {#each (['true','physical','magic','fire','water','air','hex','holy','earth'] as string[]) as sk}
+                    {#if gAny[`${sk}Type`]}
+                      <span class="modal-stat-pill" style="background:rgba(251,146,60,.1);border-color:rgba(251,146,60,.2);color:var(--weapon-blade)">{sk.charAt(0).toUpperCase() + sk.slice(1)} Type: {gAny[`${sk}Type`]}x</span>
+                    {/if}
+                  {/each}
+                </div>
+              {/if}
+              {#if gAny.physicalScaling || gAny.magicScaling || gAny.fireScaling || gAny.waterScaling || gAny.airScaling || gAny.hexScaling || gAny.holyScaling || gAny.earthScaling || gAny.dexterityScaling || gAny.summonScaling}
+                <div class="modal-item-stats">
+                  {#each (['physical','magic','fire','water','air','hex','holy','earth','dexterity','summon'] as StatPrefix[]) as sk}
+                    {#if gAny[`${sk}Scaling` as ScalingKey]}
+                      <span class="modal-stat-pill" style="background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.2);color:var(--accent3)">{sk.charAt(0).toUpperCase() + sk.slice(1)} Scaling: {gAny[`${sk}Scaling` as ScalingKey]}</span>
+                    {/if}
+                  {/each}
+                </div>
+              {/if}
               {#if gAny.perks?.length}
                 {#each gAny.perks as p}<span class="modal-perk-tag">{p.name} +{p.amount}</span>{/each}
               {/if}
@@ -602,6 +692,24 @@
                 <span class="modal-tier-badge modal-tier-badge--essence">T{e.tier}</span>
                 {#if e.attackSpeed != null}<span class="modal-cd-badge">{e.attackSpeed}x spd</span>{/if}
               </div>
+              {#if eAny.physicalType || eAny.magicType || eAny.fireType || eAny.waterType || eAny.airType || eAny.hexType || eAny.holyType || eAny.earthType || eAny.trueType}
+                <div class="modal-item-stats">
+                  {#each (['true','physical','magic','fire','water','air','hex','holy','earth'] as string[]) as sk}
+                    {#if eAny[`${sk}Type`]}
+                      <span class="modal-stat-pill" style="background:rgba(251,146,60,.1);border-color:rgba(251,146,60,.2);color:var(--weapon-blade)">{sk.charAt(0).toUpperCase() + sk.slice(1)} Type: {eAny[`${sk}Type`]}x</span>
+                    {/if}
+                  {/each}
+                </div>
+              {/if}
+              {#if eAny.physicalScaling || eAny.magicScaling || eAny.fireScaling || eAny.waterScaling || eAny.airScaling || eAny.hexScaling || eAny.holyScaling || eAny.earthScaling || eAny.dexterityScaling || eAny.summonScaling}
+                <div class="modal-item-stats">
+                  {#each (['physical','magic','fire','water','air','hex','holy','earth','dexterity','summon'] as StatPrefix[]) as sk}
+                    {#if eAny[`${sk}Scaling` as ScalingKey]}
+                      <span class="modal-stat-pill" style="background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.2);color:var(--accent3)">{sk.charAt(0).toUpperCase() + sk.slice(1)} Scaling: {eAny[`${sk}Scaling` as ScalingKey]}</span>
+                    {/if}
+                  {/each}
+                </div>
+              {/if}
               {#if eAny.perks?.length}
                 {#each eAny.perks as p}<span class="modal-perk-tag">{p.name} +{p.amount}</span>{/each}
               {/if}
@@ -847,27 +955,22 @@
           </div>
 
           <!-- ── INLINE ENCHANT PANEL ── -->
-          {#if inlineEnchantSlot}
-            {@const slot = inlineEnchantSlot}
-            {@const excl = isExclSlot(slot)}
-            {@const s0 = $build.enchantments[slot][0]}
-            {@const s1 = $build.enchantments[slot][1]}
-            {@const s2 = $build.enchantments[slot][2]}
+          <!-- Dùng biến reactive iep* thay vì {@const} để tránh stale closure -->
+          {#if iepSlot}
             <div class="inline-enchant-panel">
               <div class="iep-header">
-                <span class="iep-title">Enchant: {slot.charAt(0).toUpperCase() + slot.slice(1)}</span>
+                <span class="iep-title">Enchant: {iepSlot.charAt(0).toUpperCase() + iepSlot.slice(1)}</span>
                 <div class="iep-cat-row">
-                  <button class="iep-cat-btn" class:iep-cat-btn--active={enchantCats[slot] === 'unAscended'}
-                    on:click={() => { if (enchantCats[slot] !== 'unAscended') toggleEnchantCat(slot) }}>
+                  <button class="iep-cat-btn" class:iep-cat-btn--active={iepCat === 'unAscended'}
+                    on:click={() => { if (iepCat !== 'unAscended') toggleEnchantCat(iepSlot) }}>
                     Unascended
                   </button>
-                  <button class="iep-cat-btn iep-cat-btn--asc" class:iep-cat-btn--active={enchantCats[slot] === 'Ascended'}
-                    on:click={() => { if (enchantCats[slot] !== 'Ascended') toggleEnchantCat(slot) }}>
+                  <button class="iep-cat-btn iep-cat-btn--asc" class:iep-cat-btn--active={iepCat === 'Ascended'}
+                    on:click={() => { if (iepCat !== 'Ascended') toggleEnchantCat(iepSlot) }}>
                     Ascended
                   </button>
-                  {#if hasEnchants(slot)}
-                    <button class="iep-clear-btn"
-                      on:click={() => build.update(s => ({ ...s, enchantments: { ...s.enchantments, [slot]: ['','',''] as [string,string,string] } }))}>
+                  {#if hasEnchants(iepSlot)}
+                    <button class="iep-clear-btn" on:click={() => clearEnchants(iepSlot)}>
                       Clear all
                     </button>
                   {/if}
@@ -875,57 +978,54 @@
                 </div>
               </div>
               <div class="iep-slots">
-                <!-- Slot 0 always visible -->
+                <!-- Slot 0 luôn hiện -->
                 <div class="iep-slot">
                   <span class="iep-slot-num">1</span>
                   <select class="iep-select"
-                    value={s0}
-                    on:change={e => setEnchantment(slot, 0, (e.target as HTMLSelectElement).value)}
-                    on:mousemove={ev => onEnchantMove(ev, s0)}
+                    value={iepS0}
+                    on:change={e => setEnchantment(iepSlot, 0, (e.target as HTMLSelectElement).value)}
+                    on:mousemove={ev => onEnchantMove(ev, iepS0)}
                     on:mouseleave={onEnchantLeave}>
                     <option value="">— None —</option>
-                    {#each enchantOpts(slot, s1, s2) as opt}
+                    {#each iepOpts0 as opt}
                       <option value={opt.name}>{opt.name}</option>
                     {/each}
                   </select>
-                  {#if s0}<span class="iep-enchant-name">{s0}</span>{/if}
                 </div>
-                <!-- Slot 1: only if s0 set and not exclusive -->
-                {#if s0 && !excl}
+                <!-- Slot 1: chỉ khi s0 có giá trị và không exclusive -->
+                {#if iepS0 && !iepExcl}
                   <div class="iep-slot">
                     <span class="iep-slot-num">2</span>
                     <select class="iep-select"
-                      value={s1}
-                      on:change={e => setEnchantment(slot, 1, (e.target as HTMLSelectElement).value)}
-                      on:mousemove={ev => onEnchantMove(ev, s1)}
+                      value={iepS1}
+                      on:change={e => setEnchantment(iepSlot, 1, (e.target as HTMLSelectElement).value)}
+                      on:mousemove={ev => onEnchantMove(ev, iepS1)}
                       on:mouseleave={onEnchantLeave}>
                       <option value="">— None —</option>
-                      {#each enchantOpts(slot, s0, s2) as opt}
+                      {#each iepOpts1 as opt}
                         <option value={opt.name}>{opt.name}</option>
                       {/each}
                     </select>
-                    {#if s1}<span class="iep-enchant-name">{s1}</span>{/if}
                   </div>
                 {/if}
-                <!-- Slot 2: only if s1 set -->
-                {#if s1 && !excl}
+                <!-- Slot 2: chỉ khi s1 có giá trị và không exclusive -->
+                {#if iepS1 && !iepExcl}
                   <div class="iep-slot">
                     <span class="iep-slot-num">3</span>
                     <select class="iep-select"
-                      value={s2}
-                      on:change={e => setEnchantment(slot, 2, (e.target as HTMLSelectElement).value)}
-                      on:mousemove={ev => onEnchantMove(ev, s2)}
+                      value={iepS2}
+                      on:change={e => setEnchantment(iepSlot, 2, (e.target as HTMLSelectElement).value)}
+                      on:mousemove={ev => onEnchantMove(ev, iepS2)}
                       on:mouseleave={onEnchantLeave}>
                       <option value="">— None —</option>
-                      {#each enchantOpts(slot, s0, s1) as opt}
+                      {#each iepOpts2 as opt}
                         <option value={opt.name}>{opt.name}</option>
                       {/each}
                     </select>
-                    {#if s2}<span class="iep-enchant-name">{s2}</span>{/if}
                   </div>
                 {/if}
               </div>
-              {#if excl && s0}
+              {#if iepExcl && iepS0}
                 <p class="iep-excl-note">⚠ Exclusive enchantment — only one slot available</p>
               {/if}
             </div>
@@ -963,8 +1063,7 @@
               {@const perk = getPerk(name)}
               <div class="perk-card">
                 <div class="perk-row">
-                  <span class="perk-name">{name}</span>
-                  <span class="perk-val">+{Math.round(count * 100) / 100}</span>
+                  <span class="perk-name">{name} <span class="perk-val">+{Math.round(count * 100) / 100}</span></span>
                 </div>
                 {#if perk?.description}
                   <p class="perk-desc">{perk.description}</p>
@@ -1022,7 +1121,7 @@
                       {#if card.perks.length}
                         <div class="perk-list">
                           {#each card.perks as p}
-                            <div class="perk-row"><span>{p.name}</span><span class="perk-val">+{p.amount}</span></div>
+                            <div class="perk-row"><span>{p.name} <span class="perk-val">+{p.amount}</span></span></div>
                           {/each}
                         </div>
                       {/if}
@@ -1079,7 +1178,7 @@
                             <div class="perk-list">
                               {#each group.main.perks as p}
                                 <div class="perk-row" class:perk-row--enchant={p.fromEnchant}>
-                                  <span>{p.name}</span><span class="perk-val" class:perk-val--enchant={p.fromEnchant}>+{p.amount}</span>
+                                  <span>{p.name} <span class="perk-val" class:perk-val--enchant={p.fromEnchant}>+{p.amount}</span></span>
                                 </div>
                               {/each}
                             </div>
@@ -1111,7 +1210,7 @@
                           {#if group.infusion.perks.length}
                             <div class="perk-list">
                               {#each group.infusion.perks as p}
-                                <div class="perk-row"><span>{p.name}</span><span class="perk-val">+{p.amount}</span></div>
+                                <div class="perk-row"><span>{p.name} <span class="perk-val">+{p.amount}</span></span></div>
                               {/each}
                             </div>
                           {/if}
@@ -1141,10 +1240,10 @@
                 {#if part1Data?.attackSpeed != null}
                   <div class="weapon-meta-row"><span class="weapon-meta-label">Attack Speed</span><span class="weapon-meta-val">{part1Data.attackSpeed}x</span></div>
                 {/if}
-                {#if Object.keys(weaponResult.part1DamageTypes).length}
+                {#if Object.keys(part1DamageTypes).length}
                   <div class="weapon-section-label">Damage Types</div>
                   <div class="damage-type-grid">
-                    {#each Object.entries(weaponResult.part1DamageTypes) as [k, v]}
+                    {#each Object.entries(part1DamageTypes) as [k, v]}
                       <div class="damage-type-pill"><span class="dt-name">{formatDmgTypeLabel(k)}</span><span class="dt-val">{v}x</span></div>
                     {/each}
                   </div>
@@ -1185,7 +1284,7 @@
                 {#if (part1Data as any)?.perks?.length}
                   <div class="perk-list">
                     {#each ((part1Data as any)?.perks ?? []) as p}
-                      <div class="perk-row"><span>{p.name}</span><span class="perk-val">+{p.amount}</span></div>
+                      <div class="perk-row"><span>{p.name} <span class="perk-val">+{p.amount}</span></span></div>
                     {/each}
                   </div>
                 {/if}
@@ -1214,10 +1313,10 @@
                 {#if part2Data?.attackSpeed != null}
                   <div class="weapon-meta-row"><span class="weapon-meta-label">Attack Speed</span><span class="weapon-meta-val">{part2Data.attackSpeed}x</span></div>
                 {/if}
-                {#if Object.keys(weaponResult.part2DamageTypes).length}
+                {#if Object.keys(part2DamageTypes).length}
                   <div class="weapon-section-label">Damage Types</div>
                   <div class="damage-type-grid">
-                    {#each Object.entries(weaponResult.part2DamageTypes) as [k, v]}
+                    {#each Object.entries(part2DamageTypes) as [k, v]}
                       <div class="damage-type-pill"><span class="dt-name">{formatDmgTypeLabel(k)}</span><span class="dt-val">{v}x</span></div>
                     {/each}
                   </div>
@@ -1258,7 +1357,7 @@
                 {#if (part2Data as any)?.perks?.length}
                   <div class="perk-list">
                     {#each ((part2Data as any)?.perks ?? []) as p}
-                      <div class="perk-row"><span>{p.name}</span><span class="perk-val">+{p.amount}</span></div>
+                      <div class="perk-row"><span>{p.name} <span class="perk-val">+{p.amount}</span></span></div>
                     {/each}
                   </div>
                 {/if}
@@ -1313,7 +1412,7 @@
                 {#if Object.keys(weaponResult.perks).length}
                   <div class="perk-list">
                     {#each Object.entries(weaponResult.perks) as [name, amount]}
-                      <div class="perk-row"><span>{name}</span><span class="perk-val">+{amount}</span></div>
+                      <div class="perk-row"><span>{name} <span class="perk-val">+{amount}</span></span></div>
                     {/each}
                   </div>
                 {/if}
@@ -1480,7 +1579,6 @@
   }
   .sg-clear:hover { background:rgba(248,113,113,.4); }
 
-  /* Enchant button — bottom right of cell */
   .sg-ench-btn {
     position:absolute; bottom:5px; right:5px;
     width:20px; height:20px; border-radius:4px;
@@ -1524,7 +1622,6 @@
   .sg-cd-arrow { font-size:.6rem; color:var(--ink-muted); opacity:.35; }
   .sg-cd-final { font-size:.8rem; font-weight:800; color:#34d399; }
 
-  /* Shrine toggle */
   .sg-weapon-inner { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; width:100%; }
   .sg-weapon-left { display:flex; flex-direction:column; gap:2px; flex:1; min-width:0; }
   .shrine-inline { display:flex; flex-direction:column; align-items:flex-end; gap:4px; flex-shrink:0; }
@@ -1536,7 +1633,6 @@
   .shrine-state-sm { font-size:.65rem; opacity:.7; }
   .shrine-hint-sm { font-size:.6rem; color:var(--weapon-combined); opacity:.6; }
 
-  /* Stats sidebar */
   .summary-stats { background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:10px 12px; display:flex; flex-direction:column; gap:4px; max-height:400px; overflow-y:auto; scrollbar-width:thin; }
   .ss-header { font-size:.62rem; text-transform:uppercase; letter-spacing:.16em; color:var(--ink-muted); font-weight:700; padding-bottom:6px; border-bottom:1px solid var(--border); margin-bottom:2px; }
   .ss-section { display:flex; flex-direction:column; gap:2px; }
@@ -1584,7 +1680,6 @@
     transition:border-color .15s;
   }
   .iep-select:focus { outline:none; border-color:var(--accent3); }
-  .iep-enchant-name { font-size:.68rem; color:var(--accent3); white-space:nowrap; font-weight:600; opacity:.75; }
   .iep-excl-note { font-size:.72rem; color:var(--accent2); margin-top:8px; padding:6px 10px; background:rgba(245,158,11,.08); border:1px solid rgba(245,158,11,.2); border-radius:6px; }
 
   /* ── Collapsible panel title buttons ── */
@@ -1597,11 +1692,9 @@
   .collapse-icon { font-size:.65rem; color:var(--ink-muted); opacity:.5; }
   .perk-count-badge { display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:50%; background:rgba(245,158,11,.15); border:1px solid rgba(245,158,11,.25); color:var(--accent2); font-size:.6rem; font-weight:800; margin-left:6px; vertical-align:middle; }
 
-  /* Perks panel */
   .perks-panel { border-color:rgba(245,158,11,.13); background:linear-gradient(160deg,var(--surface) 60%,rgba(245,158,11,.03) 100%); }
   .perks-title { color:var(--accent2); }
   .panel-title-btn.perks-title { margin-bottom:14px; }
-  .panel-title-btn.perks-title:has(+ .perks-grid) { margin-bottom:14px; }
   .perks-grid { display:flex; flex-direction:column; gap:6px; margin-top:10px; }
 
   /* ── Details panel with tabs ── */
@@ -1632,7 +1725,6 @@
   .tab-weapon-badge { font-size:.62rem; font-weight:700; padding:2px 6px; border-radius:999px; background:rgba(251,146,60,.12); border:1px solid rgba(251,146,60,.25); color:var(--weapon-blade); }
   .tab-weapon-badge--monk { background:rgba(232,121,249,.12); border-color:rgba(232,121,249,.25); color:var(--monk-glove); }
 
-  /* Detail content area */
   .details-panel > div:not(.details-tabs-header) { padding:16px 18px; }
   .detail-layout { display:flex; gap:10px; align-items:flex-start; }
   .identity-col { flex:0 0 200px; display:flex; flex-direction:column; gap:10px; }
@@ -1653,7 +1745,6 @@
   .detail-extra { font-size:.75rem; color:var(--accent2); }
   .infusion-note { font-size:.65rem; color:var(--infusion); opacity:.5; }
 
-  /* Weapon tab layout */
   .weapon-result-layout { display:grid; grid-template-columns:1fr auto 1fr auto 1fr; gap:10px; align-items:start; }
   .weapon-combined-card { background:linear-gradient(135deg,rgba(251,191,36,.08),rgba(251,146,60,.06)); border:1px solid rgba(251,191,36,.22); border-radius:var(--radius-sm); padding:12px; display:flex; flex-direction:column; gap:8px; }
   .weapon-combined-card--monk { background:linear-gradient(135deg,rgba(192,132,252,.1),rgba(129,140,248,.08)); border-color:rgba(192,132,252,.28); }
@@ -1700,7 +1791,6 @@
   .sc-val--new { color:var(--weapon-combined) !important; font-weight:800; }
   .scaling-pill--boosted { border-color:rgba(251,191,36,.3); background:rgba(251,191,36,.08); }
 
-  /* Stat/perk lists */
   .stat-list { display:flex; flex-direction:column; gap:4px; }
   .stat-row { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:6px 8px; border-radius:6px; background:var(--surface3); font-size:.8rem; }
   .stat-row--infusion { background:rgba(56,189,248,.06); }
@@ -1712,16 +1802,15 @@
   .stat-val-ghost { font-weight:400; opacity:.35; font-size:.72rem; text-decoration:line-through; color:var(--ink-muted) !important; }
   .stat-val--new { color:var(--weapon-combined) !important; font-weight:800; }
   .perk-list { display:flex; flex-direction:column; gap:4px; }
-  .perk-row { display:flex; justify-content:space-between; align-items:center; font-size:.82rem; padding:4px 6px; border-radius:5px; }
+  .perk-row { display:flex; align-items:center; font-size:.82rem; padding:4px 6px; border-radius:5px; }
   .perk-row--enchant { background:rgba(167,139,250,.06); }
-  .perk-val { font-weight:700; color:var(--accent2); white-space:nowrap; }
+  .perk-val { font-weight:700; color:var(--accent2); white-space:nowrap; margin-left:3px; }
   .perk-val--enchant { color:var(--accent3); }
   .perk-card { display:flex; flex-direction:column; gap:2px; padding:4px 0; border-bottom:1px solid var(--border); }
   .perk-card:last-child { border-bottom:none; }
   .perk-name { font-weight:600; }
   .perk-desc { font-size:.74rem; color:var(--ink-muted); line-height:1.4; }
 
-  /* CDR */
   .cdr-block { background:rgba(52,211,153,.05); border:1px solid rgba(52,211,153,.18); border-radius:7px; padding:9px 11px; display:flex; flex-direction:column; gap:5px; }
   .cdr-block-header { display:flex; align-items:center; gap:5px; }
   .cdr-icon { font-size:.8rem; }
@@ -1736,7 +1825,6 @@
 
   .empty { color:var(--ink-muted); font-style:italic; font-size:.85rem; }
 
-  /* Responsive */
   @media (max-width:900px) {
     .summary-layout { grid-template-columns:1fr; }
   }
