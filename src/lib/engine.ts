@@ -140,7 +140,7 @@ export function applyEnchantmentsToSlot(
       const defenseKeys = STAT_KEYS.filter(k => k.endsWith('Defense'))
       for (const key of defenseKeys) {
         const base = baseStats[key] ?? 0
-        if (base !== 0) {
+        if (base > 0) {
           for (const mod of mods) {
             if (mod.type === 'multiplier') mult[key] = (mult[key] ?? 1) * mod.value
             else add[key] = (add[key] ?? 0) + mod.value

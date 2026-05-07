@@ -1833,10 +1833,10 @@
 
   .empty { color:var(--ink-muted); font-style:italic; font-size:.85rem; }
 
-  @media (max-width:900px) {
+  @media (max-width:1020px) {
     .summary-layout { grid-template-columns:1fr; }
   }
-  @media (max-width:700px) {
+  @media (max-width:740px) {
     .weapon-result-layout { grid-template-columns:1fr auto 1fr; }
     .weapon-combined-card { grid-column:1/-1; }
     .weapon-combine--arrow { display:none; }
