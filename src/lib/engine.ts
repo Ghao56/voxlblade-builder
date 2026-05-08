@@ -3,7 +3,7 @@ import type {
   Enchantment, Perk, StatMap, StatKey, StatModifier, EnchantSlot, BuildState,
   WeaponBlade, WeaponHandle, MonkGlove, MonkEssence
 } from './types'
-import { STAT_KEYS, PERCENT_STATS } from './types'
+import { STAT_KEYS, PERCENT_STATS, applyUpgrade } from './types'
 import { CDR_PERK_DATA } from '../data/cdr'
 
 import racesRaw from '../data/races.json'
@@ -88,12 +88,6 @@ export function applyEnchantmentsToSlot(
   basePerks: Record<string, number>,
   enchantNames: string[]
 ): { stats: StatMap; perks: Record<string, number> } {
-  // Multiplier-first, addition-last:
-  //   result[k] = baseValue[k] * (∏ multipliers) + (∑ additions)
-  // positiveStats / negativeStats / defenseStats only apply multipliers to
-  // the keys where base satisfies their condition; additions are accumulated
-  // independently and added at the end.
-
   const ordered = [...enchantNames].reverse()
 
   const mult: Partial<Record<StatKey, number>> = {}
@@ -106,7 +100,6 @@ export function applyEnchantmentsToSlot(
     if (!e) continue
     const es = e.stats
 
-    // ── positiveStats ──
     if (es.positiveStats) {
       const mods = normalizeModifiers(es.positiveStats as StatModifier | StatModifier[])
       for (const key of STAT_KEYS) {
@@ -120,7 +113,6 @@ export function applyEnchantmentsToSlot(
       }
     }
 
-    // ── negativeStats ──
     if (es.negativeStats) {
       const mods = normalizeModifiers(es.negativeStats as StatModifier | StatModifier[])
       for (const key of STAT_KEYS) {
@@ -134,7 +126,6 @@ export function applyEnchantmentsToSlot(
       }
     }
 
-    // ── defenseStats ──
     if (es.defenseStats) {
       const mods = normalizeModifiers(es.defenseStats as StatModifier | StatModifier[])
       const defenseKeys = STAT_KEYS.filter(k => k.endsWith('Defense'))
@@ -149,7 +140,6 @@ export function applyEnchantmentsToSlot(
       }
     }
 
-    // ── perks multiplier (kept as sequential apply, same as before) ──
     if (es.perks) {
       const mods = normalizeModifiers(es.perks as StatModifier | StatModifier[])
       for (const perkName of Object.keys(perks)) {
@@ -159,7 +149,6 @@ export function applyEnchantmentsToSlot(
       }
     }
 
-    // ── specific stat keys ──
     for (const [key, modifier] of Object.entries(es)) {
       if (!modifier) continue
       if (['positiveStats', 'negativeStats', 'defenseStats', 'perks'].includes(key)) continue
@@ -171,13 +160,11 @@ export function applyEnchantmentsToSlot(
       }
     }
 
-    // ── enchant effects → perks ──
     for (const eff of e.effects) {
       perks[eff.name] = (perks[eff.name] ?? 0) + eff.value
     }
   }
 
-  // ── Combine: base * multiplier + addition ──
   const stats: StatMap = {}
   const allKeys = new Set<StatKey>([
     ...Object.keys(baseStats) as StatKey[],
@@ -418,7 +405,6 @@ export interface WeaponResult {
   scalings: Record<string, number>
   shrineActive: boolean
   hybridActive: boolean
-  // Legacy compat aliases
   bladeName: string
   handleName: string
   bladeType: string
@@ -476,9 +462,9 @@ function calcWeaponGeneric(
     : 1.0
 
   const dtKeys = [
-  "trueType","physicalType","magicType","fireType",
-  "waterType","earthType","airType","hexType","holyType","summonType"
-]
+    "trueType","physicalType","magicType","fireType",
+    "waterType","earthType","airType","hexType","holyType","summonType"
+  ]
 
   const part1DamageTypes: Record<string, number> = {}
   const part2DamageTypes: Record<string, number> = {}
@@ -502,7 +488,6 @@ function calcWeaponGeneric(
   }
 
   const damageTypes: Record<string, number> = { ...part1DamageTypes }
-
   for (const [k, v] of Object.entries(part2DamageTypes)) {
     damageTypes[k] = (damageTypes[k] ?? 0) + v
   }
@@ -783,36 +768,42 @@ export function calcBuild(state: BuildState): BuildResult {
     }
   }
 
-  // Armor parts with enchantments
-  const armorSlots: Array<[string, ArmorPart["type"], EnchantSlot]> = [
-    [state.helmet, "Helmet", "helmet"],
-    [state.chestplate, "Chestplate", "chestplate"],
-    [state.leggings, "Leggings", "leggings"],
+  // ── Armor parts with enchantments + upgrade ───────────────────────────────
+  type ArmorSlotKey = 'upgradeHelmet' | 'upgradeChestplate' | 'upgradeLeggings'
+  const armorSlots: Array<[string, ArmorPart["type"], EnchantSlot, ArmorSlotKey]> = [
+    [state.helmet,     "Helmet",     "helmet",     "upgradeHelmet"],
+    [state.chestplate, "Chestplate", "chestplate", "upgradeChestplate"],
+    [state.leggings,   "Leggings",   "leggings",   "upgradeLeggings"],
   ]
 
-  for (const [armorName, partType, enchSlot] of armorSlots) {
+  for (const [armorName, partType, enchSlot, upgradeKey] of armorSlots) {
     if (!armorName) continue
     const part = getArmorPart(armorName, partType)
     if (!part) continue
+
+    const upgradeLevel = state[upgradeKey] ?? 0
+    const upgradedStats = applyUpgrade(part.stats as StatMap, upgradeLevel)
 
     const basePerksForSlot: Record<string, number> = {}
     if (part.perkName) basePerksForSlot[part.perkName] = 1
 
     const enchNames = state.enchantments[enchSlot]
-    const slotResult = applyEnchantmentsToSlot(part.stats as StatMap, basePerksForSlot, enchNames)
+    const slotResult = applyEnchantmentsToSlot(upgradedStats, basePerksForSlot, enchNames)
     addStats(slotResult.stats)
     for (const [k, v] of Object.entries(slotResult.perks)) {
       perks[k] = (perks[k] ?? 0) + v
     }
   }
 
-  // Ring with enchantments
+  // ── Ring with enchantments + upgrade ─────────────────────────────────────
   if (state.ring) {
     const ring = getRing(state.ring)
     if (ring) {
+      const upgradeLevel = state.upgradeRing ?? 0
+      const upgradedStats = applyUpgrade(ring.stats, upgradeLevel)
       const basePerksForRing: Record<string, number> = ring.perkName
         ? { [ring.perkName]: ring.perkAmount ?? 1 } : {}
-      const slotResult = applyEnchantmentsToSlot(ring.stats, basePerksForRing, state.enchantments.ring)
+      const slotResult = applyEnchantmentsToSlot(upgradedStats, basePerksForRing, state.enchantments.ring)
       addStats(slotResult.stats)
       for (const [k, v] of Object.entries(slotResult.perks)) {
         perks[k] = (perks[k] ?? 0) + v
@@ -820,13 +811,15 @@ export function calcBuild(state: BuildState): BuildResult {
     }
   }
 
-  // Rune with enchantments
+  // ── Rune with enchantments + upgrade ─────────────────────────────────────
   if (state.rune) {
     const rune = getRune(state.rune)
     if (rune) {
+      const upgradeLevel = state.upgradeRune ?? 0
+      const upgradedStats = applyUpgrade(rune.stats, upgradeLevel)
       const basePerksForRune: Record<string, number> = rune.perkName
         ? { [rune.perkName]: rune.perkAmount ?? 1 } : {}
-      const slotResult = applyEnchantmentsToSlot(rune.stats, basePerksForRune, state.enchantments.rune)
+      const slotResult = applyEnchantmentsToSlot(upgradedStats, basePerksForRune, state.enchantments.rune)
       addStats(slotResult.stats)
       for (const [k, v] of Object.entries(slotResult.perks)) {
         perks[k] = (perks[k] ?? 0) + v
@@ -888,7 +881,7 @@ export function calcBuild(state: BuildState): BuildResult {
     }
   }
 
-  // Infusion slots
+  // Infusion slots (no upgrade on infusions)
   if (state.infusionHelmet) {
     const part = getArmorPart(state.infusionHelmet, "Helmet")
     if (part) {

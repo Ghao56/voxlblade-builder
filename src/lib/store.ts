@@ -27,6 +27,12 @@ export const build = writable<BuildState>({
   monkGlove: "",
   monkEssence: "",
   shrineActive: true,
+  // Upgrade levels (0 = +0, 5 = max)
+  upgradeHelmet: 0,
+  upgradeChestplate: 0,
+  upgradeLeggings: 0,
+  upgradeRing: 0,
+  upgradeRune: 0,
 })
 
 export const result = derived(build, $b => calcBuild($b))

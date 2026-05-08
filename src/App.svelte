@@ -12,12 +12,18 @@
   import type { EnchantSlot, StatMap, StatPrefix, ScalingKey } from './lib/types'
   import { enchantments, getEnchant as ge, isExclusiveEnchant } from './lib/engine'
   import EnchantSelect from './lib/EnchantSelect.svelte'
+  import { applyUpgrade, UPGRADE_MAX } from './lib/types'
+
+  function toggleUpgrade(key: 'upgradeHelmet'|'upgradeChestplate'|'upgradeLeggings'|'upgradeRing'|'upgradeRune') {
+    build.update(s => ({...s, [key]: s[key] === UPGRADE_MAX ? 0 : UPGRADE_MAX}))
+  }
 
   // ── Modal state ────────────────────────────────────────────────────────────
   type ModalType = 'race' | 'guild' | 'armor-helmet' | 'armor-chestplate' | 'armor-leggings' | 'infusion-helmet' | 'infusion-chestplate' | 'infusion-leggings' | 'ring' | 'infusion-ring' | 'rune' | 'blade' | 'handle' | 'glove' | 'essence' | null
   let activeModal: ModalType = null
   function openModal(m: ModalType) { activeModal = m }
   function closeModal() { activeModal = null }
+
 
   // ── Collapsible panels ─────────────────────────────────────────────────────
   let showDetailsPanel = true
@@ -224,17 +230,18 @@
 
   $: slotGroups = (() => {
     const groups: SlotGroup[] = []
-    const armorSlots: Array<[string, 'Helmet'|'Chestplate'|'Leggings', EnchantSlot, string, string]> = [
-      [$build.helmet, 'Helmet', 'helmet', $build.infusionHelmet, 'Helmet'],
-      [$build.chestplate, 'Chestplate', 'chestplate', $build.infusionChestplate, 'Chestplate'],
-      [$build.leggings, 'Leggings', 'leggings', $build.infusionLeggings, 'Leggings'],
+    const armorSlots: Array<[string, 'Helmet'|'Chestplate'|'Leggings', EnchantSlot, string, string, number]> = [
+      [$build.helmet, 'Helmet', 'helmet', $build.infusionHelmet, 'Helmet', $build.upgradeHelmet ?? 0],
+      [$build.chestplate, 'Chestplate', 'chestplate', $build.infusionChestplate, 'Chestplate', $build.upgradeChestplate ?? 0],
+      [$build.leggings, 'Leggings', 'leggings', $build.infusionLeggings, 'Leggings', $build.upgradeLeggings ?? 0],
     ]
-    for (const [armorName, partType, enchSlot, infName] of armorSlots) {
+    for (const [armorName, partType, enchSlot, infName, , upgradeLevel] of armorSlots) {
       const part = armorName ? getArmorPart(armorName, partType as any) : null
       const ip = infName ? getArmorPart(infName, partType as any) : null
       if (part || ip) {
         const bp: Record<string, number> = part?.perkName ? { [part.perkName]: 1 } : {}
-        const main = part ? buildSlotCard(partType, buildEnchantLabel(armorName, enchSlot), part.description, part.stats as StatMap, bp, enchSlot) : null
+        const upgradedStats = part ? applyUpgrade(part.stats as StatMap, upgradeLevel) : {}
+        const main = part ? buildSlotCard(partType, buildEnchantLabel(armorName, enchSlot), part.description, upgradedStats, bp, enchSlot) : null
         let infusion: DetailCard | null = null
         if (ip) {
           const ibp: Record<string, number> = ip.perkName ? { [ip.perkName]: 1 } : {}
@@ -248,7 +255,8 @@
       const ir = $build.infusionRing ? getRing($build.infusionRing) : null
       if (ring || ir) {
         const bp: Record<string, number> = ring?.perkName ? { [ring.perkName]: ring.perkAmount ?? 1 } : {}
-        const main = ring ? buildSlotCard('Ring', buildEnchantLabel(ring.name, 'ring'), ring.description, ring.stats, bp, 'ring') : null
+        const upgradedRingStats = applyUpgrade(ring.stats, $build.upgradeRing ?? 0)
+        const main = ring ? buildSlotCard('Ring', buildEnchantLabel(ring.name, 'ring'), ring.description, upgradedRingStats, bp, 'ring') : null
         let infusion: DetailCard | null = null
         if (ir) {
           const ibp: Record<string, number> = ir.perkName ? { [ir.perkName]: ir.perkAmount ?? 1 } : {}
@@ -261,7 +269,7 @@
       const rune = getRune($build.rune)
       if (rune) {
         const bp: Record<string, number> = rune.perkName ? { [rune.perkName]: rune.perkAmount ?? 1 } : {}
-        groups.push({ main: buildSlotCard('Rune', buildEnchantLabel(rune.name, 'rune'), rune.description, rune.stats, bp, 'rune', hasRuneCDR ? [`Base CD: ${rune.cooldown}s → ${formatCD(rune.cooldown, cdr)}`] : [`Cooldown: ${rune.cooldown}s`]), infusion: null })
+        groups.push({ main: buildSlotCard('Rune', buildEnchantLabel(rune.name, 'rune'), rune.description, applyUpgrade(rune.stats, $build.upgradeRune ?? 0), bp, 'rune', hasRuneCDR ? [`Base CD: ${rune.cooldown}s → ${formatCD(rune.cooldown, cdr)}`] : [`Cooldown: ${rune.cooldown}s`]), infusion: null })
       }
     }
     return groups
@@ -795,15 +803,24 @@
               role="button" tabindex="0"
               on:click={() => openModal('armor-helmet')}
               on:keydown={e => e.key === 'Enter' && openModal('armor-helmet')}>
-              <span class="sg-label">Helmet</span>
+                <span class="sg-label">Helmet</span>
+                {#if $build.helmet}
+                    <button class="sg-upgrade-btn"
+                      class:sg-upgrade-btn--maxed={$build.upgradeHelmet === 5}
+                      on:click|stopPropagation={() => toggleUpgrade('upgradeHelmet')}
+                      title={$build.upgradeHelmet === 5 ? 'Reset to +0' : 'Max upgrade'}>
+                      {$build.upgradeHelmet === 5 ? '+5' : '+0'}
+                    </button>
+                {/if}
               <span class="sg-value">{$build.helmet || 'No helmet'}</span>
               {#if $build.helmet && hasEnchants('helmet')}
                 <span class="sg-ench">{$build.enchantments.helmet.filter(Boolean).join(' · ')}</span>
               {/if}
-              {#if $build.helmet}
-                <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, helmet: ''}))} title="Clear">✕</button>
-                <button class="sg-ench-btn" class:sg-ench-btn--active={inlineEnchantSlot === 'helmet'}
-                  on:click|stopPropagation={() => toggleInlineEnchant('helmet')} title="Enchant">✦</button>
+              
+              {#if $build.chestplate}
+                <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, chestplate: ''}))} title="Clear">✕</button>
+                <button class="sg-ench-btn" class:sg-ench-btn--active={inlineEnchantSlot === 'chestplate'}
+                  on:click|stopPropagation={() => toggleInlineEnchant('chestplate')} title="Enchant">✦</button>
               {/if}
             </div>
             <div class="sg-cell sg-span3 sg-clickable"
@@ -847,6 +864,14 @@
               on:click={() => openModal('armor-chestplate')}
               on:keydown={e => e.key === 'Enter' && openModal('armor-chestplate')}>
               <span class="sg-label">Chestplate</span>
+              {#if $build.chestplate}
+                <button class="sg-upgrade-btn"
+                  class:sg-upgrade-btn--maxed={$build.upgradeChestplate === 5}
+                  on:click|stopPropagation={() => toggleUpgrade('upgradeChestplate')}
+                  title={$build.upgradeChestplate === 5 ? 'Click to reset to +0' : 'Click to max upgrade'}>
+                  {$build.upgradeChestplate === 5 ? '+5' : '+0'}
+                </button>
+              {/if}
               <span class="sg-value">{$build.chestplate || 'No chestplate'}</span>
               {#if $build.chestplate && hasEnchants('chestplate')}
                 <span class="sg-ench">{$build.enchantments.chestplate.filter(Boolean).join(' · ')}</span>
@@ -871,7 +896,15 @@
               role="button" tabindex="0"
               on:click={() => openModal('ring')}
               on:keydown={e => e.key === 'Enter' && openModal('ring')}>
-              <span class="sg-label">Ring</span>
+              <span class="sg-label">Ring</span>  
+              {#if $build.ring}            
+                <button class="sg-upgrade-btn"
+                  class:sg-upgrade-btn--maxed={$build.upgradeRing === 5}
+                  on:click|stopPropagation={() => toggleUpgrade('upgradeRing')}
+                  title={$build.upgradeRing === 5 ? 'Click to reset to +0' : 'Click to max upgrade'}>
+                  {$build.upgradeRing === 5 ? '+5' : '+0'}
+                </button>
+              {/if}
               <span class="sg-value">{$build.ring || 'No ring'}</span>
               {#if $build.ring && hasEnchants('ring')}
                 <span class="sg-ench">{$build.enchantments.ring.filter(Boolean).join(' · ')}</span>
@@ -909,6 +942,14 @@
               on:click={() => openModal('armor-leggings')}
               on:keydown={e => e.key === 'Enter' && openModal('armor-leggings')}>
               <span class="sg-label">Leggings</span>
+              {#if $build.leggings}
+                  <button class="sg-upgrade-btn"
+                    class:sg-upgrade-btn--maxed={$build.upgradeLeggings === 5}
+                    on:click|stopPropagation={() => toggleUpgrade('upgradeLeggings')}
+                    title={$build.upgradeLeggings === 5 ? 'Click to reset to +0' : 'Click to max upgrade'}>
+                    {$build.upgradeLeggings === 5 ? '+5' : '+0'}
+                  </button>
+              {/if}
               <span class="sg-value">{$build.leggings || 'No leggings'}</span>
               {#if $build.leggings && hasEnchants('leggings')}
                 <span class="sg-ench">{$build.enchantments.leggings.filter(Boolean).join(' · ')}</span>
@@ -928,6 +969,14 @@
               on:click={() => openModal('rune')}
               on:keydown={e => e.key === 'Enter' && openModal('rune')}>
               <span class="sg-label">Rune</span>
+              {#if $build.rune}
+                <button class="sg-upgrade-btn"
+                  class:sg-upgrade-btn--maxed={$build.upgradeRune === 5}
+                  on:click|stopPropagation={() => toggleUpgrade('upgradeRune')}
+                  title={$build.upgradeRune === 5 ? 'Click to reset to +0' : 'Click to max upgrade'}>
+                  {$build.upgradeRune === 5 ? '+5' : '+0'}
+                </button>
+                {/if}
               <span class="sg-value">{$build.rune || 'No rune'}</span>
               {#if $build.rune}
                 {@const rune = runes.find(r => r.name === $build.rune)}
@@ -1856,4 +1905,17 @@
     .identity-col { flex:none; width:100%; }
   }
   .sg-clickable:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  .sg-upgrade-btn {
+    display:inline-flex; align-items:center; justify-content:center;
+    padding:1px 5px; border-radius:4px;
+    background:rgba(251,191,36,.12); border:1px solid rgba(251,191,36,.22);
+    color:var(--weapon-combined); font-size:.6rem; font-weight:800;
+    cursor:pointer; transition:all .15s; line-height:1;
+    width:fit-content; margin-top:2px;
+  }
+  .sg-upgrade-btn:hover { background:rgba(251,191,36,.25); }
+  .sg-upgrade-btn--maxed {
+    background:rgba(251,191,36,.22); border-color:rgba(251,191,36,.5);
+    box-shadow: 0 0 6px rgba(251,191,36,.3);
+  }
 </style>

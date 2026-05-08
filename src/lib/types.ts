@@ -67,6 +67,25 @@ export interface Perk { name: string; description: string; tags: string[] }
 
 export type EnchantSlot = "helmet" | "chestplate" | "leggings" | "ring" | "rune"
 
+// ── Upgrade helpers ───────────────────────────────────────────────────────────
+
+export const UPGRADE_MAX = 5
+export const UPGRADE_MULTIPLIER = 1.1
+
+/** Apply upgrade level to a stat map: positive stats ×mult, negative ÷mult */
+export function applyUpgrade(stats: StatMap, level: number): StatMap {
+  if (level <= 0) return { ...stats }
+  const mult = 1+ level * 0.1
+  const result: StatMap = {}
+  for (const [k, v] of Object.entries(stats)) {
+    if (v == null) continue
+    if (v > 0) result[k as StatKey] = Math.round((v * mult + Number.EPSILON) * 100) / 100
+    else if (v < 0) result[k as StatKey] = Math.round((v / mult + Number.EPSILON) * 100) / 100
+    else result[k as StatKey] = 0
+  }
+  return result
+}
+
 // ── Weapon Types (Blade/Handle) ───────────────────────────────────────────────
 
 export type BladeType = "Small Blade" | "Medium Blade" | "Heavy Blade" | "Hammer Head"
@@ -175,4 +194,10 @@ export interface BuildState {
   monkGlove: string
   monkEssence: string
   shrineActive: boolean
+  // Upgrade levels (0-5, default 0)
+  upgradeHelmet: number
+  upgradeChestplate: number
+  upgradeLeggings: number
+  upgradeRing: number
+  upgradeRune: number
 }
