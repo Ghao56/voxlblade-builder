@@ -90,6 +90,36 @@
     else if (state.monkGlove) parts.push(`Monk: ${state.monkGlove}`)
     return parts.join(' · ') || 'Empty build'
   }
+
+let shareCode = ''
+let importCode = ''
+let importError = ''
+let importSuccess = false
+let exportingSlot: number | null = null
+
+function exportSlot(i: number) {
+  const slot = slots[i]
+  if (!slot) return
+  shareCode = btoa(unescape(encodeURIComponent(JSON.stringify(slot.state))))
+  exportingSlot = i
+  importError = ''
+}
+
+function importBuild() {
+  try {
+    const state = JSON.parse(decodeURIComponent(escape(atob(importCode.trim()))))
+    build.set(state)
+    importError = ''
+    importSuccess = true
+    setTimeout(() => importSuccess = false, 2000)
+  } catch {
+    importError = 'Invalid code!'
+  }
+}
+
+function copyCode() {
+  navigator.clipboard.writeText(shareCode)
+}
 </script>
 
 <button class="saves-toggle" on:click={() => open = !open}>
@@ -140,6 +170,10 @@
                 on:click={() => loadBuild(i)}>
                 {confirmLoad === i ? '✓ Sure?' : '↓ Load'}
               </button>
+              <button class="btn btn-share" class:btn-share--active={exportingSlot === i}
+                on:click={() => exportSlot(i)} title="Export this build as code">
+                ⬆
+              </button>
               <button class="btn" class:btn-delete={confirmDelete !== i} class:btn-confirm={confirmDelete === i}
                 on:click={() => deleteSlot(i)}>
                 {confirmDelete === i ? '?' : '✕'}
@@ -148,6 +182,23 @@
           </div>
         </div>
       {/each}
+    </div>
+    <div class="share-section">
+      {#if exportingSlot !== null && shareCode}
+        <div class="share-row">
+          <span class="export-label">Slot {exportingSlot + 1} code:</span>
+          <input class="share-code" value={shareCode} readonly
+            on:click={e => (e.target as HTMLInputElement).select()} />
+          <button class="btn btn-copy" on:click={copyCode}>Copy</button>
+        </div>
+      {/if}
+
+      <div class="import-row">
+        <input class="share-code" bind:value={importCode} placeholder="Paste build code here…" />
+        <button class="btn btn-import" on:click={importBuild}>⬇ Import</button>
+      </div>
+      {#if importError}<span class="import-err">{importError}</span>{/if}
+      {#if importSuccess}<span class="import-ok">✓ Loaded!</span>{/if}
     </div>
   </div>
 {/if}
@@ -224,4 +275,23 @@
     color:var(--accent2);animation:pulse .4s ease infinite alternate;
   }
   @keyframes pulse{from{opacity:.8}to{opacity:1}}
+
+.share-section{display:flex;flex-direction:column;gap:8px;padding-top:10px;border-top:1px solid var(--border);}
+.share-row,.import-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.share-code{
+  flex:1;min-width:0;background:var(--surface3);border:1px solid var(--border-strong);
+  border-radius:6px;color:var(--ink);font-family:monospace;font-size:.7rem;
+  padding:5px 9px;outline:none;
+}
+.share-code:focus{border-color:rgba(167,139,250,.4);}
+.btn-share{background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.25);color:var(--accent3);}
+.btn-share:hover{background:rgba(167,139,250,.2);border-color:rgba(167,139,250,.5);}
+.btn-copy{background:rgba(74,222,128,.1);border-color:rgba(74,222,128,.25);color:var(--accent);flex-shrink:0;}
+.btn-copy:hover{background:rgba(74,222,128,.2);}
+.btn-import{background:rgba(56,189,248,.08);border-color:rgba(56,189,248,.2);color:var(--infusion);flex-shrink:0;}
+.btn-import:hover{background:rgba(56,189,248,.18);}
+.import-err{font-size:.7rem;color:var(--neg);}
+.import-ok{font-size:.7rem;color:var(--accent);}
+.export-label{font-size:.62rem;color:var(--ink-muted);white-space:nowrap;flex-shrink:0;}
+.btn-share--active{background:rgba(167,139,250,.25);border-color:rgba(167,139,250,.6);}
 </style>
