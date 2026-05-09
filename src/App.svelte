@@ -15,6 +15,8 @@
   import { applyUpgrade, UPGRADE_MAX } from './lib/types'
   import { WEAPON_ARTS, type WeaponArt } from './data/weaponArts'
 
+  import BuildSaves from './BuildSaves.svelte'
+
   function toggleUpgrade(key: 'upgradeHelmet'|'upgradeChestplate'|'upgradeLeggings'|'upgradeRing'|'upgradeRune') {
     build.update(s => ({...s, [key]: s[key] === UPGRADE_MAX ? 0 : UPGRADE_MAX}))
   }
@@ -864,6 +866,8 @@
     <h1>Voxl<span class="accent">Builder</span></h1>
     <span class="header-hint">Click any cell to edit · Click ✦ to enchant</span>
   </header>
+
+  <BuildSaves />
 
   <div class="workspace">
 
