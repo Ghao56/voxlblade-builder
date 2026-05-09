@@ -1216,7 +1216,15 @@
   <div class="wa-selected" class:wa-selected--invalid={!waAvailable}>
     <div class="wa-selected-top">
       <span class="wa-name">{selectedWA.name}</span>
-      <span class="wa-cd-badge" class:wa-cd-badge--reduced={hasWACDR}>CD: {Math.floor(selectedWA.cooldown * cdr.waCDR)}s</span>
+      {#if hasWACDR}
+  <span class="wa-cd-badge wa-cd-badge--reduced">
+    <span class="wa-cd-old">{selectedWA.cooldown}s</span>
+    <span class="wa-cd-arrow">→</span>
+    {Math.floor(selectedWA.cooldown * cdr.waCDR)}s
+  </span>
+{:else}
+  <span class="wa-cd-badge">CD: {selectedWA.cooldown}s</span>
+{/if}
       {#if !waAvailable}
         <span class="wa-req-badge">⚠ Req. not met</span>
       {/if}
@@ -1477,7 +1485,15 @@
     <span class="detail-type" style="color:var(--accent3)">Weapon Art</span>
     <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
       <span class="detail-name">{selectedWA.name}</span>
-      <span class="wa-cd-badge" class:wa-cd-badge--reduced={hasWACDR}>CD: {Math.floor(selectedWA.cooldown * cdr.waCDR)}s</span>
+      {#if hasWACDR}
+  <span class="wa-cd-badge wa-cd-badge--reduced">
+    <span class="wa-cd-old">{selectedWA.cooldown}s</span>
+    <span class="wa-cd-arrow">→</span>
+    {Math.floor(selectedWA.cooldown * cdr.waCDR)}s
+  </span>
+{:else}
+  <span class="wa-cd-badge">CD: {selectedWA.cooldown}s</span>
+{/if}
       {#if !waAvailable}<span class="wa-req-badge">⚠ Req. not met</span>{/if}
     </div>
   </div>
@@ -2356,5 +2372,16 @@
   opacity: .5;
   font-style: italic;
   letter-spacing: .08em;
+}
+.wa-cd-old {
+  text-decoration: line-through;
+  opacity: .45;
+  font-size: .6rem;
+  margin-right: 2px;
+}
+.wa-cd-arrow {
+  opacity: .4;
+  margin: 0 2px;
+  font-size: .6rem;
 }
 </style>
