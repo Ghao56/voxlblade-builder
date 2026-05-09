@@ -13,6 +13,7 @@
   import { enchantments, getEnchant as ge, isExclusiveEnchant } from './lib/engine'
   import EnchantSelect from './lib/EnchantSelect.svelte'
   import { applyUpgrade, UPGRADE_MAX } from './lib/types'
+  import { WEAPON_ARTS, type WeaponArt } from './data/weaponArts'
 
   function toggleUpgrade(key: 'upgradeHelmet'|'upgradeChestplate'|'upgradeLeggings'|'upgradeRing'|'upgradeRune') {
     build.update(s => ({...s, [key]: s[key] === UPGRADE_MAX ? 0 : UPGRADE_MAX}))
@@ -27,6 +28,7 @@
 
   // ── Collapsible panels ─────────────────────────────────────────────────────
   let showDetailsPanel = true
+  let selectedWeaponArt: string = 'Lunge'
   let showPerksPanel = true
   let activeDetailsTab: 'selection' | 'weapon' = 'selection'
 
@@ -44,6 +46,7 @@
   $: perkRows = Object.entries($result.perks).filter(([,v]) => v > 0).sort(([a],[b]) => a.localeCompare(b))
   $: cdr = $result.cdr
   $: hasRuneCDR = cdr.runeCDR < 1.0 || cdr.runeSetCD != null
+  $: hasWACDR = cdr.waCDR < 1.0
 
   $: shrineActive = $build.shrineActive
 
@@ -326,6 +329,114 @@
     if (slot === 'rune') return !!s.rune
     return false
   }
+
+  // ── Weapon Art helpers ─────────────────────────────────────────────────────
+
+  // Pure function nhận scalings, stats, finalWeaponType, build state để Svelte track đúng
+  function checkWA(
+    wa: WeaponArt,
+    scalings: Record<string, number>,
+    stats: Record<string, number>,
+    finalWeaponType: string,
+    _isMonk: boolean,
+    bladeName: string,
+    handleName: string
+  ): boolean {
+    const req = wa.requirements
+
+    // Monk WA chỉ dùng được khi là Monk
+    if (wa.isMonk && !_isMonk) return false
+    // Khi là Monk: chỉ hiện WA có req.guild === 'Monk' (isMonk flag)
+    if (_isMonk && !wa.isMonk) return false
+
+    if (req.guild === 'Monk' && !_isMonk) return false
+
+    if (req.bothParts) {
+      const has = req.bothParts.every(p => p === bladeName || p === handleName)
+      if (!has) return false
+    }
+
+    const scaleMap: Record<string, string> = {
+      physicalScaling: 'physical', magicScaling: 'magic',
+      fireScaling: 'fire', waterScaling: 'water', earthScaling: 'earth',
+      airScaling: 'air', hexScaling: 'hex', holyScaling: 'holy',
+      dexterityScaling: 'dexterity', summonScaling: 'summon'
+    }
+    for (const [reqKey, scalingKey] of Object.entries(scaleMap)) {
+      const needed = (req as any)[reqKey]
+      if (needed != null && (scalings[scalingKey] ?? 0) < needed) return false
+    }
+
+    if (req.physicalDefense != null && (stats.physicalDefense ?? 0) < req.physicalDefense) return false
+    if (req.magicBoost != null && (stats.magicBoost ?? 0) < req.magicBoost) return false
+    if (req.holyBoost != null && (stats.holyBoost ?? 0) < req.holyBoost) return false
+    if (req.summonBoost != null && (stats.summonBoost ?? 0) < req.summonBoost) return false
+    if (req.heatResistance != null && (stats.heatResistance ?? 0) < req.heatResistance) return false
+    if (req.tenacity != null && (stats.tenacity ?? 0) < req.tenacity) return false
+
+    if (req.weaponType && req.weaponType.length > 0) {
+      if (!req.weaponType.some(t => t === finalWeaponType)) return false
+    }
+
+    return true
+  }
+
+  // Reactive snapshots để force Svelte track
+  $: _waScalings = weaponResult?.scalings ?? {} as Record<string, number>
+  $: _waStats = weaponResult?.stats ?? {} as Record<string, number>  // chỉ weapon stats
+  $: _waWeaponType = weaponResult?.finalWeaponType ?? ''
+  $: _waBlade = $build.weaponBlade
+  $: _waHandle = $build.weaponHandle
+
+  $: availableWeaponArts = WEAPON_ARTS.filter(wa =>
+    checkWA(wa, _waScalings, _waStats, _waWeaponType, isMonk, _waBlade, _waHandle)
+  )
+
+  $: selectedWA = WEAPON_ARTS.find(wa => wa.name === selectedWeaponArt) ?? WEAPON_ARTS[0]
+
+  // Auto-select default khi switch monk/non-monk
+  $: {
+    if (isMonk && selectedWeaponArt === 'Lunge') selectedWeaponArt = 'Barrage'
+    else if (!isMonk && selectedWeaponArt === 'Barrage') selectedWeaponArt = 'Lunge'
+  }
+
+  $: waAvailable = checkWA(selectedWA, _waScalings, _waStats, _waWeaponType, isMonk, _waBlade, _waHandle)
+  $: waReq = selectedWA.requirements
+
+  // Các req không đạt (để hiện trong UI)
+  $: waUnmetReqs = (() => {
+    const req = waReq
+    const unmet: string[] = []
+    if (req.guild && !isMonk) unmet.push(`Guild: ${req.guild}`)
+    if (req.weaponType?.length && !req.weaponType.some(t => t === _waWeaponType))
+      unmet.push(`Weapon: ${req.weaponType.join(' / ')}`)
+    const scaleMapLabels: Array<[string, string, string]> = [
+      ['physicalScaling', 'physical', 'Physical'],
+      ['magicScaling', 'magic', 'Magic'],
+      ['fireScaling', 'fire', 'Fire'],
+      ['waterScaling', 'water', 'Water'],
+      ['earthScaling', 'earth', 'Earth'],
+      ['airScaling', 'air', 'Air'],
+      ['hexScaling', 'hex', 'Hex'],
+      ['holyScaling', 'holy', 'Holy'],
+      ['dexterityScaling', 'dexterity', 'Dexterity'],
+      ['summonScaling', 'summon', 'Summon'],
+    ]
+    for (const [reqKey, scalingKey, label] of scaleMapLabels) {
+      const needed = (req as any)[reqKey]
+      if (needed != null && (_waScalings[scalingKey] ?? 0) < needed)
+        unmet.push(`${label} Scaling ≥ ${needed}`)
+    }
+    if (req.magicBoost != null && (_waStats.magicBoost ?? 0) < req.magicBoost) unmet.push(`Magic Boost ≥ +${req.magicBoost}%`)
+    if (req.holyBoost != null && (_waStats.holyBoost ?? 0) < req.holyBoost) unmet.push(`Holy Boost ≥ +${req.holyBoost}%`)
+    if (req.summonBoost != null && (_waStats.summonBoost ?? 0) < req.summonBoost) unmet.push(`Summon Boost ≥ +${req.summonBoost}%`)
+    if (req.heatResistance != null && (_waStats.heatResistance ?? 0) < req.heatResistance) unmet.push(`Heat Resistance ≥ ${req.heatResistance}%`)
+    if (req.tenacity != null && (_waStats.tenacity ?? 0) < req.tenacity) unmet.push(`Tenacity ≥ ${req.tenacity}`)
+    if (req.physicalDefense != null && (_waStats.physicalDefense ?? 0) < req.physicalDefense) unmet.push(`Physical Defense ≥ +${req.physicalDefense}%`)
+    if (req.bothParts && !req.bothParts.every(p => p === _waBlade || p === _waHandle))
+      unmet.push(`Cần cả: ${req.bothParts.join(' + ')}`)
+    return unmet
+  })()
 </script>
 
 <svelte:window on:keydown={onKeydown} />
@@ -745,6 +856,8 @@
   </div>
 {/if}
 
+
+
 <!-- ═══════════════════════════════ MAIN APP ═══════════════════════════════ -->
 <div class="app">
   <header>
@@ -1013,6 +1126,8 @@
 
           </div>
 
+
+
           <!-- ── INLINE ENCHANT PANEL ── -->
           <!-- Dùng biến reactive iep* thay vì {@const} để tránh stale closure -->
           {#if iepSlot}
@@ -1091,6 +1206,37 @@
             </div>
           {/if}
         </div>
+        
+<!-- ── WEAPON ART PANEL ── -->
+<div class="wa-panel">
+  <div class="wa-panel-header">
+    <span class="wa-panel-title">Weapon Art</span>
+  </div>
+
+  <div class="wa-selected" class:wa-selected--invalid={!waAvailable}>
+    <div class="wa-selected-top">
+      <span class="wa-name">{selectedWA.name}</span>
+      <span class="wa-cd-badge" class:wa-cd-badge--reduced={hasWACDR}>CD: {Math.floor(selectedWA.cooldown * cdr.waCDR)}s</span>
+      {#if !waAvailable}
+        <span class="wa-req-badge">⚠ Req. not met</span>
+      {/if}
+    </div>
+  </div>
+
+  {#if availableWeaponArts.length > 1}
+    <div class="wa-available-list">
+      <span class="wa-avail-label">Available ({availableWeaponArts.length})</span>
+      <div class="wa-chips">
+        {#each availableWeaponArts as wa}
+          <button class="wa-chip" class:wa-chip--active={selectedWeaponArt === wa.name}
+            on:click={() => selectedWeaponArt = wa.name}>
+            {wa.name}
+          </button>
+        {/each}
+      </div>
+    </div>
+  {/if}
+</div>
 
         <div class="summary-stats">
           <div class="ss-header">Stats</div>
@@ -1215,15 +1361,55 @@
                               {#if cdr.runeSetCD != null}<div class="cdr-step"><span class="cdr-source">Gladiatorial Rage</span><span class="cdr-mult">Sets CD = {cdr.runeSetCD}s</span></div>{/if}
                               {#each cdr.runeBreakdown as step}<div class="cdr-step"><span class="cdr-source">{step.source}</span><span class="cdr-mult">-{step.pct}%</span></div>{/each}
                               {#each runes.filter(r => r.name === $build.rune).slice(0,1) as rune}
-                                <div class="cdr-result">
-                                  {#if cdr.runeSetCD != null}
-                                    <span class="cdr-cd-old">{rune.cooldown}s</span><span class="cdr-arrow">→</span>
-                                    <span class="cdr-cd-old">{cdr.runeSetCD}s</span><span class="cdr-arrow">→</span>
-                                  {:else}
-                                    <span class="cdr-cd-old">{rune.cooldown}s</span><span class="cdr-arrow">→</span>
-                                  {/if}
-                                  <span class="cdr-cd-new">{formatCD(rune.cooldown, cdr)}</span>
-                                </div>
+                                <!-- SAU (Rune CDR block) -->
+<div class="cdr-steps-calc">
+  {#if cdr.runeSetCD != null}
+    <div class="cdr-calc-row">
+      <span class="cdr-cd-old">{rune.cooldown}s</span>
+      <span class="cdr-arrow">→</span>
+      <span class="cdr-cd-new">{cdr.runeSetCD}s</span>
+    </div>
+    {#each cdr.runeBreakdown as step, i}
+  {@const prevCD = i === 0 ? cdr.runeSetCD : cdr.runeSetCD * cdr.runeBreakdown.slice(0,i).reduce((a,s)=>a*s.multiplier,1)}
+  {@const nextCD = cdr.runeSetCD * cdr.runeBreakdown.slice(0,i+1).reduce((a,s)=>a*s.multiplier,1)}
+  {@const isLast = i === cdr.runeBreakdown.length - 1}
+  <div class="cdr-calc-row">
+    <span class="cdr-cd-old">{i === 0 ? prevCD : prevCD.toFixed(2)}s</span>
+    <span class="cdr-arrow">{step.isMultiply ? '×' : '÷'}</span>
+    <span class="cdr-calc-mult">{step.isMultiply ? step.multiplier.toFixed(2) : (1/step.multiplier).toFixed(2)}</span>
+    <span class="cdr-arrow">=</span>
+    <span class="cdr-cd-new">{nextCD.toFixed(2)}s</span>
+  </div>
+  {#if isLast}
+    <div class="cdr-calc-row cdr-calc-row--floor">
+      <span class="cdr-floor-label">floor</span>
+      <span class="cdr-arrow">→</span>
+      <span class="cdr-cd-new">{Math.floor(nextCD)}s</span>
+    </div>
+  {/if}
+{/each}
+    {:else}
+    {#each cdr.runeBreakdown as step, i}
+      {@const prevCD = i === 0 ? rune.cooldown : rune.cooldown * cdr.runeBreakdown.slice(0,i).reduce((a,s)=>a*s.multiplier,1)}
+      {@const nextCD = rune.cooldown * cdr.runeBreakdown.slice(0,i+1).reduce((a,s)=>a*s.multiplier,1)}
+      {@const isLast = i === cdr.runeBreakdown.length - 1}
+      <div class="cdr-calc-row">
+        <span class="cdr-cd-old">{i === 0 ? prevCD : prevCD.toFixed(2)}s</span>
+        <span class="cdr-arrow">{step.isMultiply ? '×' : '÷'}</span>
+        <span class="cdr-calc-mult">{step.isMultiply ? step.multiplier.toFixed(2) : (1/step.multiplier).toFixed(2)}</span>
+        <span class="cdr-arrow">=</span>
+        <span class="cdr-cd-new">{nextCD.toFixed(2)}s</span>
+      </div>
+      {#if isLast}
+        <div class="cdr-calc-row cdr-calc-row--floor">
+          <span class="cdr-floor-label">floor</span>
+          <span class="cdr-arrow">→</span>
+          <span class="cdr-cd-new">{Math.floor(nextCD)}s</span>
+        </div>
+      {/if}
+    {/each}
+                          {/if}
+                        </div>
                               {/each}
                             </div>
                           {/if}
@@ -1285,6 +1471,67 @@
           {/if}
 
         {:else if activeDetailsTab === 'weapon' && weaponResult}
+        <!-- WA Detail card -->
+<div class="detail-card wa-detail-card" class:wa-selected--invalid={!waAvailable} style="margin-bottom:10px;">
+  <div class="detail-head">
+    <span class="detail-type" style="color:var(--accent3)">Weapon Art</span>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+      <span class="detail-name">{selectedWA.name}</span>
+      <span class="wa-cd-badge" class:wa-cd-badge--reduced={hasWACDR}>CD: {Math.floor(selectedWA.cooldown * cdr.waCDR)}s</span>
+      {#if !waAvailable}<span class="wa-req-badge">⚠ Req. not met</span>{/if}
+    </div>
+  </div>
+  <p class="wa-desc">{selectedWA.description}</p>
+  {#if selectedWA.baseDamage}
+    <div class="wa-stat-row"><span class="wa-stat-key">Damage</span><span class="wa-stat-val">{selectedWA.baseDamage}</span></div>
+  {/if}
+  {#if selectedWA.damageType}
+    <div class="wa-stat-row"><span class="wa-stat-key">Type</span><span class="wa-stat-val">{selectedWA.damageType}</span></div>
+  {/if}
+  {#if selectedWA.scaling}
+    <div class="wa-stat-row"><span class="wa-stat-key">Scaling</span><span class="wa-stat-val">{selectedWA.scaling}</span></div>
+  {/if}
+  {#if selectedWA.extras?.length}
+    {#each selectedWA.extras as ex}
+      <div class="wa-stat-row wa-stat-row--extra"><span class="wa-stat-val wa-stat-val--extra">{ex}</span></div>
+    {/each}
+  {/if}
+  {#if !waAvailable && waUnmetReqs.length > 0}
+    <div class="wa-req-block">
+      <span class="wa-req-title">Requirements not met:</span>
+      {#each waUnmetReqs as item}<div class="wa-req-item">{item}</div>{/each}
+    </div>
+  {/if}
+  {#if hasWACDR}
+    <div class="cdr-block" style="margin-top:6px;">
+      <div class="cdr-block-header"><span class="cdr-icon">⏱</span><span class="cdr-title">Weapon Art CDR</span></div>
+      {#each cdr.waBreakdown as step}
+        <div class="cdr-step"><span class="cdr-source">{step.source}</span><span class="cdr-mult">-{step.pct}%</span></div>
+      {/each}
+      <div class="cdr-steps-calc">
+  {#each cdr.waBreakdown as step, i}
+  {@const prevCD = i === 0 ? selectedWA.cooldown : selectedWA.cooldown * cdr.waBreakdown.slice(0,i).reduce((a,s)=>a*s.multiplier,1)}
+  {@const nextCD = selectedWA.cooldown * cdr.waBreakdown.slice(0,i+1).reduce((a,s)=>a*s.multiplier,1)}
+  {@const isLast = i === cdr.waBreakdown.length - 1}
+  <div class="cdr-calc-row">
+    <span class="cdr-cd-old">{i === 0 ? prevCD : prevCD.toFixed(2)}s</span>
+    <span class="cdr-arrow">{step.isMultiply ? '×' : '÷'}</span>
+    <span class="cdr-calc-mult">{step.isMultiply ? step.multiplier.toFixed(2) : (1/step.multiplier).toFixed(2)}</span>
+    <span class="cdr-arrow">=</span>
+    <span class="cdr-cd-new">{nextCD.toFixed(2)}s</span>
+  </div>
+  {#if isLast}
+    <div class="cdr-calc-row cdr-calc-row--floor">
+      <span class="cdr-floor-label">floor</span>
+      <span class="cdr-arrow">→</span>
+      <span class="cdr-cd-new">{Math.floor(nextCD)}s</span>
+    </div>
+  {/if}
+{/each}
+</div>
+    </div>
+  {/if}
+</div>
           <div class="weapon-result-layout">
             <!-- Part 1 -->
             {#if weaponResult.part1Name}
@@ -1612,7 +1859,16 @@
   .panel-title { font-size:.8rem; text-transform:uppercase; letter-spacing:.18em; color:var(--ink-muted); font-weight:700; margin-bottom:14px; }
   .summary-panel { border-color:rgba(74,222,128,.13); background:linear-gradient(160deg,var(--surface) 60%,rgba(74,222,128,.03) 100%); }
   .summary-title { color:var(--accent); }
-  .summary-layout { display:grid; grid-template-columns:1fr 240px; gap:12px; align-items:start; }
+  .summary-layout {
+  display: grid;
+  grid-template-columns: 1fr 240px;
+  grid-template-rows: auto auto;
+  gap: 12px;
+  align-items: start;
+}
+.summary-grid-wrap { grid-row: 1 / 3; }  /* occupies both rows on left */
+.summary-stats { grid-row: 1; }
+.wa-panel { grid-row: 2; grid-column: 2; }  /* right column, second row */
   .summary-grid-wrap { overflow-x:auto; }
   .summary-grid { display:grid; grid-template-columns:repeat(10,minmax(60px,1fr)); gap:6px; min-width:600px; }
 
@@ -1875,7 +2131,6 @@
   .cdr-step { display:flex; justify-content:space-between; align-items:center; font-size:.75rem; padding:2px 4px; }
   .cdr-source { color:var(--ink-muted); }
   .cdr-mult { font-weight:700; color:#34d399; }
-  .cdr-result { display:flex; align-items:center; gap:7px; padding-top:6px; border-top:1px solid rgba(52,211,153,.15); margin-top:2px; }
   .cdr-cd-old { font-size:.75rem; color:var(--ink-muted); text-decoration:line-through; opacity:.4; }
   .cdr-arrow { font-size:.7rem; color:var(--ink-muted); opacity:.35; }
   .cdr-cd-new { font-size:.95rem; font-weight:800; color:#34d399; }
@@ -1918,4 +2173,188 @@
     background:rgba(251,191,36,.22); border-color:rgba(251,191,36,.5);
     box-shadow: 0 0 6px rgba(251,191,36,.3);
   }
+  /* ── WEAPON ART PANEL ── */
+.wa-panel {
+  background: linear-gradient(135deg, rgba(167,139,250,.09) 0%, rgba(167,139,250,.04) 100%);
+  border: 1px solid rgba(167,139,250,.22);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.wa-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.wa-panel-title {
+  font-size: .62rem;
+  text-transform: uppercase;
+  letter-spacing: .18em;
+  font-weight: 700;
+  color: var(--accent3);
+}
+.wa-selected {
+  background: var(--surface3);
+  border: 1px solid rgba(167,139,250,.18);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.wa-selected--invalid {
+  border-color: rgba(248,113,113,.25);
+  background: rgba(248,113,113,.04);
+}
+
+.wa-selected-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.wa-name {
+  font-size: .9rem;
+  font-weight: 700;
+  color: var(--accent3);
+  flex: 1;
+  min-width: 0;
+}
+
+.wa-cd-badge {
+  font-size: .65rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(52,211,153,.12);
+  border: 1px solid rgba(52,211,153,.25);
+  color: var(--weapon-handle);
+  flex-shrink: 0;
+}
+
+.wa-req-badge {
+  font-size: .65rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(248,113,113,.12);
+  border: 1px solid rgba(248,113,113,.3);
+  color: var(--neg);
+  flex-shrink: 0;
+}
+
+.wa-desc {
+  font-size: .78rem;
+  color: var(--ink-muted);
+  line-height: 1.4;
+}
+
+.wa-stat-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: .76rem;
+}
+.wa-stat-key {
+  color: var(--ink-muted);
+  font-size: .67rem;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  font-weight: 700;
+  min-width: 52px;
+}
+.wa-stat-val {
+  color: var(--ink);
+  font-weight: 600;
+}
+.wa-stat-row--extra { margin-top: 1px; }
+.wa-stat-val--extra {
+  font-size: .72rem;
+  color: var(--accent2);
+  font-style: italic;
+  font-weight: 400;
+}
+
+.wa-req-block {
+  margin-top: 4px;
+  padding: 8px 10px;
+  background: rgba(248,113,113,.06);
+  border: 1px solid rgba(248,113,113,.18);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.wa-req-title {
+  font-size: .62rem;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  font-weight: 700;
+  color: var(--neg);
+  margin-bottom: 2px;
+}
+.wa-req-item {
+  font-size: .74rem;
+  color: var(--ink-muted);
+}
+.wa-req-item::before { content: '• '; color: var(--neg); opacity: .6; }
+
+.wa-available-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.wa-avail-label {
+  font-size: .6rem;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  font-weight: 700;
+  color: var(--ink-muted);
+  opacity: .6;
+}
+.wa-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.wa-chip {
+  font-size: .68rem;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(167,139,250,.2);
+  background: rgba(167,139,250,.07);
+  color: var(--ink-muted);
+  cursor: pointer;
+  transition: all .12s;
+  font-family: var(--font-body);
+}
+.wa-chip:hover { border-color: rgba(167,139,250,.4); color: var(--accent3); }
+.wa-chip--active {
+  background: rgba(167,139,250,.18);
+  border-color: rgba(167,139,250,.45);
+  color: var(--accent3);
+  font-weight: 700;
+}.wa-cd-badge--reduced { 
+  background: rgba(52,211,153,.2); 
+  border-color: rgba(52,211,153,.4); 
+}
+.cdr-calc-row--floor { 
+  padding-top: 4px;
+  border-top: 1px dashed rgba(52,211,153,.2);
+  margin-top: 2px;
+}
+.cdr-floor-label { 
+  font-size: .62rem; 
+  color: var(--ink-muted); 
+  opacity: .5;
+  font-style: italic;
+  letter-spacing: .08em;
+}
 </style>

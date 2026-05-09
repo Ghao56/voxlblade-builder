@@ -661,6 +661,7 @@ export interface CDRStep {
   source: string
   pct: number
   multiplier: number
+  isMultiply?: boolean
 }
 
 export interface CDRResult {
@@ -710,11 +711,11 @@ export function calcCDR(
   if (raceCooldownModifiers) {
     if (raceCooldownModifiers["RuneCDR"] != null) {
       const m = raceCooldownModifiers["RuneCDR"]
-      runeSteps.push({ source: `${activeRaceName} (Race)`, pct: Math.round((1 - m) * 100), multiplier: m })
+      runeSteps.push({ source: `${activeRaceName} (Race)`, pct: Math.round((1 - m) * 100), multiplier: m, isMultiply: true })
     }
     if (raceCooldownModifiers["weaponArtCDR"] != null) {
       const m = raceCooldownModifiers["weaponArtCDR"]
-      waSteps.push({ source: `${activeRaceName} (Race)`, pct: Math.round((1 - m) * 100), multiplier: m })
+      waSteps.push({ source: `${activeRaceName} (Race)`, pct: Math.round((1 - m) * 100), multiplier: m, isMultiply: true })
     }
   }
 
