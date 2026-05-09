@@ -3,7 +3,7 @@
   {"name":"HALF-ORK","passive":"Gain 10 armor penetration.","statModifiers":{"armorPenetration":10}},
   {"name":"ELF","passive":"Gain 40% rune cooldown reduction.","cooldownModifiers":{"RuneCDR":0.6}},
   {"name":"DARK ELF","passive":"An 8% chance to apply a random debuff to the opponent when hitting them."},
-  {"name":"DRAGON BLOODED","passive":"Gain 50% Warding and 10 Protection.","statModifiers":{"warding":50,"protection":10}},
+  {"name":"DRAGON BLOODED","passive":"Gain 30% Warding and 10 Protection alongside 100% Heat and Cold Resistance.","statModifiers":{"warding":50,"protection":10,"heatResistance":100,"coldResistance":100}},
   {"name":"ORK","passive":"Weapon arts gain 10 armor penetration. +0.2 Tenacity and for each active buff you gain an additional +0.1 tenacity.","statModifiers":{"tenacity":0.2}},
   {"name":"HIGH ELF","passive":"Reduces Weapon Art cooldown by 25%.","cooldownModifiers":{"weaponArtCDR":0.75}},
   {"name":"ARBORIAN","passive":"-50% Fire Defense, +15 Protection, passive regen that is boosted in the sun, and a chance to entangle foes on hit.","statModifiers":{"fireDefense":-50,"protection":15}},

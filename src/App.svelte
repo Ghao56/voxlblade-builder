@@ -51,6 +51,10 @@
   $: hasWACDR = cdr.waCDR < 1.0
 
   $: shrineActive = $build.shrineActive
+  $: buildAtkSpd = $result.stats.attackSpeed ?? 0
+  $: finalAttackSpeed = weaponResult
+  ? Math.round(weaponResult.attackSpeed * (1 + ($result.stats.attackSpeed ?? 0) / 100) * 100) / 100
+  : null
 
   // ── Enchant helpers ────────────────────────────────────────────────────────
   let enchantCats: Record<EnchantSlot, 'unAscended' | 'Ascended'> = {
@@ -87,6 +91,20 @@
       return { ...s, enchantments: { ...s.enchantments, [slot]: next } }
     })
   }
+
+  function applyEnchantToAll(slot: EnchantSlot) {
+  const current = $build.enchantments[slot]
+  build.update(s => {
+    const updated = { ...s.enchantments }
+    const allSlots: EnchantSlot[] = ['helmet', 'chestplate', 'leggings', 'ring', 'rune']
+    for (const s2 of allSlots) {
+      if (s2 !== slot) {
+        updated[s2] = [...current] as [string, string, string]
+      }
+    }
+    return { ...s, enchantments: updated }
+  })
+}
 
   // ── Inline enchant reactive values ─────────────────────────────────────────
   $: iepSlot = inlineEnchantSlot
@@ -922,6 +940,7 @@
               on:keydown={e => e.key === 'Enter' && openModal('armor-helmet')}>
                 <span class="sg-label">Helmet</span>
                 {#if $build.helmet}
+                
                     <button class="sg-upgrade-btn"
                       class:sg-upgrade-btn--maxed={$build.upgradeHelmet === 5}
                       on:click|stopPropagation={() => toggleUpgrade('upgradeHelmet')}
@@ -934,10 +953,10 @@
                 <span class="sg-ench">{$build.enchantments.helmet.filter(Boolean).join(' · ')}</span>
               {/if}
               
-              {#if $build.chestplate}
-                <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, chestplate: ''}))} title="Clear">✕</button>
-                <button class="sg-ench-btn" class:sg-ench-btn--active={inlineEnchantSlot === 'chestplate'}
-                  on:click|stopPropagation={() => toggleInlineEnchant('chestplate')} title="Enchant">✦</button>
+              {#if $build.helmet}
+                <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, helmet: ''}))} title="Clear">✕</button>
+                <button class="sg-ench-btn" class:sg-ench-btn--active={inlineEnchantSlot === 'helmet'}
+                  on:click|stopPropagation={() => toggleInlineEnchant('helmet')} title="Enchant">✦</button>
               {/if}
             </div>
             <div class="sg-cell sg-span3 sg-clickable"
@@ -1151,6 +1170,10 @@
                     <button class="iep-clear-btn" on:click={() => clearEnchants(iepSlot)}>
                       Clear all
                     </button>
+                    <button class="iep-apply-all-btn" on:click={() => applyEnchantToAll(iepSlot)}
+                      title="Apply this enchantment setup to all slots">
+                      Apply to all
+                    </button>
                   {/if}
                   <button class="iep-close-btn" on:click={() => inlineEnchantSlot = null}>✕</button>
                 </div>
@@ -1171,8 +1194,10 @@
                 </div>
                 <!-- Slot 1: chỉ khi s0 có giá trị và không exclusive -->
                 {#if iepS0 && !iepExcl}
-                  <button class="iep-swap-btn" title="Swap slot 1 ↔ slot 2"
-                    on:click={() => swapEnchantments(iepSlot, 0, 1)}>⇅</button>
+                  {#if iepS1}
+                    <button class="iep-swap-btn" title="Swap slot 1 ↔ slot 2"
+                      on:click={() => swapEnchantments(iepSlot, 0, 1)}>⇅</button>
+                  {/if}
                   <div class="iep-slot">
                     <span class="iep-slot-num">2</span>
                     <EnchantSelect
@@ -1188,8 +1213,10 @@
                 {/if}
                 <!-- Slot 2: chỉ khi s1 có giá trị và không exclusive -->
                 {#if iepS1 && !iepExcl}
-                  <button class="iep-swap-btn" title="Swap slot 2 ↔ slot 3"
-                    on:click={() => swapEnchantments(iepSlot, 1, 2)}>⇅</button>
+                  {#if iepS2}
+                    <button class="iep-swap-btn" title="Swap slot 2 ↔ slot 3"
+                      on:click={() => swapEnchantments(iepSlot, 1, 2)}>⇅</button>
+                  {/if}
                   <div class="iep-slot">
                     <span class="iep-slot-num">3</span>
                     <EnchantSelect
@@ -1711,7 +1738,16 @@
                     {#if weaponResult.weaponModifier}<span class="weapon-modifier-badge">{isMonk ? '' : 'via '}{weaponResult.weaponModifier}</span>{/if}
                     {#if weaponResult.hybridActive}<span class="weapon-modifier-badge weapon-modifier-badge--hybrid">Hybrid</span>{/if}
                   </div>
-                  <span class="weapon-combined-speed">{weaponResult.attackSpeed}x Attack Speed</span>
+                  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
+                    <span class="weapon-combined-speed">
+                      {finalAttackSpeed ?? weaponResult.attackSpeed}x Attack Speed
+                    </span>
+                    {#if buildAtkSpd !== 0}
+                      <span style="font-size:.62rem;color:var(--accent2);opacity:.8;">
+                        {weaponResult.attackSpeed}x base {buildAtkSpd > 0 ? '+' : ''}{buildAtkSpd/100} from race
+                      </span>
+                    {/if}
+                  </div>
                 </div>
                 {#if Object.keys(weaponResult.damageTypes).length}
                   <div class="weapon-section-label">Damage Types</div>
@@ -2388,4 +2424,15 @@
   margin: 0 2px;
   font-size: .6rem;
 }
+.iep-apply-all-btn {
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(74,222,128,.25);
+  background: rgba(74,222,128,.08);
+  color: var(--accent);
+  font-size: .7rem;
+  cursor: pointer;
+  transition: all .15s;
+}
+.iep-apply-all-btn:hover { background: rgba(74,222,128,.18); }
 </style>
