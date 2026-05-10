@@ -7,6 +7,6 @@
   {"name":"ORK","passive":"Weapon arts gain 10 armor penetration. +0.2 Tenacity and for each active buff you gain an additional +0.1 tenacity.","statModifiers":{"tenacity":0.2}},
   {"name":"HIGH ELF","passive":"Reduces Weapon Art cooldown by 25%.","cooldownModifiers":{"weaponArtCDR":0.75}},
   {"name":"ARBORIAN","passive":"-50% Fire Defense, +15 Protection, passive regen that is boosted in the sun, and a chance to entangle foes on hit.","statModifiers":{"fireDefense":-50,"protection":15}},
-  {"name":"KITSUNE","passive":"Gain +2 Jump Boost, 10% Movement Speed and +10% Attack Speed.","statModifiers":{"jumpBoost":2,"speedBoost":10,"attackSpeed":10}},
+  {"name":"KITSUNE","passive":"Gain +2 Jump Boost, 10% Movement Speed and +10% Attack Speed.","statModifiers":{"jumpBoost":2,"speedBoost":10}},
   {"name":"BUNIKIN","passive":"Gain +5 Jump Boost and Gain dodge chance based on Jump Boost, when you dodge with the passive you gain a 100% chance to crit for one attack.","statModifiers":{"jumpBoost":5}}
 ]

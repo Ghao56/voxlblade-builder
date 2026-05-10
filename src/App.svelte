@@ -51,10 +51,6 @@
   $: hasWACDR = cdr.waCDR < 1.0
 
   $: shrineActive = $build.shrineActive
-  $: buildAtkSpd = $result.stats.attackSpeed ?? 0
-  $: finalAttackSpeed = weaponResult
-  ? Math.round(weaponResult.attackSpeed * (1 + ($result.stats.attackSpeed ?? 0) / 100) * 100) / 100
-  : null
 
   // ── Enchant helpers ────────────────────────────────────────────────────────
   let enchantCats: Record<EnchantSlot, 'unAscended' | 'Ascended'> = {
@@ -967,9 +963,6 @@
               <span class="sg-label">{part1Label}</span>
               <span class="sg-value">{sgPart1Name}</span>
               {#if weaponResult?.part1Type}<span class="sg-sub">{weaponResult.part1Type}</span>{/if}
-              {#if !sgPart1Empty}
-                <button class="sg-clear" on:click|stopPropagation={() => build.update(s => isMonk ? ({...s, monkGlove: ''}) : ({...s, weaponBlade: ''}))} title="Clear">✕</button>
-              {/if}
             </div>
             <div class="sg-cell sg-span3 sg-clickable"
               class:sg-handle={!isMonk} class:sg-monk-essence={isMonk} class:sg-empty={sgPart2Empty}
@@ -979,9 +972,6 @@
               <span class="sg-label">{part2Label}</span>
               <span class="sg-value">{sgPart2Name}</span>
               {#if weaponResult?.part2Type}<span class="sg-sub">{weaponResult.part2Type}</span>{/if}
-              {#if !sgPart2Empty}
-                <button class="sg-clear" on:click|stopPropagation={() => build.update(s => isMonk ? ({...s, monkEssence: ''}) : ({...s, weaponHandle: ''}))} title="Clear">✕</button>
-              {/if}
             </div>
 
             <!-- Row 2: Inf Chest | Chest | Inf Ring | Ring | Race -->
@@ -1738,14 +1728,10 @@
                     {#if weaponResult.weaponModifier}<span class="weapon-modifier-badge">{isMonk ? '' : 'via '}{weaponResult.weaponModifier}</span>{/if}
                     {#if weaponResult.hybridActive}<span class="weapon-modifier-badge weapon-modifier-badge--hybrid">Hybrid</span>{/if}
                   </div>
-                  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
-                    <span class="weapon-combined-speed">
-                      {finalAttackSpeed ?? weaponResult.attackSpeed}x Attack Speed
-                    </span>
-                    {#if buildAtkSpd !== 0}
-                      <span style="font-size:.62rem;color:var(--accent2);opacity:.8;">
-                        {weaponResult.attackSpeed}x base {buildAtkSpd > 0 ? '+' : ''}{buildAtkSpd/100} from race
-                      </span>
+                  <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+                    <span class="weapon-combined-speed">{weaponResult.attackSpeed}x Attack Speed</span>
+                    {#if $build.race === 'KITSUNE'}
+                      <span class="weapon-speed-race-bonus">+0.1 from Kitsune</span>
                     {/if}
                   </div>
                 </div>
@@ -1916,15 +1902,25 @@
   .summary-panel { border-color:rgba(74,222,128,.13); background:linear-gradient(160deg,var(--surface) 60%,rgba(74,222,128,.03) 100%); }
   .summary-title { color:var(--accent); }
   .summary-layout {
-  display: grid;
-  grid-template-columns: 1fr 240px;
-  grid-template-rows: auto auto;
-  gap: 12px;
-  align-items: start;
-}
-.summary-grid-wrap { grid-row: 1 / 3; }  /* occupies both rows on left */
-.summary-stats { grid-row: 1; }
-.wa-panel { grid-row: 2; grid-column: 2; }  /* right column, second row */
+    display: grid;
+    grid-template-columns: 1fr 240px;
+    grid-template-rows: auto auto;
+    gap: 12px;
+    align-items: start;
+  }
+  .summary-grid-wrap { grid-row: 1 / 3; }
+  .summary-stats { grid-row: 1; grid-column: 2; }
+  .wa-panel { grid-row: 2; grid-column: 2; }
+
+  @media (max-width: 1020px) {
+    .summary-layout {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto;
+    }
+    .summary-grid-wrap { grid-row: unset; grid-column: 1; }
+    .summary-stats { grid-row: unset; grid-column: 1; }
+    .wa-panel { grid-row: unset; grid-column: 1; margin-top: 0; }
+  }
   .summary-grid-wrap { overflow-x:auto; }
   .summary-grid { display:grid; grid-template-columns:repeat(10,minmax(60px,1fr)); gap:6px; min-width:600px; }
 
@@ -2122,6 +2118,7 @@
   .weapon-combined-title { font-size:.72rem; text-transform:uppercase; letter-spacing:.16em; color:var(--weapon-combined); font-weight:700; }
   .monk-combined-title { color:var(--monk-combined) !important; }
   .weapon-combined-speed { font-size:.8rem; font-weight:700; color:var(--weapon-combined); background:rgba(251,191,36,.1); padding:3px 8px; border-radius:999px; border:1px solid rgba(251,191,36,.2); }
+  .weapon-speed-race-bonus { font-size:.68rem; font-weight:600; padding:2px 8px; border-radius:999px; background:rgba(74,222,128,.1); border:1px solid rgba(74,222,128,.22); color:var(--accent); }
   .weapon-type-badge { font-size:.72rem; font-weight:700; padding:2px 9px; border-radius:999px; background:rgba(251,146,60,.12); border:1px solid rgba(251,146,60,.28); color:var(--weapon-blade); }
   .weapon-type-badge--none { background:rgba(138,141,133,.1); border-color:rgba(138,141,133,.2); color:var(--ink-muted); }
   .monk-type-badge { background:rgba(232,121,249,.12) !important; border-color:rgba(232,121,249,.3) !important; color:var(--monk-glove) !important; }
