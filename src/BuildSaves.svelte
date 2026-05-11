@@ -88,6 +88,7 @@
     if (state.guild) parts.push(`${state.guild} R${state.guildRank}`)
     if (state.weaponBlade && state.weaponHandle) parts.push(`${state.weaponBlade} + ${state.weaponHandle}`)
     else if (state.monkGlove) parts.push(`Monk: ${state.monkGlove}`)
+    if (state.selectedWeaponArt) parts.push(`WA: ${state.selectedWeaponArt}`)
     return parts.join(' · ') || 'Empty build'
   }
 
@@ -108,6 +109,11 @@ function exportSlot(i: number) {
 function importBuild() {
   try {
     const state = JSON.parse(decodeURIComponent(escape(atob(importCode.trim()))))
+    // Validate basic structure
+    if (typeof state !== 'object' || !state.race) {
+      importError = 'Invalid build data!'
+      return
+    }
     build.set(state)
     importError = ''
     importSuccess = true

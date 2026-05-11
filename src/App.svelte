@@ -30,7 +30,6 @@
 
   // ── Collapsible panels ─────────────────────────────────────────────────────
   let showDetailsPanel = true
-  let selectedWeaponArt: string = 'Lunge'
   let showPerksPanel = true
   let activeDetailsTab: 'selection' | 'weapon' = 'selection'
 
@@ -51,6 +50,7 @@
   $: hasWACDR = cdr.waCDR < 1.0
 
   $: shrineActive = $build.shrineActive
+  $: selectedWA = WEAPON_ARTS.find(wa => wa.name === $build.selectedWeaponArt) ?? WEAPON_ARTS[0]
 
   // ── Enchant helpers ────────────────────────────────────────────────────────
   let enchantCats: Record<EnchantSlot, 'unAscended' | 'Ascended'> = {
@@ -147,7 +147,27 @@
   $: filteredEssences = essences.filter(e =>
     (!essenceFilterTier || e.tier === Number(essenceFilterTier))
   )
+// ── Weapon enchant damage type bonuses ────────────────────────────────────────
+const WEAPON_ENCHANT_DMG_TYPE: Record<string, Partial<Record<string, number>>> = {
+  'Stone': { earth: 0.3 },
+  // thêm các enchant khác ở đây nếu cần
+}
 
+$: weaponEnchantDmgBonus = (() => {
+  const bonus: Record<string, number> = {}
+  const stoneWeapon = $result.perks['Stone Weapon'] ?? 0
+  if (stoneWeapon > 0) bonus['earth'] = Math.round(stoneWeapon * 0.3 * 100) / 100
+  return bonus
+})()
+
+$: weaponDamageTypesWithBonus = (() => {
+  if (!weaponResult) return {}
+  const result: Record<string, number> = { ...weaponResult.damageTypes }
+  for (const [k, v] of Object.entries(weaponEnchantDmgBonus)) {
+    result[k] = Math.round(((result[k] ?? 0) + v) * 100) / 100
+  }
+  return result
+})()
   // ── Weapon result ──────────────────────────────────────────────────────────
   $: weaponResult = isMonk
     ? (($build.monkGlove || $build.monkEssence) ? calcMonkWeapon($build.monkGlove, $build.monkEssence, shrineActive) : null)
@@ -408,12 +428,13 @@
     checkWA(wa, _waScalings, _waStats, _waWeaponType, isMonk, _waBlade, _waHandle)
   )
 
-  $: selectedWA = WEAPON_ARTS.find(wa => wa.name === selectedWeaponArt) ?? WEAPON_ARTS[0]
 
   // Auto-select default khi switch monk/non-monk
   $: {
-    if (isMonk && selectedWeaponArt === 'Lunge') selectedWeaponArt = 'Barrage'
-    else if (!isMonk && selectedWeaponArt === 'Barrage') selectedWeaponArt = 'Lunge'
+    if (isMonk && $build.selectedWeaponArt === 'Lunge') 
+      build.update(s => ({...s, selectedWeaponArt: 'Barrage'}))
+    else if (!isMonk && $build.selectedWeaponArt === 'Barrage') 
+      build.update(s => ({...s, selectedWeaponArt: 'Lunge'}))
   }
 
   $: waAvailable = checkWA(selectedWA, _waScalings, _waStats, _waWeaponType, isMonk, _waBlade, _waHandle)
@@ -1105,6 +1126,9 @@
                 {/if}
               <span class="sg-value">{$build.rune || 'No rune'}</span>
               {#if $build.rune}
+                {#if hasEnchants('rune')}
+                  <span class="sg-ench">{$build.enchantments.rune.filter(Boolean).join(' · ')}</span>
+                {/if}
                 {@const rune = runes.find(r => r.name === $build.rune)}
                 {#if rune}
                   {#if hasRuneCDR}
@@ -1116,9 +1140,6 @@
                   {:else}
                     <span class="sg-sub">CD: {rune.cooldown}s</span>
                   {/if}
-                {/if}
-                {#if hasEnchants('rune')}
-                  <span class="sg-ench">{$build.enchantments.rune.filter(Boolean).join(' · ')}</span>
                 {/if}
                 <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, rune: ''}))} title="Clear">✕</button>
                 <button class="sg-ench-btn" class:sg-ench-btn--active={inlineEnchantSlot === 'rune'}
@@ -1257,8 +1278,8 @@
       <span class="wa-avail-label">Available ({availableWeaponArts.length})</span>
       <div class="wa-chips">
         {#each availableWeaponArts as wa}
-          <button class="wa-chip" class:wa-chip--active={selectedWeaponArt === wa.name}
-            on:click={() => selectedWeaponArt = wa.name}>
+          <button class="wa-chip" class:wa-chip--active={$build.selectedWeaponArt === wa.name}
+            on:click={() => build.update(s => ({...s, selectedWeaponArt: wa.name}))}>
             {wa.name}
           </button>
         {/each}
@@ -1523,10 +1544,32 @@
     <div class="wa-stat-row"><span class="wa-stat-key">Damage</span><span class="wa-stat-val">{selectedWA.baseDamage}</span></div>
   {/if}
   {#if selectedWA.damageType}
-    <div class="wa-stat-row"><span class="wa-stat-key">Type</span><span class="wa-stat-val">{selectedWA.damageType}</span></div>
+    <div class="wa-stat-row">
+      <span class="wa-stat-key">Type</span>
+      {#if selectedWA.damageType === 'Same as weapon' && weaponResult}
+        <div class="damage-type-grid" style="flex:1">
+          {#each Object.entries(weaponDamageTypesWithBonus) as [k, v]}
+            <div class="damage-type-pill"><span class="dt-name">{formatDmgTypeLabel(k)}</span><span class="dt-val">{v}x</span></div>
+          {/each}
+        </div>
+      {:else}
+        <span class="wa-stat-val">{selectedWA.damageType}</span>
+      {/if}
+    </div>
   {/if}
   {#if selectedWA.scaling}
-    <div class="wa-stat-row"><span class="wa-stat-key">Scaling</span><span class="wa-stat-val">{selectedWA.scaling}</span></div>
+    <div class="wa-stat-row">
+      <span class="wa-stat-key">Scaling</span>
+      {#if selectedWA.scaling === 'Same as weapon' && weaponResult}
+        <div class="scaling-grid" style="flex:1">
+          {#each Object.entries(weaponResult.scalings) as [k, v]}
+            <div class="scaling-pill"><span class="sc-name">{formatScalingLabel(k)}</span><span class="sc-val">{v}</span></div>
+          {/each}
+        </div>
+      {:else}
+        <span class="wa-stat-val">{selectedWA.scaling}</span>
+      {/if}
+    </div>
   {/if}
   {#if selectedWA.extras?.length}
     {#each selectedWA.extras as ex}
@@ -1735,15 +1778,25 @@
                     {/if}
                   </div>
                 </div>
-                {#if Object.keys(weaponResult.damageTypes).length}
+                {#if Object.keys(weaponDamageTypesWithBonus).length}
                   <div class="weapon-section-label">Damage Types</div>
                   <div class="damage-type-grid">
-                    {#each Object.entries(weaponResult.damageTypes) as [k, v]}
-                      <div class="damage-type-pill"><span class="dt-name">{formatDmgTypeLabel(k)}</span><span class="dt-val">{v}x</span></div>
+                    {#each Object.entries(weaponDamageTypesWithBonus) as [k, v]}
+                      {@const base = weaponResult.damageTypes[k] ?? 0}
+                      {@const bonus = weaponEnchantDmgBonus[k] ?? 0}
+                      <div class="damage-type-pill" class:damage-type-pill--boosted={bonus > 0}>
+                        <span class="dt-name">{formatDmgTypeLabel(k)}</span>
+                        {#if bonus > 0}
+                          <span class="dt-val-old">{base}x</span>
+                          <span class="dt-val dt-val--boosted">{v}x</span>
+                        {:else}
+                          <span class="dt-val">{v}x</span>
+                        {/if}
+                      </div>
                     {/each}
                   </div>
                 {/if}
-                {#if Object.keys(weaponResult.scalings).length}
+                                {#if Object.keys(weaponResult.scalings).length}
                   <div class="weapon-section-label">Scalings</div>
                   <div class="scaling-grid">
                     {#each Object.entries(weaponResult.scalings) as [k, v]}
@@ -2432,4 +2485,19 @@
   transition: all .15s;
 }
 .iep-apply-all-btn:hover { background: rgba(74,222,128,.18); }
+.damage-type-pill--boosted {
+  border-color: rgba(251,191,36,.3);
+  background: rgba(251,191,36,.08);
+}
+.dt-val-old {
+  font-size: .6rem;
+  opacity: .35;
+  text-decoration: line-through;
+  color: var(--ink-muted);
+  margin-right: 2px;
+}
+.dt-val--boosted {
+  color: var(--weapon-combined) !important;
+  font-weight: 800;
+}
 </style>

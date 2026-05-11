@@ -200,4 +200,5 @@ export interface BuildState {
   upgradeLeggings: number
   upgradeRing: number
   upgradeRune: number
+  selectedWeaponArt: string
 }
