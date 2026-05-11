@@ -92,25 +92,177 @@
     return parts.join(' · ') || 'Empty build'
   }
 
+// ── Key map để rút gọn ────────────────────────────────────────────────────
+const KEY_MAP: Record<string, string> = {
+  race:'ra', guild:'gu', guildRank:'gr', helmet:'he', chestplate:'cp',
+  leggings:'le', ring:'ri', rune:'ru', enchantments:'en',
+  infusionHelmet:'ih', infusionChestplate:'ic', infusionLeggings:'il', infusionRing:'ir',
+  weaponBlade:'wb', weaponHandle:'wh', monkGlove:'mg', monkEssence:'me',
+  shrineActive:'sh', upgradeHelmet:'uh', upgradeChestplate:'uc',
+  upgradeLeggings:'ul', upgradeRing:'ur', upgradeRune:'uu', selectedWeaponArt:'wa'
+}
+const KEY_UNMAP = Object.fromEntries(Object.entries(KEY_MAP).map(([k,v])=>[v,k]))
+
+// Enchant slot keys
+const ENCH_MAP: Record<string, string> = {
+  helmet:'he', chestplate:'cp', leggings:'le', ring:'ri', rune:'ru'
+}
+const ENCH_UNMAP = Object.fromEntries(Object.entries(ENCH_MAP).map(([k,v])=>[v,k]))
+
+// Default values để bỏ qua
+const DEFAULTS: Record<string, any> = {
+  race:'', guild:'', guildRank:1, helmet:'', chestplate:'', leggings:'',
+  ring:'', rune:'', infusionHelmet:'', infusionChestplate:'', infusionLeggings:'',
+  infusionRing:'', weaponBlade:'', weaponHandle:'', monkGlove:'', monkEssence:'',
+  shrineActive:false, upgradeHelmet:0, upgradeChestplate:0, upgradeLeggings:0,
+  upgradeRing:0, upgradeRune:0, selectedWeaponArt:'Lunge'
+}
+
+function compressToBase64(str: string): Promise<string> {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const enc = new TextEncoder().encode(str)
+      const cs = new CompressionStream('deflate-raw')
+      const writer = cs.writable.getWriter()
+      writer.write(enc)
+      writer.close()
+      const chunks: Uint8Array[] = []
+      const reader = cs.readable.getReader()
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        chunks.push(value)
+      }
+      const total = chunks.reduce((a, c) => a + c.length, 0)
+      const merged = new Uint8Array(total)
+      let offset = 0
+      for (const c of chunks) { merged.set(c, offset); offset += c.length }
+      // base64url (không có +/= gây nhầm lẫn)
+      const b64 = btoa(String.fromCharCode(...merged))
+        .replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'')
+      resolve(b64)
+    } catch(e) { reject(e) }
+  })
+}
+
+function decompressFromBase64(b64: string): Promise<string> {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Restore base64
+      const std = b64.replace(/-/g,'+').replace(/_/g,'/')
+      const pad = std + '='.repeat((4 - std.length % 4) % 4)
+      const bin = atob(pad)
+      const bytes = Uint8Array.from(bin, c => c.charCodeAt(0))
+      const ds = new DecompressionStream('deflate-raw')
+      const writer = ds.writable.getWriter()
+      writer.write(bytes)
+      writer.close()
+      const chunks: Uint8Array[] = []
+      const reader = ds.readable.getReader()
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        chunks.push(value)
+      }
+      const total = chunks.reduce((a, c) => a + c.length, 0)
+      const merged = new Uint8Array(total)
+      let offset = 0
+      for (const c of chunks) { merged.set(c, offset); offset += c.length }
+      resolve(new TextDecoder().decode(merged))
+    } catch(e) { reject(e) }
+  })
+}
+
+function encodeState(state: BuildState): Promise<string> {
+  // 1. Short keys + strip defaults
+  const slim: Record<string, any> = {}
+  for (const [k, v] of Object.entries(state)) {
+    if (k === 'enchantments') continue
+    if (JSON.stringify(v) === JSON.stringify(DEFAULTS[k])) continue
+    const sk = KEY_MAP[k] ?? k
+    slim[sk] = v
+  }
+  // Enchantments: chỉ lưu slot có giá trị, dùng short key
+  const enchSlim: Record<string, any> = {}
+  for (const [slot, arr] of Object.entries(state.enchantments)) {
+    const filtered = (arr as string[]).filter(Boolean)
+    if (filtered.length > 0) {
+      enchSlim[ENCH_MAP[slot] ?? slot] = filtered.length === 1 ? filtered[0] : filtered
+    }
+  }
+  if (Object.keys(enchSlim).length > 0) slim['en'] = enchSlim
+
+  // 2. Gzip
+  return compressToBase64(JSON.stringify(slim))
+}
+
+async function decodeState(code: string): Promise<BuildState> {
+  let slim: Record<string, any>
+  // Thử decode mới (compressed)
+  try {
+    const json = await decompressFromBase64(code)
+    slim = JSON.parse(json)
+  } catch {
+    // Fallback: code cũ (plain base64 JSON)
+    try {
+      slim = JSON.parse(decodeURIComponent(escape(atob(code.trim()))))
+      // Code cũ đã có full keys, không cần unmap nếu có 'race'
+      if (slim.race !== undefined) return slim as BuildState
+    } catch {
+      throw new Error('Invalid code')
+    }
+  }
+
+  // Expand short keys
+  const full: Record<string, any> = { ...DEFAULTS }
+  for (const [k, v] of Object.entries(slim)) {
+    if (k === 'en') continue
+    full[KEY_UNMAP[k] ?? k] = v
+  }
+
+  // Expand enchantments
+  const enchFull: Record<string, [string,string,string]> = {
+    helmet:['','',''], chestplate:['','',''], leggings:['','',''],
+    ring:['','',''], rune:['','','']
+  }
+  if (slim['en']) {
+    for (const [sk, v] of Object.entries(slim['en'] as Record<string,any>)) {
+      const slot = ENCH_UNMAP[sk] ?? sk
+      if (typeof v === 'string') enchFull[slot] = [v,'','']
+      else if (Array.isArray(v)) {
+        enchFull[slot] = [v[0]??'', v[1]??'', v[2]??''] as [string,string,string]
+      }
+    }
+  }
+  full['enchantments'] = enchFull
+  return full as BuildState
+}
+
+// ── State ─────────────────────────────────────────────────────────────────
 let shareCode = ''
 let importCode = ''
 let importError = ''
 let importSuccess = false
 let exportingSlot: number | null = null
 
-function exportSlot(i: number) {
+async function exportSlot(i: number) {
   const slot = slots[i]
   if (!slot) return
-  shareCode = btoa(unescape(encodeURIComponent(JSON.stringify(slot.state))))
   exportingSlot = i
   importError = ''
+  shareCode = '...'
+  try {
+    shareCode = await encodeState(slot.state)
+  } catch {
+    shareCode = ''
+    importError = 'Export failed!'
+  }
 }
 
-function importBuild() {
+async function importBuild() {
   try {
-    const state = JSON.parse(decodeURIComponent(escape(atob(importCode.trim()))))
-    // Validate basic structure
-    if (typeof state !== 'object' || !state.race) {
+    const state = await decodeState(importCode.trim())
+    if (!state.race && !state.helmet && !state.weaponBlade) {
       importError = 'Invalid build data!'
       return
     }
