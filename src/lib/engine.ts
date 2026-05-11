@@ -371,6 +371,10 @@ const MONK_WEAPON_TYPE_MAP: Record<string, Record<string, string>> = {
     "Gloves": "Fists",
     "Shield": "Shield",
   },
+  "Essence":{
+    "Gloves": "Fists",
+    "Shield": "Shield",
+  }
 }
 
 export function getMonkWeaponType(essenceType: string, gloveType: string): string {
