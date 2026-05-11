@@ -73,6 +73,27 @@ export function isMonkGuild(guildName: string): boolean {
   return guildName === "Monk"
 }
 
+export function applyMonkGuildBonus(
+  stats: StatMap,
+  glovePerks: Array<{name: string; amount: number}>,
+  monkRank: number
+): { stats: StatMap; perkBonus: number } {
+  // rank 1: no bonus, rank 2: +25%, rank 3: +50%
+  const statMult = 1 + Math.max(0, monkRank - 1) * 0.25
+  
+  const boostedStats: StatMap = {}
+  for (const [k, v] of Object.entries(stats)) {
+    if (v == null) continue
+    // Only boost positive stat boost values (boosts)
+    boostedStats[k as StatKey] = v > 0 ? Math.round((v * statMult + Number.EPSILON) * 100) / 100 : v
+  }
+  
+  // +1 perk amount to first perk per rank
+  const perkBonus = monkRank
+  
+  return { stats: boostedStats, perkBonus }
+}
+
 // ─── Enchantment logic ────────────────────────────────────────────────────────
 
 function applyMod(value: number, mod: StatModifier): number {
@@ -642,17 +663,72 @@ export function calcWeapon(
 export function calcMonkWeapon(
   gloveName: string,
   essenceName: string,
-  shrineActive: boolean = false
+  shrineActive: boolean = false,
+  monkRank: number = 1
 ): WeaponResult | null {
   const glove = gloveName ? getGlove(gloveName) : null
   const essence = essenceName ? getEssence(essenceName) : null
   if (!glove && !essence) return null
-  return calcWeaponGeneric(
+  
+  const result = calcWeaponGeneric(
     glove ?? null, essence ?? null,
     "Glove", "Essence",
     "gloveType", "essenceType",
     true, shrineActive
   )
+  
+  if (!result) return null
+
+  const monkStatMult = 1 + Math.max(0, monkRank - 1) * 0.25
+  const monkPerkBonus = Math.max(0, monkRank - 1)
+
+  // Apply stat multiplier to glove's contribution in combined stats
+  if (monkStatMult !== 1 && glove) {
+    const gloveBaseStats: StatMap = shrineActive
+      ? applyShrineToStats(glove.stats as StatMap, glove.tier)
+      : glove.stats as StatMap
+
+    // Recalculate: remove original glove stats, add boosted ones
+    for (const [k, v] of Object.entries(gloveBaseStats)) {
+      if (v == null || (v as number) <= 0) continue
+      const orig = v as number
+      const boosted = Math.round((orig * monkStatMult + Number.EPSILON) * 100) / 100
+      const diff = Math.round((boosted - orig + Number.EPSILON) * 100) / 100
+      if (diff !== 0) {
+        result.stats[k as StatKey] = Math.round(
+          ((result.stats[k as StatKey] ?? 0) + diff + Number.EPSILON) * 100
+        ) / 100
+      }
+    }
+
+    // Also update part1FinalStats to reflect monk bonus
+    const boostedPart1: StatMap = {}
+    for (const [k, v] of Object.entries(result.part1FinalStats)) {
+      boostedPart1[k as StatKey] = (v as number) > 0
+        ? Math.round(((v as number) * monkStatMult + Number.EPSILON) * 100) / 100
+        : (v as number)
+    }
+    result.part1FinalStats = boostedPart1
+
+    // part1RawStats stays raw (for display old/new)
+    const boostedPart1Raw: StatMap = {}
+    for (const [k, v] of Object.entries(result.part1RawStats)) {
+      boostedPart1Raw[k as StatKey] = (v as number) > 0
+        ? Math.round(((v as number) * monkStatMult + Number.EPSILON) * 100) / 100
+        : (v as number)
+    }
+    result.part1RawStats = boostedPart1Raw
+  }
+
+  // Apply perk bonus to first glove perk
+  if (glove && monkPerkBonus > 0) {
+    const gp = (glove as any).perks as Array<{name:string;amount:number}> | undefined
+    if (gp && gp.length > 0) {
+      result.perks[gp[0].name] = (result.perks[gp[0].name] ?? 0) + monkPerkBonus
+    }
+  }
+
+  return result
 }
 
 // ─── Cooldown Reduction System ────────────────────────────────────────────────
@@ -834,13 +910,42 @@ export function calcBuild(state: BuildState): BuildResult {
     if (state.monkGlove) {
       const glove = getGlove(state.monkGlove)
       if (glove) {
-        const gloveStats = state.shrineActive
+        // Monk stat bonus: rank 2 = ×1.25, rank 3 = ×1.5
+        const monkStatMult = isMonkGuild(state.guild)
+          ? 1 + Math.max(0, state.guildRank - 1) * 0.25
+          : 1
+        // Monk perk bonus: rank 1 = +0, rank 2 = +1, rank 3 = +2  
+        const monkPerkBonus = isMonkGuild(state.guild)
+          ? Math.max(0, state.guildRank - 1)
+          : 0
+
+        let gloveStats: StatMap = state.shrineActive
           ? applyShrineToStats(glove.stats as StatMap, glove.tier)
           : glove.stats as StatMap
+
+        // Apply stat multiplier
+        if (monkStatMult !== 1) {
+          const boosted: StatMap = {}
+          for (const [k, v] of Object.entries(gloveStats)) {
+            if (v == null) continue
+            boosted[k as StatKey] = (v as number) > 0
+              ? Math.round(((v as number) * monkStatMult + Number.EPSILON) * 100) / 100
+              : (v as number)
+          }
+          gloveStats = boosted
+        }
+
         addStats(gloveStats)
         if (glove.perkName) perks[glove.perkName] = (perks[glove.perkName] ?? 0) + (glove.perkAmount ?? 1)
         const gp = (glove as any).perks as Array<{name:string;amount:number}> | undefined
-        if (gp) for (const p of gp) perks[p.name] = (perks[p.name] ?? 0) + p.amount
+        if (gp) {
+          for (let i = 0; i < gp.length; i++) {
+            const p = gp[i]
+            // Chỉ perk đầu tiên (index 0) được bonus
+            const bonus = i === 0 ? monkPerkBonus : 0
+            perks[p.name] = (perks[p.name] ?? 0) + p.amount + bonus
+          }
+        }
       }
     }
     if (state.monkEssence) {

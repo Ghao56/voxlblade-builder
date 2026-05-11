@@ -50,7 +50,46 @@
   $: hasWACDR = cdr.waCDR < 1.0
 
   $: shrineActive = $build.shrineActive
-  $: selectedWA = WEAPON_ARTS.find(wa => wa.name === $build.selectedWeaponArt) ?? WEAPON_ARTS[0]
+  $: selectedWA = (() => {
+  const found = WEAPON_ARTS.find(wa => wa.name === $build.selectedWeaponArt)
+  if (found && availableWeaponArts.some(wa => wa.name === found.name)) return found
+  return availableWeaponArts[0] ?? WEAPON_ARTS[0]
+})()
+
+  $: monkGlovePerkBonus = (() => {
+    if (!isMonk || !weaponResult?.part1Name) return 0
+    // rank 1 = 0, rank 2 = +1, rank 3 = +2
+    return Math.max(0, $build.guildRank - 1)
+  })()
+
+  $: monkGloveStatMult = (() => {
+    if (!isMonk) return 1
+    // rank 1 = 1.0, rank 2 = 1.25, rank 3 = 1.5
+    return 1 + Math.max(0, $build.guildRank - 1) * 0.25
+  })()
+  $: part1DisplayStats = (() => {
+  if (!isMonk || !weaponResult || monkGloveStatMult === 1) 
+    return (weaponResult?.part1FinalStats ?? {}) as Record<string, number>
+  const res: Record<string, number> = {}
+  for (const [k, v] of Object.entries(weaponResult.part1FinalStats)) {
+    res[k] = (v as number) > 0 
+      ? Math.round(((v as number) * monkGloveStatMult + Number.EPSILON) * 100) / 100 
+      : (v as number)
+  }
+  return res
+})()
+
+$: part1DisplayRawStats = (() => {
+  if (!isMonk || !weaponResult || monkGloveStatMult === 1) 
+    return (weaponResult?.part1RawStats ?? {}) as Record<string, number>
+  const res: Record<string, number> = {}
+  for (const [k, v] of Object.entries(weaponResult.part1RawStats)) {
+    res[k] = (v as number) > 0 
+      ? Math.round(((v as number) * monkGloveStatMult + Number.EPSILON) * 100) / 100 
+      : (v as number)
+  }
+  return res
+})()
 
   // ── Enchant helpers ────────────────────────────────────────────────────────
   let enchantCats: Record<EnchantSlot, 'unAscended' | 'Ascended'> = {
@@ -169,9 +208,9 @@ $: weaponDamageTypesWithBonus = (() => {
   return result
 })()
   // ── Weapon result ──────────────────────────────────────────────────────────
-  $: weaponResult = isMonk
-    ? (($build.monkGlove || $build.monkEssence) ? calcMonkWeapon($build.monkGlove, $build.monkEssence, shrineActive) : null)
-    : (($build.weaponBlade || $build.weaponHandle) ? calcWeapon($build.weaponBlade, $build.weaponHandle, shrineActive) : null)
+ $: weaponResult = isMonk
+  ? (($build.monkGlove || $build.monkEssence) ? calcMonkWeapon($build.monkGlove, $build.monkEssence, shrineActive, $build.guildRank) : null)
+  : (($build.weaponBlade || $build.weaponHandle) ? calcWeapon($build.weaponBlade, $build.weaponHandle, shrineActive) : null)
 
   $: summaryWeaponLabel = weaponResult?.part1Name && weaponResult?.part2Name && weaponResult.finalWeaponType
     ? weaponResult.finalWeaponType : 'None'
@@ -429,13 +468,22 @@ $: weaponDamageTypesWithBonus = (() => {
   )
 
 
-  // Auto-select default khi switch monk/non-monk
-  $: {
-    if (isMonk && $build.selectedWeaponArt === 'Lunge') 
-      build.update(s => ({...s, selectedWeaponArt: 'Barrage'}))
-    else if (!isMonk && $build.selectedWeaponArt === 'Barrage') 
-      build.update(s => ({...s, selectedWeaponArt: 'Lunge'}))
+  // Auto-select: nếu WA hiện tại không có trong availableWeaponArts thì chọn cái đầu tiên
+// Track isMonk changes để force switch WA
+let _prevIsMonk = isMonk
+$: if (isMonk !== _prevIsMonk) {
+  _prevIsMonk = isMonk
+  const firstAvail = WEAPON_ARTS.find(wa => isMonk ? wa.isMonk : !wa.isMonk)
+  if (firstAvail) build.update(s => ({...s, selectedWeaponArt: firstAvail.name}))
+}
+
+// Fallback: nếu WA hiện tại không trong available list
+$: {
+  const _inAvail = availableWeaponArts.some(wa => wa.name === $build.selectedWeaponArt)
+  if (!_inAvail && availableWeaponArts.length > 0) {
+    build.update(s => ({...s, selectedWeaponArt: availableWeaponArts[0].name}))
   }
+}
 
   $: waAvailable = checkWA(selectedWA, _waScalings, _waStats, _waWeaponType, isMonk, _waBlade, _waHandle)
   $: waReq = selectedWA.requirements
@@ -1650,31 +1698,38 @@ $: weaponDamageTypesWithBonus = (() => {
                   </div>
                 {/if}
                 {#if part1Data && Object.keys(part1Data.stats).length}
-                  <div class="stat-list">
-                    {#each Object.entries(part1Data.stats).filter(([,v]) => v !== 0) as [k, rawVal]}
-                      {@const finalVal = (weaponResult.part1FinalStats as Record<string,number>)[k] ?? rawVal}
-                      {@const boosted = weaponResult.shrineActive && finalVal !== rawVal}
-                      <div class="stat-row" class:stat-row--boosted={boosted}>
-                        <span>{formatLabel(k)}</span>
-                        <div class="stat-val-group">
-                          {#if boosted}
-                            <span class="stat-val stat-val-ghost" class:neg={rawVal < 0}>{formatStat(k, rawVal as number)}</span>
-                            <span class="stat-val stat-val--new" class:neg={finalVal < 0}>{formatStat(k, finalVal as number)}</span>
-                          {:else}
-                            <span class="stat-val" class:neg={rawVal < 0}>{formatStat(k, rawVal as number)}</span>
-                          {/if}
-                        </div>
-                      </div>
-                    {/each}
-                  </div>
-                {/if}
+  <div class="stat-list">
+    {#each Object.entries(part1Data.stats).filter(([,v]) => v !== 0) as [k, rawVal]}
+  {@const shrineFinal = (weaponResult.part1FinalStats as Record<string,number>)[k] ?? rawVal}
+  {@const shrineRaw = (weaponResult.part1RawStats as Record<string,number>)[k] ?? rawVal}
+  {@const boosted = shrineFinal !== (rawVal as number)}
+  <div class="stat-row" class:stat-row--boosted={boosted}>
+    <span>{formatLabel(k)}</span>
+    <div class="stat-val-group">
+      {#if boosted}
+        <span class="stat-val stat-val-ghost" class:neg={(rawVal as number) < 0}>{formatStat(k, shrineRaw as number)}</span>
+        <span class="stat-val stat-val--new" class:neg={shrineFinal < 0}>{formatStat(k, shrineFinal as number)}</span>
+      {:else}
+        <span class="stat-val" class:neg={shrineFinal < 0}>{formatStat(k, shrineFinal as number)}</span>
+      {/if}
+    </div>
+  </div>
+{/each}
+  </div>
+{/if}
                 {#if (part1Data as any)?.perks?.length}
-                  <div class="perk-list">
-                    {#each ((part1Data as any)?.perks ?? []) as p}
-                      <div class="perk-row"><span>{p.name} <span class="perk-val">+{p.amount}</span></span></div>
-                    {/each}
-                  </div>
-                {/if}
+                <div class="perk-list">
+                  {#each ((part1Data as any)?.perks ?? []) as p, pi}
+                    {@const bonusAmt = (isMonk && pi === 0) ? p.amount + monkGlovePerkBonus : p.amount}
+                    <div class="perk-row">
+                      <span>{p.name} <span class="perk-val">+{bonusAmt}</span></span>
+                      {#if isMonk && pi === 0 && monkGlovePerkBonus > 0}
+                        <span class="monk-perk-bonus">(+{monkGlovePerkBonus} Monk)</span>
+                      {/if}
+                    </div>
+                  {/each}
+                </div>
+              {/if}
               </div>
             {:else}
               <div class="detail-card weapon-card weapon-card--empty"><p class="empty">No {part1Label.toLowerCase()} selected.</p></div>
@@ -2499,5 +2554,12 @@ $: weaponDamageTypesWithBonus = (() => {
 .dt-val--boosted {
   color: var(--weapon-combined) !important;
   font-weight: 800;
+}
+.monk-perk-bonus {
+  font-size: .62rem;
+  color: var(--monk-glove);
+  opacity: .7;
+  margin-left: 4px;
+  font-weight: 600;
 }
 </style>
