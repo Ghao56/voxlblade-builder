@@ -683,43 +683,27 @@ export function calcMonkWeapon(
   const monkPerkBonus = Math.max(0, monkRank - 1)
 
   // Apply stat multiplier to glove's contribution in combined stats
-  if (monkStatMult !== 1 && glove) {
-    const gloveBaseStats: StatMap = shrineActive
-      ? applyShrineToStats(glove.stats as StatMap, glove.tier)
-      : glove.stats as StatMap
 
-    // Recalculate: remove original glove stats, add boosted ones
-    for (const [k, v] of Object.entries(gloveBaseStats)) {
-      if (v == null || (v as number) <= 0) continue
-      const orig = v as number
-      const boosted = Math.round((orig * monkStatMult + Number.EPSILON) * 100) / 100
-      const diff = Math.round((boosted - orig + Number.EPSILON) * 100) / 100
+  if (monkPerkBonus > 0 && glove) {
+    const monkPct = Math.max(0, monkRank - 1) * 0.25
+    const baseGloveStats = glove.stats as StatMap
+    const shrineMult = shrineActive ? (SHRINE_MULTIPLIERS[glove.tier] ?? 1.0) : 1.0
+
+    for (const [k, baseV] of Object.entries(baseGloveStats)) {
+      if (baseV == null || (baseV as number) <= 0) continue
+      const base = baseV as number
+      const wrongVal = Math.round((base * shrineMult + Number.EPSILON) * 100) / 100
+      const correctVal = Math.round((base * shrineMult + base * monkPct + Number.EPSILON) * 100) / 100
+      const diff = Math.round((correctVal - wrongVal + Number.EPSILON) * 100) / 100
       if (diff !== 0) {
         result.stats[k as StatKey] = Math.round(
           ((result.stats[k as StatKey] ?? 0) + diff + Number.EPSILON) * 100
         ) / 100
       }
+      result.part1FinalStats[k as StatKey] = correctVal
+      result.part1RawStats[k as StatKey] = base
     }
-
-    // Also update part1FinalStats to reflect monk bonus
-    const boostedPart1: StatMap = {}
-    for (const [k, v] of Object.entries(result.part1FinalStats)) {
-      boostedPart1[k as StatKey] = (v as number) > 0
-        ? Math.round(((v as number) * monkStatMult + Number.EPSILON) * 100) / 100
-        : (v as number)
-    }
-    result.part1FinalStats = boostedPart1
-
-    // part1RawStats stays raw (for display old/new)
-    const boostedPart1Raw: StatMap = {}
-    for (const [k, v] of Object.entries(result.part1RawStats)) {
-      boostedPart1Raw[k as StatKey] = (v as number) > 0
-        ? Math.round(((v as number) * monkStatMult + Number.EPSILON) * 100) / 100
-        : (v as number)
-    }
-    result.part1RawStats = boostedPart1Raw
   }
-
   // Apply perk bonus to first glove perk
   if (glove && monkPerkBonus > 0) {
     const gp = (glove as any).perks as Array<{name:string;amount:number}> | undefined
@@ -919,20 +903,17 @@ export function calcBuild(state: BuildState): BuildResult {
           ? Math.max(0, state.guildRank - 1)
           : 0
 
-        let gloveStats: StatMap = state.shrineActive
-          ? applyShrineToStats(glove.stats as StatMap, glove.tier)
-          : glove.stats as StatMap
-
-        // Apply stat multiplier
-        if (monkStatMult !== 1) {
-          const boosted: StatMap = {}
-          for (const [k, v] of Object.entries(gloveStats)) {
-            if (v == null) continue
-            boosted[k as StatKey] = (v as number) > 0
-              ? Math.round(((v as number) * monkStatMult + Number.EPSILON) * 100) / 100
-              : (v as number)
-          }
-          gloveStats = boosted
+        const monkPct = Math.max(0, state.guildRank - 1) * 0.25
+        const baseGloveStats = glove.stats as StatMap
+        const gloveStats: StatMap = {}
+        for (const [k, v] of Object.entries(baseGloveStats)) {
+          if (v == null) continue
+          const base = v as number
+          if (base <= 0) { gloveStats[k as StatKey] = base; continue }
+          const shrineMult = state.shrineActive ? (SHRINE_MULTIPLIERS[glove.tier] ?? 1.0) : 1.0
+          gloveStats[k as StatKey] = Math.round(
+            (base * shrineMult + base * monkPct + Number.EPSILON) * 100
+          ) / 100
         }
 
         addStats(gloveStats)

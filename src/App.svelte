@@ -67,29 +67,6 @@
     // rank 1 = 1.0, rank 2 = 1.25, rank 3 = 1.5
     return 1 + Math.max(0, $build.guildRank - 1) * 0.25
   })()
-  $: part1DisplayStats = (() => {
-  if (!isMonk || !weaponResult || monkGloveStatMult === 1) 
-    return (weaponResult?.part1FinalStats ?? {}) as Record<string, number>
-  const res: Record<string, number> = {}
-  for (const [k, v] of Object.entries(weaponResult.part1FinalStats)) {
-    res[k] = (v as number) > 0 
-      ? Math.round(((v as number) * monkGloveStatMult + Number.EPSILON) * 100) / 100 
-      : (v as number)
-  }
-  return res
-})()
-
-$: part1DisplayRawStats = (() => {
-  if (!isMonk || !weaponResult || monkGloveStatMult === 1) 
-    return (weaponResult?.part1RawStats ?? {}) as Record<string, number>
-  const res: Record<string, number> = {}
-  for (const [k, v] of Object.entries(weaponResult.part1RawStats)) {
-    res[k] = (v as number) > 0 
-      ? Math.round(((v as number) * monkGloveStatMult + Number.EPSILON) * 100) / 100 
-      : (v as number)
-  }
-  return res
-})()
 
   // ── Enchant helpers ────────────────────────────────────────────────────────
   let enchantCats: Record<EnchantSlot, 'unAscended' | 'Ascended'> = {
@@ -1699,10 +1676,10 @@ $: {
                 {/if}
                 {#if part1Data && Object.keys(part1Data.stats).length}
   <div class="stat-list">
-    {#each Object.entries(part1Data.stats).filter(([,v]) => v !== 0) as [k, rawVal]}
-  {@const shrineFinal = (weaponResult.part1FinalStats as Record<string,number>)[k] ?? rawVal}
-  {@const shrineRaw = (weaponResult.part1RawStats as Record<string,number>)[k] ?? rawVal}
-  {@const boosted = shrineFinal !== (rawVal as number)}
+  {#each Object.entries(part1Data.stats).filter(([,v]) => v !== 0) as [k, rawVal]}
+    {@const shrineFinal = (weaponResult.part1FinalStats as Record<string,number>)[k] ?? rawVal}
+    {@const shrineRaw = (weaponResult.part1RawStats as Record<string,number>)[k] ?? rawVal}
+    {@const boosted = shrineFinal !== (rawVal as number)}
   <div class="stat-row" class:stat-row--boosted={boosted}>
     <span>{formatLabel(k)}</span>
     <div class="stat-val-group">
