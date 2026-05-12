@@ -1412,7 +1412,7 @@ $: {
         <div class="draconic-panel-header">
           <span class="draconic-panel-title">
             Draconic Rune
-            {#if dracoColor}
+            {#if dracoColor && isDragonBlooded}
               <span class="draco-color-badge" style="background:{dracoColor.color}20;border-color:{dracoColor.color}60;color:{dracoColor.color}">
                 {dracoColor.label} · {dracoColor.stat.charAt(0).toUpperCase() + dracoColor.stat.slice(1)} Type
               </span>
@@ -1443,7 +1443,7 @@ $: {
               <div class="dab-stat-row">
                 <span class="dab-stat-k">Damage</span>
                 <span class="dab-stat-v">{dragonClawDmg(draconicPerkAmt)}</span>
-                {#if !isDragonBlooded}<span class="dab-half">(→ {dragonClawDmg(draconicPerkAmt)/2} vs non-DB)</span>{/if}
+                {#if !isDragonBlooded}<span class="dab-half">(→ {dragonClawDmg(draconicPerkAmt)/2})</span>{/if}
               </div>
               <div class="dab-stat-row">
                 <span class="dab-stat-k">Dmg Type</span>
@@ -1470,9 +1470,10 @@ $: {
                   <span class="dab-stat-k">Heal (Water)</span>
                   <span class="dab-stat-v">{dragonClawHealWater(draconicPerkAmt)}</span>
                 </div>
+                <div class="dab-notes">Cleanses</div>
                 {/if}
               </div>
-              <div class="dab-notes">Guardbreaks · Half damage if not Dragon Blooded</div>
+              <div class="dab-notes">Guardbreaks</div>
             </div>
 
           <!-- Dragon Infusion -->
@@ -1525,7 +1526,7 @@ $: {
               <div class="dab-stat-row">
                 <span class="dab-stat-k">Damage</span>
                 <span class="dab-stat-v">{dragonBubbleDmg(draconicPerkAmt)}</span>
-                {#if !isDragonBlooded}<span class="dab-half">(→ {dragonBubbleDmg(draconicPerkAmt)/2} vs non-DB)</span>{/if}
+                {#if !isDragonBlooded}<span class="dab-half">(→ {dragonBubbleDmg(draconicPerkAmt)/2})</span>{/if}
               </div>
               <div class="dab-stat-row">
                 <span class="dab-stat-k">Dmg Type</span>
@@ -1552,9 +1553,10 @@ $: {
                 <span class="dab-stat-k">Heal (Water)</span>
                 <span class="dab-stat-v">{dragonBubbleHealWater(draconicPerkAmt)}</span>
               </div>
+              <div class="dab-notes">Cleanses</div>
               {/if}
             </div>
-            <div class="dab-notes">Goes through walls · Detonates on contact · Half damage if not Dragon Blooded</div>
+            <div class="dab-notes">Goes through walls · Detonates on contact</div>
           </div>
         </div>
       </div>
