@@ -14,7 +14,6 @@
   import EnchantSelect from './lib/EnchantSelect.svelte'
   import { applyUpgrade, UPGRADE_MAX } from './lib/types'
   import { WEAPON_ARTS, type WeaponArt } from './data/weaponArts'
-
   import BuildSaves from './BuildSaves.svelte'
 
   function toggleUpgrade(key: 'upgradeHelmet'|'upgradeChestplate'|'upgradeLeggings'|'upgradeRing'|'upgradeRune') {
