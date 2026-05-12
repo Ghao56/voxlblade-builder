@@ -201,4 +201,5 @@ export interface BuildState {
   upgradeRing: number
   upgradeRune: number
   selectedWeaponArt: string
+  draconicColor: string
 }

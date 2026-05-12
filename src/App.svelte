@@ -46,6 +46,39 @@
   $: statRows = Object.entries($result.stats).filter(([,v]) => v !== 0).sort(([a],[b]) => a.localeCompare(b))
   $: perkRows = Object.entries($result.perks).filter(([,v]) => v > 0).sort(([a],[b]) => a.localeCompare(b))
   $: cdr = $result.cdr
+  $: isDraconic = $build.guild === 'Draconic'
+
+  const DRACO_COLORS = [
+    { id: 'fire',  label: 'Red',    color: '#ef4444', stat: 'fire'  },
+    { id: 'air',   label: 'White',  color: '#e5e7eb', stat: 'air'   },
+    { id: 'earth', label: 'Green',  color: '#22c55e', stat: 'earth' },
+    { id: 'water', label: 'Blue',   color: '#3b82f6', stat: 'water' },
+    { id: 'holy',  label: 'Yellow', color: '#eab308', stat: 'holy'  },
+    { id: 'hex',   label: 'Purple', color: '#a855f7', stat: 'hex'   },
+  ]
+
+  $: dracoColor = DRACO_COLORS.find(c => c.id === $build.draconicColor) ?? null
+  $: isDragonBlooded = $build.race === 'DRAGON BLOODED'
+
+  function dragonClawDmg(perkAmt: number) { return 25 + 2.5 * perkAmt }
+  function dragonClawHealHoly(perkAmt: number) { return 5 + 0.5 * perkAmt }
+  function dragonClawHealWater(perkAmt: number) { return +(1.923 + 0.1923 * perkAmt).toFixed(3) }
+  function dragonBubbleDmg(perkAmt: number) { return 20 + 2 * perkAmt }
+  function dragonBubbleHealHoly(perkAmt: number) { return 4 + 0.4 * perkAmt }
+  function dragonBubbleHealWater(perkAmt: number) { return +(1.538 + 0.1538 * perkAmt).toFixed(3) }
+
+  $: draconicPerkAmt = (() => {
+    const p = $result.perks['Draconic Blood'] ?? 0
+    return Math.round(p * 100) / 100
+  })()
+
+  $: draconicBaseCDs = { claw: 5, infusion: 35, bubble: 7 }
+  $: draconicFinalCDs = {
+    claw:     Math.floor(draconicBaseCDs.claw * cdr.runeCDR),
+    infusion: Math.floor(draconicBaseCDs.infusion * cdr.runeCDR),
+    bubble:   Math.floor(draconicBaseCDs.bubble * cdr.runeCDR),
+  }
+  $: draconicHasCDR = cdr.runeCDR < 1.0 || cdr.runeSetCD != null
   $: hasRuneCDR = cdr.runeCDR < 1.0 || cdr.runeSetCD != null
   $: hasWACDR = cdr.waCDR < 1.0
 
@@ -546,7 +579,7 @@ $: {
           {#each guilds as g}
             <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
             <div class="modal-item" class:modal-item--active={$build.guild === g.name}
-              on:click={() => { build.update(s => ({...s, guild: g.name, guildRank: s.guild === g.name ? s.guildRank : 3})); closeModal() }}>
+              on:click={() => { build.update(s => ({...s, guild: g.name, guildRank: s.guild === g.name ? s.guildRank : 3, race: g.name === 'Draconic' ? 'DRAGON BLOODED' : s.race})); closeModal() }}>
               <span class="modal-item-name">{g.name}</span>
               <div class="modal-rank-row">
                 {#each g.ranks as rank}
@@ -1182,10 +1215,27 @@ $: {
                 <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, guild: '', guildRank: 1}))} title="Clear">✕</button>
               {/if}
             </div>
-
           </div>
-
-
+                    
+                    <!-- Draconic Rune row — chỉ hiện khi guild = Draconic -->
+          {#if isDraconic && isDragonBlooded}
+            <div class="sg-cell sg-span10 sg-draconic-row">
+              <div class="sg-draconic-header">
+                <span class="sg-label" style="color:#a855f7">Draconic Rune</span>
+                <span class="sg-draconic-hint">Select your dragon color</span>
+              </div>
+              <div class="sg-draconic-colors">
+                {#each DRACO_COLORS as dc}
+                  <button class="draco-color-btn"
+                    class:draco-color-btn--active={$build.draconicColor === dc.id}
+                    style="--dc:{dc.color}"
+                    on:click={() => build.update(s => ({...s, draconicColor: s.draconicColor === dc.id ? '' : dc.id}))}>
+                    {dc.label}
+                  </button>
+                {/each}
+              </div>
+            </div>
+          {/if}
 
           <!-- ── INLINE ENCHANT PANEL ── -->
           <!-- Dùng biến reactive iep* thay vì {@const} để tránh stale closure -->
@@ -1353,6 +1403,160 @@ $: {
             {/each}
           </div>
         {/if}
+      </div>
+    {/if}
+
+        <!-- ── DRACONIC RUNE PANEL ── -->
+    {#if isDraconic}
+      <div class="panel draconic-panel">
+        <div class="draconic-panel-header">
+          <span class="draconic-panel-title">
+            Draconic Rune
+            {#if dracoColor}
+              <span class="draco-color-badge" style="background:{dracoColor.color}20;border-color:{dracoColor.color}60;color:{dracoColor.color}">
+                {dracoColor.label} · {dracoColor.stat.charAt(0).toUpperCase() + dracoColor.stat.slice(1)} Type
+              </span>
+            {/if}
+            {#if !isDragonBlooded}
+              <span class="draco-warning">⚠ Not Dragon Blooded — abilities deal half damage (Physical type)</span>
+            {/if}
+          </span>
+        </div>
+
+        <div class="draconic-abilities">
+
+          <!-- Dragon Claw -->
+          <div class="draconic-ability-card">
+            <div class="dab-header">
+              <span class="dab-name">Dragon Claw</span>
+              <div class="dab-cds">
+                {#if draconicHasCDR}
+                  <span class="dab-cd-old">{draconicBaseCDs.claw}s</span>
+                  <span class="dab-cd-arrow">→</span>
+                  <span class="dab-cd">{draconicFinalCDs.claw}s</span>
+                {:else}
+                  <span class="dab-cd">CD: {draconicBaseCDs.claw}s</span>
+                {/if}
+              </div>
+            </div>
+            <div class="dab-stats">
+              <div class="dab-stat-row">
+                <span class="dab-stat-k">Damage</span>
+                <span class="dab-stat-v">{dragonClawDmg(draconicPerkAmt)}</span>
+                {#if !isDragonBlooded}<span class="dab-half">(→ {dragonClawDmg(draconicPerkAmt)/2} vs non-DB)</span>{/if}
+              </div>
+              <div class="dab-stat-row">
+                <span class="dab-stat-k">Dmg Type</span>
+                <span class="dab-stat-v" style={dracoColor && isDragonBlooded ? `color:${dracoColor.color}` : ''}>
+                  {dracoColor && isDragonBlooded ? dracoColor.stat.charAt(0).toUpperCase() + dracoColor.stat.slice(1) : 'Physical'} 1.0×
+                </span>
+              </div>
+              <div class="dab-stat-row">
+                <span class="dab-stat-k">Scaling</span>
+                <span class="dab-stat-v">1.0 (same type)</span>
+              </div>
+              <div class="dab-stat-row">
+                <span class="dab-stat-k">Poise Dmg</span>
+                <span class="dab-stat-v">60</span>
+              </div>
+              {#if $build.draconicColor === 'holy'}
+                <div class="dab-stat-row">
+                  <span class="dab-stat-k">Heal (Holy)</span>
+                  <span class="dab-stat-v">{dragonClawHealHoly(draconicPerkAmt)}</span>
+                </div>
+                {/if}
+                {#if $build.draconicColor === 'water'}
+                <div class="dab-stat-row">
+                  <span class="dab-stat-k">Heal (Water)</span>
+                  <span class="dab-stat-v">{dragonClawHealWater(draconicPerkAmt)}</span>
+                </div>
+                {/if}
+              </div>
+              <div class="dab-notes">Guardbreaks · Half damage if not Dragon Blooded</div>
+            </div>
+
+          <!-- Dragon Infusion -->
+          <div class="draconic-ability-card draconic-ability-card--infusion">
+            <div class="dab-header">
+              <span class="dab-name">Dragon Infusion</span>
+              <div class="dab-cds">
+                {#if draconicHasCDR}
+                  <span class="dab-cd-old">{draconicBaseCDs.infusion}s</span>
+                  <span class="dab-cd-arrow">→</span>
+                  <span class="dab-cd">{draconicFinalCDs.infusion}s</span>
+                {:else}
+                  <span class="dab-cd">CD: {draconicBaseCDs.infusion}s</span>
+                {/if}
+                <span class="dab-duration">20s duration</span>
+              </div>
+            </div>
+            <div class="dab-stats">
+              <div class="dab-stat-row">
+                <span class="dab-stat-k">Effect</span>
+                <span class="dab-stat-v">Draconic Infusion buff</span>
+              </div>
+              <div class="dab-stat-row">
+                <span class="dab-stat-k">Total bonus</span>
+                <span class="dab-stat-v" style={dracoColor && isDragonBlooded ? `color:${dracoColor.color}` : ''}>
+                  {isDragonBlooded
+                    ? `+${Math.round(draconicPerkAmt * 0.1 * 100) / 100} ${dracoColor ? dracoColor.stat : 'draco'} dmg type`
+                    : `+${parseFloat((draconicPerkAmt * 0.075).toFixed(3))} physical dmg type`}
+                </span>
+              </div>
+            </div>
+            <div class="dab-notes">Does not apply to attacks without proc coefficient</div>
+          </div>
+
+          <!-- Dragon Bubble -->
+          <div class="draconic-ability-card">
+            <div class="dab-header">
+              <span class="dab-name">Dragon Bubble</span>
+              <div class="dab-cds">
+                {#if draconicHasCDR}
+                  <span class="dab-cd-old">{draconicBaseCDs.bubble}s</span>
+                  <span class="dab-cd-arrow">→</span>
+                  <span class="dab-cd">{draconicFinalCDs.bubble}s</span>
+                {:else}
+                  <span class="dab-cd">CD: {draconicBaseCDs.bubble}s</span>
+                {/if}
+              </div>
+            </div>
+            <div class="dab-stats">
+              <div class="dab-stat-row">
+                <span class="dab-stat-k">Damage</span>
+                <span class="dab-stat-v">{dragonBubbleDmg(draconicPerkAmt)}</span>
+                {#if !isDragonBlooded}<span class="dab-half">(→ {dragonBubbleDmg(draconicPerkAmt)/2} vs non-DB)</span>{/if}
+              </div>
+              <div class="dab-stat-row">
+                <span class="dab-stat-k">Dmg Type</span>
+                <span class="dab-stat-v" style={dracoColor && isDragonBlooded ? `color:${dracoColor.color}` : ''}>
+                  {dracoColor && isDragonBlooded ? dracoColor.stat.charAt(0).toUpperCase() + dracoColor.stat.slice(1) : 'Physical'} 1.0×
+                </span>
+              </div>
+              <div class="dab-stat-row">
+                <span class="dab-stat-k">Scaling</span>
+                <span class="dab-stat-v">1.0 (same type)</span>
+              </div>
+              <div class="dab-stat-row">
+                <span class="dab-stat-k">Poise Dmg</span>
+                <span class="dab-stat-v">45</span>
+              </div>
+              {#if $build.draconicColor === 'holy'}
+              <div class="dab-stat-row">
+                <span class="dab-stat-k">Heal (Holy)</span>
+                <span class="dab-stat-v">{dragonBubbleHealHoly(draconicPerkAmt)}</span>
+              </div>
+              {/if}
+              {#if $build.draconicColor === 'water'}
+              <div class="dab-stat-row">
+                <span class="dab-stat-k">Heal (Water)</span>
+                <span class="dab-stat-v">{dragonBubbleHealWater(draconicPerkAmt)}</span>
+              </div>
+              {/if}
+            </div>
+            <div class="dab-notes">Goes through walls · Detonates on contact · Half damage if not Dragon Blooded</div>
+          </div>
+        </div>
       </div>
     {/if}
 
@@ -2539,4 +2743,49 @@ $: {
   margin-left: 4px;
   font-weight: 600;
 }
+/* ── DRACONIC RUNE ── */
+.sg-draconic-row {
+  background: linear-gradient(135deg,rgba(168,85,247,.1),rgba(168,85,247,.05));
+  border-color: rgba(168,85,247,.25); min-height:unset; padding:10px 12px;
+}
+.sg-draconic-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.sg-draconic-hint { font-size:.62rem; color:var(--ink-muted); opacity:.5; font-style:italic; }
+.sg-draconic-colors { display:flex; flex-wrap:wrap; gap:5px; }
+.draco-color-btn {
+  padding:4px 11px; border-radius:999px; font-size:.7rem; font-weight:700;
+  border:1px solid var(--dc,#888); background:color-mix(in srgb,var(--dc,#888) 12%,transparent);
+  color:var(--dc,#888); cursor:pointer; font-family:var(--font-body);
+  transition:all .15s; opacity:.55;
+}
+.draco-color-btn:hover { opacity:.85; }
+.draco-color-btn--active { opacity:1; background:color-mix(in srgb,var(--dc,#888) 25%,transparent); box-shadow:0 0 8px color-mix(in srgb,var(--dc,#888) 40%,transparent); }
+
+.draconic-panel {
+  border-color:rgba(168,85,247,.2);
+  background:linear-gradient(160deg,var(--surface) 60%,rgba(168,85,247,.04) 100%);
+}
+.draconic-panel-header { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+.draconic-panel-title { font-size:.72rem; text-transform:uppercase; letter-spacing:.16em; font-weight:700; color:#a855f7; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.draco-color-badge { font-size:.65rem; font-weight:700; padding:2px 9px; border-radius:999px; border:1px solid; }
+.draco-warning { font-size:.65rem; color:var(--neg); font-weight:600; padding:2px 8px; background:rgba(248,113,113,.08); border:1px solid rgba(248,113,113,.2); border-radius:999px; text-transform:none; letter-spacing:0; }
+
+.draconic-abilities { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px; }
+.draconic-ability-card {
+  background:var(--surface2); border:1px solid rgba(168,85,247,.15);
+  border-radius:var(--radius-sm); padding:12px; display:flex; flex-direction:column; gap:7px;
+}
+.draconic-ability-card--infusion { border-color:rgba(56,189,248,.2); background:linear-gradient(135deg,var(--surface2),rgba(56,189,248,.05)); }
+.dab-header { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px; }
+.dab-name { font-size:.88rem; font-weight:700; color:#c084fc; }
+.dab-cds { display:flex; align-items:center; gap:5px; }
+.dab-cd { font-size:.72rem; font-weight:700; padding:2px 8px; border-radius:999px; background:rgba(52,211,153,.12); border:1px solid rgba(52,211,153,.25); color:#34d399; }
+.dab-cd-old { font-size:.62rem; color:var(--ink-muted); text-decoration:line-through; opacity:.4; }
+.dab-cd-arrow { font-size:.6rem; color:var(--ink-muted); opacity:.35; }
+.dab-duration { font-size:.65rem; color:var(--infusion); padding:2px 7px; background:rgba(56,189,248,.1); border:1px solid rgba(56,189,248,.2); border-radius:999px; }
+.dab-stats { display:flex; flex-direction:column; gap:3px; }
+.dab-stat-row { display:flex; align-items:center; gap:6px; font-size:.77rem; padding:3px 6px; border-radius:5px; background:var(--surface3); }
+.dab-stat-k { color:var(--ink-muted); min-width:80px; font-size:.68rem; }
+.dab-stat-v { font-weight:700; color:var(--ink); }
+.dab-half { font-size:.65rem; color:var(--neg); opacity:.7; margin-left:4px; }
+.dab-notes { font-size:.68rem; color:var(--ink-muted); font-style:italic; line-height:1.4; }
 </style>
