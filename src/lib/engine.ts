@@ -5,6 +5,7 @@ import type {
 } from './types'
 import { STAT_KEYS, PERCENT_STATS, applyUpgrade } from './types'
 import { CDR_PERK_DATA } from '../data/cdr'
+import { applyStatBoostPerks } from '../data/statboost'
 
 import racesRaw from '../data/races.json'
 import guildsRaw from '../data/guilds.json'
@@ -1038,7 +1039,10 @@ export function calcBuild(state: BuildState): BuildResult {
 
   const cdr = calcCDR(finalPerks, race?.cooldownModifiers, state.rune || undefined, state.race || undefined)
 
-  return { stats: finalStats, perks: finalPerks, cdr }
+  // Apply Stat Boost perks (summary only)
+  const boostedStats = applyStatBoostPerks(finalStats, finalPerks)
+
+  return { stats: boostedStats, perks: finalPerks, cdr }
 }
 
 // ─── Formatting ───────────────────────────────────────────────────────────────
