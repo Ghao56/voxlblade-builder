@@ -29,11 +29,10 @@ if (quickWitted > 0) {
 //Whirl Foot
 const whirlFoot = perks['Whirl Foot'] ?? 0
 if (whirlFoot > 0) {
-  const speed = s['speedBoost'] ?? 0
-  const air = s['airBoost'] ?? 0
-  if (speed > 0 && air > 0) {
-    const bonus = r(0.05 * air * whirlFoot)
-    s['speedBoost'] = r(speed + bonus)
+  const airBoost = s['airBoost'] ?? 0
+  if (airBoost > 0) {
+    const bonus = r(0.05 * airBoost * whirlFoot)
+    s['speedBoost'] = r((s['speedBoost'] ?? 0) + bonus)
   }
 }
 //Carapace
@@ -148,6 +147,16 @@ if (strongTides > 0) {
     s['waterBoost'] = r((s['waterBoost'] ?? 0) + bonus)
   }
 }
+//Swift Guard
+const swiftGuard = perks['Swift Guard'] ?? 0
+if (swiftGuard > 0) {
+  const dexterityBoost = s['dexterityBoost'] ?? 0
+  if (dexterityBoost > 0) {
+    const bonus = r(dexterityBoost * 0.1 * swiftGuard)
+    s['physicalDefense'] = r((s['physicalDefense'] ?? 0) + bonus)
+  }
+}
+
   // ── Brawny ──────────────────────────────────────────────────────────────
   const brawny = perks['Brawny'] ?? 0
   if (brawny > 0) {
@@ -163,6 +172,18 @@ if (strongTides > 0) {
     }
     s['physicalBoost'] = r((s['physicalBoost'] ?? 0) + gained)
   }
+  //Weight Distribution
+const weightDistribution = perks['Weight Distribution'] ?? 0
+if (weightDistribution > 0) {
+  const dexterityBoost = s['dexterityBoost'] ?? 0
+  const physicalBoost = s['physicalBoost'] ?? 0
+  const total = dexterityBoost + physicalBoost
+  const split = r(total * 0.5)
+  const multiplier = 1 + 0.1 * weightDistribution
+  s['dexterityBoost'] = r(split * multiplier)
+  s['physicalBoost'] = r(split * multiplier)
+}
+
 
 // Clean up zeros
   const result: StatMap = {}
