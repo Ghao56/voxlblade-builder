@@ -1182,14 +1182,15 @@ $: {
                 </button>
                 {/if}
               <span class="sg-value">{$build.rune || 'No rune'}</span>
+              {#if $build.rune && hasEnchants('rune')}
+                <span class="sg-ench">{$build.enchantments.rune.filter(Boolean).join(' · ')}</span>
+              {/if}
               {#if $build.rune}
-                {#if hasEnchants('rune')}
-                  <span class="sg-ench">{$build.enchantments.rune.filter(Boolean).join(' · ')}</span>
-                {/if}
-                {@const rune = runes.find(r => r.name === $build.rune)}
+               {@const rune = runes.find(r => r.name === $build.rune)}
                 {#if rune}
                   {#if hasRuneCDR}
                     <span class="sg-cd-row">
+                      <span class="sg-sub">CD:</span>
                       <span class="sg-cd-base">{rune.cooldown}s</span>
                       <span class="sg-cd-arrow">→</span>
                       <span class="sg-cd-final">{formatCD(rune.cooldown, cdr)}</span>
