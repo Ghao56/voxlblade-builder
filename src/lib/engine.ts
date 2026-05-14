@@ -776,7 +776,23 @@ export function calcCDR(
       const totalPct = data.waPct * perkAmount
       const displayPct = Math.round(totalPct * 100)
       const multiplier = 1 / (1 + totalPct)
-      waSteps.push({ source: perkName, pct: displayPct, multiplier })
+
+      waSteps.push({
+        source: perkName,
+        pct: displayPct,
+        multiplier
+      })
+    }
+
+    if (data.waMultiplier) {
+      const multiplier = data.waMultiplier(perkAmount)
+
+      waSteps.push({
+        source: perkName,
+        pct: Math.round((1 - multiplier) * 100),
+        multiplier,
+        isMultiply: true
+      })
     }
   }
 
