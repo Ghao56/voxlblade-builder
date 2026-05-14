@@ -20,11 +20,34 @@
     build.update(s => ({...s, [key]: s[key] === UPGRADE_MAX ? 0 : UPGRADE_MAX}))
   }
 
-  // ── Modal state ────────────────────────────────────────────────────────────
+// ── Modal state ────────────────────────────────────────────────────────────
   type ModalType = 'race' | 'guild' | 'armor-helmet' | 'armor-chestplate' | 'armor-leggings' | 'infusion-helmet' | 'infusion-chestplate' | 'infusion-leggings' | 'ring' | 'infusion-ring' | 'rune' | 'blade' | 'handle' | 'glove' | 'essence' | null
   let activeModal: ModalType = null
-  function openModal(m: ModalType) { activeModal = m }
-  function closeModal() { activeModal = null }
+  let modalSearch = ''
+  function openModal(m: ModalType) { activeModal = m; modalSearch = '' }
+  function closeModal() { activeModal = null; modalSearch = '' }
+
+  function highlight(text: string, query: string): string {
+    if (!query.trim()) return text
+    const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    return text.replace(new RegExp(`(${escaped})`, 'gi'), '<mark class="modal-hl">$1</mark>')
+  }
+
+  function matchSearch(name: string, perkNames: string[] = []): boolean {
+    if (!modalSearch.trim()) return true
+    const q = modalSearch.toLowerCase()
+    if (name.toLowerCase().includes(q)) return true
+    return perkNames.some(p => p.toLowerCase().includes(q))
+  }
+
+  // Helper: extract perk names from a weapon part (blades/handles/gloves/essences have perks array)
+  function getPerkNames(data: any): string[] {
+    if (!data) return []
+    const names: string[] = []
+    if (data.perkName) names.push(data.perkName)
+    if (Array.isArray(data.perks)) data.perks.forEach((p: any) => p?.name && names.push(p.name))
+    return names
+  }
 
 
   // ── Collapsible panels ─────────────────────────────────────────────────────
@@ -171,7 +194,156 @@
   $: iepOpts1 = iepSlot ? enchantments.filter(e => e.category === enchantCats[iepSlot] && e.name !== iepS0 && e.name !== iepS2) : []
   $: iepOpts2 = iepSlot ? enchantments.filter(e => e.category === enchantCats[iepSlot] && e.name !== iepS0 && e.name !== iepS1) : []
 
-  // ── Weapon filters ─────────────────────────────────────────────────────────
+  // ── Modal search suggestions ───────────────────────────────────────────────
+  let showSuggestions = false
+
+  $: modalSuggestions = (() => {
+    if (!modalSearch.trim() || !showSuggestions) return []
+    const q = modalSearch.toLowerCase()
+    const results: Array<{ label: string; type: 'name' | 'perk' }> = []
+    const seen = new Set<string>()
+
+    function add(label: string, type: 'name' | 'perk') {
+      if (!seen.has(label) && label.toLowerCase().includes(q)) {
+        seen.add(label); results.push({ label, type })
+      }
+    }
+
+    if (activeModal === 'race') {
+      races.forEach(r => add(r.name, 'name'))
+    } else if (activeModal === 'guild') {
+      guilds.forEach(g => {
+        add(g.name, 'name')
+        g.ranks.forEach(r => (r.perks ?? []).forEach((p: any) => add(p.name, 'perk')))
+      })
+    } else if (activeModal === 'armor-helmet' || activeModal === 'infusion-helmet') {
+      armors.forEach(a => { const p = getArmorPart(a.name,'Helmet'); if(p){add(a.name,'name');if(p.perkName)add(p.perkName,'perk')} })
+    } else if (activeModal === 'armor-chestplate' || activeModal === 'infusion-chestplate') {
+      armors.forEach(a => { const p = getArmorPart(a.name,'Chestplate'); if(p){add(a.name,'name');if(p.perkName)add(p.perkName,'perk')} })
+    } else if (activeModal === 'armor-leggings' || activeModal === 'infusion-leggings') {
+      armors.forEach(a => { const p = getArmorPart(a.name,'Leggings'); if(p){add(a.name,'name');if(p.perkName)add(p.perkName,'perk')} })
+    } else if (activeModal === 'ring' || activeModal === 'infusion-ring') {
+      rings.forEach(r => { add(r.name,'name'); if(r.perkName)add(r.perkName,'perk') })
+    } else if (activeModal === 'rune') {
+      runes.forEach(r => { add(r.name,'name'); if(r.perkName)add(r.perkName,'perk') })
+    } else if (activeModal === 'blade') {
+      blades.forEach(b => { add(b.name,'name'); getPerkNames(b).forEach(p => add(p,'perk')) })
+    } else if (activeModal === 'handle') {
+      handles.forEach(h => { add(h.name,'name'); getPerkNames(h).forEach(p => add(p,'perk')) })
+    } else if (activeModal === 'glove') {
+      gloves.forEach(g => { add(g.name,'name'); getPerkNames(g).forEach(p => add(p,'perk')) })
+    } else if (activeModal === 'essence') {
+      essences.forEach(e => { add(e.name,'name'); getPerkNames(e).forEach(p => add(p,'perk')) })
+    }
+
+    return results
+  })()
+
+  // ── Fuzzy "Did you mean?" ─────────────────────────────────────────────────
+  function levenshtein(a: string, b: string): number {
+    const m = a.length, n = b.length
+    const dp: number[][] = Array.from({length: m+1}, (_, i) => [i, ...Array(n).fill(0)])
+    for (let j = 0; j <= n; j++) dp[0][j] = j
+    for (let i = 1; i <= m; i++)
+      for (let j = 1; j <= n; j++)
+        dp[i][j] = a[i-1] === b[j-1] ? dp[i-1][j-1]
+          : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1])
+    return dp[m][n]
+  }
+
+  function fuzzyScore(candidate: string, query: string): number {
+    const c = candidate.toLowerCase(), q = query.toLowerCase()
+    if (c.includes(q)) return 0
+    // check each word of candidate against query
+    const words = c.split(/\s+/)
+    return Math.min(...words.map(w => levenshtein(w.slice(0, q.length + 2), q)))
+  }
+
+  function getAllModalCandidates(): Array<{label: string; type: 'name'|'perk'}> {
+    const out: Array<{label: string; type: 'name'|'perk'}> = []
+    const seen = new Set<string>()
+    function add(label: string, type: 'name'|'perk') {
+      if (!seen.has(label)) { seen.add(label); out.push({label, type}) }
+    }
+    if (activeModal === 'race') {
+      races.forEach(r => add(r.name, 'name'))
+    } else if (activeModal === 'guild') {
+      guilds.forEach(g => { add(g.name,'name'); g.ranks.forEach(r => (r.perks ?? []).forEach((p: any) => add(p.name,'perk'))) })
+    } else if (activeModal === 'armor-helmet' || activeModal === 'infusion-helmet') {
+      armors.forEach(a => { const p = getArmorPart(a.name,'Helmet'); if(p){add(a.name,'name');if(p.perkName)add(p.perkName,'perk')} })
+    } else if (activeModal === 'armor-chestplate' || activeModal === 'infusion-chestplate') {
+      armors.forEach(a => { const p = getArmorPart(a.name,'Chestplate'); if(p){add(a.name,'name');if(p.perkName)add(p.perkName,'perk')} })
+    } else if (activeModal === 'armor-leggings' || activeModal === 'infusion-leggings') {
+      armors.forEach(a => { const p = getArmorPart(a.name,'Leggings'); if(p){add(a.name,'name');if(p.perkName)add(p.perkName,'perk')} })
+    } else if (activeModal === 'ring' || activeModal === 'infusion-ring') {
+      rings.forEach(r => { add(r.name,'name'); if(r.perkName)add(r.perkName,'perk') })
+    } else if (activeModal === 'rune') {
+      runes.forEach(r => { add(r.name,'name'); if(r.perkName)add(r.perkName,'perk') })
+    } else if (activeModal === 'blade') {
+      blades.forEach(b => { add(b.name,'name'); getPerkNames(b).forEach(p => add(p,'perk')) })
+    } else if (activeModal === 'handle') {
+      handles.forEach(h => { add(h.name,'name'); getPerkNames(h).forEach(p => add(p,'perk')) })
+    } else if (activeModal === 'glove') {
+      gloves.forEach(g => { add(g.name,'name'); getPerkNames(g).forEach(p => add(p,'perk')) })
+    } else if (activeModal === 'essence') {
+      essences.forEach(e => { add(e.name,'name'); getPerkNames(e).forEach(p => add(p,'perk')) })
+    }
+    return out
+  }
+
+  // Chỉ hiện khi: có query, không có exact suggestions, không có kết quả filter
+  $: noExactResults = (() => {
+    if (!modalSearch.trim()) return false
+    if (activeModal === 'race') return searchedRaces.length === 0
+    if (activeModal === 'guild') return searchedGuilds.length === 0
+    if (activeModal === 'ring' || activeModal === 'infusion-ring') return searchedRings.length === 0
+    if (activeModal === 'rune') return searchedRunes.length === 0
+    if (activeModal === 'blade') return searchedBlades.length === 0
+    if (activeModal === 'handle') return searchedHandles.length === 0
+    if (activeModal === 'glove') return searchedGloves.length === 0
+    if (activeModal === 'essence') return searchedEssences.length === 0
+    if (activeModal?.startsWith('armor-') || activeModal?.startsWith('infusion-')) return searchedArmorsForModal.length === 0
+    return false
+  })()
+
+  $: didYouMean = (() => {
+    if (!modalSearch.trim() || !noExactResults || modalSearch.length < 2) return []
+    const q = modalSearch.toLowerCase()
+    return getAllModalCandidates()
+      .map(c => ({ ...c, score: fuzzyScore(c.label, q) }))
+      .filter(c => c.score <= 2)
+      .sort((a, b) => a.score - b.score)
+      .slice(0, 6)
+  })()
+
+  $: searchedRaces = races.filter(r => matchSearchReactive(r.name, [], modalSearch))
+  $: searchedGuilds = guilds.filter(g => matchSearchReactive(g.name, g.ranks.flatMap(r => (r.perks ?? []).map((p: any) => p.name)), modalSearch))
+  $: searchedRings = rings.filter(r => matchSearchReactive(r.name, r.perkName ? [r.perkName] : [], modalSearch))
+  $: searchedRunes = runes.filter(r => matchSearchReactive(r.name, r.perkName ? [r.perkName] : [], modalSearch))
+  $: searchedBlades = filteredBlades.filter(b => matchSearchReactive(b.name, getPerkNames(b), modalSearch))
+  $: searchedHandles = filteredHandles.filter(h => matchSearchReactive(h.name, getPerkNames(h), modalSearch))
+  $: searchedGloves = filteredGloves.filter(g => matchSearchReactive(g.name, getPerkNames(g), modalSearch))
+  $: searchedEssences = filteredEssences.filter(e => matchSearchReactive(e.name, getPerkNames(e), modalSearch))
+
+  function matchSearchReactive(name: string, perkNames: string[], query: string): boolean {
+    if (!query.trim()) return true
+    const q = query.toLowerCase()
+    if (name.toLowerCase().includes(q)) return true
+    return perkNames.some(p => p.toLowerCase().includes(q))
+  }
+
+  // Armor search cần slotName nên làm riêng
+  $: searchedArmorsForModal = (() => {
+    const slotName = activeModal === 'armor-helmet' || activeModal === 'infusion-helmet' ? 'Helmet'
+      : activeModal === 'armor-chestplate' || activeModal === 'infusion-chestplate' ? 'Chestplate'
+      : activeModal === 'armor-leggings' || activeModal === 'infusion-leggings' ? 'Leggings'
+      : null
+    if (!slotName) return []
+    return armors.filter(a => {
+      const part = getArmorPart(a.name, slotName as any)
+      return part && matchSearchReactive(a.name, part.perkName ? [part.perkName] : [], modalSearch)
+    })
+  })()
   let bladeFilterTier = ''
   let bladeFilterType = ''
   let handleFilterTier = ''
@@ -397,6 +569,14 @@ $: weaponDamageTypesWithBonus = (() => {
   }
   function onEnchantLeave() { tooltip = { ...tooltip, visible: false } }
 
+  function applySuggestion(label: string) {
+    modalSearch = label
+    showSuggestions = false
+  }
+
+  function onSearchFocus() { showSuggestions = true }
+  function onSearchBlur() { setTimeout(() => { showSuggestions = false }, 150) }
+
   function onKeydown(e: KeyboardEvent) {
     if (e.key === 'Escape') {
       if (activeModal) closeModal()
@@ -580,11 +760,26 @@ function prettyKey(key: string, suffix: string) {
 
       {#if activeModal === 'race'}
         <h2 class="modal-title">Select Race</h2>
+        <div class="search-wrap">
+          <input class="modal-search-input" type="text" bind:value={modalSearch} placeholder="Search name..."
+            on:focus={onSearchFocus} on:blur={onSearchBlur} />
+          {#if showSuggestions && modalSuggestions.length > 0}
+            <div class="suggest-drop">
+              {#each modalSuggestions as s}
+                <button class="suggest-item" class:suggest-item--perk={s.type==='perk'}
+                  on:mousedown|preventDefault={() => applySuggestion(s.label)}>
+                  <span class="suggest-type">{s.type === 'perk' ? 'Perk' : 'Name'}</span>
+                  <span class="suggest-label">{@html highlight(s.label, modalSearch)}</span>
+                </button>
+              {/each}
+            </div>
+          {/if}
+        </div>
         <div class="modal-list">
-          {#each races as r}
+          {#each searchedRaces as r}
             <button class="modal-item" class:modal-item--active={$build.race === r.name}
               on:click={() => { build.update(s => ({...s, race: r.name})); closeModal() }}>
-              <span class="modal-item-name">{r.name}</span>
+              <span class="modal-item-name">{@html highlight(r.name, modalSearch)}</span>
               <span class="modal-item-desc">{r.passive}</span>
               {#if r.statModifiers && Object.keys(r.statModifiers).length}
                 <div class="modal-item-stats">
@@ -595,20 +790,50 @@ function prettyKey(key: string, suffix: string) {
               {/if}
             </button>
           {/each}
+          {#if noExactResults && didYouMean.length > 0}
+            <div class="dym-block">
+              <span class="dym-label">Did you mean?</span>
+              <div class="dym-chips">
+                {#each didYouMean as s}
+                  <button class="dym-chip" class:dym-chip--perk={s.type==='perk'}
+                    on:click={() => { modalSearch = s.label }}>
+                    {@html highlight(s.label, modalSearch)}
+                  </button>
+                {/each}
+              </div>
+            </div>
+          {:else if noExactResults}
+            <p class="dym-empty">No results for "<strong>{modalSearch}</strong>"</p>
+          {/if}
         </div>
 
       {:else if activeModal === 'guild'}
-        <h2 class="modal-title">Select Guild</h2>
+        <h2 class="modal-title">Select Guild</h2>        
+        <div class="search-wrap">
+          <input class="modal-search-input" type="text" bind:value={modalSearch} placeholder="Search name or perk..."
+            on:focus={onSearchFocus} on:blur={onSearchBlur} />
+          {#if showSuggestions && modalSuggestions.length > 0}
+            <div class="suggest-drop">
+              {#each modalSuggestions as s}
+                <button class="suggest-item" class:suggest-item--perk={s.type==='perk'}
+                  on:mousedown|preventDefault={() => applySuggestion(s.label)}>
+                  <span class="suggest-type">{s.type === 'perk' ? 'Perk' : 'Name'}</span>
+                  <span class="suggest-label">{@html highlight(s.label, modalSearch)}</span>
+                </button>
+              {/each}
+            </div>
+          {/if}
+        </div>
         <div class="modal-list">
           <button class="modal-item" class:modal-item--active={$build.guild === ''}
             on:click={() => { build.update(s => ({...s, guild: '', guildRank: 1})); closeModal() }}>
             <span class="modal-item-name">— None —</span>
           </button>
-          {#each guilds as g}
+          {#each searchedGuilds as g}
             <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
             <div class="modal-item" class:modal-item--active={$build.guild === g.name}
               on:click={() => { build.update(s => ({...s, guild: g.name, guildRank: s.guild === g.name ? s.guildRank : 3, race: g.name === 'Draconic' ? 'DRAGON BLOODED' : s.race})); closeModal() }}>
-              <span class="modal-item-name">{g.name}</span>
+              <span class="modal-item-name">{@html highlight(g.name, modalSearch)}</span>
               <div class="modal-rank-row">
                 {#each g.ranks as rank}
                   <button class="rank-btn" class:rank-btn--active={$build.guild === g.name && $build.guildRank === rank.rank}
@@ -628,32 +853,62 @@ function prettyKey(key: string, suffix: string) {
                 {#if displayRank?.perks?.length}
                   <div class="modal-item-stats">
                     {#each displayRank.perks as p}
-                      <span class="modal-perk-tag">{p.name} +{p.amount}</span>
+                      <span class="modal-perk-tag">{@html highlight(p.name, modalSearch)} +{p.amount}</span>
                     {/each}
                   </div>
                 {/if}
               {/each}
             </div>
           {/each}
+          {#if noExactResults && didYouMean.length > 0}
+            <div class="dym-block">
+              <span class="dym-label">Did you mean?</span>
+              <div class="dym-chips">
+                {#each didYouMean as s}
+                  <button class="dym-chip" class:dym-chip--perk={s.type==='perk'}
+                    on:click={() => { modalSearch = s.label }}>
+                    {@html highlight(s.label, modalSearch)}
+                  </button>
+                {/each}
+              </div>
+            </div>
+          {:else if noExactResults}
+            <p class="dym-empty">No results for "<strong>{modalSearch}</strong>"</p>
+          {/if}
         </div>
 
       {:else if activeModal === 'armor-helmet' || activeModal === 'armor-chestplate' || activeModal === 'armor-leggings'}
         {@const slotName = activeModal === 'armor-helmet' ? 'Helmet' : activeModal === 'armor-chestplate' ? 'Chestplate' : 'Leggings'}
         {@const storeKey = slotName.toLowerCase() as 'helmet'|'chestplate'|'leggings'}
         <h2 class="modal-title">Select {slotName}</h2>
+        <div class="search-wrap">
+          <input class="modal-search-input" type="text" bind:value={modalSearch} placeholder="Search name or perk..."
+            on:focus={onSearchFocus} on:blur={onSearchBlur} />
+          {#if showSuggestions && modalSuggestions.length > 0}
+            <div class="suggest-drop">
+              {#each modalSuggestions as s}
+                <button class="suggest-item" class:suggest-item--perk={s.type==='perk'}
+                  on:mousedown|preventDefault={() => applySuggestion(s.label)}>
+                  <span class="suggest-type">{s.type === 'perk' ? 'Perk' : 'Name'}</span>
+                  <span class="suggest-label">{@html highlight(s.label, modalSearch)}</span>
+                </button>
+              {/each}
+            </div>
+          {/if}
+        </div>
         <div class="modal-list modal-list--compact">
           <button class="modal-item modal-item--sm" class:modal-item--active={$build[storeKey] === ''}
             on:click={() => { build.update(s => ({...s, [storeKey]: ''})); closeModal() }}>
             <span class="modal-item-name">— None —</span>
           </button>
-          {#each armors as a}
+          {#each searchedArmorsForModal as a}
             {@const part = getArmorPart(a.name, slotName as any)}
             {#if part}
               <button class="modal-item modal-item--sm" class:modal-item--active={$build[storeKey] === a.name}
                 on:click={() => { build.update(s => ({...s, [storeKey]: a.name})); closeModal() }}>
-                <span class="modal-item-name">{a.name}</span>
+                <span class="modal-item-name">{@html highlight(a.name, modalSearch)}</span>
                 <span class="modal-item-desc">{part.description}</span>
-                {#if part.perkName}<span class="modal-perk-tag">{part.perkName} +{part.perkAmount}</span>{/if}
+                {#if part.perkName}<span class="modal-perk-tag">{@html highlight(part.perkName, modalSearch)} +{part.perkAmount}</span>{/if}
                 <div class="modal-item-stats">
                   {#each Object.entries(part.stats).filter(([,v]) => v !== 0) as [k,v]}
                     <span class="modal-stat-pill" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, v as number)}</span>
@@ -662,24 +917,54 @@ function prettyKey(key: string, suffix: string) {
               </button>
             {/if}
           {/each}
+          {#if noExactResults && didYouMean.length > 0}
+            <div class="dym-block">
+              <span class="dym-label">Did you mean?</span>
+              <div class="dym-chips">
+                {#each didYouMean as s}
+                  <button class="dym-chip" class:dym-chip--perk={s.type==='perk'}
+                    on:click={() => { modalSearch = s.label }}>
+                    {@html highlight(s.label, modalSearch)}
+                  </button>
+                {/each}
+              </div>
+            </div>
+          {:else if noExactResults}
+            <p class="dym-empty">No results for "<strong>{modalSearch}</strong>"</p>
+          {/if}
         </div>
 
       {:else if activeModal === 'infusion-helmet' || activeModal === 'infusion-chestplate' || activeModal === 'infusion-leggings'}
         {@const slotName = activeModal === 'infusion-helmet' ? 'Helmet' : activeModal === 'infusion-chestplate' ? 'Chestplate' : 'Leggings'}
         {@const infKey = ('infusion' + slotName) as 'infusionHelmet'|'infusionChestplate'|'infusionLeggings'}
-        <h2 class="modal-title">Select Infusion {slotName}</h2>
+        <h2 class="modal-title">Select Infusion {slotName}</h2>        
+        <div class="search-wrap">
+          <input class="modal-search-input" type="text" bind:value={modalSearch} placeholder="Search name or perk..."
+            on:focus={onSearchFocus} on:blur={onSearchBlur} />
+          {#if showSuggestions && modalSuggestions.length > 0}
+            <div class="suggest-drop">
+              {#each modalSuggestions as s}
+                <button class="suggest-item" class:suggest-item--perk={s.type==='perk'}
+                  on:mousedown|preventDefault={() => applySuggestion(s.label)}>
+                  <span class="suggest-type">{s.type === 'perk' ? 'Perk' : 'Name'}</span>
+                  <span class="suggest-label">{@html highlight(s.label, modalSearch)}</span>
+                </button>
+              {/each}
+            </div>
+          {/if}
+        </div>
         <div class="modal-list modal-list--compact">
           <button class="modal-item modal-item--sm modal-item--inf" class:modal-item--active={$build[infKey] === ''}
             on:click={() => { build.update(s => ({...s, [infKey]: ''})); closeModal() }}>
             <span class="modal-item-name">— None —</span>
           </button>
-          {#each armors as a}
+          {#each searchedArmorsForModal as a}
             {@const part = getArmorPart(a.name, slotName as any)}
             {#if part}
               <button class="modal-item modal-item--sm modal-item--inf" class:modal-item--active={$build[infKey] === a.name}
                 on:click={() => { build.update(s => ({...s, [infKey]: a.name})); closeModal() }}>
-                <span class="modal-item-name">{a.name} <span class="inf-label">×0.5</span></span>
-                {#if part.perkName}<span class="modal-perk-tag">{part.perkName} +{part.perkAmount}</span>{/if}
+                <span class="modal-item-name">{@html highlight(a.name, modalSearch)} <span class="inf-label">×0.5</span></span>
+                {#if part.perkName}<span class="modal-perk-tag">{@html highlight(part.perkName, modalSearch)} +{part.perkAmount}</span>{/if}
                 <div class="modal-item-stats">
                   {#each Object.entries(part.stats).filter(([,v]) => v !== 0) as [k,v]}
                     <span class="modal-stat-pill modal-stat-pill--inf" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, (v as number) * 0.5)}</span>
@@ -688,21 +973,51 @@ function prettyKey(key: string, suffix: string) {
               </button>
             {/if}
           {/each}
+          {#if noExactResults && didYouMean.length > 0}
+            <div class="dym-block">
+              <span class="dym-label">Did you mean?</span>
+              <div class="dym-chips">
+                {#each didYouMean as s}
+                  <button class="dym-chip" class:dym-chip--perk={s.type==='perk'}
+                    on:click={() => { modalSearch = s.label }}>
+                    {@html highlight(s.label, modalSearch)}
+                  </button>
+                {/each}
+              </div>
+            </div>
+          {:else if noExactResults}
+            <p class="dym-empty">No results for "<strong>{modalSearch}</strong>"</p>
+          {/if}
         </div>
 
       {:else if activeModal === 'ring'}
-        <h2 class="modal-title">Select Ring</h2>
+        <h2 class="modal-title">Select Ring</h2>        
+        <div class="search-wrap">
+          <input class="modal-search-input" type="text" bind:value={modalSearch} placeholder="Search name or perk..."
+            on:focus={onSearchFocus} on:blur={onSearchBlur} />
+          {#if showSuggestions && modalSuggestions.length > 0}
+            <div class="suggest-drop">
+              {#each modalSuggestions as s}
+                <button class="suggest-item" class:suggest-item--perk={s.type==='perk'}
+                  on:mousedown|preventDefault={() => applySuggestion(s.label)}>
+                  <span class="suggest-type">{s.type === 'perk' ? 'Perk' : 'Name'}</span>
+                  <span class="suggest-label">{@html highlight(s.label, modalSearch)}</span>
+                </button>
+              {/each}
+            </div>
+          {/if}
+        </div>
         <div class="modal-list modal-list--compact">
           <button class="modal-item modal-item--sm" class:modal-item--active={$build.ring === ''}
             on:click={() => { build.update(s => ({...s, ring: ''})); closeModal() }}>
             <span class="modal-item-name">— None —</span>
           </button>
-          {#each rings as r}
+          {#each searchedRings as r}
             <button class="modal-item modal-item--sm" class:modal-item--active={$build.ring === r.name}
               on:click={() => { build.update(s => ({...s, ring: r.name})); closeModal() }}>
-              <span class="modal-item-name">{r.name}</span>
+              <span class="modal-item-name">{@html highlight(r.name, modalSearch)}</span>
               <span class="modal-item-desc">{r.description}</span>
-              {#if r.perkName}<span class="modal-perk-tag">{r.perkName} +{r.perkAmount}</span>{/if}
+              {#if r.perkName}<span class="modal-perk-tag">{@html highlight(r.perkName, modalSearch)} +{r.perkAmount}</span>{/if}
               <div class="modal-item-stats">
                 {#each Object.entries(r.stats).filter(([,v]) => v !== 0) as [k,v]}
                   <span class="modal-stat-pill" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, v as number)}</span>
@@ -710,20 +1025,50 @@ function prettyKey(key: string, suffix: string) {
               </div>
             </button>
           {/each}
+          {#if noExactResults && didYouMean.length > 0}
+            <div class="dym-block">
+              <span class="dym-label">Did you mean?</span>
+              <div class="dym-chips">
+                {#each didYouMean as s}
+                  <button class="dym-chip" class:dym-chip--perk={s.type==='perk'}
+                    on:click={() => { modalSearch = s.label }}>
+                    {@html highlight(s.label, modalSearch)}
+                  </button>
+                {/each}
+              </div>
+            </div>
+          {:else if noExactResults}
+            <p class="dym-empty">No results for "<strong>{modalSearch}</strong>"</p>
+          {/if}
         </div>
 
       {:else if activeModal === 'infusion-ring'}
-        <h2 class="modal-title">Select Infusion Ring</h2>
+        <h2 class="modal-title">Select Infusion Ring</h2>       
+        <div class="search-wrap">
+          <input class="modal-search-input" type="text" bind:value={modalSearch} placeholder="Search name or perk..."
+            on:focus={onSearchFocus} on:blur={onSearchBlur} />
+          {#if showSuggestions && modalSuggestions.length > 0}
+            <div class="suggest-drop">
+              {#each modalSuggestions as s}
+                <button class="suggest-item" class:suggest-item--perk={s.type==='perk'}
+                  on:mousedown|preventDefault={() => applySuggestion(s.label)}>
+                  <span class="suggest-type">{s.type === 'perk' ? 'Perk' : 'Name'}</span>
+                  <span class="suggest-label">{@html highlight(s.label, modalSearch)}</span>
+                </button>
+              {/each}
+            </div>
+          {/if}
+        </div>
         <div class="modal-list modal-list--compact">
           <button class="modal-item modal-item--sm modal-item--inf" class:modal-item--active={$build.infusionRing === ''}
             on:click={() => { build.update(s => ({...s, infusionRing: ''})); closeModal() }}>
             <span class="modal-item-name">— None —</span>
           </button>
-          {#each rings as r}
+          {#each searchedRings as r}
             <button class="modal-item modal-item--sm modal-item--inf" class:modal-item--active={$build.infusionRing === r.name}
               on:click={() => { build.update(s => ({...s, infusionRing: r.name})); closeModal() }}>
-              <span class="modal-item-name">{r.name} <span class="inf-label">×0.5</span></span>
-              {#if r.perkName}<span class="modal-perk-tag">{r.perkName} +{r.perkAmount}</span>{/if}
+              <span class="modal-item-name">{@html highlight(r.name, modalSearch)} <span class="inf-label">×0.5</span></span>
+              {#if r.perkName}<span class="modal-perk-tag">{@html highlight(r.perkName, modalSearch)} +{r.perkAmount}</span>{/if}
               <div class="modal-item-stats">
                 {#each Object.entries(r.stats).filter(([,v]) => v !== 0) as [k,v]}
                   <span class="modal-stat-pill modal-stat-pill--inf" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, (v as number) * 0.5)}</span>
@@ -731,22 +1076,52 @@ function prettyKey(key: string, suffix: string) {
               </div>
             </button>
           {/each}
+          {#if noExactResults && didYouMean.length > 0}
+            <div class="dym-block">
+              <span class="dym-label">Did you mean?</span>
+              <div class="dym-chips">
+                {#each didYouMean as s}
+                  <button class="dym-chip" class:dym-chip--perk={s.type==='perk'}
+                    on:click={() => { modalSearch = s.label }}>
+                    {@html highlight(s.label, modalSearch)}
+                  </button>
+                {/each}
+              </div>
+            </div>
+          {:else if noExactResults}
+            <p class="dym-empty">No results for "<strong>{modalSearch}</strong>"</p>
+          {/if}
         </div>
 
       {:else if activeModal === 'rune'}
         <h2 class="modal-title">Select Rune</h2>
+        <div class="search-wrap">
+          <input class="modal-search-input" type="text" bind:value={modalSearch} placeholder="Search name or perk..."
+            on:focus={onSearchFocus} on:blur={onSearchBlur} />
+          {#if showSuggestions && modalSuggestions.length > 0}
+            <div class="suggest-drop">
+              {#each modalSuggestions as s}
+                <button class="suggest-item" class:suggest-item--perk={s.type==='perk'}
+                  on:mousedown|preventDefault={() => applySuggestion(s.label)}>
+                  <span class="suggest-type">{s.type === 'perk' ? 'Perk' : 'Name'}</span>
+                  <span class="suggest-label">{@html highlight(s.label, modalSearch)}</span>
+                </button>
+              {/each}
+            </div>
+          {/if}
+        </div>
         <div class="modal-list modal-list--compact">
           <button class="modal-item modal-item--sm" class:modal-item--active={$build.rune === ''}
             on:click={() => { build.update(s => ({...s, rune: ''})); closeModal() }}>
             <span class="modal-item-name">— None —</span>
           </button>
-          {#each runes as r}
+          {#each searchedRunes as r}
             <button class="modal-item modal-item--sm" class:modal-item--active={$build.rune === r.name}
               on:click={() => { build.update(s => ({...s, rune: r.name})); closeModal() }}>
-              <span class="modal-item-name">{r.name}</span>
+              <span class="modal-item-name">{@html highlight(r.name, modalSearch)}</span>
               <span class="modal-item-desc">{r.description}</span>
               <span class="modal-cd-badge">CD: {r.cooldown}s</span>
-              {#if r.perkName}<span class="modal-perk-tag">{r.perkName} +{r.perkAmount ?? 1}</span>{/if}
+              {#if r.perkName}<span class="modal-perk-tag">{@html highlight(r.perkName, modalSearch)} +{r.perkAmount ?? 1}</span>{/if}
               <div class="modal-item-stats">
                 {#each Object.entries(r.stats).filter(([,v]) => v !== 0) as [k,v]}
                   <span class="modal-stat-pill" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, v as number)}</span>
@@ -754,10 +1129,40 @@ function prettyKey(key: string, suffix: string) {
               </div>
             </button>
           {/each}
+          {#if noExactResults && didYouMean.length > 0}
+            <div class="dym-block">
+              <span class="dym-label">Did you mean?</span>
+              <div class="dym-chips">
+                {#each didYouMean as s}
+                  <button class="dym-chip" class:dym-chip--perk={s.type==='perk'}
+                    on:click={() => { modalSearch = s.label }}>
+                    {@html highlight(s.label, modalSearch)}
+                  </button>
+                {/each}
+              </div>
+            </div>
+          {:else if noExactResults}
+            <p class="dym-empty">No results for "<strong>{modalSearch}</strong>"</p>
+          {/if}
         </div>
 
       {:else if activeModal === 'blade'}
         <h2 class="modal-title">Select Blade</h2>
+        <div class="search-wrap">
+          <input class="modal-search-input" type="text" bind:value={modalSearch} placeholder="Search name or perk..."
+            on:focus={onSearchFocus} on:blur={onSearchBlur} />
+          {#if showSuggestions && modalSuggestions.length > 0}
+            <div class="suggest-drop">
+              {#each modalSuggestions as s}
+                <button class="suggest-item" class:suggest-item--perk={s.type==='perk'}
+                  on:mousedown|preventDefault={() => applySuggestion(s.label)}>
+                  <span class="suggest-type">{s.type === 'perk' ? 'Perk' : 'Name'}</span>
+                  <span class="suggest-label">{@html highlight(s.label, modalSearch)}</span>
+                </button>
+              {/each}
+            </div>
+          {/if}
+        </div>
         <div class="modal-filters">
           <select bind:value={bladeFilterTier} class="modal-filter-sel">
             <option value="">All Tiers</option>
@@ -773,18 +1178,18 @@ function prettyKey(key: string, suffix: string) {
             on:click={() => { build.update(s => ({...s, weaponBlade: ''})); closeModal() }}>
             <span class="modal-item-name">— None —</span>
           </button>
-          {#each filteredBlades as b}
+          {#each searchedBlades as b}
             {@const bAny = b as any}
             <button class="modal-item modal-item--sm modal-item--blade" class:modal-item--active={$build.weaponBlade === b.name}
               on:click={() => { build.update(s => ({...s, weaponBlade: b.name})); closeModal() }}>
               <div class="modal-item-head">
-                <span class="modal-item-name">{b.name}</span>
+                <span class="modal-item-name">{@html highlight(b.name, modalSearch)}</span>
                 <span class="modal-tier-badge">T{b.tier}</span>
                 <span class="modal-type-badge modal-type-badge--blade">{b.bladeType}</span>
                 {#if b.attackSpeed != null}<span class="modal-cd-badge">{b.attackSpeed}x spd</span>{/if}
               </div>
               {#if bAny.perks?.length}
-                {#each bAny.perks as p}<span class="modal-perk-tag">{p.name} +{p.amount}</span>{/each}
+                {#each bAny.perks as p}<span class="modal-perk-tag">{@html highlight(p.name, modalSearch)} +{p.amount}</span>{/each}
               {/if}
               {#if true}
                 {@const ws = splitWeaponStats(b.stats ?? {})}
@@ -839,10 +1244,40 @@ function prettyKey(key: string, suffix: string) {
               {/if}
             </button>
           {/each}
+          {#if noExactResults && didYouMean.length > 0}
+            <div class="dym-block">
+              <span class="dym-label">Did you mean?</span>
+              <div class="dym-chips">
+                {#each didYouMean as s}
+                  <button class="dym-chip" class:dym-chip--perk={s.type==='perk'}
+                    on:click={() => { modalSearch = s.label }}>
+                    {@html highlight(s.label, modalSearch)}
+                  </button>
+                {/each}
+              </div>
+            </div>
+          {:else if noExactResults}
+            <p class="dym-empty">No results for "<strong>{modalSearch}</strong>"</p>
+          {/if}
         </div>
 
       {:else if activeModal === 'handle'}
         <h2 class="modal-title">Select Handle</h2>
+        <div class="search-wrap">
+          <input class="modal-search-input" type="text" bind:value={modalSearch} placeholder="Search name or perk..."
+            on:focus={onSearchFocus} on:blur={onSearchBlur} />
+          {#if showSuggestions && modalSuggestions.length > 0}
+            <div class="suggest-drop">
+              {#each modalSuggestions as s}
+                <button class="suggest-item" class:suggest-item--perk={s.type==='perk'}
+                  on:mousedown|preventDefault={() => applySuggestion(s.label)}>
+                  <span class="suggest-type">{s.type === 'perk' ? 'Perk' : 'Name'}</span>
+                  <span class="suggest-label">{@html highlight(s.label, modalSearch)}</span>
+                </button>
+              {/each}
+            </div>
+          {/if}
+        </div>
         <div class="modal-filters">
           <select bind:value={handleFilterTier} class="modal-filter-sel">
             <option value="">All Tiers</option>
@@ -858,12 +1293,12 @@ function prettyKey(key: string, suffix: string) {
             on:click={() => { build.update(s => ({...s, weaponHandle: ''})); closeModal() }}>
             <span class="modal-item-name">— None —</span>
           </button>
-          {#each filteredHandles as h}
+          {#each searchedHandles as h}
             {@const hAny = h as any}
             <button class="modal-item modal-item--sm modal-item--handle" class:modal-item--active={$build.weaponHandle === h.name}
               on:click={() => { build.update(s => ({...s, weaponHandle: h.name})); closeModal() }}>
               <div class="modal-item-head">
-                <span class="modal-item-name">{h.name}</span>
+                <span class="modal-item-name">{@html highlight(h.name, modalSearch)}</span>
                 <span class="modal-tier-badge modal-tier-badge--handle">T{h.tier}</span>
                 <span class="modal-type-badge modal-type-badge--handle">{h.handleType}</span>
                 {#if h.attackSpeed != null}<span class="modal-cd-badge">{h.attackSpeed}x spd</span>{/if}
@@ -893,7 +1328,7 @@ function prettyKey(key: string, suffix: string) {
                 </div>
               {/if}
               {#if hAny.perks?.length}
-                {#each hAny.perks as p}<span class="modal-perk-tag">{p.name} +{p.amount}</span>{/each}
+                {#each hAny.perks as p}<span class="modal-perk-tag">{@html highlight(p.name, modalSearch)} +{p.amount}</span>{/each}
               {/if}
               {#if Object.entries(h.stats).filter(([,v]) => v !== 0).length > 0}
                 <div class="modal-stat-group">
@@ -907,10 +1342,40 @@ function prettyKey(key: string, suffix: string) {
               {/if}
             </button>
           {/each}
+          {#if noExactResults && didYouMean.length > 0}
+            <div class="dym-block">
+              <span class="dym-label">Did you mean?</span>
+              <div class="dym-chips">
+                {#each didYouMean as s}
+                  <button class="dym-chip" class:dym-chip--perk={s.type==='perk'}
+                    on:click={() => { modalSearch = s.label }}>
+                    {@html highlight(s.label, modalSearch)}
+                  </button>
+                {/each}
+              </div>
+            </div>
+          {:else if noExactResults}
+            <p class="dym-empty">No results for "<strong>{modalSearch}</strong>"</p>
+          {/if}
         </div>
 
       {:else if activeModal === 'glove'}
         <h2 class="modal-title">Select Glove</h2>
+        <div class="search-wrap">
+          <input class="modal-search-input" type="text" bind:value={modalSearch} placeholder="Search name or perk..."
+            on:focus={onSearchFocus} on:blur={onSearchBlur} />
+          {#if showSuggestions && modalSuggestions.length > 0}
+            <div class="suggest-drop">
+              {#each modalSuggestions as s}
+                <button class="suggest-item" class:suggest-item--perk={s.type==='perk'}
+                  on:mousedown|preventDefault={() => applySuggestion(s.label)}>
+                  <span class="suggest-type">{s.type === 'perk' ? 'Perk' : 'Name'}</span>
+                  <span class="suggest-label">{@html highlight(s.label, modalSearch)}</span>
+                </button>
+              {/each}
+            </div>
+          {/if}
+        </div>
         <div class="modal-filters">
           <select bind:value={gloveFilterTier} class="modal-filter-sel">
             <option value="">All Tiers</option>
@@ -922,12 +1387,12 @@ function prettyKey(key: string, suffix: string) {
             on:click={() => { build.update(s => ({...s, monkGlove: ''})); closeModal() }}>
             <span class="modal-item-name">— None —</span>
           </button>
-          {#each filteredGloves as g}
+          {#each searchedGloves as g}
             {@const gAny = g as any}
             <button class="modal-item modal-item--sm modal-item--glove" class:modal-item--active={$build.monkGlove === g.name}
               on:click={() => { build.update(s => ({...s, monkGlove: g.name})); closeModal() }}>
               <div class="modal-item-head">
-                <span class="modal-item-name">{g.name}</span>
+                <span class="modal-item-name">{@html highlight(g.name, modalSearch)}</span>
                 <span class="modal-tier-badge modal-tier-badge--glove">T{g.tier}</span>
                 {#if g.attackSpeed != null}<span class="modal-cd-badge">{g.attackSpeed}x spd</span>{/if}
               </div>
@@ -956,7 +1421,7 @@ function prettyKey(key: string, suffix: string) {
                 </div>
               {/if}
               {#if gAny.perks?.length}
-                {#each gAny.perks as p}<span class="modal-perk-tag">{p.name} +{p.amount}</span>{/each}
+                {#each gAny.perks as p}<span class="modal-perk-tag">{@html highlight(p.name, modalSearch)} +{p.amount}</span>{/each}
               {/if}
               {#if Object.entries(g.stats).filter(([,v]) => v !== 0).length > 0}
                 <div class="modal-stat-group">
@@ -970,10 +1435,40 @@ function prettyKey(key: string, suffix: string) {
               {/if}
             </button>
           {/each}
+          {#if noExactResults && didYouMean.length > 0}
+            <div class="dym-block">
+              <span class="dym-label">Did you mean?</span>
+              <div class="dym-chips">
+                {#each didYouMean as s}
+                  <button class="dym-chip" class:dym-chip--perk={s.type==='perk'}
+                    on:click={() => { modalSearch = s.label }}>
+                    {@html highlight(s.label, modalSearch)}
+                  </button>
+                {/each}
+              </div>
+            </div>
+          {:else if noExactResults}
+            <p class="dym-empty">No results for "<strong>{modalSearch}</strong>"</p>
+          {/if}
         </div>
 
       {:else if activeModal === 'essence'}
         <h2 class="modal-title">Select Essence</h2>
+        <div class="search-wrap">
+          <input class="modal-search-input" type="text" bind:value={modalSearch} placeholder="Search name or perk..."
+            on:focus={onSearchFocus} on:blur={onSearchBlur} />
+          {#if showSuggestions && modalSuggestions.length > 0}
+            <div class="suggest-drop">
+              {#each modalSuggestions as s}
+                <button class="suggest-item" class:suggest-item--perk={s.type==='perk'}
+                  on:mousedown|preventDefault={() => applySuggestion(s.label)}>
+                  <span class="suggest-type">{s.type === 'perk' ? 'Perk' : 'Name'}</span>
+                  <span class="suggest-label">{@html highlight(s.label, modalSearch)}</span>
+                </button>
+              {/each}
+            </div>
+          {/if}
+        </div>
         <div class="modal-filters">
           <select bind:value={essenceFilterTier} class="modal-filter-sel">
             <option value="">All Tiers</option>
@@ -985,12 +1480,12 @@ function prettyKey(key: string, suffix: string) {
             on:click={() => { build.update(s => ({...s, monkEssence: ''})); closeModal() }}>
             <span class="modal-item-name">— None —</span>
           </button>
-          {#each filteredEssences as e}
+          {#each searchedEssences as e}
             {@const eAny = e as any}
             <button class="modal-item modal-item--sm modal-item--essence" class:modal-item--active={$build.monkEssence === e.name}
               on:click={() => { build.update(s => ({...s, monkEssence: e.name})); closeModal() }}>
               <div class="modal-item-head">
-                <span class="modal-item-name">{e.name}</span>
+                <span class="modal-item-name">{@html highlight(e.name, modalSearch)}</span>
                 <span class="modal-tier-badge modal-tier-badge--essence">T{e.tier}</span>
                 {#if e.attackSpeed != null}<span class="modal-cd-badge">{e.attackSpeed}x spd</span>{/if}
               </div>
@@ -1019,7 +1514,7 @@ function prettyKey(key: string, suffix: string) {
                 </div>
               {/if}
               {#if eAny.perks?.length}
-                {#each eAny.perks as p}<span class="modal-perk-tag">{p.name} +{p.amount}</span>{/each}
+                {#each eAny.perks as p}<span class="modal-perk-tag">{@html highlight(p.name, modalSearch)} +{p.amount}</span>{/each}
               {/if}
               {#if Object.entries(e.stats).filter(([,v]) => v !== 0).length > 0}
                 <div class="modal-stat-group">
@@ -1033,6 +1528,21 @@ function prettyKey(key: string, suffix: string) {
               {/if}
             </button>
           {/each}
+          {#if noExactResults && didYouMean.length > 0}
+            <div class="dym-block">
+              <span class="dym-label">Did you mean?</span>
+              <div class="dym-chips">
+                {#each didYouMean as s}
+                  <button class="dym-chip" class:dym-chip--perk={s.type==='perk'}
+                    on:click={() => { modalSearch = s.label }}>
+                    {@html highlight(s.label, modalSearch)}
+                  </button>
+                {/each}
+              </div>
+            </div>
+          {:else if noExactResults}
+            <p class="dym-empty">No results for "<strong>{modalSearch}</strong>"</p>
+          {/if}
         </div>
       {/if}
 
@@ -2905,4 +3415,133 @@ function prettyKey(key: string, suffix: string) {
 .modal-stat-pill--scaling {
   border-color: var(--accent3);
 }
+/* ── Search suggestions ── */
+.search-wrap { position: relative; margin-bottom: 12px; }
+.search-wrap .modal-search-input { margin-bottom: 0; }
+.suggest-drop {
+  position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 100;
+  background: var(--surface); border: 1px solid rgba(167,139,250,.4);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 8px 24px rgba(0,0,0,.5);
+  overflow-y: auto;
+  max-height: 260px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(167,139,250,.3) transparent;
+  animation: iepSlide .12s ease;
+}
+.suggest-drop::-webkit-scrollbar { width: 4px; }
+.suggest-drop::-webkit-scrollbar-thumb { background: rgba(167,139,250,.3); border-radius: 2px; }
+.suggest-item {
+  display: flex; align-items: center; gap: 8px;
+  width: 100%; text-align: left; padding: 8px 12px;
+  background: none; border: none; border-bottom: 1px solid var(--border);
+  color: var(--ink); font-family: var(--font-body); font-size: .84rem;
+  cursor: pointer; transition: background .1s;
+}
+.suggest-label { flex: 1; min-width: 0; }
+.suggest-item:last-child { border-bottom: none; }
+.suggest-item:hover { background: var(--surface3); }
+.suggest-item--perk { color: var(--accent2); }
+.suggest-type {
+  font-size: .55rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: .14em; padding: 1px 5px; border-radius: 3px;
+  flex-shrink: 0;
+  background: rgba(167,139,250,.12); border: 1px solid rgba(167,139,250,.2); color: var(--accent3);
+}
+.suggest-item--perk .suggest-type {
+  background: rgba(245,158,11,.12); border-color: rgba(245,158,11,.22); color: var(--accent2);
+}
+
+
+.modal-search-input {
+  width: 100%;
+  background: var(--surface3);
+  border: 1px solid rgba(167,139,250,.35);
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: .85rem;
+  padding: 9px 14px;
+  outline: none;
+  margin-bottom: 12px;
+  caret-color: var(--accent3);
+  transition: border-color .15s, box-shadow .15s;
+}
+.modal-search-input::placeholder { color: var(--ink-muted); opacity: .5; }
+.modal-search-input:focus {
+  border-color: rgba(167,139,250,.6);
+  box-shadow: 0 0 0 2px rgba(167,139,250,.12);
+}
+
+:global(.modal-hl) {
+  display: inline;
+  background: rgba(167,139,250,.3);
+  color: var(--accent3);
+  border-radius: 2px;
+  padding: 0 1px;
+  font-weight: 800;
+  font-style: normal;
+}
+
+/* ── Did You Mean ── */
+.dym-block {
+  margin-top: 8px;
+  padding: 10px 12px;
+  background: rgba(167,139,250,.07);
+  border: 1px solid rgba(167,139,250,.22);
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  animation: iepSlide .15s ease;
+}
+.dym-label {
+  font-size: .6rem;
+  text-transform: uppercase;
+  letter-spacing: .16em;
+  font-weight: 800;
+  color: var(--accent3);
+  opacity: .7;
+}
+.dym-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.dym-chip {
+  font-size: .78rem;
+  font-weight: 600;
+  padding: 4px 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(167,139,250,.3);
+  background: rgba(167,139,250,.1);
+  color: var(--accent3);
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: all .12s;
+}
+.dym-chip:hover {
+  background: rgba(167,139,250,.22);
+  border-color: rgba(167,139,250,.55);
+}
+.dym-chip--perk {
+  border-color: rgba(245,158,11,.3);
+  background: rgba(245,158,11,.09);
+  color: var(--accent2);
+}
+.dym-chip--perk:hover {
+  background: rgba(245,158,11,.2);
+  border-color: rgba(245,158,11,.55);
+}
+.dym-empty {
+  margin-top: 8px;
+  padding: 10px 12px;
+  font-size: .8rem;
+  color: var(--ink-muted);
+  font-style: italic;
+  background: var(--surface3);
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--border);
+}
+.dym-empty strong { color: var(--ink); font-style: normal; }
 </style>
