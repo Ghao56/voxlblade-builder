@@ -278,13 +278,20 @@ export function applyShrineToStats(
 ): StatMap {
   if (!stats) return {}
   const mult = SHRINE_MULTIPLIERS[tier] ?? 1.0
-  if (mult === 1.0) return { ...stats }
+  if (mult === 1.0) {
+    const r: StatMap = {}
+    for (const [k, v] of Object.entries(stats)) {
+      if (v == null || !STAT_KEYS.includes(k as StatKey)) continue
+      r[k as StatKey] = v as number
+    }
+    return r
+  }
   const result: StatMap = {}
   for (const [k, v] of Object.entries(stats)) {
-    if (v == null) continue
-    result[k as StatKey] = v > 0
-      ? Math.round((v * mult + Number.EPSILON) * 100) / 100
-      : v
+    if (v == null || !STAT_KEYS.includes(k as StatKey)) continue
+    result[k as StatKey] = (v as number) > 0
+      ? Math.round(((v as number) * mult + Number.EPSILON) * 100) / 100
+      : (v as number)
   }
   return result
 }
@@ -810,6 +817,7 @@ export function calcBuild(state: BuildState): BuildResult {
     if (!s) return
     for (const [k, v] of Object.entries(s)) {
       if (v == null) continue
+      if (!STAT_KEYS.includes(k as StatKey)) continue
       const key = k as StatKey
       stats[key] = (stats[key] ?? 0) + v
     }
