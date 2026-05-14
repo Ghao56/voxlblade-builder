@@ -559,6 +559,7 @@ function prettyKey(key: string, suffix: string) {
   const base = key.replace(suffix, '')
   return base.charAt(0).toUpperCase() + base.slice(1)
 }
+
 </script>
 
 <svelte:window on:keydown={onKeydown} />
