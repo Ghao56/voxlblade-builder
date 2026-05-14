@@ -531,6 +531,34 @@ $: {
       unmet.push(`Cần cả: ${req.bothParts.join(' + ')}`)
     return unmet
   })()
+// ── Weapon stat groups ──────────────────────────────────────────────────────
+const DMG_TYPE_KEYS = new Set(['physicalType','magicType','fireType','waterType','earthType','airType','hexType','holyType','trueType','summonType'])
+const SCALING_KEYS = new Set(['physicalScaling','magicScaling','fireScaling','waterScaling','earthScaling','airScaling','hexScaling','holyScaling','dexterityScaling','summonScaling'])
+
+function splitWeaponStats(stats: Record<string, number> = {}) {
+  const dmgTypes: [string, number][] = []
+  const scalings: [string, number][] = []
+  const boosts: [string, number][] = []
+
+  for (const [k, v] of Object.entries(stats)) {
+    if (!v) continue
+
+    if (DMG_TYPE_KEYS.has(k)) {
+      dmgTypes.push([k, v])
+    } else if (SCALING_KEYS.has(k)) {
+      scalings.push([k, v])
+    } else {
+      boosts.push([k, v])
+    }
+  }
+
+  return { dmgTypes, scalings, boosts }
+}
+
+function prettyKey(key: string, suffix: string) {
+  const base = key.replace(suffix, '')
+  return base.charAt(0).toUpperCase() + base.slice(1)
+}
 </script>
 
 <svelte:window on:keydown={onKeydown} />
@@ -754,32 +782,60 @@ $: {
                 <span class="modal-type-badge modal-type-badge--blade">{b.bladeType}</span>
                 {#if b.attackSpeed != null}<span class="modal-cd-badge">{b.attackSpeed}x spd</span>{/if}
               </div>
-              {#if bAny.physicalType || bAny.magicType || bAny.fireType || bAny.waterType || bAny.airType || bAny.hexType || bAny.holyType || bAny.earthType || bAny.trueType}
-                <div class="modal-item-stats">
-                  {#each (['true','physical','magic','fire','water','air','hex','holy','earth'] as string[]) as sk}
-                    {#if bAny[`${sk}Type`]}
-                      <span class="modal-stat-pill" style="background:rgba(251,146,60,.1);border-color:rgba(251,146,60,.2);color:var(--weapon-blade)">{sk.charAt(0).toUpperCase() + sk.slice(1)} Type: {bAny[`${sk}Type`]}x</span>
-                    {/if}
-                  {/each}
-                </div>
-              {/if}
-              {#if bAny.physicalScaling || bAny.magicScaling || bAny.fireScaling || bAny.waterScaling || bAny.airScaling || bAny.hexScaling || bAny.holyScaling || bAny.earthScaling || bAny.dexterityScaling || bAny.summonScaling}
-                <div class="modal-item-stats">
-                  {#each (['physical','magic','fire','water','air','hex','holy','earth','dexterity','summon'] as StatPrefix[]) as sk}
-                    {#if b[`${sk}Scaling` as ScalingKey]}
-                      <span class="modal-stat-pill" style="background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.2);color:var(--accent3)">{sk.charAt(0).toUpperCase() + sk.slice(1)} Scaling: {b[`${sk}Scaling` as ScalingKey]}</span>
-                    {/if}
-                  {/each}
-                </div>
-              {/if}
               {#if bAny.perks?.length}
                 {#each bAny.perks as p}<span class="modal-perk-tag">{p.name} +{p.amount}</span>{/each}
               {/if}
-              <div class="modal-item-stats">
-                {#each Object.entries(b.stats ?? {}).filter(([, v]) => v !== 0) as [k, v]}
-                  <span class="modal-stat-pill" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, v as number)}</span>
-                {/each}
-              </div>
+              {#if true}
+                {@const ws = splitWeaponStats(b.stats ?? {})}
+
+                {#if ws.dmgTypes.length}
+                  <div class="modal-stat-group">
+                    <span class="modal-stat-group-label modal-stat-group-label--dmg">
+                      Dmg Type
+                    </span>
+
+                    <div class="modal-item-stats">
+                      {#each ws.dmgTypes as [k, v]}
+                        <span class="modal-stat-pill modal-stat-pill--dmgtype">
+                          {prettyKey(k, 'Type')}: {v}×
+                        </span>
+                      {/each}
+                    </div>
+                  </div>
+                {/if}
+
+                {#if ws.scalings.length}
+                  <div class="modal-stat-group">
+                    <span class="modal-stat-group-label modal-stat-group-label--scaling">
+                      Scaling
+                    </span>
+
+                    <div class="modal-item-stats">
+                      {#each ws.scalings as [k, v]}
+                        <span class="modal-stat-pill modal-stat-pill--scaling">
+                          {prettyKey(k, 'Scaling')}: {v}
+                        </span>
+                      {/each}
+                    </div>
+                  </div>
+                {/if}
+
+                {#if ws.boosts.length}
+                  <div class="modal-stat-group">
+                    <span class="modal-stat-group-label">
+                      Stats
+                    </span>
+
+                    <div class="modal-item-stats">
+                      {#each ws.boosts as [k, v]}
+                        <span class="modal-stat-pill" class:neg={(v as number) < 0}>
+                          {formatLabel(k)}: {formatStat(k, v as number)}
+                        </span>
+                      {/each}
+                    </div>
+                  </div>
+                {/if}
+              {/if}
             </button>
           {/each}
         </div>
@@ -812,31 +868,42 @@ $: {
                 {#if h.attackSpeed != null}<span class="modal-cd-badge">{h.attackSpeed}x spd</span>{/if}
               </div>
               {#if hAny.physicalType || hAny.magicType || hAny.fireType || hAny.waterType || hAny.airType || hAny.hexType || hAny.holyType || hAny.earthType || hAny.trueType}
-                <div class="modal-item-stats">
-                  {#each (['true','physical','magic','fire','water','air','hex','holy','earth'] as string[]) as sk}
-                    {#if hAny[`${sk}Type`]}
-                      <span class="modal-stat-pill" style="background:rgba(251,146,60,.1);border-color:rgba(251,146,60,.2);color:var(--weapon-blade)">{sk.charAt(0).toUpperCase() + sk.slice(1)} Type: {hAny[`${sk}Type`]}x</span>
-                    {/if}
-                  {/each}
+                <div class="modal-stat-group">
+                  <span class="modal-stat-group-label">Dmg Type</span>
+                  <div class="modal-item-stats">
+                    {#each (['true','physical','magic','fire','water','air','hex','holy','earth'] as string[]) as sk}
+                      {#if hAny[`${sk}Type`]}
+                        <span class="modal-stat-pill modal-stat-pill--dmgtype">{sk.charAt(0).toUpperCase() + sk.slice(1)}: {hAny[`${sk}Type`]}x</span>
+                      {/if}
+                    {/each}
+                  </div>
                 </div>
               {/if}
               {#if hAny.physicalScaling || hAny.magicScaling || hAny.fireScaling || hAny.waterScaling || hAny.airScaling || hAny.hexScaling || hAny.holyScaling || hAny.earthScaling || hAny.dexterityScaling || hAny.summonScaling}
-                <div class="modal-item-stats">
-                  {#each (['physical','magic','fire','water','air','hex','holy','earth','dexterity','summon'] as StatPrefix[]) as sk}
-                    {#if hAny[`${sk}Scaling` as ScalingKey]}
-                      <span class="modal-stat-pill" style="background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.2);color:var(--accent3)">{sk.charAt(0).toUpperCase() + sk.slice(1)} Scaling: {hAny[`${sk}Scaling` as ScalingKey]}</span>
-                    {/if}
-                  {/each}
+                <div class="modal-stat-group">
+                  <span class="modal-stat-group-label">Scaling</span>
+                  <div class="modal-item-stats">
+                    {#each (['physical','magic','fire','water','air','hex','holy','earth','dexterity','summon'] as StatPrefix[]) as sk}
+                      {#if hAny[`${sk}Scaling` as ScalingKey]}
+                        <span class="modal-stat-pill modal-stat-pill--scaling">{sk.charAt(0).toUpperCase() + sk.slice(1)}: {hAny[`${sk}Scaling` as ScalingKey]}</span>
+                      {/if}
+                    {/each}
+                  </div>
                 </div>
               {/if}
               {#if hAny.perks?.length}
                 {#each hAny.perks as p}<span class="modal-perk-tag">{p.name} +{p.amount}</span>{/each}
               {/if}
-              <div class="modal-item-stats">
-                {#each Object.entries(h.stats).filter(([,v]) => v !== 0) as [k,v]}
-                  <span class="modal-stat-pill" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, v as number)}</span>
-                {/each}
-              </div>
+              {#if Object.entries(h.stats).filter(([,v]) => v !== 0).length > 0}
+                <div class="modal-stat-group">
+                  <span class="modal-stat-group-label">Stats</span>
+                  <div class="modal-item-stats">
+                    {#each Object.entries(h.stats).filter(([,v]) => v !== 0) as [k,v]}
+                      <span class="modal-stat-pill" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, v as number)}</span>
+                    {/each}
+                  </div>
+                </div>
+              {/if}
             </button>
           {/each}
         </div>
@@ -864,31 +931,42 @@ $: {
                 {#if g.attackSpeed != null}<span class="modal-cd-badge">{g.attackSpeed}x spd</span>{/if}
               </div>
               {#if gAny.physicalType || gAny.magicType || gAny.fireType || gAny.waterType || gAny.airType || gAny.hexType || gAny.holyType || gAny.earthType || gAny.trueType}
-                <div class="modal-item-stats">
-                  {#each (['true','physical','magic','fire','water','air','hex','holy','earth'] as string[]) as sk}
-                    {#if gAny[`${sk}Type`]}
-                      <span class="modal-stat-pill" style="background:rgba(251,146,60,.1);border-color:rgba(251,146,60,.2);color:var(--weapon-blade)">{sk.charAt(0).toUpperCase() + sk.slice(1)} Type: {gAny[`${sk}Type`]}x</span>
-                    {/if}
-                  {/each}
+                <div class="modal-stat-group">
+                  <span class="modal-stat-group-label">Dmg Type</span>
+                  <div class="modal-item-stats">
+                    {#each (['true','physical','magic','fire','water','air','hex','holy','earth'] as string[]) as sk}
+                      {#if gAny[`${sk}Type`]}
+                        <span class="modal-stat-pill modal-stat-pill--dmgtype">{sk.charAt(0).toUpperCase() + sk.slice(1)}: {gAny[`${sk}Type`]}x</span>
+                      {/if}
+                    {/each}
+                  </div>
                 </div>
               {/if}
               {#if gAny.physicalScaling || gAny.magicScaling || gAny.fireScaling || gAny.waterScaling || gAny.airScaling || gAny.hexScaling || gAny.holyScaling || gAny.earthScaling || gAny.dexterityScaling || gAny.summonScaling}
-                <div class="modal-item-stats">
-                  {#each (['physical','magic','fire','water','air','hex','holy','earth','dexterity','summon'] as StatPrefix[]) as sk}
-                    {#if gAny[`${sk}Scaling` as ScalingKey]}
-                      <span class="modal-stat-pill" style="background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.2);color:var(--accent3)">{sk.charAt(0).toUpperCase() + sk.slice(1)} Scaling: {gAny[`${sk}Scaling` as ScalingKey]}</span>
-                    {/if}
-                  {/each}
+                <div class="modal-stat-group">
+                  <span class="modal-stat-group-label">Scaling</span>
+                  <div class="modal-item-stats">
+                    {#each (['physical','magic','fire','water','air','hex','holy','earth','dexterity','summon'] as StatPrefix[]) as sk}
+                      {#if gAny[`${sk}Scaling` as ScalingKey]}
+                        <span class="modal-stat-pill modal-stat-pill--scaling">{sk.charAt(0).toUpperCase() + sk.slice(1)}: {gAny[`${sk}Scaling` as ScalingKey]}</span>
+                      {/if}
+                    {/each}
+                  </div>
                 </div>
               {/if}
               {#if gAny.perks?.length}
                 {#each gAny.perks as p}<span class="modal-perk-tag">{p.name} +{p.amount}</span>{/each}
               {/if}
-              <div class="modal-item-stats">
-                {#each Object.entries(g.stats).filter(([,v]) => v !== 0) as [k,v]}
-                  <span class="modal-stat-pill" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, v as number)}</span>
-                {/each}
-              </div>
+              {#if Object.entries(g.stats).filter(([,v]) => v !== 0).length > 0}
+                <div class="modal-stat-group">
+                  <span class="modal-stat-group-label">Stats</span>
+                  <div class="modal-item-stats">
+                    {#each Object.entries(g.stats).filter(([,v]) => v !== 0) as [k,v]}
+                      <span class="modal-stat-pill" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, v as number)}</span>
+                    {/each}
+                  </div>
+                </div>
+              {/if}
             </button>
           {/each}
         </div>
@@ -916,31 +994,42 @@ $: {
                 {#if e.attackSpeed != null}<span class="modal-cd-badge">{e.attackSpeed}x spd</span>{/if}
               </div>
               {#if eAny.physicalType || eAny.magicType || eAny.fireType || eAny.waterType || eAny.airType || eAny.hexType || eAny.holyType || eAny.earthType || eAny.trueType}
-                <div class="modal-item-stats">
-                  {#each (['true','physical','magic','fire','water','air','hex','holy','earth'] as string[]) as sk}
-                    {#if eAny[`${sk}Type`]}
-                      <span class="modal-stat-pill" style="background:rgba(251,146,60,.1);border-color:rgba(251,146,60,.2);color:var(--weapon-blade)">{sk.charAt(0).toUpperCase() + sk.slice(1)} Type: {eAny[`${sk}Type`]}x</span>
-                    {/if}
-                  {/each}
+                <div class="modal-stat-group">
+                  <span class="modal-stat-group-label">Dmg Type</span>
+                  <div class="modal-item-stats">
+                    {#each (['true','physical','magic','fire','water','air','hex','holy','earth'] as string[]) as sk}
+                      {#if eAny[`${sk}Type`]}
+                        <span class="modal-stat-pill modal-stat-pill--dmgtype">{sk.charAt(0).toUpperCase() + sk.slice(1)}: {eAny[`${sk}Type`]}x</span>
+                      {/if}
+                    {/each}
+                  </div>
                 </div>
               {/if}
               {#if eAny.physicalScaling || eAny.magicScaling || eAny.fireScaling || eAny.waterScaling || eAny.airScaling || eAny.hexScaling || eAny.holyScaling || eAny.earthScaling || eAny.dexterityScaling || eAny.summonScaling}
-                <div class="modal-item-stats">
-                  {#each (['physical','magic','fire','water','air','hex','holy','earth','dexterity','summon'] as StatPrefix[]) as sk}
-                    {#if eAny[`${sk}Scaling` as ScalingKey]}
-                      <span class="modal-stat-pill" style="background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.2);color:var(--accent3)">{sk.charAt(0).toUpperCase() + sk.slice(1)} Scaling: {eAny[`${sk}Scaling` as ScalingKey]}</span>
-                    {/if}
-                  {/each}
+                <div class="modal-stat-group">
+                  <span class="modal-stat-group-label">Scaling</span>
+                  <div class="modal-item-stats">
+                    {#each (['physical','magic','fire','water','air','hex','holy','earth','dexterity','summon'] as StatPrefix[]) as sk}
+                      {#if eAny[`${sk}Scaling` as ScalingKey]}
+                        <span class="modal-stat-pill modal-stat-pill--scaling">{sk.charAt(0).toUpperCase() + sk.slice(1)}: {eAny[`${sk}Scaling` as ScalingKey]}</span>
+                      {/if}
+                    {/each}
+                  </div>
                 </div>
               {/if}
               {#if eAny.perks?.length}
                 {#each eAny.perks as p}<span class="modal-perk-tag">{p.name} +{p.amount}</span>{/each}
               {/if}
-              <div class="modal-item-stats">
-                {#each Object.entries(e.stats).filter(([,v]) => v !== 0) as [k,v]}
-                  <span class="modal-stat-pill" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, v as number)}</span>
-                {/each}
-              </div>
+              {#if Object.entries(e.stats).filter(([,v]) => v !== 0).length > 0}
+                <div class="modal-stat-group">
+                  <span class="modal-stat-group-label">Stats</span>
+                  <div class="modal-item-stats">
+                    {#each Object.entries(e.stats).filter(([,v]) => v !== 0) as [k,v]}
+                      <span class="modal-stat-pill" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, v as number)}</span>
+                    {/each}
+                  </div>
+                </div>
+              {/if}
             </button>
           {/each}
         </div>
@@ -2166,6 +2255,14 @@ $: {
   .modal-stat-pill--inf { background:rgba(56,189,248,.1); border-color:rgba(56,189,248,.2); color:var(--infusion); }
   .modal-perk-tag { font-size:.67rem; font-weight:700; padding:2px 7px; border-radius:999px; background:rgba(245,158,11,.1); border:1px solid rgba(245,158,11,.22); color:var(--accent2); width:fit-content; }
   .modal-cd-badge { font-size:.67rem; font-weight:700; padding:2px 7px; border-radius:999px; background:rgba(52,211,153,.1); border:1px solid rgba(52,211,153,.22); color:var(--weapon-handle); width:fit-content; }
+  .modal-stat-group { display:flex; align-items:baseline; gap:6px; flex-wrap:wrap; }
+  .modal-stat-group-label {
+    font-size:.55rem; font-weight:800; text-transform:uppercase; letter-spacing:.14em;
+    color:var(--ink-muted); opacity:.45; flex-shrink:0; width:40px; text-align:right;
+    padding-top:2px;
+  }
+  .modal-stat-pill--dmgtype { background:rgba(251,146,60,.1); border-color:rgba(251,146,60,.22); color:var(--weapon-blade); }
+  .modal-stat-pill--scaling { background:rgba(167,139,250,.1); border-color:rgba(167,139,250,.22); color:var(--accent3); }
   .modal-tier-badge { font-size:.62rem; font-weight:800; padding:2px 6px; border-radius:4px; background:rgba(251,146,60,.12); border:1px solid rgba(251,146,60,.25); color:var(--weapon-blade); }
   .modal-tier-badge--handle { background:rgba(52,211,153,.12); border-color:rgba(52,211,153,.25); color:var(--weapon-handle); }
   .modal-tier-badge--glove { background:rgba(232,121,249,.12); border-color:rgba(232,121,249,.25); color:var(--monk-glove); }
@@ -2790,4 +2887,21 @@ $: {
 .dab-stat-v { font-weight:700; color:var(--ink); }
 .dab-half { font-size:.65rem; color:var(--neg); opacity:.7; margin-left:4px; }
 .dab-notes { font-size:.68rem; color:var(--ink-muted); font-style:italic; line-height:1.4; }
+.modal-stat-group-label--dmg {
+  color: var(--weapon-blade);
+  opacity: 0.75;
+}
+
+.modal-stat-group-label--scaling {
+  color: var(--accent3);
+  opacity: 0.75;
+}
+
+.modal-stat-pill--dmgtype {
+  border-color: var(--weapon-blade);
+}
+
+.modal-stat-pill--scaling {
+  border-color: var(--accent3);
+}
 </style>
