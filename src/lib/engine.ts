@@ -1045,6 +1045,11 @@ export function calcBuild(state: BuildState): BuildResult {
     }
   }
 
+    // Buckler grants an equal amount of Parry
+  if (finalPerks["Buckler"] != null) {
+    finalPerks["Parry"] = (finalPerks["Parry"] ?? 0) + finalPerks["Buckler"]
+  }
+
   const cdr = calcCDR(finalPerks, race?.cooldownModifiers, state.rune || undefined, state.race || undefined)
 
   // Apply Stat Boost perks (summary only)
