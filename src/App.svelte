@@ -402,7 +402,8 @@ $: weaponDamageTypesWithBonus = (() => {
     const dtKeys = ['true','physical','magic','fire','water','earth','air','hex','holy','summon']
     const result: Record<string, number> = {}
     for (const k of dtKeys) {
-      const v = data?.[`${k}Type`]
+      // Check top-level first, then inside .stats (blades/handles/gloves/essences store type keys in stats)
+      const v = data?.[`${k}Type`] ?? data?.stats?.[`${k}Type`]
       if (v != null && v !== 0) result[k] = v
     }
     return result
@@ -2482,7 +2483,7 @@ function prettyKey(key: string, suffix: string) {
                 {/if}
                 {#if part1Data && Object.keys(part1Data.stats).length}
   <div class="stat-list">
-  {#each Object.entries(part1Data.stats).filter(([,v]) => v !== 0) as [k, rawVal]}
+  {#each Object.entries(part1Data.stats).filter(([k,v]) => v !== 0 && !k.endsWith('Type') && !k.endsWith('Scaling')) as [k, rawVal]}
     {@const shrineFinal = (weaponResult.part1FinalStats as Record<string,number>)[k] ?? rawVal}
     {@const shrineRaw = (weaponResult.part1RawStats as Record<string,number>)[k] ?? rawVal}
     {@const boosted = shrineFinal !== (rawVal as number)}
@@ -2562,7 +2563,7 @@ function prettyKey(key: string, suffix: string) {
                 {/if}
                 {#if part2Data && Object.keys(part2Data.stats).length}
                   <div class="stat-list">
-                    {#each Object.entries(part2Data.stats).filter(([,v]) => v !== 0) as [k, rawVal]}
+                    {#each Object.entries(part2Data.stats).filter(([k,v]) => v !== 0 && !k.endsWith('Type') && !k.endsWith('Scaling')) as [k, rawVal]}
                       {@const finalVal = (weaponResult.part2FinalStats as Record<string,number>)[k] ?? rawVal}
                       {@const boosted = weaponResult.shrineActive && finalVal !== rawVal}
                       <div class="stat-row" class:stat-row--boosted={boosted}>
@@ -2643,6 +2644,7 @@ function prettyKey(key: string, suffix: string) {
                   </div>
                 {/if}
                 {#if Object.keys(weaponResult.stats).length}
+                  <div class="weapon-section-label">Stats</div>
                   <div class="stat-list">
                     {#each Object.entries(weaponResult.stats).filter(([,v]) => v !== 0) as [k,v]}
                       <div class="stat-row"><span>{formatLabel(k)}</span><span class="stat-val" class:neg={v < 0}>{formatStat(k, v as number)}</span></div>
@@ -2650,6 +2652,7 @@ function prettyKey(key: string, suffix: string) {
                   </div>
                 {/if}
                 {#if Object.keys(weaponResult.perks).length}
+                  <div class="weapon-section-label">Perks</div>
                   <div class="perk-list">
                     {#each Object.entries(weaponResult.perks) as [name, amount]}
                       <div class="perk-row"><span>{name} <span class="perk-val">+{amount}</span></span></div>

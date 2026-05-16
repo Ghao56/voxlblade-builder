@@ -302,8 +302,10 @@ export function checkHybrid(
 ): boolean {
   if (!part1 || !part2) return false
   const scaleKeys = ["dexterityScaling","physicalScaling","magicScaling","fireScaling","waterScaling","earthScaling","airScaling","hexScaling","holyScaling","summonScaling"]
-  const scalings1 = new Set(scaleKeys.filter(k => part1[k] != null && part1[k] !== 0))
-  const scalings2 = new Set(scaleKeys.filter(k => part2[k] != null && part2[k] !== 0))
+  const s1 = part1.stats ?? part1
+  const s2 = part2.stats ?? part2
+  const scalings1 = new Set(scaleKeys.filter(k => s1[k] != null && s1[k] !== 0))
+  const scalings2 = new Set(scaleKeys.filter(k => s2[k] != null && s2[k] !== 0))
   if (scalings1.size === 0 || scalings2.size === 0) return false
   for (const k of scalings1) { if (scalings2.has(k)) return false }
   return true
@@ -503,8 +505,9 @@ function calcWeaponGeneric(
   const part2DamageTypes: Record<string, number> = {}
 
   if (part1) {
+    const s1: any = (part1 as any).stats ?? part1
     for (const key of dtKeys) {
-      const v = (part1 as any)[key]
+      const v = s1[key]
       if (v != null && v !== 0) {
         part1DamageTypes[key.replace("Type", "")] = v
       }
@@ -512,8 +515,9 @@ function calcWeaponGeneric(
   }
 
   if (part2) {
+    const s2: any = (part2 as any).stats ?? part2
     for (const key of dtKeys) {
-      const v = (part2 as any)[key]
+      const v = s2[key]
       if (v != null && v !== 0) {
         part2DamageTypes[key.replace("Type", "")] = v
       }
@@ -530,20 +534,32 @@ function calcWeaponGeneric(
   const part1RawScalings: Record<string, number> = {}
   const part2RawScalings: Record<string, number> = {}
   if (part1) {
+    const s1: any = (part1 as any).stats ?? part1
     for (const key of scaleKeys) {
-      const v = (part1 as any)[key]
+      const v = s1[key]
       if (v != null && v !== 0) part1RawScalings[key.replace("Scaling", "")] = v
     }
   }
   if (part2) {
+    const s2: any = (part2 as any).stats ?? part2
     for (const key of scaleKeys) {
-      const v = (part2 as any)[key]
+      const v = s2[key]
       if (v != null && v !== 0) part2RawScalings[key.replace("Scaling", "")] = v
     }
   }
 
-  const part1RawStats: StatMap = part1 ? { ...(part1.stats as StatMap ?? {}) } : {}
-  const part2RawStats: StatMap = part2 ? { ...(part2.stats as StatMap ?? {}) } : {}
+  const part1RawStats: StatMap = {}
+  if (part1) {
+    for (const [k, v] of Object.entries((part1.stats as Record<string,number>) ?? {})) {
+      if (v != null && STAT_KEYS.includes(k as StatKey)) part1RawStats[k as StatKey] = v as number
+    }
+  }
+  const part2RawStats: StatMap = {}
+  if (part2) {
+    for (const [k, v] of Object.entries((part2.stats as Record<string,number>) ?? {})) {
+      if (v != null && STAT_KEYS.includes(k as StatKey)) part2RawStats[k as StatKey] = v as number
+    }
+  }
 
   const part1FinalScalings = shrineActive && part1
     ? applyShrineToScalings(part1RawScalings, part1.tier)
