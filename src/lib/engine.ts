@@ -30,6 +30,45 @@ export const handles: WeaponHandle[] = handlesRaw as WeaponHandle[]
 export const gloves: MonkGlove[] = glovesRaw as MonkGlove[]
 export const essences: MonkEssence[] = essencesRaw as MonkEssence[]
 
+import { BOOST_DEF_MAP } from '../data/Boost'
+import type { BoostEntry, BoostResult } from './types'
+export function calcBoosts(perks: Record<string, number>): BoostResult {
+
+  const dmgMap = new Map<string, BoostEntry>()
+  const healMap = new Map<string, BoostEntry>()
+
+  for (const [perkName, perkAmount] of Object.entries(perks)) {
+    if (perkAmount <= 0) continue
+    const def = BOOST_DEF_MAP.get(perkName)
+    if (!def) continue
+
+    const rawMult = 1 + def.multiplierPerPerk * perkAmount
+    const entry: BoostEntry = {
+      sourceName: perkName,
+      rawMultiplier: rawMult,
+      condition: def.condition,
+      type: def.type,
+    }
+
+    if (def.type === 'dmg') dmgMap.set(perkName, entry)
+    else healMap.set(perkName, entry)
+  }
+
+  const dmgEntries = [...dmgMap.values()]
+  const healEntries = [...healMap.values()]
+
+  // Multiplicative across sources
+  const dmgFinal = dmgEntries.reduce((acc, e) => acc * e.rawMultiplier, 1.0)
+  const healFinal = healEntries.reduce((acc, e) => acc * e.rawMultiplier, 1.0)
+
+  return {
+    dmgEntries,
+    healEntries,
+    dmgFinalMultiplier: Math.round(dmgFinal * 10000) / 10000,
+    healFinalMultiplier: Math.round(healFinal * 10000) / 10000,
+  }
+}
+
 export const armors: Armor[] = (armorsRaw as any[]).map(a => ({
   name: a.name,
   tags: a.tags,
@@ -839,6 +878,7 @@ export interface BuildResult {
   stats: StatMap
   perks: Record<string, number>
   cdr: CDRResult
+  boosts: BoostResult
 }
 
 export function calcBuild(state: BuildState): BuildResult {
@@ -1087,7 +1127,8 @@ export function calcBuild(state: BuildState): BuildResult {
   // Apply Stat Boost perks (summary only)
   const boostedStats = applyStatBoostPerks(finalStats, finalPerks)
 
-  return { stats: boostedStats, perks: finalPerks, cdr }
+  const boosts = calcBoosts(finalPerks)
+  return { stats: boostedStats, perks: finalPerks, cdr, boosts }
 }
 
 // ─── Formatting ───────────────────────────────────────────────────────────────

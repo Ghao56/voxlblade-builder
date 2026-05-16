@@ -203,3 +203,17 @@ export interface BuildState {
   selectedWeaponArt: string
   draconicColor: string
 }
+
+export interface BoostEntry {
+  sourceName: string
+  rawMultiplier: number
+  condition?: string
+  type: 'dmg' | 'heal'
+}
+
+export interface BoostResult {
+  dmgEntries: BoostEntry[]
+  healEntries: BoostEntry[]
+  dmgFinalMultiplier: number
+  healFinalMultiplier: number
+}

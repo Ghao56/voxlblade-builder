@@ -15,6 +15,7 @@
   import { applyUpgrade, UPGRADE_MAX } from './lib/types'
   import { WEAPON_ARTS, type WeaponArt } from './data/weaponArts'
   import BuildSaves from './BuildSaves.svelte'
+  import EmotionalTracker from './EmotionalTracker.svelte'
 
   function toggleUpgrade(key: 'upgradeHelmet'|'upgradeChestplate'|'upgradeLeggings'|'upgradeRing'|'upgradeRune') {
     build.update(s => ({...s, [key]: s[key] === UPGRADE_MAX ? 0 : UPGRADE_MAX}))
@@ -53,6 +54,7 @@
   // ── Collapsible panels ─────────────────────────────────────────────────────
   let showDetailsPanel = true
   let showPerksPanel = true
+  let activePerksTab: 'perks' | 'boosts' = 'perks'
   let activeDetailsTab: 'selection' | 'weapon' = 'selection'
 
   // ── Inline enchant panel ───────────────────────────────────────────────────
@@ -60,6 +62,13 @@
   function toggleInlineEnchant(slot: EnchantSlot) {
     inlineEnchantSlot = inlineEnchantSlot === slot ? null : slot
   }
+
+  $: boosts = $result.boosts
+  $: hasDmgBoosts = boosts.dmgEntries.length > 0
+  $: hasHealBoosts = boosts.healEntries.length > 0
+  $: hasBoosts = hasDmgBoosts || hasHealBoosts
+
+  let showBoostsPanel = true
 
   // ── Derived ────────────────────────────────────────────────────────────────
   $: guildData = getGuild($build.guild)
@@ -1982,27 +1991,101 @@ function prettyKey(key: string, suffix: string) {
       </div>
     </div>
 
-    <!-- Perks & Effects — collapsible -->
-    {#if perkRows.length > 0}
+    <!-- Perks & Effects + Combat Multipliers — shared panel with tabs -->
+    {#if perkRows.length > 0 || hasBoosts}
       <div class="panel perks-panel">
-        <button class="panel-title-btn perks-title" on:click={() => showPerksPanel = !showPerksPanel}>
-          <span>Perks &amp; Effects <span class="perk-count-badge">{perkRows.length}</span></span>
-          <span class="collapse-icon">{showPerksPanel ? '▲' : '▼'}</span>
-        </button>
+        <div class="perks-tabs-header">
+          <button class="perks-tab" class:perks-tab--active={activePerksTab === 'perks'}
+            on:click={() => activePerksTab = 'perks'}>
+            Perks &amp; Effects
+            <span class="perk-count-badge">{perkRows.length}</span>
+          </button>
+          {#if hasBoosts}
+            <button class="perks-tab perks-tab--boosts" class:perks-tab--active={activePerksTab === 'boosts'}
+              on:click={() => activePerksTab = 'boosts'}>
+              Combat Multipliers
+              {#if hasDmgBoosts}
+                <span class="tab-boost-badge tab-boost-badge--dmg">⚔×{boosts.dmgFinalMultiplier.toFixed(2)}</span>
+              {/if}
+              {#if hasHealBoosts}
+                <span class="tab-boost-badge tab-boost-badge--heal">✦×{boosts.healFinalMultiplier.toFixed(2)}</span>
+              {/if}
+            </button>
+          {/if}
+          <button class="perks-collapse-btn" on:click={() => showPerksPanel = !showPerksPanel}>
+            {showPerksPanel ? '▲' : '▼'}
+          </button>
+        </div>
+
         {#if showPerksPanel}
-          <div class="perks-grid">
-            {#each perkRows as [name, count]}
-              {@const perk = getPerk(name)}
-              <div class="perk-card">
-                <div class="perk-row">
-                  <span class="perk-name">{name} <span class="perk-val">+{Math.round(count * 100) / 100}</span></span>
+          {#if activePerksTab === 'perks'}
+            <div class="perks-grid">
+              {#each perkRows as [name, count]}
+                {@const perk = getPerk(name)}
+                <div class="perk-card">
+                  <div class="perk-row">
+                    <span class="perk-name">{name} <span class="perk-val">+{Math.round(count * 100) / 100}</span></span>
+                  </div>
+                  {#if perk?.description}
+                    <p class="perk-desc">{perk.description}</p>
+                  {/if}
+                  {#if name === 'Emotional'}
+                    <EmotionalTracker />
+                  {/if}
                 </div>
-                {#if perk?.description}
-                  <p class="perk-desc">{perk.description}</p>
-                {/if}
-              </div>
-            {/each}
-          </div>
+              {/each}
+            </div>
+          {:else if activePerksTab === 'boosts'}
+            <div class="boosts-layout">
+
+              {#if hasDmgBoosts}
+                <div class="boost-group">
+                  <div class="boost-group-header">
+                    <span class="boost-group-label boost-group-label--dmg">Damage Boost</span>
+                    <span class="boost-group-final boost-group-final--dmg">×{boosts.dmgFinalMultiplier.toFixed(3)}</span>
+                  </div>
+                  <div class="boost-chain">
+                    {#each boosts.dmgEntries as entry, i}
+                      {#if i > 0}<span class="boost-chain-op">×</span>{/if}
+                      <div class="boost-chip boost-chip--dmg" title={entry.condition ?? 'Universal'}>
+                        <span class="boost-chip-name">{entry.sourceName}</span>
+                        <span class="boost-chip-val">×{entry.rawMultiplier.toFixed(2)}</span>
+                        {#if entry.condition}
+                          <span class="boost-chip-cond">{entry.condition}</span>
+                        {/if}
+                      </div>
+                    {/each}
+                    <span class="boost-chain-op">=</span>
+                    <span class="boost-chain-result boost-chain-result--dmg">×{boosts.dmgFinalMultiplier.toFixed(3)}</span>
+                  </div>
+                </div>
+              {/if}
+
+              {#if hasHealBoosts}
+                <div class="boost-group">
+                  <div class="boost-group-header">
+                    <span class="boost-group-label boost-group-label--heal">✦ Heal Boost</span>
+                    <span class="boost-group-final boost-group-final--heal">×{boosts.healFinalMultiplier.toFixed(3)}</span>
+                  </div>
+                  <div class="boost-chain">
+                    {#each boosts.healEntries as entry, i}
+                      {#if i > 0}<span class="boost-chain-op">×</span>{/if}
+                      <div class="boost-chip boost-chip--heal" title={entry.condition ?? 'Universal'}>
+                        <span class="boost-chip-name">{entry.sourceName}</span>
+                        <span class="boost-chip-val">×{entry.rawMultiplier.toFixed(2)}</span>
+                        {#if entry.condition}
+                          <span class="boost-chip-cond">{entry.condition}</span>
+                        {/if}
+                      </div>
+                    {/each}
+                    <span class="boost-chain-op">=</span>
+                    <span class="boost-chain-result boost-chain-result--heal">×{boosts.healFinalMultiplier.toFixed(3)}</span>
+                  </div>
+                </div>
+              {/if}
+
+            </div>
+          {/if}
         {/if}
       </div>
     {/if}
@@ -2950,18 +3033,92 @@ function prettyKey(key: string, suffix: string) {
   .iep-excl-note { font-size:.72rem; color:var(--accent2); margin-top:8px; padding:6px 10px; background:rgba(245,158,11,.08); border:1px solid rgba(245,158,11,.2); border-radius:6px; }
 
   /* ── Collapsible panel title buttons ── */
-  .panel-title-btn {
-    display:flex; align-items:center; justify-content:space-between; width:100%;
-    background:none; border:none; color:inherit; cursor:pointer; padding:0;
-    font-size:.8rem; text-transform:uppercase; letter-spacing:.18em; font-weight:700;
-    margin-bottom:0; font-family:var(--font-body);
-  }
-  .collapse-icon { font-size:.65rem; color:var(--ink-muted); opacity:.5; }
+/* ── PERKS PANEL TABS ── */
+.perks-panel { 
+  border-color: rgba(245,158,11,.13); 
+  background: linear-gradient(160deg, var(--surface) 60%, rgba(245,158,11,.03) 100%);
+  padding: 0;
+  overflow: hidden;
+}
+
+.perks-tabs-header {
+  display: flex; align-items: stretch;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.perks-tab {
+  display: flex; align-items: center; gap: 7px;
+  padding: 11px 16px; background: none; border: none;
+  color: var(--ink-muted); font-size: .75rem; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase; cursor: pointer;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  transition: all .15s; font-family: var(--font-body);
+}
+.perks-tab:hover { color: var(--ink); background: rgba(255,255,255,.03); }
+.perks-tab--active { 
+  color: var(--accent2); 
+  border-bottom-color: var(--accent2); 
+  background: rgba(245,158,11,.04); 
+}
+.perks-tab--boosts.perks-tab--active { 
+  color: var(--weapon-blade); 
+  border-bottom-color: var(--weapon-blade); 
+  background: rgba(251,146,60,.04); 
+}
+
+.perks-collapse-btn {
+  margin-left: auto; padding: 0 14px; background: none; border: none;
+  color: var(--ink-muted); font-size: .65rem; cursor: pointer; opacity: .5;
+  transition: opacity .15s; font-family: var(--font-body);
+}
+.perks-collapse-btn:hover { opacity: 1; }
+
+.perks-panel > div:not(.perks-tabs-header) { padding: 14px 18px; }
+
+.tab-boost-badge {
+  font-size: .6rem; font-weight: 800;
+  padding: 1px 6px; border-radius: 999px;
+}
+.tab-boost-badge--dmg {
+  background: rgba(251,146,60,.12);
+  border: 1px solid rgba(251,146,60,.25);
+  color: var(--weapon-blade);
+}
+.tab-boost-badge--heal {
+  background: rgba(74,222,128,.12);
+  border: 1px solid rgba(74,222,128,.25);
+  color: var(--accent);
+}
+
+/* boosts layout (giữ nguyên các class cũ) */
+.boosts-layout { display: flex; flex-direction: column; gap: 14px; }
+.boost-group { display: flex; flex-direction: column; gap: 8px; }
+.boost-group-header { display: flex; align-items: center; justify-content: space-between; }
+.boost-group-label { font-size: .62rem; text-transform: uppercase; letter-spacing: .16em; font-weight: 700; }
+.boost-group-label--dmg { color: var(--weapon-blade); }
+.boost-group-label--heal { color: var(--accent); }
+.boost-group-final { font-size: .9rem; font-weight: 800; }
+.boost-group-final--dmg { color: var(--weapon-blade); }
+.boost-group-final--heal { color: var(--accent); }
+.boost-chain { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; }
+.boost-chain-op { font-size: .75rem; color: var(--ink-muted); opacity: .5; font-weight: 700; }
+.boost-chip { display: flex; flex-direction: column; align-items: center; padding: 5px 10px; border-radius: 8px; border: 1px solid transparent; cursor: default; }
+.boost-chip--dmg { background: rgba(251,146,60,.08); border-color: rgba(251,146,60,.2); }
+.boost-chip--heal { background: rgba(74,222,128,.08); border-color: rgba(74,222,128,.2); }
+.boost-chip-name { font-size: .68rem; font-weight: 700; color: var(--ink); }
+.boost-chip-val { font-size: .82rem; font-weight: 800; }
+.boost-chip--dmg .boost-chip-val { color: var(--weapon-blade); }
+.boost-chip--heal .boost-chip-val { color: var(--accent); }
+.boost-chip-cond { font-size: .58rem; color: var(--ink-muted); opacity: .6; font-style: italic; text-align: center; max-width: 80px; }
+.boost-chain-result { font-size: 1rem; font-weight: 900; padding: 4px 10px; border-radius: 8px; }
+.boost-chain-result--dmg { color: var(--weapon-blade); background: rgba(251,146,60,.1); }
+.boost-chain-result--heal { color: var(--accent); background: rgba(74,222,128,.1); }
   .perk-count-badge { display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:50%; background:rgba(245,158,11,.15); border:1px solid rgba(245,158,11,.25); color:var(--accent2); font-size:.6rem; font-weight:800; margin-left:6px; vertical-align:middle; }
 
   .perks-panel { border-color:rgba(245,158,11,.13); background:linear-gradient(160deg,var(--surface) 60%,rgba(245,158,11,.03) 100%); }
-  .perks-title { color:var(--accent2); }
-  .panel-title-btn.perks-title { margin-bottom:14px; }
+
   .perks-grid { display:flex; flex-direction:column; gap:6px; margin-top:10px; }
 
   /* ── Details panel with tabs ── */
@@ -3547,4 +3704,73 @@ function prettyKey(key: string, suffix: string) {
   border: 1px dashed var(--border);
 }
 .dym-empty strong { color: var(--ink); font-style: normal; }
+/* ── BOOSTS PANEL ── */
+
+
+.boosts-layout { display: flex; flex-direction: column; gap: 14px; }
+
+.boost-group { display: flex; flex-direction: column; gap: 8px; }
+.boost-group-header {
+  display: flex; align-items: center;
+  justify-content: space-between;
+}
+.boost-group-label {
+  font-size: .62rem; text-transform: uppercase;
+  letter-spacing: .16em; font-weight: 700;
+}
+.boost-group-label--dmg { color: var(--weapon-blade); }
+.boost-group-label--heal { color: var(--accent); }
+.boost-group-final {
+  font-size: .9rem; font-weight: 800;
+}
+.boost-group-final--dmg { color: var(--weapon-blade); }
+.boost-group-final--heal { color: var(--accent); }
+
+.boost-chain {
+  display: flex; align-items: center;
+  flex-wrap: wrap; gap: 5px;
+}
+.boost-chain-op {
+  font-size: .75rem; color: var(--ink-muted);
+  opacity: .5; font-weight: 700;
+}
+.boost-chip {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 5px 10px; border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: default;
+}
+.boost-chip--dmg {
+  background: rgba(251,146,60,.08);
+  border-color: rgba(251,146,60,.2);
+}
+.boost-chip--heal {
+  background: rgba(74,222,128,.08);
+  border-color: rgba(74,222,128,.2);
+}
+.boost-chip-name {
+  font-size: .68rem; font-weight: 700; color: var(--ink);
+}
+.boost-chip-val {
+  font-size: .82rem; font-weight: 800;
+}
+.boost-chip--dmg .boost-chip-val { color: var(--weapon-blade); }
+.boost-chip--heal .boost-chip-val { color: var(--accent); }
+.boost-chip-cond {
+  font-size: .58rem; color: var(--ink-muted);
+  opacity: .6; font-style: italic; text-align: center;
+  max-width: 80px;
+}
+.boost-chain-result {
+  font-size: 1rem; font-weight: 900;
+  padding: 4px 10px; border-radius: 8px;
+}
+.boost-chain-result--dmg {
+  color: var(--weapon-blade);
+  background: rgba(251,146,60,.1);
+}
+.boost-chain-result--heal {
+  color: var(--accent);
+  background: rgba(74,222,128,.1);
+}
 </style>
