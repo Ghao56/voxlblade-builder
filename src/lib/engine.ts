@@ -844,6 +844,17 @@ export function calcCDR(
       runeSteps.push({ source: perkName, pct: displayPct, multiplier })
     }
 
+    if (data.runeMultiplier) {
+      const multiplier = data.runeMultiplier(perkAmount)
+      runeSteps.push({
+        source: perkName,
+        pct: Math.round((multiplier - 1) * 100),
+        multiplier,
+        isMultiply: true
+      })
+    }
+    
+
     if (data.waPct) {
       const totalPct = data.waPct * perkAmount
       const displayPct = Math.round(totalPct * 100)

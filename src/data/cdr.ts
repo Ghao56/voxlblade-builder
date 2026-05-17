@@ -40,4 +40,11 @@ export const CDR_PERK_DATA: Record<string, PerkCDREntry> = {
     waPct: 0.3,
     runePct: 0.3,
   },
+  //Gladiatorial Rage
+  "Gladiatorial Rage": {
+    runeSetCD: 30,
+  },
+  "Voltaic Body": {
+    runeMultiplier: (_perkAmount) => 1.2,
+  },
 }

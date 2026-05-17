@@ -110,8 +110,8 @@
     bubble:   Math.floor(draconicBaseCDs.bubble * cdr.runeCDR),
   }
   $: draconicHasCDR = cdr.runeCDR < 1.0 || cdr.runeSetCD != null
-  $: hasRuneCDR = cdr.runeCDR < 1.0 || cdr.runeSetCD != null
-  $: hasWACDR = cdr.waCDR < 1.0
+  $: hasRuneCDR = cdr.runeCDR !== 1.0 || cdr.runeSetCD != null
+  $: hasWACDR = cdr.waCDR !== 1.0
 
   $: shrineActive = $build.shrineActive
   $: selectedWA = (() => {
@@ -2324,7 +2324,14 @@ function prettyKey(key: string, suffix: string) {
                             <div class="cdr-block">
                               <div class="cdr-block-header"><span class="cdr-icon">⏱</span><span class="cdr-title">Rune CDR Breakdown</span></div>
                               {#if cdr.runeSetCD != null}<div class="cdr-step"><span class="cdr-source">Gladiatorial Rage</span><span class="cdr-mult">Sets CD = {cdr.runeSetCD}s</span></div>{/if}
-                              {#each cdr.runeBreakdown as step}<div class="cdr-step"><span class="cdr-source">{step.source}</span><span class="cdr-mult">-{step.pct}%</span></div>{/each}
+                              {#each cdr.runeBreakdown as step}
+                                <div class="cdr-step">
+                                  <span class="cdr-source">{step.source}</span>
+                                  <span class="cdr-mult" class:cdr-mult--increase={step.multiplier > 1}>
+                                    {step.multiplier > 1 ? '+' : '-'}{Math.abs(step.pct)}%
+                                  </span>
+                                </div>
+                              {/each}
                               {#each runes.filter(r => r.name === $build.rune).slice(0,1) as rune}
                                 <!-- SAU (Rune CDR block) -->
 <div class="cdr-steps-calc">
@@ -2501,7 +2508,9 @@ function prettyKey(key: string, suffix: string) {
     <div class="cdr-block" style="margin-top:6px;">
       <div class="cdr-block-header"><span class="cdr-icon">⏱</span><span class="cdr-title">Weapon Art CDR</span></div>
       {#each cdr.waBreakdown as step}
-        <div class="cdr-step"><span class="cdr-source">{step.source}</span><span class="cdr-mult">-{step.pct}%</span></div>
+        <div class="cdr-step"><span class="cdr-source">{step.source}</span><span class="cdr-mult" class:cdr-mult--increase={step.pct > 0}>
+  {step.pct > 0 ? '+' : '-'}{Math.abs(step.pct)}%
+</span></div>
       {/each}
       <div class="cdr-steps-calc">
   {#each cdr.waBreakdown as step, i}
@@ -3773,4 +3782,5 @@ function prettyKey(key: string, suffix: string) {
   color: var(--accent);
   background: rgba(74,222,128,.1);
 }
+.cdr-mult--increase { color: var(--neg); }
 </style>
