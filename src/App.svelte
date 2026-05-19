@@ -580,9 +580,47 @@ $: weaponDamageTypesWithBonus = (() => {
   }
   function onEnchantLeave() { tooltip = { ...tooltip, visible: false } }
 
-  function applySuggestion(label: string) {
-    modalSearch = label
-    showSuggestions = false
+  function applySuggestion(label: string, type: 'name' | 'perk') {
+    if (type === 'name') {
+      // Select item luôn dựa vào activeModal
+      if (activeModal === 'race') {
+        build.update(s => ({...s, race: label})); closeModal()
+      } else if (activeModal === 'guild') {
+        const g = guilds.find(g => g.name === label)
+        if (g) build.update(s => ({...s, guild: label, guildRank: s.guild === label ? s.guildRank : 3, race: label === 'Draconic' ? 'DRAGON BLOODED' : s.race}))
+        closeModal()
+      } else if (activeModal === 'armor-helmet') {
+        build.update(s => ({...s, helmet: label})); closeModal()
+      } else if (activeModal === 'armor-chestplate') {
+        build.update(s => ({...s, chestplate: label})); closeModal()
+      } else if (activeModal === 'armor-leggings') {
+        build.update(s => ({...s, leggings: label})); closeModal()
+      } else if (activeModal === 'infusion-helmet') {
+        build.update(s => ({...s, infusionHelmet: label})); closeModal()
+      } else if (activeModal === 'infusion-chestplate') {
+        build.update(s => ({...s, infusionChestplate: label})); closeModal()
+      } else if (activeModal === 'infusion-leggings') {
+        build.update(s => ({...s, infusionLeggings: label})); closeModal()
+      } else if (activeModal === 'ring') {
+        build.update(s => ({...s, ring: label})); closeModal()
+      } else if (activeModal === 'infusion-ring') {
+        build.update(s => ({...s, infusionRing: label})); closeModal()
+      } else if (activeModal === 'rune') {
+        build.update(s => ({...s, rune: label})); closeModal()
+      } else if (activeModal === 'blade') {
+        build.update(s => ({...s, weaponBlade: label})); closeModal()
+      } else if (activeModal === 'handle') {
+        build.update(s => ({...s, weaponHandle: label})); closeModal()
+      } else if (activeModal === 'glove') {
+        build.update(s => ({...s, monkGlove: label})); closeModal()
+      } else if (activeModal === 'essence') {
+        build.update(s => ({...s, monkEssence: label})); closeModal()
+      }
+    } else {
+      // Perk: chỉ điền vào search bar
+      modalSearch = label
+      showSuggestions = false
+    }
   }
 
   function onSearchFocus() { showSuggestions = true }
@@ -778,7 +816,7 @@ function prettyKey(key: string, suffix: string) {
             <div class="suggest-drop">
               {#each modalSuggestions as s}
                 <button class="suggest-item" class:suggest-item--perk={s.type==='perk'}
-                  on:mousedown|preventDefault={() => applySuggestion(s.label)}>
+                  on:mousedown|preventDefault={() => applySuggestion(s.label, s.type)}>
                   <span class="suggest-type">{s.type === 'perk' ? 'Perk' : 'Name'}</span>
                   <span class="suggest-label">{@html highlight(s.label, modalSearch)}</span>
                 </button>
@@ -827,7 +865,7 @@ function prettyKey(key: string, suffix: string) {
             <div class="suggest-drop">
               {#each modalSuggestions as s}
                 <button class="suggest-item" class:suggest-item--perk={s.type==='perk'}
-                  on:mousedown|preventDefault={() => applySuggestion(s.label)}>
+                  on:mousedown|preventDefault={() => applySuggestion(s.label, s.type)}>
                   <span class="suggest-type">{s.type === 'perk' ? 'Perk' : 'Name'}</span>
                   <span class="suggest-label">{@html highlight(s.label, modalSearch)}</span>
                 </button>
@@ -899,7 +937,7 @@ function prettyKey(key: string, suffix: string) {
             <div class="suggest-drop">
               {#each modalSuggestions as s}
                 <button class="suggest-item" class:suggest-item--perk={s.type==='perk'}
-                  on:mousedown|preventDefault={() => applySuggestion(s.label)}>
+                  on:mousedown|preventDefault={() => applySuggestion(s.label, s.type)}>
                   <span class="suggest-type">{s.type === 'perk' ? 'Perk' : 'Name'}</span>
                   <span class="suggest-label">{@html highlight(s.label, modalSearch)}</span>
                 </button>
@@ -956,7 +994,7 @@ function prettyKey(key: string, suffix: string) {
             <div class="suggest-drop">
               {#each modalSuggestions as s}
                 <button class="suggest-item" class:suggest-item--perk={s.type==='perk'}
-                  on:mousedown|preventDefault={() => applySuggestion(s.label)}>
+                  on:mousedown|preventDefault={() => applySuggestion(s.label, s.type)}>
                   <span class="suggest-type">{s.type === 'perk' ? 'Perk' : 'Name'}</span>
                   <span class="suggest-label">{@html highlight(s.label, modalSearch)}</span>
                 </button>
@@ -1010,7 +1048,7 @@ function prettyKey(key: string, suffix: string) {
             <div class="suggest-drop">
               {#each modalSuggestions as s}
                 <button class="suggest-item" class:suggest-item--perk={s.type==='perk'}
-                  on:mousedown|preventDefault={() => applySuggestion(s.label)}>
+                  on:mousedown|preventDefault={() => applySuggestion(s.label, s.type)}>
                   <span class="suggest-type">{s.type === 'perk' ? 'Perk' : 'Name'}</span>
                   <span class="suggest-label">{@html highlight(s.label, modalSearch)}</span>
                 </button>
@@ -1062,7 +1100,7 @@ function prettyKey(key: string, suffix: string) {
             <div class="suggest-drop">
               {#each modalSuggestions as s}
                 <button class="suggest-item" class:suggest-item--perk={s.type==='perk'}
-                  on:mousedown|preventDefault={() => applySuggestion(s.label)}>
+                  on:mousedown|preventDefault={() => applySuggestion(s.label, s.type)}>
                   <span class="suggest-type">{s.type === 'perk' ? 'Perk' : 'Name'}</span>
                   <span class="suggest-label">{@html highlight(s.label, modalSearch)}</span>
                 </button>
@@ -1113,7 +1151,7 @@ function prettyKey(key: string, suffix: string) {
             <div class="suggest-drop">
               {#each modalSuggestions as s}
                 <button class="suggest-item" class:suggest-item--perk={s.type==='perk'}
-                  on:mousedown|preventDefault={() => applySuggestion(s.label)}>
+                  on:mousedown|preventDefault={() => applySuggestion(s.label, s.type)}>
                   <span class="suggest-type">{s.type === 'perk' ? 'Perk' : 'Name'}</span>
                   <span class="suggest-label">{@html highlight(s.label, modalSearch)}</span>
                 </button>
@@ -1166,7 +1204,7 @@ function prettyKey(key: string, suffix: string) {
             <div class="suggest-drop">
               {#each modalSuggestions as s}
                 <button class="suggest-item" class:suggest-item--perk={s.type==='perk'}
-                  on:mousedown|preventDefault={() => applySuggestion(s.label)}>
+                  on:mousedown|preventDefault={() => applySuggestion(s.label, s.type)}>
                   <span class="suggest-type">{s.type === 'perk' ? 'Perk' : 'Name'}</span>
                   <span class="suggest-label">{@html highlight(s.label, modalSearch)}</span>
                 </button>
@@ -1281,7 +1319,7 @@ function prettyKey(key: string, suffix: string) {
             <div class="suggest-drop">
               {#each modalSuggestions as s}
                 <button class="suggest-item" class:suggest-item--perk={s.type==='perk'}
-                  on:mousedown|preventDefault={() => applySuggestion(s.label)}>
+                  on:mousedown|preventDefault={() => applySuggestion(s.label, s.type)}>
                   <span class="suggest-type">{s.type === 'perk' ? 'Perk' : 'Name'}</span>
                   <span class="suggest-label">{@html highlight(s.label, modalSearch)}</span>
                 </button>
@@ -1379,7 +1417,7 @@ function prettyKey(key: string, suffix: string) {
             <div class="suggest-drop">
               {#each modalSuggestions as s}
                 <button class="suggest-item" class:suggest-item--perk={s.type==='perk'}
-                  on:mousedown|preventDefault={() => applySuggestion(s.label)}>
+                  on:mousedown|preventDefault={() => applySuggestion(s.label, s.type)}>
                   <span class="suggest-type">{s.type === 'perk' ? 'Perk' : 'Name'}</span>
                   <span class="suggest-label">{@html highlight(s.label, modalSearch)}</span>
                 </button>
@@ -1472,7 +1510,7 @@ function prettyKey(key: string, suffix: string) {
             <div class="suggest-drop">
               {#each modalSuggestions as s}
                 <button class="suggest-item" class:suggest-item--perk={s.type==='perk'}
-                  on:mousedown|preventDefault={() => applySuggestion(s.label)}>
+                  on:mousedown|preventDefault={() => applySuggestion(s.label, s.type)}>
                   <span class="suggest-type">{s.type === 'perk' ? 'Perk' : 'Name'}</span>
                   <span class="suggest-label">{@html highlight(s.label, modalSearch)}</span>
                 </button>
