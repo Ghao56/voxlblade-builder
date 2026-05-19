@@ -44,13 +44,14 @@ import { build } from './lib/store'
 
   $: baseMaxHP = Math.round(BASE_HP * (1 + level * HP_PER_LEVEL))
 
-  $: effectiveMaxHP = protection >= 0
+  $: protRounded = Math.round(protection * 100) / 100
+  $: HP_FLOOR = Math.round(baseMaxHP * 0.1)
+  $: effectiveMaxHP = protRounded >= 0
     ? baseMaxHP
-    : Math.max(1, baseMaxHP + protection)
-  $: shieldCount = protection > 0 ? Math.round(protection) : 0
+    : Math.max(HP_FLOOR, baseMaxHP + protRounded)
+  $: shieldCount = protRounded > 0 ? protRounded : 0
   $: shieldFrac  = shieldCount > 0 ? Math.min(1, shieldCount / baseMaxHP) : 0
-
-  $: lostFrac = protection < 0 ? Math.min(1, Math.abs(protection) / baseMaxHP) : 0
+  $: lostFrac = protRounded < 0 ? Math.min(1, Math.abs(protRounded) / baseMaxHP) : 0
 
   function loadFill(): number {
     try {
@@ -142,11 +143,11 @@ import { build } from './lib/store'
         <span class="lb-hp-cur" style="color:{barColor}">{currentHP}</span>
         <span class="lb-hp-sep">/</span>
         <span class="lb-hp-max">{effectiveMaxHP}</span>
-        {#if protection !== 0}
+        {#if protRounded !== 0}
           <span class="lb-prot-badge"
-            class:lb-prot-badge--pos={protection > 0}
-            class:lb-prot-badge--neg={protection < 0}>
-            {protection > 0 ? `🛡 +${protection}` : `⚠ ${protection}`}
+            class:lb-prot-badge--pos={protRounded > 0}
+            class:lb-prot-badge--neg={protRounded < 0}>
+            {protRounded > 0 ? `🛡 +${protRounded}` : `⚠ ${protRounded}`}
           </span>
         {/if}
       </span>
