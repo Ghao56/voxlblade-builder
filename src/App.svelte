@@ -16,6 +16,7 @@
   import { WEAPON_ARTS, type WeaponArt } from './data/weaponArts'
   import BuildSaves from './BuildSaves.svelte'
   import EmotionalTracker from './EmotionalTracker.svelte'
+  import LevelBar from './LevelBar.svelte'
 
   function toggleUpgrade(key: 'upgradeHelmet'|'upgradeChestplate'|'upgradeLeggings'|'upgradeRing'|'upgradeRune') {
     build.update(s => ({...s, [key]: s[key] === UPGRADE_MAX ? 0 : UPGRADE_MAX}))
@@ -1575,7 +1576,10 @@ function prettyKey(key: string, suffix: string) {
 
     <!-- BUILD SUMMARY + INLINE ENCHANTS -->
     <div class="panel summary-panel">
-      <h3 class="panel-title summary-title">Build Summary</h3>
+      <div class="summary-title-row">
+        <h3 class="panel-title summary-title">Build Summary</h3>
+        <LevelBar protection={$result.stats.protection ?? 0} />
+      </div>
       <div class="summary-layout">
         <div class="summary-grid-wrap">
           <div class="summary-grid">
@@ -3786,4 +3790,11 @@ function prettyKey(key: string, suffix: string) {
   background: rgba(74,222,128,.1);
 }
 .cdr-mult--increase { color: var(--neg); }
+.summary-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.summary-title-row .panel-title { margin-bottom: 0; }
 </style>
