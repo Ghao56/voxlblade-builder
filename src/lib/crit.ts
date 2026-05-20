@@ -8,7 +8,8 @@ const NATURAL_CRIT_SOURCES: Array<{
 }> = [
   {
     label: 'Dexterity Boost',
-    calc: (stats) => {
+    calc: (stats, perks) => {
+      if ((perks['Seismic Momentum'] ?? 0) > 0) return 0 
       const dex = stats.dexterityBoost ?? 0
       return dex > 0 ? round(dex / 10) : 0
     },
@@ -69,7 +70,15 @@ const EXTRA_CRIT_SOURCES: Array<{
       const stacks = perks['Carrying Winds'] ?? 0
       if (stacks <= 0) return 0
       const air = stats.airBoost ?? 0
-      return air > 0 ? round((air / 10) * stacks) : 0
+      return air > 0 ? round(air * stacks) : 0
+    },
+  },
+    {
+    label: 'Caci King Spirit(King\'s Luck)',
+    calc: (_stats, perks) => {
+      const stacks = perks['Caci King Spirit'] ?? 0
+      if (stacks <= 0) return 0
+      return round(stacks * 20)
     },
   },
   
@@ -82,11 +91,11 @@ const CRIT_DMG_SOURCES: Array<{
   calc: (stats: StatMap, perks: Record<string, number>) => number
 }> = [
   {
-    // Dexterity Boost
     label: 'Dexterity Boost',
-    calc: (stats) => {
+    calc: (stats, perks) => {
+      if ((perks['Seismic Momentum'] ?? 0) > 0) return 0
       const dex = stats.dexterityBoost ?? 0
-     return dex > 0 ? round(dex / 10) : 0
+      return dex > 0 ? round(dex / 10) : 0
     },
   },
     {
@@ -161,10 +170,9 @@ export interface CritResult {
   naturalBreakdown: Array<{ source: string; amount: number }>
   extraCritChance: number
   extraBreakdown: Array<{ source: string; amount: number }>
-  /** All crit sources merged (natural + extra) for unified display */
   allCritBreakdown: Array<{ source: string; amount: number; isExtra: boolean }>
   effectiveCritChance: number
-  /** Breakdown of what contributes to critDamageMultiplier */
+  critFormula: string
   critDmgBreakdown: Array<{ source: string; amount: number }>
 }
 
@@ -193,9 +201,24 @@ export function calcCrit(
   }
   const extraCritChance = round(extraBreakdown.reduce((a, b) => a + b.amount, 0))
 
-  const nat = Math.min(naturalCritChance, 100) / 100
-  const ext = Math.min(extraCritChance, 100) / 100
-  const effectiveCritChance = Math.round((1 - (1 - nat) * (1 - ext)) * 10000) / 100
+const chances = [
+  Math.min(naturalCritChance, 100) / 100,
+  ...extraBreakdown.map(src => Math.min(src.amount, 100) / 100),
+]
+
+const combined =
+  1 -
+  chances.reduce((acc, chance) => {
+    return acc * (1 - chance)
+  }, 1)
+
+const effectiveCritChance = round(combined * 100)
+
+const critFormula =
+  '1 - ' +
+  chances
+    .map(v => `(1 - ${(v * 100).toFixed(2)}%)`)
+    .join(' * ')
 
   const allCritBreakdown: Array<{ source: string; amount: number; isExtra: boolean }> = [
     ...naturalBreakdown.map(s => ({ ...s, isExtra: false })),
@@ -223,6 +246,7 @@ export function calcCrit(
     extraBreakdown,
     allCritBreakdown,
     effectiveCritChance,
+    critFormula,
     critDmgBreakdown,
   }
 }

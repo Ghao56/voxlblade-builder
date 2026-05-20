@@ -129,9 +129,9 @@
                 </span>
               </div>
             {/each}
-            {#if crit.extraCritChance > 0 && crit.naturalCritChance > 0}
+            {#if crit.critFormula}
               <div class="da-source-formula">
-                (1−(1−{(crit.naturalCritChance/100).toFixed(3)})(1−{(crit.extraCritChance/100).toFixed(3)}))
+                {crit.critFormula}
               </div>
             {/if}
           </div>
