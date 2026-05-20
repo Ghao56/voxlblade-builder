@@ -1,10 +1,12 @@
 import type { StatMap } from './types'
+
+// ── Crit Chance Sources ───────────────────────────────────────────────────────
+
 const NATURAL_CRIT_SOURCES: Array<{
   label: string
   calc: (stats: StatMap, perks: Record<string, number>) => number
 }> = [
   {
-    // Dexterity Boost → 10:1 ratio (1% dex = 0.1% crit)
     label: 'Dexterity Boost',
     calc: (stats) => {
       const dex = stats.dexterityBoost ?? 0
@@ -12,7 +14,6 @@ const NATURAL_CRIT_SOURCES: Array<{
     },
   },
   {
-    // Flowing Crits: Air Boost → crit
     label: 'Flowing Crits (Air)',
     calc: (stats, perks) => {
       const stacks = perks['Flowing Crits'] ?? 0
@@ -22,7 +23,6 @@ const NATURAL_CRIT_SOURCES: Array<{
     },
   },
   {
-    // Seismic Momentum: Earth Boost → crit
     label: 'Seismic Momentum (Earth)',
     calc: (stats, perks) => {
       const stacks = perks['Seismic Momentum'] ?? 0
@@ -32,7 +32,6 @@ const NATURAL_CRIT_SOURCES: Array<{
     },
   },
   {
-    // Spell Slinger: Magic Boost → crit
     label: 'Spell Slinger (Magic)',
     calc: (stats, perks) => {
       const stacks = perks['Spell Slinger'] ?? 0
@@ -42,7 +41,6 @@ const NATURAL_CRIT_SOURCES: Array<{
     },
   },
   {
-    // Sharp Crits: Physical Boost → crit
     label: 'Sharp Crits (Physical)',
     calc: (stats, perks) => {
       const stacks = perks['Sharp Crits'] ?? 0
@@ -52,14 +50,13 @@ const NATURAL_CRIT_SOURCES: Array<{
     },
   },
   {
-  label: 'Perfection (max stack)',
-  calc: (_stats, perks) => {
-    const stacks = perks['Perfection'] ?? 0
-    if (stacks <= 0) return 0
-    const maxPotency = stacks * 5
-    return maxPotency * 1
+    label: 'Perfection (max stack)',
+    calc: (_stats, perks) => {
+      const stacks = perks['Perfection'] ?? 0
+      if (stacks <= 0) return 0
+      return stacks * 5
+    },
   },
-},
 ]
 
 const EXTRA_CRIT_SOURCES: Array<{
@@ -75,7 +72,89 @@ const EXTRA_CRIT_SOURCES: Array<{
       return air > 0 ? round((air / 10) * stacks) : 0
     },
   },
+  
 ]
+
+// ── Crit Damage Bonus Sources (additive with base 150%) ───────────────────────
+
+const CRIT_DMG_SOURCES: Array<{
+  label: string
+  calc: (stats: StatMap, perks: Record<string, number>) => number
+}> = [
+  {
+    // Dexterity Boost
+    label: 'Dexterity Boost',
+    calc: (stats) => {
+      const dex = stats.dexterityBoost ?? 0
+     return dex > 0 ? round(dex / 10) : 0
+    },
+  },
+    {
+    label: 'Flowing Crits (Air)',
+    calc: (stats, perks) => {
+      const stacks = perks['Flowing Crits'] ?? 0
+      if (stacks <= 0) return 0
+      const air = stats.airBoost ?? 0
+      return air > 0 ? round(0.0875 * air * stacks) : 0
+    },
+  },
+  {
+    label: 'Seismic Momentum (Earth)',
+    calc: (stats, perks) => {
+      const stacks = perks['Seismic Momentum'] ?? 0
+      if (stacks <= 0) return 0
+      const earth = stats.earthBoost ?? 0
+      return earth > 0 ? round(0.075 * earth * stacks) : 0
+    },
+  },
+  {
+    label: 'Spell Slinger (Magic)',
+    calc: (stats, perks) => {
+      const stacks = perks['Spell Slinger'] ?? 0
+      if (stacks <= 0) return 0
+      const magic = stats.magicBoost ?? 0
+      return magic > 0 ? round(0.075 * magic * stacks) : 0
+    },
+  },
+  {
+    label: 'Sharp Crits (Physical)',
+    calc: (stats, perks) => {
+      const stacks = perks['Sharp Crits'] ?? 0
+      if (stacks <= 0) return 0
+      const phys = stats.physicalBoost ?? 0
+      return phys > 0 ? round(0.075 * phys * stacks) : 0
+    },
+  },
+  {
+    label: 'Perfection (max stack)',
+    calc: (_stats, perks) => {
+      const stacks = perks['Perfection'] ?? 0
+      if (stacks <= 0) return 0
+      return stacks * 5
+    },
+  },
+  {
+    // Venom Eater: -30% base + 10% per stack (net: -20 at 1, -10 at 2, 0 at 3, +10 at 4…)
+    label: 'Venom Eater',
+    calc: (_stats, perks) => {
+      const stacks = perks['Venom Eater'] ?? 0
+      if (stacks <= 0) return 0
+      return round(-30 + stacks * 10)
+    },
+  },
+  {
+    // Vital Strikes: +25% crit damage per stack, additive
+    label: 'Vital Strikes',
+    calc: (_stats, perks) => {
+      const stacks = perks['Vital Strikes'] ?? 0
+      if (stacks <= 0) return 0
+      return round(stacks * 25)
+    },
+  },
+]
+
+// ── Types ─────────────────────────────────────────────────────────────────────
+
 export interface CritResult {
   naturalCritChance: number
   critDamageMultiplier: number
@@ -99,22 +178,18 @@ export function calcCrit(
   stats: StatMap,
   perks: Record<string, number>
 ): CritResult {
+  // ── Crit Chance ───────────────────────────────────────────────────────────
   const naturalBreakdown: Array<{ source: string; amount: number }> = []
   for (const src of NATURAL_CRIT_SOURCES) {
     const amount = src.calc(stats, perks)
-    if (amount > 0) naturalBreakdown.push({ source: src.label, amount })
+    if (amount !== 0) naturalBreakdown.push({ source: src.label, amount })
   }
   const naturalCritChance = round(naturalBreakdown.reduce((a, b) => a + b.amount, 0))
-
-const venomEater = perks['Venom Eater'] ?? 0
-const venomEaterBonus = venomEater > 0 ? (-30 + venomEater * 10) : 0
-const critDamageMultiplier = round(150 + venomEaterBonus + naturalCritChance)
-  
 
   const extraBreakdown: Array<{ source: string; amount: number }> = []
   for (const src of EXTRA_CRIT_SOURCES) {
     const amount = src.calc(stats, perks)
-    if (amount > 0) extraBreakdown.push({ source: src.label, amount })
+    if (amount !== 0) extraBreakdown.push({ source: src.label, amount })
   }
   const extraCritChance = round(extraBreakdown.reduce((a, b) => a + b.amount, 0))
 
@@ -122,18 +197,23 @@ const critDamageMultiplier = round(150 + venomEaterBonus + naturalCritChance)
   const ext = Math.min(extraCritChance, 100) / 100
   const effectiveCritChance = Math.round((1 - (1 - nat) * (1 - ext)) * 10000) / 100
 
-  // Merged breakdown for unified display
   const allCritBreakdown: Array<{ source: string; amount: number; isExtra: boolean }> = [
     ...naturalBreakdown.map(s => ({ ...s, isExtra: false })),
     ...extraBreakdown.map(s => ({ ...s, isExtra: true })),
   ]
 
-  // Crit damage breakdown: base 150% + naturalCrit (per source)
-const critDmgBreakdown: Array<{ source: string; amount: number }> = [
-  { source: 'Base', amount: 150 },
-  ...naturalBreakdown.map(s => ({ source: s.source, amount: s.amount })),
-  ...(venomEater > 0 ? [{ source: 'Venom Eater', amount: venomEaterBonus }] : []),
-]
+  // ── Crit Damage ───────────────────────────────────────────────────────────
+  const critDmgBreakdown: Array<{ source: string; amount: number }> = [
+    { source: 'Base', amount: 150 },
+  ]
+  for (const src of CRIT_DMG_SOURCES) {
+    const amount = src.calc(stats, perks)
+    if (amount !== 0) critDmgBreakdown.push({ source: src.label, amount })
+  }
+
+  const critDamageMultiplier = round(
+    critDmgBreakdown.reduce((a, b) => a + b.amount, 0)
+  )
 
   return {
     naturalCritChance,
