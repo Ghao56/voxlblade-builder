@@ -103,7 +103,8 @@
 
   // ── Crit source breakdown ──────────────────────────────────────────────────
   $: natSources = crit.naturalBreakdown
-  $: extSources = crit.extraBreakdown
+  $: allCritSources = crit.allCritBreakdown
+  $: critDmgSources = crit.critDmgBreakdown
 </script>
 
 <div class="da-root">
@@ -114,41 +115,41 @@
     <div class="da-crit-grid">
 
       <div class="da-stat-card da-stat-card--crit">
-        <div class="da-stat-label">Natural Crit Chance</div>
-        <div class="da-stat-val" style="color:#e2b203">{crit.naturalCritChance.toFixed(1)}%</div>
-        {#if natSources.length > 0}
+        <div class="da-stat-label">Crit Chance</div>
+        <div class="da-stat-val" style="color:#e2b203">{crit.effectiveCritChance.toFixed(1)}%</div>
+        {#if allCritSources.length > 0}
           <div class="da-sources">
-            {#each natSources as s}
+            {#each allCritSources as s}
               <div class="da-source-row">
-                <span class="da-source-name">{s.source}</span>
-                <span class="da-source-val" style="color:#e2b203">+{s.amount.toFixed(2)}%</span>
+                <span class="da-source-name">
+                  {s.source}
+                </span>
+                <span class="da-source-val" style="color:{s.isExtra ? '#f59e0b' : '#e2b203'}">
+                  +{s.amount.toFixed(2)}%
+                </span>
               </div>
             {/each}
+            {#if crit.extraCritChance > 0 && crit.naturalCritChance > 0}
+              <div class="da-source-formula">
+                (1−(1−{(crit.naturalCritChance/100).toFixed(3)})(1−{(crit.extraCritChance/100).toFixed(3)}))
+              </div>
+            {/if}
           </div>
         {:else}
           <div class="da-empty-hint">No crit sources</div>
         {/if}
       </div>
 
-      {#if crit.extraCritChance > 0}
-        <div class="da-stat-card da-stat-card--extra">
-          <div class="da-stat-label">Extra Crit Chance <span class="da-badge">(separate roll)</span></div>
-          <div class="da-stat-val" style="color:#f59e0b">+{crit.extraCritChance.toFixed(1)}%</div>
-          <div class="da-sources">
-            {#each extSources as s}
-              <div class="da-source-row">
-                <span class="da-source-name">{s.source}</span>
-                <span class="da-source-val" style="color:#f59e0b">+{s.amount.toFixed(2)}%</span>
-              </div>
-            {/each}
-          </div>
-        </div>
-      {/if}
       <div class="da-stat-card da-stat-card--critdmg">
         <div class="da-stat-label">Crit Damage Multiplier</div>
         <div class="da-stat-val" style="color:#a78bfa">{crit.critDamageMultiplier.toFixed(1)}%</div>
-        <div class="da-formula">
-          150% base + {crit.naturalCritChance.toFixed(1)}% crit chance
+        <div class="da-sources">
+          {#each critDmgSources as s}
+            <div class="da-source-row">
+              <span class="da-source-name">{s.source}</span>
+              <span class="da-source-val" style="color:#a78bfa">{s.source === 'Base' ? '' : '+'}{s.amount.toFixed(s.source === 'Base' ? 0 : 2)}%</span>
+            </div>
+          {/each}
         </div>
       </div>
 
@@ -238,7 +239,6 @@
     gap: 6px;
   }
   .da-stat-card--crit    { border-color: rgba(226,178,3,.2); }
-  .da-stat-card--extra   { border-color: rgba(245,158,11,.2); }
   .da-stat-card--critdmg { border-color: rgba(167,139,250,.2); }
 
   .da-stat-label {
@@ -250,16 +250,6 @@
     display: flex;
     align-items: center;
     gap: 6px;
-  }
-  .da-badge {
-    font-size: .55rem;
-    padding: 1px 5px;
-    border-radius: 999px;
-    background: rgba(245,158,11,.12);
-    border: 1px solid rgba(245,158,11,.25);
-    color: #f59e0b;
-    text-transform: none;
-    letter-spacing: 0;
   }
   .da-stat-val {
     font-size: 1.6rem;
@@ -281,13 +271,16 @@
     border-radius: 5px;
     background: var(--surface3, #212420);
   }
-  .da-source-name { color: var(--ink-muted, #8a8d85); }
+  .da-source-name { color: var(--ink-muted, #8a8d85); display: flex; align-items: center; gap: 5px; }
   .da-source-val  { font-weight: 700; }
-  .da-formula {
-    font-size: .65rem;
+  .da-source-formula {
+    font-size: .6rem;
     color: var(--ink-muted, #8a8d85);
+    opacity: .45;
     font-style: italic;
-    line-height: 1.4;
+    padding-top: 4px;
+    border-top: 1px solid rgba(255,255,255,.05);
+    margin-top: 2px;
   }
   .da-empty-hint {
     font-size: .68rem;

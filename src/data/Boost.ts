@@ -8,7 +8,9 @@ export interface BoostDef {
 
 export const BOOST_DEFS: BoostDef[] = [
   // dmg boost
-  { sourceName: 'Blood Thirsty', multiplierPerPerk: 0.20, type: 'dmg', condition: 'Hitting an opponent with your Bleed' },
+  {sourceName: 'Blood Thirsty', multiplierPerPerk: 0.20, type: 'dmg', condition: 'Hitting an opponent with your Bleed',},
+  {sourceName:'Perfection',multiplierPerPerk: 0.10, type: 'dmg', condition: 'at max potency',},
+  
 
   // level damage (handled specially in calcBoosts — perkAmount unused)
   { sourceName: 'Level Damage', multiplierPerPerk: 0, type: 'dmg', isLevel: true },
