@@ -51,7 +51,7 @@ import { build } from './lib/store'
     : Math.max(HP_FLOOR, baseMaxHP + protRounded)
   $: effectiveProt = protRounded >= 0
     ? protRounded
-    : -(baseMaxHP - effectiveMaxHP)
+    : Math.round((-(baseMaxHP - effectiveMaxHP)) * 100) / 100
   $: shieldCount = protRounded > 0 ? protRounded : 0
   $: shieldFrac  = shieldCount > 0 ? Math.min(1, shieldCount / baseMaxHP) : 0
   $: lostFrac = protRounded < 0 ? Math.min(1, Math.abs(protRounded) / baseMaxHP) : 0
