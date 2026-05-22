@@ -91,6 +91,14 @@ const CRIT_DMG_SOURCES: Array<{
   calc: (stats: StatMap, perks: Record<string, number>) => number
 }> = [
   {
+  label: 'Thief Training',
+  calc: (_stats, perks) => {
+    const stacks = perks['Thief Training'] ?? 0
+    if (stacks <= 0) return 0
+    return stacks * 10 - 50
+  },
+},
+  {
     label: 'Dexterity Boost',
     calc: (stats, perks) => {
       if ((perks['Seismic Momentum'] ?? 0) > 0) return 0
@@ -167,6 +175,15 @@ const CRIT_DMG_SOURCES: Array<{
       const stacks = perks['Critical Master'] ?? 0
       if (stacks <= 0) return 0
       return round(stacks * 5)
+    },
+  },
+    {
+    // Splinter
+    label: 'Splinter',
+    calc: (_stats, perks) => {
+      const stacks = perks['Splinter'] ?? 0
+      if (stacks <= 0) return 0
+      return round(stacks * 10)
     },
   },
 ]

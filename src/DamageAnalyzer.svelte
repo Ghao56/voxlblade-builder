@@ -105,7 +105,9 @@
   $: critDmgSources = crit.critDmgBreakdown
 
   // ── Toggle state cho boost entries ────────────────────────────────────────
-let disabledBoosts = new Set<string>()
+let disabledBoosts = new Set<string>([
+  'Thief Training (would-crit bonus)'
+])
 
 function toggleBoost(name: string) {
   if (disabledBoosts.has(name)) disabledBoosts.delete(name)
@@ -329,7 +331,7 @@ $: activeFinalMultRounded = Math.round(activeFinalMult * 10000) / 10000
     border-radius: 8px;
     background: rgba(251,146,60,.08);
     border: 1px solid rgba(251,146,60,.2);
-    cursor: default;
+    cursor: pointer;
   }
   .da-boost-chip--lvl {
     background: rgba(251,191,36,.08);

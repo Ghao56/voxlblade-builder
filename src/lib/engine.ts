@@ -78,6 +78,21 @@ if (primalStacks > 0 && naturalCritChance > 0) {
     type: 'dmg',
   })
 }
+const thiefStacks = perks['Thief Training'] ?? 0
+if (thiefStacks > 0) {
+  dmgMap.set('Thief Training (behind)', {
+    sourceName: 'Thief Training (behind)',
+    rawMultiplier: 1.20,
+    condition: 'attacking from behind',
+    type: 'dmg',
+  })
+  dmgMap.set('Thief Training (would-crit bonus)', {
+    sourceName: 'Thief Training (would-crit bonus)',
+    rawMultiplier: 1.30,
+    condition: 'if attack would have crit without perk',
+    type: 'dmg',
+  })
+}
 
   const dmgEntries = [...dmgMap.values()]
   const healEntries = [...healMap.values()]
