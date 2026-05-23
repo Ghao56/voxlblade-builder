@@ -382,13 +382,25 @@ $: searchedGuilds = guilds.filter(g => {
   if (selectedTags.size === 0) return true
   return g.ranks.some(r => (r.perks ?? []).some((p: any) => perkMatchesTags(p.name)))
 })
-  $: searchedRings = rings.filter(r => matchSearchReactive(r.name, r.perkName ? [r.perkName] : [], modalSearch) && perkMatchesTags(r.perkName))
-  $: searchedRunes = runes.filter(r => matchSearchReactive(r.name, r.perkName ? [r.perkName] : [], modalSearch) && perkMatchesTags(r.perkName))
-  $: searchedBlades = filteredBlades.filter(b => matchSearchReactive(b.name, getPerkNames(b), modalSearch) && anyPerkMatchesTags(getPerkNames(b)))
-  $: searchedHandles = filteredHandles.filter(h => matchSearchReactive(h.name, getPerkNames(h), modalSearch) && anyPerkMatchesTags(getPerkNames(h)))
-  $: searchedGloves = filteredGloves.filter(g => matchSearchReactive(g.name, getPerkNames(g), modalSearch) && anyPerkMatchesTags(getPerkNames(g)))
-  $: searchedEssences = filteredEssences.filter(e => matchSearchReactive(e.name, getPerkNames(e), modalSearch) && anyPerkMatchesTags(getPerkNames(e)))
+$: searchedRings = (void selectedTags, rings.filter(r => 
+  matchSearchReactive(r.name, r.perkName ? [r.perkName] : [], modalSearch) && perkMatchesTags(r.perkName)))
 
+$: searchedRunes = (void selectedTags, runes.filter(r => 
+  matchSearchReactive(r.name, r.perkName ? [r.perkName] : [], modalSearch) && perkMatchesTags(r.perkName)))
+
+$: searchedBlades = (void selectedTags, filteredBlades.filter(b => 
+  matchSearchReactive(b.name, getPerkNames(b), modalSearch) && anyPerkMatchesTags(getPerkNames(b))))
+
+$: searchedHandles = (void selectedTags, filteredHandles.filter(h => 
+  matchSearchReactive(h.name, getPerkNames(h), modalSearch) && anyPerkMatchesTags(getPerkNames(h))))
+
+$: searchedGloves = (void selectedTags, filteredGloves.filter(g => 
+  matchSearchReactive(g.name, getPerkNames(g), modalSearch) && anyPerkMatchesTags(getPerkNames(g))))
+
+$: searchedEssences = (void selectedTags, filteredEssences.filter(e => 
+  matchSearchReactive(e.name, getPerkNames(e), modalSearch) && anyPerkMatchesTags(getPerkNames(e))))
+
+  
   function matchSearchReactive(name: string, perkNames: string[], query: string): boolean {
     if (!query.trim()) return true
     const q = query.toLowerCase()
@@ -396,18 +408,20 @@ $: searchedGuilds = guilds.filter(g => {
     return perkNames.some(p => p.toLowerCase().includes(q))
   }
 
-  // Armor search cần slotName nên làm riêng
-  $: searchedArmorsForModal = (() => {
-    const slotName = activeModal === 'armor-helmet' || activeModal === 'infusion-helmet' ? 'Helmet'
-      : activeModal === 'armor-chestplate' || activeModal === 'infusion-chestplate' ? 'Chestplate'
-      : activeModal === 'armor-leggings' || activeModal === 'infusion-leggings' ? 'Leggings'
-      : null
-    if (!slotName) return []
-    return armors.filter(a => {
-      const part = getArmorPart(a.name, slotName as any)
-      return part && matchSearchReactive(a.name, part.perkName ? [part.perkName] : [], modalSearch) && perkMatchesTags(part.perkName)
-    })
-  })()
+$: searchedArmorsForModal = (() => {
+  void selectedTags 
+  const slotName = activeModal === 'armor-helmet' || activeModal === 'infusion-helmet' ? 'Helmet'
+    : activeModal === 'armor-chestplate' || activeModal === 'infusion-chestplate' ? 'Chestplate'
+    : activeModal === 'armor-leggings' || activeModal === 'infusion-leggings' ? 'Leggings'
+    : null
+  if (!slotName) return []
+  return armors.filter(a => {
+    const part = getArmorPart(a.name, slotName as any)
+    return part 
+      && matchSearchReactive(a.name, part.perkName ? [part.perkName] : [], modalSearch) 
+      && perkMatchesTags(part.perkName)
+  })
+})()
   let bladeFilterTier = ''
   let bladeFilterType = ''
   let handleFilterTier = ''
