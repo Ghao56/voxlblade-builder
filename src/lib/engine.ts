@@ -34,7 +34,7 @@ export const essences: MonkEssence[] = essencesRaw as MonkEssence[]
 
 import { BOOST_DEF_MAP } from '../data/Boost'
 import type { BoostEntry, BoostResult } from './types'
-export function calcBoosts(perks: Record<string, number>, emotionalState?: string, level: number = 80, naturalCritChance: number = 0): BoostResult {
+export function calcBoosts(perks: Record<string, number>, emotionalState?: string, level: number = 80, naturalCritChance: number = 0,jumpBoost: number = 0): BoostResult {
 
   const dmgMap = new Map<string, BoostEntry>()
   const healMap = new Map<string, BoostEntry>()
@@ -78,6 +78,18 @@ if (primalStacks > 0 && naturalCritChance > 0) {
     type: 'dmg',
   })
 }
+
+  const springStacks = perks['Spring Powered'] ?? 0
+  if (springStacks > 0 && jumpBoost > 0) {
+    const springMult = 1 + (jumpBoost * 0.0075 * springStacks)
+    dmgMap.set('Spring Powered', {
+      sourceName: 'Spring Powered',
+      rawMultiplier: Math.round(springMult * 10000) / 10000,
+      condition: `${jumpBoost} jump boost × ${springStacks} stack × 0.75%`,
+      type: 'dmg',
+    })
+  }
+
 const thiefStacks = perks['Thief Training'] ?? 0
 if (thiefStacks > 0) {
   dmgMap.set('Thief Training (behind)', {
@@ -1201,7 +1213,7 @@ export function calcBuild(state: BuildState): BuildResult {
 
   const crit = calcCrit(boostedStats, finalPerks)
   
-  const boosts = calcBoosts(finalPerks, state.emotionalState, state.level ?? 80, crit.naturalCritChance)
+  const boosts = calcBoosts(finalPerks, state.emotionalState, state.level ?? 80, crit.naturalCritChance, boostedStats.jumpBoost ?? 0)
   return { stats: boostedStats, perks: finalPerks, cdr, boosts, crit }
 }
 
