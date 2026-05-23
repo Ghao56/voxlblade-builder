@@ -79,7 +79,6 @@
     const spaceBelow = window.innerHeight - r.bottom
     const dropH = Math.min(300, spaceBelow - 8)
     if (spaceBelow < 120 && r.top > 120) {
-      // open upward
       dropdownStyle = `position:fixed;bottom:${window.innerHeight - r.top + 4}px;left:${r.left}px;width:${r.width}px;max-height:${r.top - 8}px;`
     } else {
       dropdownStyle = `position:fixed;top:${r.bottom + 4}px;left:${r.left}px;width:${r.width}px;max-height:${dropH}px;`
