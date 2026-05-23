@@ -1,7 +1,10 @@
 import type { StatMap } from './types'
 
 // ── Crit Chance Sources ───────────────────────────────────────────────────────
-
+  const CRIT_DISABLED_PERKS = [
+    'Seismic Momentum',
+    'Fractured Energy',
+  ]
 const NATURAL_CRIT_SOURCES: Array<{
   label: string
   calc: (stats: StatMap, perks: Record<string, number>) => number
@@ -9,7 +12,12 @@ const NATURAL_CRIT_SOURCES: Array<{
   {
     label: 'Dexterity Boost',
     calc: (stats, perks) => {
-      if ((perks['Seismic Momentum'] ?? 0) > 0) return 0 
+      const critDisabled = CRIT_DISABLED_PERKS.some(
+        perk => (perks[perk] ?? 0) > 0
+      )
+
+      if (critDisabled) return 0
+
       const dex = stats.dexterityBoost ?? 0
       return dex > 0 ? round(dex / 10) : 0
     },
@@ -28,6 +36,7 @@ const NATURAL_CRIT_SOURCES: Array<{
     calc: (stats, perks) => {
       const stacks = perks['Seismic Momentum'] ?? 0
       if (stacks <= 0) return 0
+      if ((perks['Fractured Energy'] ?? 0) > 0) return 0 
       const earth = stats.earthBoost ?? 0
       return earth > 0 ? round(0.075 * earth * stacks) : 0
     },
