@@ -179,7 +179,7 @@ const CRIT_DMG_SOURCES: Array<{
   },
     {
     // Spark
-    label: 'Spark(to burning enemies)',
+    label: 'Spark (to burning enemies)',
     calc: (_stats, perks) => {
       const stacks = perks['Spark'] ?? 0
       if (stacks <= 0) return 0
