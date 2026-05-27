@@ -80,7 +80,8 @@
 
   function seqWithTypes(
     seq: HitSeq,
-    dmgTypes: Record<string, number>
+    dmgTypes: Record<string, number>,
+    scalingMult: number = 1
   ): Array<{ base: number; count: number; types: HitBreakdown }> {
     const typeEntries = Object.entries(dmgTypes)
     return seq.map(h => {
@@ -88,7 +89,7 @@
       const count = typeof h === 'number' ? 1 : h.count
       const types: HitBreakdown = typeEntries.map(([k, mult]) => ({
         label: k.charAt(0).toUpperCase() + k.slice(1),
-        val: Math.round(base * mult * 100) / 100,
+        val: Math.round(base * mult * scalingMult * 100) / 100,
         color: DMG_TYPE_COLORS[k] ?? '#e8e4da',
       }))
       return { base, count, types }
@@ -213,6 +214,79 @@ $: activeEntries = boosts.dmgEntries.filter(e => !disabledBoosts.has(e.sourceNam
 $: hasDisabledVisible = boosts.dmgEntries.some(e => disabledBoosts.has(e.sourceName))
 $: activeFinalMult = activeEntries.reduce((acc, e) => acc * e.rawMultiplier, 1.0)
 $: activeFinalMultRounded = Math.round(activeFinalMult * 10000) / 10000
+
+// ── Damage Scaling breakdown ───────────────────────────────────────────────
+const SCALING_TO_BOOST: Record<string, string> = {
+  physical:   'physicalBoost',
+  magic:      'magicBoost',
+  fire:       'fireBoost',
+  water:      'waterBoost',
+  earth:      'earthBoost',
+  air:        'airBoost',
+  hex:        'hexBoost',
+  holy:       'holyBoost',
+  dexterity:  'dexterityBoost',
+  summon:     'summonBoost',
+}
+
+const SCALING_COLORS: Record<string, string> = {
+  physical:  '#fb923c',
+  magic:     '#818cf8',
+  fire:      '#f97316',
+  water:     '#38bdf8',
+  earth:     '#a3e635',
+  air:       '#e2e8f0',
+  hex:       '#e879f9',
+  holy:      '#facc15',
+  dexterity: '#34d399',
+  summon:    '#c084fc',
+}
+
+interface ScalingRow {
+  key: string
+  scalingVal: number
+  boostKey: string
+  boostPct: number
+  contribution: number
+  color: string
+}
+
+$: scalingBreakdown = (() => {
+  if (!_weaponResult) return { rows: [] as ScalingRow[], totalEffectivePct: 0, multiplier: 1 }
+  const scalings = _weaponResult.scalings
+  const rows: ScalingRow[] = []
+  for (const [key, scalingVal] of Object.entries(scalings)) {
+    if (!scalingVal) continue
+    const boostKey = SCALING_TO_BOOST[key]
+    if (!boostKey) continue
+    const boostPct = (stats as Record<string, number>)[boostKey] ?? 0
+    const contribution = Math.round(scalingVal * boostPct * 100) / 100
+    rows.push({ key, scalingVal, boostKey, boostPct, contribution, color: SCALING_COLORS[key] ?? '#e8e4da' })
+  }
+  const totalEffectivePct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 100) / 100
+  const multiplier = Math.round((1 + totalEffectivePct / 100) * 10000) / 10000
+  return { rows, totalEffectivePct, multiplier }
+})()
+
+// ── Scaling multiplier for base damage display ─────────────────────────────
+const SCALING_TO_BOOST_KEY: Record<string, string> = {
+  physical: 'physicalBoost', magic: 'magicBoost', fire: 'fireBoost',
+  water: 'waterBoost', earth: 'earthBoost', air: 'airBoost',
+  hex: 'hexBoost', holy: 'holyBoost', dexterity: 'dexterityBoost', summon: 'summonBoost',
+}
+
+$: _scalingMult = (() => {
+  if (!_weaponResult) return 1
+  const scalings = _weaponResult.scalings
+  let totalEffectivePct = 0
+  for (const [key, scalingVal] of Object.entries(scalings)) {
+    const boostKey = SCALING_TO_BOOST_KEY[key]
+    if (!boostKey) continue
+    const boostPct = (stats as Record<string, number>)[boostKey] ?? 0
+    totalEffectivePct += scalingVal * boostPct
+  }
+  return Math.round((1 + totalEffectivePct / 100) * 10000) / 10000
+})()
 </script>
 
 <div class="da-root">
@@ -333,6 +407,11 @@ $: activeFinalMultRounded = Math.round(activeFinalMult * 10000) / 10000
       {#if _currentLabel}
         <span class="da-wbd-current-badge">{_currentLabel}</span>
       {/if}
+      {#if !showAllWeapons && _scalingMult !== 1}
+        <span class="da-wbd-scaling-badge" title="Base damage × damage type × scaling multiplier">
+          ×scaling {_scalingMult.toFixed(4)}
+        </span>
+      {/if}
       <button class="da-wbd-toggle" on:click={() => showAllWeapons = !showAllWeapons}>
         {showAllWeapons ? 'Show current only' : 'Show all weapons'}
       </button>
@@ -354,8 +433,8 @@ $: activeFinalMultRounded = Math.round(activeFinalMult * 10000) / 10000
         {@const gunLabel = (row as any).gunLabel as string | undefined}
         {@const m2Only = (row as any).m2Only as boolean | undefined}
         {@const hasDmgTypes = isActive && Object.keys(_weaponDmgTypes).length > 0}
-        {@const m1Typed = hasDmgTypes && row.m1 ? seqWithTypes(row.m1, _weaponDmgTypes) : null}
-        {@const m2Typed = hasDmgTypes && row.m2 ? seqWithTypes(row.m2, _weaponDmgTypes) : null}
+        {@const m1Typed = hasDmgTypes && row.m1 ? seqWithTypes(row.m1, _weaponDmgTypes, _scalingMult) : null}
+        {@const m2Typed = hasDmgTypes && row.m2 ? seqWithTypes(row.m2, _weaponDmgTypes, _scalingMult) : null}
         <div class="da-wbd-row" class:da-wbd-row--active={isActive && !gunLabel}
           class:da-wbd-row--gun-merged={isActive && !!gunLabel}>
           <div class="da-wbd-col da-wbd-col--type">
@@ -373,6 +452,10 @@ $: activeFinalMultRounded = Math.round(activeFinalMult * 10000) / 10000
                     {#each hit.types as t, ti}
                       {#if ti > 0}<span class="da-hit-plus">+</span>{/if}
                       <div class="da-hit-chunk" style="--tc:{t.color}">
+                        {#if _scalingMult !== 1}
+                          <span class="da-hit-raw">{fmtNum(Math.round(t.val / _scalingMult * 100) / 100)}</span>
+                          <span class="da-hit-arrow">→</span>
+                        {/if}
                         <span class="da-hit-num">{fmtNum(t.val)}</span>
                         <span class="da-hit-type">{t.label}</span>
                       </div>
@@ -397,6 +480,10 @@ $: activeFinalMultRounded = Math.round(activeFinalMult * 10000) / 10000
                     {#each hit.types as t, ti}
                       {#if ti > 0}<span class="da-hit-plus">+</span>{/if}
                       <div class="da-hit-chunk" style="--tc:{t.color}">
+                        {#if _scalingMult !== 1}
+                          <span class="da-hit-raw">{fmtNum(Math.round(t.val / _scalingMult * 100) / 100)}</span>
+                          <span class="da-hit-arrow">→</span>
+                        {/if}
                         <span class="da-hit-num">{fmtNum(t.val)}</span>
                         <span class="da-hit-type">{t.label}</span>
                       </div>
@@ -437,6 +524,85 @@ $: activeFinalMultRounded = Math.round(activeFinalMult * 10000) / 10000
     {/if}
   {/if}
 </div>
+<!-- ══════════════════ DAMAGE SCALING ══════════════════ -->
+{#if _weaponResult && scalingBreakdown.rows.length > 0}
+<div class="da-section da-section--scaling">
+  <div class="da-section-title">📐 Damage Scaling</div>
+
+  <div class="ds-formula-hint">
+    Effective Boost = Σ (Scaling × Boost%) → adds to base as ×(1 + Effective%)
+  </div>
+
+  <div class="ds-table">
+    <div class="ds-head">
+      <div class="ds-col ds-col--type">Scaling</div>
+      <div class="ds-col ds-col--val">Scaling Val</div>
+      <div class="ds-col ds-col--op"></div>
+      <div class="ds-col ds-col--boost">Your Boost</div>
+      <div class="ds-col ds-col--op"></div>
+      <div class="ds-col ds-col--contrib">Contribution</div>
+    </div>
+
+    {#each scalingBreakdown.rows as row}
+      <div class="ds-row">
+        <div class="ds-col ds-col--type">
+          <span class="ds-dot" style="background:{row.color}"></span>
+          <span style="color:{row.color}">{row.key.charAt(0).toUpperCase() + row.key.slice(1)}</span>
+        </div>
+        <div class="ds-col ds-col--val">
+          <span class="ds-num" style="color:{row.color}">{row.scalingVal}</span>
+        </div>
+        <div class="ds-col ds-col--op">×</div>
+        <div class="ds-col ds-col--boost">
+          {#if row.boostPct !== 0}
+            <span class="ds-boost" class:ds-boost--zero={row.boostPct === 0}>{row.boostPct > 0 ? '+' : ''}{row.boostPct}%</span>
+          {:else}
+            <span class="ds-boost ds-boost--zero">+0%</span>
+          {/if}
+        </div>
+        <div class="ds-col ds-col--op">=</div>
+        <div class="ds-col ds-col--contrib">
+          <span class="ds-contrib" class:ds-contrib--zero={row.contribution === 0} style={row.contribution > 0 ? `color:${row.color}` : ''}>
+            +{row.contribution}%
+          </span>
+        </div>
+      </div>
+    {/each}
+
+    <!-- Total row -->
+    <div class="ds-row ds-row--total">
+      <div class="ds-col ds-col--type ds-total-label">Total Effective Boost</div>
+      <div class="ds-col ds-col--val"></div>
+      <div class="ds-col ds-col--op"></div>
+      <div class="ds-col ds-col--boost"></div>
+      <div class="ds-col ds-col--op">=</div>
+      <div class="ds-col ds-col--contrib">
+        <span class="ds-total-pct">+{scalingBreakdown.totalEffectivePct}%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Multiplier result -->
+  <div class="ds-result-row">
+    <span class="ds-result-label">Scaling Multiplier</span>
+    <span class="ds-result-eq">1 + {scalingBreakdown.totalEffectivePct}% =</span>
+    <span class="ds-result-val">×{scalingBreakdown.multiplier.toFixed(4)}</span>
+  </div>
+
+  {#if scalingBreakdown.rows.some(r => r.boostPct === 0)}
+    <p class="ds-warn">⚠ Some scalings have no matching boost stat — those contribute 0%</p>
+  {/if}
+</div>
+{:else if _weaponResult && Object.keys(_weaponResult.scalings).length > 0}
+<div class="da-section da-section--scaling">
+  <div class="da-section-title">📐 Damage Scaling</div>
+  <p class="da-empty-hint">Weapon has scalings but no matching boost stats equipped — all contributions are 0%.</p>
+  <div class="ds-result-row">
+    <span class="ds-result-label">Scaling Multiplier</span>
+    <span class="ds-result-val">×1.0000</span>
+  </div>
+</div>
+{/if}
 <BaseDamageCalc
   {boosts}
   {crit}
@@ -870,6 +1036,35 @@ $: activeFinalMultRounded = Math.round(activeFinalMult * 10000) / 10000
   gap: 1px;
 }
 
+.da-hit-raw {
+  font-size: .7rem;
+  font-weight: 500;
+  color: var(--ink-muted, #8a8d85);
+  opacity: .45;
+  text-decoration: line-through;
+  font-family: 'Courier New', monospace;
+  letter-spacing: -.01em;
+}
+
+.da-hit-arrow {
+  font-size: .55rem;
+  color: var(--ink-muted, #8a8d85);
+  opacity: .3;
+  margin: 0 1px;
+  user-select: none;
+}
+
+.da-wbd-scaling-badge {
+  font-size: .62rem;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: rgba(52,211,153,.12);
+  border: 1px solid rgba(52,211,153,.3);
+  color: #34d399;
+  white-space: nowrap;
+}
+
 .da-hit-num {
   font-size: .88rem;
   font-weight: 800;
@@ -951,6 +1146,170 @@ $: activeFinalMultRounded = Math.round(activeFinalMult * 10000) / 10000
   .da-wbd-head,
   .da-wbd-row {
     grid-template-columns: 140px 1fr 1fr;
+  }
+}
+/* ── Damage Scaling section ── */
+.da-section--scaling {
+  border-color: rgba(52,211,153,.18);
+  background: linear-gradient(160deg, var(--surface, #141715) 60%, rgba(52,211,153,.03) 100%);
+}
+
+.ds-formula-hint {
+  font-size: .65rem;
+  color: var(--ink-muted, #8a8d85);
+  font-style: italic;
+  opacity: .6;
+  padding: 4px 8px;
+  background: rgba(255,255,255,.02);
+  border-radius: 5px;
+  border: 1px solid rgba(255,255,255,.04);
+}
+
+.ds-table {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ds-head {
+  display: grid;
+  grid-template-columns: 120px 80px 20px 90px 20px 100px;
+  gap: 4px;
+  padding: 4px 8px;
+  font-size: .55rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .13em;
+  color: var(--ink-muted, #8a8d85);
+  opacity: .6;
+}
+
+.ds-row {
+  display: grid;
+  grid-template-columns: 120px 80px 20px 90px 20px 100px;
+  gap: 4px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: var(--surface2, #1a1d1b);
+  align-items: center;
+  border: 1px solid transparent;
+  transition: background .1s;
+}
+.ds-row:hover { background: var(--surface3, #212420); }
+
+.ds-row--total {
+  background: rgba(52,211,153,.06);
+  border-color: rgba(52,211,153,.15);
+  margin-top: 4px;
+}
+
+.ds-col {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: .78rem;
+}
+.ds-col--op {
+  justify-content: center;
+  font-size: .7rem;
+  color: var(--ink-muted, #8a8d85);
+  opacity: .4;
+  font-weight: 700;
+}
+.ds-col--val { justify-content: flex-end; }
+.ds-col--contrib { justify-content: flex-end; }
+.ds-col--boost { justify-content: flex-end; }
+
+.ds-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.ds-num {
+  font-family: 'Courier New', monospace;
+  font-weight: 800;
+  font-size: .88rem;
+}
+
+.ds-boost {
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  font-size: .82rem;
+  color: #4ade80;
+}
+.ds-boost--zero { color: var(--ink-muted, #8a8d85); opacity: .35; }
+
+.ds-contrib {
+  font-family: 'Courier New', monospace;
+  font-weight: 800;
+  font-size: .88rem;
+}
+.ds-contrib--zero { color: var(--ink-muted, #8a8d85); opacity: .35; }
+
+.ds-total-label {
+  font-size: .65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: #34d399;
+  opacity: .8;
+  grid-column: 1 / 5;
+}
+
+.ds-total-pct {
+  font-family: 'Courier New', monospace;
+  font-weight: 900;
+  font-size: 1rem;
+  color: #34d399;
+}
+
+.ds-result-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 7px;
+  background: rgba(52,211,153,.08);
+  border: 1px solid rgba(52,211,153,.2);
+  flex-wrap: wrap;
+}
+.ds-result-label {
+  font-size: .62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  color: #34d399;
+  opacity: .7;
+  flex: 1;
+}
+.ds-result-eq {
+  font-size: .75rem;
+  color: var(--ink-muted, #8a8d85);
+}
+.ds-result-val {
+  font-family: 'Courier New', monospace;
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: #34d399;
+  text-shadow: 0 0 12px rgba(52,211,153,.4);
+}
+
+.ds-warn {
+  font-size: .68rem;
+  color: #f59e0b;
+  padding: 5px 8px;
+  background: rgba(245,158,11,.08);
+  border: 1px solid rgba(245,158,11,.2);
+  border-radius: 5px;
+}
+
+@media (max-width: 540px) {
+  .ds-head,
+  .ds-row {
+    grid-template-columns: 100px 60px 16px 75px 16px 80px;
+    font-size: .7rem;
   }
 }
 </style>
