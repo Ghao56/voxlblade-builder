@@ -663,6 +663,10 @@ $: highestDamageType = (() => {
 
   function formatDmgTypeLabel(key: string): string { return key.charAt(0).toUpperCase() + key.slice(1) + ' Type' }
   function formatScalingLabel(key: string): string { return key.charAt(0).toUpperCase() + key.slice(1) + ' Scaling' }
+  function fmtScaling(v: number): string {
+    const r = Math.round(v * 10000) / 10000
+    return String(r)
+  }
 
   $: part1Label = isMonk ? 'Glove' : 'Blade'
   $: part2Label = isMonk ? 'Essence' : 'Handle'
@@ -791,7 +795,7 @@ $: highestDamageType = (() => {
     }
     for (const [reqKey, scalingKey] of Object.entries(scaleMap)) {
       const needed = (req as any)[reqKey]
-      if (needed != null && (scalings[scalingKey] ?? 0) < needed) return false
+      if (needed != null && (_waScalings[scalingKey] ?? 0) < needed) return false
     }
 
     if (req.physicalDefense != null && (stats.physicalDefense ?? 0) < req.physicalDefense) return false
@@ -2657,7 +2661,7 @@ function prettyKey(key: string, suffix: string) {
         {#if selectedWA.scaling === 'Same as weapon' && weaponResult}
           <div class="scaling-grid" style="flex:1">
             {#each Object.entries(weaponResult.scalings) as [k, v]}
-              <div class="scaling-pill"><span class="sc-name">{formatScalingLabel(k)}</span><span class="sc-val">{v}</span></div>
+              <div class="scaling-pill"><span class="sc-name">{formatScalingLabel(k)}</span><span class="sc-val">{fmtScaling(v)}</span></div>
             {/each}
           </div>
         {:else}
@@ -2742,8 +2746,8 @@ function prettyKey(key: string, suffix: string) {
                         {@const boosted = weaponResult.shrineActive && finalVal !== rawVal}
                         <div class="scaling-pill" class:scaling-pill--boosted={boosted}>
                           <span class="sc-name">{formatScalingLabel(k)}</span>
-                          {#if boosted}<span class="sc-val-old">{rawVal}</span><span class="sc-val sc-val--new">{finalVal}</span>
-                          {:else}<span class="sc-val">{rawVal}</span>{/if}
+                          {#if boosted}<span class="sc-val-old">{fmtScaling(rawVal)}</span><span class="sc-val sc-val--new">{fmtScaling(finalVal)}</span>
+                          {:else}<span class="sc-val">{fmtScaling(rawVal)}</span>{/if}
                         </div>
                       {/each}
                     </div>
@@ -2822,8 +2826,8 @@ function prettyKey(key: string, suffix: string) {
                         {@const boosted = weaponResult.shrineActive && finalVal !== rawVal}
                         <div class="scaling-pill" class:scaling-pill--boosted={boosted}>
                           <span class="sc-name">{formatScalingLabel(k)}</span>
-                          {#if boosted}<span class="sc-val-old">{rawVal}</span><span class="sc-val sc-val--new">{finalVal}</span>
-                          {:else}<span class="sc-val">{rawVal}</span>{/if}
+                          {#if boosted}<span class="sc-val-old">{fmtScaling(rawVal)}</span><span class="sc-val sc-val--new">{fmtScaling(finalVal)}</span>
+                          {:else}<span class="sc-val">{fmtScaling(rawVal)}</span>{/if}
                         </div>
                       {/each}
                     </div>
@@ -2906,7 +2910,7 @@ function prettyKey(key: string, suffix: string) {
                     <div class="weapon-section-label">Scalings</div>
                     <div class="scaling-grid">
                       {#each Object.entries(weaponResult.scalings) as [k, v]}
-                        <div class="scaling-pill"><span class="sc-name">{formatScalingLabel(k)}</span><span class="sc-val">{v}</span></div>
+                        <div class="scaling-pill"><span class="sc-name">{formatScalingLabel(k)}</span><span class="sc-val">{fmtScaling(v)}</span></div>
                       {/each}
                     </div>
                   {/if}

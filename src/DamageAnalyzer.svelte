@@ -550,7 +550,7 @@ $: _scalingMult = (() => {
           <span style="color:{row.color}">{row.key.charAt(0).toUpperCase() + row.key.slice(1)}</span>
         </div>
         <div class="ds-col ds-col--val">
-          <span class="ds-num" style="color:{row.color}">{row.scalingVal}</span>
+          <span class="ds-num" style="color:{row.color}">{Math.round(row.scalingVal * 10000) / 10000}</span>
         </div>
         <div class="ds-col ds-col--op">×</div>
         <div class="ds-col ds-col--boost">

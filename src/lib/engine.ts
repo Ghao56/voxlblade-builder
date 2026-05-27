@@ -358,7 +358,7 @@ export function applyShrineToScalings(
   if (mult === 1.0) return { ...scalings }
   const result: Record<string, number> = {}
   for (const [k, v] of Object.entries(scalings)) {
-    result[k] = Math.round((v * mult + Number.EPSILON) * 100) / 100
+    result[k] = v * mult
   }
   return result
 }
@@ -683,12 +683,10 @@ function calcWeaponGeneric(
   const mergedScalings: Record<string, number> = {}
   for (const [k, v] of Object.entries(part1FinalScalings)) mergedScalings[k] = (mergedScalings[k] ?? 0) + v
   for (const [k, v] of Object.entries(part2FinalScalings)) mergedScalings[k] = (mergedScalings[k] ?? 0) + v
-  for (const k of Object.keys(mergedScalings)) mergedScalings[k] = Math.round((mergedScalings[k] + Number.EPSILON) * 100) / 100
-
   const scalings: Record<string, number> = { ...mergedScalings }
   if (hybridActive) {
     for (const k of Object.keys(scalings)) {
-      scalings[k] = Math.round((scalings[k] * 1.5 + Number.EPSILON) * 100) / 100
+      scalings[k] = scalings[k] * 1.5
     }
   }
 
