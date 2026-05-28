@@ -510,7 +510,20 @@ $: weaponDamageTypesWithBonus = (() => {
 $: highestDamageType = (() => {
   const entries = Object.entries(weaponDamageTypesWithBonus)
   if (entries.length === 0) return null
-  return entries.reduce((a, b) => b[1] > a[1] ? b : a)
+  
+  const PRIORITY = ['hex','water','air','true','earth','magic','fire','physical','holy']
+  
+  return entries.reduce((a, b) => {
+    if (b[1] > a[1]) return b
+    if (b[1] === a[1]) {
+      const ia = PRIORITY.indexOf(a[0])
+      const ib = PRIORITY.indexOf(b[0])
+      const pa = ia === -1 ? 999 : ia
+      const pb = ib === -1 ? 999 : ib
+      return pb < pa ? b : a
+    }
+    return a
+  })
 })()
   // ── Weapon result ──────────────────────────────────────────────────────────
  $: weaponResult = isMonk
