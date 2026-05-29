@@ -2781,7 +2781,16 @@ function prettyKey(key: string, suffix: string) {
             <span class="wa-highest-hint">(highest of: {Object.entries(weaponDamageTypesWithBonus).map(([k,v]) => `${k} ${v}x`).join(', ')})</span>
           </div>
         {:else}
-          <span class="wa-stat-val">{selectedWA.damageType}</span>
+          <div class="damage-type-grid">
+            {#each selectedWA.damageType.split(' + ') as type}
+              {@const parts = type.split(' ')}
+
+              <div class="damage-type-pill">
+                <span class="dt-name">{parts[1]}</span>
+                <span class="dt-val">{parts[0]}x</span>
+              </div>
+            {/each}
+          </div>
         {/if}
       </div>
     {/if}
