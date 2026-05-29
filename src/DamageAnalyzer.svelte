@@ -707,24 +707,34 @@ $: _waRangeTyped = (() => {
               <span class="da-wbd-na">—</span>
             {/if}
             {#if _waHealSeq}
-  <div class="da-heal-hits-row">
-    <span class="da-heal-badge">✦ Heal</span>
-    {#each _waHealSeq as h, hi}
-      {#if hi > 0}<span class="da-hit-divider">›</span>{/if}
-      <div class="da-hit-card da-hit-card--heal">
-        <div class="da-hit-chunk" style="--tc:#4ade80">
-          <span class="da-hit-num">{h.n}</span>
-          <span class="da-hit-type">Heal</span>
-        </div>
-        {#if h.count > 1}<span class="da-hit-repeat">×{h.count}</span>{/if}
-      </div>
-    {/each}
-  </div>
-{/if}
+              <div class="da-heal-hits-row">
+                <span class="da-heal-badge">✦ Heal</span>
+                {#each _waHealSeq as h, hi}
+                  {@const scaledHeal = Math.round(h.n * _waScalingMult * 100) / 100}
+                  {#if hi > 0}
+                    <span class="da-hit-divider">›</span>
+                  {/if}
+                  <div class="da-hit-card da-hit-card--heal">
+                    <div class="da-hit-chunk" style="--tc:#4ade80">
+                      {#if _waScalingMult !== 1}
+                        <span class="da-hit-num da-hit-num--raw">
+                          {fmtNum(h.n)}
+                        </span>
+                        <span class="da-hit-arrow">→</span>
+                      {/if}
+                      <span class="da-hit-num">{fmtNum(scaledHeal)}</span>
+                      <span class="da-hit-type">Heal</span>
+                    </div>
+                    {#if h.count > 1}
+                      <span class="da-hit-repeat">×{h.count}</span>
+                    {/if}
+                  </div>
+                {/each}
+              </div>
+            {/if}
           </div>
         </div>
       {/if}
-
     </div>
   {/each}
 </div>
