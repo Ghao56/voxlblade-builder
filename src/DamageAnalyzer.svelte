@@ -1,5 +1,6 @@
 <!-- DamageAnalyzer.svelte -->
 <script lang="ts">
+
   import { build, result } from './lib/store'
   import { calcWeapon, calcMonkWeapon, isMonkGuild } from './lib/engine'
   import BaseDamageCalc from './BaseDamageCalc.svelte'
@@ -15,11 +16,22 @@
   // Format: null = N/A, number = single hit, array = combo hits
   type HitSeq = (number | { n: number; count: number })[]
 
-  interface WeaponBaseDmg {
-    type: string
-    m1: HitSeq | null   // null = N/A
-    m2: HitSeq | null
-  }
+interface WeaponChargeConfig {
+  enabled: boolean
+  label: string
+  max: number
+  formula: (
+    base:number,
+    charge:number
+  ) => number
+}
+
+interface WeaponBaseDmg {
+  type: string
+  m1: HitSeq | null
+  m2: HitSeq | null
+  m2Charge?: WeaponChargeConfig
+}
 
   // Helper: parse "4.5, 4.5, 1.5x4" → HitSeq
   // Each entry is either a flat number or {n, count} for nxCount notation
@@ -32,7 +44,7 @@
     { type: 'Dual Swords',          m1: [{n:3,count:2},{n:3,count:2},6],m2: [8] },
     { type: 'Greatsword',           m1: [9, 4, 9],                      m2: [11] },
     { type: 'Unbalanced Sword',     m1: [7.5, 12],                      m2: [16] },
-    { type: 'Dual Unbalanced Swords', m1: [12, 12],                     m2: [{n:8,count:2},12] },
+    { type: 'Dual Unbalanced Swords',m1: [12, 12],                     m2: [{n:8,count:2},12] },
     { type: 'Dagger',               m1: [4.5, 4.5, 4.5],               m2: [5.5] },
     { type: 'Dual Wielding Daggers',m1: [4, {n:1.4,count:5},{n:1.4,count:5}], m2: [11] },
     { type: 'Spear',                m1: [6, 6, 6],                      m2: [10] },
@@ -54,9 +66,15 @@
     { type: 'Mine',                 m1: null,                           m2: [5, 10, 15] },
     { type: 'Side Gun',             m1: null,                           m2: [7] },
     { type: 'Shotgun',              m1: null,                           m2: [{n:4.5,count:3}] },
-    { type: 'Dual Guns',          m1: [4, 4],                         m2: [{n:1.6,count:8}] },
-    { type: 'Rifle',                m1: [5, 5, 18],                     m2: [17] },
-  ]
+    { type: 'Dual Guns',            m1: [4, 4],                         m2: [{n:1.6,count:8}] },
+    { type: 'Rifle',                m1: [5, 5, 18],                     m2: [17],
+
+  m2Charge: {
+    enabled: true,
+    label: 'Rifle Charge',
+    max: 100,
+    formula: (base:number,charge:number) =>base *(1 + (5 / 3) * (charge / 100))
+  }},]
 
   function fmtSeq(seq: HitSeq): string {
     return seq.map(h => {
@@ -342,7 +360,21 @@ $: _waHealSeq = _waAllHits.heal.length > 0 ? _waAllHits.heal : null
 $: _waDmgTypes = (() => {
   const dt = selectedWA.damageType
   if (!dt || dt === 'Same as weapon') return _weaponDmgTypes
-  if (dt.includes('Highest damage type')) return _gunDmgTypes
+  if (dt.includes('Highest damage type')) {
+    const entries = Object.entries(_weaponDmgTypes)
+    if (entries.length === 0) return _weaponDmgTypes
+    const PRIORITY = ['hex','water','air','true','earth','magic','fire','physical','holy']
+    const [highestKey] = entries.reduce((a, b) => {
+      if (b[1] > a[1]) return b
+      if (b[1] === a[1]) {
+        const ia = PRIORITY.indexOf(a[0]); const ib = PRIORITY.indexOf(b[0])
+        return (ib === -1 ? 999 : ib) < (ia === -1 ? 999 : ia) ? b : a
+      }
+      return a
+    })
+    const total = Math.round(entries.reduce((s, [, v]) => s + v, 0) * 100) / 100
+    return { [highestKey]: total }
+  }
   const types: Record<string, number> = {}
   const re = /([\d.]+)\s*(Physical|Magic|Fire|Water|Earth|Air|Hex|Holy|True|Summon)/gi
   let m: RegExpExecArray | null
@@ -395,6 +427,17 @@ $: _waRangeTyped = (() => {
     }))
   return { minEnds: toEnds(min), minLabel, maxEnds: toEnds(max), maxLabel }
 })()
+
+let weaponCharge = 100
+
+$: selectedWeaponData =
+  WEAPON_BASE_DMG.find(w => w.type === (_gunOverlay?.type ?? _baseWeaponType))
+function applyWeaponCharge(dmg:number){
+  if (!selectedWeaponData?.m2Charge?.enabled) {
+    return dmg
+  }
+  return selectedWeaponData.m2Charge.formula(dmg, weaponCharge)
+}
 </script>
 
 <div class="da-root">
@@ -558,9 +601,13 @@ $: _waRangeTyped = (() => {
           {#if m1Typed}
             {#each m1Typed as hit, hi}
               {#if hi > 0}<span class="da-hit-divider">›</span>{/if}
+            <div class="da-hit-wrapper">
               <div class="da-hit-card">
                 {#each hit.types as t, ti}
-                  {#if ti > 0}<span class="da-hit-plus">+</span>{/if}
+                  {#if ti > 0}
+                    <span class="da-hit-plus">+</span>
+                  {/if}
+
                   <div class="da-hit-chunk" style="--tc:{t.color}">
                     {#if _scalingMult !== 1}
                       <span class="da-hit-raw">{fmtNum(Math.round(t.val / _scalingMult * 100) / 100)}</span>
@@ -570,12 +617,22 @@ $: _waRangeTyped = (() => {
                     <span class="da-hit-type">{t.label}</span>
                   </div>
                 {/each}
-                
-                {#if hit.count > 1}<span class="da-hit-repeat">×{hit.count}</span>{/if}
               </div>
+                {#if hit.count > 1}
+              <div class="da-hit-repeat">×{hit.count}<span>Hits</span></div>
+            {/if}
+          </div>
             {/each}
           {:else if row.m1}
-            {fmtSeq(row.m1)}
+            {#each row.m1 as hit, hi}
+              {#if hi > 0}<span class="da-hit-divider">›</span>{/if}
+              <div class="da-plain-pill">
+                <span class="da-plain-num">{typeof hit === 'number' ? hit : hit.n}</span>
+                {#if typeof hit !== 'number' && hit.count > 1}
+                  <span class="da-plain-count">×{hit.count}</span>
+                {/if}
+              </div>
+            {/each}
           {:else}
             <span class="da-wbd-na">N/A</span>
           {/if}
@@ -594,25 +651,55 @@ $: _waRangeTyped = (() => {
               <div class="da-hit-card">
                 {#each hit.types as t, ti}
                   {#if ti > 0}<span class="da-hit-plus">+</span>{/if}
+                  {@const finalVal = selectedWeaponData?.m2Charge?.enabled ? selectedWeaponData.m2Charge.formula(t.val, weaponCharge) : t.val}
                   <div class="da-hit-chunk" style="--tc:{t.color}">
                     {#if _scalingMult !== 1}
-                      <span class="da-hit-raw">{fmtNum(Math.round(t.val / _scalingMult * 100) / 100)}</span>
+                      <span class="da-hit-raw">{fmtNum(Math.round(finalVal / _scalingMult * 100) / 100)}</span>
                       <span class="da-hit-arrow">→</span>
                     {/if}
-                    <span class="da-hit-num">{fmtNum(t.val)}</span>
+                    <span class="da-hit-num">{fmtNum(finalVal)}</span>
                     <span class="da-hit-type">{t.label}</span>
                   </div>
                 {/each}
-                
-                {#if hit.count > 1}<span class="da-hit-repeat">×{hit.count}</span>{/if}
               </div>
+              {#if hit.count > 1}<span class="da-hit-repeat">×{hit.count}<span class="da-hit-repeat-label">hits</span></span>{/if}
             {/each}
           {:else if row.m2}
-            {fmtSeq(row.m2)}
+            {#each row.m2 as hit, hi}
+              {#if hi > 0}<span class="da-hit-divider">›</span>{/if}
+              <div class="da-plain-pill">
+                <span class="da-plain-num">{typeof hit === 'number' ? hit : hit.n}</span>
+                {#if typeof hit !== 'number' && hit.count > 1}
+                  <span class="da-plain-count">×{hit.count}</span>
+                {/if}
+              </div>
+            {/each}
           {:else}
             <span class="da-wbd-na">N/A</span>
           {/if}
-          {#if gunLabel && !m2Only}<span class="da-wbd-m2-src">from {gunLabel}</span>{/if}
+          {#if gunLabel && !m2Only}
+            <span class="da-wbd-m2-src">from {gunLabel}</span>
+            {#if selectedWeaponData?.m2Charge?.enabled}
+              <div class="da-rifle-charge-wrap">
+                <div class="da-rifle-charge-label">
+                  <span class="da-rcl-name">{selectedWeaponData.m2Charge.label}</span>
+                  <span class="da-rcl-pct">{weaponCharge}%</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max={selectedWeaponData.m2Charge.max}
+                  step="1"
+                  bind:value={weaponCharge}
+                  class="da-rifle-charge-slider"
+                  style="--fill:{weaponCharge}%"
+                />
+                <div class="da-rifle-marks">
+                  <span>0</span><span>25</span><span>50</span><span>75</span><span>100%</span>
+                </div>
+              </div>
+            {/if}
+          {/if}
         </div>
       </div>
 
@@ -646,7 +733,7 @@ $: _waRangeTyped = (() => {
                 {/each}
 
                 {#if hit.count > 1}
-                  <span class="da-hit-repeat">×{hit.count}</span>
+                  <span class="da-hit-repeat">×{hit.count}<span class="da-hit-repeat-label">hits</span></span>
                 {/if}
               </div>
             {/each}
@@ -659,33 +746,56 @@ $: _waRangeTyped = (() => {
               {_waHitsSeq.map(h => h.count > 1 ? `${h.n}×${h.count}` : String(h.n)).join(', ')}
             {:else if _waRangeTyped}
               <div class="da-range-row">
-                <div class="da-range-end">
-                  {#each _waRangeTyped.minEnds as t, ti}
-                    {#if ti > 0}<span class="da-hit-plus">+</span>{/if}
-                    <div class="da-hit-chunk" style="--tc:{t.color}">
-                      <span class="da-hit-num">{fmtNum(t.val)}</span>
-                      <span class="da-hit-type">{t.label}</span>
-                    </div>
-                  {/each}
-                  {#if _waRangeTyped.minLabel}
-                    <span class="da-range-label">({_waRangeTyped.minLabel})</span>
-                  {/if}
+                <div class="da-hit-card">
+                  <div class="da-range-end">
+                    {#each _waRangeTyped.minEnds as t, ti}
+                      {#if ti > 0}
+                        <span class="da-hit-plus">+</span>
+                      {/if}
+
+                      <div class="da-hit-chunk" style="--tc:{t.color}">
+                        <span class="da-hit-num">{fmtNum(t.val)}</span>
+                        <span class="da-hit-type">{t.label}</span>
+                      </div>
+                    {/each}
+
+                    {#if _waRangeTyped.minLabel}
+                      <span class="da-range-label">
+                        ({_waRangeTyped.minLabel})
+                      </span>
+                    {/if}
+                  </div>
                 </div>
+
                 <span class="da-range-arrow">→</span>
-                <div class="da-range-end">
-                  {#each _waRangeTyped.maxEnds as t, ti}
-                    {#if ti > 0}<span class="da-hit-plus">+</span>{/if}
-                    <div class="da-hit-chunk" style="--tc:{t.color}">
-                      <span class="da-hit-num">{fmtNum(t.val)}</span>
-                      <span class="da-hit-type">{t.label}</span>
-                    </div>
-                  {/each}
-                  {#if _waRangeTyped.maxLabel}
-                    <span class="da-range-label da-range-label--max">({_waRangeTyped.maxLabel})</span>
-                  {/if}
+
+                <div class="da-hit-card">
+                  <div class="da-range-end">
+                    {#each _waRangeTyped.maxEnds as t, ti}
+                      {#if ti > 0}
+                        <span class="da-hit-plus">+</span>
+                      {/if}
+
+                      <div class="da-hit-chunk" style="--tc:{t.color}">
+                        <span class="da-hit-num">{fmtNum(t.val)}</span>
+                        <span class="da-hit-type">{t.label}</span>
+                      </div>
+                    {/each}
+
+                    {#if _waRangeTyped.maxLabel}
+                      <span class="da-range-label da-range-label--max">
+                        ({_waRangeTyped.maxLabel})
+                      </span>
+                    {/if}
+                  </div>
                 </div>
+
                 {#if selectedWA.scaling && selectedWA.scaling !== 'Same as weapon'}
-                  <span class="da-range-scl">{selectedWA.scaling === 'None' ? 'No Scaling' : `Scaling: ${selectedWA.scaling}`}</span>
+                  <span class="da-range-scl">
+                    {selectedWA.scaling === 'None'
+                      ? 'No Scaling'
+                      : `Scaling: ${selectedWA.scaling}`}
+                  </span>
                 {/if}
               </div>
             {:else if selectedWA.baseDamage && _waAllHits.dmg.length > 0}
@@ -1158,14 +1268,34 @@ $: _waRangeTyped = (() => {
   position: relative;
 }
 
+.da-hit-wrapper{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
 .da-hit-repeat {
-  font-size: .6rem;
-  font-weight: 800;
-  color: var(--ink-muted, #8a8d85);
-  opacity: .55;
-  letter-spacing: .04em;
-  margin-right: 1px;
-  font-family: var(--font-body, 'Trebuchet MS', sans-serif);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(251,191,36,.1);
+  border: 1px solid rgba(251,191,36,.3);
+  font-weight: 900;
+  font-size: .78rem;
+  color: #fbbf24;
+  white-space: nowrap;
+  flex-shrink: 0;
+  letter-spacing: .02em;
+}
+.da-hit-repeat span,
+.da-hit-repeat-label {
+  font-size: .56rem;
+  font-weight: 700;
+  opacity: .6;
+  text-transform: uppercase;
+  letter-spacing: .12em;
 }
 
 .da-hit-plus {
@@ -1427,7 +1557,44 @@ $: _waRangeTyped = (() => {
     rgba(56,189,248,.04)
   );
 }
-
+.da-wbd-card-head {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.da-wbd-card-name {
+  font-size: .88rem;
+  font-weight: 700;
+  color: var(--ink, #e8e4da);
+  flex: 1;
+}
+.da-wbd-card-divider {
+  height: 1px;
+  background: rgba(255,255,255,.06);
+  margin: 1px 0;
+}
+.da-plain-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 9px;
+  border-radius: 7px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.09);
+}
+.da-plain-num {
+  font-weight: 800;
+  font-size: .84rem;
+  color: var(--ink, #e8e4da);
+  font-family: 'Courier New', monospace;
+  letter-spacing: -.01em;
+}
+.da-plain-count {
+  font-size: .62rem;
+  color: rgba(251,191,36,.75);
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+}
 .da-wbd-section + .da-wbd-section {
   padding-top: 6px;
   border-top: 1px dashed rgba(255,255,255,.05);
@@ -1485,16 +1652,18 @@ $: _waRangeTyped = (() => {
 /* Range damage display */
 .da-range-row {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  gap: 10px;
+  flex-wrap: wrap;
 }
+
 .da-range-end {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 6px;
   flex-wrap: wrap;
 }
+
 .da-range-arrow {
   font-size: .75rem;
   color: var(--ink-muted);
@@ -1547,5 +1716,88 @@ $: _waRangeTyped = (() => {
 .da-hit-card--heal {
   border-color: rgba(74,222,128,.2);
   background: rgba(74,222,128,.06);
+}
+.da-rifle-charge-wrap {
+  margin-top: 10px;
+  padding: 10px 13px 8px;
+  border-radius: 10px;
+  background: rgba(251,191,36,.06);
+  border: 1px solid rgba(251,191,36,.22);
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 170px;
+}
+.da-rifle-charge-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.da-rcl-name {
+  font-size: .57rem;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #d97706;
+}
+.da-rcl-pct {
+  font-size: .85rem;
+  font-weight: 900;
+  color: #fbbf24;
+  font-family: 'Courier New', monospace;
+  line-height: 1;
+}
+.da-rifle-charge-slider {
+  width: 100%;
+  appearance: none;
+  height: 6px;
+  border-radius: 999px;
+  outline: none;
+  cursor: pointer;
+  background: linear-gradient(
+    90deg,
+    #fb923c var(--fill, 100%),
+    rgba(255,255,255,.1) var(--fill, 100%)
+  );
+}
+.da-rifle-charge-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fbbf24;
+  border: 2.5px solid rgba(0,0,0,.55);
+  cursor: grab;
+  box-shadow: 0 0 0 3px rgba(251,191,36,.18);
+  transition: transform .1s, box-shadow .1s;
+}
+.da-rifle-charge-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 5px rgba(251,191,36,.28);
+}
+.da-rifle-charge-slider::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.08);
+}
+.da-rifle-charge-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fbbf24;
+  border: 2px solid rgba(0,0,0,.5);
+  cursor: grab;
+}
+.da-rifle-marks {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 1px;
+}
+.da-rifle-marks span {
+  font-size: .52rem;
+  color: rgba(251,191,36,.38);
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  letter-spacing: .02em;
 }
 </style>

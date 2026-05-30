@@ -932,7 +932,7 @@ $: highestDamageType = (() => {
   }
 
   // Reactive snapshots để force Svelte track
-  $: _waScalings = weaponResult?.scalings ?? {} as Record<string, number>
+  $: _waScalings = weaponResult?.baseScalings ?? {} as Record<string, number>
   $: _waStats = weaponResult?.stats ?? {} as Record<string, number>  // chỉ weapon stats
   $: _waWeaponType = weaponResult?.finalWeaponType ?? ''
   $: _waBlade = $build.weaponBlade
