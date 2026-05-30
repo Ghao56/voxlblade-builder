@@ -2775,7 +2775,7 @@ $: waScalingParsed = (() => {
             {@const dmgParts = selectedWA.baseDamage.split('+')}
             {#each selectedWA.hitDamageTypes as dtStr, i}
               {@const currentDmg = (dmgParts[i] || '').trim()}
-              <div style="display: flex; align-items: center; gap: 10px; padding: 4px 8px; border-radius: 4px;">
+              <div style="display: flex; align-items: center; gap: 10px; padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.04); background: rgba(255,255,255,0.02); ">
                 <span class="wa-stat-val" style="font-family: monospace; font-size: 0.8rem; font-weight: 600; min-width: 100px; flex-shrink:0;">
                   {currentDmg}
                 </span>
@@ -2802,7 +2802,7 @@ $: waScalingParsed = (() => {
 
           {:else}
             {@const dmgOnly = selectedWA.baseDamage ?.replace(/\+?\s*[\d.×x\s]+healing/gi,'').trim()}
-            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <div style="display: flex; align-items: center; gap: 10px; padding: 4px 8px; border-radius: 4px;  border: 1px solid rgba(255,255,255,0.04); background: rgba(255,255,255,0.02);">
               {#if dmgOnly}
                 <span class="wa-stat-val" style="flex-shrink:0;">{dmgOnly}</span>
               {/if}
