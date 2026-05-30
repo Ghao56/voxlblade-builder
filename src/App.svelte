@@ -2765,55 +2765,101 @@ $: waScalingParsed = (() => {
       </div>
     </div>
     <p class="wa-desc">{selectedWA.description}</p>
-    {#if selectedWA.baseDamage}
-  {@const hasHeal = /healing/i.test(selectedWA.baseDamage)}
-  {@const hasDmg = /\d/.test(selectedWA.baseDamage.replace(/\d+\s*(healing)/gi, ''))}
-  <div class="wa-stat-row">
-    <span class="wa-stat-key">
-      {hasHeal && !hasDmg ? 'Heal' : hasHeal ? 'Dmg / Heal' : 'Damage'}
-    </span>
-    {#if hasHeal && !hasDmg}
-      <span class="wa-stat-val" style="color:#4ade80;background:rgba(74,222,128,.1);padding:2px 8px;border-radius:999px;border:1px solid rgba(74,222,128,.2)">
-        {selectedWA.baseDamage}
-      </span>
-    {:else}
-      <span class="wa-stat-val">{selectedWA.baseDamage}</span>
-    {/if}
-  </div>
-{/if}
     {#if selectedWA.damageType}
-      <div class="wa-stat-row">
-        <span class="wa-stat-key">Type</span>
-        {#if selectedWA.damageType === 'Same as weapon' && weaponResult}
-          <div class="damage-type-grid" style="flex:1">
-            {#each Object.entries(weaponDamageTypesWithBonus) as [k, v]}
-              <div class="damage-type-pill"><span class="dt-name">{formatDmgTypeLabel(k)}</span><span class="dt-val">{v}x</span></div>
-            {/each}
-          </div>
-        {:else if selectedWA.damageType.includes('Highest damage type') && highestDamageType && weaponResult}
-          {@const [hdKey] = highestDamageType}
-          <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
-            <div class="damage-type-grid">
-              <div class="damage-type-pill damage-type-pill--highest">
-                <span class="dt-name">{formatDmgTypeLabel(hdKey)}</span>
-                <span class="dt-val">1.0x</span>
+      <div class="wa-stat-row" style="align-items: flex-start;">
+        <span class="wa-stat-key" style="margin-top: 4px;">Damage & Type</span>
+        
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+          
+          {#if selectedWA.hitDamageTypes && selectedWA.hitDamageTypes.length > 0 && selectedWA.baseDamage}
+            {@const dmgParts = selectedWA.baseDamage.split('+')}
+            {#each selectedWA.hitDamageTypes as dtStr, i}
+              {@const currentDmg = (dmgParts[i] || '').trim()}
+              <div style="display: flex; align-items: center; gap: 10px; padding: 4px 8px; border-radius: 4px;">
+                <span class="wa-stat-val" style="font-family: monospace; font-size: 0.8rem; font-weight: 600; min-width: 100px; flex-shrink:0;">
+                  {currentDmg}
+                </span>
+                <div class="damage-type-grid">
+                  {#if dtStr === 'Same as weapon'}
+                    {#each Object.entries(weaponDamageTypesWithBonus) as [k, v]}
+                      <div class="damage-type-pill">
+                        <span class="dt-name">{k.charAt(0).toUpperCase() + k.slice(1)}</span>
+                        <span class="dt-val">{v}x</span>
+                      </div>
+                    {/each}
+                  {:else}
+                    {#each dtStr.split('+') as part}
+                      {@const pts = part.trim().split(' ')}
+                      <div class="damage-type-pill">
+                        <span class="dt-name">{pts[1]}</span>
+                        <span class="dt-val">{pts[0]}x</span>
+                      </div>
+                    {/each}
+                  {/if}
+                </div>
               </div>
-            </div>
-            <span class="wa-highest-hint">(highest of: {Object.entries(weaponDamageTypesWithBonus).map(([k,v]) => `${k} ${v}x`).join(', ')})</span>
-          </div>
-        {:else}
-          <div class="damage-type-grid">
-            {#each selectedWA.damageType.split(' + ') as type}
-              {@const parts = type.split(' ')}
+            {/each}
 
-              <div class="damage-type-pill">
-                <span class="dt-name">{parts[1]}</span>
-                <span class="dt-val">{parts[0]}x</span>
-              </div>
+          {:else}
+            {@const dmgOnly = selectedWA.baseDamage ?.replace(/\+?\s*[\d.×x\s]+healing/gi,'').trim()}
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              {#if dmgOnly}
+                <span class="wa-stat-val" style="flex-shrink:0;">{dmgOnly}</span>
+              {/if}
+              {#if selectedWA.damageType}
+                <div class="damage-type-grid">
+                  {#if selectedWA.damageType === 'Same as weapon' && weaponResult}
+                    {#each Object.entries(weaponDamageTypesWithBonus) as [k, v]}
+                      <div class="damage-type-pill">
+                        <span class="dt-name">{k.charAt(0).toUpperCase() + k.slice(1)}</span>
+                        <span class="dt-val">{v}x</span>
+                      </div>
+                    {/each}
+                  {:else if selectedWA.damageType.includes('Highest damage type') && highestDamageType && weaponResult}
+                    {@const [hdKey] = highestDamageType}
+                    <div style="display:flex;flex-direction:column;gap:3px;">
+                      <div class="damage-type-grid">
+                        <div class="damage-type-pill damage-type-pill--highest">
+                          <span class="dt-name">{hdKey.charAt(0).toUpperCase() + hdKey.slice(1)}</span>
+                          <span class="dt-val">1.0x</span>
+                        </div>
+                      </div>
+                      <span class="wa-highest-hint">(highest of: {Object.entries(weaponDamageTypesWithBonus).map(([k,v]) => `${k} ${v}x`).join(', ')})</span>
+                    </div>
+                  {:else}
+                    {#each selectedWA.damageType.split('+') as type}
+                      {@const pts = type.trim().split(' ')}
+                      <div class="damage-type-pill">
+                        <span class="dt-name">{pts[1] ?? type.trim()}</span>
+                        <span class="dt-val">{pts[0] ? pts[0] + 'x' : ''}</span>
+                      </div>
+                    {/each}
+                  {/if}
+                </div>
+              {/if}
+            </div>
+          {/if}
+
+        </div>
+      </div>
+    {/if}
+    {#if selectedWA.baseDamage && /healing/i.test(selectedWA.baseDamage)}
+      {@const healMatches =selectedWA.baseDamage.match(/[\d.×x\s]+healing/gi)}
+      {#if healMatches?.length}
+        <div class="wa-stat-row">
+          <span class="wa-stat-key">Healing</span>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;flex:1;">
+            {#each healMatches as heal}
+              {@const formattedHeal =heal.replace(/healing/gi,'').replace(/×/g,'x').trim()}
+        {@const isMultiHeal =formattedHeal.includes('x')}
+        <span class="wa-stat-val heal-val">
+          {formattedHeal}
+          <span class="heal-label">{isMultiHeal ? 'ticks' : 'heal'}</span>
+        </span>
             {/each}
           </div>
-        {/if}
-      </div>
+        </div>
+      {/if}
     {/if}
     {#if selectedWA.scaling}
       <div class="wa-stat-row">
@@ -4162,5 +4208,18 @@ $: waScalingParsed = (() => {
 .app-tab--analyze.app-tab--active {
   color: #e2b203;
 }
+.heal-val{
+  color:#7CFF8D;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
 
+.heal-label{
+  color:#4ADE80;
+  font-size:.75rem;
+  font-weight:600;
+  opacity:.9;
+}
 </style>
