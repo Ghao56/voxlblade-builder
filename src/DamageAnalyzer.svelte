@@ -88,8 +88,8 @@ interface WeaponBaseDmg {
 
   const DMG_TYPE_COLORS: Record<string, string> = {
     physical: '#fb923c', magic: '#818cf8', fire: '#f97316',
-    water: '#38bdf8', earth: '#a3e635', air: '#e2e8f0',
-    hex: '#e879f9', holy: '#facc15', true: '#f87171', summon: '#c084fc',
+    water: '#38bdf8', earth: '#a3e635', air: '#AAFFDB',
+    hex: '#e879f9', holy: '#facc15', true: '#ffffff', summon: '#c084fc',
   }
 
   function fmtNum(n: number): string {
@@ -280,7 +280,7 @@ const SCALING_COLORS: Record<string, string> = {
   fire:      '#f97316',
   water:     '#38bdf8',
   earth:     '#a3e635',
-  air:       '#e2e8f0',
+  air:       '#AAFFDB',
   hex:       '#e879f9',
   holy:      '#facc15',
   dexterity: '#34d399',
