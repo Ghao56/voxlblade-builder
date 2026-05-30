@@ -125,7 +125,6 @@ export const WEAPON_ARTS: WeaponArt[] = [
     extras: ["Rage Potency: 0.3", "Rage Duration: 10s", "Taunt Duration: 15s", "Poise Damage: 80"],
     requirements: { physicalDefense: 5 },
   },
-  // Monk
   {
     name: "Barrage",
     description: "Barrage with a flurry of punches!",

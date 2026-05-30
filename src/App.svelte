@@ -894,10 +894,7 @@ $: highestDamageType = (() => {
   ): boolean {
     const req = wa.requirements
 
-    // Monk WA chỉ dùng được khi là Monk
     if (wa.isMonk && !_isMonk) return false
-    // Khi là Monk: chỉ hiện WA có req.guild === 'Monk' (isMonk flag)
-    if (_isMonk && !wa.isMonk) return false
 
     if (req.guild === 'Monk' && !_isMonk) return false
 
