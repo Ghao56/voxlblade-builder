@@ -145,16 +145,24 @@ function weaponMatchesFilter(item: any): boolean {
     const race = races.find(r => r.name === $build.race)
     return (race?.statModifiers as Record<string,number> | undefined)?.armorPenetration ?? 0
   })()
-  $: statRows = Object.entries($result.stats).filter(([k, v]) => {
+$: gladRageArmorPen = (() => {
+  if (($result.perks['Gladiatorial Rage'] ?? 0) <= 0) return 0
+  const BOOST_KEYS = ['dexterityBoost','physicalBoost','magicBoost','fireBoost','waterBoost','earthBoost','airBoost','hexBoost','holyBoost']
+  const highestBoost = Math.max(0, ...BOOST_KEYS.map(k => ($result.stats as Record<string,number>)[k] ?? 0))
+  return Math.round((highestBoost / 15) * 100) / 100
+})()
+
+$: statRows = Object.entries($result.stats).filter(([k, v]) => {
     if (k === 'armorPenetration') {
-      const displayVal = (v as number) - raceArmorPen
+      const displayVal = (v as number) - raceArmorPen - gladRageArmorPen
       return displayVal !== 0
     }
     return v !== 0
   }).map(([k, v]) => {
-    if (k === 'armorPenetration') return [k, (v as number) - raceArmorPen] as [string, number]
+    if (k === 'armorPenetration') return [k, (v as number) - raceArmorPen - gladRageArmorPen] as [string, number]
     return [k, v] as [string, number]
   }).sort(([a],[b]) => a.localeCompare(b))
+
   $: perkRows = Object.entries($result.perks).filter(([,v]) => v > 0).sort(([a],[b]) => a.localeCompare(b))
   $: cdr = $result.cdr
   $: isDraconic = $build.guild === 'Draconic'
@@ -420,49 +428,57 @@ $: searchedGuilds = guilds.filter(g => {
   if (selectedTags.size === 0) return true
   return g.ranks.some(r => (r.perks ?? []).some((p: any) => perkMatchesTags(p.name)))
 })
-$: searchedRings = (void selectedTags,void statFilter,
-  rings.filter(r =>matchSearchReactive(r.name,r.perkName ? [r.perkName] : [],modalSearch)&& perkMatchesTags(r.perkName)&& itemMatchesStatFilter(r.stats as Record<string, number>,statFilter)))
+$: searchedRings = (void selectedTags,void statFilter,sortByStatFilter(
+    rings.filter(r =>matchSearchReactive(r.name,r.perkName ? [r.perkName] : [],modalSearch) &&perkMatchesTags(r.perkName) &&itemMatchesStatFilter(r.stats as Record<string, number>,statFilter)),r => r.stats as Record<string, number>,statFilter)
+)
 
-$: searchedRunes = (void selectedTags,void statFilter,
-  runes.filter(r =>matchSearchReactive(r.name,r.perkName ? [r.perkName] : [],modalSearch)&& perkMatchesTags(r.perkName)&& itemMatchesStatFilter(r.stats as Record<string, number>,statFilter)))
+$: searchedRunes = (void selectedTags,void statFilter,sortByStatFilter(
+    runes.filter(r =>matchSearchReactive(r.name,r.perkName ? [r.perkName] : [],modalSearch) &&perkMatchesTags(r.perkName) &&itemMatchesStatFilter(r.stats as Record<string, number>,statFilter)),r => r.stats as Record<string, number>,statFilter))
 
 $: searchedBlades = (
   void weaponStatFilter,
   void selectedTags,
-  filteredBlades.filter(b =>
-    matchSearchReactive(b.name, getPerkNames(b), modalSearch) &&
-    anyPerkMatchesTags(getPerkNames(b)) &&
-    weaponMatchesFilter(b)
+  sortByStatFilter(
+    filteredBlades.filter(b =>
+    matchSearchReactive(b.name,getPerkNames(b),modalSearch) &&anyPerkMatchesTags(getPerkNames(b)) &&weaponMatchesFilter(b)),
+    b => ({...(b.stats ?? {}),...b}) as Record<string, number>,
+    weaponStatFilter
   )
 )
 
-$: searchedHandles = (  void weaponStatFilter,
-  void selectedTags,
-  filteredHandles.filter(h =>
-    matchSearchReactive(h.name, getPerkNames(h), modalSearch) &&
-    anyPerkMatchesTags(getPerkNames(h)) &&
-    weaponMatchesFilter(h)
-  )
+$: searchedHandles = (
+ void weaponStatFilter,
+ void selectedTags,
+ sortByStatFilter(
+   filteredHandles.filter(b =>
+    matchSearchReactive(b.name,getPerkNames(b),modalSearch) &&anyPerkMatchesTags(getPerkNames(b)) &&weaponMatchesFilter(b)),
+   h => ({...(h.stats ?? {}),...h}) as Record<string,number>,
+   weaponStatFilter
+ )
 )
 
 
-$: searchedGloves = (  void weaponStatFilter,
+$: searchedGloves = (  
+  void weaponStatFilter,
   void selectedTags,
-  filteredGloves.filter(g =>
-    matchSearchReactive(g.name, getPerkNames(g), modalSearch) &&
-    anyPerkMatchesTags(getPerkNames(g)) &&
-    weaponMatchesFilter(g)
-  )
+ sortByStatFilter(
+   filteredGloves.filter(g =>
+    matchSearchReactive(g.name,getPerkNames(g),modalSearch) &&anyPerkMatchesTags(getPerkNames(g)) &&weaponMatchesFilter(g)),
+   g => ({...(g.stats ?? {}),...g}) as Record<string,number>,
+   weaponStatFilter
+ )
 )
 
 
-$: searchedEssences = (  void weaponStatFilter,
+$: searchedEssences = (  
+  void weaponStatFilter,
   void selectedTags,
-  filteredEssences.filter(e =>
-    matchSearchReactive(e.name, getPerkNames(e), modalSearch) &&
-    anyPerkMatchesTags(getPerkNames(e)) &&
-    weaponMatchesFilter(e)
-  )
+ sortByStatFilter(
+   filteredEssences.filter(e =>
+    matchSearchReactive(e.name,getPerkNames(e),modalSearch) &&anyPerkMatchesTags(getPerkNames(e)) &&weaponMatchesFilter(e)),
+   e => ({...(e.stats ?? {}),...e}) as Record<string,number>,
+   weaponStatFilter
+ )
 )
 
   
@@ -474,11 +490,8 @@ $: searchedEssences = (  void weaponStatFilter,
   }
 
 $: searchedArmorsForModal = (() => {
-
-  // reactive tracking
   void selectedTags
   void statFilter
-
   const slotName =
     activeModal === 'armor-helmet' || activeModal === 'infusion-helmet'
       ? 'Helmet'
@@ -487,27 +500,23 @@ $: searchedArmorsForModal = (() => {
       : activeModal === 'armor-leggings' || activeModal === 'infusion-leggings'
       ? 'Leggings'
       : null
-
   if (!slotName) {
     return []
   }
-
-  return armors.filter(a => {
-
-    const part = getArmorPart(a.name, slotName as any)
-
+  return sortByStatFilter(
+  armors.filter(a => {
+    const part = getArmorPart(a.name,slotName as any)
     return part
-      && matchSearchReactive(
-        a.name,
-        part.perkName ? [part.perkName] : [],
-        modalSearch
-      )
+      && matchSearchReactive(a.name,part.perkName? [part.perkName]: [],modalSearch)
       && perkMatchesTags(part.perkName)
-      && itemMatchesStatFilter(
-        part.stats as Record<string, number>,
-        statFilter
-      )
-  })
+      && itemMatchesStatFilter(part.stats as Record<string,number>,statFilter)
+  }),
+  a => {
+    const part = getArmorPart(a.name,slotName as any)
+    return (part?.stats as Record<string,number>) ?? {}
+  },
+  statFilter
+)
 })()
   let bladeFilterTier = ''
   let bladeFilterType = ''
@@ -569,6 +578,50 @@ $: searchedArmorsForModal = (() => {
     }
     return true
   }
+  function sortByStatFilter(
+  items: any[],
+  getStats: (item: any) => Record<string, number>,
+  sf: Map<string, 'include' | 'exclude'>
+): any[] {
+  if (sf.size === 0) return items
+
+  const includeKeys: string[] = []
+  const includeNegKeys: string[] = []
+  const excludeKeys: string[] = []
+  const excludeNegKeys: string[] = []
+
+  for (const [key, state] of sf) {
+    const isNeg = key.startsWith('neg:')
+    const actualKey = isNeg ? key.slice(4) : key
+
+    if (state === 'include') {
+      if (isNeg) includeNegKeys.push(actualKey)
+      else includeKeys.push(actualKey)
+    } else {
+      if (isNeg) excludeNegKeys.push(actualKey)
+      else excludeKeys.push(actualKey)
+    }
+  }
+
+  function score(item: any): number {
+    const stats = getStats(item)
+    let s = 0
+
+    for (const k of includeKeys)
+      s += stats[k] ?? 0
+
+    for (const k of includeNegKeys)
+      s -= stats[k] ?? 0
+
+    for (const k of excludeKeys)
+      s -= stats[k] ?? 0
+
+    for (const k of excludeNegKeys)
+      s += stats[k] ?? 0
+    return s
+  }
+  return [...items].sort((a, b) => score(b) - score(a))
+}
 
   function anyPerkMatchesTags(perkNames: string[]): boolean {
     if (selectedTags.size === 0) return true

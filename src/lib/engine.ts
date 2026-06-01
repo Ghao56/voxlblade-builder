@@ -1221,6 +1221,18 @@ export function calcBuild(state: BuildState): BuildResult {
 
   // Apply Stat Boost perks (summary only)
   const boostedStats = applyStatBoostPerks(finalStats, finalPerks)
+  if ((finalPerks['Gladiatorial Rage'] ?? 0) > 0) {
+  const BOOST_KEYS: StatKey[] = [
+    'dexterityBoost', 'physicalBoost', 'magicBoost',
+    'fireBoost', 'waterBoost', 'earthBoost', 'airBoost',
+    'hexBoost', 'holyBoost',
+  ]
+  const highestBoost = Math.max(0, ...BOOST_KEYS.map(k => boostedStats[k] ?? 0))
+  const armorPen = Math.round((highestBoost / 15) * 100) / 100
+  if (armorPen > 0) {
+    boostedStats['armorPenetration'] = (boostedStats['armorPenetration'] ?? 0) + armorPen
+  }
+}
 
   const crit = calcCrit(boostedStats, finalPerks)
   
