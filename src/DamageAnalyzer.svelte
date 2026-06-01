@@ -357,10 +357,13 @@ $: waScalingBreakdown = (() => {
       }
     }
     if (!rows.length) return null
+    const totalContribution =rows.reduce((sum,row)=>sum + row.contribution,0)
+    const avgEffectivePct =Math.round((totalContribution / rows.length) * 100) / 100
+    const multiplier =Math.round((1 + avgEffectivePct / 100) * 10000) / 10000
     return {
       rows,
-      totalEffectivePct:0,
-      multiplier:0,
+      totalEffectivePct: avgEffectivePct,
+      multiplier,
       isPerHit:true
     }
   }
