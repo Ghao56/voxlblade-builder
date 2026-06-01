@@ -1,7 +1,12 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
 
-    const dispatch = createEventDispatcher<{ change: Map<string, 'include' | 'exclude'>}>()
+    const dispatch = createEventDispatcher<{
+      change: {
+        filter: Map<string,'include'|'exclude'>
+        sortMode:'highest'|'lowest'|'alphabetical'
+      }
+    }>()
 
   const STAT_GROUPS = [
     {
@@ -47,6 +52,7 @@
     },
 ]
   let activeTab: 'positive' | 'negative' = 'positive'
+  let sortMode: 'highest' |'lowest' |'alphabetical' ='highest'
   const NEG_STAT_GROUPS = [
     {
       label: 'Boost', color: '#f87171',
@@ -121,18 +127,18 @@
             active.delete(key)
         }
         active = new Map(active)
-        dispatch('change', active)
+        dispatch('change',{filter: active,sortMode})
     }
 
   function remove(key: string) {
     active.delete(key)
     active = new Map(active)
-    dispatch('change', active)
+    dispatch('change',{filter: active,sortMode})
   }
 
   function clear() {
     active = new Map()
-    dispatch('change', active)
+    dispatch('change',{filter: active,sortMode})
   }
 
   function getLabel(key: string) {
@@ -203,14 +209,25 @@
       </button>
     </div>
 
-    <p class="sf-legend">
+    <div class="sf-legend">
+      <div class="sf-sort-row">
+        <button class={sortMode==='highest'? 'sf-tab sf-tab--active': 'sf-tab'} on:click={()=>{sortMode='highest'; dispatch('change',{filter:active,sortMode})}}>
+          Highest
+        </button>
+        <button class={sortMode==='lowest'? 'sf-tab sf-tab--active': 'sf-tab'} on:click={()=>{sortMode='lowest'; dispatch('change',{filter:active,sortMode})}}>
+          Lowest
+        </button>
+        <button class={sortMode==='alphabetical'? 'sf-tab sf-tab--active': 'sf-tab'} on:click={()=>{sortMode='alphabetical'; dispatch('change',{filter:active,sortMode})}}>
+          ABC
+        </button>
+      </div> 
       <span class="sf-leg sf-leg--off">○ Off</span>
       <span class="sf-leg sf-leg--inc">+ Must have</span>
       <span class="sf-leg sf-leg--exc">− Must NOT have</span>
       <span class="sf-leg-hint">
         · Click to cycle · Right-click to remove
       </span>
-    </p>
+    </div>
 
         {#if activeTab === 'positive'}
 
@@ -394,5 +411,45 @@
   background: rgba(248,113,113,.12);
   border-color: rgba(248,113,113,.3);
   color: #f87171;
+}
+
+.sf-sort-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.sf-sort-row button {
+  flex: 1;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  background: transparent;
+  color: #8a8d85;
+  font-size: .58rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sf-sort-row button:hover:not(.sf-tab--active) {
+  color: #e8e4da;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.sf-sort-row button.sf-tab--active {
+  background: rgba(251, 146, 60, 0.15);
+  border-color: rgba(251, 146, 60, 0.4);
+  color: #fb923c;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(251, 146, 60, 0.15);
+  text-shadow: 0 0 4px rgba(251, 146, 60, 0.2);
 }
 </style>

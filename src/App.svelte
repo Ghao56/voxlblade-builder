@@ -23,7 +23,10 @@
   import WeaponStatFilter from './WeaponStatFilter.svelte'
 
   let weaponStatFilter: Map<string, 'include' | 'exclude'> = new Map()
-let weaponStatFilterRef: WeaponStatFilter
+  let weaponStatFilterRef: WeaponStatFilter
+
+  let statFilterSortMode:'highest'|'lowest'|'alphabetical'='highest'
+  let weaponStatFilterSortMode:'highest'|'lowest'|'alphabetical'= 'highest'
 
 function weaponMatchesFilter(item: any): boolean {
   if (weaponStatFilter.size === 0) return true
@@ -429,11 +432,12 @@ $: searchedGuilds = guilds.filter(g => {
   return g.ranks.some(r => (r.perks ?? []).some((p: any) => perkMatchesTags(p.name)))
 })
 $: searchedRings = (void selectedTags,void statFilter,sortByStatFilter(
-    rings.filter(r =>matchSearchReactive(r.name,r.perkName ? [r.perkName] : [],modalSearch) &&perkMatchesTags(r.perkName) &&itemMatchesStatFilter(r.stats as Record<string, number>,statFilter)),r => r.stats as Record<string, number>,statFilter)
+    rings.filter(r =>matchSearchReactive(r.name,r.perkName ? [r.perkName] : [],modalSearch) &&perkMatchesTags(r.perkName) &&itemMatchesStatFilter(r.stats as Record<string, number>,statFilter)),r => r.stats as Record<string, number>,statFilter,statFilterSortMode)
 )
 
 $: searchedRunes = (void selectedTags,void statFilter,sortByStatFilter(
-    runes.filter(r =>matchSearchReactive(r.name,r.perkName ? [r.perkName] : [],modalSearch) &&perkMatchesTags(r.perkName) &&itemMatchesStatFilter(r.stats as Record<string, number>,statFilter)),r => r.stats as Record<string, number>,statFilter))
+    runes.filter(r =>matchSearchReactive(r.name,r.perkName ? [r.perkName] : [],modalSearch) &&perkMatchesTags(r.perkName) &&itemMatchesStatFilter(r.stats as Record<string, number>,statFilter)),r => r.stats as Record<string, number>,statFilter,statFilterSortMode)
+)
 
 $: searchedBlades = (
   void weaponStatFilter,
@@ -442,7 +446,8 @@ $: searchedBlades = (
     filteredBlades.filter(b =>
     matchSearchReactive(b.name,getPerkNames(b),modalSearch) &&anyPerkMatchesTags(getPerkNames(b)) &&weaponMatchesFilter(b)),
     b => ({...(b.stats ?? {}),...b}) as Record<string, number>,
-    weaponStatFilter
+    weaponStatFilter,
+    weaponStatFilterSortMode
   )
 )
 
@@ -453,7 +458,8 @@ $: searchedHandles = (
    filteredHandles.filter(b =>
     matchSearchReactive(b.name,getPerkNames(b),modalSearch) &&anyPerkMatchesTags(getPerkNames(b)) &&weaponMatchesFilter(b)),
    h => ({...(h.stats ?? {}),...h}) as Record<string,number>,
-   weaponStatFilter
+   weaponStatFilter,
+    weaponStatFilterSortMode
  )
 )
 
@@ -465,7 +471,8 @@ $: searchedGloves = (
    filteredGloves.filter(g =>
     matchSearchReactive(g.name,getPerkNames(g),modalSearch) &&anyPerkMatchesTags(getPerkNames(g)) &&weaponMatchesFilter(g)),
    g => ({...(g.stats ?? {}),...g}) as Record<string,number>,
-   weaponStatFilter
+   weaponStatFilter,
+    weaponStatFilterSortMode
  )
 )
 
@@ -477,7 +484,8 @@ $: searchedEssences = (
    filteredEssences.filter(e =>
     matchSearchReactive(e.name,getPerkNames(e),modalSearch) &&anyPerkMatchesTags(getPerkNames(e)) &&weaponMatchesFilter(e)),
    e => ({...(e.stats ?? {}),...e}) as Record<string,number>,
-   weaponStatFilter
+   weaponStatFilter,
+    weaponStatFilterSortMode
  )
 )
 
@@ -515,7 +523,8 @@ $: searchedArmorsForModal = (() => {
     const part = getArmorPart(a.name,slotName as any)
     return (part?.stats as Record<string,number>) ?? {}
   },
-  statFilter
+  statFilter,
+  statFilterSortMode
 )
 })()
   let bladeFilterTier = ''
@@ -530,9 +539,14 @@ $: searchedArmorsForModal = (() => {
   let selectedTags: Set<string> = new Set()
   let statFilter: Map<string, 'include' | 'exclude'> = new Map()
 
-  function onStatFilterChange(e: CustomEvent<Map<string, 'include' | 'exclude'>>) {
-    statFilter = e.detail
-  }
+function onStatFilterChange( e: CustomEvent<{ 
+    filter: Map<string,'include'|'exclude'>
+    sortMode:'highest'|'lowest'|'alphabetical'
+  }>
+){
+ statFilter =e.detail.filter
+ statFilterSortMode =e.detail.sortMode
+}
 
   function toggleTag(tag: string) {
     if (selectedTags.has(tag)) selectedTags.delete(tag)
@@ -581,7 +595,8 @@ $: searchedArmorsForModal = (() => {
   function sortByStatFilter(
   items: any[],
   getStats: (item: any) => Record<string, number>,
-  sf: Map<string, 'include' | 'exclude'>
+  sf: Map<string, 'include' | 'exclude'>,
+  mode: 'highest' | 'lowest' | 'alphabetical' = 'highest'
 ): any[] {
   if (sf.size === 0) return items
 
@@ -620,7 +635,19 @@ $: searchedArmorsForModal = (() => {
       s += stats[k] ?? 0
     return s
   }
-  return [...items].sort((a, b) => score(b) - score(a))
+  return [...items].sort((a,b)=>{
+  const aScore = score(a)
+  const bScore = score(b)
+  if(mode==='highest'){
+    if(bScore!==aScore) return bScore-aScore
+    return a.name.localeCompare(b.name)
+  }
+  if(mode==='lowest'){
+    if(aScore!==bScore) return aScore-bScore
+    return a.name.localeCompare(b.name)
+  }
+  return a.name.localeCompare(b.name)
+})
 }
 
   function anyPerkMatchesTags(perkNames: string[]): boolean {
