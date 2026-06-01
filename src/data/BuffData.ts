@@ -46,8 +46,8 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
     potency: 0.1 * amount,
     duration: 5 + 2 * amount,
     condition: 'On critical hit',
-    sourceName: 'Wrathful Crits',
-    sourceType: 'perk',
+    sourceName: 'Desert Champion',
+    sourceType: 'armor',
   }),
 }
 
