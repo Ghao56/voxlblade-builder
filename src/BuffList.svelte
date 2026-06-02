@@ -5,6 +5,7 @@
     BUFF_DEFS,
     getActiveBuildBuffs,
     getPerkBuffs,
+    applyBuffPerkModifiers,
     calcBuffEffect,
     type GrantedBuff,
   } from './data/BuffData'
@@ -23,61 +24,59 @@
 
   $: perkBuffs = getPerkBuffs($result.perks)
 
-  $: activeBuffs = [
-    ...itemBuffs,
-    ...perkBuffs,
-  ]
+  $: activeBuffs = applyBuffPerkModifiers(
+    [...itemBuffs, ...perkBuffs],
+    $result.perks
+  )
+
   type GroupedBuff = {
-  buffName: string
-  entries: GrantedBuff[]
-  strongest: GrantedBuff
-}
+    buffName: string
+    entries: GrantedBuff[]
+    strongest: GrantedBuff
+    maxDuration: number
+  }
 
-$: groupedBuffs = Object.values(
-  activeBuffs.reduce((acc, buff) => {
-    (acc[buff.buffName] ??= []).push(buff)
-    return acc
-  }, {} as Record<string, GrantedBuff[]>)
-).map(entries => ({
-  buffName: entries[0].buffName,
-  entries,
-  strongest: [...entries].sort(
-    (a, b) =>
-      (b.potency - a.potency) ||
-      (b.duration - a.duration)
-  )[0],
-  maxDuration: Math.max(
-    ...entries.map(e => e.duration)
-  ),
-}))
+  $: groupedBuffs = Object.values(
+    activeBuffs.reduce((acc, buff) => {
+      (acc[buff.buffName] ??= []).push(buff)
+      return acc
+    }, {} as Record<string, GrantedBuff[]>)
+  ).map(entries => ({
+    buffName: entries[0].buffName,
+    entries,
+    strongest: [...entries].sort(
+      (a, b) => (b.potency - a.potency) || (b.duration - a.duration)
+    )[0],
+    maxDuration: Math.max(...entries.map(e => e.duration)),
+  }))
 
-  $: buffs = groupedBuffs.filter(
-    g => !BUFF_DEFS[g.buffName]?.isDebuff
-  )
-
-  $: debuffs = groupedBuffs.filter(
-    g => BUFF_DEFS[g.buffName]?.isDebuff
-  )
+  $: buffs = groupedBuffs.filter(g => !BUFF_DEFS[g.buffName]?.isDebuff)
+  $: debuffs = groupedBuffs.filter(g => BUFF_DEFS[g.buffName]?.isDebuff)
 
   let expanded = true
   let activeTab: 'buffs' | 'debuffs' = 'buffs'
 
   const SRC_COLOR: Record<string, string> = {
-    rune: '#a78bfa',
-    ring: '#38bdf8',
-    armor: '#4ade80',
+    rune:   '#a78bfa',
+    ring:   '#38bdf8',
+    armor:  '#4ade80',
     weapon: '#fb923c',
-    perk: '#fbbf24',
-    guild: '#e879f9',
+    perk:   '#fbbf24',
+    guild:  '#e879f9',
   }
 
   const SRC_LABEL: Record<string, string> = {
-    rune: 'Rune',
-    ring: 'Ring',
-    armor: 'Armor',
+    rune:   'Rune',
+    ring:   'Ring',
+    armor:  'Armor',
     weapon: 'Weapon',
-    perk: 'Perk',
-    guild: 'Guild',
+    perk:   'Perk',
+    guild:  'Guild',
+  }
+
+  // Max potency across all sources in a group, used for bar widths
+  function maxPotency(entries: GrantedBuff[]): number {
+    return Math.max(...entries.map(e => e.potency))
   }
 </script>
 
@@ -126,80 +125,87 @@ $: groupedBuffs = Object.values(
       <div class="bl-list">
         {#each list as group (group.buffName)}
           {@const def = BUFF_DEFS[group.buffName]}
-          {@const effect = calcBuffEffect(group.strongest.buffName,group.strongest.potency  )}
+          {@const effect = calcBuffEffect(group.strongest.buffName, group.strongest.potency)}
+          {@const topPotency = maxPotency(group.entries)}
           {#if def}
-            <div
-              class="bl-card"
-              class:bl-card--debuff={def.isDebuff}
-              style="--c:{def.color}"
-            >
+            <div class="bl-card" class:bl-card--debuff={def.isDebuff} style="--c:{def.color}">
 
-              <!-- Center: info -->
-              <div class="bl-info">
-                <div class="bl-info-top">
-                  <span class="bl-buff-name" style="color:{def.color}">{def.name}</span>
-                  {#if group.maxDuration > 0}
-                    <span class="bl-duration">
-                      ⏱ {group.maxDuration}s
-                    </span>
-                  {:else}
-                    <span class="bl-duration bl-duration--passive">
-                      Passive
-                    </span>
-                  {/if}
-                </div>
-                <div class="bl-effect">
-                  <span class="bl-potency">
-                    {group.strongest.potency.toFixed(1)} potency
-                  </span>
-                  <span class="bl-arrow">→</span>
-                  <span class="bl-value" style="color:{def.color}">
-                    {effect.value}{effect.unit === '%' ? '%' : ''}
-                    {def.isDebuff ? ' to enemy' : ''}
-                  </span>
-                </div>
-                {#if group.strongest.condition}
-                  <div class="bl-condition">
-                    <span class="bl-cond-dot"></span>
-                    {group.strongest.condition}
+              <!-- ── Accent bar ── -->
+              <div class="bl-accent-bar"></div>
+
+              <div class="bl-body">
+
+                <!-- ── Top row: name + tags + value ── -->
+                <div class="bl-top-row">
+                  <div class="bl-name-group">
+                    <span class="bl-buff-name" style="color:{def.color}">{def.name}</span>
+
+                    {#if group.maxDuration > 0}
+                      <span class="bl-tag bl-tag--duration">⏱ {group.maxDuration}s</span>
+                    {:else}
+                      <span class="bl-tag bl-tag--passive">Passive</span>
+                    {/if}
+
+                    {#if def.statKey}
+                      <span class="bl-tag bl-tag--stat">{def.statKey.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/^./, c => c.toUpperCase())}</span>
+                    {/if}
                   </div>
-                {/if}
-              </div>
 
-              <div class="bl-sources">
-                {#each [...group.entries].sort((a,b)=>b.potency-a.potency) as source}
-                  <div
-                    class="bl-source-row"
-                    class:bl-source-row--main={source === group.strongest}
-                  >
-                    <div class="bl-source-left">
-                      <span class="bl-src-type">
+                  <div class="bl-value-box">
+                    <span class="bl-value" style="color:{def.color}">
+                      {effect.value}{effect.unit === '%' ? '%' : ''}
+                      {def.isDebuff ? ' to enemy' : ''}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- ── Description + formula ── -->
+                <div class="bl-desc-row">
+                  <span class="bl-desc-text">{def.description}</span>
+                  <span class="bl-formula">
+                    {group.strongest.potency.toFixed(1)} × {def.effectPerTenthPotency * 10}{def.effectUnit}
+                  </span>
+                </div>
+
+                <!-- ── Sources ── -->
+                <div class="bl-sources-label">Sources</div>
+                <div class="bl-sources">
+                  {#each [...group.entries].sort((a, b) => b.potency - a.potency) as source}
+                    {@const pct = (source.potency * 100)}
+                    {@const barW = topPotency > 0 ? Math.round((source.potency / topPotency) * 100) : 0}
+                    {@const isMain = source === group.strongest}
+                    <div class="bl-source-row" class:bl-source-row--main={isMain}>
+                      <span
+                        class="bl-src-type"
+                        style="color:{SRC_COLOR[source.sourceType]};border-color:{SRC_COLOR[source.sourceType]};background:color-mix(in srgb,{SRC_COLOR[source.sourceType]} 12%,transparent)"
+                      >
                         {SRC_LABEL[source.sourceType]}
                       </span>
 
-                      <span class="bl-src-name">
-                        {source.sourceName}
-                      </span>
+                      <div class="bl-src-info">
+                        <span class="bl-src-name">{source.sourceName}</span>
+                        {#if source.condition}
+                          <span class="bl-src-condition">{source.condition}</span>
+                        {/if}
+                      </div>
 
-                      {#if source.condition}
-                        <div class="bl-source-condition">
-                          • {source.condition}
+                      <div class="bl-src-right">
+                        <div class="bl-bar-wrap">
+                          <div class="bl-bar-fill" style="width:{barW}%;background:{def.color}"></div>
                         </div>
-                      {/if}
+                        <span class="bl-src-potency" style="color:{def.color}">{pct.toFixed(0)}%</span>
+                      </div>
                     </div>
+                  {/each}
+                </div>
 
-                    <span class="bl-src-potency">
-                      {(source.potency * 100).toFixed(0)}%
-                    </span>
-                  </div>
-                {/each}
               </div>
             </div>
           {/if}
         {/each}
       </div>
 
-      <!-- ── Scaling legend ── -->
+      <!-- ── Legend ── -->
       <div class="bl-legend">
         <span class="bl-leg-icon">ℹ</span>
         Each 0.1 potency = {
@@ -229,10 +235,8 @@ $: groupedBuffs = Object.values(
     border-bottom: 1px solid rgba(255,255,255,.06);
     background: var(--surface2, #1a1d1b);
   }
-  .bl-tabs {
-    display: flex;
-    flex: 1;
-  }
+  .bl-tabs { display: flex; flex: 1; }
+
   .bl-tab {
     display: flex;
     align-items: center;
@@ -294,7 +298,7 @@ $: groupedBuffs = Object.values(
   }
   .bl-collapse:hover { opacity: 1; }
 
-  /* ── Empty state ── */
+  /* ── Empty ── */
   .bl-empty {
     display: flex;
     align-items: center;
@@ -305,135 +309,225 @@ $: groupedBuffs = Object.values(
   .bl-empty-icon { font-size: 1rem; opacity: .3; }
   .bl-empty-text { font-size: .75rem; color: var(--ink-muted, #8a8d85); font-style: italic; opacity: .5; }
 
-  /* ── Cards list ── */
+  /* ── List ── */
   .bl-list {
     display: flex;
     flex-direction: column;
-    gap: 0;
   }
 
+  /* ── Card ── */
   .bl-card {
     display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
+    align-items: stretch;
     border-bottom: 1px solid rgba(255,255,255,.04);
     transition: background .12s;
-    position: relative;
-  }
-  .bl-card::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background: var(--c, #4ade80);
-    opacity: .6;
   }
   .bl-card:hover { background: rgba(255,255,255,.02); }
   .bl-card:last-child { border-bottom: none; }
-  .bl-card--debuff::before { opacity: .5; }
 
-  /* ── Info ── */
-  .bl-info {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
+  /* Gradient accent bar on the left */
+  .bl-accent-bar {
+    width: 4px;
+    flex-shrink: 0;
+    background: linear-gradient(180deg, var(--c, #4ade80) 0%, color-mix(in srgb, var(--c, #4ade80) 30%, transparent) 100%);
+  }
+  .bl-card--debuff .bl-accent-bar {
+    background: linear-gradient(180deg, var(--c, #f87171) 0%, color-mix(in srgb, var(--c, #f87171) 25%, transparent) 100%);
   }
 
-  .bl-info-top {
+  /* ── Body ── */
+  .bl-body {
+    flex: 1;
+    padding: 11px 14px 11px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  /* ── Top row ── */
+  .bl-top-row {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 8px;
   }
 
-  .bl-buff-name {
-    font-size: .88rem;
-    font-weight: 800;
-    letter-spacing: .02em;
-  }
-
-  .bl-duration {
-    font-size: .62rem;
-    font-weight: 700;
-    padding: 1px 6px;
-    border-radius: 999px;
-    background: rgba(52,211,153,.1);
-    border: 1px solid rgba(52,211,153,.22);
-    color: #34d399;
-    flex-shrink: 0;
-  }
-  .bl-duration--passive {
-    background: rgba(167,139,250,.1);
-    border-color: rgba(167,139,250,.22);
-    color: #a78bfa;
-  }
-
-  .bl-effect {
+  .bl-name-group {
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: .78rem;
+    flex-wrap: wrap;
+    min-width: 0;
   }
 
-  .bl-potency {
-    color: var(--ink-muted, #8a8d85);
-    font-family: 'Courier New', monospace;
-    font-weight: 600;
-    font-size: .75rem;
+  .bl-buff-name {
+    font-size: .9rem;
+    font-weight: 800;
+    letter-spacing: .02em;
+    line-height: 1;
   }
-  .bl-arrow {
-    color: var(--ink-muted, #8a8d85);
-    opacity: .35;
-    font-size: .65rem;
+
+  /* Tags */
+  .bl-tag {
+    font-size: .6rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 999px;
+    flex-shrink: 0;
+  }
+  .bl-tag--duration {
+    background: rgba(52,211,153,.1);
+    border: 1px solid rgba(52,211,153,.22);
+    color: #34d399;
+  }
+  .bl-tag--passive {
+    background: rgba(167,139,250,.1);
+    border: 1px solid rgba(167,139,250,.22);
+    color: #a78bfa;
+  }
+  .bl-tag--stat {
+    background: color-mix(in srgb, var(--c, #4ade80) 10%, transparent);
+    border: 1px solid color-mix(in srgb, var(--c, #4ade80) 25%, transparent);
+    color: var(--c, #4ade80);
+    opacity: .75;
+  }
+
+  /* Value box */
+  .bl-value-box {
+    flex-shrink: 0;
   }
   .bl-value {
     font-weight: 800;
     font-family: 'Courier New', monospace;
-    font-size: .9rem;
-    text-shadow: 0 0 10px color-mix(in srgb, var(--c, #4ade80) 40%, transparent);
+    font-size: 1.05rem;
+    letter-spacing: -.01em;
   }
 
-
-  .bl-condition {
+  /* ── Description row ── */
+  .bl-desc-row {
     display: flex;
     align-items: center;
-    gap: 5px;
-    font-size: .65rem;
-    color: var(--ink-muted, #8a8d85);
-    font-style: italic;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 5px 8px;
+    background: color-mix(in srgb, var(--c, #4ade80) 6%, transparent);
+    border: 1px solid color-mix(in srgb, var(--c, #4ade80) 14%, transparent);
+    border-radius: 5px;
   }
-  .bl-cond-dot {
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: var(--c, #4ade80);
-    opacity: .5;
+  .bl-desc-text {
+    font-size: .72rem;
+    color: var(--ink-muted, #8a8d85);
+    line-height: 1.4;
+  }
+  .bl-formula {
+    font-size: .62rem;
+    color: var(--ink-muted, #8a8d85);
+    opacity: .45;
+    font-family: 'Courier New', monospace;
+    white-space: nowrap;
     flex-shrink: 0;
   }
 
+  /* ── Sources ── */
+  .bl-sources-label {
+    font-size: .55rem;
+    text-transform: uppercase;
+    letter-spacing: .15em;
+    color: var(--ink-muted, #8a8d85);
+    opacity: .4;
+    font-weight: 700;
+    margin-top: 2px;
+  }
+
+  .bl-sources {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .bl-source-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 8px;
+    border-radius: 6px;
+    background: rgba(255,255,255,.02);
+    border: 1px solid rgba(255,255,255,.04);
+    opacity: .5;
+    transition: opacity .15s, background .15s;
+  }
+  .bl-source-row--main {
+    opacity: 1;
+    background: rgba(255,255,255,.04);
+    border-color: rgba(255,255,255,.07);
+  }
+  .bl-source-row:hover { opacity: .9; }
+
   .bl-src-type {
-    font-size: .58rem;
+    font-size: .55rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: .12em;
     padding: 2px 6px;
     border-radius: 4px;
     border: 1px solid;
+    flex-shrink: 0;
+    line-height: 1.5;
+  }
+
+  .bl-src-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
   }
   .bl-src-name {
-    font-size: .68rem;
+    font-size: .74rem;
     font-weight: 600;
-    color: var(--ink-muted, #8a8d85);
-    text-align: right;
-    line-height: 1.3;
-    max-width: 100px;
+    color: var(--ink, #e8e4da);
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+  .bl-src-condition {
+    font-size: .6rem;
+    color: var(--ink-muted, #8a8d85);
+    font-style: italic;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Bar + value */
+  .bl-src-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .bl-bar-wrap {
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255,255,255,.08);
+    overflow: hidden;
+  }
+  .bl-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width .3s ease;
+    opacity: .75;
+  }
+  .bl-source-row--main .bl-bar-fill { opacity: 1; }
+
+  .bl-src-potency {
+    font-size: .72rem;
+    font-weight: 800;
+    font-family: 'Courier New', monospace;
+    min-width: 30px;
+    text-align: right;
   }
 
   /* ── Legend ── */
@@ -450,32 +544,4 @@ $: groupedBuffs = Object.values(
     font-style: italic;
   }
   .bl-leg-icon { opacity: .6; }
-  .bl-sources {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-width: 220px;
-}
-
-.bl-source-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  opacity: .45;
-  transition: .2s;
-}
-
-.bl-source-row--main {
-  opacity: 1;
-  font-weight: 700;
-}
-
-.bl-source-row:hover {
-  opacity: .85;
-}
-
-.bl-src-potency {
-  color: var(--c);
-  font-weight: 700;
-}
 </style>
