@@ -106,6 +106,17 @@ if (thiefStacks > 0) {
   })
 }
 
+const oceansRageStacks = perks['Oceans Rage'] ?? 0
+if (oceansRageStacks > 0) {
+  const mult = Math.round((1 + oceansRageStacks * 0.1) * 10000) / 10000
+  healMap.set('Oceans Rage', {
+    sourceName: 'Oceans Rage',
+    rawMultiplier: mult,
+    condition: `${oceansRageStacks} stack × 10% outgoing heal`,
+    type: 'heal',
+  })
+}
+
   const dmgEntries = [...dmgMap.values()]
   const healEntries = [...healMap.values()]
 

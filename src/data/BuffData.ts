@@ -7,29 +7,97 @@ export interface BuffDefinition {
   statKey?: string
   isDebuff?: boolean
 }
+function formatDamageTypes(types: string[]) {
+  if (types.length === 1)
+    return types[0]
 
+  if (types.length === 2)
+    return `${types[0]} and ${types[1]}`
+
+  return `${types.slice(0,-1).join(', ')} and ${types.at(-1)}`
+}
+// Cập nhật thêm thuộc tính vào Interface để lưu vết chỉ số gốc
 export interface GrantedBuff {
   buffName: string
   potency: number
+  basePotency?: number;    // <-- Thêm dòng này để lưu chỉ số gốc
+  bonusPotency?: number;   // <-- Thêm dòng này để lưu chỉ số được cộng thêm
   duration: number
   condition?: string
   sourceName: string
   sourceType: 'rune' | 'ring' | 'armor' | 'weapon' | 'perk' | 'guild'
 }
 
+export function applyBuffPerkModifiers(
+  buffs: GrantedBuff[],
+  perks: Record<string, number>
+): GrantedBuff[] {
+  if (buffs.length === 0) return buffs
+
+  return buffs.map(buff => {
+    let bonus = 0
+    for (const mod of BUFF_POTENCY_MODIFIERS) {
+      if (mod.buffName !== buff.buffName) continue
+      const stacks = perks[mod.label] ?? 0
+      if (stacks > 0) bonus += mod.potencyPerStack * stacks
+    }
+    
+    if (bonus === 0) return buff 
+    
+    const finalPotency = Math.round((buff.potency + bonus) * 1000) / 1000
+    return { 
+      ...buff, 
+      potency: finalPotency,
+      basePotency: buff.potency,
+      bonusPotency: Math.round(bonus * 1000) / 1000
+    }
+  })
+}
+
+export function getBuffDescription(
+  buffName: string,
+  perks: Record<string, number>
+): string {
+  const buff = BUFF_DEFS[buffName]
+  if (!buff) return ''
+
+  if (buffName !== 'Rage')
+    return buff.description
+
+  const damageTypes = ['physical']
+  
+  if ((perks['Oceans Rage'] ?? 0) > 0)
+    damageTypes.push('water')
+
+  if ((perks['Mage Rage'] ?? 0) > 0)
+    damageTypes.push('magic')
+
+  let desc = `Deal x% more ${formatDamageTypes(damageTypes)} damage.`
+  
+  const oceansRageStacks = perks['Oceans Rage'] ?? 0
+  if (oceansRageStacks > 0)
+    desc += ` Heal ${oceansRageStacks * 10}% more.`
+
+  const mageRageStacks = perks['Mage Rage'] ?? 0
+  if (mageRageStacks > 0)
+    desc += ` Gain ${mageRageStacks * 10}% Rune CDR.`
+
+  return desc
+}
+
 export const BUFF_DEFS: Record<string, BuffDefinition> = {
   Rage: {
     name: 'Rage',
     color: '#f70201',
-    description: 'Deal more physical damage.',
-    effectPerTenthPotency: 10,
-    effectUnit: '%',
+    description: 'Deal x% more physical damage.',
+    effectPerTenthPotency: 0.1,
+    effectUnit: 'flat',
     statKey: 'physicalBoost',
   },
   Bounce: {
     name: 'Bounce',
     color: '#f438d7',
-    description: 'Attacks bounce to nearby enemies.',
+    description: "Jump x% higher.",
     effectPerTenthPotency: 0.1, 
     effectUnit: 'flat',
   },
@@ -44,17 +112,17 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
   Reinforce: {
     name: 'Reinforce',
     color: '#fbed0a',
-    description: 'Gain increased defense.',
-    effectPerTenthPotency: 10,
-    effectUnit: '%',
+    description: 'Take x% less damage.',
+    effectPerTenthPotency: 0.1,
+    effectUnit: 'flat',
     statKey: 'physicalDefense',
   },
   Tailwind: {
     name: 'Tailwind',
     color: '#ffffff',
-    description: 'Move and attack faster.',
-    effectPerTenthPotency: 10,
-    effectUnit: '%',
+    description: 'Move x% faster.',
+    effectPerTenthPotency: 0.1,
+    effectUnit: 'flat',
   },
 }
 
@@ -75,7 +143,7 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
   }],
 
   'Blessing': (amount) => {
-    const condition = `${7.5 * amount}% chance on heal (no proc coeff)`
+    const condition = `${7.5 * amount}% chance on heal`
     return [
       { buffName: 'Bounce',    potency: 0.2, duration: 15, condition, sourceName: 'Blessing', sourceType: 'perk' },
       { buffName: 'Regen',     potency: 1.0, duration: 5,  condition, sourceName: 'Blessing', sourceType: 'perk' },
@@ -140,30 +208,11 @@ interface BuffPotencyModifier {
 }
 
 const BUFF_POTENCY_MODIFIERS: BuffPotencyModifier[] = [
-  {
-    buffName: 'Rage',
-    potencyPerStack: 0.1,
-    label: 'Gladiatorial Rage',
-  },
+  { buffName: 'Rage', potencyPerStack: 0.1, label: 'Gladiatorial Rage' },
+  { buffName: 'Rage', potencyPerStack: 0.1, label: 'Mage Rage' },
+  { buffName: 'Rage', potencyPerStack: 0.1, label: 'Oceans Rage' },
 ]
 
-export function applyBuffPerkModifiers(
-  buffs: GrantedBuff[],
-  perks: Record<string, number>
-): GrantedBuff[] {
-  if (buffs.length === 0) return buffs
-
-  return buffs.map(buff => {
-    let bonus = 0
-    for (const mod of BUFF_POTENCY_MODIFIERS) {
-      if (mod.buffName !== buff.buffName) continue
-      const stacks = perks[mod.label] ?? 0
-      if (stacks > 0) bonus += mod.potencyPerStack * stacks
-    }
-    if (bonus === 0) return buff
-    return { ...buff, potency: Math.round((buff.potency + bonus) * 1000) / 1000 }
-  })
-}
 
 export function calcBuffEffect(
   buffName: string,
@@ -187,4 +236,6 @@ export function calcBuffEffect(
       : `${sign}${value} ${def.statKey ?? ''}`
 
   return { value, unit: def.effectUnit, label }
+
+  
 }

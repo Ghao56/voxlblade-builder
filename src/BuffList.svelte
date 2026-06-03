@@ -1,14 +1,15 @@
 <script lang="ts">
   import { build, result } from './lib/store'
 
-  import {
-    BUFF_DEFS,
-    getActiveBuildBuffs,
-    getPerkBuffs,
-    applyBuffPerkModifiers,
-    calcBuffEffect,
-    type GrantedBuff,
-  } from './data/BuffData'
+import {
+  BUFF_DEFS,
+  getActiveBuildBuffs,
+  getPerkBuffs,
+  applyBuffPerkModifiers,
+  calcBuffEffect,
+  getBuffDescription,
+  type GrantedBuff,
+} from './data/BuffData'
 
   $: itemBuffs = getActiveBuildBuffs({
     rune: $build.rune,
@@ -145,10 +146,6 @@
                     {:else}
                       <span class="bl-tag bl-tag--passive">Passive</span>
                     {/if}
-
-                    {#if def.statKey}
-                      <span class="bl-tag bl-tag--stat">{def.statKey.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/^./, c => c.toUpperCase())}</span>
-                    {/if}
                   </div>
 
                   <div class="bl-value-box">
@@ -159,14 +156,18 @@
                   </div>
                 </div>
 
-                <!-- ── Description + formula ── -->
+                <!-- ── Description  ── -->
                 <div class="bl-desc-row">
-                  <span class="bl-desc-text">{def.description}</span>
-                  <span class="bl-formula">
-                    {group.strongest.potency.toFixed(1)} × {def.effectPerTenthPotency * 10}{def.effectUnit}
+                  <span class="bl-desc-text">
+                    {
+                      getBuffDescription(group.buffName, $result.perks)
+                        .replace(
+                          /x%/g,
+                          `${(group.strongest.potency * 100).toFixed(0)}%`
+                        )
+                    }
                   </span>
                 </div>
-
                 <!-- ── Sources ── -->
                 <div class="bl-sources-label">Sources</div>
                 <div class="bl-sources">
@@ -193,7 +194,18 @@
                         <div class="bl-bar-wrap">
                           <div class="bl-bar-fill" style="width:{barW}%;background:{def.color}"></div>
                         </div>
-                        <span class="bl-src-potency" style="color:{def.color}">{pct.toFixed(0)}%</span>
+
+                        {#if source.bonusPotency && source.bonusPotency > 0}
+                          <span class="bl-perk-badge">perk +{source.bonusPotency.toFixed(1)}</span>
+                        {/if}
+
+                        <div class="bl-potency-cell">
+                          {#if source.bonusPotency && source.bonusPotency > 0}
+                            <span class="bl-base-val">{source.basePotency?.toFixed(1)}</span>
+                            <span class="bl-arrow">→</span>
+                          {/if}
+                          <span class="bl-src-potency" style="color:{def.color}">{source.potency.toFixed(1)}</span>
+                        </div>
                       </div>
                     </div>
                   {/each}
@@ -203,17 +215,6 @@
             </div>
           {/if}
         {/each}
-      </div>
-
-      <!-- ── Legend ── -->
-      <div class="bl-legend">
-        <span class="bl-leg-icon">ℹ</span>
-        Each 0.1 potency = {
-          [...new Set(list.map(b => {
-            const d = BUFF_DEFS[b.buffName]
-            return d ? `${d.effectPerTenthPotency}${d.effectUnit} (${b.buffName})` : null
-          }).filter(Boolean))].join(' · ')
-        }
       </div>
     {/if}
   {/if}
@@ -386,12 +387,6 @@
     border: 1px solid rgba(167,139,250,.22);
     color: #a78bfa;
   }
-  .bl-tag--stat {
-    background: color-mix(in srgb, var(--c, #4ade80) 10%, transparent);
-    border: 1px solid color-mix(in srgb, var(--c, #4ade80) 25%, transparent);
-    color: var(--c, #4ade80);
-    opacity: .75;
-  }
 
   /* Value box */
   .bl-value-box {
@@ -419,14 +414,6 @@
     font-size: .72rem;
     color: var(--ink-muted, #8a8d85);
     line-height: 1.4;
-  }
-  .bl-formula {
-    font-size: .62rem;
-    color: var(--ink-muted, #8a8d85);
-    opacity: .45;
-    font-family: 'Courier New', monospace;
-    white-space: nowrap;
-    flex-shrink: 0;
   }
 
   /* ── Sources ── */
@@ -530,18 +517,39 @@
     text-align: right;
   }
 
-  /* ── Legend ── */
-  .bl-legend {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 16px;
-    background: rgba(255,255,255,.02);
-    border-top: 1px solid rgba(255,255,255,.04);
-    font-size: .62rem;
-    color: var(--ink-muted, #8a8d85);
-    opacity: .5;
-    font-style: italic;
+  .bl-src-potency {
+    font-size: .72rem;
+    font-weight: 800;
+    font-family: 'Courier New', monospace;
+    line-height: 1;
   }
-  .bl-leg-icon { opacity: .6; }
+.bl-potency-cell {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+}
+.bl-base-val {
+  font-size: .62rem;
+  color: var(--ink-muted, #8a8d85);
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+}
+.bl-arrow {
+  font-size: .6rem;
+  color: var(--ink-muted, #8a8d85);
+  opacity: .5;
+}
+.bl-perk-badge {
+  font-size: .52rem;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  color: #4ade80;
+  background: rgba(74,222,128,.12);
+  border: 1px solid rgba(74,222,128,.25);
+  padding: 1px 5px;
+  border-radius: 3px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
 </style>
