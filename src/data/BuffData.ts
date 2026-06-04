@@ -7,6 +7,7 @@ export interface BuffDefinition {
   effectUnit: '%' | 'flat'
   statKey?: string
   isDebuff?: boolean
+  isSelfDebuff?: boolean 
 }
 
 function formatDamageTypes(types: string[]) {
@@ -23,7 +24,7 @@ export interface GrantedBuff {
   duration: number
   condition?: string
   sourceName: string
-  sourceType: 'rune' | 'ring' | 'armor' | 'weapon' | 'perk' | 'guild'
+  sourceType: 'perk' | 'weaponArt'| 'rune'
 }
 
 
@@ -80,6 +81,137 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
   },
+  'Critical Boost': {
+    name: 'Critical Boost',
+    color: '#ede714',
+    description: 'Next attack will crit.',
+    effectPerTenthPotency: 0.1,
+    effectUnit: 'flat',
+  },
+  Hexigen: {
+    name: 'Hexigen',
+    color: '#fc0279',
+    description: 'Rage increases hex based on your rage boost.',
+    effectPerTenthPotency: 0.1,
+    effectUnit: 'flat',
+  },
+  Inspired: {
+    name: 'Inspired',
+    color: '#818cf8',
+    description: 'Gain x% inspiration.',
+    effectPerTenthPotency: 0.1,
+    effectUnit: 'flat',
+  },
+
+  //Debuff  
+  Slowness: {
+    name: 'Slowness',
+    color: '#7eb4a9',
+    description: 'Move x% slower.',
+    effectPerTenthPotency: 0.1,
+    effectUnit: 'flat',
+    isDebuff: true,
+    isSelfDebuff: true,
+  },
+  Despair: {
+    name: 'Despair',
+    color: '#7c3aed',
+    description: 'Inflict despair.',
+    effectPerTenthPotency: 0.1,
+    effectUnit: 'flat',
+    isDebuff: true,
+    isSelfDebuff: true,
+  },
+  Weakness: {
+    name: 'Weakness',
+    color: '#dc2626',
+    description: 'Reduce enemy damage output.',
+    effectPerTenthPotency: 0.1,
+    effectUnit: 'flat',
+    isDebuff: true,
+    isSelfDebuff: true,
+  },
+  Bleed: {
+    name: 'Bleed',
+    color: '#ef4444',
+    description: 'Enemy bleeds over time.',
+    effectPerTenthPotency: 0.1,
+    effectUnit: 'flat',
+    isDebuff: true,
+    isSelfDebuff: true,
+  },
+  Burn: {
+    name: 'Burn',
+    color: '#f97316',
+    description: 'Enemy burns over time.',
+    effectPerTenthPotency: 0.1,
+    effectUnit: 'flat',
+    isDebuff: true,
+    isSelfDebuff: true,
+  },
+  Poison: {
+    name: 'Poison',
+    color: '#84cc16',
+    description: 'Enemy is poisoned over time.',
+    effectPerTenthPotency: 0.1,
+    effectUnit: 'flat',
+    isDebuff: true,
+    isSelfDebuff: true,
+  },
+  Frostbite: {
+    name: 'Frostbite',
+    color: '#7dd3fc',
+    description: 'Inflict frostbite on enemy.',
+    effectPerTenthPotency: 0.1,
+    effectUnit: 'flat',
+    isDebuff: true,
+    isSelfDebuff: true,
+  },
+  Sticky: {
+    name: 'Sticky',
+    color: '#ca8a04',
+    description: 'Enemy is stuck.',
+    effectPerTenthPotency: 0.1,
+    effectUnit: 'flat',
+    isDebuff: true,
+    isSelfDebuff: true,
+  },
+  Shatter: {
+    name: 'Shatter',
+    color: '#94a3b8',
+    description: 'Shatter enemy armor.',
+    effectPerTenthPotency: 0.1,
+    effectUnit: 'flat',
+    isDebuff: true,
+    isSelfDebuff: true,
+  },
+  'Electrical Rend': {
+    name: 'Electrical Rend',
+    color: '#facc15',
+    description: 'Rend enemy with electricity.',
+    effectPerTenthPotency: 0.1,
+    effectUnit: 'flat',
+    isDebuff: true,
+    isSelfDebuff: true,
+  },
+  Hypnotized: {
+    name: 'Hypnotized',
+    color: '#c084fc',
+    description: 'Hypnotize the enemy.',
+    effectPerTenthPotency: 0.1,
+    effectUnit: 'flat',
+    isDebuff: true,
+    isSelfDebuff: true,
+  },
+  Taunt: {
+    name: 'Taunt',
+    color: '#f97316',
+    description: 'Enemies with this debuff will only target whoever applied it.',
+    effectPerTenthPotency: 0.1,
+    effectUnit: 'flat',
+    isDebuff: true,
+    isSelfDebuff: true,
+  },
 }
 
 export const ITEM_BUFF_MAP: GrantedBuff[] = [
@@ -109,10 +241,100 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       { buffName: 'Tailwind',  potency: 0.2, duration: 15, condition, sourceName: 'Blessing', sourceType: 'perk' },
     ]
   },
+  'Cursed Experiment': (amount) => [
+    { buffName: 'Rage',           potency: 0.3 + 0.1 * amount, duration: 5 + 2 * amount, condition: 'Rune used below 50% HP', sourceName: 'Cursed Experiment', sourceType: 'perk' },
+    { buffName: 'Critical Boost', potency: 1.0,                 duration: 5 + 2 * amount, condition: 'Rune used below 50% HP', sourceName: 'Cursed Experiment', sourceType: 'perk' },
+    { buffName: 'Hexigen',        potency: 1.0,                 duration: 7 + 2 * amount, condition: 'Rune used below 50% HP', sourceName: 'Cursed Experiment', sourceType: 'perk' },
+    { buffName: 'Regen',          potency: 1.0,                 duration: 5 + 2 * amount, condition: 'Rune used below 50% HP', sourceName: 'Cursed Experiment', sourceType: 'perk' },
+    { buffName: 'Slowness',       potency: 1.0,                 duration: 10,             condition: 'After buff expires',     sourceName: 'Cursed Experiment', sourceType: 'perk' },
+  ],
 
   'Beastial Rage': (amount) => [{ 
     buffName: 'Rage', potency: 0.3 * amount, duration: 15, condition: 'On kill or Poisebreak', sourceName: 'Beastial Rage', sourceType: 'perk' 
   }],
+}
+
+export const WEAPON_ART_BUFF_MAP: Record<string, GrantedBuff[]> = {
+  'Warrior Stomp': [
+    { buffName: 'Rage', potency: 0.3, duration: 10, sourceName: 'Warrior Stomp', sourceType: 'weaponArt' },
+    { buffName: 'Taunt', potency: 1.0, duration: 15, sourceName: 'Warrior Stomp', sourceType: 'weaponArt' },
+  ],
+}
+
+export function getWeaponArtBuffs(weaponArtName: string): GrantedBuff[] {
+  return WEAPON_ART_BUFF_MAP[weaponArtName] ?? []
+}
+
+export const TRUE_BALANCE_DEBUFF_MAP: Record<string, {
+  buffName: string
+  getPotency: (perkAmount: number) => number
+  getDuration: (perkAmount: number) => number
+}> = {
+  'Bleed':           { buffName: 'Regen',     getPotency: a => 0.1 * a,       getDuration: a => 1 + a },
+  'Burn':            { buffName: 'Regen',     getPotency: a => 0.1 * a,       getDuration: a => 1 + a },
+  'Poison':          { buffName: 'Regen',     getPotency: a => 0.1 * a,       getDuration: a => 1 + a },
+
+  'Frostbite':       { buffName: 'Tailwind',  getPotency: a => 0.1 * a,       getDuration: a => 3 + a },
+  'Slowness':        { buffName: 'Tailwind',  getPotency: a => 0.1 * a,       getDuration: a => 3 + a },
+  'Sticky':          { buffName: 'Tailwind',  getPotency: a => 0.1 * a,       getDuration: a => 3 + a },
+
+  'Shatter':         { buffName: 'Reinforce', getPotency: a => 0.1 + 0.1 * a, getDuration: a => 5 + a },
+  'Electrical Rend': { buffName: 'Reinforce', getPotency: a => 0.1 + 0.1 * a, getDuration: a => 5 + a },
+  'Hypnotized':      { buffName: 'Reinforce', getPotency: a => 0.1 + 0.1 * a, getDuration: a => 5 + a },
+
+  'Weakness':        { buffName: 'Rage',      getPotency: a => 0.1 * a,       getDuration: a => 3 + a },
+
+  'Despair':         { buffName: 'Inspired',  getPotency: a => 0.1 * a,       getDuration: a => 4 + a },
+}
+
+export function getTrueBalanceBuffs(
+  perkAmount: number,
+  activeDebuffs: GrantedBuff[]
+): GrantedBuff[] {
+  if (perkAmount <= 0 || activeDebuffs.length === 0) return []
+
+  const eligibleDebuffs = activeDebuffs.filter(b => {
+    const mapping = TRUE_BALANCE_DEBUFF_MAP[b.buffName]
+    if (!mapping) return false
+
+    const def = BUFF_DEFS[b.buffName]
+    if (def?.isSelfDebuff) {
+      return b.buffName === 'Despair'
+    }
+    return true
+  })
+
+  if (eligibleDebuffs.length === 0) return []
+
+  const grouped = new Map<string, { sources: string[], maxPotency: number, maxDuration: number }>()
+
+  for (const debuff of eligibleDebuffs) {
+    const mapping = TRUE_BALANCE_DEBUFF_MAP[debuff.buffName]
+    const targetBuffName = mapping.buffName
+
+    const currentPotency = mapping.getPotency(perkAmount)
+    const currentDuration = mapping.getDuration(perkAmount)
+
+    const existing = grouped.get(targetBuffName) ?? { sources: [], maxPotency: 0, maxDuration: 0 }
+    
+    if (!existing.sources.includes(debuff.buffName)) {
+      existing.sources.push(debuff.buffName)
+    }
+    
+    existing.maxPotency = Math.max(existing.maxPotency, currentPotency)
+    existing.maxDuration = Math.max(existing.maxDuration, currentDuration)
+
+    grouped.set(targetBuffName, existing)
+  }
+
+  return [...grouped.entries()].map(([buffName, data]) => ({
+    buffName,
+    potency: Math.round(data.maxPotency * 1000) / 1000,
+    duration: data.maxDuration,
+    condition: `True Balance · on ${data.sources.join(' / ')}`,
+    sourceName: 'True Balance',
+    sourceType: 'perk' as const,
+  }))
 }
 
 interface BuffPotencyModifier {

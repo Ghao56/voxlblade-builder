@@ -7,6 +7,8 @@
     applyBuffPerkModifiers,
     calcBuffEffect,
     getBuffDescription,
+    getTrueBalanceBuffs,
+    getWeaponArtBuffs,
     type GrantedBuff,
   } from './data/BuffData'
 
@@ -24,10 +26,24 @@
 
   $: perkBuffs = getPerkBuffs($result.perks)
 
-  $: activeBuffs = applyBuffPerkModifiers(
-    [...itemBuffs, ...perkBuffs],
+  $: weaponArtBuffs = getWeaponArtBuffs($build.selectedWeaponArt)
+
+  $: baseActiveBuffs = applyBuffPerkModifiers(
+    [...itemBuffs, ...perkBuffs, ...weaponArtBuffs],
     $result.perks
   )
+
+  $: activeDebuffs = baseActiveBuffs.filter(b => BUFF_DEFS[b.buffName]?.isDebuff)
+
+  $: trueBalanceBuffs = getTrueBalanceBuffs(
+    $result.perks['True Balance'] ?? 0,
+    activeDebuffs
+  )
+  
+  $: activeBuffs = [
+    ...baseActiveBuffs,
+    ...trueBalanceBuffs
+  ]
 
   type GroupedBuff = {
     buffName: string
@@ -61,20 +77,14 @@
 
   const SRC_COLOR: Record<string, string> = {
     rune:   '#a78bfa',
-    ring:   '#38bdf8',
-    armor:  '#4ade80',
-    weapon: '#fb923c',
     perk:   '#fbbf24',
-    guild:  '#e879f9',
+    weaponArt: '#38bdf8',
   }
 
   const SRC_LABEL: Record<string, string> = {
     rune:   'Rune',
-    ring:   'Ring',
-    armor:  'Armor',
-    weapon: 'Weapon',
     perk:   'Perk',
-    guild:  'Guild',
+    weaponArt: 'W. Art', 
   }
 </script>
 
@@ -134,6 +144,11 @@
                 <div class="bl-top-row">
                   <div class="bl-name-group">
                     <span class="bl-buff-name" style="color:{def.color}">{def.name}</span>
+                    
+                    {#if def.isSelfDebuff}
+                      <span class="bl-tag bl-tag--self">Self</span>
+                    {/if}
+                    
                     {#if group.maxDuration > 0}
                       <span class="bl-tag bl-tag--duration">⏱ {group.maxDuration}s</span>
                     {:else}
@@ -144,7 +159,7 @@
                   <div class="bl-value-box">
                     <span class="bl-value" style="color:{def.color}">
                       {effect.value}{effect.unit === '%' ? '%' : ''}
-                      {def.isDebuff ? ' to enemy' : ''}
+                      {def.isDebuff && !def.isSelfDebuff ? ' to enemy' : ''}
                     </span>
                   </div>
                 </div>
@@ -517,4 +532,9 @@
     white-space: nowrap;
     flex-shrink: 0;
   }
+  .bl-tag--self {
+  background: rgba(148,163,184,.12);
+  border: 1px solid rgba(148,163,184,.28);
+  color: #94a3b8;
+}
 </style>
