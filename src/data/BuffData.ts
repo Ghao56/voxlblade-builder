@@ -25,6 +25,7 @@ export interface GrantedBuff {
   condition?: string
   sourceName: string
   sourceType: 'perk' | 'weaponArt'| 'rune'
+  isSelfDebuff?: boolean
 }
 
 
@@ -112,7 +113,6 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
     isDebuff: true,
-    isSelfDebuff: true,
   },
   Despair: {
     name: 'Despair',
@@ -121,7 +121,6 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
     isDebuff: true,
-    isSelfDebuff: true,
   },
   Weakness: {
     name: 'Weakness',
@@ -130,7 +129,6 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
     isDebuff: true,
-    isSelfDebuff: true,
   },
   Bleed: {
     name: 'Bleed',
@@ -139,7 +137,6 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
     isDebuff: true,
-    isSelfDebuff: true,
   },
   Burn: {
     name: 'Burn',
@@ -148,7 +145,6 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
     isDebuff: true,
-    isSelfDebuff: true,
   },
   Poison: {
     name: 'Poison',
@@ -157,7 +153,6 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
     isDebuff: true,
-    isSelfDebuff: true,
   },
   Frostbite: {
     name: 'Frostbite',
@@ -166,7 +161,6 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
     isDebuff: true,
-    isSelfDebuff: true,
   },
   Sticky: {
     name: 'Sticky',
@@ -175,7 +169,6 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
     isDebuff: true,
-    isSelfDebuff: true,
   },
   Shatter: {
     name: 'Shatter',
@@ -184,7 +177,6 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
     isDebuff: true,
-    isSelfDebuff: true,
   },
   'Electrical Rend': {
     name: 'Electrical Rend',
@@ -193,7 +185,6 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
     isDebuff: true,
-    isSelfDebuff: true,
   },
   Hypnotized: {
     name: 'Hypnotized',
@@ -202,7 +193,6 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
     isDebuff: true,
-    isSelfDebuff: true,
   },
   Taunt: {
     name: 'Taunt',
@@ -211,7 +201,6 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
     isDebuff: true,
-    isSelfDebuff: true,
   },
 }
 
@@ -247,12 +236,13 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
     { buffName: 'Critical Boost', potency: 1.0,                 duration: 5 + 2 * amount, condition: 'Rune used below 50% HP', sourceName: 'Cursed Experiment', sourceType: 'perk' },
     { buffName: 'Hexigen',        potency: 1.0,                 duration: 7 + 2 * amount, condition: 'Rune used below 50% HP', sourceName: 'Cursed Experiment', sourceType: 'perk' },
     { buffName: 'Regen',          potency: 1.0,                 duration: 5 + 2 * amount, condition: 'Rune used below 50% HP', sourceName: 'Cursed Experiment', sourceType: 'perk' },
-    { buffName: 'Slowness',       potency: 1.0,                 duration: 10,             condition: 'After buff expires',     sourceName: 'Cursed Experiment', sourceType: 'perk' },
+    { buffName: 'Slowness',       potency: 1.0,                 duration: 10,             condition: 'After buff expires',     sourceName: 'Cursed Experiment', sourceType: 'perk',
+    isSelfDebuff: true },
   ],
 
   'Beastial Rage': (amount) => [{ 
     buffName: 'Rage', potency: 0.3 * amount, duration: 15, condition: 'On kill or Poisebreak', sourceName: 'Beastial Rage', sourceType: 'perk' 
-  }],
+  }], 
 }
 
 export const WEAPON_ART_BUFF_MAP: Record<string, GrantedBuff[]> = {
@@ -297,6 +287,7 @@ export function getTrueBalanceBuffs(
   const eligibleDebuffs = activeDebuffs.filter(b => {
     const mapping = TRUE_BALANCE_DEBUFF_MAP[b.buffName]
     if (!mapping) return false
+    if (b.isSelfDebuff) return b.buffName === 'Despair'
 
     const def = BUFF_DEFS[b.buffName]
     if (def?.isSelfDebuff) {
@@ -342,12 +333,15 @@ interface BuffPotencyModifier {
   buffName: string
   potencyPerStack: number
   label: string
+  runeFilter?: string
 }
 
 const BUFF_POTENCY_MODIFIERS: BuffPotencyModifier[] = [
   { buffName: 'Rage', potencyPerStack: 0.1, label: 'Gladiatorial Rage' },
   { buffName: 'Rage', potencyPerStack: 0.1, label: 'Mage Rage' },
   { buffName: 'Rage', potencyPerStack: 0.1, label: 'Oceans Rage' },
+  { buffName: 'Rage',     potencyPerStack: 0.2, label: 'Slayer Rage', runeFilter: 'Rage Rune' },
+  { buffName: 'Weakness', potencyPerStack: 0.1, label: 'Slayer Rage', runeFilter: 'Weakening Roar Rune' },
 ]
 
 const MODIFIERS_BY_BUFF = BUFF_POTENCY_MODIFIERS.reduce((acc, mod) => {
@@ -363,7 +357,8 @@ const BUFFS_BY_ITEM_SOURCE = ITEM_BUFF_MAP.reduce((acc, buff) => {
 
 export function applyBuffPerkModifiers(
   buffs: GrantedBuff[],
-  perks: Record<string, number>
+  perks: Record<string, number>,
+  activeRune?: string
 ): GrantedBuff[] {
   if (buffs.length === 0) return buffs
 
@@ -373,6 +368,7 @@ export function applyBuffPerkModifiers(
 
     let bonus = 0
     for (const mod of modifiers) {
+      if (mod.runeFilter && mod.runeFilter !== buff.sourceName) continue
       const stacks = perks[mod.label] ?? 0
       if (stacks > 0) bonus += mod.potencyPerStack * stacks
     }

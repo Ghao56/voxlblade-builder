@@ -30,7 +30,8 @@
 
   $: baseActiveBuffs = applyBuffPerkModifiers(
     [...itemBuffs, ...perkBuffs, ...weaponArtBuffs],
-    $result.perks
+    $result.perks,
+    $build.rune || undefined
   )
 
   $: activeDebuffs = baseActiveBuffs.filter(b => BUFF_DEFS[b.buffName]?.isDebuff)
@@ -47,27 +48,30 @@
 
   type GroupedBuff = {
     buffName: string
+    isSelfDebuff: boolean
     entries: GrantedBuff[]
     strongest: GrantedBuff
     maxDuration: number
   }
 
-  $: groupedBuffs = Object.values(
-    activeBuffs.reduce((acc, buff) => {
-      (acc[buff.buffName] ??= []).push(buff)
-      return acc
-    }, {} as Record<string, GrantedBuff[]>)
-  ).map(entries => {
-    const sortedEntries = [...entries].sort(
-      (a, b) => (b.potency - a.potency) || (b.duration - a.duration)
-    )
-    return {
-      buffName: sortedEntries[0].buffName,
-      entries: sortedEntries,
-      strongest: sortedEntries[0],
-      maxDuration: Math.max(...sortedEntries.map(e => e.duration)),
-    }
-  })
+$: groupedBuffs = Object.values(
+  activeBuffs.reduce((acc, buff) => {
+    const k = `${buff.buffName}:${String(buff.isSelfDebuff ?? false)}`
+    ;(acc[k] ??= []).push(buff)
+    return acc
+  }, {} as Record<string, GrantedBuff[]>)
+).map(entries => {
+  const sortedEntries = [...entries].sort(
+    (a, b) => (b.potency - a.potency) || (b.duration - a.duration)
+  )
+  return {
+    buffName: sortedEntries[0].buffName,
+    isSelfDebuff: sortedEntries[0].isSelfDebuff ?? false,
+    entries: sortedEntries,
+    strongest: sortedEntries[0],
+    maxDuration: Math.max(...sortedEntries.map(e => e.duration)),
+  }
+})
 
   $: buffs = groupedBuffs.filter(g => !BUFF_DEFS[g.buffName]?.isDebuff)
   $: debuffs = groupedBuffs.filter(g => BUFF_DEFS[g.buffName]?.isDebuff)
@@ -145,7 +149,7 @@
                   <div class="bl-name-group">
                     <span class="bl-buff-name" style="color:{def.color}">{def.name}</span>
                     
-                    {#if def.isSelfDebuff}
+                    {#if group.strongest.isSelfDebuff}
                       <span class="bl-tag bl-tag--self">Self</span>
                     {/if}
                     

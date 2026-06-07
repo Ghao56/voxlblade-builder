@@ -355,7 +355,10 @@ function applyEnchantToAll(slot: EnchantSlot) {
           out.push({ label, type }); 
         }
       }
-
+      const ARMOR_SLOT_MODALS = new Set([
+        'armor-helmet', 'armor-chestplate', 'armor-leggings',
+        'infusion-helmet', 'infusion-chestplate', 'infusion-leggings',
+      ]);
       if (activeModal === 'race') {
         races.forEach(r => add(r.name, 'name'));
       } else if (activeModal === 'guild') {
@@ -363,8 +366,10 @@ function applyEnchantToAll(slot: EnchantSlot) {
           add(g.name, 'name');
           g.ranks.forEach(r => (r.perks ?? []).forEach((p: any) => add(p.name, 'perk')));
         });
-      } else if (activeModal.startsWith('armor-') || activeModal.startsWith('infusion-')) {
-        const slotName = activeModal.endsWith('helmet') ? 'Helmet' : activeModal.endsWith('chestplate') ? 'Chestplate' : 'Leggings';
+      } else if (ARMOR_SLOT_MODALS.has(activeModal)) {
+        const slotName = activeModal.endsWith('helmet') ? 'Helmet' 
+                      : activeModal.endsWith('chestplate') ? 'Chestplate' 
+                      : 'Leggings';
         armors.forEach(a => { 
           const p = getArmorPart(a.name, slotName); 
           if (p) { add(a.name, 'name'); if (p.perkName) add(p.perkName, 'perk'); } 
