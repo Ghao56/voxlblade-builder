@@ -223,6 +223,13 @@ export const ITEM_BUFF_MAP: GrantedBuff[] = [
     sourceName: 'Rage Rune',
     sourceType: 'rune',
   },
+  {
+    buffName: 'Rage',
+    potency: 0.2,
+    duration: 10,
+    sourceName: 'Toad Slam Rune',
+    sourceType: 'rune',
+  },
 ]
 
 type PerkBuffFactory = (amount: number, allPerks: Record<string, number>) => GrantedBuff[]
@@ -396,24 +403,26 @@ export function applyBuffPerkModifiers(
   activeRune?: string
 ): GrantedBuff[] {
   if (buffs.length === 0) return buffs
-
+  const furyStacks = perks['Fury'] ?? 0
   return buffs.map(buff => {
-    const modifiers = MODIFIERS_BY_BUFF[buff.buffName]
-    if (!modifiers) return buff
+    let updatedBuff = { ...buff }
+    if (buff.buffName === 'Rage' && furyStacks > 0) {
+      updatedBuff.duration = Math.round(buff.duration * (1 + 0.5 * furyStacks))
+    }
+    const modifiers = MODIFIERS_BY_BUFF[updatedBuff.buffName]
+    if (!modifiers) return updatedBuff
 
     let bonus = 0
     for (const mod of modifiers) {
-      if (mod.runeFilter && mod.runeFilter !== buff.sourceName) continue
+      if (mod.runeFilter && mod.runeFilter !== updatedBuff.sourceName) continue
       const stacks = perks[mod.label] ?? 0
       if (stacks > 0) bonus += mod.potencyPerStack * stacks
     }
-
-    if (bonus === 0) return buff
-
+    if (bonus === 0) return updatedBuff
     return {
-      ...buff,
-      potency: Math.round((buff.potency + bonus) * 1000) / 1000,
-      basePotency: buff.potency,
+      ...updatedBuff,
+      potency: Math.round((updatedBuff.potency + bonus) * 1000) / 1000,
+      basePotency: updatedBuff.potency,
       bonusPotency: Math.round(bonus * 1000) / 1000,
     }
   })

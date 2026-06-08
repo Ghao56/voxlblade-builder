@@ -92,8 +92,7 @@ $: groupedBuffs = Object.values(
     weaponArt: 'W. Art', 
   }
   function fmtPotency(v: number): string {
-    const r = Math.round(v * 100) / 100
-    return Number.isInteger(r) ? String(r) : r.toFixed(2)
+    return String(Math.round(v * 100) / 100);
   }
 </script>
 

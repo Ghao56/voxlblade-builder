@@ -23,6 +23,13 @@
   import WeaponStatFilter from './WeaponStatFilter.svelte'
   import BuffList from './BuffList.svelte'
 
+  $: {
+    const _maxSummons = 15 + ($result.perks['Swarm'] ?? 0)
+    if ($build.summonCount !== _maxSummons) {
+      build.update(s => ({ ...s, summonCount: _maxSummons }))
+    }
+  }
+
   let weaponStatFilter: Map<string, 'include' | 'exclude'> = new Map()
   let weaponStatFilterRef: WeaponStatFilter
 

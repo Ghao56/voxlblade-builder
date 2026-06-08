@@ -578,7 +578,6 @@ function applyWeaponCharge(dmg:number){
   return selectedWeaponData.m2Charge.formula(dmg, weaponCharge)
 }
 $: maxSummons = 15 + (perks['Swarm'] ?? 0);
-$: {if (maxSummons) {build.update(s => ({...s,summonCount: maxSummons}));}}
 </script>
 
 <div class="da-root">
@@ -649,21 +648,19 @@ $: {if (maxSummons) {build.update(s => ({...s,summonCount: maxSummons}));}}
     {#if (perks['Vassals Croak'] ?? 0) > 0}
       <div class="da-summon-row">
         <span class="da-summon-label">Active Summons</span>
-        <input
-          class="da-summon-input"
-          type="number"
-          min="0"
-          max={maxSummons}
-          value={$build.summonCount}
+        <input 
+          class="da-summon-input" 
+          type="number" 
+          min="0" 
+          max={maxSummons} 
+          bind:value={$build.summonCount} 
           on:input={e => {
-            const inputEl = e.currentTarget;
-            let val = parseInt(inputEl.value);
+            let val = parseInt(e.currentTarget.value);
             if (isNaN(val)) val = maxSummons;
             if (val > maxSummons) val = maxSummons;
             if (val < 0) val = 0;
-            inputEl.value = val.toString();
-            build.update(s => ({...s,summonCount: val}));
-          }}
+            build.update(s => ({ ...s, summonCount: val }));
+          }} 
         />
         <span class="da-summon-max">/ {maxSummons}</span>
       </div>
