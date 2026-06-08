@@ -577,6 +577,8 @@ function applyWeaponCharge(dmg:number){
   }
   return selectedWeaponData.m2Charge.formula(dmg, weaponCharge)
 }
+$: maxSummons = 15 + (perks['Swarm'] ?? 0);
+$: {if (maxSummons) {build.update(s => ({...s,summonCount: maxSummons}));}}
 </script>
 
 <div class="da-root">
@@ -644,6 +646,29 @@ function applyWeaponCharge(dmg:number){
 <!-- ══════════════════ COMBAT MULTIPLIERS ══════════════════ -->
 <div class="da-section">
   <div class="da-section-title">⚔ Combat Multipliers</div>
+    {#if (perks['Vassals Croak'] ?? 0) > 0}
+      <div class="da-summon-row">
+        <span class="da-summon-label">Active Summons</span>
+        <input
+          class="da-summon-input"
+          type="number"
+          min="0"
+          max={maxSummons}
+          value={$build.summonCount}
+          on:input={e => {
+            const inputEl = e.currentTarget;
+            let val = parseInt(inputEl.value);
+            if (isNaN(val)) val = maxSummons;
+            if (val > maxSummons) val = maxSummons;
+            if (val < 0) val = 0;
+            inputEl.value = val.toString();
+            build.update(s => ({...s,summonCount: val}));
+          }}
+        />
+        <span class="da-summon-max">/ {maxSummons}</span>
+      </div>
+    {/if}
+
   <div class="da-boost-row">
     {#each boosts.dmgEntries as entry}
       {@const disabled = disabledBoosts.has(entry.sourceName)}
@@ -2107,5 +2132,44 @@ function applyWeaponCharge(dmg:number){
 @keyframes da-pulse-gun {
   0%, 100% { box-shadow: 0 0 0 0 rgba(56,189,248,.4); }
   50%       { box-shadow: 0 0 0 4px rgba(56,189,248,.0); }
+}
+.da-summon-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  background: rgba(192,132,252,.08);
+  border: 1px solid rgba(192,132,252,.22);
+  border-radius: 7px;
+  width: fit-content;
+}
+.da-summon-label {
+  font-size: .62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: #c084fc;
+  opacity: .8;
+}
+.da-summon-input {
+  font-family: 'Courier New', monospace;
+  font-size: .9rem;
+  font-weight: 800;
+  color: #c084fc;
+  background: none;
+  border: none;
+  outline: none;
+  width: 36px;
+  text-align: center;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+.da-summon-input::-webkit-inner-spin-button,
+.da-summon-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+.da-summon-max {
+  font-size: .62rem;
+  color: #c084fc;
+  opacity: .45;
+  font-family: 'Courier New', monospace;
 }
 </style>

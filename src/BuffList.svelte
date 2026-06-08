@@ -73,11 +73,12 @@ $: groupedBuffs = Object.values(
   }
 })
 
-  $: buffs = groupedBuffs.filter(g => !BUFF_DEFS[g.buffName]?.isDebuff)
-  $: debuffs = groupedBuffs.filter(g => BUFF_DEFS[g.buffName]?.isDebuff)
+  $: buffs    = groupedBuffs.filter(g => !BUFF_DEFS[g.buffName]?.isDebuff && !BUFF_DEFS[g.buffName]?.isNeutral)
+  $: debuffs  = groupedBuffs.filter(g =>  BUFF_DEFS[g.buffName]?.isDebuff)
+  $: neutrals = groupedBuffs.filter(g =>  BUFF_DEFS[g.buffName]?.isNeutral)
 
   let expanded = true
-  let activeTab: 'buffs' | 'debuffs' = 'buffs'
+  let activeTab: 'buffs' | 'debuffs' | 'neutral' = 'buffs'
 
   const SRC_COLOR: Record<string, string> = {
     rune:   '#a78bfa',
@@ -89,6 +90,10 @@ $: groupedBuffs = Object.values(
     rune:   'Rune',
     perk:   'Perk',
     weaponArt: 'W. Art', 
+  }
+  function fmtPotency(v: number): string {
+    const r = Math.round(v * 100) / 100
+    return Number.isInteger(r) ? String(r) : r.toFixed(2)
   }
 </script>
 
@@ -117,14 +122,26 @@ $: groupedBuffs = Object.values(
           <span class="bl-count bl-count--debuff">{debuffs.length}</span>
         {/if}
       </button>
-    </div>
-    <button class="bl-collapse" on:click={() => expanded = !expanded}>
-      {expanded ? '▲' : '▼'}
-    </button>
-  </div>
+
+      <button
+        class="bl-tab"
+        class:bl-tab--active={activeTab === 'neutral'}
+        on:click={() => { activeTab = 'neutral'; expanded = true }}
+      >
+        <span class="bl-tab-dot bl-tab-dot--neutral"></span>
+        Neutral
+        {#if neutrals.length > 0}
+          <span class="bl-count bl-count--neutral">{neutrals.length}</span>
+        {/if}
+      </button>
+        </div>
+        <button class="bl-collapse" on:click={() => expanded = !expanded}>
+          {expanded ? '▲' : '▼'}
+        </button>
+      </div>
 
   {#if expanded}
-    {@const list = activeTab === 'buffs' ? buffs : debuffs}
+    {@const list = activeTab === 'buffs' ? buffs : activeTab === 'debuffs' ? debuffs : neutrals}
     {#if list.length === 0}
       <div class="bl-empty">
         <span class="bl-empty-icon">{activeTab === 'buffs' ? 'ඞ' : '☢'}</span>
@@ -155,8 +172,6 @@ $: groupedBuffs = Object.values(
                     
                     {#if group.maxDuration > 0}
                       <span class="bl-tag bl-tag--duration">⏱ {group.maxDuration}s</span>
-                    {:else}
-                      <span class="bl-tag bl-tag--passive">Passive</span>
                     {/if}
                   </div>
 
@@ -203,15 +218,15 @@ $: groupedBuffs = Object.values(
                         </div>
 
                         {#if source.bonusPotency && source.bonusPotency > 0}
-                          <span class="bl-perk-badge">perk +{source.bonusPotency.toFixed(1)}</span>
+                          <span class="bl-perk-badge">perk +{fmtPotency(source.bonusPotency)}</span>
                         {/if}
 
                         <div class="bl-potency-cell">
                           {#if source.bonusPotency && source.bonusPotency > 0}
-                            <span class="bl-base-val">{source.basePotency?.toFixed(1)}</span>
+                            <span class="bl-base-val">{fmtPotency(source.basePotency ?? 0)}</span>
                             <span class="bl-arrow">→</span>
                           {/if}
-                          <span class="bl-src-potency" style="color:{def.color}">{source.potency.toFixed(1)}</span>
+                          <span class="bl-src-potency" style="color:{def.color}">{fmtPotency(source.potency)}</span>
                         </div>
                       </div>
                     </div>
@@ -380,11 +395,6 @@ $: groupedBuffs = Object.values(
     border: 1px solid rgba(52,211,153,.22);
     color: #34d399;
   }
-  .bl-tag--passive {
-    background: rgba(167,139,250,.1);
-    border: 1px solid rgba(167,139,250,.22);
-    color: #a78bfa;
-  }
 
   .bl-value-box { flex-shrink: 0; }
   .bl-value {
@@ -537,8 +547,16 @@ $: groupedBuffs = Object.values(
     flex-shrink: 0;
   }
   .bl-tag--self {
-  background: rgba(148,163,184,.12);
-  border: 1px solid rgba(148,163,184,.28);
-  color: #94a3b8;
-}
+    background: rgba(148,163,184,.12);
+    border: 1px solid rgba(148,163,184,.28);
+    color: #94a3b8;
+  }
+  .bl-tab-dot--neutral { background: #6366f1; box-shadow: 0 0 5px rgba(99,102,241,.5); }
+  .bl-count--neutral   { background: rgba(99,102,241,.15); border: 1px solid rgba(99,102,241,.3); color: #6366f1; }
+
+  .bl-tab--active:nth-child(3) {
+    color: #6366f1;
+    border-bottom-color: #6366f1;
+    background: rgba(99,102,241,.04);
+  }
 </style>

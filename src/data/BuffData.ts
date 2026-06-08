@@ -7,7 +7,8 @@ export interface BuffDefinition {
   effectUnit: '%' | 'flat'
   statKey?: string
   isDebuff?: boolean
-  isSelfDebuff?: boolean 
+  isSelfDebuff?: boolean
+  isNeutral?: boolean
 }
 
 function formatDamageTypes(types: string[]) {
@@ -108,7 +109,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
   //Debuffs
   Slowness: {
     name: 'Slowness',
-    color: '#7eb4a9',
+    color: '#7eb4ad',
     description: 'Move x% slower.',
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
@@ -116,7 +117,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
   },
   Despair: {
     name: 'Despair',
-    color: '#7c3aed',
+    color: '#54405d',
     description: 'Inflict despair.',
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
@@ -124,7 +125,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
   },
   Weakness: {
     name: 'Weakness',
-    color: '#dc2626',
+    color: '#8b11e9',
     description: 'Reduce enemy damage output.',
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
@@ -132,7 +133,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
   },
   Bleed: {
     name: 'Bleed',
-    color: '#ef4444',
+    color: '#ff0004',
     description: 'Enemy bleeds over time.',
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
@@ -140,7 +141,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
   },
   Burn: {
     name: 'Burn',
-    color: '#f97316',
+    color: '#fd5d00',
     description: 'Enemy burns over time.',
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
@@ -148,7 +149,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
   },
   Poison: {
     name: 'Poison',
-    color: '#84cc16',
+    color: '#d900ff',
     description: 'Enemy is poisoned over time.',
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
@@ -156,7 +157,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
   },
   Frostbite: {
     name: 'Frostbite',
-    color: '#7dd3fc',
+    color: '#54a4ec',
     description: 'Inflict frostbite on enemy.',
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
@@ -164,7 +165,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
   },
   Sticky: {
     name: 'Sticky',
-    color: '#ca8a04',
+    color: '#ff9349',
     description: 'Enemy is stuck.',
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
@@ -172,7 +173,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
   },
   Shatter: {
     name: 'Shatter',
-    color: '#94a3b8',
+    color: '#ff8183',
     description: 'Shatter enemy armor.',
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
@@ -180,7 +181,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
   },
   'Electrical Rend': {
     name: 'Electrical Rend',
-    color: '#facc15',
+    color: '#fff47a',
     description: 'Rend enemy with electricity.',
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
@@ -188,7 +189,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
   },
   Hypnotized: {
     name: 'Hypnotized',
-    color: '#c084fc',
+    color: '#8b4aab',
     description: 'Hypnotize the enemy.',
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
@@ -196,11 +197,21 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
   },
   Taunt: {
     name: 'Taunt',
-    color: '#f97316',
+    color: '#e50604',
     description: 'Enemies with this debuff will only target whoever applied it.',
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
     isDebuff: true,
+  },
+
+  //Neutral
+  'Last Croak': {
+    name: 'Last Croak',
+    color: '#94ff88',
+    description: 'Neutral status. Consume on RMB hit to trigger an explosion and gain Rage. Rage potency = 0.1 + 0.01 × stacks × perk.',
+    effectPerTenthPotency: 0.1,
+    effectUnit: 'flat',
+    isNeutral: true,
   },
 }
 
@@ -214,7 +225,7 @@ export const ITEM_BUFF_MAP: GrantedBuff[] = [
   },
 ]
 
-type PerkBuffFactory = (amount: number) => GrantedBuff[]
+type PerkBuffFactory = (amount: number, allPerks: Record<string, number>) => GrantedBuff[]
 
 const PERK_BUFFS: Record<string, PerkBuffFactory> = {
   'Wrathful Crits': (amount) => [{ 
@@ -242,7 +253,31 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
 
   'Beastial Rage': (amount) => [{ 
     buffName: 'Rage', potency: 0.3 * amount, duration: 15, condition: 'On kill or Poisebreak', sourceName: 'Beastial Rage', sourceType: 'perk' 
-  }], 
+  }],
+  'Vassals Croak': (amount, allPerks) => {
+    const swarm = allPerks['Swarm'] ?? 0
+    const maxStacks = 15 + swarm
+    const minRage = Math.round((0.1 + 0.01 * 1 * amount) * 1000) / 1000
+    const maxRage = Math.round((0.1 + 0.01 * maxStacks * amount) * 1000) / 1000
+    return [
+      {
+        buffName: 'Last Croak',
+        potency: maxStacks,
+        duration: 0,
+        condition: `Per minion death · max ${maxStacks} stacks`,
+        sourceName: 'Vassals Croak',
+        sourceType: 'perk',
+      },
+      {
+        buffName: 'Rage',
+        potency: maxRage,
+        duration: 10,
+        condition: `On RMB consume · ${minRage}–${maxRage} potency (1–${maxStacks} stacks)`,
+        sourceName: 'Vassals Croak',
+        sourceType: 'perk',
+      },
+    ]
+  },
 }
 
 export const WEAPON_ART_BUFF_MAP: Record<string, GrantedBuff[]> = {
@@ -403,7 +438,7 @@ export function getPerkBuffs(perks: Record<string, number>): GrantedBuff[] {
     if (amount <= 0) continue
     const factory = PERK_BUFFS[perkName]
     if (!factory) continue
-    buffs.push(...factory(amount))
+    buffs.push(...factory(amount, perks))
   }
 
   return buffs

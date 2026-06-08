@@ -206,6 +206,7 @@ export interface BuildState {
   emotionalState: 'buffs' | 'debuffs' | 'both'
   level: number
   hpFill: number
+  summonCount: number
 }
 
 export interface BoostEntry {

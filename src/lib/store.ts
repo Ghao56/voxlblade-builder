@@ -37,6 +37,7 @@ export const build = writable<BuildState>({
   emotionalState: 'buffs',
   level: 80,
   hpFill: 100,
+  summonCount: 0,
 })
 
 export const result = derived(build, $b => calcBuild($b))

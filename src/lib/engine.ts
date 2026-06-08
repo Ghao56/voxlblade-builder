@@ -97,7 +97,7 @@ export function isMonkGuild(guildName: string): boolean {
   return guildName === "Monk"
 }
 
-export function calcBoosts(perks: Record<string, number>, emotionalState?: string, level: number = 80, naturalCritChance: number = 0, jumpBoost: number = 0): BoostResult {
+export function calcBoosts(perks: Record<string, number>, emotionalState?: string, level: number = 80, naturalCritChance: number = 0, jumpBoost: number = 0,summonCount: number = 0): BoostResult {
   const dmgMap = new Map<string, BoostEntry>()
   const healMap = new Map<string, BoostEntry>()
 
@@ -178,6 +178,17 @@ export function calcBoosts(perks: Record<string, number>, emotionalState?: strin
       type: 'heal',
     })
   }
+  
+  const vassalsCroakStacks = perks['Vassals Croak'] ?? 0
+  if (vassalsCroakStacks > 0 && summonCount > 0) {
+    const mult = 1 + 0.02 * summonCount * vassalsCroakStacks
+    dmgMap.set("Vassals Croak", {
+      sourceName: "Vassals Croak",
+      rawMultiplier: Math.round(mult * 10000) / 10000,
+      condition: `${summonCount} summons × ${vassalsCroakStacks} stack × 2%`,
+      type: 'dmg',
+    })
+  }
 
   const dmgEntries = [...dmgMap.values()]
   const healEntries = [...healMap.values()]
@@ -194,6 +205,7 @@ export function calcBoosts(perks: Record<string, number>, emotionalState?: strin
     dmgFinalMultiplier: Math.round(dmgFinal * 10000) / 10000,
     healFinalMultiplier: Math.round(healFinal * 10000) / 10000,
   }
+  
 }
 
 export function applyMonkGuildBonus(stats: StatMap, glovePerks: Array<{name: string; amount: number}>, monkRank: number): { stats: StatMap; perkBonus: number } {
@@ -950,7 +962,7 @@ export function calcBuild(state: BuildState): BuildResult {
   }
 
   const crit = calcCrit(boostedStats, finalPerks)
-  const boosts = calcBoosts(finalPerks, state.emotionalState, state.level ?? 80, crit.naturalCritChance, boostedStats.jumpBoost ?? 0)
+  const boosts = calcBoosts(finalPerks, state.emotionalState, state.level ?? 80, crit.naturalCritChance, boostedStats.jumpBoost ?? 0,state.summonCount ?? 0)
   return { stats: boostedStats, perks: finalPerks, cdr, boosts, crit }
 }
 
