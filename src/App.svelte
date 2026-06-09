@@ -966,6 +966,7 @@ $: highestDamageType = (() => {
     const req = wa.requirements
 
     if (wa.isMonk && !_isMonk) return false
+    
 
     if (req.guild === 'Monk' && !_isMonk) return false
 
@@ -980,9 +981,28 @@ $: highestDamageType = (() => {
       airScaling: 'air', hexScaling: 'hex', holyScaling: 'holy',
       dexterityScaling: 'dexterity', summonScaling: 'summon'
     }
-    for (const [reqKey, scalingKey] of Object.entries(scaleMap)) {
-      const needed = (req as any)[reqKey]
-      if (needed != null && (_waScalings[scalingKey] ?? 0) < needed) return false
+    if (req.atLeastOneScaling) {
+      const passes = Object.entries(req.atLeastOneScaling).some(([reqKey, minVal]) => {
+        const scalingKey = scaleMap[reqKey as keyof typeof scaleMap]
+        return scalingKey != null && (_waScalings[scalingKey] ?? 0) >= (minVal ?? 0)
+      })
+      if (!passes) return false
+    }
+    
+    const isScalingExempt = req.scalingExemptWeaponTypes?.includes(finalWeaponType) ?? false;
+
+    if (!isScalingExempt) {
+      if (req.atLeastOneScaling) {
+        const passes = Object.entries(req.atLeastOneScaling).some(([reqKey, minVal]) => {
+          const scalingKey = scaleMap[reqKey as keyof typeof scaleMap];
+          return scalingKey != null && (_waScalings[scalingKey] ?? 0) >= (minVal ?? 0);
+        });
+        if (!passes) return false;
+      }
+      for (const [reqKey, scalingKey] of Object.entries(scaleMap)) {
+        const needed = (req as any)[reqKey];
+        if (needed != null && (_waScalings[scalingKey] ?? 0) < needed) return false;
+      }
     }
 
     if (req.physicalDefense != null && (stats.physicalDefense ?? 0) < req.physicalDefense) return false
@@ -1001,7 +1021,7 @@ $: highestDamageType = (() => {
 
   // Reactive snapshots để force Svelte track
   $: _waScalings = weaponResult?.baseScalings ?? {} as Record<string, number>
-  $: _waStats = weaponResult?.stats ?? {} as Record<string, number>  // chỉ weapon stats
+  $: _waStats = weaponResult?.stats ?? {} as Record<string, number>
   $: _waWeaponType = weaponResult?.finalWeaponType ?? ''
   $: _waBlade = $build.weaponBlade
   $: _waHandle = $build.weaponHandle
@@ -1031,13 +1051,15 @@ $: {
   $: waAvailable = checkWA(selectedWA, _waScalings, _waStats, _waWeaponType, isMonk, _waBlade, _waHandle)
   $: waReq = selectedWA.requirements
 
-  // Các req không đạt (để hiện trong UI)
   $: waUnmetReqs = (() => {
     const req = waReq
+    if (!req) return []
     const unmet: string[] = []
+    
     if (req.guild && !isMonk) unmet.push(`Guild: ${req.guild}`)
     if (req.weaponType?.length && !req.weaponType.some(t => t === _waWeaponType))
       unmet.push(`Weapon: ${req.weaponType.join(' / ')}`)
+      
     const scaleMapLabels: Array<[string, string, string]> = [
       ['physicalScaling', 'physical', 'Physical'],
       ['magicScaling', 'magic', 'Magic'],
@@ -1050,11 +1072,31 @@ $: {
       ['dexterityScaling', 'dexterity', 'Dexterity'],
       ['summonScaling', 'summon', 'Summon'],
     ]
-    for (const [reqKey, scalingKey, label] of scaleMapLabels) {
-      const needed = (req as any)[reqKey]
-      if (needed != null && (_waScalings[scalingKey] ?? 0) < needed)
-        unmet.push(`${label} Scaling ≥ ${needed}`)
+
+    const isScalingExempt = req.scalingExemptWeaponTypes?.includes(_waWeaponType) ?? false
+
+    if (!isScalingExempt) {
+      for (const [reqKey, scalingKey, label] of scaleMapLabels) {
+        const needed = (req as any)[reqKey]
+        if (needed != null && (_waScalings[scalingKey] ?? 0) < needed)
+          unmet.push(`${label} Scaling ≥ ${needed}`)
+      }
+
+      if (req.atLeastOneScaling) {
+        const passes = Object.entries(req.atLeastOneScaling).some(([reqKey, minVal]) => {
+          const entry = scaleMapLabels.find(([rk]) => rk === reqKey)
+          return entry != null && (_waScalings[entry[1]] ?? 0) >= (minVal ?? 0)
+        })
+        if (!passes) {
+          const parts = Object.entries(req.atLeastOneScaling).map(([reqKey, minVal]) => {
+            const entry = scaleMapLabels.find(([rk]) => rk === reqKey)
+            return `${entry?.[2] ?? reqKey} Scaling ≥ ${minVal}`
+          })
+          unmet.push(`At least one of: ${parts.join(' / ')}`)
+        }
+      }
     }
+
     if (req.magicBoost != null && (_waStats.magicBoost ?? 0) < req.magicBoost) unmet.push(`Magic Boost ≥ +${req.magicBoost}%`)
     if (req.holyBoost != null && (_waStats.holyBoost ?? 0) < req.holyBoost) unmet.push(`Holy Boost ≥ +${req.holyBoost}%`)
     if (req.summonBoost != null && (_waStats.summonBoost ?? 0) < req.summonBoost) unmet.push(`Summon Boost ≥ +${req.summonBoost}%`)
@@ -1063,8 +1105,10 @@ $: {
     if (req.physicalDefense != null && (_waStats.physicalDefense ?? 0) < req.physicalDefense) unmet.push(`Physical Defense ≥ +${req.physicalDefense}%`)
     if (req.bothParts && !req.bothParts.every(p => p === _waBlade || p === _waHandle))
       unmet.push(`Cần cả: ${req.bothParts.join(' + ')}`)
+      
     return unmet
   })()
+
 // ── Weapon stat groups ──────────────────────────────────────────────────────
 const DMG_TYPE_KEYS = new Set(['physicalType','magicType','fireType','waterType','earthType','airType','hexType','holyType','trueType','summonType'])
 const SCALING_KEYS = new Set(['physicalScaling','magicScaling','fireScaling','waterScaling','earthScaling','airScaling','hexScaling','holyScaling','dexterityScaling','summonScaling'])

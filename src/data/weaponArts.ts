@@ -18,7 +18,9 @@ export interface WeaponArtRequirement {
   weaponType?: string[]
   guild?: string
   bothParts?: string[]
+  atLeastOneScaling?: Partial<Record<string, number>>
   description?: string
+  scalingExemptWeaponTypes?: string[]
 }
 
 export interface WeaponArt {
@@ -62,7 +64,12 @@ export const WEAPON_ARTS: WeaponArt[] = [
     baseDamage: "8.75 × 3 Hits",
     damageType: "Same as weapon",
     scaling: "Same as weapon",
-    requirements: { weaponType: ["Dagger", "Rapier", "Spear"], dexterityScaling: 0.5 },
+    extras: ["Each hit counts as an individual RMB Finisher"],
+    requirements: {
+      weaponType: ["Dagger", "Rapier", "Spear"],
+      dexterityScaling: 0.5,
+      scalingExemptWeaponTypes: ["Dagger"],
+    },
   },
   {
     name: "Javelin",
@@ -214,7 +221,12 @@ export const WEAPON_ARTS: WeaponArt[] = [
     baseDamage: "4",
     damageType: "1 True",
     scaling: "1 Magic + 1 Dex",
-    requirements: { magicScaling: 0.5, dexterityScaling: 0.5, description: "Both Magic and Dex Scaling; one must be >0.5" },
+    requirements: {
+      magicScaling: 0.001,
+      dexterityScaling: 0.001,
+      atLeastOneScaling: { magicScaling: 0.5, dexterityScaling: 0.5 },
+      description: "Both Magic and Dex Scaling; one must be >0.5",
+    },
   },
   {
     name: "Mage Bomber Summon",
