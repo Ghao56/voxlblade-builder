@@ -180,13 +180,14 @@ export function calcBoosts(perks: Record<string, number>, emotionalState?: strin
     })
   }
   
-  const vassalsCroakStacks = perks['Vassals Croak'] ?? 0
+  const vassalsCroakStacks = Math.floor(perks['Vassals Croak'] ?? 0)
   if (vassalsCroakStacks > 0 && summonCount > 0) {
-    const mult = 1 + 0.02 * summonCount * vassalsCroakStacks
+    const clampedCount = Math.floor(summonCount)
+    const mult = 1 + 0.02 * clampedCount * vassalsCroakStacks
     dmgMap.set("Vassals Croak", {
       sourceName: "Vassals Croak",
-      rawMultiplier: Math.round(mult * 10000) / 10000,
-      condition: `${summonCount} summons × ${vassalsCroakStacks} stack × 2%`,
+      rawMultiplier: Math.round(mult * 100) / 100,
+      condition: `${clampedCount} summons × ${vassalsCroakStacks} stack × 2%`,
       type: 'dmg',
     })
   }
