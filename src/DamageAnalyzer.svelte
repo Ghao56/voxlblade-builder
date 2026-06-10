@@ -720,7 +720,7 @@
   {#if _ragePotency > 0}
     <div class="da-rage-row" style="margin-top: 8px;">
       <span class="da-rage-badge">
-        Rage ×{_rageMult.toFixed(4)}
+        Rage ×{+_rageMult.toFixed(4)}
       </span>
       <span class="da-rage-types">
         {[..._rageAffectedTypes].map(t => t.charAt(0).toUpperCase() + t.slice(1)).join(' · ')}
