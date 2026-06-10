@@ -1,3 +1,9 @@
+export interface WAIndividualHit {
+  damageType: string
+  scaling?: string
+  isFinisher?: boolean
+}
+
 export interface WeaponArtRequirement {
   physicalScaling?: number
   magicScaling?: number
@@ -31,6 +37,7 @@ export interface WeaponArt {
   damageType?: string
   hitDamageTypes?: string[]
   hitScalings?: string[]
+  hits?: WAIndividualHit[]
   scaling?: string
   extras?: string[]
   requirements: WeaponArtRequirement
@@ -63,7 +70,11 @@ export const WEAPON_ARTS: WeaponArt[] = [
     cooldown: 10,
     baseDamage: "8.75 × 3 Hits",
     damageType: "Same as weapon",
-    scaling: "Same as weapon",
+    hits: [
+      { damageType: "Same as weapon", isFinisher: true },
+      { damageType: "Same as weapon", isFinisher: true },
+      { damageType: "Same as weapon", isFinisher: true }
+    ],
     extras: ["Each hit counts as an individual RMB Finisher"],
     requirements: {
       weaponType: ["Dagger", "Rapier", "Spear"],

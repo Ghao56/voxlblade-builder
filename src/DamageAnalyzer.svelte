@@ -854,7 +854,6 @@
         <div class="da-wbd-row-label da-wbd-row-label--m2">
           <span class="da-wbd-lbl-badge da-wbd-lbl-badge--m2">M2</span>
           <span class="da-wbd-lbl-text">Heavy</span>
-          <span class="da-m2-finisher-tag">✦ All Finisher</span>
         </div>
         <div class="da-hits-row">
           {#if m2Typed}
@@ -936,7 +935,8 @@
           {#if _waTyped}
             {#each _waTyped as hit, hi}
               {#if hi > 0}<span class="da-hit-divider">›</span>{/if}
-              <div class="da-hit-card">
+              
+              <div class="da-hit-card" class:da-hit-card--finisher={selectedWA.hits?.[hi]?.isFinisher}>
                 {#each hit.types as t, ti}
                   {#if ti > 0}<span class="da-hit-plus">+</span>{/if}
                   <div class="da-hit-chunk" style="--tc:{t.color}" class:da-hit-chunk--rage={t.rageApplied}>
@@ -954,6 +954,10 @@
                     </span>
                   </div>
                 {/each}
+
+                {#if selectedWA.hits?.[hi]?.isFinisher}
+                  <span class="da-finisher-crown">✦</span>
+                {/if}
 
                 {#if hit.count > 1}
                   <span class="da-hit-repeat">×{hit.count}<span class="da-hit-repeat-label">hits</span></span>
@@ -2274,23 +2278,6 @@
   z-index: 10;
   transform: rotate(15deg);
   font-weight: bold;
-}
-
-.da-m2-finisher-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 8px;
-  font-size: 0.68rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: #facc15;
-  background: rgba(250, 204, 21, 0.15);
-  border: 1px solid rgba(250, 204, 21, 0.4);
-  border-radius: 4px;
-  letter-spacing: 0.05em;
-  box-shadow: 0 0 6px rgba(250, 204, 21, 0.15);
-  margin-left: 8px;
 }
 
 .da-plain-pill--finisher {
