@@ -208,7 +208,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
   'Last Croak': {
     name: 'Last Croak',
     color: '#94ff88',
-    description: 'Neutral status. Consume on RMB hit to trigger an explosion and gain Rage. Rage potency = 0.1 + 0.01 × stacks × perk.',
+    description: 'Neutral status. Consume on RMB hit to trigger an explosion and gain Rage. Rage potency = 0.1 + 0.01 × PerkAmounts × perk.',
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
     isNeutral: true,
@@ -507,7 +507,7 @@ export function calcBuffEffect(
     return { value: 0, unit: '%', label: '?' }
   }
 
-  const value = Math.round(def.effectPerTenthPotency * potency * 10 * 100) / 100
+  const value = Math.round(def.effectPerTenthPotency * potency * 10 * 1000) / 1000
   const sign = def.isDebuff ? '' : '+'
   const label =
     def.effectUnit === '%'

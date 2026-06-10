@@ -46,9 +46,9 @@
     return types
   })()
 
-$: _rageMult = _ragePotency > 0
-  ? Math.round((1 + _ragePotency) * 100) / 100
-  : 1
+  $: _rageMult = _ragePotency > 0
+    ? Math.round((1 + _ragePotency) * 10000) / 10000
+    : 1
 
   type HitSeq = (number | { n: number; count: number })[]
 
@@ -250,7 +250,7 @@ $: _rageMult = _ragePotency > 0
   let showAllWeapons = false
 
   function fmtMult(n: number): string {
-    return `×${fmtNum(n)}`
+    return `×${n.toFixed(4)}`
   }
   function isFinisher(row: any, attackType: 'm1' | 'm2', hitIndex: number): boolean {
     if (attackType === 'm2') return true
@@ -276,7 +276,7 @@ $: _rageMult = _ragePotency > 0
   $: activeEntries = boosts.dmgEntries.filter(e => !disabledBoosts.has(e.sourceName))
   $: hasDisabledVisible = boosts.dmgEntries.some(e => disabledBoosts.has(e.sourceName))
   $: activeFinalMult = activeEntries.reduce((acc, e) => acc * e.rawMultiplier, 1.0)
-  $: activeFinalMultRounded = Math.round(activeFinalMult * 100) / 100
+  $: activeFinalMultRounded = Math.round(activeFinalMult * 10000) / 10000
 
   const SCALING_TO_BOOST: Record<string, string> = {
     physical:   'physicalBoost',
@@ -327,7 +327,7 @@ $: _rageMult = _ragePotency > 0
       rows.push({ key, scalingVal, boostKey, boostPct, contribution, color: SCALING_COLORS[key] ?? '#e8e4da' })
     }
     const totalEffectivePct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 100) / 100
-    const multiplier = Math.round((1 + totalEffectivePct / 100) * 100) / 100
+    const multiplier = Math.round((1 + totalEffectivePct / 100) * 10000) / 10000
     return { rows, totalEffectivePct, multiplier }
   })()
 
@@ -360,7 +360,7 @@ $: _rageMult = _ragePotency > 0
       if (!rows.length) return null
       const totalContribution = rows.reduce((sum, row) => sum + row.contribution, 0)
       const avgEffectivePct = Math.round((totalContribution / rows.length) * 100) / 100
-      const multiplier = Math.round((1 + avgEffectivePct / 100) * 100) / 100
+      const multiplier = Math.round((1 + avgEffectivePct / 100) * 10000) / 10000
       return {
         rows,
         totalEffectivePct: avgEffectivePct,
@@ -388,7 +388,7 @@ $: _rageMult = _ragePotency > 0
     if (!rows.length) return null
     const totalEffectivePct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 100) / 100
     return { rows, totalEffectivePct,
-      multiplier: Math.round((1 + totalEffectivePct / 100) * 100) / 100,
+      multiplier: Math.round((1 + totalEffectivePct / 100) * 10000) / 10000,
       isPerHit: false }
   })()
 
@@ -411,7 +411,7 @@ $: _rageMult = _ragePotency > 0
       const boostPct = (stats as Record<string, number>)[boostKey] ?? 0
       totalEffectivePct += scalingVal * boostPct
     }
-    return Math.round((1 + totalEffectivePct / 100) * 100) / 100
+    return Math.round((1 + totalEffectivePct / 100) * 10000) / 10000
   })()
 
   $: selectedWA = WEAPON_ARTS.find(wa => wa.name === $build.selectedWeaponArt) ?? WEAPON_ARTS[0]
@@ -480,7 +480,7 @@ $: _rageMult = _ragePotency > 0
       const typeName = /dex/i.test(m[2]) ? 'dexterity' : m[2].toLowerCase()
       totalPct += parseFloat(m[1]) * ((stats as Record<string, number>)[typeName + 'Boost'] ?? 0)
     }
-    return Math.round((1 + totalPct / 100) * 100) / 100
+    return Math.round((1 + totalPct / 100) * 10000) / 10000
   })()
 
   $: _waTyped = (() => {
@@ -503,7 +503,7 @@ $: _rageMult = _ragePotency > 0
             const typeName = /dex/i.test(scM[2]) ? 'dexterity' : scM[2].toLowerCase()
             totalPct += parseFloat(scM[1]) * ((stats as Record<string, number>)[typeName + 'Boost'] ?? 0)
           }
-          hitScalingMult = Math.round((1 + totalPct / 100) * 100) / 100
+          hitScalingMult = Math.round((1 + totalPct / 100) * 10000) / 10000
         } else if (hitScalingStr === 'Same as weapon') {
           hitScalingMult = _scalingMult
         }
@@ -598,7 +598,7 @@ $: _rageMult = _ragePotency > 0
     return selectedWeaponData.m2Charge.formula(dmg, weaponCharge)
   }
 
-  $: maxSummons = 15 + Math.floor(perks['Swarm'] ?? 0);
+  $: maxSummons = 15 + (perks['Swarm'] ?? 0);
 </script>
 
 <div class="da-root">
@@ -673,12 +673,13 @@ $: _rageMult = _ragePotency > 0
           class="da-summon-input" 
           type="number" 
           min="0" 
-          max={maxSummons}
-          value={Math.floor($build.summonCount)}
+          max={maxSummons} 
+          bind:value={$build.summonCount} 
           on:input={e => {
-            let val = Math.floor(parseInt(e.currentTarget.value));
-            if (isNaN(val) || val < 0) val = 0;
+            let val = parseInt(e.currentTarget.value);
+            if (isNaN(val)) val = maxSummons;
             if (val > maxSummons) val = maxSummons;
+            if (val < 0) val = 0;
             build.update(s => ({ ...s, summonCount: val }));
           }} 
         />
@@ -699,7 +700,7 @@ $: _rageMult = _ragePotency > 0
         <span class="da-bc-name">
           {entry.sourceName === 'Level Damage' ? `LV${$build.level ?? 80}` : entry.sourceName}
         </span>
-        <span class="da-bc-val">{disabled ? '—' : fmtMult(entry.rawMultiplier)}</span>
+        <span class="da-bc-val">{disabled ? '—' : `×${+entry.rawMultiplier.toFixed(3)}`}</span>
         {#if entry.condition}
           <span class="da-bc-cond">{entry.condition}</span>
         {/if}
@@ -709,16 +710,18 @@ $: _rageMult = _ragePotency > 0
     {/each}
     <span class="da-chain-result"
       class:da-chain-result--dimmed={hasDisabledVisible}>
-      = ×{activeFinalMultRounded.toFixed(2)}
+      = ×{+activeFinalMultRounded.toFixed(4)}
       {#if hasDisabledVisible}
-        <span class="da-chain-orig">/{boosts.dmgFinalMultiplier.toFixed(2)}</span>
+        <span class="da-chain-orig">/{+boosts.dmgFinalMultiplier.toFixed(4)}</span>
       {/if}
     </span>
   </div>
 
   {#if _ragePotency > 0}
     <div class="da-rage-row" style="margin-top: 8px;">
-      <span class="da-rage-badge">Rage {fmtMult(_rageMult)}</span>
+      <span class="da-rage-badge">
+        Rage ×{_rageMult.toFixed(4)}
+      </span>
       <span class="da-rage-types">
         {[..._rageAffectedTypes].map(t => t.charAt(0).toUpperCase() + t.slice(1)).join(' · ')}
       </span>
@@ -734,11 +737,11 @@ $: _rageMult = _ragePotency > 0
       {#each boosts.healEntries as entry}
         <div class="da-boost-chip da-boost-chip--heal" title={entry.condition ?? ''}>
           <span class="da-bc-name">{entry.sourceName}</span>
-          <span class="da-bc-val" style="color:#4ade80">×{entry.rawMultiplier.toFixed(2)}</span>
+          <span class="da-bc-val" style="color:#4ade80">×{+entry.rawMultiplier.toFixed(3)}</span>
         </div>
         <span class="da-chain-op">×</span>
       {/each}
-      <span class="da-chain-result" style="color:#4ade80">= {fmtMult(boosts.healFinalMultiplier)}</span>
+      <span class="da-chain-result" style="color:#4ade80">= ×{+boosts.healFinalMultiplier.toFixed(4)}</span>
     </div>
   {/if}
 </div>
@@ -753,7 +756,7 @@ $: _rageMult = _ragePotency > 0
       {/if}
       {#if !showAllWeapons && _scalingMult !== 1}
         <span class="da-wbd-scaling-badge" title="Base damage × damage type × scaling multiplier">
-          ×scaling {fmtNum(_scalingMult)}
+          ×scaling {_scalingMult.toFixed(4)}
         </span>
       {/if}
       <button class="da-wbd-toggle" on:click={() => showAllWeapons = !showAllWeapons}>
@@ -925,7 +928,7 @@ $: _rageMult = _ragePotency > 0
             <span class="da-wbd-lbl-badge da-wbd-lbl-badge--wa">WA</span>
             <span class="da-wbd-lbl-text da-wbd-lbl-text--wa">{selectedWA.name}</span>
             {#if _waScalingDiffers && _waScalingMult !== 1}
-              <span class="da-wbd-scaling-badge" style="background:rgba(167,139,250,.12);border-color:rgba(167,139,250,.3);color:var(--accent3)">×{fmtNum(_waScalingMult)}</span>
+              <span class="da-wbd-scaling-badge" style="background:rgba(167,139,250,.12);border-color:rgba(167,139,250,.3);color:var(--accent3)">×{_waScalingMult.toFixed(4)}</span>
             {/if}
           </div>
           <div class="da-hits-row">
@@ -1107,7 +1110,7 @@ $: _rageMult = _ragePotency > 0
           <span style="color:{row.color}">{row.label ??(row.key.charAt(0).toUpperCase()+ row.key.slice(1))}</span>
         </div>
         <div class="ds-col ds-col--val">
-          <span class="ds-num" style="color:{row.color}">{Math.round(row.scalingVal * 100) / 100}</span>
+          <span class="ds-num" style="color:{row.color}">{Math.round(row.scalingVal * 1000) / 1000}</span>
         </div>
         <div class="ds-col ds-col--op">×</div>
         <div class="ds-col ds-col--boost">
@@ -1147,7 +1150,7 @@ $: _rageMult = _ragePotency > 0
       <span class="ds-applies-to">{waScalingSameAsWeapon ? 'M1 · M2 · Weapon Art' : 'M1 · M2'}</span>
     </div>
     <span class="ds-result-eq">1 + {scalingBreakdown.totalEffectivePct}% =</span>
-    <span class="ds-result-val">×{fmtNum(scalingBreakdown.multiplier)}</span>
+    <span class="ds-result-val">×{+scalingBreakdown.multiplier.toFixed(4)}</span>
   </div>
 
   {#if scalingBreakdown.rows.some(r => r.boostPct === 0)}
@@ -1177,7 +1180,7 @@ $: _rageMult = _ragePotency > 0
               <span style="color:{row.color}">{(row as any).label ?? (row.key.charAt(0).toUpperCase() + row.key.slice(1))}</span>
             </div>
             <div class="ds-col ds-col--val">
-              <span class="ds-num" style="color:{row.color}">{Math.round(row.scalingVal * 100) / 100}</span>
+              <span class="ds-num" style="color:{row.color}">{Math.round(row.scalingVal * 10000) / 10000}</span>
             </div>
             <div class="ds-col ds-col--op">×</div>
             <div class="ds-col ds-col--boost">
@@ -1220,7 +1223,7 @@ $: _rageMult = _ragePotency > 0
         <span class="ds-result-eq">1 + {waScalingBreakdown.totalEffectivePct}% =</span>
         <span class="ds-result-val"
           style={waScalingIsHealOnly ? 'color:#4ade80;text-shadow:0 0 12px rgba(74,222,128,.4)' : ''}>
-          ×{fmtNum(waScalingBreakdown.multiplier)}
+          ×{+waScalingBreakdown.multiplier.toFixed(4)}
         </span>
       </div>
       {#if waScalingBreakdown.rows.some(r => r.boostPct === 0)}
@@ -1241,7 +1244,7 @@ $: _rageMult = _ragePotency > 0
         <span class="ds-result-val">see rows above</span>
       </div>
     {:else}
-      <div class="ds-result-row">Scaling Multiplier×{fmtNum(waScalingBreakdown.multiplier)}</div>
+      <div class="ds-result-row">Scaling Multiplier×{waScalingBreakdown.multiplier.toFixed(4)}</div>
     {/if}
   {/if}
 </div>
