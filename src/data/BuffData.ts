@@ -208,7 +208,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
   'Last Croak': {
     name: 'Last Croak',
     color: '#94ff88',
-    description: 'Neutral status. Consume on RMB hit to trigger an explosion and gain Rage. Rage potency = 0.1 + 0.01 × PerkAmounts × perk.',
+    description: 'Neutral status. Consume on RMB hit to trigger an explosion and gain Rage. Rage potency = 0.1 + 0.01 × Potency × PerkAmount.',
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
     isNeutral: true,
@@ -263,7 +263,7 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
   }],
   'Vassals Croak': (amount, allPerks) => {
     const swarm = allPerks['Swarm'] ?? 0
-    const maxStacks = 15 + swarm
+    const maxStacks = Math.floor(15 + swarm)
     const minRage = Math.round((0.1 + 0.01 * 1 * amount) * 1000) / 1000
     const maxRage = Math.round((0.1 + 0.01 * maxStacks * amount) * 1000) / 1000
     return [
