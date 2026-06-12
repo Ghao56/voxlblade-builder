@@ -7,7 +7,10 @@
   import { DMG_TYPE_COLORS, DMG_TYPE_PRIORITY, ONE_HANDED_TYPES, type WeaponBaseDmg } from './lib/types'
   import { getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers } from './data/BuffData'
 
-  
+  $: _showCrit = crit.effectiveCritChance > 0
+  $: _critMult = crit.critDamageMultiplier / 100  
+  let showCritValues = false
+
   $: crit = $result.crit
   $: boosts = $result.boosts
   $: stats = $result.stats
@@ -604,6 +607,8 @@
   // ── Perk Base Damage ───────────────────────────────────────────────────────
   import { PERK_DMG_DEFS } from './data/Perkbasedmg'
 
+  let springblastFinisherHits = 1
+
   /** Total hit count in the current weapon's M2 (used as finisher hits context) */
   $: _m2FinisherHits = (() => {
     if (!_displayRows.length || !_displayRows[0].m2) return 1
@@ -674,8 +679,10 @@
           label: k.charAt(0).toUpperCase() + k.slice(1),
         }))
 
-      const baseDmg_m2 = def.getBaseDamage({ perkAmount, finisherHits: _m2FinisherHits })
-      const baseDmg_m1f = def.getBaseDamage({ perkAmount, finisherHits: _m1FinisherHits })
+      const _fhM2  = def.perkName === 'Springblast' ? springblastFinisherHits : _m2FinisherHits
+      const _fhM1f = def.perkName === 'Springblast' ? springblastFinisherHits : _m1FinisherHits
+      const baseDmg_m2  = def.getBaseDamage({ perkAmount, finisherHits: _fhM2  })
+      const baseDmg_m1f = def.getBaseDamage({ perkAmount, finisherHits: _fhM1f })
 
       out.push({
         perkName: def.perkName,
@@ -849,6 +856,15 @@
       {#if _currentLabel}
         <span class="da-wbd-current-badge">{_currentLabel}</span>
       {/if}
+      {#if _showCrit}
+        <button
+          class="da-crit-toggle"
+          class:da-crit-toggle--on={showCritValues}
+          on:click={() => showCritValues = !showCritValues}
+        >
+          ⚡ {showCritValues ? 'Crit ON' : 'Crit OFF'}
+        </button>
+      {/if}
       <button class="da-wbd-toggle" on:click={() => showAllWeapons = !showAllWeapons}>
         {showAllWeapons ? 'Show current only' : 'Show all weapons'}
       </button>
@@ -907,7 +923,9 @@
                         <span class="da-hit-raw">{fmtNum(t.rawVal)}</span>
                         <span class="da-hit-arrow">→</span>
                       {/if}
-                      <span class="da-hit-num">{fmtNum(t.val)}</span>
+                      <span class="da-hit-num" class:da-hit-num--crit={showCritValues} style="--tc:{t.color}">
+                        {fmtNum(showCritValues ? Math.round(t.val * _critMult * 100) / 100 : t.val)}
+                      </span>
                       <span class="da-hit-type">{t.label}</span>
                     </div>
                     {#if hit.count > 1}
@@ -960,7 +978,9 @@
                         <span class="da-hit-raw">{fmtNum(t.rawVal)}</span>
                         <span class="da-hit-arrow">→</span>
                       {/if}
-                      <span class="da-hit-num">{fmtNum(finalVal)}</span>
+                        <span class="da-hit-num" class:da-hit-num--crit={showCritValues} style="--tc:{t.color}">
+                          {fmtNum(showCritValues ? Math.round(finalVal * _critMult * 100) / 100 : finalVal)}
+                        </span>
                       <span class="da-hit-type">{t.label}</span>
                     </div>
                   {/each}
@@ -1024,19 +1044,27 @@
             {#each _waTyped as hit, hi}
               {#if hi > 0}<span class="da-hit-divider">›</span>{/if}
               
-              <div class="da-hit-card" class:da-hit-card--finisher={selectedWA.hits?.[hi]?.isFinisher}>
+              <div class="da-hit-card"
+                class:da-hit-card--finisher={selectedWA.hits?.[hi]?.isFinisher}
+                class:da-hit-card--crit={selectedWA.hits?.[hi]?.isCrit}>
                 {#each hit.types as t, ti}
                   {#if ti > 0}<span class="da-hit-plus">+</span>{/if}
                   <div class="da-hit-chunk" style="--tc:{t.color}" class:da-hit-chunk--rage={t.rageApplied}>
-                    {#if t.scalingMult !== 1}
-                      <span class="da-hit-raw">
-                        {fmtNum(t.rawVal)}
-                      </span>
+                    {#if selectedWA.hits?.[hi]?.isCrit}
+                      <span class="da-hit-raw">{fmtNum(t.val)}</span>
                       <span class="da-hit-arrow">→</span>
+                      <span class="da-hit-num" style="color:#e2b203;text-shadow:0 0 10px rgba(226,178,3,.5)">
+                        {fmtNum(Math.round(t.val * _critMult * 100) / 100)}
+                      </span>
+                    {:else}
+                      {#if t.scalingMult !== 1}
+                        <span class="da-hit-raw">{fmtNum(t.rawVal)}</span>
+                        <span class="da-hit-arrow">→</span>
+                      {/if}
+                      <span class="da-hit-num" class:da-hit-num--crit={showCritValues} style="--tc:{t.color}">
+                        {fmtNum(showCritValues ? Math.round(t.val * _critMult * 100) / 100 : t.val)}
+                      </span>
                     {/if}
-                    <span class="da-hit-num">
-                      {fmtNum(t.val)}
-                    </span>
                     <span class="da-hit-type">
                       {t.label}
                     </span>
@@ -1069,7 +1097,9 @@
                       {/if}
 
                       <div class="da-hit-chunk" style="--tc:{t.color}" class:da-hit-chunk--rage={t.rageApplied}>
-                        <span class="da-hit-num">{fmtNum(t.val)}</span>
+                        <span class="da-hit-num" class:da-hit-num--crit={showCritValues} style="--tc:{t.color}">
+                          {fmtNum(showCritValues ? Math.round(t.val * _critMult * 100) / 100 : t.val)}
+                        </span>
                         <span class="da-hit-type">{t.label}</span>
                       </div>
                     {/each}
@@ -1092,7 +1122,9 @@
                       {/if}
 
                       <div class="da-hit-chunk" style="--tc:{t.color}" class:da-hit-chunk--rage={t.rageApplied}>
-                        <span class="da-hit-num">{fmtNum(t.val)}</span>
+                        <span class="da-hit-num" class:da-hit-num--crit={showCritValues} style="--tc:{t.color}">
+                          {fmtNum(showCritValues ? Math.round(t.val * _critMult * 100) / 100 : t.val)}
+                        </span>
                         <span class="da-hit-type">{t.label}</span>
                       </div>
                     {/each}
@@ -1144,7 +1176,9 @@
                         <span class="da-hit-raw">{fmtNum(h.n)}</span>
                         <span class="da-hit-arrow">→</span>
                       {/if}
-                      <span class="da-hit-num">{fmtNum(scaledHeal)}</span>
+                      <span class="da-hit-num" style="--tc:#4ade80">
+                        {fmtNum(scaledHeal)}
+                      </span>
                       <span class="da-heal-badge">✦ Heal</span>
                     </div>
                     {#if h.count > 1}
@@ -1199,6 +1233,19 @@
         {#if entry.condition}
           <div class="da-pbd-condition">{entry.condition}</div>
         {/if}
+        <!-- Springblast: finisher hit count slider -->
+        {#if entry.perkName === 'Springblast'}
+          <div class="da-sb-slider-wrap">
+            <span class="da-sb-slider-label">Finisher hits</span>
+            <input
+              type="range" min="1" max="20" step="1"
+              bind:value={springblastFinisherHits}
+              class="da-sb-slider"
+              style="--fill:{((springblastFinisherHits - 1) / 19) * 100}%"
+            />
+            <span class="da-sb-slider-val">{springblastFinisherHits}</span>
+          </div>
+        {/if}
         <!-- Typed damage: M2/main finisher -->
         <div class="da-pbd-dmg-row">
           {#if entry.isFinisher && _m2FinisherHits > 1}
@@ -1213,7 +1260,9 @@
                     <span class="da-hit-raw">{fmtNum(t.rawVal)}</span>
                     <span class="da-hit-arrow">→</span>
                   {/if}
-                  <span class="da-hit-num">{fmtNum(t.val)}</span>
+                  <span class="da-hit-num" class:da-hit-num--crit={showCritValues} style="--tc:{t.color}">
+                    {fmtNum(showCritValues ? Math.round(t.val * _critMult * 100) / 100 : t.val)}
+                  </span>
                   <span class="da-hit-type">{t.label}</span>
                 </div>
               {/each}
@@ -1237,11 +1286,32 @@
                       <span class="da-hit-raw">{fmtNum(t.rawVal)}</span>
                       <span class="da-hit-arrow">→</span>
                     {/if}
-                    <span class="da-hit-num">{fmtNum(t.val)}</span>
+                    <span class="da-hit-num" class:da-hit-num--crit={showCritValues} style="--tc:{t.color}">
+                      {fmtNum(showCritValues ? Math.round(t.val * _critMult * 100) / 100 : t.val)}
+                    </span>
                     <span class="da-hit-type">{t.label}</span>
                   </div>
                 {/each}
                 <span class="da-finisher-crown">✦</span>
+              </div>
+            </div>
+          </div>
+        {/if}
+        <!-- Springblast: total damage across all finisher hits -->
+        {#if entry.perkName === 'Springblast' && springblastFinisherHits > 1}
+          <div class="da-pbd-dmg-row">
+            <span class="da-pbd-ctx-label">Total (×{springblastFinisherHits} hits)</span>
+            <div class="da-hits-row">
+              <div class="da-hit-card">
+                {#each entry.typedHits_m2 as t, ti}
+                  {#if ti > 0}<span class="da-hit-plus">+</span>{/if}
+                  <div class="da-hit-chunk" style="--tc:{t.color}">
+                    <span class="da-hit-num" class:da-hit-num--crit={showCritValues} style="--tc:{t.color}">
+                      {fmtNum(Math.round(t.val * springblastFinisherHits * (showCritValues ? _critMult : 1) * 100) / 100)}
+                    </span>
+                    <span class="da-hit-type">{t.label}</span>
+                  </div>
+                {/each}
               </div>
             </div>
           </div>
@@ -2643,6 +2713,63 @@
   border-top: 1px dashed rgba(255,255,255,.05);
 }
 
+/* ── Springblast finisher hits slider ── */
+.da-sb-slider-wrap {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: rgba(251,146,60,.05);
+  border: 1px solid rgba(251,146,60,.18);
+  min-width: 0;
+  overflow: hidden;
+}
+.da-sb-slider-label {
+  font-size: .55rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #fb923c;
+  opacity: .75;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.da-sb-slider {
+  flex: 1;
+  min-width: 0;
+  width: 0;
+  appearance: none;
+  height: 5px;
+  border-radius: 999px;
+  outline: none;
+  cursor: pointer;
+  background: linear-gradient(
+    90deg,
+    #fb923c var(--fill, 0%),
+    rgba(255,255,255,.1) var(--fill, 0%)
+  );
+}
+.da-sb-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: #fbbf24;
+  border: 2px solid rgba(0,0,0,.5);
+  cursor: grab;
+  box-shadow: 0 0 0 3px rgba(251,191,36,.2);
+}
+.da-sb-slider::-webkit-slider-thumb:active { cursor: grabbing; }
+.da-sb-slider-val {
+  font-family: 'Courier New', monospace;
+  font-size: .82rem;
+  font-weight: 800;
+  color: #fbbf24;
+  min-width: 16px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
 @media (max-width: 700px) {
   .da-wbd-outer {
     flex-direction: column;
@@ -2697,5 +2824,33 @@
 }
 .ds-result-row--perk .ds-result-val {
   color: var(--accent2) !important;
+}
+.da-hit-card--crit {
+  border-color: rgba(226,178,3,.6) !important;
+  background: linear-gradient(135deg, rgba(20,20,20,.85) 0%, rgba(226,178,3,.1) 100%) !important;
+}
+.da-crit-toggle {
+  font-size: .62rem; 
+  font-weight: 800;
+  padding: 3px 10px; 
+  border-radius: 6px;
+  border: 1px solid rgba(226,178,3,.25);
+  background: var(--surface2, #1a1d1b);
+  color: var(--ink-muted, #8a8d85);
+  cursor: pointer; 
+  font-family: inherit;
+  transition: all .12s;
+}
+
+.da-crit-toggle--on {
+  border-color: rgba(226,178,3,.6);
+  background: rgba(226,178,3,.12);
+  color: #e2b203;
+  box-shadow: 0 0 8px rgba(226,178,3,.2);
+}
+
+.da-hit-num--crit {
+  color: #e2b203 !important;
+  text-shadow: 0 0 10px rgba(226,178,3,.4) !important;
 }
 </style>

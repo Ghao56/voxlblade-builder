@@ -338,6 +338,9 @@ export const WEAPON_ART_BUFF_MAP: Record<string, GrantedBuff[]> = {
     { buffName: 'Rage', potency: 0.3, duration: 10, sourceName: 'Warrior Stomp', sourceType: 'weaponArt' },
     { buffName: 'Taunt', potency: 1.0, duration: 15, sourceName: 'Warrior Stomp', sourceType: 'weaponArt' },
   ],
+  'Javelin': [
+    { buffName: 'Slowness', potency: 0, duration: 6, sourceName: 'Javelin', sourceType: 'weaponArt' },
+  ],
 }
 
 export function getWeaponArtBuffs(weaponArtName: string): GrantedBuff[] {

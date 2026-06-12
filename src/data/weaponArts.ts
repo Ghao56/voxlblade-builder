@@ -2,6 +2,7 @@ export interface WAIndividualHit {
   damageType: string
   scaling?: string
   isFinisher?: boolean
+  isCrit?: boolean
 }
 
 export interface WeaponArtRequirement {
@@ -50,7 +51,7 @@ export const WEAPON_ARTS: WeaponArt[] = [
     name: "Lunge",
     description: "Lunge forwards with your sword!",
     cooldown: 12,
-    baseDamage: "3.2 × 10 Hits",
+    baseDamage: "3.6 × 10 Hits",
     damageType: "Same as weapon",
     scaling: "Same as weapon",
     requirements: { description: "Available on any weapon, except Monk" },
@@ -59,7 +60,7 @@ export const WEAPON_ARTS: WeaponArt[] = [
     name: "Spin",
     description: "Spin with your weapon to quickly chop up the opponent!",
     cooldown: 10,
-    baseDamage: "2.7 × 5 Hits + 13.5",
+    baseDamage: "3.5 × 5 Hits + 17",
     damageType: "Same as weapon",
     scaling: "Same as weapon",
     requirements: { weaponType: ["Two Handed Sword", "Greatsword", "Unbalanced Sword"] },
@@ -68,7 +69,7 @@ export const WEAPON_ARTS: WeaponArt[] = [
     name: "Rapid Stabs",
     description: "Perform three fast stabs that deal low damage and reset your M1 combo!",
     cooldown: 10,
-    baseDamage: "8.75 × 3 Hits",
+    baseDamage: "12 × 3 Hits",
     damageType: "Same as weapon",
     hits: [
       { damageType: "Same as weapon", isFinisher: true },
@@ -86,16 +87,17 @@ export const WEAPON_ARTS: WeaponArt[] = [
     name: "Javelin",
     description: "Throw your spear like a javelin and apply bleed!",
     cooldown: 15,
-    baseDamage: "27",
+    baseDamage: "40",
     damageType: "Same as weapon",
     scaling: "Same as weapon",
+    extras: ["Slow Duration: 6s"],
     requirements: { weaponType: ["Spear", "Great Spear"] },
   },
   {
     name: "Rend",
     description: "Release a slow strong slash that gains size and speed on each enemy hit.",
     cooldown: 20,
-    baseDamage: "20",
+    baseDamage: "35",
     damageType: "Same as weapon",
     scaling: "Same as weapon",
     requirements: { weaponType: ["Greatsword"] },
@@ -122,19 +124,23 @@ export const WEAPON_ARTS: WeaponArt[] = [
     name: "Cross Slash",
     description: "Slash in a cross weakening the opponent's defenses.",
     cooldown: 20,
-    baseDamage: "12 × 2 Hits",
+    baseDamage: "5 + 25",
     damageType: "Same as weapon",
     scaling: "Same as weapon",
     extras: ["Shatter Potency: 0.2", "Shatter Duration: ~8s"],
     requirements: { weaponType: ["1-Handed Sword", "2-Handed Sword"], dexterityScaling: 0.4, physicalScaling: 0.4 },
   },
-  {
+    {
     name: "Impale",
     description: "Stab through the opponent in a critical spot and then throw them aside.",
     cooldown: 12,
-    baseDamage: "10.5 + 21",
+    baseDamage: "25 + 5",
     damageType: "1 True + Same as weapon",
     hitDamageTypes: ["1 True", "Same as weapon"],
+    hits: [
+      { damageType: "1 True", isCrit: true },
+      { damageType: "Same as weapon" },
+    ],
     scaling: "Same as weapon",
     extras: ["Poise Damage: 100 per hit"],
     requirements: { weaponType: ["1-Handed Sword", "Spear"] },
@@ -143,7 +149,7 @@ export const WEAPON_ARTS: WeaponArt[] = [
     name: "Warrior Stomp",
     description: "Stomp the floor giving yourself rage and taunting everyone around you.",
     cooldown: 20,
-    baseDamage: "3",
+    baseDamage: "10",
     extras: ["Rage Potency: 0.3", "Rage Duration: 10s", "Taunt Duration: 15s", "Poise Damage: 80"],
     requirements: { physicalDefense: 5 },
   },
