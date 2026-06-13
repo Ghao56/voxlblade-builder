@@ -7,6 +7,7 @@
   import { DMG_TYPE_COLORS, DMG_TYPE_PRIORITY, ONE_HANDED_TYPES, type WeaponBaseDmg } from './lib/types'
   import { getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers } from './data/BuffData'
   import { WA_SUMMON_MAP, SUMMON_MAP, calcSummonStat } from './data/SummonData'
+  import CritIcon from './CritIcon.svelte'
 
   $: _waSummonDef = (() => {
     const summonName = WA_SUMMON_MAP[selectedWA.name]
@@ -730,11 +731,11 @@
 
     <!-- Crit column -->
     <div class="da-section da-section--crit">
-      <div class="da-section-title">⚡ Crit Statistics</div>
+      <div class="da-section-title"><CritIcon size={13}/> Crit Statistics</div>
       <div class="da-crit-grid">
 
         <div class="da-stat-card da-stat-card--crit">
-          <div class="da-stat-label">Crit Chance</div>
+          <div class="da-stat-label"><CritIcon size={12}/> Crit Chance</div>
           <div class="da-stat-val" style="color:#e2b203">{crit.effectiveCritChance.toFixed(1)}%</div>
           {#if allCritSources.length > 0}
             <div class="da-sources">
@@ -883,7 +884,7 @@
           class:da-crit-toggle--on={showCritValues}
           on:click={() => showCritValues = !showCritValues}
         >
-          ⚡ {showCritValues ? 'Crit ON' : 'Crit OFF'}
+          <CritIcon size={12}/> {showCritValues ? 'Crit ON' : 'Crit OFF'}
         </button>
       {/if}
       <button class="da-wbd-toggle" on:click={() => showAllWeapons = !showAllWeapons}>
@@ -953,7 +954,14 @@
                       <div class="da-hit-repeat">×{hit.count}<span>Hits</span></div>
                     {/if}
                   {/each}
-                  {#if finisher}<span class="da-finisher-crown">✦</span>{/if}
+                  {#if finisher}
+                    <span class="da-finisher-crown">✦</span>
+                  {/if}
+                  {#if showCritValues}
+                    <span class="da-crit-mini-badge">
+                      <CritIcon size={12}/>
+                    </span>
+                  {/if}
                 </div>
               </div>
             {/each}
@@ -1006,6 +1014,9 @@
                     </div>
                   {/each}
                   <span class="da-finisher-crown">✦</span>
+                  {#if showCritValues}
+                    <span class="da-crit-mini-badge"><CritIcon size={12}/></span>
+                  {/if}
                 </div>
               </div>
               {#if hit.count > 1}
@@ -1092,8 +1103,16 @@
                   </div>
                 {/each}
 
+                {#if selectedWA.hits?.[hi]?.isCrit}
+                  <CritIcon size={12}/>
+                {/if}
+
                 {#if selectedWA.hits?.[hi]?.isFinisher}
                   <span class="da-finisher-crown">✦</span>
+                {/if}
+
+                {#if showCritValues && !selectedWA.hits?.[hi]?.isCrit}
+                  <span class="da-crit-mini-badge"><CritIcon size={12}/></span>
                 {/if}
 
                 {#if hit.count > 1}
@@ -1327,7 +1346,14 @@
               {#if entry.hits && entry.hits > 1}
                 <span class="da-hit-repeat">×{entry.hits}<span class="da-hit-repeat-label">hits</span></span>
               {/if}
-              {#if entry.isFinisher}<span class="da-finisher-crown">✦</span>{/if}
+              {#if entry.isFinisher}
+                <span class="da-finisher-crown">✦</span>
+              {/if}
+              {#if showCritValues}
+                <span class="da-crit-mini-badge">
+                  <CritIcon size={12}/>
+                </span>
+              {/if}
             </div>
           </div>
         </div>
@@ -1351,6 +1377,9 @@
                   </div>
                 {/each}
                 <span class="da-finisher-crown">✦</span>
+                {#if showCritValues}
+                  <span class="da-crit-mini-badge"><CritIcon size={12}/></span>
+                {/if}
               </div>
             </div>
           </div>
@@ -2917,5 +2946,14 @@
   color: #c084fc;
   opacity: 0.5;
   white-space: nowrap;
+}
+.da-crit-mini-badge {
+  position: absolute;
+  top: 10px;
+  right: -4px;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  z-index: 10;
 }
 </style>

@@ -98,7 +98,9 @@ export const WEAPON_ARTS: WeaponArt[] = [
     description: "Release a slow strong slash that gains size and speed on each enemy hit.",
     cooldown: 20,
     baseDamage: "35",
-    damageType: "Same as weapon",
+     hits: [
+      { damageType: "Same as weapon", isCrit: true },
+    ],
     scaling: "Same as weapon",
     requirements: { weaponType: ["Greatsword"] },
   },
@@ -289,6 +291,10 @@ export const WEAPON_ARTS: WeaponArt[] = [
     description: "Raise a shield and rapidly stab holy spears through it.",
     cooldown: 15,
     baseDamage: " 1.5 × 20 Hits + 10 + 4.5 Healing",
+    hits: [
+      { damageType: "1 Holy", isFinisher: true },
+      { damageType: "1 Holy", isFinisher: true }
+    ],
     damageType: "1 Holy",
     scaling: "Same as weapon",
     requirements: { weaponType: ["Spear", "Great Spear"], holyScaling: 0.4 },
