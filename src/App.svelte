@@ -966,7 +966,6 @@ $: highestDamageType = (() => {
     const req = wa.requirements
 
     if (wa.isMonk && !_isMonk) return false
-    if (_isMonk && !wa.isMonk) return false
     
 
     if (req.guild === 'Monk' && !_isMonk) return false

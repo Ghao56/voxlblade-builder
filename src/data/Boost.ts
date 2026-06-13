@@ -17,6 +17,7 @@ export const BOOST_DEFS: BoostDef[] = [
   { sourceName: 'Royal Parry', multiplierPerPerk: 0.50, type: 'dmg', condition: 'on the hit that activated the Critical Boost status per 1 of this perk.' },
   { sourceName: 'Spell Piercer', multiplierPerPerk: 0.20, type: 'dmg', condition: 'Increase damage dealt by weapon arts and runes on crit by 20% per 1 of this perk' },
   { sourceName: 'Scourge', multiplierPerPerk: 0.2, condition: 'Gain a chance for any hit to count as a Guardbreak', type: 'dmg' },
+  
 
   // level damage (handled specially in calcBoosts — perkAmount unused)
   { sourceName: 'Level Damage', multiplierPerPerk: 0, type: 'dmg', isLevel: true },

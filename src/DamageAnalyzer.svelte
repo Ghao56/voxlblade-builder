@@ -6,6 +6,26 @@
   import { WEAPON_BASE_DMG } from './data/weapon base dmg'
   import { DMG_TYPE_COLORS, DMG_TYPE_PRIORITY, ONE_HANDED_TYPES, type WeaponBaseDmg } from './lib/types'
   import { getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers } from './data/BuffData'
+  import { WA_SUMMON_MAP, SUMMON_MAP, calcSummonStat } from './data/SummonData'
+
+  $: _waSummonDef = (() => {
+    const summonName = WA_SUMMON_MAP[selectedWA.name]
+    if (!summonName) return null
+    const def = SUMMON_MAP[summonName]
+    if (!def) return null
+    const sb = (($result.stats as Record<string,number>).summonBoost ?? 0)
+    const lv = $build.level ?? 80
+    return {
+      ...def,
+      scaledDmg: calcSummonStat(def.baseDmg, sb, lv),
+      scaledHp: def.baseHp !== undefined ? calcSummonStat(def.baseHp, sb, lv) : undefined,
+      scaledAttacks: def.attacks?.map(a => ({ 
+        ...a,
+        scaledDmg: calcSummonStat(a.baseDmg, sb, lv),
+      })),
+      summonBoostPct: sb,
+    }
+  })()
 
   $: _showCrit = crit.effectiveCritChance > 0
   $: _critMult = crit.critDamageMultiplier / 100  
@@ -558,7 +578,8 @@
   })()
 
   $: _waScalingDiffers = _waScalingMult !== _scalingMult
-  $: _showWACol = !showAllWeapons && (!!_waHitsSeq || !!selectedWA.baseDamage)
+  $: _showWACol = !showAllWeapons && (!!_waHitsSeq || !!selectedWA.baseDamage || !!_waSummonDef)
+
 
   function parseRangeDamage(s: string): { min: number; minLabel: string; max: number; maxLabel: string } | null {
     const m = s.match(/([\d.]+)\s*(?:\(([^)]+)\))?\s*[–—]\s*([\d.]+)\s*(?:\(([^)]+)\))?/)
@@ -1082,121 +1103,158 @@
             {/each}
 
           {:else if _waHitsSeq}
+            {_waHitsSeq.map(h => h.count > 1 ? `${h.n}×${h.count}` : String(h.n)).join(', ')}
 
-            {_waHitsSeq.map(h =>
-              h.count > 1 ? `${h.n}×${h.count}` : String(h.n)
-            ).join(', ')}
-              {_waHitsSeq.map(h => h.count > 1 ? `${h.n}×${h.count}` : String(h.n)).join(', ')}
-            {:else if _waRangeTyped}
-              <div class="da-range-row">
-                <div class="da-hit-card">
-                  <div class="da-range-end">
-                    {#each _waRangeTyped.minEnds as t, ti}
-                      {#if ti > 0}
-                        <span class="da-hit-plus">+</span>
-                      {/if}
-
-                      <div class="da-hit-chunk" style="--tc:{t.color}" class:da-hit-chunk--rage={t.rageApplied}>
-                        <span class="da-hit-num" class:da-hit-num--crit={showCritValues} style="--tc:{t.color}">
-                          {fmtNum(showCritValues ? Math.round(t.val * _critMult * 100) / 100 : t.val)}
-                        </span>
-                        <span class="da-hit-type">{t.label}</span>
-                      </div>
-                    {/each}
-
-                    {#if _waRangeTyped.minLabel}
-                      <span class="da-range-label">
-                        ({_waRangeTyped.minLabel})
-                      </span>
+          {:else if _waRangeTyped}
+            <div class="da-range-row">
+              <div class="da-hit-card">
+                <div class="da-range-end">
+                  {#each _waRangeTyped.minEnds as t, ti}
+                    {#if ti > 0}
+                      <span class="da-hit-plus">+</span>
                     {/if}
-                  </div>
-                </div>
 
-                <span class="da-range-arrow">→</span>
-
-                <div class="da-hit-card">
-                  <div class="da-range-end">
-                    {#each _waRangeTyped.maxEnds as t, ti}
-                      {#if ti > 0}
-                        <span class="da-hit-plus">+</span>
-                      {/if}
-
-                      <div class="da-hit-chunk" style="--tc:{t.color}" class:da-hit-chunk--rage={t.rageApplied}>
-                        <span class="da-hit-num" class:da-hit-num--crit={showCritValues} style="--tc:{t.color}">
-                          {fmtNum(showCritValues ? Math.round(t.val * _critMult * 100) / 100 : t.val)}
-                        </span>
-                        <span class="da-hit-type">{t.label}</span>
-                      </div>
-                    {/each}
-
-                    {#if _waRangeTyped.maxLabel}
-                      <span class="da-range-label da-range-label--max">
-                        ({_waRangeTyped.maxLabel})
+                    <div class="da-hit-chunk" style="--tc:{t.color}" class:da-hit-chunk--rage={t.rageApplied}>
+                      <span class="da-hit-num" class:da-hit-num--crit={showCritValues} style="--tc:{t.color}">
+                        {fmtNum(showCritValues ? Math.round(t.val * _critMult * 100) / 100 : t.val)}
                       </span>
-                    {/if}
-                  </div>
-                </div>
-
-                {#if selectedWA.scaling && selectedWA.scaling !== 'Same as weapon'}
-                  <span class="da-range-scl">
-                    {selectedWA.scaling === 'None'
-                      ? 'No Scaling'
-                      : `Scaling: ${selectedWA.scaling}`}
-                  </span>
-                {/if}
-              </div>
-            {:else if selectedWA.baseDamage && _waAllHits.dmg.length > 0}
-              <div class="da-range-row">
-                <span class="da-wbd-range">{selectedWA.baseDamage}</span>
-                {#if Object.keys(_waDmgTypes).length > 0}
-                  {#each Object.entries(_waDmgTypes) as [k, v]}
-                    <div class="da-hit-chunk da-hit-chunk--sm" style="--tc:{DMG_TYPE_COLORS[k] ?? '#e8e4da'}">
-                      <span class="da-hit-num">{v}×</span>
-                      <span class="da-hit-type">{k.charAt(0).toUpperCase() + k.slice(1)}</span>
+                      <span class="da-hit-type">{t.label}</span>
                     </div>
                   {/each}
-                {/if}
-                {#if selectedWA.scaling && selectedWA.scaling !== 'Same as weapon'}
-                  <span class="da-range-scl">{selectedWA.scaling === 'None' ? 'No Scaling' : `Scaling: ${selectedWA.scaling}`}</span>
-                {/if}
-              </div>
-            {:else}
-              <span class="da-wbd-na">—</span>
-            {/if}
-            {#if _waHealSeq}
-              <div class="da-heal-hits-row">
-                {#each _waHealSeq as h, hi}
-                  {@const scaledHeal = Math.round(h.n * _waScalingMult * 100) / 100}
-                  {#if hi > 0}
-                    <span class="da-hit-divider">›</span>
+
+                  {#if _waRangeTyped.minLabel}
+                    <span class="da-range-label">
+                      ({_waRangeTyped.minLabel})
+                    </span>
                   {/if}
-                  <div class="da-hit-card da-hit-card--heal">
-                    <div class="da-hit-chunk" style="--tc:#4ade80">
-                      {#if _waScalingMult !== 1}
-                        <span class="da-hit-raw">{fmtNum(h.n)}</span>
-                        <span class="da-hit-arrow">→</span>
-                      {/if}
-                      <span class="da-hit-num" style="--tc:#4ade80">
-                        {fmtNum(scaledHeal)}
-                      </span>
-                      <span class="da-heal-badge">✦ Heal</span>
-                    </div>
-                    {#if h.count > 1}
-                      <span class="da-hit-repeat">×{h.count}</span>
+                </div>
+              </div>
+
+              <span class="da-range-arrow">→</span>
+
+              <div class="da-hit-card">
+                <div class="da-range-end">
+                  {#each _waRangeTyped.maxEnds as t, ti}
+                    {#if ti > 0}
+                      <span class="da-hit-plus">+</span>
                     {/if}
+
+                    <div class="da-hit-chunk" style="--tc:{t.color}" class:da-hit-chunk--rage={t.rageApplied}>
+                      <span class="da-hit-num" class:da-hit-num--crit={showCritValues} style="--tc:{t.color}">
+                        {fmtNum(showCritValues ? Math.round(t.val * _critMult * 100) / 100 : t.val)}
+                      </span>
+                      <span class="da-hit-type">{t.label}</span>
+                    </div>
+                  {/each}
+
+                  {#if _waRangeTyped.maxLabel}
+                    <span class="da-range-label da-range-label--max">
+                      ({_waRangeTyped.maxLabel})
+                    </span>
+                  {/if}
+                </div>
+              </div>
+
+              {#if selectedWA.scaling && selectedWA.scaling !== 'Same as weapon'}
+                <span class="da-range-scl">
+                  {selectedWA.scaling === 'None'
+                    ? 'No Scaling'
+                    : `Scaling: ${selectedWA.scaling}`}
+                </span>
+              {/if}
+            </div>
+
+          {:else if selectedWA.baseDamage && _waAllHits.dmg.length > 0}
+            <div class="da-range-row">
+              <span class="da-wbd-range">{selectedWA.baseDamage}</span>
+              {#if Object.keys(_waDmgTypes).length > 0}
+                {#each Object.entries(_waDmgTypes) as [k, v]}
+                  <div class="da-hit-chunk da-hit-chunk--sm" style="--tc:{DMG_TYPE_COLORS[k] ?? '#e8e4da'}">
+                    <span class="da-hit-num">{v}×</span>
+                    <span class="da-hit-type">{k.charAt(0).toUpperCase() + k.slice(1)}</span>
                   </div>
                 {/each}
+              {/if}
+              {#if selectedWA.scaling && selectedWA.scaling !== 'Same as weapon'}
+                <span class="da-range-scl">{selectedWA.scaling === 'None' ? 'No Scaling' : `Scaling: ${selectedWA.scaling}`}</span>
+              {/if}
+            </div>
+
+          {:else if _waSummonDef}
+            <div class="da-range-row" style="gap: 8px; align-items: center;">
+              <div class="da-hit-card">
+                {#if _waSummonDef.scaledAttacks}
+                  {#each _waSummonDef.scaledAttacks as atk, ai}
+                    {#if ai > 0}<span class="da-hit-plus">+</span>{/if}
+                    <div class="da-hit-chunk" style="--tc:#c084fc">
+                      {#if atk.scaledDmg !== atk.baseDmg}
+                        <span class="da-hit-raw">{atk.baseDmg}</span>
+                        <span class="da-hit-arrow">→</span>
+                      {/if}
+                      <span class="da-hit-num" style="--tc:#c084fc">{atk.scaledDmg}</span>
+                      <span class="da-hit-type">{atk.label}</span>
+                    </div>
+                    {#if atk.guardbreak}
+                      <span class="da-pbd-badge da-pbd-badge--gb" style="align-self:center">GB</span>
+                    {/if}
+                  {/each}
+                {:else}
+                  <div class="da-hit-chunk" style="--tc:#c084fc">
+                    {#if _waSummonDef.scaledDmg !== _waSummonDef.baseDmg}
+                      <span class="da-hit-raw">{_waSummonDef.baseDmg}</span>
+                      <span class="da-hit-arrow">→</span>
+                    {/if}
+                    <span class="da-hit-num" style="--tc:#c084fc">{_waSummonDef.scaledDmg}</span>
+                    <span class="da-hit-type">{_waSummonDef.dmgType}</span>
+                  </div>
+                {/if}
+                <span class="da-hit-repeat" style="background:rgba(192,132,252,.12);border-color:rgba(192,132,252,.3);color:#c084fc">
+                  ×{_waSummonDef.count}<span class="da-hit-repeat-label">summons</span>
+                </span>
               </div>
-            {/if}
-            {#if _waAvgTotal}
-              <div class="wa-avg-total-box">
-                <div class="wa-atb-left">
-                  <span class="wa-atb-label">Avg Total</span>
-                  <span class="wa-atb-hint">~{_waAvgTotal.total} stars · {_waAvgTotal.starsPerType}/type</span>
+              <span class="da-summon-formula">
+                ({_waSummonDef.baseDmg} × (1 + {_waSummonDef.summonBoostPct}% × (1 + LV{$build.level}/80)))
+              </span>
+            </div>
+          {:else}
+            <span class="da-wbd-na">—</span>
+          {/if}
+
+          {#if _waHealSeq}
+            <div class="da-heal-hits-row">
+              {#each _waHealSeq as h, hi}
+                {@const scaledHeal = Math.round(h.n * _waScalingMult * 100) / 100}
+                {#if hi > 0}
+                  <span class="da-hit-divider">›</span>
+                {/if}
+                <div class="da-hit-card da-hit-card--heal">
+                  <div class="da-hit-chunk" style="--tc:#4ade80">
+                    {#if _waScalingMult !== 1}
+                      <span class="da-hit-raw">{fmtNum(h.n)}</span>
+                      <span class="da-hit-arrow">→</span>
+                    {/if}
+                    <span class="da-hit-num" style="--tc:#4ade80">
+                      {fmtNum(scaledHeal)}
+                    </span>
+                    <span class="da-heal-badge">✦ Heal</span>
+                  </div>
+                  {#if h.count > 1}
+                    <span class="da-hit-repeat">×{h.count}</span>
+                  {/if}
                 </div>
-                <span class="wa-atb-base">{fmtNum(_waAvgTotal.baseTotal)}</span>
+              {/each}
+            </div>
+          {/if}
+
+          {#if _waAvgTotal}
+            <div class="wa-avg-total-box">
+              <div class="wa-atb-left">
+                <span class="wa-atb-label">Avg Total</span>
+                <span class="wa-atb-hint">~{_waAvgTotal.total} stars · {_waAvgTotal.starsPerType}/type</span>
               </div>
-            {/if}
+              <span class="wa-atb-base">{fmtNum(_waAvgTotal.baseTotal)}</span>
+            </div>
+          {/if}
           </div>
         </div>
       {/if}
@@ -2852,5 +2910,12 @@
 .da-hit-num--crit {
   color: #e2b203 !important;
   text-shadow: 0 0 10px rgba(226,178,3,.4) !important;
+}
+.da-summon-formula {
+  font-size: 0.58rem;
+  font-family: 'Courier New', monospace;
+  color: #c084fc;
+  opacity: 0.5;
+  white-space: nowrap;
 }
 </style>

@@ -341,6 +341,64 @@ export const WEAPON_ART_BUFF_MAP: Record<string, GrantedBuff[]> = {
   'Javelin': [
     { buffName: 'Slowness', potency: 0, duration: 6, sourceName: 'Javelin', sourceType: 'weaponArt' },
   ],
+  'Cursed Ground': [
+    { 
+      buffName: 'Weakness', 
+      potency: 1.0, 
+      duration: 15, 
+      condition: 'On cast (All nearby opponents)',
+      sourceName: 'Cursed Ground', 
+      sourceType: 'weaponArt' 
+    },
+    { 
+      buffName: 'Bleed',
+      potency: 0, 
+      duration: 5, 
+      condition: '50% chance from pool',
+      sourceName: 'Cursed Ground', 
+      sourceType: 'weaponArt' 
+    },
+    { 
+      buffName: 'Burn', 
+      potency: 0, 
+      duration: 5, 
+      condition: '50% chance from pool',
+      sourceName: 'Cursed Ground', 
+      sourceType: 'weaponArt' 
+    },
+    { 
+      buffName: 'Poison', 
+      potency: 0, 
+      duration: 5, 
+      condition: '50% chance from pool',
+      sourceName: 'Cursed Ground', 
+      sourceType: 'weaponArt' 
+    },
+    { 
+      buffName: 'Shatter', 
+      potency: 0.2, 
+      duration: 5, 
+      condition: '50% chance from pool',
+      sourceName: 'Cursed Ground', 
+      sourceType: 'weaponArt' 
+    },
+    { 
+      buffName: 'Slowness', 
+      potency: 0.2, 
+      duration: 5, 
+      condition: '50% chance from pool',
+      sourceName: 'Cursed Ground', 
+      sourceType: 'weaponArt' 
+    },
+    { 
+      buffName: 'Weakness', 
+      potency: 0.5, 
+      duration: 5, 
+      condition: '50% chance from pool',
+      sourceName: 'Cursed Ground', 
+      sourceType: 'weaponArt' 
+    },
+  ],
 }
 
 export function getWeaponArtBuffs(weaponArtName: string): GrantedBuff[] {
