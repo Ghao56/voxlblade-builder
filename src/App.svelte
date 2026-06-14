@@ -3031,7 +3031,6 @@ $: _appWaAvgTotal = (() => {
               {/if}
             </div>
           {/if}
-
         </div>
       </div>
     {/if}
@@ -3130,17 +3129,16 @@ $: _appWaAvgTotal = (() => {
       </div>
     {/if}
     {#if _appWaAvgTotal}
-  <div class="wa-avg-total-box">
-    <div class="wa-atb-left">
-      <span class="wa-atb-label">Avg Total</span>
-      <span class="wa-atb-hint">~{_appWaAvgTotal.total} stars · {_appWaAvgTotal.starsPerType}/type · base only</span>
-    </div>
-    <span class="wa-atb-base">{_appWaAvgTotal.rawTotal}</span>
-  </div>
-{/if}
-  </div>
+      <div class="wa-avg-total-box">
+        <div class="wa-atb-left">
+          <span class="wa-atb-label">Avg Total</span>
+          <span class="wa-atb-hint">~{_appWaAvgTotal.total} stars · {_appWaAvgTotal.starsPerType}/type · base only</span>
+        </div>
+        <span class="wa-atb-base">{_appWaAvgTotal.rawTotal}</span>
+      </div>
+    {/if}
+      </div>
             <div class="weapon-result-layout">
-              <!-- Part 1 -->
               {#if weaponResult.part1Name}
                 {@const part1Data = isMonk ? getGlove(weaponResult.part1Name) : getBlade(weaponResult.part1Name)}
                 <div class="detail-card weapon-card" class:weapon-card--blade={!isMonk} class:weapon-card--glove={isMonk}>

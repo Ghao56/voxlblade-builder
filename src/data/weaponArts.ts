@@ -130,7 +130,7 @@ export const WEAPON_ARTS: WeaponArt[] = [
     baseDamage: "5 + 25",
     damageType: "Same as weapon",
     scaling: "Same as weapon",
-    extras: ["Shatter Potency: 0.2", "Shatter Duration: ~8s"],
+    extras: ["Shatter Potency: 0.2", "Shatter Duration: ~8s","Guardbreaks"],
     requirements: { weaponType: ["1-Handed Sword", "2-Handed Sword"], dexterityScaling: 0.4, physicalScaling: 0.4 },
   },
     {

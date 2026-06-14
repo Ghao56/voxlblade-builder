@@ -731,7 +731,7 @@ function buildWeaponResult(opts: {
   const damageTypes: Record<string, number> = { ...p1Data.damageTypes }
   for (const k in p2Data.damageTypes) {
     if (Object.prototype.hasOwnProperty.call(p2Data.damageTypes, k)) {
-      damageTypes[k] = (damageTypes[k] ?? 0) + p2Data.damageTypes[k]
+      damageTypes[k] = round2((damageTypes[k] ?? 0) + p2Data.damageTypes[k])
     }
   }
 

@@ -88,4 +88,16 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     guardbreak: true,
     note: 'Resets cooldown of the activating WA/Rune. Counts as rune damage.',
   },
+  // ── Toadzerker Spirit ────────────────────────────────────────────────────────
+  {
+    perkName: 'Toadzerker Spirit',
+    condition: 'On RMB (Monk)',
+    getBaseDamage: () => 30,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { physical: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { physical : 1.0},
+    guardbreak: true,
+    note: 'Each hit counts as individual M1/M2 and procs related effects.',
+  },
 ]

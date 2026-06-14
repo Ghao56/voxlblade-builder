@@ -665,10 +665,8 @@
     isM1?: boolean; isM2?: boolean; isFinisher?: boolean; isWA?: boolean; isRune?: boolean
     guardbreak?: boolean
     note?: string
-    /** typed hits for M2/main finisher context */
-    typedHits_m2: Array<{ rawVal: number; val: number; color: string; label: string }>
-    /** typed hits for M1 finisher context (only shown if different) */
-    typedHits_m1f: Array<{ rawVal: number; val: number; color: string; label: string }>
+    typedHits_m2:  Array<{ rawVal: number; val: number; color: string; label: string; rageApplied?: boolean }>
+    typedHits_m1f: Array<{ rawVal: number; val: number; color: string; label: string; rageApplied?: boolean }>
     scalingMult: number
     dmgTypeMode: 'weapon' | 'fixed'
   }
@@ -694,12 +692,17 @@
         : 1
 
       const buildTypedHits = (baseDmg: number) =>
-        Object.entries(resolvedDmgTypes).map(([k, mult]) => ({
+      Object.entries(resolvedDmgTypes).map(([k, mult]) => {
+        const rageApplied = _rageMult !== 1 && _rageAffectedTypes.has(k)
+        const finalMult = rageApplied ? mult * _rageMult : mult
+        return {
           rawVal: Math.round(baseDmg * 100) / 100,
-          val: Math.round(baseDmg * mult * scalingMult * 100) / 100,
+          val: Math.round(baseDmg * finalMult * scalingMult * 100) / 100,
           color: DMG_TYPE_COLORS[k] ?? '#e8e4da',
           label: k.charAt(0).toUpperCase() + k.slice(1),
-        }))
+          rageApplied,
+        }
+      })
 
       const _fhM2  = def.perkName === 'Springblast' ? springblastFinisherHits : _m2FinisherHits
       const _fhM1f = def.perkName === 'Springblast' ? springblastFinisherHits : _m1FinisherHits
@@ -1332,7 +1335,7 @@
             <div class="da-hit-card" class:da-hit-card--finisher={entry.isFinisher}>
               {#each entry.typedHits_m2 as t, ti}
                 {#if ti > 0}<span class="da-hit-plus">+</span>{/if}
-                <div class="da-hit-chunk" style="--tc:{t.color}">
+                <div class="da-hit-chunk" style="--tc:{t.color}" class:da-hit-chunk--rage={t.rageApplied}>
                   {#if entry.scalingMult !== 1}
                     <span class="da-hit-raw">{fmtNum(t.rawVal)}</span>
                     <span class="da-hit-arrow">→</span>
@@ -1365,7 +1368,7 @@
               <div class="da-hit-card da-hit-card--finisher">
                 {#each entry.typedHits_m1f as t, ti}
                   {#if ti > 0}<span class="da-hit-plus">+</span>{/if}
-                  <div class="da-hit-chunk" style="--tc:{t.color}">
+                  <div class="da-hit-chunk" style="--tc:{t.color}" class:da-hit-chunk--rage={t.rageApplied}>
                     {#if entry.scalingMult !== 1}
                       <span class="da-hit-raw">{fmtNum(t.rawVal)}</span>
                       <span class="da-hit-arrow">→</span>
@@ -1631,7 +1634,7 @@
               <span class="ds-result-label" style="color: #fb923c;">Perk: {entry.perkName} Scaling</span>
             </div>
             <span class="ds-result-eq">Multiplier =</span>
-            <span class="ds-result-val">×{entry.scalingMult.toFixed(4)}</span>
+            <span class="ds-result-val">×{+entry.scalingMult.toFixed(4)}</span>
           </div>
 
         {:else if entry.dmgTypeMode === 'weapon'}
@@ -1644,7 +1647,7 @@
               <span class="ds-applies-to" style="opacity:.5;font-size:.58rem;">Same as weapon</span>
             </div>
             <span class="ds-result-eq">Multiplier =</span>
-            <span class="ds-result-val">×{entry.scalingMult.toFixed(4)}</span>
+            <span class="ds-result-val">×{+entry.scalingMult.toFixed(4)}</span>
           </div>
         {/if}
       {/each}

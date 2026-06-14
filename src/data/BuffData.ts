@@ -236,6 +236,25 @@ type PerkBuffFactory = (amount: number, allPerks: Record<string, number>) => Gra
 
 const PERK_BUFFS: Record<string, PerkBuffFactory> = {
 
+  'Toadzerker Spirit': () => {
+    return [
+      {
+        buffName: 'Bounce',
+        potency: 0.2,
+        duration: 10,
+        sourceName: 'Toadzerker',
+        sourceType: 'perk',
+      },
+      {
+        buffName: 'Rage',
+        potency: 0.2,
+        duration: 10,
+        sourceName: 'Toadzerker',
+        sourceType: 'perk',
+      },
+    ]
+  },
+
   'Iron Bounce': (amount) => {
     const bounceDuration = 8 + 2 * amount
     return [
