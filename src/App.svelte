@@ -176,7 +176,7 @@ $: statRows = Object.entries($result.stats).filter(([k, v]) => {
     { id: 'fire',  label: 'Red',    color: '#ef4444', stat: 'fire'  },
     { id: 'air',   label: 'White',  color: '#e5e7eb', stat: 'air'   },
     { id: 'earth', label: 'Green',  color: '#22c55e', stat: 'earth' },
-    { id: 'water', label: 'Blue',   color: '#3b82f6', stat: 'water' },
+    { id: 'water', label: 'Blue',     color: '#3b82f6', stat: 'water' },
     { id: 'holy',  label: 'Yellow', color: '#eab308', stat: 'holy'  },
     { id: 'hex',   label: 'Purple', color: '#a855f7', stat: 'hex'   },
   ]
@@ -198,9 +198,9 @@ $: statRows = Object.entries($result.stats).filter(([k, v]) => {
 
   $: draconicBaseCDs = { claw: 5, infusion: 35, bubble: 7 }
   $: draconicFinalCDs = {
-    claw:     Math.floor(draconicBaseCDs.claw * cdr.runeCDR),
-    infusion: Math.floor(draconicBaseCDs.infusion * cdr.runeCDR),
-    bubble:   Math.floor(draconicBaseCDs.bubble * cdr.runeCDR),
+    claw:     Math.max(1, Math.floor(draconicBaseCDs.claw * cdr.runeCDR)),
+    infusion: Math.max(1, Math.floor(draconicBaseCDs.infusion * cdr.runeCDR)),
+    bubble:   Math.max(1, Math.floor(draconicBaseCDs.bubble * cdr.runeCDR)),
   }
   $: draconicHasCDR = cdr.runeCDR < 1.0 || cdr.runeSetCD != null
   $: hasRuneCDR = cdr.runeCDR !== 1.0 || cdr.runeSetCD != null
@@ -765,7 +765,7 @@ $: highestDamageType = (() => {
 
   function formatCD(base: number, cdr: CDRResult) {
     const effectiveBase = cdr.runeSetCD ?? base
-    return `${Math.floor(effectiveBase * cdr.runeCDR)}s`
+    return `${Math.max(1, Math.floor(effectiveBase * cdr.runeCDR))}s`
   }
 
   // ── Detail cards ───────────────────────────────────────────────────────────
@@ -2345,8 +2345,6 @@ $: _appWaAvgTotal = (() => {
                 {/if}
               </div>
             </div>
-                      
-                      <!-- Draconic Rune row — chỉ hiện khi guild = Draconic -->
             {#if isDraconic && isDragonBlooded}
               <div class="sg-cell sg-span10 sg-draconic-row">
                 <div class="sg-draconic-header">
@@ -2366,8 +2364,6 @@ $: _appWaAvgTotal = (() => {
               </div>
             {/if}
           </div>
-                      <!-- ── INLINE ENCHANT PANEL ── -->
-            <!-- Dùng biến reactive iep* thay vì {@const} để tránh stale closure -->
             {#if iepSlot}
               <div class="inline-enchant-panel">
                 <div class="iep-header">
@@ -2465,7 +2461,7 @@ $: _appWaAvgTotal = (() => {
           <span class="wa-cd-badge wa-cd-badge--reduced">
             <span class="wa-cd-old">{selectedWA.cooldown}s</span>
             <span class="wa-cd-arrow">→</span>
-            {Math.floor(selectedWA.cooldown * cdr.waCDR)}s
+            {Math.max(1, Math.floor(selectedWA.cooldown * cdr.waCDR))}s
           </span>
         {:else}
           <span class="wa-cd-badge">CD: {selectedWA.cooldown}s</span>
@@ -2813,10 +2809,19 @@ $: _appWaAvgTotal = (() => {
       <span class="cdr-cd-new">{nextCD.toFixed(2)}s</span>
     </div>
     {#if isLast}
+      {@const floored = Math.floor(nextCD)}
+      {@const capped = Math.max(1, floored)}
       <div class="cdr-calc-row cdr-calc-row--floor">
         <span class="cdr-floor-label">floor</span>
         <span class="cdr-arrow">→</span>
-        <span class="cdr-cd-new">{Math.floor(nextCD)}s</span>
+        {#if capped > floored}
+          <span class="cdr-cd-new" style="text-decoration:line-through;opacity:.35">{floored}s</span>
+          <span class="cdr-arrow">→</span>
+          <span class="cdr-cd-new" style="color:var(--accent2)">1s</span>
+          <span class="cdr-cap-label">(min)</span>
+        {:else}
+          <span class="cdr-cd-new">{floored}s</span>
+        {/if}
       </div>
     {/if}
   {/each}
@@ -2833,10 +2838,19 @@ $: _appWaAvgTotal = (() => {
           <span class="cdr-cd-new">{nextCD.toFixed(2)}s</span>
         </div>
         {#if isLast}
+          {@const floored = Math.floor(nextCD)}
+          {@const capped = Math.max(1, floored)}
           <div class="cdr-calc-row cdr-calc-row--floor">
             <span class="cdr-floor-label">floor</span>
             <span class="cdr-arrow">→</span>
-            <span class="cdr-cd-new">{Math.floor(nextCD)}s</span>
+            {#if capped > floored}
+              <span class="cdr-cd-new" style="text-decoration:line-through;opacity:.35">{floored}s</span>
+              <span class="cdr-arrow">→</span>
+              <span class="cdr-cd-new" style="color:var(--accent2)">1s</span>
+              <span class="cdr-cap-label">(min)</span>
+            {:else}
+              <span class="cdr-cd-new">{floored}s</span>
+            {/if}
           </div>
         {/if}
       {/each}
@@ -2913,7 +2927,7 @@ $: _appWaAvgTotal = (() => {
           <span class="wa-cd-badge wa-cd-badge--reduced">
             <span class="wa-cd-old">{selectedWA.cooldown}s</span>
             <span class="wa-cd-arrow">→</span>
-            {Math.floor(selectedWA.cooldown * cdr.waCDR)}s
+            {Math.max(1, Math.floor(selectedWA.cooldown * cdr.waCDR))}s
           </span>
         {:else}
           <span class="wa-cd-badge">CD: {selectedWA.cooldown}s</span>
@@ -3084,26 +3098,35 @@ $: _appWaAvgTotal = (() => {
           </div>
         {/each}
         <div class="cdr-steps-calc">
-    {#each cdr.waBreakdown as step, i}
-    {@const prevCD = i === 0 ? selectedWA.cooldown : selectedWA.cooldown * cdr.waBreakdown.slice(0,i).reduce((a,s)=>a*s.multiplier,1)}
-    {@const nextCD = selectedWA.cooldown * cdr.waBreakdown.slice(0,i+1).reduce((a,s)=>a*s.multiplier,1)}
-    {@const isLast = i === cdr.waBreakdown.length - 1}
-    <div class="cdr-calc-row">
-      <span class="cdr-cd-old">{i === 0 ? prevCD : prevCD.toFixed(2)}s</span>
-      <span class="cdr-arrow">{step.isMultiply ? '×' : '÷'}</span>
-      <span class="cdr-calc-mult">{step.isMultiply ? step.multiplier.toFixed(2) : (1/step.multiplier).toFixed(2)}</span>
-      <span class="cdr-arrow">=</span>
-      <span class="cdr-cd-new">{nextCD.toFixed(2)}s</span>
-    </div>
-    {#if isLast}
-      <div class="cdr-calc-row cdr-calc-row--floor">
-        <span class="cdr-floor-label">floor</span>
-        <span class="cdr-arrow">→</span>
-        <span class="cdr-cd-new">{Math.floor(nextCD)}s</span>
-      </div>
-    {/if}
-  {/each}
-  </div>
+          {#each cdr.waBreakdown as step, i}
+          {@const prevCD = i === 0 ? selectedWA.cooldown : selectedWA.cooldown * cdr.waBreakdown.slice(0,i).reduce((a,s)=>a*s.multiplier,1)}
+          {@const nextCD = selectedWA.cooldown * cdr.waBreakdown.slice(0,i+1).reduce((a,s)=>a*s.multiplier,1)}
+          {@const isLast = i === cdr.waBreakdown.length - 1}
+          <div class="cdr-calc-row">
+            <span class="cdr-cd-old">{i === 0 ? prevCD : prevCD.toFixed(2)}s</span>
+            <span class="cdr-arrow">{step.isMultiply ? '×' : '÷'}</span>
+            <span class="cdr-calc-mult">{step.isMultiply ? step.multiplier.toFixed(2) : (1/step.multiplier).toFixed(2)}</span>
+            <span class="cdr-arrow">=</span>
+            <span class="cdr-cd-new">{nextCD.toFixed(2)}s</span>
+          </div>
+          {#if isLast}
+            {@const floored = Math.floor(nextCD)}
+            {@const capped = Math.max(1, floored)}
+            <div class="cdr-calc-row cdr-calc-row--floor">
+              <span class="cdr-floor-label">floor</span>
+              <span class="cdr-arrow">→</span>
+              {#if capped > floored}
+                <span class="cdr-cd-new" style="text-decoration:line-through;opacity:.35">{floored}s</span>
+                <span class="cdr-arrow">→</span>
+                <span class="cdr-cd-new" style="color:var(--accent2)">1s</span>
+                <span class="cdr-cap-label">(min)</span>
+              {:else}
+                <span class="cdr-cd-new">{floored}s</span>
+              {/if}
+            </div>
+          {/if}
+        {/each}
+        </div>
       </div>
     {/if}
     {#if _appWaAvgTotal}
@@ -4456,5 +4479,12 @@ $: _appWaAvgTotal = (() => {
   font-weight: 800;
   color: var(--accent3);
   text-shadow: 0 0 10px rgba(167,139,250,.35);
+}
+.cdr-cap-label {
+  font-size: .58rem;
+  color: var(--accent2);
+  font-weight: 700;
+  opacity: .7;
+  letter-spacing: .06em;
 }
 </style>

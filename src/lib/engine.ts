@@ -921,7 +921,7 @@ export function calcCDR(
 }
 
 export function applyCD(baseCooldown: number, cdrMultiplier: number): number {
-  return Math.floor(baseCooldown * cdrMultiplier)
+  return Math.max(1, Math.floor(baseCooldown * cdrMultiplier))
 }
 
 export function calcLevelDamageMultiplier(level: number): number {
@@ -932,7 +932,6 @@ export function calcLevelDamageMultiplier(level: number): number {
 
 export interface BuildResult { stats: StatMap; perks: Record<string, number>; cdr: CDRResult; boosts: BoostResult; crit: CritResult }
 
-// Phase 1a: monk weapon slots
 function accumulateMonkWeapon(
   state:    BuildState,
   perks:    Record<string, number>,
@@ -972,7 +971,6 @@ function accumulateMonkWeapon(
   }
 }
 
-// Phase 1b: standard weapon slots
 function accumulateStandardWeapon(
   state:    BuildState,
   perks:    Record<string, number>,
@@ -993,7 +991,6 @@ function accumulateStandardWeapon(
   }
 }
 
-// Phase 1: accumulate raw stats + perks from all equipment
 function accumulateEquipment(state: BuildState): { stats: StatMap; perks: Record<string, number> } {
   const stats: StatMap                = {}
   const perks: Record<string, number> = {}
@@ -1096,7 +1093,6 @@ function accumulateEquipment(state: BuildState): { stats: StatMap; perks: Record
   return { stats, perks }
 }
 
-// Phase 2: round, apply perk effectiveness, add derived perks
 function finalizePerks(rawPerks: Record<string, number>): Record<string, number> {
   let finalPerks: Record<string, number> = {}
   for (const k in rawPerks) {
@@ -1120,7 +1116,6 @@ function finalizePerks(rawPerks: Record<string, number>): Record<string, number>
   return finalPerks
 }
 
-// Phase 3: CDR, boosts, crit from finalized stats + perks
 function deriveResults(
   rawStats:   StatMap,
   finalPerks: Record<string, number>,

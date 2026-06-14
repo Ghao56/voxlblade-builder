@@ -70,25 +70,12 @@
   <span class="row-label">{label}</span>
   <div class="row-selects">
 
-    <div 
-  class="slot-row"
-  role="presentation"
-  on:mousemove={e => showTooltip(e, s[0])}
-  on:mouseleave={hideTooltip}
->
-  <button
-    class="cat-toggle"
-    class:ascended={cat === 'Ascended'}
-    title={cat === 'Ascended'
+  <div class="slot-row" role="presentation" on:mousemove={e => showTooltip(e, s[0])} on:mouseleave={hideTooltip}>
+  <button class="cat-toggle" class:ascended={cat === 'Ascended'} title={cat === 'Ascended'
       ? 'Currently: Ascended — click to switch to Unascended'
       : 'Currently: Unascended — click to switch to Ascended'}
-    on:click={toggleCat}
-  >{cat === 'Ascended' ? 'A' : 'U'}</button>
-  <EnchantSelect
-    value={s[0]}
-    options={opts0}
-    on:change={e => set(0, e.detail)}
-  />
+    on:click={toggleCat}>{cat === 'Ascended' ? 'A' : 'U'}</button>
+  <EnchantSelect value={s[0]} options={opts0} on:change={e => set(0, e.detail)}/>
 </div>
 
 {#if show1}
