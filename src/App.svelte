@@ -467,13 +467,13 @@ function applyEnchantToAll(slot: EnchantSlot) {
         .slice(0, 6);
     }
   }
-  function filterAccessoryItems(items: any[]) {
+  function filterAccessoryItems(items: any[], search: string) {
     return sortByStatFilter(
       items.filter(item =>
         matchSearchReactive(
           item.name,
           item.perkName ? [item.perkName] : [],
-          modalSearch
+          search
         ) &&
         perkMatchesTags(item.perkName) &&
         itemMatchesStatFilter(
@@ -493,25 +493,27 @@ function applyEnchantToAll(slot: EnchantSlot) {
     if (selectedTags.size === 0) return true
     return g.ranks.some(r => (r.perks ?? []).some((p: any) => perkMatchesTags(p.name)))
   })
-  $: searchedRings = (
+    $: searchedRings = (
     void selectedTags,
     void statFilter,
-    filterAccessoryItems(rings)
+    void modalSearch,
+    filterAccessoryItems(rings, modalSearch)
   )
 
   $: searchedRunes = (
     void selectedTags,
     void statFilter,
-    filterAccessoryItems(runes)
+    void modalSearch,
+    filterAccessoryItems(runes, modalSearch)
   )
 
-  function filterWeaponItems(items: any[]) {
+  function filterWeaponItems(items: any[], search: string) {
     return sortByStatFilter(
       items.filter(item =>
         matchSearchReactive(
           item.name,
           getPerkNames(item),
-          modalSearch
+          search
         ) &&
         anyPerkMatchesTags(getPerkNames(item)) &&
         weaponMatchesFilter(item)
@@ -521,10 +523,11 @@ function applyEnchantToAll(slot: EnchantSlot) {
       weaponStatFilterSortMode
     )
   }
-  $: searchedBlades =(void weaponStatFilter, void selectedTags,filterWeaponItems(filteredBlades))
-  $: searchedHandles =(void weaponStatFilter, void selectedTags,filterWeaponItems(filteredHandles))
-  $: searchedGloves =(void weaponStatFilter, void selectedTags,filterWeaponItems(filteredGloves))
-  $: searchedEssences =(void weaponStatFilter, void selectedTags,filterWeaponItems(filteredEssences))
+
+  $: searchedBlades   = (void weaponStatFilter, void selectedTags, void modalSearch, filterWeaponItems(filteredBlades,   modalSearch))
+  $: searchedHandles  = (void weaponStatFilter, void selectedTags, void modalSearch, filterWeaponItems(filteredHandles,  modalSearch))
+  $: searchedGloves   = (void weaponStatFilter, void selectedTags, void modalSearch, filterWeaponItems(filteredGloves,   modalSearch))
+  $: searchedEssences = (void weaponStatFilter, void selectedTags, void modalSearch, filterWeaponItems(filteredEssences, modalSearch))
 
   $: searchedArmorsForModal = (() => {
     void selectedTags; void statFilter;
@@ -899,7 +902,6 @@ $: highestDamageType = (() => {
 
   function applySuggestion(label: string, type: 'name' | 'perk') {
     if (type === 'name') {
-      // Select item luôn dựa vào activeModal
       if (activeModal === 'race') {
         build.update(s => ({...s, race: label})); closeModal()
       } else if (activeModal === 'guild') {
@@ -934,7 +936,6 @@ $: highestDamageType = (() => {
         build.update(s => ({...s, monkEssence: label})); closeModal()
       }
     } else {
-      // Perk: chỉ điền vào search bar
       modalSearch = label
       showSuggestions = false
     }
@@ -1032,7 +1033,6 @@ $: highestDamageType = (() => {
     return true
   }
 
-  // Reactive snapshots để force Svelte track
   $: _waScalings = weaponResult?.baseScalings ?? {} as Record<string, number>
   $: _waStats = weaponResult?.stats ?? {} as Record<string, number>
   $: _waWeaponType = weaponResult?.finalWeaponType ?? ''
@@ -1050,8 +1050,6 @@ $: highestDamageType = (() => {
   })()
 
 
-  // Auto-select: nếu WA hiện tại không có trong availableWeaponArts thì chọn cái đầu tiên
-// Track isMonk changes để force switch WA
 let _prevIsMonk = isMonk
 $: if (isMonk !== _prevIsMonk) {
   _prevIsMonk = isMonk
@@ -1059,7 +1057,6 @@ $: if (isMonk !== _prevIsMonk) {
   if (firstAvail) build.update(s => ({...s, selectedWeaponArt: firstAvail.name}))
 }
 
-// Fallback: nếu WA hiện tại không trong available list
 $: {
   const _inAvail = availableWeaponArts.some(wa => wa.name === $build.selectedWeaponArt)
   if (!_inAvail && availableWeaponArts.length > 0) {

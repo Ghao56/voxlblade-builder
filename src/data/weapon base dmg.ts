@@ -2,7 +2,7 @@ import type { WeaponBaseDmg } from '../lib/types';
 
   export const WEAPON_BASE_DMG: WeaponBaseDmg[] = [
     { type: 'Fists',                m1: [5.5, 5.5, {n:2.7,count:3}],    m2: [15.5] },
-    { type: 'Chain Fists',          m1: [{n:3.5,count:2},{n:3.5,count:2},{n:3.5,count:2}], m2: [{n:3,count:7}] },
+    { type: 'Chain Fists',          m1: [{n:2.5,count:2},{n:2.5,count:2},{n:2.5,count:2}], m2: [{n:3,count:7}] },
     { type: '1-Handed Sword',       m1: [6, 6, 6],                      m2: [9] },
     { type: '2-Handed Sword',       m1: [5.5, 5.5, 5.5],                m2: [12] },
     { type: 'Rapier',               m1: [4.5, 4.5, {n:1.5,count:4}],    m2: [7.5] },

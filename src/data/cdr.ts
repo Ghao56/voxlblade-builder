@@ -12,8 +12,8 @@ export interface PerkCDREntry {
 
 export const CDR_PERK_DATA: Record<string, PerkCDREntry> = {
   "Caster": {
-    runePct: 0.15,
-    waPct: 0.15,
+    runePct: 0.2,
+    waPct: 0.1,
   },
   "Channeled Weapon": {
     waMultiplier: (perkAmount) => 0.8 - 0.05 * perkAmount,

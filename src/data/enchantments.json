@@ -41,7 +41,7 @@
   {"name":"Spell Proof","category":"Ascended","stacking":"multi","stats":{},"effects":[{"name":"Hex Shield","value":1}]},
   {"name":"Ferocious","category":"Ascended","stacking":"multi","stats":{"tenacity":{"type":"addition","value":0.05}},"effects":[{"name":"Ferocity","value":1}]},
   {"name":"Contained","category":"Ascended","stacking":"multi","stats":{"coldResistance":{"type":"addition","value":20},"heatResistance":{"type":"addition","value":20}},"effects":[{"name":"Contained","value":1}]},
-  {"name":"Necrotic","category":"Ascended","stacking":"multi","stats":{"earthDefense":{"type":"addition","value":20},"hexDefense":{"type":"addition","value":20}},"effects":[{"name":"Undead Might","value":1}]},
+  {"name":"Necrotic","category":"Ascended","stacking":"multi","stats":{},"effects":[{"name":"Undead Might","value":1}]},
   {"name":"Turtle King's","category":"Ascended","stacking":"multi","stats":{"defenseStats":{"type":"multiplier","value":1.2},"physicalDefense":{"type":"addition","value":5},"magicDefense":{"type":"addition","value":5}},"effects":[{"name":"Turtle","value":1}]},
   {"name":"Frenzied","category":"Ascended","stacking":"multi","stats":{"protection":{"type":"addition","value":-2}},"effects":[{"name":"Frenzy","value":1}]},
   {"name":"Piercing","category":"Ascended","stacking":"multi","stats":{"armorPenetration":{"type":"addition","value":10}},"effects":[]},
