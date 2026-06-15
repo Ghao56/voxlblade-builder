@@ -599,26 +599,26 @@ function applyEnchantToAll(slot: EnchantSlot) {
     })
 
     const scalings = weaponResult?.scalings ?? {}
-    if (statFilterSortMode === 'most-effective' && Object.keys(scalings).length > 0) {
-      return [...filtered].sort((a, b) => {
-        const pa = getArmorPart(a.name, slotName as any)
-        const pb = getArmorPart(b.name, slotName as any)
-        const sa = computeArmorEffectiveBoost(pa?.stats as Record<string,number> ?? {}, scalings)
-        const sb = computeArmorEffectiveBoost(pb?.stats as Record<string,number> ?? {}, scalings)
-        return sb - sa || a.name.localeCompare(b.name)
-      })
-    }
+      if (statFilterSortMode === 'most-effective' && Object.keys(scalings).length > 0) {
+        return [...filtered].sort((a, b) => {
+          const pa = getArmorPart(a.name, slotName as any)
+          const pb = getArmorPart(b.name, slotName as any)
+          const sa = computeArmorEffectiveBoost(applyUpgrade(pa?.stats as StatMap ?? {}, UPGRADE_MAX), scalings)
+          const sb = computeArmorEffectiveBoost(applyUpgrade(pb?.stats as StatMap ?? {}, UPGRADE_MAX), scalings)
+          return sb - sa || a.name.localeCompare(b.name)
+        })
+      }
 
-    if (statFilterSortMode === 'brawny') {
-      const brawnyAmt = Math.max(1, _brawnyPerkAmt)
-      return [...filtered].sort((a, b) => {
-        const pa = getArmorPart(a.name, slotName as any)
-        const pb = getArmorPart(b.name, slotName as any)
-        const sa = computeArmorBrawnyEffectiveBoost(pa?.stats as Record<string,number> ?? {}, scalings, brawnyAmt)
-        const sb = computeArmorBrawnyEffectiveBoost(pb?.stats as Record<string,number> ?? {}, scalings, brawnyAmt)
-        return sb - sa || a.name.localeCompare(b.name)
-      })
-    }
+      if (statFilterSortMode === 'brawny') {
+        const brawnyAmt = Math.max(1, _brawnyPerkAmt)
+        return [...filtered].sort((a, b) => {
+          const pa = getArmorPart(a.name, slotName as any)
+          const pb = getArmorPart(b.name, slotName as any)
+          const sa = computeArmorBrawnyEffectiveBoost(applyUpgrade(pa?.stats as StatMap ?? {}, UPGRADE_MAX), scalings, brawnyAmt)
+          const sb = computeArmorBrawnyEffectiveBoost(applyUpgrade(pb?.stats as StatMap ?? {}, UPGRADE_MAX), scalings, brawnyAmt)
+          return sb - sa || a.name.localeCompare(b.name)
+        })
+      }
 
     return sortByStatFilter(
       filtered,
@@ -1460,13 +1460,14 @@ $: _appWaAvgTotal = (() => {
           {#each searchedArmorsForModal as a}
             {@const part = getArmorPart(a.name, slotName as any)}
             {#if part}
-              {@const _effScore = _armorSortActive ? (statFilterSortMode === 'brawny' ? computeArmorBrawnyEffectiveBoost(part.stats as Record<string,number>, _armorSortScalings, Math.max(1, _brawnyPerkAmt)) : computeArmorEffectiveBoost(part.stats as Record<string,number>, _armorSortScalings)) : null}
+              {@const upgradedStats = applyUpgrade(part.stats as StatMap, UPGRADE_MAX)}
+              {@const _effScore = _armorSortActive ? (statFilterSortMode === 'brawny' ? computeArmorBrawnyEffectiveBoost(upgradedStats, _armorSortScalings, Math.max(1, _brawnyPerkAmt)) : computeArmorEffectiveBoost(upgradedStats, _armorSortScalings)) : null}
               <button class="modal-item modal-item--sm" class:modal-item--active={$build[storeKey] === a.name}
                 on:click={() => { build.update(s => ({...s, [storeKey]: a.name})); closeModal() }}>
                 <div class="modal-item-head">
                   <span class="modal-item-name">{@html highlight(a.name, modalSearch)}</span>
                   {#if _effScore !== null}
-                    <span class="armor-eff-score" class:armor-eff-score--brawny={statFilterSortMode === 'brawny'}>+{_effScore}%</span>
+                    <span class="armor-eff-score" class:armor-eff-score--brawny={statFilterSortMode === 'brawny'}>{_effScore >= 0 ? '+' : ''}{_effScore}% lv+5</span>
                   {/if}
                 </div>
                 <span class="modal-item-desc">{part.description}</span>
@@ -1614,7 +1615,7 @@ $: _appWaAvgTotal = (() => {
               <div class="modal-item-head">
                 <span class="modal-item-name">{@html highlight(r.name, modalSearch)}</span>
                 {#if _effScore !== null}
-                  <span class="armor-eff-score" class:armor-eff-score--brawny={statFilterSortMode === 'brawny'}>+{_effScore}%</span>
+                  <span class="armor-eff-score" class:armor-eff-score--brawny={statFilterSortMode === 'brawny'}>{_effScore >= 0 ? '+' : ''}{_effScore}%</span>
                 {/if}
               </div>
               <span class="modal-item-desc">{r.description}</span>
@@ -1748,7 +1749,7 @@ $: _appWaAvgTotal = (() => {
               <div class="modal-item-head">
                 <span class="modal-item-name">{@html highlight(r.name, modalSearch)}</span>
                 {#if _effScore !== null}
-                  <span class="armor-eff-score" class:armor-eff-score--brawny={statFilterSortMode === 'brawny'}>+{_effScore}%</span>
+                  <span class="armor-eff-score" class:armor-eff-score--brawny={statFilterSortMode === 'brawny'}>{_effScore >= 0 ? '+' : ''}{_effScore}%</span>
                 {/if}
               </div>
               <span class="modal-item-desc">{r.description}</span>
