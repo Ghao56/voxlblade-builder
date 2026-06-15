@@ -1086,11 +1086,15 @@
                   {#if ti > 0}<span class="da-hit-plus">+</span>{/if}
                   <div class="da-hit-chunk" style="--tc:{t.color}" class:da-hit-chunk--rage={t.rageApplied}>
                     {#if selectedWA.hits?.[hi]?.isCrit}
-                      <span class="da-hit-raw">{fmtNum(t.val)}</span>
-                      <span class="da-hit-arrow">→</span>
-                      <span class="da-hit-num" style="color:#e2b203;text-shadow:0 0 10px rgba(226,178,3,.5)">
+                      {#if t.scalingMult !== 1}
+                        <span class="da-hit-raw">{fmtNum(t.rawVal)}</span>
+                        <span class="da-hit-arrow">→</span>
+                      {/if}
+                      <span class="da-hit-num da-hit-num--gcrit-base" style="--tc:{t.color}">{fmtNum(t.val)}</span>
+                      <span class="da-hit-num da-hit-num--gcrit" style="--tc:{t.color}">
                         {fmtNum(Math.round(t.val * _critMult * 100) / 100)}
                       </span>
+                      <span class="da-hit-type da-hit-type--gcrit" style="--tc:{t.color}">✦ Crit · {t.label}</span>
                     {:else}
                       {#if t.scalingMult !== 1}
                         <span class="da-hit-raw">{fmtNum(t.rawVal)}</span>
@@ -1099,10 +1103,10 @@
                       <span class="da-hit-num" class:da-hit-num--crit={showCritValues} style="--tc:{t.color}">
                         {fmtNum(showCritValues ? Math.round(t.val * _critMult * 100) / 100 : t.val)}
                       </span>
+                      <span class="da-hit-type">
+                        {t.label}
+                      </span>
                     {/if}
-                    <span class="da-hit-type">
-                      {t.label}
-                    </span>
                   </div>
                 {/each}
 
@@ -2940,8 +2944,22 @@
 }
 
 .da-hit-num--crit {
-  color: #e2b203 !important;
-  text-shadow: 0 0 10px rgba(226,178,3,.4) !important;
+  filter: brightness(1.5) saturate(2) !important;
+  text-shadow: 0 0 16px color-mix(in srgb, var(--tc) 90%, white) !important;
+}
+.da-hit-num--gcrit-base {
+  font-size: .65rem;
+  opacity: .35;
+}
+.da-hit-num--gcrit {
+  color: var(--tc);
+  filter: brightness(1.4) saturate(1.9);
+  text-shadow: 0 0 14px var(--tc);
+}
+.da-hit-type--gcrit {
+  color: var(--tc);
+  filter: brightness(1.2) saturate(1.5);
+  opacity: .85;
 }
 .da-summon-formula {
   font-size: 0.58rem;
