@@ -238,6 +238,13 @@ export const ITEM_BUFF_MAP: GrantedBuff[] = [
     sourceName: 'Toad Slam Rune',
     sourceType: 'rune',
   },
+  {
+    buffName: 'Bounce',
+    potency: 0.3,
+    duration: 10,
+    sourceName: 'Bounce Rune',
+    sourceType: 'rune',
+  },
 ]
 
 type PerkBuffFactory = (amount: number, allPerks: Record<string, number>) => GrantedBuff[]
@@ -279,7 +286,7 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
     return [
       {
         buffName: 'Bounce',
-        potency: 0.3 * amount,
+        potency: 0.1 * amount,
         duration: bounceDuration,
         condition: '10% chance on M1/M2',
         sourceName: 'Iron Bounce',
@@ -295,6 +302,17 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       },
     ]
   },
+
+  'Springblast': (amount) => [
+      {
+        buffName: 'Bounce',
+        potency: 0.1 * amount,
+        duration: 8 + 2 * amount,
+        condition: '25% chance when blocking hits (?)',
+        sourceName: 'Springblast',
+        sourceType: 'perk',
+      },
+    ],
 
   'Spring Step': (amount) => [
     {
