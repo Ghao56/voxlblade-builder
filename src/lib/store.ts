@@ -2,7 +2,9 @@ import { writable, derived } from 'svelte/store'
 import type { BuildState, EnchantSlot } from './types'
 import { calcBuild, races, enforceEnchantSlot } from './engine'
 
-export const build = writable<BuildState>({
+const STORAGE_KEY = 'voxlbuilder_build_v1'
+
+const DEFAULT_BUILD: BuildState = {
   race: races[0]?.name ?? "",
   guild: "",
   guildRank: 1,
@@ -38,6 +40,25 @@ export const build = writable<BuildState>({
   level: 80,
   hpFill: 100,
   summonCount: 0,
+}
+
+function loadBuild(): BuildState {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (!raw) return { ...DEFAULT_BUILD }
+    const parsed = JSON.parse(raw) as Partial<BuildState>
+    return { ...DEFAULT_BUILD, ...parsed }
+  } catch {
+    return { ...DEFAULT_BUILD }
+  }
+}
+
+export const build = writable<BuildState>(loadBuild())
+
+build.subscribe(state => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+  } catch {  }
 })
 
 export const result = derived(build, $b => calcBuild($b))
@@ -54,4 +75,8 @@ export function setEnchantment(slot: EnchantSlot, index: 0 | 1 | 2, value: strin
       }
     }
   })
+}
+
+export function clearBuild() {
+  build.set({ ...DEFAULT_BUILD })
 }

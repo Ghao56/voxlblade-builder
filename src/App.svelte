@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { build, result } from './lib/store'
+  import { build, result, clearBuild } from './lib/store'
   import {
     races, guilds, armors, rings, runes, blades, handles, gloves, essences,
     getGuild, getArmorPart, getRing, getRune, getEnchant, getPerk,
@@ -23,6 +23,7 @@
   import StatFilter from './StatFilter.svelte'
   import WeaponStatFilter from './WeaponStatFilter.svelte'
   import BuffList from './BuffList.svelte'
+  
 
   $: {
     const _maxSummons = 15 + ($result.perks['Swarm'] ?? 0)
@@ -2235,6 +2236,9 @@ $: _appWaAvgTotal = (() => {
       <div class="panel summary-panel">
         <div class="summary-title-row">
           <h3 class="panel-title summary-title">Build Summary</h3>
+          <button class="clear-all-btn" on:click={clearBuild} title="Clear all selections">
+            ✕ Clear All
+          </button>
           <LevelBar protection={$result.stats.protection ?? 0} />
         </div>
         <div class="summary-layout">
@@ -4677,4 +4681,22 @@ $: _appWaAvgTotal = (() => {
   color: var(--weapon-blade);
 }
 .armor-eff-score--inf { opacity: .85; }
+.clear-all-btn {
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(248,113,113,.3);
+  background: rgba(248,113,113,.08);
+  color: var(--neg);
+  font-size: .7rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font-body);
+  letter-spacing: .04em;
+  transition: all .15s;
+  flex-shrink: 0;
+}
+.clear-all-btn:hover {
+  background: rgba(248,113,113,.2);
+  border-color: rgba(248,113,113,.55);
+}
 </style>
