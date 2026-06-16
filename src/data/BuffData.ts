@@ -9,6 +9,7 @@ export interface BuffDefinition {
   isDebuff?: boolean
   isSelfDebuff?: boolean
   isNeutral?: boolean
+  potencyCapped?: boolean
 }
 
 function formatDamageTypes(types: string[]) {
@@ -111,6 +112,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     description: '+2% damage · +1% crit chance & crit damage · +3% speed per potency. Indefinite — lose perkAmount potency on unblocked hit.',
     effectPerTenthPotency: 0.2,
     effectUnit: 'flat',
+    potencyCapped: true,
   },
 
   //Debuffs
@@ -645,7 +647,7 @@ export function applyBuffPerkModifiers(
     const bastionStacks = perks['Bastion Bless'] ?? 0
     if (bastionStacks > 0 && !buff.isSelfDebuff) {
       const def = BUFF_DEFS[buff.buffName]
-      if (def && !def.isDebuff && !def.isNeutral) {
+      if (def && !def.isDebuff && !def.isNeutral && !def.potencyCapped) {
         bonus += 0.1 * bastionStacks * buff.potency
       }
     }
