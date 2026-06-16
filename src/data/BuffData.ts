@@ -110,7 +110,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     name: 'Perfection',
     color: '#e5e7eb',
     description: '+2% damage · +1% crit chance & crit damage · +3% speed per potency. Indefinite — lose perkAmount potency on unblocked hit.',
-    effectPerTenthPotency: 0.2,
+    effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
     potencyCapped: true,
   },
@@ -263,7 +263,7 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
   'Perfection': (amount) => [
     {
       buffName: 'Perfection',
-      potency: amount * 0.5,
+      potency: amount * 5,
       duration: 0,
       condition: `On dodge/parry · +${amount}/dodge · max ${amount * 5} · −${amount} on unblocked hit`,
       sourceName: 'Perfection',
