@@ -28,7 +28,21 @@
     }
   })()
 
-  $: _showCrit = crit.effectiveCritChance > 0
+  $: _hasCritBoostBuff = (() => {
+    const itemBuffs = getActiveBuildBuffs({
+      rune: $build.rune, ring: $build.ring, infusionRing: $build.infusionRing,
+      helmet: $build.helmet, chestplate: $build.chestplate, leggings: $build.leggings,
+      weaponBlade: $build.weaponBlade, weaponHandle: $build.weaponHandle,
+      monkGlove: $build.monkGlove, race: $build.race,
+    })
+    const all = applyBuffPerkModifiers(
+      [...itemBuffs, ...getPerkBuffs($result.perks), ...getWeaponArtBuffs($build.selectedWeaponArt)],
+      $result.perks, $build.rune || undefined
+    )
+    return all.some(b => b.buffName === 'Critical Boost')
+  })()
+
+  $: _showCrit = crit.effectiveCritChance > 0 || _hasCritBoostBuff
   $: _critMult = crit.critDamageMultiplier / 100  
   let showCritValues = false
 

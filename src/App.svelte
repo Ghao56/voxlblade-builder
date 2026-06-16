@@ -675,7 +675,7 @@ function applyEnchantToAll(slot: EnchantSlot) {
 
 function onStatFilterChange( e: CustomEvent<{ 
     filter: Map<string,'include'|'exclude'>
-    sortMode:'highest'|'lowest'|'alphabetical'
+    sortMode:'highest'|'lowest'|'alphabetical'|'most-effective'|'brawny'
   }>
 ){
  statFilter =e.detail.filter

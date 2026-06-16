@@ -378,6 +378,9 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
     { buffName: 'Slowness',       potency: 1.0,                 duration: 10,             condition: 'After buff expires',     sourceName: 'Cursed Experiment', sourceType: 'perk',
     isSelfDebuff: true },
   ],
+    'Royal Parry': () => [
+    { buffName: 'Critical Boost', potency: 1.0,                 duration: 15, condition: 'Upon a successful parry', sourceName: 'Royal Parry', sourceType: 'perk' },
+  ],
 
   'Beastial Rage': (amount) => [{ 
     buffName: 'Rage', potency: 0.3 * amount, duration: 15, condition: 'On kill or Poisebreak', sourceName: 'Beastial Rage', sourceType: 'perk' 
@@ -692,31 +695,42 @@ export function getPerkBuffs(perks: Record<string, number>): GrantedBuff[] {
 }
 
 export function getActiveBuildBuffs(build: {
-  rune: string
-  ring: string
-  infusionRing: string
-  helmet: string
-  chestplate: string
-  leggings: string
-  weaponBlade: string
-  weaponHandle: string
-  monkGlove: string
+  rune: string; ring: string; infusionRing: string;
+  helmet: string; chestplate: string; leggings: string;
+  weaponBlade: string; weaponHandle: string; monkGlove: string;
+  race?: string;
 }): GrantedBuff[] {
   const buffs: GrantedBuff[] = []
-  
   const slots = [
     build.rune, build.ring, build.infusionRing,
     build.helmet, build.chestplate, build.leggings,
     build.weaponBlade, build.weaponHandle, build.monkGlove
   ]
-
   for (const itemName of slots) {
     if (itemName && BUFFS_BY_ITEM_SOURCE[itemName]) {
       buffs.push(...BUFFS_BY_ITEM_SOURCE[itemName])
     }
   }
-
+  if (build.race) buffs.push(...getRaceBuffs(build.race))
   return buffs
+}
+// ─── Race buffs ───────────────────────────────────────────────────────────────
+
+export const RACE_BUFF_MAP: Record<string, GrantedBuff[]> = {
+  'BUNIKIN': [
+    {
+      buffName: 'Critical Boost',
+      potency: 1.0,
+      duration: 10,
+      condition: 'On successful dodge (passive)',
+      sourceName: 'BUNIKIN',
+      sourceType: 'race' as any,
+    },
+  ],
+}
+
+export function getRaceBuffs(race: string): GrantedBuff[] {
+  return RACE_BUFF_MAP[race] ?? []
 }
 
 export function calcBuffEffect(

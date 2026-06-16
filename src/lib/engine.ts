@@ -1161,7 +1161,7 @@ function deriveResults(
   const _itemBuffs = getActiveBuildBuffs({
     rune: state.rune, ring: state.ring, infusionRing: state.infusionRing,
     helmet: state.helmet, chestplate: state.chestplate, leggings: state.leggings,
-    weaponBlade: state.weaponBlade, weaponHandle: state.weaponHandle, monkGlove: state.monkGlove,
+    weaponBlade: state.weaponBlade, weaponHandle: state.weaponHandle, monkGlove: state.monkGlove,race: state.race,
   })
   const _allBuffs = applyBuffPerkModifiers(
     [..._itemBuffs, ...getPerkBuffs(finalPerks), ...getWeaponArtBuffs(state.selectedWeaponArt)],

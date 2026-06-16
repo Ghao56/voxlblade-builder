@@ -24,6 +24,7 @@
     weaponBlade: $build.weaponBlade,
     weaponHandle: $build.weaponHandle,
     monkGlove: $build.monkGlove,
+    race: $build.race,
   })
 
   $: perkBuffs = getPerkBuffs($result.perks)
@@ -86,12 +87,14 @@ $: groupedBuffs = Object.values(
     rune:   '#a78bfa',
     perk:   '#fbbf24',
     weaponArt: '#38bdf8',
+    race:      '#34d399'
   }
 
   const SRC_LABEL: Record<string, string> = {
-    rune:   'Rune',
-    perk:   'Perk',
-    weaponArt: 'W. Art', 
+    rune:       'Rune',
+    perk:       'Perk',
+    weaponArt:  'W. Art',
+    race:       'Race',
   }
   function fmtPotency(v: number): string {
     return String(Math.round(v * 1000) / 1000);
