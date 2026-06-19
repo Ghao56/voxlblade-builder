@@ -820,7 +820,6 @@ $: weaponDamageTypesWithBonus = (() => {
   return result
 })()
 
-// Highest damage type key from weapon (for WAs like Laser, Mines, etc.)
 $: highestDamageType = (() => {
   const entries = Object.entries(weaponDamageTypesWithBonus)
   if (entries.length === 0) return null

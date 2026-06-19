@@ -26,7 +26,7 @@ import type { WeaponBaseDmg } from '../lib/types';
     { type: 'Artillery Mage',       m1: [5.5, 5.5],  m1Finisher: false, m2: [8.5] },
     { type: 'Stratos Winds',        m1: [5, 5],  m1Finisher: false,     m2: [8] },
     { type: 'Storm Caster',         m1: [5, 5],  m1Finisher: false,     m2: [{n:2.75,count:5}] },
-    { type: 'Virulent Core',        m1: [4.5, 4.5],  m1Finisher: false, m2: [13.9] },
+    { type: 'Virulent Core',        m1: [4.5, 4.5],  m1Finisher: false, m2: [	12] },
     { type: 'Cosmic Ray',           m1: null,                           m2: [18.5] },
     { type: 'Mine',                 m1: null,                           m2: [5, 10, 15] },
     { type: 'Side Gun',             m1: null,                           m2: [7] },

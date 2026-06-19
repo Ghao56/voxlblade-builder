@@ -13,8 +13,10 @@
   activeFinalMult
 
   export let weaponHits: Array<{
-    group: string; index: number; count: number
-    base: number; scalingMult: number; combatMult: number; isFinisher: boolean
+    group: string;
+    index: number; count: number
+    base: number; scalingMult: number; combatMult: number;
+    isFinisher: boolean
     dmgTypes: Record<string, number>
     label?: string
   }> = []
@@ -65,14 +67,18 @@
 
   // ── Compute every hit × every damage type up front (no manual selection) ───
   interface ComputedType {
-    key: string; label: string; color: string
+    key: string;
+    label: string; color: string
     typeBase: number; scalingMult: number; combatMult: number
-    rageApplied: boolean; rageMultUsed: number
+    rageApplied: boolean;
+    rageMultUsed: number
     defMult: number; enemyDefPct: number
-    raw: number; critVal: number
+    raw: number;
+    critVal: number
   }
   interface ComputedHit {
-    group: string; index: number; count: number; isFinisher: boolean; label?: string
+    group: string; index: number; count: number; isFinisher: boolean;
+    label?: string
     types: ComputedType[]
   }
 
@@ -90,7 +96,8 @@
       const raw          = Math.round(typeBase * hit.scalingMult * rageMultUsed * hit.combatMult * defMult * 100) / 100
       const critVal      = Math.round(raw * critDmgMult / 100 * 100) / 100
       return {
-        key: k, label: info.label, color: info.color,
+        key: k, 
+        label: info.label, color: info.color,
         typeBase, scalingMult: hit.scalingMult, combatMult: hit.combatMult,
         rageApplied, rageMultUsed, defMult, enemyDefPct,
         raw, critVal,
@@ -110,6 +117,14 @@
     { label: 'WA', list: waHits },
     ...(perkHits.length > 0 ? [{ label: 'Perk', list: perkHits }] : [])
   ]
+
+  // ── Totals ────────────────────────────────────────────────────────────────
+  function hitTypeSum(hit: ComputedHit, useCrit: boolean): number {
+    return Math.round(hit.types.reduce((s, t) => s + (useCrit ? t.critVal : t.raw), 0) * 100) / 100
+  }
+  function groupTotalSum(list: ComputedHit[], useCrit: boolean): number {
+    return Math.round(list.reduce((s, h) => s + hitTypeSum(h, useCrit) * h.count, 0) * 100) / 100
+  }
 </script>
 
 <div class="bdc-root da-section">
@@ -192,10 +207,21 @@
         <div class="bdc-hit-list">
           {#each hitGroups as grp}
             {#if grp.list.length > 0}
+              {@const gTotal = groupTotalSum(grp.list, showCritValues)}
               <div class="bdc-hit-list-grp">
-                <span class="bdc-hit-grp-label">{grp.label}</span>
+                <div class="bdc-grp-head">
+                  <span class="bdc-hit-grp-label">{grp.label}</span>
+                  {#if grp.label !== 'Perk'}
+                    <span class="bdc-grp-total" class:bdc-grp-total--crit={showCritValues}>
+                      {#if showCritValues}<CritIcon size={10}/>{/if}
+                      {fmt(gTotal)}
+                    </span>
+                  {/if}
+                </div>
                 <div class="bdc-hit-list-rows">
                   {#each grp.list as hit}
+                    {@const hSum = hitTypeSum(hit, showCritValues)}
+                    {@const multiType = hit.types.length > 1}
                     <div class="bdc-hit-row" class:bdc-hit-row--finisher={hit.isFinisher}>
                       {#if hit.label != null}
                         <span class="bdc-hit-row-label">{hit.label}</span>
@@ -204,16 +230,15 @@
                         {#each hit.types as t, ti}
                           {#if ti > 0}<span class="bdc-hit-plus">+</span>{/if}
                           <div class="bdc-hit-type-chunk" style="--tc:{t.color}" class:bdc-hit-type-chunk--rage={t.rageApplied} class:bdc-hit-type-chunk--crit={showCritValues}>
-                          <div class="bdc-hit-type-top">
-                            {#if showCritValues}
-                              <span class="bdc-crit-inline-icon">
-                                <CritIcon size={12} />
-                              </span>
-                            {/if}
-                            
-                            <span class="bdc-hit-type-val">{fmt(showCritValues ? t.critVal : t.raw)}</span>
-                            <span class="bdc-hit-type-label">{t.label}</span>
-                          </div>
+                            <div class="bdc-hit-type-top">
+                              {#if showCritValues}
+                                <span class="bdc-crit-inline-icon">
+                                  <CritIcon size={12} />
+                                </span>
+                              {/if}
+                              <span class="bdc-hit-type-val">{fmt(showCritValues ? t.critVal : t.raw)}</span>
+                              <span class="bdc-hit-type-label">{t.label}</span>
+                            </div>
                             <div class="bdc-hit-type-formula">
                               <span class="bdc-mini-num">{fmt(t.typeBase)}</span>
                               {#if t.scalingMult !== 1}
@@ -222,7 +247,7 @@
                               {/if}
                               {#if t.rageApplied}
                                 <span class="bdc-mini-op">×</span>
-                                <span class="bdc-mini-chip bdc-mini-chip--rage" title="Rage">🔥{fmtMult(t.rageMultUsed)}</span>
+                                <span class="bdc-mini-chip bdc-mini-chip--rage" title="Rage">{fmtMult(t.rageMultUsed)}</span>
                               {/if}
                               {#if t.combatMult !== 1}
                                 <span class="bdc-mini-op">×</span>
@@ -234,12 +259,29 @@
                               {/if}
                               <span class="bdc-mini-op">=</span>
                               <span class="bdc-mini-result" style="--tc:{t.color}">{fmt(t.raw)}</span>
+                              {#if showCritValues}
+                                <span class="bdc-mini-op">×</span>
+                                <span class="bdc-mini-chip bdc-mini-chip--crit" title="Crit damage multiplier">
+                                  <CritIcon size={9}/>{fmtMult(critDmgMult / 100)}
+                                </span>
+                                <span class="bdc-mini-op">=</span>
+                                <span class="bdc-mini-result bdc-mini-result--crit" style="--tc:{t.color}">{fmt(t.critVal)}</span>
+                              {/if}
                             </div>
                           </div>
                         {/each}
                       </div>
-                      {#if hit.count > 1}<span class="bdc-hit-cnt">×{hit.count}</span>{/if}
-                      {#if hit.isFinisher}<span class="bdc-hit-fin">✦</span>{/if}
+                      <div class="bdc-hit-row-end">
+                        {#if hit.count > 1}<span class="bdc-hit-cnt">×{hit.count}</span>{/if}
+                        
+                        <span class="bdc-hit-type-sum-sep">=</span>
+                        <span class="bdc-hit-type-sum" class:bdc-hit-type-sum--crit={showCritValues}>
+                          {#if showCritValues}<CritIcon size={11}/>{/if}
+                          {fmt(hSum * hit.count)}
+                        </span>
+                        
+                        {#if hit.isFinisher}<span class="bdc-hit-fin">✦</span>{/if}
+                      </div>
                     </div>
                   {/each}
                 </div>
@@ -386,7 +428,6 @@
   gap: 10px;
 }
 
-
 /* Crit Toggle Row */
 .bdc-crit-toggle-row {
   display: flex;
@@ -421,7 +462,6 @@
   .bdc-def-grid { flex: 1; }
 }
 
-/* ── Hit selector ── */
 .bdc-hit-grp-label {
   font-size: .52rem;
   font-weight: 900;
@@ -431,7 +471,77 @@
   opacity: .5;
   min-width: 20px;
 }
-.bdc-hit-cnt { font-size: .58rem; opacity: .6; }
+
+.bdc-hit-cnt {
+  font-family: 'Courier New', monospace;
+  font-size: .95rem;
+  font-weight: 900;
+  color: #fbbf24;
+  background: rgba(251,191,36,.12);
+  border: 1px solid rgba(251,191,36,.3);
+  border-radius: 999px;
+  padding: 3px 11px;
+  letter-spacing: -.01em;
+  flex-shrink: 0;
+}
+
+/* ── Group header with total ── */
+.bdc-grp-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2px 3px;
+}
+
+.bdc-grp-total {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: .95rem;
+  font-weight: 900;
+  color: var(--ink-muted, #8a8d85);
+  opacity: .55;
+  letter-spacing: -.01em;
+}
+
+.bdc-grp-total--crit {
+  color: #e2b203;
+  opacity: .85;
+}
+
+/* ── Per-hit type sum (multi-type only) ── */
+.bdc-hit-type-sum-sep {
+  font-size: .7rem;
+  color: var(--ink-muted, #8a8d85);
+  opacity: .35;
+  font-weight: 700;
+  margin: 0 2px;
+  flex-shrink: 0;
+}
+
+.bdc-hit-type-sum {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: var(--ink, #e8e4da);
+  padding: 4px 10px;
+  border-radius: 7px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.12);
+  letter-spacing: -.01em;
+  min-width: 58px;
+}
+
+.bdc-hit-type-sum--crit {
+  color: #e2b203;
+  background: rgba(226,178,3,.1);
+  border-color: rgba(226,178,3,.25);
+}
 
 /* ── Full hit list (no selection needed) ── */
 .bdc-empty {
@@ -481,6 +591,15 @@
   flex-wrap: wrap;
   gap: 4px;
   flex: 1;
+  min-width: 0;
+}
+.bdc-hit-row-end {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
+  padding-left: 8px;
 }
 .bdc-hit-type-chunk {
   display: flex;
@@ -496,9 +615,12 @@
 }
 .bdc-hit-type-val {
   font-family: 'Courier New', monospace;
-  font-size: .9rem;
-  font-weight: 800;
+  font-size: 1.3rem;
+  font-weight: 900;
   color: var(--tc, #e8e4da);
+  text-shadow: 0 0 12px color-mix(in srgb, var(--tc) 55%, transparent);
+  letter-spacing: -.02em;
+  line-height: 1;
 }
 .bdc-hit-type-label {
   font-size: .55rem;
@@ -555,11 +677,20 @@
 .bdc-mini-chip--combat  { color: #34d399; border-color: rgba(52,211,153,.25); background: rgba(52,211,153,.06); }
 .bdc-mini-chip--def     { color: #f87171; border-color: rgba(248,113,113,.25); background: rgba(248,113,113,.06); }
 .bdc-mini-chip--amplify { color: #fbbf24; border-color: rgba(251,191,36,.3); background: rgba(251,191,36,.07); }
+.bdc-mini-chip--crit    {
+  display: inline-flex; align-items: center; gap: 3px;
+  color: #e2b203; border-color: rgba(226,178,3,.3); background: rgba(226,178,3,.1);
+}
 .bdc-mini-result {
   font-family: 'Courier New', monospace;
   font-size: .72rem;
   font-weight: 900;
   color: var(--tc, #e8e4da);
+}
+.bdc-mini-result--crit {
+  color: #e2b203;
+  font-size: .78rem;
+  text-shadow: 0 0 8px rgba(226,178,3,.4);
 }
 .bdc-hit-fin { font-size: .65rem; color: #facc15; }
 .bdc-crit-inline-icon {
@@ -572,7 +703,6 @@
 .bdc-hit-type-chunk--crit .bdc-hit-type-val {
   font-weight: 900;
   text-shadow: 0 0 4px rgba(216, 75, 85, 0.4);
-
   filter: hue-rotate(-15deg) saturate(1.8) brightness(1.2);
 }
 

@@ -201,7 +201,7 @@
       return { type: 'Cosmic Ray', m2Only: true }
     }
     if ((_weaponPerks['Mine'] ?? 0) > 0) {
-      return { type: 'Mine', m2Only: true }
+      return { type: 'Mine', m2Only: true, m2NoLock: true }
     }
 
     return null
@@ -284,8 +284,7 @@
       return a
     })
     
-    const total = Math.round(entries.reduce((s, [, v]) => s + v, 0) * 100) / 100
-    return { [highestKey]: total }
+    return { [highestKey]: 1 }
   })()
 
   let showAllWeapons = false
@@ -745,17 +744,12 @@
         : 1
 
       const buildTypedHits = (baseDmg: number) =>
-      Object.entries(resolvedDmgTypes).map(([k, mult]) => {
-        const rageApplied = _rageMult !== 1 && _rageAffectedTypes.has(k)
-        const finalMult = rageApplied ? mult * _rageMult : mult
-        return {
-          rawVal: Math.round(baseDmg * 100) / 100,
-          val: Math.round(baseDmg * finalMult * scalingMult * combatMult * 100) / 100, // ← THÊM combatMult
-          color: DMG_TYPE_COLORS[k] ?? '#e8e4da',
-          label: k.charAt(0).toUpperCase() + k.slice(1),
-          rageApplied,
-        }
-      })
+      Object.entries(resolvedDmgTypes).map(([k, mult]) => ({
+        rawVal: Math.round(baseDmg * 100) / 100,
+        val: Math.round(baseDmg * mult * 100) / 100,
+        color: DMG_TYPE_COLORS[k] ?? '#e8e4da',
+        label: k.charAt(0).toUpperCase() + k.slice(1),
+      }))
 
       const _fhM2  = def.perkName === 'Springblast' ? springblastFinisherHits : _m2FinisherHits
       const _fhM1f = def.perkName === 'Springblast' ? springblastFinisherHits : _m1FinisherHits
@@ -809,8 +803,9 @@
       }
       if (row.m2) {
         row.m2.forEach((h: any, i: number) => {
-          const base = typeof h === 'number' ? h : h.n
+          const rawBase = typeof h === 'number' ? h : h.n
           const count = typeof h === 'number' ? 1 : h.count
+          const base = applyWeaponCharge(rawBase)
           result.push({ group: 'M2', index: i, count, base, scalingMult: _scalingMult, combatMult: _m2CombatMult, isFinisher: true, dmgTypes: m2Types })
         })
       }
@@ -834,7 +829,7 @@
       result.push({
         group: 'Perk',
         index: result.length,
-        count: entry.hits ?? 1,
+        count: entry.perkName === 'Springblast' ? springblastFinisherHits : (entry.hits ?? 1),
         base: entry.typedHits_m2[0].rawVal,
         scalingMult: entry.scalingMult,
         combatMult: entry.combatMult,
@@ -1436,7 +1431,7 @@
               {#each entry.typedHits_m2 as t, ti}
                 {#if ti > 0}<span class="da-hit-plus">+</span>{/if}
                 <div class="da-hit-chunk" style="--tc:{t.color}" class:da-hit-chunk--rage={t.rageApplied}>
-                  {#if entry.scalingMult !== 1}
+                  {#if t.val !== t.rawVal}
                     <span class="da-hit-raw">{fmtNum(t.rawVal)}</span>
                     <span class="da-hit-arrow">→</span>
                   {/if}
@@ -1469,7 +1464,7 @@
                 {#each entry.typedHits_m1f as t, ti}
                   {#if ti > 0}<span class="da-hit-plus">+</span>{/if}
                   <div class="da-hit-chunk" style="--tc:{t.color}" class:da-hit-chunk--rage={t.rageApplied}>
-                    {#if entry.scalingMult !== 1}
+                    {#if t.val !== t.rawVal}
                       <span class="da-hit-raw">{fmtNum(t.rawVal)}</span>
                       <span class="da-hit-arrow">→</span>
                     {/if}
