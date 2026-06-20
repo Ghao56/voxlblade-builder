@@ -212,13 +212,29 @@ export function calcCrit(stats: StatMap, perks: Record<string, number>): CritRes
     if (amount !== 0) critDmgBreakdown.push({ source: src.label, amount })
   }
 
-  const rawCritDamageMultiplier = round(critDmgBreakdown.reduce((a, b) => a + b.amount, 0))
-  const critDamageMultiplier = primalStacks > 0
-    ? round(150 + (rawCritDamageMultiplier - 150) / 4)
-    : rawCritDamageMultiplier
+  // TÍNH TOÁN CRIT DAMAGE MULTIPLIER THỰC TẾ
+  let critDamageMultiplier = 150
+  if (primalStacks > 0) {
+    for (const src of critDmgBreakdown) {
+      if (src.source === 'Base') continue
+      if (src.amount < 0) {
+        critDamageMultiplier += src.amount // Giữ nguyên penalty
+      } else {
+        critDamageMultiplier += src.amount / 4 // Giảm 4 lần bonus
+      }
+    }
+    critDamageMultiplier = round(critDamageMultiplier)
+  } else {
+    critDamageMultiplier = round(critDmgBreakdown.reduce((a, b) => a + b.amount, 0))
+  }
 
+  // TÍNH TOÁN HIỂN THỊ TRÊN GIAO DIỆN
   const displayedCritDmgBreakdown: Array<{ source: string; amount: number }> = primalStacks > 0
-    ? critDmgBreakdown.map(s => s.source === 'Base' ? s : { ...s, amount: round(s.amount / 4) })
+    ? critDmgBreakdown.map(s => 
+        (s.source === 'Base' || s.amount < 0) 
+          ? s 
+          : { ...s, amount: round(s.amount / 4) }
+      )
     : critDmgBreakdown
 
   return {
