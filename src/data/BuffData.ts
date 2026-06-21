@@ -472,6 +472,26 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       sourceType: 'perk',
     },
   ],
+  'Air Pressure': (amount) => [
+    {
+      buffName: 'Air Pressure',
+      potency: 0.1 * amount,
+      duration: 15,
+      condition: 'Dealing Air Damage',
+      sourceName: 'Air Pressure',
+      sourceType: 'perk',
+    },
+  ],
+  'Apollo Boost': () => [
+      {
+        buffName: 'Taunt',
+        potency: 1.0, 
+        duration: 15,
+        condition: 'Using a Rune',
+        sourceName: 'Apollo Boost',
+        sourceType: 'perk',
+      },
+    ],
 }
 
 export const WEAPON_ART_BUFF_MAP: Record<string, GrantedBuff[]> = {

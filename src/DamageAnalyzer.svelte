@@ -804,7 +804,7 @@
         perkName: def.perkName,
         perkAmount,
         condition: def.condition,
-        hits: def.hits,
+        hits: def.getHits ? def.getHits({ perkAmount }) : def.hits,
         isM1: def.isM1, isM2: def.isM2, isFinisher: def.isFinisher,
         isWA: def.isWA, isRune: def.isRune, guardbreak: def.guardbreak,
         note: def.note,
@@ -834,6 +834,7 @@
   }
 
   $: _bdcWeaponHits = (() => {
+    void weaponCharge
     const result: BDCHit[] = []
     const row = _displayRows[0]
     if (row && Object.keys(_weaponDmgTypes).length > 0) {

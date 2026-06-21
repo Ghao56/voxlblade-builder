@@ -39,6 +39,7 @@ export interface PerkDmgDef {
   condition?: string
   getBaseDamage: (ctx: PerkDmgCtx) => number
   hits?: number
+  getHits?: (ctx: PerkDmgCtx) => number 
   dmgTypeMode: 'weapon' | 'fixed'
   dmgTypes?: Record<string, number>
   scalingMode: 'weapon' | 'fixed' | 'none'
@@ -160,5 +161,39 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
         tone: 'defense',
       }
     ]
-  }
+  },
+  // ── Air Barrier ────────────────────────────────────────────────────────
+  {
+    perkName: 'Air Barrier',
+    condition: 'Blocking an attack',
+    getBaseDamage: ({perkAmount}) => 3*perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { air: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { air : 1.0},
+    guardbreak: true,
+    note: 'Each hit counts as individual M1/M2 and procs related effects.',
+  },
+  // ── Apollo Boost ───────────────────────────────────────────────────────────
+  {
+    perkName: 'Apollo Boost',
+    condition: 'On Rune use (after cast finishes)',
+    getBaseDamage: ({ perkAmount }) => 5 - (0.15 + 0.25 * perkAmount),
+    getHits: ({ perkAmount }) => Math.floor(1 + 2 * perkAmount),
+    dmgTypeMode: 'fixed',
+    dmgTypes: { magic: 0.5, physical: 0.5 },
+    scalingMode: 'fixed',
+    scalings: { magic: 1.0, physical: 1.0 },
+    isRune: true,
+    secondaryEffects: [
+      {
+        label: 'Taunt',
+        getValue: () => 15,
+        format: v => `~${v}s`,
+        condition: 'Enemies hit by the shockwave',
+        tone: 'utility',
+      },
+    ],
+    note: 'Overrides Launch Rune boost / Combat Roll Rune roll if used together. Launch height also scales with perk amount (not modeled).',
+  },
 ]
