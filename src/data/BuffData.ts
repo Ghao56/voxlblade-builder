@@ -122,6 +122,14 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectUnit: 'flat',
     statKey: 'airDefense',
   },
+  'Ancient Shield': {
+    name: 'Ancient Shield',
+    color: '#38bdf8',
+    description: 'Gain a shield equal to potency HP for 15s. Consumes buffs/neutrals applied to allies.',
+    effectPerTenthPotency: 0.1,
+    effectUnit: 'flat',
+    statKey: 'protection',
+  },
 
   //Debuffs
   Slowness: {
@@ -277,6 +285,14 @@ export const ITEM_BUFF_MAP: GrantedBuff[] = [
     sourceName: 'Beenade Rune',
     sourceType: 'rune',
   },
+  {
+  buffName: 'Ancient Shield',
+  potency: 20,
+  duration: 15,
+  condition: 'On cast · potency = 20 + 4 × buffs consumed (allies also receive)',
+  sourceName: 'Ancient Cleric Rune',
+  sourceType: 'rune',
+},
 ]
 
 type PerkBuffFactory = (amount: number, allPerks: Record<string, number>) => GrantedBuff[]

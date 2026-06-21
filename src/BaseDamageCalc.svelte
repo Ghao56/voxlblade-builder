@@ -19,6 +19,7 @@
     label?: string
     weaponBoostMult?: number
     weaponBoostLabel?: string
+    isHeal?: boolean
   }> = []
   export let rageMult: number = 1
   export let rageAffectedTypes: Set<string> = new Set()
@@ -34,6 +35,7 @@
     { id: 'holy',     label: 'Holy',     color: '#facc15' },
     { id: 'true',     label: 'True',     color: '#f87171' },
     { id: 'summon',   label: 'Summon',   color: '#c084fc' },
+    { id: 'heal',     label: 'Heal',     color: '#4ade80' },
   ]
   const DMG_TYPE_MAP = new Map(DMG_TYPES.map(t => [t.id, t]))
 
@@ -129,23 +131,26 @@
     weaponBoostMult: number; weaponBoostLabel?: string
     defMult: number; enemyDefPct: number
     raw: number; critVal: number
+    isHeal: boolean
   }
   interface ComputedHit {
-    group: string; index: number; count: number; isFinisher: boolean; label?: string
-    types: ComputedType[]
+      group: string; index: number; count: number; isFinisher: boolean; label?: string
+      isHeal: boolean
+      types: ComputedType[]
   }
 
   $: critChance  = crit?.effectiveCritChance ?? 0
   $: critDmgMult = crit?.critDamageMultiplier ?? 100
 
   $: computedHits = weaponHits.map((hit): ComputedHit => {
+    const isHeal = hit.isHeal ?? false
     const types: ComputedType[] = Object.entries(hit.dmgTypes ?? {}).map(([k, mult]) => {
       const info = DMG_TYPE_MAP.get(k) ?? { label: k, color: '#e8e4da' }
-      const rageApplied  = rageMult > 1 && rageAffectedTypes.has(k)
+      const rageApplied  = !isHeal && rageMult > 1 && rageAffectedTypes.has(k)
       const rageMultUsed = rageApplied ? rageMult : 1
-      
+
       let enemyDefPct = 0
-      if (k !== 'true' && k !== 'summon') {
+      if (!isHeal && k !== 'true' && k !== 'summon') {   // ← heal bỏ qua giáp
         enemyDefPct = defenses[k] ?? 0
         if (k === 'air' || k === 'earth') {
           enemyDefPct += defenses['physical'] ?? 0
@@ -153,9 +158,9 @@
           enemyDefPct += defenses['magic'] ?? 0
         }
       }
-      
+
       const weaponBoostMult = hit.weaponBoostMult ?? 1
-      const defMult      = Math.round(calcArmorMult(enemyDefPct, penDecimal).mult * 10000) / 10000
+      const defMult      = isHeal ? 1 : Math.round(calcArmorMult(enemyDefPct, penDecimal).mult * 10000) / 10000
       const typeBase     = Math.round(hit.base * mult * 100) / 100
       const raw          = Math.round(typeBase * hit.scalingMult * rageMultUsed * hit.combatMult * weaponBoostMult * defMult * 100) / 100
       const critVal      = Math.round(raw * critDmgMult / 100 * 100) / 100
@@ -164,10 +169,10 @@
         typeBase, scalingMult: hit.scalingMult, combatMult: hit.combatMult,
         rageApplied, rageMultUsed, weaponBoostMult, weaponBoostLabel: hit.weaponBoostLabel,
         defMult, enemyDefPct,
-        raw, critVal,
+        raw, critVal, isHeal,
       }
     })
-    return { group: hit.group, index: hit.index, count: hit.count, isFinisher: hit.isFinisher, label: hit.label, types }
+    return { group: hit.group, index: hit.index, count: hit.count, isFinisher: hit.isFinisher, label: hit.label, isHeal, types }
   })
 
   $: m1Hits   = computedHits.filter(h => h.group === 'M1')
@@ -313,6 +318,7 @@
                           {#if ti > 0}<span class="bdc-hit-plus">+</span>{/if}
                           <div class="bdc-hit-type-chunk" style="--tc:{t.color}"
                             class:bdc-hit-type-chunk--rage={t.rageApplied}
+                            class:bdc-hit-type-chunk--heal={t.isHeal}
                             class:bdc-hit-type-chunk--weaponboost={t.weaponBoostMult !== 1}
                             class:bdc-hit-type-chunk--crit={showCritValues}>
                             <div class="bdc-hit-type-top">
@@ -322,7 +328,7 @@
                                 </span>
                               {/if}
                               <span class="bdc-hit-type-val">{fmt(showCritValues ? t.critVal : t.raw)}</span>
-                              <span class="bdc-hit-type-label">{t.label}</span>
+                              <span class="bdc-hit-type-label">{t.label}{t.isHeal && t.label.toLowerCase() !== 'heal' ? ' Heal' : ''}</span>
                             </div>
                             <div class="bdc-hit-type-formula">
                               <span class="bdc-mini-num">{fmt(t.typeBase)}</span>
@@ -860,5 +866,9 @@
 .bdc-mini-chip--weaponboost {
   display: inline-flex; align-items: center; gap: 3px;
   color: #fbbf24; border-color: rgba(251,191,36,.3); background: rgba(251,191,36,.1);
+}
+.bdc-hit-type-chunk--heal {
+  border-color: rgba(74,222,128,.35) !important;
+  box-shadow: inset 0 0 6px rgba(74,222,128,.15);
 }
 </style>

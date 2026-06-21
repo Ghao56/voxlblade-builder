@@ -207,6 +207,7 @@ export interface BuildState {
   level: number
   hpFill: number
   summonCount: number
+  buffsConsumed: number
 }
 
 export type BoostAttackType = 'm1' | 'm2' | 'wa' | 'rune' | 'perk'

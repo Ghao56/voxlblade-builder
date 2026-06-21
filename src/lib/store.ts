@@ -40,6 +40,7 @@ const DEFAULT_BUILD: BuildState = {
   level: 80,
   hpFill: 100,
   summonCount: 0,
+  buffsConsumed: 0,
 }
 
 function loadBuild(): BuildState {

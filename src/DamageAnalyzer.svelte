@@ -513,6 +513,26 @@
       multiplier: Math.round((1 + totalEffectivePct / 100) * 10000) / 10000,
       isPerHit: false }
   })()
+  $: runeScalingBreakdown = (() => {
+    if (!_activeRuneDmgDef) return null
+    const scalings = _activeRuneDmgDef.scalings
+    if (!scalings || Object.keys(scalings).length === 0) return null
+
+    const rows: ScalingRow[] = []
+    for (const [key, scalingVal] of Object.entries(scalings)) {
+      if (!scalingVal) continue
+      const boostKey = SCALING_TO_BOOST[key]
+      if (!boostKey) continue
+      const boostPct = (stats as Record<string, number>)[boostKey] ?? 0
+      const contribution = Math.round(scalingVal * boostPct * 100) / 100
+      rows.push({ key, scalingVal, boostKey, boostPct, contribution, color: SCALING_COLORS[key] ?? '#e8e4da' })
+    }
+    if (!rows.length) return null
+
+    const totalEffectivePct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 100) / 100
+    const multiplier = Math.round((1 + totalEffectivePct / 100) * 10000) / 10000
+    return { rows, totalEffectivePct, multiplier }
+  })()
 
   $: waScalingSameAsWeapon = selectedWA.scaling === 'Same as weapon'
   $: waScalingIsHealOnly = !_waHitsSeq && !!_waHealSeq
@@ -835,6 +855,7 @@
     isFinisher: boolean
     dmgTypes: Record<string, number>
     label?: string
+    isHeal?: boolean
   }
 
   $: _bdcWeaponHits = (() => {
@@ -885,6 +906,22 @@
         result.push({ group: 'WA', index: i, count: h.count, base: h.n, scalingMult: sc, combatMult: _waCombatMult, isFinisher: selectedWA.hits?.[i]?.isFinisher ?? false, dmgTypes: _waDmgTypes })
       })
     }
+    if (_waHealSeq) {
+      _waHealSeq.forEach((h) => {
+        result.push({
+          group: 'Heal',
+          index: result.length,
+          count: h.count,
+          base: h.n,
+          scalingMult: _waScalingMult,
+          combatMult: boosts.healFinalMultiplier,
+          isFinisher: false,
+          dmgTypes: { heal: 1.0 },
+          label: selectedWA.name,
+          isHeal: true,
+        })
+      })
+    }
     for (const entry of _activePerkDmgEntries) {
       if (entry.typedHits_m2.length === 0) continue
       if (!entry.isActive) continue 
@@ -901,18 +938,20 @@
       })
     }
     if (_activeRuneDmgDef && Object.keys(_activeRuneDmgDef.dmgTypes).length > 0) {
+      const _runeIsHeal = _activeRuneDmgDef.isHealOnly ?? false
       result.push({
-        group: 'Rune',
+        group: _runeIsHeal ? 'Heal' : 'Rune',
         index: result.length,
         count: _activeRuneDmgDef.getHits
           ? _activeRuneDmgDef.getHits({ potency: runePotency })
           : (_activeRuneDmgDef.hits ?? 1),
         base: _activeRuneDmgDef.getBaseDamage({ potency: runePotency }),
         scalingMult: _computePerkScalingMult(_activeRuneDmgDef.scalings),
-        combatMult: _runeCombatMult,
+        dmgTypes: _activeRuneDmgDef.dmgTypes,      
+        combatMult: _runeIsHeal ? boosts.healFinalMultiplier : _runeCombatMult,
         isFinisher: false,
-        dmgTypes: _activeRuneDmgDef.dmgTypes,
         label: _activeRuneDmgDef.runeName,
+        isHeal: _runeIsHeal,
       })
     }
     return result
@@ -1516,10 +1555,7 @@
 
         <div class="da-wbd-section">
           <div class="da-wbd-row-label da-wbd-row-label--wa">
-            <span
-              class="da-wbd-lbl-badge da-wbd-lbl-badge--wa"
-              style="background:rgba(56,189,248,.16);border-color:rgba(56,189,248,.35);color:#38bdf8"
-            >
+            <span class="da-wbd-lbl-badge da-wbd-lbl-badge--wa" style="background:rgba(56,189,248,.16);border-color:rgba(56,189,248,.35);color:#38bdf8">
               Rune
             </span>
             <span class="da-wbd-lbl-text da-wbd-lbl-text--wa" style="color:#38bdf8">
@@ -1548,7 +1584,34 @@
               {/if}
             </div>
           </div>
-        </div>
+
+          {#if _activeRuneDmgDef?.slider}
+            {@const sl = _activeRuneDmgDef.slider}
+            {@const buildAny = $build as any} <div class="da-sb-slider-wrap" style="margin-top: 8px;">
+              <span class="da-sb-slider-label">{sl.label}</span>
+              <input type="range" min={sl.min} max={sl.max} step={sl.step ?? 1}
+                value={buildAny[sl.buildKey] ?? sl.min}
+                on:input={e => {
+                  const target = e.target as HTMLInputElement;
+                  build.update(s => ({...s, [sl.buildKey]: +target.value}));
+                }}
+                class="da-sb-slider"
+                style="--fill:{(( (buildAny[sl.buildKey] ?? sl.min) - sl.min) / (sl.max - sl.min)) * 100}%"
+              />
+              <span class="da-sb-slider-val">{buildAny[sl.buildKey] ?? sl.min}</span>
+            </div>
+          {/if}
+
+          {#if _activeRuneDmgDef?.shield}
+            {@const buildAny = $build as any}
+            {@const shieldHp = _activeRuneDmgDef.shield.getShieldHp(buildAny[_activeRuneDmgDef.slider?.buildKey ?? 'buffsConsumed'] ?? 0)}
+            <div class="da-rage-row" style="background:rgba(56,189,248,.06);border-color:rgba(56,189,248,.2); margin-top: 6px;">
+              <span style="font-family:'Courier New',monospace;font-weight:800;color:#38bdf8">
+                🛡 Shield: {shieldHp} HP
+              </span>
+            </div>
+          {/if}
+          </div>
       {/if}
     </div>
   {/each}
@@ -1956,6 +2019,85 @@
   </div>
 {/if}
 
+{#if runeScalingBreakdown}
+<div class="da-section da-section--scaling">
+  <div class="da-section-title">📐 Damage Scaling</div>
+  <div class="ds-wa-subsection" style="margin-top:0">
+    <div class="ds-wa-header">
+      <span class="ds-sub-badge" style="background:rgba(56,189,248,.16);border-color:rgba(56,189,248,.35);color:#38bdf8">Rune</span>
+      <span class="ds-wa-name" style="color:#38bdf8">{_activeRuneDmgDef?.runeName}</span>
+    </div>
+    <div class="ds-table">
+      <div class="ds-head">
+        <div class="ds-col ds-col--type">Scaling</div>
+        <div class="ds-col ds-col--val">Scaling Val</div>
+        <div class="ds-col ds-col--op"></div>
+        <div class="ds-col ds-col--boost">Your Boost</div>
+        <div class="ds-col ds-col--op"></div>
+        <div class="ds-col ds-col--contrib">Contribution</div>
+      </div>
+      {#each runeScalingBreakdown.rows as row}
+        <div class="ds-row">
+          <div class="ds-col ds-col--type">
+            <span class="ds-dot" style="background:{row.color}"></span>
+            <span style="color:{row.color}">{row.key.charAt(0).toUpperCase() + row.key.slice(1)}</span>
+          </div>
+          <div class="ds-col ds-col--val">
+            <span class="ds-num" style="color:{row.color}">{row.scalingVal}</span>
+          </div>
+          <div class="ds-col ds-col--op">×</div>
+          <div class="ds-col ds-col--boost">
+            {#if row.boostPct !== 0}
+              <span class="ds-boost" style={row.boostPct < 0 ? 'color: #cf6679;' : ''}>
+                {row.boostPct > 0 ? '+' : ''}{row.boostPct}%
+              </span>
+            {:else}
+              <span class="ds-boost ds-boost--zero">+0%</span>
+            {/if}
+          </div>
+          <div class="ds-col ds-col--op">=</div>
+          <div class="ds-col ds-col--contrib">
+            <span class="ds-contrib"
+                  class:ds-contrib--zero={row.contribution === 0}
+                  style={row.contribution > 0 ? `color:${row.color}` : row.contribution < 0 ? 'color: #cf6679;' : ''}>
+              {row.contribution > 0 ? '+' : ''}{row.contribution}%
+            </span>
+          </div>
+        </div>
+      {/each}
+      <div class="ds-row ds-row--total">
+        <div class="ds-col ds-col--type ds-total-label">Total</div>
+        <div class="ds-col ds-col--val"></div>
+        <div class="ds-col ds-col--op"></div>
+        <div class="ds-col ds-col--boost"></div>
+        <div class="ds-col ds-col--op">=</div>
+        <div class="ds-col ds-col--contrib">
+          <span class="ds-total-pct">+{runeScalingBreakdown.totalEffectivePct}%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ds-result-row"
+    style={_activeRuneDmgDef?.isHealOnly ? 'border-color:rgba(74,222,128,.2);background:rgba(74,222,128,.06)' : ''}>
+    <div style="display:flex;flex-direction:column;gap:2px;flex:1;">
+      <span class="ds-result-label" style={_activeRuneDmgDef?.isHealOnly ? 'color:#4ade80' : ''}>
+        {_activeRuneDmgDef?.isHealOnly ? 'Heal Multiplier' : 'Scaling Multiplier'}
+      </span>
+      <span class="ds-applies-to">Rune</span>
+    </div>
+    <span class="ds-result-eq">1 + {runeScalingBreakdown.totalEffectivePct}% =</span>
+    <span class="ds-result-val"
+      style={_activeRuneDmgDef?.isHealOnly ? 'color:#4ade80;text-shadow:0 0 12px rgba(74,222,128,.4)' : ''}>
+      ×{+runeScalingBreakdown.multiplier.toFixed(4)}
+    </span>
+  </div>
+
+  {#if runeScalingBreakdown.rows.some(r => r.boostPct === 0)}
+    <p class="ds-warn">⚠ Some Rune scalings have no matching boost stat — those contribute 0%</p>
+  {/if}
+</div>
+{/if}
 <BaseDamageCalc {boosts} {crit} {stats} {disabledBoosts} {activeFinalMult}
   weaponHits={_bdcWeaponHits}
   rageMult={_rageMult}

@@ -248,6 +248,12 @@ export function calcBoosts(
     condition:     `LV0 → ×1.0 · LV80 → ×2.0`,
     type:          'dmg',
   })
+  healMap.set('Level Healing', {
+    sourceName:    'Level Healing',
+    rawMultiplier: lvlMult,
+    condition:     `LV0 → ×1.0 · LV80 → ×2.0`,
+    type:          'heal',
+  })
 
   for (const perkName in perks) {
     if (!Object.prototype.hasOwnProperty.call(perks, perkName)) continue
