@@ -13,6 +13,7 @@
   import { getActiveRaceEffect } from './data/raceEffects'
   import { getActiveDefensivePerkSources } from './data/defensivePerks'
   import { getWeaponConditionalBoost } from './data/weaponConditionalBoosts'
+  import { RUNE_DMG_DEFS } from './data/Runebasedmg'
 
   $: _m1FinisherWeaponBoost = getWeaponConditionalBoost(perks, _baseWeaponType, 'm1Finisher')
   $: _m2WeaponBoost         = getWeaponConditionalBoost(perks, _baseWeaponType, 'm2')
@@ -701,6 +702,9 @@
 
   $: maxSummons = 15 + Math.floor(perks['Swarm'] ?? 0);
 
+  $: _activeRuneDmgDef = RUNE_DMG_DEFS.find(d => d.runeName === $build.rune) ?? null
+  $: runePotency = _activeRuneDmgDef?.maxPotency ?? 0
+
   // ── Perk Base Damage ───────────────────────────────────────────────────────
   let springblastFinisherHits = 1
 
@@ -896,6 +900,21 @@
         label: entry.perkName,
       })
     }
+    if (_activeRuneDmgDef && Object.keys(_activeRuneDmgDef.dmgTypes).length > 0) {
+      result.push({
+        group: 'Rune',
+        index: result.length,
+        count: _activeRuneDmgDef.getHits
+          ? _activeRuneDmgDef.getHits({ potency: runePotency })
+          : (_activeRuneDmgDef.hits ?? 1),
+        base: _activeRuneDmgDef.getBaseDamage({ potency: runePotency }),
+        scalingMult: _computePerkScalingMult(_activeRuneDmgDef.scalings),
+        combatMult: _runeCombatMult,
+        isFinisher: false,
+        dmgTypes: _activeRuneDmgDef.dmgTypes,
+        label: _activeRuneDmgDef.runeName,
+      })
+    }
     return result
   })()
 
@@ -966,25 +985,6 @@
 <!-- ══════════════════ COMBAT MULTIPLIERS ══════════════════ -->
 <div class="da-section">
   <div class="da-section-title">⚔ Combat Multipliers</div>
-    {#if (perks['Vassals Croak'] ?? 0) > 0}
-      <div class="da-summon-row">
-        <span class="da-summon-label">Active Summons</span>
-        <input class="da-summon-input" 
-          type="number" 
-          min="0" 
-          max={maxSummons}
-          value={Math.floor($build.summonCount)}
-          on:input={e => {
-            let val = Math.floor(parseInt(e.currentTarget.value));
-            if (isNaN(val) || val < 0) val = 0;
-            if (val > maxSummons) val = maxSummons;
-            build.update(s => ({ ...s, summonCount: val }));
-          }} 
-        />
-        <span class="da-summon-max">/ {maxSummons}</span>
-      </div>
-    {/if}
-
     {#if !_hasSpecificBoosts}
       <div class="da-boost-row">
         {#each boosts.dmgEntries as entry}
@@ -1504,6 +1504,49 @@
               <span class="wa-atb-base">{fmtNum(_waAvgTotal.baseTotal)}</span>
             </div>
           {/if}
+          </div>
+        </div>
+      {/if}
+      {#if _activeRuneDmgDef && isActive}
+        {@const _runeHits = _activeRuneDmgDef.getHits
+          ? _activeRuneDmgDef.getHits({ potency: runePotency })
+          : (_activeRuneDmgDef.hits ?? 1)}
+        {@const _runeBase = _activeRuneDmgDef.getBaseDamage({ potency: runePotency })}
+        {@const _runeScalingMult = _computePerkScalingMult(_activeRuneDmgDef.scalings)}
+
+        <div class="da-wbd-section">
+          <div class="da-wbd-row-label da-wbd-row-label--wa">
+            <span
+              class="da-wbd-lbl-badge da-wbd-lbl-badge--wa"
+              style="background:rgba(56,189,248,.16);border-color:rgba(56,189,248,.35);color:#38bdf8"
+            >
+              Rune
+            </span>
+            <span class="da-wbd-lbl-text da-wbd-lbl-text--wa" style="color:#38bdf8">
+              {_activeRuneDmgDef.runeName}
+            </span>
+          </div>
+
+          <div class="da-hits-row">
+            <div class="da-hit-card">
+              {#each Object.entries(_activeRuneDmgDef.dmgTypes) as [k, mult], ti}
+                {#if ti > 0}<span class="da-hit-plus">+</span>{/if}
+                <div class="da-hit-chunk" style="--tc:{DMG_TYPE_COLORS[k] ?? '#e8e4da'}">
+                  <span class="da-hit-num" style="--tc:{DMG_TYPE_COLORS[k] ?? '#e8e4da'}">
+                    {fmtNum(_runeBase * mult)}
+                  </span>
+                  <span class="da-hit-type">
+                    {k.charAt(0).toUpperCase() + k.slice(1)}
+                  </span>
+                </div>
+              {/each}
+
+              {#if _runeHits > 1}
+                <span class="da-hit-repeat">
+                  ×{_runeHits}<span class="da-hit-repeat-label">hits</span>
+                </span>
+              {/if}
+            </div>
           </div>
         </div>
       {/if}

@@ -173,12 +173,14 @@
   $: m1Hits   = computedHits.filter(h => h.group === 'M1')
   $: m2Hits   = computedHits.filter(h => h.group === 'M2')
   $: waHits   = computedHits.filter(h => h.group === 'WA')
-  $: perkHits = computedHits.filter(h => h.group !== 'M1' && h.group !== 'M2' && h.group !== 'WA')
+  $: runeHits = computedHits.filter(h => h.group === 'Rune')
+  $: perkHits = computedHits.filter(h => h.group !== 'M1' && h.group !== 'M2' && h.group !== 'WA' && h.group !== 'Rune')
 
   $: hitGroups = [
     { label: 'M1', list: m1Hits },
     { label: 'M2', list: m2Hits },
     { label: 'WA', list: waHits },
+    ...(runeHits.length > 0 ? [{ label: 'Rune', list: runeHits }] : []),
     ...(perkHits.length > 0 ? [{ label: 'Perk', list: perkHits }] : [])
   ]
 
