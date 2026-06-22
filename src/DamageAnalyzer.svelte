@@ -21,7 +21,7 @@
   $: _activeRaceEffect = getActiveRaceEffect($build.race, _hpFillPct)
   const _DEF_TYPE_LIST = ['physical','magic','fire','water','earth','air','hex','holy','true'] as const
   
-  $: _activeDefensivePerkSources = getActiveDefensivePerkSources(perks, _hpFillPct, _adaptivePlateTriggered)
+  $: _activeDefensivePerkSources = getActiveDefensivePerkSources(perks, _hpFillPct, _adaptivePlateTriggered, $build.inDarkness)
   $: _vampireStacks = perks['Vampire'] ?? 0
 
   $: _defenseRows = _DEF_TYPE_LIST.map(type => {
@@ -32,9 +32,6 @@
       }
       if (_activeRaceEffect?.flatDrPct) {
         sources.push({ name: _activeRaceEffect.label, defPct: _activeRaceEffect.flatDrPct, isFlat: true, condition: _activeRaceEffect.condition })
-      }
-      if (_vampireStacks > 0 && $build.inDarkness) {
-        sources.push({ name: 'Vampire', defPct: Math.round((_vampireStacks * 10 / 3) * 100) / 100, isFlat: true, condition: 'In darkness · lost in sunlight' })
       }
       return { type, color: DMG_TYPE_COLORS[type] ?? '#e8e4da', ...resolveDefenseSources(sources) }
     }).filter(r => r.percentSources.length > 0 || r.flatSources.length > 0)
@@ -75,7 +72,7 @@
     return all.some(b => b.buffName === 'Critical Boost')
   })()
 
-  $: _showCrit = crit.effectiveCritChance > 0 || _hasCritBoostBuff
+  $: _showCrit = crit.effectiveCritChance > 0 || _hasCritBoostBuff || crit.hasCritRelevantPerks
   $: _critMult = crit.critDamageMultiplier / 100  
   let showCritValues = false
 
@@ -276,19 +273,6 @@
     amountPerStack: number
   }
 
-  const WA_DMG_TYPE_BONUS_DEFS: WaDmgTypeBonusDef[] = [
-    { perkName: 'Channeled Weapon', type: 'magic', amountPerStack: 0.05 },
-  ]
-
-  $: _waPerkDmgTypeBonuses = (() => {
-    const bonus: Record<string, number> = {}
-    for (const def of WA_DMG_TYPE_BONUS_DEFS) {
-      const amt = perks[def.perkName] ?? 0
-      if (amt <= 0) continue
-      bonus[def.type] = Math.round(((bonus[def.type] ?? 0) + amt * def.amountPerStack) * 100) / 100
-    }
-    return bonus
-  })()
   interface PerkDmgTypeBonusDef {
     perkName: string
     type: string
@@ -297,7 +281,8 @@
   }
 
   const PERK_DMG_TYPE_BONUS_DEFS: PerkDmgTypeBonusDef[] = [
-    { perkName: 'Void Rage', type: 'hex', amountPerStack: 0.1, condition: ctx => ctx.ragePotency > 0 },
+    { perkName: 'Void Rage', type: 'hex', amountPerStack: 0.1, condition: ctx => ctx.ragePotency > 0 },    
+    { perkName: 'Channeled Weapon', type: 'magic', amountPerStack: 0.05 },
   ]
 
   $: _perkDmgTypeBonuses = (() => {
@@ -616,10 +601,14 @@
 
   $: _waDmgTypes = (() => {
     const dt = selectedWA.damageType
-    if (!dt || dt === 'Same as weapon') return _applyDmgBonuses(_weaponDmgTypes, _waPerkDmgTypeBonuses)
+    if (!dt || dt === 'Same as weapon') {
+      return _applyDmgBonuses(_weaponDmgTypes, _perkDmgTypeBonuses)
+    }
     if (dt.includes('Highest damage type')) {
       const entries = Object.entries(_weaponDmgTypes)
-      if (entries.length === 0) return _applyDmgBonuses(_weaponDmgTypes, _waPerkDmgTypeBonuses)
+      if (entries.length === 0) {
+        return _applyDmgBonuses(_weaponDmgTypes, _perkDmgTypeBonuses)
+      }
       const PRIORITY = ['hex', 'water', 'air', 'true', 'earth', 'magic', 'fire', 'physical', 'holy']
       const [highestKey] = entries.reduce((a, b) => {
         if (b[1] > a[1]) return b
@@ -630,15 +619,33 @@
         }
         return a
       })
-      const total = Math.round(entries.reduce((s, [, v]) => s + v, 0) * 100) / 100
-      return _applyDmgBonuses(_applyDmgBonuses({ [highestKey]: total }, _perkDmgTypeBonuses), _waPerkDmgTypeBonuses)
+      const total =
+        Math.round(entries.reduce((s, [, v]) => s + v, 0) * 100) / 100
+      return _applyDmgBonuses(
+        { [highestKey]: total },
+        _perkDmgTypeBonuses
+      )
     }
+
     const types: Record<string, number> = {}
-    const re = /([\d.]+)\s*(Physical|Magic|Fire|Water|Earth|Air|Hex|Holy|True|Summon)/gi
+    const re =
+      /([\d.]+)\s*(Physical|Magic|Fire|Water|Earth|Air|Hex|Holy|True|Summon)/gi
+
     let m: RegExpExecArray | null
-    while ((m = re.exec(dt)) !== null) types[m[2].toLowerCase()] = parseFloat(m[1])
-    const base = Object.keys(types).length > 0 ? types : { ..._weaponDmgTypes }
-    return _applyDmgBonuses(_applyDmgBonuses(base, _perkDmgTypeBonuses), _waPerkDmgTypeBonuses)
+
+    while ((m = re.exec(dt)) !== null) {
+      types[m[2].toLowerCase()] = parseFloat(m[1])
+    }
+
+    const base =
+      Object.keys(types).length > 0
+        ? types
+        : { ..._weaponDmgTypes }
+
+    return _applyDmgBonuses(
+      base,
+      _perkDmgTypeBonuses
+    )
   })()
 
   $: _waScalingMult = (() => {

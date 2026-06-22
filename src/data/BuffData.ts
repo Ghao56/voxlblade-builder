@@ -122,14 +122,6 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectUnit: 'flat',
     statKey: 'airDefense',
   },
-  'Ancient Shield': {
-    name: 'Ancient Shield',
-    color: '#9aff00',
-    description: 'Gain a shield equal to potency HP for 15s. Consumes buffs/neutrals applied to allies.',
-    effectPerTenthPotency: 0.1,
-    effectUnit: 'flat',
-    statKey: 'protection',
-  },
 
   //Debuffs
   Slowness: {
@@ -254,6 +246,16 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectUnit: 'flat',
     isNeutral: true,
   },
+  
+  'Ancient Shield': {
+    name: 'Ancient Shield',
+    color: '#9aff00',
+    description: 'Gain a shield equal to potency HP for 15s. Consumes buffs/neutrals applied to allies.',
+    effectPerTenthPotency: 0.1,
+    effectUnit: 'flat',
+    statKey: 'protection',
+    isNeutral: true,
+  },
 }
 
 export const ITEM_BUFF_MAP: GrantedBuff[] = [
@@ -281,7 +283,7 @@ export const ITEM_BUFF_MAP: GrantedBuff[] = [
     {
     buffName: 'Beenades',
     potency: 5,
-    duration: 10,
+    duration: 0,
     sourceName: 'Beenade Rune',
     sourceType: 'rune',
   },

@@ -163,12 +163,12 @@ function applySpecialBoosts(
     })
   }
 
-  const vassalsCroakStacks = Math.floor(perks['Vassals Croak'] ?? 0)
+  const vassalsCroakStacks = perks['Vassals Croak'] ?? 0
   if (vassalsCroakStacks > 0 && summonCount > 0) {
     const clampedCount = Math.floor(summonCount)
     dmgMap.set('Vassals Croak', {
       sourceName:    'Vassals Croak',
-      rawMultiplier: Math.round((1 + 0.02 * clampedCount * vassalsCroakStacks) * 100) / 100,
+      rawMultiplier: Math.round((1 + 0.02 * clampedCount * vassalsCroakStacks) * 10000) / 10000,
       condition:     `${clampedCount} summons × ${vassalsCroakStacks} stack × 2%`,
       type:          'dmg',
     })

@@ -1,3 +1,8 @@
+export interface DefensivePerkSourceContext {
+  hpFillPct: number
+  adaptivePlateTriggered: boolean
+  inDarkness: boolean
+}
 export interface DefensivePerkSource {
   perkName: string
   drPctPerStack: number
@@ -8,6 +13,7 @@ export interface DefensivePerkSource {
   hpBelowThreshold?: number
   minPerkForAlways?: number
   matchedOnly?: boolean
+  dependsOn?: (ctx: DefensivePerkSourceContext) => boolean
 }
 
 export const DEFENSIVE_PERK_SOURCES: DefensivePerkSource[] = [
@@ -51,16 +57,25 @@ export const DEFENSIVE_PERK_SOURCES: DefensivePerkSource[] = [
     perkName: 'Air Pressure',
     drPctPerStack: 10,
     label: 'Air Pressure (Max Potency)',
-    conditionLabel: 'Tính ở mốc tích lũy tối đa (10 potency mỗi cấp perk)',
+    conditionLabel: 'Calculate at maximum accumulation, assuming 10 potency per perk level.',
+  },
+    {
+    perkName: 'Vampire',
+    drPctPerStack: 10 / 3,
+    label: 'Vampire',
+    conditionLabel: 'In darkness · removed in sunlight',
+    dependsOn: ctx => ctx.inDarkness,
   },
 ]
 export function getActiveDefensivePerkSources(
   perks: Record<string, number>,
   hpFillPct: number = 100,
   adaptivePlateTriggered: boolean = false,
+  inDarkness: boolean = true,
 ): Array<{ name: string; defPct: number; isFlat?: boolean; condition: string }> {
   const out: Array<{ name: string; defPct: number; isFlat?: boolean; condition: string }> = []
-  
+  const ctx: DefensivePerkSourceContext = { hpFillPct, adaptivePlateTriggered, inDarkness }
+
   for (const def of DEFENSIVE_PERK_SOURCES) {
     const amt = perks[def.perkName] ?? 0
     if (amt <= 0) continue
@@ -72,10 +87,12 @@ export function getActiveDefensivePerkSources(
       if (def.matchedOnly && !adaptivePlateTriggered) continue
       if (!def.matchedOnly && adaptivePlateTriggered) continue
     }
+    if (def.dependsOn && !def.dependsOn(ctx)) continue
 
     let defPct = def.drPctPerStack * amt
     if (def.maxDrPct != null) defPct = Math.min(defPct, def.maxDrPct)
-    
+    defPct = Math.round(defPct * 100) / 100
+
     out.push({ name: def.label, defPct, isFlat: def.isFlat, condition: def.conditionLabel })
   }
   return out

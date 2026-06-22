@@ -5,9 +5,9 @@ const CRIT_DISABLED_PERKS = ['Seismic Momentum', 'Fractured Energy'] as const
 interface CritSource {
   label: string
   calc: (stats: StatMap, perks: Record<string, number>) => number
+  gatingPerks?: string[] 
 }
 
-// --- Shared Calculation Helpers ---
 const calcDexterity = (stats: StatMap) => {
   const dex = stats.dexterityBoost ?? 0
   return dex > 0 ? round(dex / 10) : 0
@@ -30,27 +30,29 @@ const calcPerfection = (perks: Record<string, number>) => {
   return stacks > 0 ? stacks * 5 : 0
 }
 
-// --- Shared Source Object Structures ---
 const ELEMENTAL_CRIT_SOURCES: Array<CritSource> = [
   {
     label: 'Flowing Crits (Air)',
     calc: (stats, perks) => calcElementalBoost(perks, 'Flowing Crits', stats.airBoost, 0.0875),
+    gatingPerks: ['Flowing Crits'],
   },
   {
     label: 'Spell Slinger (Magic)',
     calc: (stats, perks) => calcElementalBoost(perks, 'Spell Slinger', stats.magicBoost, 0.075),
+    gatingPerks: ['Spell Slinger'],
   },
   {
     label: 'Sharp Crits (Physical)',
     calc: (stats, perks) => calcElementalBoost(perks, 'Sharp Crits', stats.physicalBoost, 0.075),
+    gatingPerks: ['Sharp Crits'],
   },
   {
     label: 'Perfection (max stack)',
     calc: (_stats, perks) => calcPerfection(perks),
+    gatingPerks: ['Perfection'],
   },
 ]
 
-// --- Source Arrays ---
 const NATURAL_CRIT_SOURCES: Array<CritSource> = [
   {
     label: 'Dexterity Boost',
@@ -60,12 +62,12 @@ const NATURAL_CRIT_SOURCES: Array<CritSource> = [
     },
   },
   {
-    // Gated by Fractured Energy for crit chance but not crit damage
     label: 'Seismic Momentum (Earth)',
     calc: (stats, perks) => {
       if ((perks['Fractured Energy'] ?? 0) > 0) return 0
       return calcElementalBoost(perks, 'Seismic Momentum', stats.earthBoost, 0.075)
     },
+    gatingPerks: ['Seismic Momentum'],
   },
   ...ELEMENTAL_CRIT_SOURCES,
 ]
@@ -79,6 +81,7 @@ const EXTRA_CRIT_SOURCES: Array<CritSource> = [
       const air = stats.airBoost ?? 0
       return air > 0 ? round(air * stacks) : 0
     },
+    gatingPerks: ['Carrying Winds'],
   },
   {
     label: "Caci King Spirit(King's Luck)",
@@ -86,6 +89,7 @@ const EXTRA_CRIT_SOURCES: Array<CritSource> = [
       const stacks = perks['Caci King Spirit'] ?? 0
       return stacks > 0 ? round(stacks * 20) : 0
     },
+    gatingPerks: ['Caci King Spirit'],
   },
 ]
 
@@ -96,19 +100,19 @@ const CRIT_DMG_SOURCES: Array<CritSource> = [
       const stacks = perks['Thief Training'] ?? 0
       return stacks > 0 ? stacks * 10 - 50 : 0
     },
+    gatingPerks: ['Thief Training'],
   },
   {
     label: 'Dexterity Boost',
-    // Seismic Momentum suppresses the crit damage bonus but not the chance bonus
     calc: (stats, perks) => {
       if ((perks['Seismic Momentum'] ?? 0) > 0) return 0
       return calcDexterity(stats)
     },
   },
   {
-    // No Fractured Energy gate — always contributes to damage
     label: 'Seismic Momentum (Earth)',
     calc: (stats, perks) => calcElementalBoost(perks, 'Seismic Momentum', stats.earthBoost, 0.075),
+    gatingPerks: ['Seismic Momentum'],
   },
   ...ELEMENTAL_CRIT_SOURCES,
   {
@@ -117,6 +121,7 @@ const CRIT_DMG_SOURCES: Array<CritSource> = [
       const stacks = perks['Venom Eater'] ?? 0
       return stacks > 0 ? round(-30 + stacks * 10) : 0
     },
+    gatingPerks: ['Venom Eater'],
   },
   {
     label: 'Vital Strikes',
@@ -124,6 +129,7 @@ const CRIT_DMG_SOURCES: Array<CritSource> = [
       const stacks = perks['Vital Strikes'] ?? 0
       return stacks > 0 ? round(stacks * 25) : 0
     },
+    gatingPerks: ['Vital Strikes'],
   },
   {
     label: 'Spark (to burning enemies)',
@@ -131,6 +137,7 @@ const CRIT_DMG_SOURCES: Array<CritSource> = [
       const stacks = perks['Spark'] ?? 0
       return stacks > 0 ? round(stacks * 50) : 0
     },
+    gatingPerks: ['Spark'],
   },
   {
     label: 'Critical Master',
@@ -138,6 +145,7 @@ const CRIT_DMG_SOURCES: Array<CritSource> = [
       const stacks = perks['Critical Master'] ?? 0
       return stacks > 0 ? round(stacks * 5) : 0
     },
+    gatingPerks: ['Critical Master'],
   },
   {
     label: 'Splinter',
@@ -145,8 +153,19 @@ const CRIT_DMG_SOURCES: Array<CritSource> = [
       const stacks = perks['Splinter'] ?? 0
       return stacks > 0 ? round(stacks * 10) : 0
     },
+    gatingPerks: ['Splinter'],
   },
 ]
+
+const ALL_CRIT_SOURCES = [
+  ...NATURAL_CRIT_SOURCES,
+  ...EXTRA_CRIT_SOURCES,
+  ...CRIT_DMG_SOURCES
+]
+
+function hasActiveGatingPerks(sources: CritSource[], perks: Record<string, number>): boolean {
+  return sources.some(s => s.gatingPerks?.some(p => (perks[p] ?? 0) > 0))
+}
 
 export interface CritResult {
   naturalCritChance: number
@@ -161,6 +180,7 @@ export interface CritResult {
   critDmgBreakdown: Array<{ source: string; amount: number }>
   primalActive: boolean
   primalStacks: number
+  hasCritRelevantPerks: boolean
 }
 
 function round(n: number): number {
@@ -212,15 +232,14 @@ export function calcCrit(stats: StatMap, perks: Record<string, number>): CritRes
     if (amount !== 0) critDmgBreakdown.push({ source: src.label, amount })
   }
 
-  // TÍNH TOÁN CRIT DAMAGE MULTIPLIER THỰC TẾ
   let critDamageMultiplier = 150
   if (primalStacks > 0) {
     for (const src of critDmgBreakdown) {
       if (src.source === 'Base') continue
       if (src.amount < 0) {
-        critDamageMultiplier += src.amount // Giữ nguyên penalty
+        critDamageMultiplier += src.amount 
       } else {
-        critDamageMultiplier += src.amount / 4 // Giảm 4 lần bonus
+        critDamageMultiplier += src.amount / 4 
       }
     }
     critDamageMultiplier = round(critDamageMultiplier)
@@ -237,6 +256,8 @@ export function calcCrit(stats: StatMap, perks: Record<string, number>): CritRes
       )
     : critDmgBreakdown
 
+  const hasCritRelevantPerks = hasActiveGatingPerks(ALL_CRIT_SOURCES, perks)
+
   return {
     naturalCritChance,
     effectiveNaturalCrit,
@@ -250,5 +271,6 @@ export function calcCrit(stats: StatMap, perks: Record<string, number>): CritRes
     critDmgBreakdown: displayedCritDmgBreakdown,
     primalActive: primalStacks > 0,
     primalStacks,
+    hasCritRelevantPerks,
   }
 }
