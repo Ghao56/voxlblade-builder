@@ -120,6 +120,10 @@
     ? Math.round((1 + _ragePotency) * 10000) / 10000
     : 1
 
+  let rageDisabled = false
+  $: _effectiveRageMult = rageDisabled ? 1 : _rageMult
+  $: _effectiveRageAffectedTypes = rageDisabled ? new Set<string>() : _rageAffectedTypes    
+
   type HitSeq = (number | { n: number; count: number })[]
 
   interface WeaponChargeConfig {
@@ -1174,15 +1178,18 @@
     {/if}
   {#if _ragePotency > 0}
     <div class="da-rage-row" style="margin-top: 8px;">
-      <span class="da-rage-badge">
-        Rage ×{+_rageMult.toFixed(4)}
-      </span>
-      <span class="da-rage-types">
-        {[..._rageAffectedTypes].map(t => t.charAt(0).toUpperCase() + t.slice(1)).join(' · ')}
-      </span>
-      <span class="da-rage-sources">
-        {_activeRageBuffs.map(b => `${b.sourceName} (${b.potency})`).join(', ')}
-      </span>
+      <button
+        class="da-boost-chip"
+        class:da-boost-chip--off={rageDisabled}
+        style="background:rgba(247,2,1,.08);border-color:rgba(247,2,1,.2)"
+        on:click={() => rageDisabled = !rageDisabled}
+      >
+        <span class="da-bc-name">Rage</span>
+        <span class="da-bc-val" style="color:#f70201">{rageDisabled ? '—' : `×${+_rageMult.toFixed(3)}`}</span>
+        <span class="da-bc-cond">{[..._rageAffectedTypes].map(t => t.charAt(0).toUpperCase() + t.slice(1)).join(' · ')}</span>
+        <span class="da-bc-toggle" style={rageDisabled ? '' : 'background:rgba(247,2,1,.15);color:#f70201'}>{rageDisabled ? 'OFF' : 'ON'}</span>
+      </button>
+      <span class="da-rage-sources">{_activeRageBuffs.map(b => `${b.sourceName} (${b.potency})`).join(', ')}</span>
     </div>
   {/if}
   {#if _m1FinisherWeaponBoost.mult !== 1 || _m2WeaponBoost.mult !== 1}
@@ -2180,8 +2187,8 @@
 {/if}
 <BaseDamageCalc {boosts} {crit} {stats} {disabledBoosts} {activeFinalMult}
   weaponHits={_bdcWeaponHits}
-  rageMult={_rageMult}
-  rageAffectedTypes={_rageAffectedTypes}
+  rageMult={_effectiveRageMult}
+  rageAffectedTypes={_effectiveRageAffectedTypes}
   luminescentPct={_luminescentPct}
   showCritToggle={_showCrit}
   bind:showCritValues

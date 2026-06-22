@@ -136,6 +136,7 @@
     isHeal: boolean
     isLuminescent?: boolean
     forceCrit: boolean
+    isCritExempt?: boolean
   }
   interface ComputedHit {
       group: string; index: number; count: number; isFinisher: boolean; label?: string
@@ -188,7 +189,7 @@
           typeBase: lumTypeBase, scalingMult: 1, combatMult: 1,
           rageApplied: false, rageMultUsed: 1, weaponBoostMult: 1,
           defMult: holyDefMult, enemyDefPct: holyDefPct,
-          raw: lumRaw, critVal: lumCrit, isHeal: false, isLuminescent: true, forceCrit: false,
+          raw: lumRaw, critVal: lumCrit, isHeal: false, isLuminescent: true, isCritExempt: true, forceCrit: false,
         })
       }
     }
@@ -329,7 +330,7 @@
                   {#each grp.list as hit}
                     {@const hSum = hitTypeSum(hit, showCritValues)}
                     {@const multiType = hit.types.length > 1}
-                    {@const hitForceCrit = hit.types.some(t => t.forceCrit)}
+                    {@const hitForceCrit = hit.types.some(t => t.forceCrit)}  
                     <div class="bdc-hit-row" class:bdc-hit-row--finisher={hit.isFinisher}>
                       {#if hit.label != null}
                         <span class="bdc-hit-row-label">{hit.label}</span>
@@ -342,12 +343,12 @@
                             class:bdc-hit-type-chunk--heal={t.isHeal}
                             class:bdc-hit-type-chunk--weaponboost={t.weaponBoostMult !== 1}
                             class:bdc-hit-type-chunk--luminescent={t.isLuminescent}
-                            class:bdc-hit-type-chunk--crit={showCritValues || t.forceCrit}>
+                            class:bdc-hit-type-chunk--crit={(showCritValues && !t.isCritExempt) || t.forceCrit}>
                             <div class="bdc-hit-type-top">
-                              {#if showCritValues || t.forceCrit}
+                              {#if (showCritValues && !t.isCritExempt) || t.forceCrit}
                                 <span class="bdc-crit-inline-icon"><CritIcon size={12} /></span>
                               {/if}
-                              <span class="bdc-hit-type-val">{fmt((showCritValues || t.forceCrit) ? t.critVal : t.raw)}</span>
+                              <span class="bdc-hit-type-val">{fmt(((showCritValues && !t.isCritExempt) || t.forceCrit) ? t.critVal : t.raw)}</span>
                               <span class="bdc-hit-type-label">{t.label}{t.isHeal && t.label.toLowerCase() !== 'heal' ? ' Heal' : ''}</span>
                               {#if t.isLuminescent}
                                 <span class="bdc-lum-badge" title="Luminescent Fervor: 5% × perk amount of this hit's damage">✦ Luminescent</span>
@@ -361,7 +362,7 @@
                               {/if}
                               {#if t.rageApplied}
                                 <span class="bdc-mini-op">×</span>
-                                <span class="bdc-mini-chip bdc-mini-chip--rage" title="Rage">🔥{fmtMult(t.rageMultUsed)}</span>
+                                <span class="bdc-mini-chip bdc-mini-chip--rage" title="Rage">💢{fmtMult(t.rageMultUsed)}</span>
                               {/if}
                               {#if t.combatMult !== 1}
                                 <span class="bdc-mini-op">×</span>
@@ -379,7 +380,7 @@
                               {/if}
                               <span class="bdc-mini-op">=</span>
                               <span class="bdc-mini-result" style="--tc:{t.color}">{fmt(t.raw)}</span>
-                              {#if showCritValues || t.forceCrit}
+                              {#if (showCritValues && !t.isCritExempt) || t.forceCrit}
                                 <span class="bdc-mini-op">×</span>
                                 <span class="bdc-mini-chip bdc-mini-chip--crit" title={t.forceCrit ? 'Guaranteed crit' : 'Crit damage multiplier'}>
                                   <CritIcon size={9}/>{fmtMult(critDmgMult / 100)}

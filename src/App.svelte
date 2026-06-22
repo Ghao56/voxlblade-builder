@@ -2278,7 +2278,6 @@ $: _appWaAvgTotal = (() => {
           <div class="left-column">
             <div class="summary-grid-wrap">
               <div class="summary-grid">
-
                 <!-- Weapon type row -->
                 <div class="sg-cell sg-weapon sg-span10 sg-clickable"
                   on:click={() => build.update(s => ({...s, shrineActive: !s.shrineActive}))}
@@ -2524,7 +2523,7 @@ $: _appWaAvgTotal = (() => {
                       <button class="draco-color-btn"
                         class:draco-color-btn--active={$build.draconicColor === dc.id}
                         style="--dc:{dc.color}"
-                        on:click={() => build.update(s => ({...s, draconicColor: s.draconicColor === dc.id ? '' : dc.id}))}>
+                        on:click={() => build.update(s => ({ ...s, draconicColor: s.draconicColor === dc.id ? '' : dc.id }))}>
                         {dc.label}
                       </button>
                     {/each}
@@ -2532,7 +2531,6 @@ $: _appWaAvgTotal = (() => {
                 </div>
               {/if}
             </div>
-          </div>
             {#if iepSlot}
               <div class="inline-enchant-panel">
                 <div class="iep-header">
@@ -2559,7 +2557,6 @@ $: _appWaAvgTotal = (() => {
                   </div>
                 </div>
                 <div class="iep-slots">
-                  <!-- Slot 0 luôn hiện -->
                   <div class="iep-slot">
                     <span class="iep-slot-num">1</span>
                     <EnchantSelect
@@ -2572,7 +2569,6 @@ $: _appWaAvgTotal = (() => {
                         on:click={() => setEnchantment(iepSlot, 0, '')}>✕</button>
                     {/if}
                   </div>
-                  <!-- Slot 1: chỉ khi s0 có giá trị và không exclusive -->
                   {#if iepS0 && !iepExcl}
                     {#if iepS1}
                       <button class="iep-swap-btn" title="Swap slot 1 ↔ slot 2"
@@ -2591,7 +2587,6 @@ $: _appWaAvgTotal = (() => {
                       {/if}
                     </div>
                   {/if}
-                  <!-- Slot 2: chỉ khi s1 có giá trị và không exclusive -->
                   {#if iepS1 && !iepExcl}
                     {#if iepS2}
                       <button class="iep-swap-btn" title="Swap slot 2 ↔ slot 3"
@@ -2616,66 +2611,60 @@ $: _appWaAvgTotal = (() => {
                 {/if}
               </div>
             {/if}
-          
-  <!-- ── WEAPON ART PANEL ── -->
-  <div class="wa-panel">
-    <div class="wa-panel-header">
-      <span class="wa-panel-title">Weapon Art</span>
-    </div>
-
-    <div class="wa-selected" class:wa-selected--invalid={!waAvailable}>
-      <div class="wa-selected-top">
-        <span class="wa-name">{selectedWA.name}</span>
-        {#if hasWACDR}
-          <span class="wa-cd-badge wa-cd-badge--reduced">
-            <span class="wa-cd-old">{selectedWA.cooldown}s</span>
-            <span class="wa-cd-arrow">→</span>
-            {Math.max(1, Math.floor(selectedWA.cooldown * cdr.waCDR))}s
-          </span>
-        {:else}
-          <span class="wa-cd-badge">CD: {selectedWA.cooldown}s</span>
-        {/if}
-        {#if !waAvailable}
-          <span class="wa-req-badge">⚠ Req. not met</span>
-        {/if}
-      </div>
-    </div>
-
-    {#if availableWeaponArts.length > 1}
-      <div class="wa-available-list">
-        <span class="wa-avail-label">Available ({availableWeaponArts.length})</span>
-        <div class="wa-chips">
-          {#each availableWeaponArts as wa}
-            <button class="wa-chip" class:wa-chip--active={$build.selectedWeaponArt === wa.name}
-              on:click={() => build.update(s => ({...s, selectedWeaponArt: wa.name}))}>
-              {wa.name}
-            </button>
-          {/each}
-        </div>
-      </div>
-    {/if}
-  </div>
-
-          <div class="summary-stats">
-            <div class="ss-header">Stats</div>
-            {#if statRows.length === 0}
-              <p class="empty ss-empty">No stats yet.</p>
-            {:else}
-              <div class="ss-section">
-                {#each statRows as [k, v]}
-                  <div class="ss-row">
-                    <span class="ss-key">{formatLabel(k)}</span>
-                    <span class="ss-val" class:neg={v < 0}>{formatStat(k, v)}</span>
-                  </div>
-                {/each}
-              </div>
-            {/if}
           </div>
-        </div>
-      </div>
-
-      <!-- Perks & Effects + Combat Multipliers — shared panel with tabs -->
-      {#if perkRows.length > 0}
+          
+          <!-- ── WEAPON ART PANEL ── -->
+          <div class="right-column">
+            <div class="wa-panel">
+              <div class="wa-panel-header">
+                <span class="wa-panel-title">Weapon Art</span>
+              </div>
+              <div class="wa-selected" class:wa-selected--invalid={!waAvailable}>
+                  <div class="wa-selected-top">
+                    <span class="wa-name">{selectedWA.name}</span>
+                    {#if hasWACDR}
+                      <span class="wa-cd-badge wa-cd-badge--reduced">
+                        <span class="wa-cd-old">{selectedWA.cooldown}s</span>
+                        <span class="wa-cd-arrow">→</span>
+                        {Math.max(1, Math.floor(selectedWA.cooldown * cdr.waCDR))}s
+                      </span>
+                    {:else}
+                      <span class="wa-cd-badge">CD: {selectedWA.cooldown}s</span>
+                    {/if}
+                    {#if !waAvailable}
+                      <span class="wa-req-badge">⚠ Req. not met</span>
+                    {/if}
+                  </div>
+                </div>
+                {#if availableWeaponArts.length > 1}
+                    <div class="wa-available-list">
+                      <span class="wa-avail-label">Available ({availableWeaponArts.length})</span>
+                      <div class="wa-chips">
+                        {#each availableWeaponArts as wa}
+                          <button class="wa-chip" class:wa-chip--active={$build.selectedWeaponArt === wa.name}
+                            on:click={() => build.update(s => ({ ...s, selectedWeaponArt: wa.name }))}>
+                            {wa.name}
+                          </button>
+                        {/each}
+                      </div>
+                    </div>
+                  {/if}
+                </div>
+                <div class="summary-stats">
+                  <div class="ss-header">Stats</div>
+                  {#if statRows.length === 0}
+                    <p class="empty ss-empty">No stats yet.</p>
+                  {:else}
+                    <div class="ss-section">
+                      {#each statRows as [k, v]}
+                        <div class="ss-row">
+                          <span class="ss-key">{formatLabel(k)}</span>
+                          <span class="ss-val" class:neg={v < 0}>{formatStat(k, v)}</span>
+                        </div>
+                      {/each}
+                    </div>
+                  {/if}
+                </div> </div> </div> </div> {#if perkRows.length > 0}
         <div class="panel perks-panel">
           <div class="perks-tabs-header">
             <button class="perks-tab" class:perks-tab--active={activePerksTab === 'perks'}
@@ -3529,14 +3518,13 @@ $: _appWaAvgTotal = (() => {
       </div>
 
     </div>
-  {:else}
-  <div class="analyze-wrap">
-      <DamageAnalyzer />
-    </div>
-  {/if}
-</div>
+    {:else}
+      <div class="analyze-wrap">
+        <DamageAnalyzer />
+      </div>
+    {/if}
 
-<style>
+</div> <style>
   :root {
     --bg: #0d0f0e; --surface: #141715; --surface2: #1a1d1b; --surface3: #212420;
     --border: rgba(255,255,255,0.06); --border-strong: rgba(255,255,255,0.1);
@@ -3670,28 +3658,34 @@ $: _appWaAvgTotal = (() => {
   .summary-panel { border-color:rgba(74,222,128,.13); background:linear-gradient(160deg,var(--surface) 60%,rgba(74,222,128,.03) 100%); }
   .summary-title { color:var(--accent); }
   .summary-layout {
-    display: grid;
-    grid-template-columns: 1fr 240px;
-    grid-template-rows: auto auto;
+    display: flex;
+    align-items: flex-start;
     gap: 12px;
-    align-items: start;
   }
+
   .left-column {
+    flex: 1 1 0;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     gap: 8px;
   }
-  .summary-stats { grid-row: 1; grid-column: 2; }
-  .wa-panel { grid-row: 2; grid-column: 2; }
+
+  .right-column {
+    flex: 0 0 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
 
   @media (max-width: 1020px) {
     .summary-layout {
-      grid-template-columns: 1fr;
-      grid-template-rows: auto;
+      flex-direction: column;
     }
-    .summary-grid-wrap { grid-row: unset; grid-column: 1; }
-    .summary-stats { grid-row: unset; grid-column: 1; }
-    .wa-panel { grid-row: unset; grid-column: 1; margin-top: 0; }
+    .right-column {
+      width: 100%;
+    }
   }
   .summary-grid-wrap { overflow-x:auto; }
   .summary-grid { display:grid; grid-template-columns:repeat(10,minmax(60px,1fr)); gap:6px; min-width:600px; }
@@ -3786,15 +3780,13 @@ $: _appWaAvgTotal = (() => {
   padding: 0;
   display: flex;
   flex-direction: column;
-  max-height: 400px;
+  max-height: 354px;
   overflow-y: auto;
   overscroll-behavior: contain;
   transition: border-color .25s ease, box-shadow .25s ease;
   scrollbar-width: thin;
   scrollbar-color: rgba(139,92,246,.45) transparent;
-  /* Fade CHỈ ở bottom — không xung đột với sticky header */
-  -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 20px), transparent 100%);
-  mask-image:         linear-gradient(to bottom, black calc(100% - 20px), transparent 100%);
+  order: -1;
 }
 .summary-stats:hover {
   border-color: rgba(139,92,246,.4);
@@ -4066,7 +4058,7 @@ $: _appWaAvgTotal = (() => {
   .cdr-arrow { font-size:.7rem; color:var(--ink-muted); opacity:.35; }
   .cdr-cd-new { font-size:.95rem; font-weight:800; color:#34d399; }
 
-  .empty { color:var(--ink-muted); font-style:italic; font-size:.85rem; }
+  .empty { color:var(--ink-muted); font-style:italic; font-size:.85rem; padding: 10px;}
 
   
 
@@ -4108,14 +4100,22 @@ $: _appWaAvgTotal = (() => {
   }
   /* ── WEAPON ART PANEL ── */
 .wa-panel {
+  order: 1;
   background: linear-gradient(135deg, rgba(167,139,250,.09) 0%, rgba(167,139,250,.04) 100%);
   border: 1px solid rgba(167,139,250,.22);
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 12px 14px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: 10px;
+  width: 100%;
+  margin-top: 0;
+  transition: border-color .25s ease, box-shadow .25s ease, transform .2s ease;
+}
+
+.wa-panel:hover {
+  border-color: rgba(167,139,250,.4);
+  box-shadow: 0 0 0 1px rgba(167,139,250,.12), 0 8px 28px rgba(167,139,250,.1);
 }
 
 .wa-panel-header {
