@@ -145,6 +145,17 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectPerTenthPotency: 5,
     effectUnit: '%',
   },
+  'Draconic Infusion': {
+    name: 'Draconic Infusion',
+    color: '#a855f7',
+    description: 'All attacks gain draconic damage type. Does not apply to attacks without proc coefficient.',
+    dynamicDescription: (_perks, potency) => {
+      const bonus = +(potency * 10).toFixed(3)
+      return `All attacks gain +${bonus} draconic damage type. Lasts 20s. Does not apply without proc coefficient.`
+    },
+    effectPerTenthPotency: 0.1,
+    effectUnit: 'flat',
+  },
 
   //Debuffs
   Slowness: {

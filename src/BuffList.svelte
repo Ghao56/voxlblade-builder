@@ -44,9 +44,40 @@
     activeDebuffs
   )
   
+  $: draconicInfusionBuff = (() => {
+    if ($build.draconicRuneInfusion !== 'infusion') return []
+
+    const perkAmt = $result.perks['Draconic Blood'] ?? 0
+    const potency = Math.round(perkAmt * 0.1 * 1000) / 1000
+    const color   = $build.draconicColor
+
+    const COLOR_EFFECTS: Record<string, string> = {
+      air:   `+${perkAmt * 10}% Attack Speed · +${perkAmt * 20}% Knockback (per 0.1 potency)`,
+      fire:  `100% chance to apply Burn (proc-affected) · +${perkAmt * 15}% applied Burn potency`,
+      hex:   `+${perkAmt * 5}% applied debuff potency · +${perkAmt * 15}% debuff duration`,
+      holy:  `+${perkAmt * 10}% healing (per 0.1 potency) · +${perkAmt * 5}% applied buff potency`,
+      water: `Immune to debuffs · Pulse every ${Math.max(1, 8 - perkAmt)}s (heal 0.1 · 1.0 Water scaling · cleanses)`,
+      earth: `+${perkAmt * 15}% Poise damage · +${Math.round(perkAmt * 0.15 * 1000) / 1000} Stun Resistance (per 0.1 potency)`,
+    }
+
+    const colorLabel  = color ? color.charAt(0).toUpperCase() + color.slice(1) : ''
+    const colorEffect = color && COLOR_EFFECTS[color] ? `${colorLabel}: ${COLOR_EFFECTS[color]}` : 'No Dragon Blooded color → Physical damage type'
+
+    return [{
+      buffName:   'Draconic Infusion',
+      isSelfDebuff: false,
+      potency,
+      duration:   20,
+      condition:  `Dragon Infusion active · ${colorEffect}`,
+      sourceName: 'Dragon Infusion',
+      sourceType: 'rune' as const,
+    }] satisfies GrantedBuff[]
+  })()
+
   $: activeBuffs = [
     ...baseActiveBuffs,
-    ...trueBalanceBuffs
+    ...trueBalanceBuffs,
+    ...draconicInfusionBuff,
   ]
 
   type GroupedBuff = {

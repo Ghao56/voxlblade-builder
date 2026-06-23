@@ -288,6 +288,32 @@ $: statRows = Object.entries($result.stats).filter(([k, v]) => {
   })()
 
   $: draconicBaseCDs = { claw: 5, infusion: 35, bubble: 7 }
+  $: draconicColorEffectRows = (() => {
+    const amt = draconicPerkAmt
+    const c = $build.draconicColor
+    if (!c) return []
+    const rows: Array<{k: string, v: string}> = []
+    if (c === 'air') {
+      rows.push({ k: 'Atk Speed',  v: `+${Math.round(amt * 10 * 100)/100}% per 0.1 pot` })
+      rows.push({ k: 'Knockback',  v: `+${Math.round(amt * 20 * 100)/100}% per 0.1 pot` })
+    } else if (c === 'fire') {
+      rows.push({ k: 'Burn Chance', v: '100% (proc-affected)' })
+      rows.push({ k: 'Burn Potency',v: `+${Math.round(amt * 15 * 100)/100}% per perk` })
+    } else if (c === 'hex') {
+      rows.push({ k: 'Debuff Pot.',  v: `+${Math.round(amt * 5 * 100)/100}% per perk` })
+      rows.push({ k: 'Debuff Dur.',  v: `+${Math.round(amt * 15 * 100)/100}% per perk` })
+    } else if (c === 'holy') {
+      rows.push({ k: 'Healing',     v: `+${Math.round(amt * 10 * 100)/100}% per 0.1 pot` })
+      rows.push({ k: 'Buff Potency',v: `+${Math.round(amt * 5 * 100)/100}% per perk` })
+    } else if (c === 'water') {
+      rows.push({ k: 'Debuff Immunity', v: 'Active' })
+      rows.push({ k: 'Pulse CD',    v: `${Math.max(1, 8 - amt)}s (heal 0.1 · 1.0 Water)` })
+    } else if (c === 'earth') {
+      rows.push({ k: 'Poise Dmg',   v: `+${Math.round(amt * 15 * 100)/100}% per 0.1 pot` })
+      rows.push({ k: 'Stun Resist', v: `+${Math.round(amt * 0.15 * 1000)/1000} per 0.1 pot` })
+    }
+    return rows
+  })()
   $: draconicFinalCDs = {
     claw:     Math.max(1, Math.floor(draconicBaseCDs.claw * cdr.runeCDR)),
     infusion: Math.max(1, Math.floor(draconicBaseCDs.infusion * cdr.runeCDR)),
@@ -1415,12 +1441,12 @@ $: _appWaAvgTotal = (() => {
           {#each searchedGuilds as g}
             <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
             <div class="modal-item" class:modal-item--active={$build.guild === g.name}
-              on:click={() => { build.update(s => ({...s, guild: g.name, guildRank: s.guild === g.name ? s.guildRank : 3, race: g.name === 'Draconic' ? 'DRAGON BLOODED' : s.race})); closeModal() }}>
+              on:click={() => {build.update(s => ({...s, guild: g.name, guildRank: s.guild === g.name ? s.guildRank : 3, race: g.name === 'Draconic' ? 'DRAGON BLOODED' : s.race,draconicColor: g.name === 'Draconic' && !s.draconicColor ? 'air' : s.draconicColor,})); closeModal() }}>
               <span class="modal-item-name">{@html highlight(g.name, modalSearch)}</span>
               <div class="modal-rank-row">
                 {#each g.ranks as rank}
                   <button class="rank-btn" class:rank-btn--active={$build.guild === g.name && $build.guildRank === rank.rank}
-                    on:click|stopPropagation={() => { build.update(s => ({...s, guild: g.name, guildRank: rank.rank})); closeModal() }}>
+                    on:click|stopPropagation={() => { build.update(s => ({...s, guild: g.name, guildRank: rank.rank,draconicColor: g.name === 'Draconic' && !s.draconicColor ? 'air' : s.draconicColor,})); closeModal() }}>
                     Rank {rank.rank}
                   </button>
                 {/each}
@@ -2830,15 +2856,26 @@ $: _appWaAvgTotal = (() => {
               </div>
               <div class="dab-stats">
                 <div class="dab-stat-row">
-                  <span class="dab-stat-k">Effect</span>
-                  <span class="dab-stat-v">Draconic Infusion buff</span>
-                </div>
-                <div class="dab-stat-row">
-                  <span class="dab-stat-k">Total bonus</span>
-                  <span class="dab-stat-v" style={dracoColor ? `color:${dracoColor.color}` : 'color:#fb923c'}>
-                    +{Math.round(draconicPerkAmt * 0.1 * 100) / 100} {dracoColor ? dracoColor.stat : 'physical'} dmg type
+                  <span class="dab-stat-k">Dmg Type</span>
+                  <span class="dab-stat-v" style={dracoColor ? `color:${dracoColor.color}` : ''}>
+                    +{Math.round(draconicPerkAmt * 0.1 * 1000)/1000} {dracoColor ? dracoColor.stat : 'physical'} per 0.1 pot
                   </span>
                 </div>
+
+                <!-- Color-specific effects -->
+                {#if draconicColorEffectRows.length > 0}
+                  <div class="dab-stat-row" style="padding:2px 6px;opacity:.45;font-size:.6rem;">
+                    <span style="text-transform:uppercase;letter-spacing:.12em;color:var(--ink-muted)">
+                      {dracoColor?.label ?? ''} bonus
+                    </span>
+                  </div>
+                  {#each draconicColorEffectRows as row}
+                    <div class="dab-stat-row">
+                      <span class="dab-stat-k">{row.k}</span>
+                      <span class="dab-stat-v" style={dracoColor ? `color:${dracoColor.color}` : ''}>{row.v}</span>
+                    </div>
+                  {/each}
+                {/if}
               </div>
               <div class="dab-notes">Does not apply to attacks without proc coefficient</div>
             </button>
@@ -4424,7 +4461,6 @@ $: _appWaAvgTotal = (() => {
 .draconic-panel-header { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
 .draconic-panel-title { font-size:.72rem; text-transform:uppercase; letter-spacing:.16em; font-weight:700; color:#a855f7; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
 .draco-color-badge { font-size:.65rem; font-weight:700; padding:2px 9px; border-radius:999px; border:1px solid; }
-.draco-warning { font-size:.65rem; color:var(--neg); font-weight:600; padding:2px 8px; background:rgba(248,113,113,.08); border:1px solid rgba(248,113,113,.2); border-radius:999px; text-transform:none; letter-spacing:0; }
 
 .draconic-abilities { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px; }
 .draconic-ability-card {
