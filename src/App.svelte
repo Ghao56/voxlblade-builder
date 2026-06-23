@@ -257,6 +257,24 @@ $: statRows = Object.entries($result.stats).filter(([k, v]) => {
   $: dracoColor = DRACO_COLORS.find(c => c.id === $build.draconicColor) ?? null
   $: isDragonBlooded = $build.race === 'DRAGON BLOODED'
 
+  const DRACONIC_ABILITIES: Array<{ id: string; label: string }> = [
+    { id: 'claw',     label: 'Dragon Claw' },
+    { id: 'infusion', label: 'Dragon Infusion' },
+    { id: 'bubble',   label: 'Dragon Bubble' },
+  ]
+
+  $: selectedDraconicAbility = DRACONIC_ABILITIES.find(a => a.id === $build.draconicRuneInfusion) ?? null
+
+  function selectDraconicAbility(id: string) {
+    build.update(s => ({ ...s, draconicRuneInfusion: s.draconicRuneInfusion === id ? '' : id }))
+  }
+
+  function cycleDraconicAbility() {
+    const ids = DRACONIC_ABILITIES.map(a => a.id)
+    const idx = ids.indexOf($build.draconicRuneInfusion)
+    build.update(s => ({ ...s, draconicRuneInfusion: ids[(idx + 1) % ids.length] }))
+  }
+
   function dragonClawDmg(perkAmt: number) { return 25 + 2.5 * perkAmt }
   function dragonClawHealHoly(perkAmt: number) { return 5 + 0.5 * perkAmt }
   function dragonClawHealWater(perkAmt: number) { return +(1.923 + 0.1923 * perkAmt).toFixed(3) }
@@ -2462,10 +2480,22 @@ $: _appWaAvgTotal = (() => {
                       on:click|stopPropagation={() => toggleInlineEnchant('leggings')} title="Enchant">✦</button>
                   {/if}
                 </div>
-                <div class="sg-cell sg-infusion sg-span2" style="opacity:0.3">
-                  <span class="sg-label">Inf. Rune</span>
-                  <span class="sg-value">Coming soon</span>
-                </div>
+                {#if isDraconic}
+                  <div class="sg-cell sg-span2 sg-clickable sg-draconic-rune-cell" class:sg-empty={!selectedDraconicAbility}
+                    role="button" tabindex="0"
+                    on:click={cycleDraconicAbility}
+                    on:keydown={e => e.key === 'Enter' && cycleDraconicAbility()}
+                    title="Click để cycle Draconic Ability — hoặc chọn trực tiếp ở panel bên dưới">
+                    <span class="sg-label">Draconic Rune</span>
+                    <span class="sg-value">{selectedDraconicAbility?.label ?? 'Select ability'}</span>
+                    <span class="sg-sub">{selectedDraconicAbility ? 'Rune Infusion locked' : 'Click to choose'}</span>
+                  </div>
+                {:else}
+                  <div class="sg-cell sg-infusion sg-span2" style="opacity:0.3">
+                    <span class="sg-label">Inf. Rune</span>
+                    <span class="sg-value">Coming soon</span>
+                  </div>
+                {/if}
                 <div class="sg-cell sg-item sg-span2 sg-clickable" class:sg-empty={!$build.rune}
                   role="button" tabindex="0"
                   on:click={() => openModal('rune')}
@@ -2715,18 +2745,22 @@ $: _appWaAvgTotal = (() => {
                   {dracoColor.label} · {dracoColor.stat.charAt(0).toUpperCase() + dracoColor.stat.slice(1)} Type
                 </span>
               {/if}
-              {#if !isDragonBlooded}
-                <span class="draco-warning">⚠ Not Dragon Blooded — abilities deal half damage (Physical type)</span>
+
+              {#if !selectedDraconicAbility}
+                <span class="draco-select-hint">Pick your Rune Infusion ability below</span>
               {/if}
             </span>
           </div>
-
           <div class="draconic-abilities">
 
             <!-- Dragon Claw -->
-            <div class="draconic-ability-card">
+             <button type="button" class="draconic-ability-card draconic-ability-card--selectable"
+              class:draconic-ability-card--selected={$build.draconicRuneInfusion === 'claw'}
+              class:draconic-ability-card--unselected={$build.draconicRuneInfusion && $build.draconicRuneInfusion !== 'claw'}
+              on:click={() => selectDraconicAbility('claw')}>
               <div class="dab-header">
                 <span class="dab-name">Dragon Claw</span>
+                {#if $build.draconicRuneInfusion === 'claw'}<span class="dab-selected-badge">✦ Selected</span>{/if}
                 <div class="dab-cds">
                   {#if draconicHasCDR}
                     <span class="dab-cd-old">{draconicBaseCDs.claw}s</span>
@@ -2740,22 +2774,23 @@ $: _appWaAvgTotal = (() => {
               <div class="dab-stats">
                 <div class="dab-stat-row">
                   <span class="dab-stat-k">Damage</span>
-                  <span class="dab-stat-v">{dragonClawDmg(draconicPerkAmt)}</span>
-                  {#if !isDragonBlooded}<span class="dab-half">(→ {dragonClawDmg(draconicPerkAmt)/2})</span>{/if}
+                  <span class="dab-stat-v dab-stat-v--dmg">{dragonClawDmg(draconicPerkAmt)}</span>
                 </div>
                 <div class="dab-stat-row">
                   <span class="dab-stat-k">Dmg Type</span>
-                  <span class="dab-stat-v" style={dracoColor && isDragonBlooded ? `color:${dracoColor.color}` : ''}>
-                    {dracoColor && isDragonBlooded ? dracoColor.stat.charAt(0).toUpperCase() + dracoColor.stat.slice(1) : 'Physical'} 1.0×
+                  <span class="dab-stat-v" style={dracoColor ? `color:${dracoColor.color}` : 'color:#fb923c'}>
+                    {dracoColor ? dracoColor.stat.charAt(0).toUpperCase() + dracoColor.stat.slice(1) : 'Physical'} 1.0
                   </span>
                 </div>
                 <div class="dab-stat-row">
                   <span class="dab-stat-k">Scaling</span>
-                  <span class="dab-stat-v">1.0 (same type)</span>
+                  <span class="dab-stat-v" style={dracoColor ? `color:${dracoColor.color}` : 'color:#fb923c'}>
+                    1.0 {dracoColor ? dracoColor.stat.charAt(0).toUpperCase() + dracoColor.stat.slice(1) : 'Physical'}
+                  </span>
                 </div>
                 <div class="dab-stat-row">
                   <span class="dab-stat-k">Poise Dmg</span>
-                  <span class="dab-stat-v">60</span>
+                  <span class="dab-stat-v dab-stat-v--poise">60</span>
                 </div>
                 {#if $build.draconicColor === 'holy'}
                   <div class="dab-stat-row">
@@ -2772,12 +2807,16 @@ $: _appWaAvgTotal = (() => {
                   {/if}
                 </div>
                 <div class="dab-notes">Guardbreaks</div>
-              </div>
+              </button>
 
             <!-- Dragon Infusion -->
-            <div class="draconic-ability-card draconic-ability-card--infusion">
+            <button type="button" class="draconic-ability-card draconic-ability-card--infusion draconic-ability-card--selectable"
+              class:draconic-ability-card--selected={$build.draconicRuneInfusion === 'infusion'}
+              class:draconic-ability-card--unselected={$build.draconicRuneInfusion && $build.draconicRuneInfusion !== 'infusion'}
+              on:click={() => selectDraconicAbility('infusion')}>
               <div class="dab-header">
                 <span class="dab-name">Dragon Infusion</span>
+                {#if $build.draconicRuneInfusion === 'infusion'}<span class="dab-selected-badge">✦ Selected</span>{/if}
                 <div class="dab-cds">
                   {#if draconicHasCDR}
                     <span class="dab-cd-old">{draconicBaseCDs.infusion}s</span>
@@ -2796,20 +2835,22 @@ $: _appWaAvgTotal = (() => {
                 </div>
                 <div class="dab-stat-row">
                   <span class="dab-stat-k">Total bonus</span>
-                  <span class="dab-stat-v" style={dracoColor && isDragonBlooded ? `color:${dracoColor.color}` : ''}>
-                    {isDragonBlooded
-                      ? `+${Math.round(draconicPerkAmt * 0.1 * 100) / 100} ${dracoColor ? dracoColor.stat : 'draco'} dmg type`
-                      : `+${parseFloat((draconicPerkAmt * 0.075).toFixed(3))} physical dmg type`}
+                  <span class="dab-stat-v" style={dracoColor ? `color:${dracoColor.color}` : 'color:#fb923c'}>
+                    +{Math.round(draconicPerkAmt * 0.1 * 100) / 100} {dracoColor ? dracoColor.stat : 'physical'} dmg type
                   </span>
                 </div>
               </div>
               <div class="dab-notes">Does not apply to attacks without proc coefficient</div>
-            </div>
+            </button>
 
             <!-- Dragon Bubble -->
-            <div class="draconic-ability-card">
+            <button type="button" class="draconic-ability-card draconic-ability-card--selectable"
+              class:draconic-ability-card--selected={$build.draconicRuneInfusion === 'bubble'}
+              class:draconic-ability-card--unselected={$build.draconicRuneInfusion && $build.draconicRuneInfusion !== 'bubble'}
+              on:click={() => selectDraconicAbility('bubble')}>
               <div class="dab-header">
                 <span class="dab-name">Dragon Bubble</span>
+                {#if $build.draconicRuneInfusion === 'bubble'}<span class="dab-selected-badge">✦ Selected</span>{/if}
                 <div class="dab-cds">
                   {#if draconicHasCDR}
                     <span class="dab-cd-old">{draconicBaseCDs.bubble}s</span>
@@ -2823,22 +2864,23 @@ $: _appWaAvgTotal = (() => {
               <div class="dab-stats">
                 <div class="dab-stat-row">
                   <span class="dab-stat-k">Damage</span>
-                  <span class="dab-stat-v">{dragonBubbleDmg(draconicPerkAmt)}</span>
-                  {#if !isDragonBlooded}<span class="dab-half">(→ {dragonBubbleDmg(draconicPerkAmt)/2})</span>{/if}
+                  <span class="dab-stat-v dab-stat-v--dmg">{dragonBubbleDmg(draconicPerkAmt)}</span>
                 </div>
                 <div class="dab-stat-row">
                   <span class="dab-stat-k">Dmg Type</span>
-                  <span class="dab-stat-v" style={dracoColor && isDragonBlooded ? `color:${dracoColor.color}` : ''}>
-                    {dracoColor && isDragonBlooded ? dracoColor.stat.charAt(0).toUpperCase() + dracoColor.stat.slice(1) : 'Physical'} 1.0×
+                  <span class="dab-stat-v" style={dracoColor ? `color:${dracoColor.color}` : 'color:#fb923c'}>
+                    {dracoColor ? dracoColor.stat.charAt(0).toUpperCase() + dracoColor.stat.slice(1) : 'Physical'} 1.0
                   </span>
                 </div>
                 <div class="dab-stat-row">
                   <span class="dab-stat-k">Scaling</span>
-                  <span class="dab-stat-v">1.0 (same type)</span>
+                  <span class="dab-stat-v" style={dracoColor ? `color:${dracoColor.color}` : 'color:#fb923c'}>
+                    1.0 {dracoColor ? dracoColor.stat.charAt(0).toUpperCase() + dracoColor.stat.slice(1) : 'Physical'}
+                  </span>
                 </div>
                 <div class="dab-stat-row">
                   <span class="dab-stat-k">Poise Dmg</span>
-                  <span class="dab-stat-v">45</span>
+                  <span class="dab-stat-v dab-stat-v--poise">45</span>
                 </div>
                 {#if $build.draconicColor === 'holy'}
                 <div class="dab-stat-row">
@@ -2855,7 +2897,7 @@ $: _appWaAvgTotal = (() => {
                 {/if}
               </div>
               <div class="dab-notes">Goes through walls · Detonates on contact</div>
-            </div>
+            </button>
           </div>
         </div>
       {/if}
@@ -4349,6 +4391,16 @@ $: _appWaAvgTotal = (() => {
   font-weight: 600;
 }
 /* ── DRACONIC RUNE ── */
+.sg-draconic-rune-cell {
+  background: linear-gradient(135deg,rgba(168,85,247,.14),rgba(168,85,247,.06));
+  border-color: rgba(168,85,247,.3);
+}
+.sg-draconic-rune-cell .sg-label { color:#c084fc; }
+.draco-select-hint {
+  font-size:.65rem; color:#c084fc; font-weight:600; padding:2px 8px;
+  background:rgba(168,85,247,.08); border:1px solid rgba(168,85,247,.2); border-radius:999px;
+  text-transform:none; letter-spacing:0;
+}
 .sg-draconic-row {
   background: linear-gradient(135deg,rgba(168,85,247,.1),rgba(168,85,247,.05));
   border-color: rgba(168,85,247,.25); min-height:unset; padding:10px 12px;
@@ -4380,6 +4432,23 @@ $: _appWaAvgTotal = (() => {
   border-radius:var(--radius-sm); padding:12px; display:flex; flex-direction:column; gap:7px;
 }
 .draconic-ability-card--infusion { border-color:rgba(56,189,248,.2); background:linear-gradient(135deg,var(--surface2),rgba(56,189,248,.05)); }
+.draconic-ability-card--selectable {
+  cursor:pointer; text-align:left; font-family:var(--font-body); width:100%;
+  transition:border-color .15s, background .15s, opacity .15s, transform .15s;
+}
+.draconic-ability-card--selectable:hover { border-color:rgba(168,85,247,.4); transform:translateY(-1px); }
+.draconic-ability-card--selected {
+  border-color:#a855f7 !important;
+  background:linear-gradient(135deg,rgba(168,85,247,.16),rgba(168,85,247,.06)) !important;
+  box-shadow:0 0 0 1px rgba(168,85,247,.3), 0 4px 14px rgba(168,85,247,.18);
+}
+.draconic-ability-card--unselected { opacity:.55; }
+.draconic-ability-card--unselected:hover { opacity:.85; }
+.dab-selected-badge {
+  font-size:.6rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase;
+  padding:2px 7px; border-radius:999px;
+  background:rgba(168,85,247,.18); border:1px solid rgba(168,85,247,.4); color:#c084fc;
+}
 .dab-header { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px; }
 .dab-name { font-size:.88rem; font-weight:700; color:#c084fc; }
 .dab-cds { display:flex; align-items:center; gap:5px; }
@@ -4390,9 +4459,11 @@ $: _appWaAvgTotal = (() => {
 .dab-stats { display:flex; flex-direction:column; gap:3px; }
 .dab-stat-row { display:flex; align-items:center; gap:6px; font-size:.77rem; padding:3px 6px; border-radius:5px; background:var(--surface3); }
 .dab-stat-k { color:var(--ink-muted); min-width:80px; font-size:.68rem; }
-.dab-stat-v { font-weight:700; color:var(--ink); }
-.dab-half { font-size:.65rem; color:var(--neg); opacity:.7; margin-left:4px; }
-.dab-notes { font-size:.68rem; color:var(--ink-muted); font-style:italic; line-height:1.4; }
+.dab-stat-v { font-weight:700; color:#c8c4ba; }
+  .dab-stat-v--dmg { color:var(--accent2); font-size:.95rem; text-shadow:0 0 8px rgba(245,158,11,.35); }
+  .dab-stat-v--poise { color:#f472b6; font-weight:800; }
+
+.dab-notes { font-size:.68rem; color:var(--accent3); opacity:.65; font-style:italic; line-height:1.4; letter-spacing:.02em; }
 .modal-stat-group-label--dmg {
   color: var(--weapon-blade);
   opacity: 0.75;

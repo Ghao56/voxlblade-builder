@@ -36,6 +36,7 @@ const DEFAULT_BUILD: BuildState = {
   upgradeRune: 5,
   selectedWeaponArt: "Lunge",
   draconicColor: "",
+  draconicRuneInfusion: "",
   emotionalState: 'buffs',
   level: 80,
   hpFill: 100,

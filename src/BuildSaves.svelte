@@ -129,7 +129,8 @@
     infusionHelmet:'ih', infusionChestplate:'ic', infusionLeggings:'il', infusionRing:'ir',
     weaponBlade:'wb', weaponHandle:'wh', monkGlove:'mg', monkEssence:'me',
     shrineActive:'sh', upgradeHelmet:'uh', upgradeChestplate:'uc',
-    upgradeLeggings:'ul', upgradeRing:'ur', upgradeRune:'uu', selectedWeaponArt:'wa', draconicColor:'dc',emotionalState: 'es'
+    upgradeLeggings:'ul', upgradeRing:'ur', upgradeRune:'uu', selectedWeaponArt:'wa', draconicColor:'dc',
+    draconicRuneInfusion:'dri', emotionalState: 'es'
   }
   const KEY_UNMAP = Object.fromEntries(Object.entries(KEY_MAP).map(([k,v])=>[v,k]))
 
@@ -144,7 +145,7 @@
     ring:'', rune:'', infusionHelmet:'', infusionChestplate:'', infusionLeggings:'',
     infusionRing:'', weaponBlade:'', weaponHandle:'', monkGlove:'', monkEssence:'',
     shrineActive:false, upgradeHelmet:0, upgradeChestplate:0, upgradeLeggings:0,
-    upgradeRing:0, upgradeRune:0, selectedWeaponArt:'Lunge', draconicColor:'', emotionalState: 'buffs'
+    upgradeRing:0, upgradeRune:0, selectedWeaponArt:'Lunge', draconicColor:'', draconicRuneInfusion:'', emotionalState: 'buffs'
   }
   async function readStream(readable: ReadableStream<Uint8Array>): Promise<Uint8Array> {
     const chunks: Uint8Array[] = []
