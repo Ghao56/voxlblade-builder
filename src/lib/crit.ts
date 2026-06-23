@@ -5,7 +5,8 @@ const CRIT_DISABLED_PERKS = ['Seismic Momentum', 'Fractured Energy'] as const
 interface CritSource {
   label: string
   calc: (stats: StatMap, perks: Record<string, number>) => number
-  gatingPerks?: string[] 
+  gatingPerks?: string[]
+  naturalEquivalent?: boolean
 }
 
 const calcDexterity = (stats: StatMap) => {
@@ -33,42 +34,45 @@ const calcPerfection = (perks: Record<string, number>) => {
 const ELEMENTAL_CRIT_SOURCES: Array<CritSource> = [
   {
     label: 'Flowing Crits (Air)',
+    naturalEquivalent: true,
     calc: (stats, perks) => calcElementalBoost(perks, 'Flowing Crits', stats.airBoost, 0.0875),
     gatingPerks: ['Flowing Crits'],
   },
   {
     label: 'Spell Slinger (Magic)',
+    naturalEquivalent: true,
     calc: (stats, perks) => calcElementalBoost(perks, 'Spell Slinger', stats.magicBoost, 0.075),
     gatingPerks: ['Spell Slinger'],
   },
   {
     label: 'Sharp Crits (Physical)',
+    naturalEquivalent: true,
     calc: (stats, perks) => calcElementalBoost(perks, 'Sharp Crits', stats.physicalBoost, 0.075),
     gatingPerks: ['Sharp Crits'],
   },
   {
     label: 'Perfection (max stack)',
+    naturalEquivalent: true,
     calc: (_stats, perks) => calcPerfection(perks),
     gatingPerks: ['Perfection'],
   },
 ]
 
 const NATURAL_CRIT_SOURCES: Array<CritSource> = [
-  {
-    label: 'Dexterity Boost',
-    calc: (stats, perks) => {
-      const critDisabled = CRIT_DISABLED_PERKS.some(perk => (perks[perk] ?? 0) > 0)
-      return critDisabled ? 0 : calcDexterity(stats)
+    {
+      label: 'Dexterity Boost',
+      naturalEquivalent: true,
+      calc: (stats, perks) => {
+        if ((perks['Seismic Momentum'] ?? 0) > 0) return 0
+        return calcDexterity(stats)
+      },
     },
-  },
-  {
-    label: 'Seismic Momentum (Earth)',
-    calc: (stats, perks) => {
-      if ((perks['Fractured Energy'] ?? 0) > 0) return 0
-      return calcElementalBoost(perks, 'Seismic Momentum', stats.earthBoost, 0.075)
+    {
+      label: 'Seismic Momentum (Earth)',
+      naturalEquivalent: true,
+      calc: (stats, perks) => calcElementalBoost(perks, 'Seismic Momentum', stats.earthBoost, 0.075),
+      gatingPerks: ['Seismic Momentum'],
     },
-    gatingPerks: ['Seismic Momentum'],
-  },
   ...ELEMENTAL_CRIT_SOURCES,
 ]
 
@@ -224,19 +228,19 @@ export function calcCrit(stats: StatMap, perks: Record<string, number>): CritRes
     ...extraBreakdown.map(s => ({ ...s, isExtra: true })),
   ]
 
-  const critDmgBreakdown: Array<{ source: string; amount: number }> = [
+  const critDmgBreakdown: Array<{ source: string; amount: number; naturalEquivalent?: boolean }> = [
     { source: 'Base', amount: 150 },
   ]
   for (const src of CRIT_DMG_SOURCES) {
     const amount = src.calc(stats, perks)
-    if (amount !== 0) critDmgBreakdown.push({ source: src.label, amount })
+    if (amount !== 0) critDmgBreakdown.push({ source: src.label, amount, naturalEquivalent: src.naturalEquivalent })
   }
 
   let critDamageMultiplier = 150
   if (primalStacks > 0) {
     for (const src of critDmgBreakdown) {
       if (src.source === 'Base') continue
-      if (src.amount < 0) {
+      if (src.amount < 0 || !src.naturalEquivalent) {
         critDamageMultiplier += src.amount 
       } else {
         critDamageMultiplier += src.amount / 4 
@@ -247,14 +251,13 @@ export function calcCrit(stats: StatMap, perks: Record<string, number>): CritRes
     critDamageMultiplier = round(critDmgBreakdown.reduce((a, b) => a + b.amount, 0))
   }
 
-  // TÍNH TOÁN HIỂN THỊ TRÊN GIAO DIỆN
   const displayedCritDmgBreakdown: Array<{ source: string; amount: number }> = primalStacks > 0
     ? critDmgBreakdown.map(s => 
-        (s.source === 'Base' || s.amount < 0) 
-          ? s 
-          : { ...s, amount: round(s.amount / 4) }
+        (s.source === 'Base' || s.amount < 0 || !s.naturalEquivalent) 
+          ? { source: s.source, amount: s.amount }
+          : { source: s.source, amount: round(s.amount / 4) }
       )
-    : critDmgBreakdown
+    : critDmgBreakdown.map(s => ({ source: s.source, amount: s.amount }))
 
   const hasCritRelevantPerks = hasActiveGatingPerks(ALL_CRIT_SOURCES, perks)
 
