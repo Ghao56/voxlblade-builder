@@ -28,6 +28,7 @@ export interface SecondaryEffect {
   condition?: string
   tone?: SecondaryEffectTone
   hpGate?: HpGate
+  showIf?: (ctx: { draconicColor: string }) => boolean
 }
 
 export const SECONDARY_TONE_COLORS: Record<SecondaryEffectTone, string> = {
@@ -207,8 +208,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     perkName: 'Draconic Blood',
     label: 'Dragon Claw',
     condition: 'Draconic Rune Infusion · Dragon Claw selected',
-    getBaseDamage: ({ perkAmount, draconicColor }) =>
-      Math.round((25 + 2.5 * perkAmount) * getDraconicColorDmgMultiplier(draconicColor ?? '') * 1000) / 1000,
+    getBaseDamage: ({ perkAmount }) => 25 + 2.5 * perkAmount,
     dmgTypeMode: 'dynamic',
     getDmgTypes: ({ draconicColor }) => ({ [draconicColor || 'physical']: 1.0 }),
     scalingMode: 'dynamic',
@@ -224,16 +224,27 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
         condition: 'Earth ×1.5 · Water ×1.1 · others ×1.0',
         tone: 'offense',
       },
+      {
+        label: 'Heal (Holy)',
+        getValue: ({ perkAmount }) => 5 + 0.5 * perkAmount,
+        tone: 'utility',
+        showIf: ({ draconicColor }) => draconicColor === 'holy',
+      },
+      {
+        label: 'Heal (Water)',
+        getValue: ({ perkAmount }) => Math.round((1.923 + 0.1923 * perkAmount) * 1000) / 1000,
+        tone: 'utility',
+        showIf: ({ draconicColor }) => draconicColor === 'water',
+      },
     ],
-    note: 'Holy/Water colors also grant a heal (not modeled yet).',
+    note: 'Heal applies regardless of equipped draconic color.',
   },
   // ── Dragon Bubble (Draconic Rune Infusion ability) ───────────────────────────
   {
     perkName: 'Draconic Blood',
     label: 'Dragon Bubble',
     condition: 'Draconic Rune Infusion · Dragon Bubble selected',
-    getBaseDamage: ({ perkAmount, draconicColor }) =>
-      Math.round((20 + 2 * perkAmount) * getDraconicColorDmgMultiplier(draconicColor ?? '') * 1000) / 1000,
+    getBaseDamage: ({ perkAmount }) => 20 + 2 * perkAmount,
     dmgTypeMode: 'dynamic',
     getDmgTypes: ({ draconicColor }) => ({ [draconicColor || 'physical']: 1.0 }),
     scalingMode: 'dynamic',
@@ -249,7 +260,19 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
         condition: 'Earth ×1.5 · Water ×1.1 · others ×1.0',
         tone: 'offense',
       },
+      {
+        label: 'Heal (Holy)',
+        getValue: ({ perkAmount }) => 4 + 0.4 * perkAmount,
+        tone: 'utility',
+        showIf: ({ draconicColor }) => draconicColor === 'holy',
+      },
+      {
+        label: 'Heal (Water)',
+        getValue: ({ perkAmount }) => Math.round((1.538 + 0.1538 * perkAmount) * 1000) / 1000,
+        tone: 'utility',
+        showIf: ({ draconicColor }) => draconicColor === 'water',
+      },
     ],
-    note: 'Goes through walls · Detonates on contact. Holy/Water colors also grant a heal (not modeled yet).',
+    note: 'Goes through walls · Detonates on contact. Heal applies regardless of equipped draconic color.',
   },
 ]

@@ -886,7 +886,7 @@
 
       const isActive = isHpGateActive(def.hpGate, _hpFillPct, perkAmount)
 
-      const secondaryEffects = (def.secondaryEffects ?? []).map(se => {
+      const secondaryEffects = (def.secondaryEffects ?? []).filter(se => !se.showIf || se.showIf({ draconicColor: $build.draconicColor })).map(se => {
         const raw = Math.round(se.getValue({ perkAmount, draconicColor: $build.draconicColor }) * 100) / 100
         return {
           label: se.label,
@@ -1029,6 +1029,29 @@
           weaponBoostLabel: `${$build.draconicColor.charAt(0).toUpperCase()}${$build.draconicColor.slice(1)} Color Bonus`,
         } : {}),
       })
+      if (entry.perkName === 'Draconic Blood') {
+         const _color = $build.draconicColor
+         const _healSe = (PERK_DMG_DEFS.find(d => d.perkName === 'Draconic Blood' && d.label === entry.displayName)
+           ?.secondaryEffects ?? []).find(se =>
+             (_color === 'holy'  && se.label === 'Heal (Holy)') ||
+             (_color === 'water' && se.label === 'Heal (Water)')
+           )
+         if (_healSe) {
+           const _healVal = Math.round(_healSe.getValue({ perkAmount: entry.perkAmount, draconicColor: _color }) * 100) / 100
+           result.push({
+             group: 'Heal',
+             index: result.length,
+             count: 1,
+             base: _healVal,
+             scalingMult: entry.scalingMult,
+             combatMult: boosts.healFinalMultiplier,
+             isFinisher: false,
+             dmgTypes: { heal: 1.0 },
+             label: `${entry.displayName} Heal`,
+             isHeal: true,
+           })
+         }
+       }
     }
     if (_activeRuneDmgDef && Object.keys(_activeRuneDmgDef.dmgTypes).length > 0) {
       const _runeIsHeal = _activeRuneDmgDef.isHealOnly ?? false
