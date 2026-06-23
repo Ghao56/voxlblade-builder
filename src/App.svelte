@@ -294,23 +294,23 @@ $: statRows = Object.entries($result.stats).filter(([k, v]) => {
     if (!c) return []
     const rows: Array<{k: string, v: string}> = []
     if (c === 'air') {
-      rows.push({ k: 'Atk Speed',  v: `+${Math.round(amt * 10 * 100)/100}% per 0.1 pot` })
-      rows.push({ k: 'Knockback',  v: `+${Math.round(amt * 20 * 100)/100}% per 0.1 pot` })
+      rows.push({ k: 'Atk Speed',  v: `+${Math.round(amt * 10 * 100)/100}% ` })
+      rows.push({ k: 'Knockback',  v: `+${Math.round(amt * 20 * 100)/100}% ` })
     } else if (c === 'fire') {
       rows.push({ k: 'Burn Chance', v: '100% (proc-affected)' })
-      rows.push({ k: 'Burn Potency',v: `+${Math.round(amt * 15 * 100)/100}% per perk` })
+      rows.push({ k: 'Burn Potency',v: `+${Math.round(amt * 15 * 100)/100}% ` })
     } else if (c === 'hex') {
-      rows.push({ k: 'Debuff Pot.',  v: `+${Math.round(amt * 5 * 100)/100}% per perk` })
-      rows.push({ k: 'Debuff Dur.',  v: `+${Math.round(amt * 15 * 100)/100}% per perk` })
+      rows.push({ k: 'Debuff Pot.',  v: `+${Math.round(amt * 5 * 100)/100}% ` })
+      rows.push({ k: 'Debuff Dur.',  v: `+${Math.round(amt * 15 * 100)/100}% ` })
     } else if (c === 'holy') {
-      rows.push({ k: 'Healing',     v: `+${Math.round(amt * 10 * 100)/100}% per 0.1 pot` })
-      rows.push({ k: 'Buff Potency',v: `+${Math.round(amt * 5 * 100)/100}% per perk` })
+      rows.push({ k: 'Healing',     v: `+${Math.round(amt * 10 * 100)/100}% ` })
+      rows.push({ k: 'Buff Potency',v: `+${Math.round(amt * 5 * 100)/100}% ` })
     } else if (c === 'water') {
       rows.push({ k: 'Debuff Immunity', v: 'Active' })
       rows.push({ k: 'Pulse CD',    v: `${Math.max(1, 8 - amt)}s (heal 0.1 · 1.0 Water)` })
     } else if (c === 'earth') {
-      rows.push({ k: 'Poise Dmg',   v: `+${Math.round(amt * 15 * 100)/100}% per 0.1 pot` })
-      rows.push({ k: 'Stun Resist', v: `+${Math.round(amt * 0.15 * 1000)/1000} per 0.1 pot` })
+      rows.push({ k: 'Poise Dmg',   v: `+${Math.round(amt * 15 * 100)/100}% ` })
+      rows.push({ k: 'Stun Resist', v: `+${Math.round(amt * 0.15 * 1000)/1000} ` })
     }
     return rows
   })()
@@ -2858,7 +2858,7 @@ $: _appWaAvgTotal = (() => {
                 <div class="dab-stat-row">
                   <span class="dab-stat-k">Dmg Type</span>
                   <span class="dab-stat-v" style={dracoColor ? `color:${dracoColor.color}` : ''}>
-                    +{Math.round(draconicPerkAmt * 0.1 * 1000)/1000} {dracoColor ? dracoColor.stat : 'physical'} per 0.1 pot
+                    +{Math.round(draconicPerkAmt * 0.1 * 1000)/1000} {dracoColor ? dracoColor.stat : 'physical'}
                   </span>
                 </div>
 
@@ -3752,7 +3752,7 @@ $: _appWaAvgTotal = (() => {
 
   .right-column {
     flex: 0 0 auto;
-    min-width: 0;
+    max-width: 250px;
     display: flex;
     flex-direction: column;
     gap: 12px;
