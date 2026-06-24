@@ -99,11 +99,31 @@
       helmet: $build.helmet, chestplate: $build.chestplate, leggings: $build.leggings,
       weaponBlade: $build.weaponBlade, weaponHandle: $build.weaponHandle,
       monkGlove: $build.monkGlove, race: $build.race,
-    })
-    return applyBuffPerkModifiers(
+    })    
+    const baseBuffs = applyBuffPerkModifiers(
       [...itemBuffs, ...getPerkBuffs($result.perks), ...getWeaponArtBuffs($build.selectedWeaponArt)],
       $result.perks, $build.rune || undefined
     )
+    const _infActive = $build.draconicRuneInfusion === 'infusion'
+    const color = $build.draconicColor
+    if (!_infActive || (color !== 'hex' && color !== 'holy')) {
+      return baseBuffs
+    }
+    const _infPerkAmt = $result.perks['Draconic Blood'] ?? 0
+    const potMult = 1 + _infPerkAmt * 0.05
+
+    return baseBuffs.map(buff => {
+      const def = BUFF_DEFS[buff.buffName]
+      if (!def) return buff
+      if (color === 'hex' && def.isDebuff) {
+        return { ...buff, potency: Math.round(buff.potency * potMult * 10000) / 10000 }
+      }
+      if (color === 'holy' && !def.isDebuff && !def.isNeutral && buff.buffName !== 'Draconic Infusion') {
+        return { ...buff, potency: Math.round(buff.potency * potMult * 10000) / 10000 }
+      }
+      
+      return buff
+    })
   })()
   $: _hasCritBoostBuff = _allActiveBuffs.some(b => b.buffName === 'Critical Boost')
   $: _draconicHexDebuffsForDummy = getDraconicHexDebuffs(
