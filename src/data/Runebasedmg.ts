@@ -1,5 +1,5 @@
 import type { BuildState } from '../lib/types';
-import { calculateHealScaling, type HealScalingContext } from './healScaling';
+import { calculateHealBoost, type HealBoostContext } from './HealBoost';
 
 export interface RuneDmgCtx {
   potency: number
@@ -47,7 +47,7 @@ export function calculateRuneHealScaling(
 ): number {
   if (!runeDef.isHealOnly) return 1.0
   
-  const healCtx: HealScalingContext = {
+  const healCtx: HealBoostContext = {
     perks: ctx.perks,
     emotionalState: ctx.emotionalState,
     inDarkness: ctx.inDarkness,
@@ -55,7 +55,7 @@ export function calculateRuneHealScaling(
     sliderVal: ctx.sliderVal,
   }
   
-  const result = calculateHealScaling(healCtx, 'rune')
+  const result = calculateHealBoost(healCtx, 'rune')
   return result.finalMultiplier
 }
 

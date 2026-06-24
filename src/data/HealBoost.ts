@@ -1,6 +1,6 @@
 export type HealSource = 'perk' | 'rune' | 'weaponArt' | 'passive'
 
-export interface HealScalingContext {
+export interface HealBoostContext {
   perks: Record<string, number>
   emotionalState?: 'buffs' | 'debuffs' | 'both'
   inDarkness: boolean
@@ -9,27 +9,22 @@ export interface HealScalingContext {
   sliderVal?: number
 }
 
-export interface HealScalingDef {
+export interface HealBoostDef {
   sourceName: string
   sourceType: HealSource
   
-  // For simple heal scaling
   multiplierPerPerk?: number
   condition?: string
   isLevel?: boolean
   
-  // For complex heal scaling - custom calculation function
-  calcFn?: (ctx: HealScalingContext) => { multiplier: number; condition: string } | null
+  calcFn?: (ctx: HealBoostContext) => { multiplier: number; condition: string } | null
   
-  // For heal that only applies to specific sources
   appliesTo?: HealSource[]
   
-  // For conditional activation
-  activeIf?: (ctx: HealScalingContext) => boolean
+  activeIf?: (ctx: HealBoostContext) => boolean
 }
 
-export const HEAL_SCALING_DEFS: HealScalingDef[] = [
-  // Level healing
+export const HEAL_SCALING_DEFS: HealBoostDef[] = [
   { 
     sourceName: 'Level Healing', 
     multiplierPerPerk: 0, 
@@ -37,8 +32,6 @@ export const HEAL_SCALING_DEFS: HealScalingDef[] = [
     isLevel: true,
     condition: 'LV0 → ×1.0 · LV80 → ×2.0'
   },
-  
-  // Simple heal boosts from perks
   { 
     sourceName: 'Emotional', 
     multiplierPerPerk: 0.20, 
@@ -52,8 +45,6 @@ export const HEAL_SCALING_DEFS: HealScalingDef[] = [
     sourceType: 'perk',
     condition: 'Increase healing by 10% per 1 of this perk'
   },
-  
-  // Complex heal boosts
   {
     sourceName: 'Oceans Rage',
     sourceType: 'perk',
@@ -83,7 +74,7 @@ export const HEAL_SCALING_DEFS: HealScalingDef[] = [
 
 export const HEAL_SCALING_DEF_MAP = new Map(HEAL_SCALING_DEFS.map(d => [d.sourceName, d]))
 
-export interface HealScalingResult {
+export interface HealBoostResult {
   entries: Array<{
     sourceName: string
     rawMultiplier: number
@@ -93,10 +84,10 @@ export interface HealScalingResult {
   finalMultiplier: number
 }
 
-export function calculateHealScaling(
-  ctx: HealScalingContext,
+export function calculateHealBoost(
+  ctx: HealBoostContext,
   appliesToType?: HealSource
-): HealScalingResult {
+): HealBoostResult {
   const entriesMap = new Map<string, { rawMultiplier: number; condition?: string; sourceType: HealSource }>()
   
   // Calculate level healing
@@ -108,22 +99,17 @@ export function calculateHealScaling(
     sourceType: 'passive'
   })
   
-  // Process heal scaling definitions
   for (const def of HEAL_SCALING_DEFS) {
-    // Skip level healing (already handled)
     if (def.isLevel) continue
     
-    // Check if applies to the requested type
     if (appliesToType && def.appliesTo && !def.appliesTo.includes(appliesToType)) {
       continue
     }
     
-    // Check active condition
     if (def.activeIf && !def.activeIf(ctx)) {
       continue
     }
     
-    // Complex calculation function
     if (def.calcFn) {
       const result = def.calcFn(ctx)
       if (result) {
@@ -135,8 +121,6 @@ export function calculateHealScaling(
       }
       continue
     }
-    
-    // Simple perk-based multiplier
     if (def.multiplierPerPerk !== undefined) {
       const perkAmount = ctx.perks[def.sourceName] ?? 0
       if (perkAmount <= 0) continue
@@ -167,9 +151,9 @@ export function calculateHealScaling(
 }
 
 export function getHealScalingMultiplier(
-  ctx: HealScalingContext,
+  ctx: HealBoostContext,
   appliesToType?: HealSource
 ): number {
-  const result = calculateHealScaling(ctx, appliesToType)
+  const result = calculateHealBoost(ctx, appliesToType)
   return result.finalMultiplier
 }

@@ -18,7 +18,7 @@
   import { RUNE_DMG_DEFS } from './data/Runebasedmg'
   import { getDraconicColorDmgMultiplier } from './data/draconicColorEffects'
   import { applyDraconicRunesBonus, getDraconicRunesBonus, applyDraconicBonuses, getDraconicBonuses } from './data/draconicRunes'
-  import { calculateHealScaling, type HealScalingContext } from './data/healScaling'
+  import { calculateHealBoost, type HealBoostContext } from './data/HealBoost'
 
   $: _m1FinisherWeaponBoost = getWeaponConditionalBoost(perks, _baseWeaponType, 'm1Finisher')
   $: _m2WeaponBoost         = getWeaponConditionalBoost(perks, _baseWeaponType, 'm2')
@@ -37,7 +37,7 @@
     level: $build.level,
     draconicColor: $build.draconicColor,
   }
-  $: _healScalingResult = calculateHealScaling(_healScalingCtx)
+  $: _healScalingResult = calculateHealBoost(_healScalingCtx)
   $: _healFinalMultiplier = _healScalingResult.finalMultiplier
 
   $: _defenseRows = _DEF_TYPE_LIST.map(type => {
