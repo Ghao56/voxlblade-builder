@@ -214,6 +214,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     scalingMode: 'dynamic',
     getScalings: ({ draconicColor }) => ({ [draconicColor || 'physical']: 1.0 }),
     guardbreak: true,
+    isRune: true,
     activeIf: ({ draconicRuneInfusion }) => draconicRuneInfusion === 'claw',
     secondaryEffects: [
       { label: 'Poise Damage', getValue: () => 60, tone: 'offense' },
@@ -249,6 +250,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     scalingMode: 'dynamic',
     getScalings: ({ draconicColor }) => ({ [draconicColor || 'physical']: 1.0 }),
     guardbreak: true,
+    isRune: true,
     activeIf: ({ draconicRuneInfusion }) => draconicRuneInfusion === 'bubble',
     secondaryEffects: [
       { label: 'Poise Damage', getValue: () => 45, tone: 'offense' },

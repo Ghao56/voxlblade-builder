@@ -610,6 +610,24 @@
     return { rows, totalEffectivePct, multiplier }
   })()
 
+  $: _draconicScalingBreakdown = (() => {
+    if (!_draconicBloodEntry) return null
+    const scalings = _draconicBloodEntry.resolvedScalings
+    if (!scalings || Object.keys(scalings).length === 0) return null
+    const rows: ScalingRow[] = []
+    for (const [key, scalingVal] of Object.entries(scalings)) {
+      if (!scalingVal) continue
+      const boostKey = SCALING_TO_BOOST[key]
+      if (!boostKey) continue
+      const boostPct = (stats as Record<string, number>)[boostKey] ?? 0
+      const contribution = Math.round(scalingVal * boostPct * 100) / 100
+      rows.push({ key, scalingVal, boostKey, boostPct, contribution, color: SCALING_COLORS[key] ?? '#e8e4da' })
+    }
+    if (!rows.length) return null
+    const totalEffectivePct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 100) / 100
+    return { rows, totalEffectivePct, multiplier: Math.round((1 + totalEffectivePct / 100) * 10000) / 10000 }
+  })()
+
   $: waScalingSameAsWeapon = selectedWA.scaling === 'Same as weapon'
   $: waScalingIsHealOnly = !_waHitsSeq && !!_waHealSeq
 
@@ -952,7 +970,8 @@
     }
     return out
   })()
-
+  $: _draconicBloodEntry = _activePerkDmgEntries.find(e => e.perkName === 'Draconic Blood') ?? null
+  $: _nonDraconicPerkEntries = _activePerkDmgEntries.filter(e => e.perkName !== 'Draconic Blood')
   interface BDCHit {
     group: string
     index: number
@@ -1049,7 +1068,7 @@
       const _preColorBase = _rawBase
 
       result.push({
-        group: 'Perk',
+        group: entry.perkName === 'Draconic Blood' ? 'Rune' : 'Perk',
         index: result.length,
         count: entry.perkName === 'Springblast' ? springblastFinisherHits : (entry.hits ?? 1),
         base: _preColorBase,
@@ -1073,7 +1092,7 @@
          if (_healSe) {
            const _healVal = Math.round(_healSe.getValue({ perkAmount: entry.perkAmount, draconicColor: _color }) * 100) / 100
            result.push({
-             group: 'Perk',
+             group: entry.perkName === 'Draconic Blood' ? 'Rune' : 'Perk',
              index: result.length,
              count: 1,
              base: _healVal,
@@ -1724,80 +1743,51 @@
           : (_activeRuneDmgDef.hits ?? 1)}
         {@const _runeBase = _activeRuneDmgDef.getBaseDamage({ potency: runePotency })}
         {@const _runeScalingMult = _computePerkScalingMult(_activeRuneDmgDef.scalings)}
-
-        <div class="da-wbd-section">
-          <div class="da-wbd-row-label da-wbd-row-label--wa">
-            <span class="da-wbd-lbl-badge da-wbd-lbl-badge--wa" style="background:rgba(56,189,248,.16);border-color:rgba(56,189,248,.35);color:#38bdf8">
-              Rune
-            </span>
-            <span class="da-wbd-lbl-text da-wbd-lbl-text--wa" style="color:#38bdf8">
-              {_activeRuneDmgDef.runeName}
-            </span>
-          </div>
-
-          <div class="da-hits-row">
-            <div class="da-hit-card">
-              {#each Object.entries(_activeRuneDmgDef.dmgTypes) as [k, mult], ti}
-                {#if ti > 0}<span class="da-hit-plus">+</span>{/if}
-                <div class="da-hit-chunk" style="--tc:{DMG_TYPE_COLORS[k] ?? '#e8e4da'}">
-                  <span class="da-hit-num" style="--tc:{DMG_TYPE_COLORS[k] ?? '#e8e4da'}">
-                    {fmtNum(_runeBase * mult)}
-                  </span>
-                  <span class="da-hit-type">
-                    {k.charAt(0).toUpperCase() + k.slice(1)}
-                  </span>
-                </div>
-              {/each}
-
-              {#if _runeHits > 1}
-                <span class="da-hit-repeat">
-                  ×{_runeHits}<span class="da-hit-repeat-label">hits</span>
-                </span>
-              {/if}
-            </div>
-          </div>
-
-          {#if _activeRuneDmgDef?.slider}
-            {@const sl = _activeRuneDmgDef.slider}
-            {@const buildAny = $build as any} <div class="da-sb-slider-wrap" style="margin-top: 8px;">
-              <span class="da-sb-slider-label">{sl.label}</span>
-              <input type="range" min={sl.min} max={sl.max} step={sl.step ?? 1}
-                value={buildAny[sl.buildKey] ?? sl.min}
-                on:input={e => {
-                  const target = e.target as HTMLInputElement;
-                  build.update(s => ({...s, [sl.buildKey]: +target.value}));
-                }}
-                class="da-sb-slider"
-                style="--fill:{(( (buildAny[sl.buildKey] ?? sl.min) - sl.min) / (sl.max - sl.min)) * 100}%"
-              />
-              <span class="da-sb-slider-val">{buildAny[sl.buildKey] ?? sl.min}</span>
-            </div>
-          {/if}
-
-          {#if _activeRuneDmgDef?.shield}
-            {@const buildAny = $build as any}
-            {@const shieldHp = _activeRuneDmgDef.shield.getShieldHp(buildAny[_activeRuneDmgDef.slider?.buildKey ?? 'buffsConsumed'] ?? 0)}
-            <div class="da-rage-row" style="background:rgba(56,189,248,.06);border-color:rgba(56,189,248,.2); margin-top: 6px;">
-              <span style="font-family:'Courier New',monospace;font-weight:800;color:#38bdf8">
-                🛡 Shield: {shieldHp} HP
-              </span>
-            </div>
-          {/if}
-          </div>
-      {/if}
+        
+        {/if}
     </div>
-  {/each}
-</div>
-<p class="da-wbd-note">M1 = light attack combo · M2 = heavy attack · × = repeated hits</p>
-  {/if}
-</div>
+  {/each} {#if _draconicBloodEntry}
+    <div class="da-wbd-card da-wbd-card--active da-wbd-card--gun">
+      <div class="da-wbd-card-head">
+        <span class="da-wbd-dot da-wbd-dot--gun"></span>
+        <span class="da-wbd-card-name">{_draconicBloodEntry.displayName}</span>
+        <span class="da-wbd-gun-badge" style="background:rgba(56,189,248,.1);border-color:rgba(56,189,248,.25);color:#38bdf8">Rune</span>
+      </div>
+      <div class="da-wbd-card-divider"></div>
+      <div class="da-wbd-section">
+        <div class="da-hits-row">
+          <div class="da-hit-card" class:da-hit-card--finisher={_draconicBloodEntry.guardbreak}>
+            {#each _draconicBloodEntry.typedHits_m2 as t, ti}
+              {#if ti > 0}<span class="da-hit-plus">+</span>{/if}
+              <div class="da-hit-chunk" style="--tc:{t.color}">
+                <span class="da-hit-num" style="--tc:{t.color}">{fmtNum(t.val)}</span>
+                <span class="da-hit-type">{t.label}</span>
+              </div>
+            {/each}
+            {#if _draconicBloodEntry.guardbreak}<span class="da-finisher-crown">✦</span>{/if}
+          </div>
+        </div>
+      </div>
+            {#if _draconicBloodEntry.secondaryEffects.length > 0}
+        <div class="da-pbd-secondary-list" style="margin-top:6px">
+          {#each _draconicBloodEntry.secondaryEffects as se}
+            <div class="da-pbd-secondary" class:da-pbd-secondary--inactive={!se.isActive} style="--sc:{se.color}">
+              <span class="da-pbd-secondary-label">{se.label}</span>
+              <span class="da-pbd-secondary-val">{se.display}</span>
+              {#if se.condition}<span class="da-pbd-secondary-cond">{se.condition}</span>{/if}
+            </div>
+          {/each}
+        </div>
+    {/if}
+    <p class="da-wbd-note">M1 = light attack combo · M2 = heavy attack · × = repeated hits</p>
+{/if}
 
 <!-- ── Perk Base Damage ── -->
-{#if _activePerkDmgEntries.length > 0}
+{#if _nonDraconicPerkEntries.length > 0}
 <div class="da-section da-section--pbd">
   <div class="da-section-title">Perk Base Damage</div>
   <div class="da-pbd-list">
-    {#each _activePerkDmgEntries as entry}
+    {#each _nonDraconicPerkEntries as entry}
       <div class="da-pbd-card">
         <!-- Header row -->
         <div class="da-pbd-head">
@@ -2111,7 +2101,7 @@
 </div>
 {/if}
 {#if _weaponResult && scalingBreakdown.rows.length > 0
-  && _activePerkDmgEntries.some(e =>(e.dmgTypeMode === 'fixed' ||e.dmgTypeMode === 'dynamic')&& Object.keys(e.resolvedScalings ?? {}).length > 0|| e.dmgTypeMode === 'weapon')}
+  && _nonDraconicPerkEntries.some(e =>(e.dmgTypeMode === 'fixed' ||e.dmgTypeMode === 'dynamic')&& Object.keys(e.resolvedScalings ?? {}).length > 0|| e.dmgTypeMode === 'weapon')}
   <div class="da-section da-section--scaling">
     <div class="da-section-title">📐 Damage Scaling</div>
     <div class="ds-formula-hint">Effective Boost = Σ (Scaling × Boost%) → adds to base as ×(1 + Effective%)</div>
@@ -2126,7 +2116,7 @@
         <div class="ds-col ds-col--contrib">Contribution</div>
       </div>
 
-      {#each _activePerkDmgEntries as entry}
+      {#each _nonDraconicPerkEntries as entry}
         {#if (entry.dmgTypeMode === 'fixed' ||entry.dmgTypeMode === 'dynamic')&& Object.keys(entry.resolvedScalings ?? {}).length > 0}
           <div class="da-perk-scaling-divider">
             <span class="da-perk-scaling-label">Perk Damage</span>
@@ -2191,82 +2181,126 @@
   </div>
 {/if}
 
-{#if runeScalingBreakdown}
+{#if runeScalingBreakdown || _draconicScalingBreakdown}
 <div class="da-section da-section--scaling">
   <div class="da-section-title">📐 Damage Scaling</div>
-  <div class="ds-wa-subsection" style="margin-top:0">
-    <div class="ds-wa-header">
-      <span class="ds-sub-badge" style="background:rgba(56,189,248,.16);border-color:rgba(56,189,248,.35);color:#38bdf8">Rune</span>
-      <span class="ds-wa-name" style="color:#38bdf8">{_activeRuneDmgDef?.runeName}</span>
-    </div>
-    <div class="ds-table">
-      <div class="ds-head">
-        <div class="ds-col ds-col--type">Scaling</div>
-        <div class="ds-col ds-col--val">Scaling Val</div>
-        <div class="ds-col ds-col--op"></div>
-        <div class="ds-col ds-col--boost">Your Boost</div>
-        <div class="ds-col ds-col--op"></div>
-        <div class="ds-col ds-col--contrib">Contribution</div>
+
+  {#if runeScalingBreakdown}
+    <div class="ds-wa-subsection" style="margin-top:0">
+      <div class="ds-wa-header">
+        <span class="ds-sub-badge" style="background:rgba(56,189,248,.16);border-color:rgba(56,189,248,.35);color:#38bdf8">Rune</span>
+        <span class="ds-wa-name" style="color:#38bdf8">{_activeRuneDmgDef?.runeName}</span>
       </div>
-      {#each runeScalingBreakdown.rows as row}
-        <div class="ds-row">
-          <div class="ds-col ds-col--type">
-            <span class="ds-dot" style="background:{row.color}"></span>
-            <span style="color:{row.color}">{row.key.charAt(0).toUpperCase() + row.key.slice(1)}</span>
-          </div>
-          <div class="ds-col ds-col--val">
-            <span class="ds-num" style="color:{row.color}">{row.scalingVal}</span>
-          </div>
-          <div class="ds-col ds-col--op">×</div>
-          <div class="ds-col ds-col--boost">
-            {#if row.boostPct !== 0}
+      <div class="ds-table">
+        <div class="ds-head">
+          <div class="ds-col ds-col--type">Scaling</div>
+          <div class="ds-col ds-col--val">Scaling Val</div>
+          <div class="ds-col ds-col--op"></div>
+          <div class="ds-col ds-col--boost">Your Boost</div>
+          <div class="ds-col ds-col--op"></div>
+          <div class="ds-col ds-col--contrib">Contribution</div>
+        </div>
+        {#each runeScalingBreakdown.rows as row}
+          <div class="ds-row">
+            <div class="ds-col ds-col--type">
+              <span class="ds-dot" style="background:{row.color}"></span>
+              <span style="color:{row.color}">{row.key.charAt(0).toUpperCase() + row.key.slice(1)}</span>
+            </div>
+            <div class="ds-col ds-col--val">
+              <span class="ds-num" style="color:{row.color}">{row.scalingVal}</span>
+            </div>
+            <div class="ds-col ds-col--op">×</div>
+            <div class="ds-col ds-col--boost">
               <span class="ds-boost" style={row.boostPct < 0 ? 'color: #cf6679;' : ''}>
                 {row.boostPct > 0 ? '+' : ''}{row.boostPct}%
               </span>
-            {:else}
-              <span class="ds-boost ds-boost--zero">+0%</span>
-            {/if}
+            </div>
+            <div class="ds-col ds-col--op">=</div>
+            <div class="ds-col ds-col--contrib">
+              <span class="ds-contrib" style={row.contribution > 0 ? `color:${row.color}` : row.contribution < 0 ? 'color: #cf6679;' : ''}>
+                {row.contribution > 0 ? '+' : ''}{row.contribution}%
+              </span>
+            </div>
           </div>
+        {/each}
+        <div class="ds-row ds-row--total">
+          <div class="ds-col ds-col--type ds-total-label">Total</div>
+          <div class="ds-col ds-col--val"></div><div class="ds-col ds-col--op"></div><div class="ds-col ds-col--boost"></div>
           <div class="ds-col ds-col--op">=</div>
           <div class="ds-col ds-col--contrib">
-            <span class="ds-contrib"
-                  class:ds-contrib--zero={row.contribution === 0}
-                  style={row.contribution > 0 ? `color:${row.color}` : row.contribution < 0 ? 'color: #cf6679;' : ''}>
-              {row.contribution > 0 ? '+' : ''}{row.contribution}%
-            </span>
+            <span class="ds-total-pct">+{runeScalingBreakdown.totalEffectivePct}%</span>
           </div>
-        </div>
-      {/each}
-      <div class="ds-row ds-row--total">
-        <div class="ds-col ds-col--type ds-total-label">Total</div>
-        <div class="ds-col ds-col--val"></div>
-        <div class="ds-col ds-col--op"></div>
-        <div class="ds-col ds-col--boost"></div>
-        <div class="ds-col ds-col--op">=</div>
-        <div class="ds-col ds-col--contrib">
-          <span class="ds-total-pct">+{runeScalingBreakdown.totalEffectivePct}%</span>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="ds-result-row"
-    style={_activeRuneDmgDef?.isHealOnly ? 'border-color:rgba(74,222,128,.2);background:rgba(74,222,128,.06)' : ''}>
-    <div style="display:flex;flex-direction:column;gap:2px;flex:1;">
-      <span class="ds-result-label" style={_activeRuneDmgDef?.isHealOnly ? 'color:#4ade80' : ''}>
-        {_activeRuneDmgDef?.isHealOnly ? 'Heal Multiplier' : 'Scaling Multiplier'}
+    <div class="ds-result-row" style={_activeRuneDmgDef?.isHealOnly ? 'border-color:rgba(74,222,128,.2);background:rgba(74,222,128,.06)' : ''}>
+      <div style="display:flex;flex-direction:column;gap:2px;flex:1;">
+        <span class="ds-result-label" style={_activeRuneDmgDef?.isHealOnly ? 'color:#4ade80' : ''}>
+          {_activeRuneDmgDef?.isHealOnly ? 'Heal Multiplier' : 'Scaling Multiplier'}
+        </span>
+        <span class="ds-applies-to">Rune</span>
+      </div>
+      <span class="ds-result-eq">1 + {runeScalingBreakdown.totalEffectivePct}% =</span>
+      <span class="ds-result-val" style={_activeRuneDmgDef?.isHealOnly ? 'color:#4ade80;text-shadow:0 0 12px rgba(74,222,128,.4)' : ''}>
+        ×{+runeScalingBreakdown.multiplier.toFixed(4)}
       </span>
-      <span class="ds-applies-to">Rune</span>
     </div>
-    <span class="ds-result-eq">1 + {runeScalingBreakdown.totalEffectivePct}% =</span>
-    <span class="ds-result-val"
-      style={_activeRuneDmgDef?.isHealOnly ? 'color:#4ade80;text-shadow:0 0 12px rgba(74,222,128,.4)' : ''}>
-      ×{+runeScalingBreakdown.multiplier.toFixed(4)}
-    </span>
-  </div>
+    {#if runeScalingBreakdown.rows.some(r => r.boostPct === 0)}
+      <p class="ds-warn">⚠ Some Rune scalings have no matching boost stat — those contribute 0%</p>
+    {/if}
+  {/if}
 
-  {#if runeScalingBreakdown.rows.some(r => r.boostPct === 0)}
-    <p class="ds-warn">⚠ Some Rune scalings have no matching boost stat — those contribute 0%</p>
+  {#if _draconicScalingBreakdown}
+    <div class="ds-wa-subsection" style="margin-top:{runeScalingBreakdown ? '12px' : '0'}">
+      <div class="ds-wa-header">
+        <span class="ds-sub-badge" style="background:rgba(56,189,248,.16);border-color:rgba(56,189,248,.35);color:#38bdf8">Rune</span>
+        <span class="ds-wa-name" style="color:#38bdf8">{_draconicBloodEntry?.displayName}</span>
+      </div>
+      <div class="ds-table">
+        <div class="ds-head">
+          <div class="ds-col ds-col--type">Scaling</div>
+          <div class="ds-col ds-col--val">Scaling Val</div>
+          <div class="ds-col ds-col--op"></div>
+          <div class="ds-col ds-col--boost">Your Boost</div>
+          <div class="ds-col ds-col--op"></div>
+          <div class="ds-col ds-col--contrib">Contribution</div>
+        </div>
+        {#each _draconicScalingBreakdown.rows as row}
+          <div class="ds-row">
+            <div class="ds-col ds-col--type">
+              <span class="ds-dot" style="background:{row.color}"></span>
+              <span style="color:{row.color}">{row.key.charAt(0).toUpperCase() + row.key.slice(1)}</span>
+            </div>
+            <div class="ds-col ds-col--val"><span class="ds-num" style="color:{row.color}">{row.scalingVal}</span></div>
+            <div class="ds-col ds-col--op">×</div>
+            <div class="ds-col ds-col--boost">
+              <span class="ds-boost" style={row.boostPct < 0 ? 'color:#cf6679;' : ''}>{row.boostPct > 0 ? '+' : ''}{row.boostPct}%</span>
+            </div>
+            <div class="ds-col ds-col--op">=</div>
+            <div class="ds-col ds-col--contrib">
+              <span class="ds-contrib" style={row.contribution > 0 ? `color:${row.color}` : row.contribution < 0 ? 'color:#cf6679;' : ''}>
+                {row.contribution > 0 ? '+' : ''}{row.contribution}%
+              </span>
+            </div>
+          </div>
+        {/each}
+        <div class="ds-row ds-row--total">
+          <div class="ds-col ds-col--type ds-total-label">Total</div>
+          <div class="ds-col ds-col--val"></div><div class="ds-col ds-col--op"></div><div class="ds-col ds-col--boost"></div>
+          <div class="ds-col ds-col--op">=</div>
+          <div class="ds-col ds-col--contrib"><span class="ds-total-pct">+{_draconicScalingBreakdown.totalEffectivePct}%</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="ds-result-row">
+      <div style="display:flex;flex-direction:column;gap:2px;flex:1;">
+        <span class="ds-result-label">Scaling Multiplier</span>
+        <span class="ds-applies-to">Rune</span>
+      </div>
+      <span class="ds-result-eq">1 + {_draconicScalingBreakdown.totalEffectivePct}% =</span>
+      <span class="ds-result-val">×{+_draconicScalingBreakdown.multiplier.toFixed(4)}</span>
+    </div>
   {/if}
 </div>
 {/if}
