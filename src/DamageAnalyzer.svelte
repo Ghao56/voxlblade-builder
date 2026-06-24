@@ -1130,7 +1130,6 @@
 </script>
 
 <div class="da-root">
-
   <!-- ══════════════════ TOP ROW: CRIT + APEN ══════════════════ -->
   <div class="da-top-row">
 
@@ -1768,7 +1767,7 @@
           </div>
         </div>
       </div>
-            {#if _draconicBloodEntry.secondaryEffects.length > 0}
+      {#if _draconicBloodEntry.secondaryEffects.length > 0}
         <div class="da-pbd-secondary-list" style="margin-top:6px">
           {#each _draconicBloodEntry.secondaryEffects as se}
             <div class="da-pbd-secondary" class:da-pbd-secondary--inactive={!se.isActive} style="--sc:{se.color}">
@@ -1780,7 +1779,11 @@
         </div>
     {/if}
     <p class="da-wbd-note">M1 = light attack combo · M2 = heavy attack · × = repeated hits</p>
+  </div>
 {/if}
+</div>
+{/if}
+</div><!-- end da-section--wbd -->
 
 <!-- ── Perk Base Damage ── -->
 {#if _nonDraconicPerkEntries.length > 0}
