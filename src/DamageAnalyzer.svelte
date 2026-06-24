@@ -216,6 +216,10 @@
     return Number.isInteger(r) ? String(r) : r.toFixed(2).replace(/\.?0+$/, '')
   }
 
+  function calcGroupMultiplier(entries: Array<{ rawMultiplier: number }>): number {
+    return entries.reduce((acc, e) => acc * e.rawMultiplier, 1)
+  }
+
   function seqWithTypes(
   seq: HitSeq,
   dmgTypes: Record<string, number>,
@@ -643,6 +647,10 @@
 
   $: waScalingSameAsWeapon = selectedWA.scaling === 'Same as weapon'
   $: waScalingIsHealOnly = !_waHitsSeq && !!_waHealSeq
+  $: _waHealScalingBreakdown = (waScalingIsHealOnly && waScalingBreakdown) ? waScalingBreakdown : null
+  $: _healDisplayMult = _waHealScalingBreakdown
+    ? Math.round(_healFinalMultiplier * _waHealScalingBreakdown.multiplier * 10000) / 10000
+    : _healFinalMultiplier
 
   const SCALING_TO_BOOST_KEY: Record<string, string> = {
     physical: 'physicalBoost', magic: 'magicBoost', fire: 'fireBoost',
@@ -1083,9 +1091,40 @@
       })
     }
     for (const entry of _activePerkDmgEntries) {
-      if (entry.typedHits_m2.length === 0) continue
       if (!entry.isActive) continue 
 
+      // Check for heal effects from Draconic Blood abilities
+      if (entry.perkName === 'Draconic Blood') {
+         const _color = $build.draconicColor
+         const healSe = (PERK_DMG_DEFS.find(d => d.perkName === 'Draconic Blood' && d.label === entry.displayName)
+           ?.secondaryEffects ?? []).find(se =>
+             (_color === 'holy'  && se.label === 'Base Heal (Holy)') ||
+             (_color === 'water' && se.label === 'Base Heal (Water)')
+           )
+         
+         if (healSe) {
+           const baseHeal = healSe.getValue({ perkAmount: entry.perkAmount, draconicColor: _color })
+           // Apply color scaling: holy = 1.0 holy scaling, water = 1.0 water scaling
+           const colorScaling = _computePerkScalingMult({ [_color]: 1.0 })
+           
+           result.push({
+             group: 'Rune',
+             index: result.length,
+             count: 1,
+             base: baseHeal,
+             scalingMult: colorScaling,
+             combatMult: _healFinalMultiplier,
+             isFinisher: false,
+             dmgTypes: { heal: 1.0 },
+             label: `${entry.displayName} Heal`,
+             isHeal: true,
+           })
+         }
+      }
+
+      // Add damage if available
+      if (entry.typedHits_m2.length === 0) continue
+      
       const _colorMult = entry.perkName === 'Draconic Blood'
         ? getDraconicColorDmgMultiplier($build.draconicColor)
         : 1
@@ -1107,32 +1146,6 @@
           weaponBoostLabel: `${$build.draconicColor.charAt(0).toUpperCase()}${$build.draconicColor.slice(1)} Color Bonus`,
         } : {}),
       })
-      if (entry.perkName === 'Draconic Blood') {
-         const _color = $build.draconicColor
-         const healSourceName = entry.displayName === 'Dragon Claw' 
-          ? (_color === 'holy' ? 'Dragon Claw (Holy)' : _color === 'water' ? 'Dragon Claw (Water)' : null)
-          : entry.displayName === 'Dragon Bubble'
-          ? (_color === 'holy' ? 'Dragon Bubble (Holy)' : _color === 'water' ? 'Dragon Bubble (Water)' : null)
-          : null
-        
-        if (healSourceName) {
-          const healEntry = _healScalingResult.entries.find(e => e.sourceName === healSourceName)
-          if (healEntry && healEntry.rawMultiplier > 0) {
-            result.push({
-              group: 'Rune',
-              index: result.length,
-              count: 1,
-              base: healEntry.rawMultiplier,
-              scalingMult: 1.0,
-              combatMult: _healFinalMultiplier,
-              isFinisher: false,
-              dmgTypes: { heal: 1.0 },
-              label: `${entry.displayName} Heal`,
-              isHeal: true,
-            })
-          }
-        }
-       }
     }
     if (_activeRuneDmgDef && Object.keys(_activeRuneDmgDef.dmgTypes).length > 0) {
       const _runeIsHeal = _activeRuneDmgDef.isHealOnly ?? false
@@ -1626,9 +1639,6 @@
           <div class="da-wbd-row-label da-wbd-row-label--wa">
             <span class="da-wbd-lbl-badge da-wbd-lbl-badge--wa">WA</span>
             <span class="da-wbd-lbl-text da-wbd-lbl-text--wa">{selectedWA.name}</span>
-            {#if _waScalingDiffers && _waScalingMult !== 1}
-              <span class="da-wbd-scaling-badge" style="background:rgba(167,139,250,.12);border-color:rgba(167,139,250,.3);color:var(--accent3)">×{_waScalingMult.toFixed(4)}</span>
-            {/if}
           </div>
           <div class="da-hits-row">
           {#if _waTyped}
@@ -2110,7 +2120,7 @@
   {/if}
 
   <!-- WA-specific scaling subsection (only when WA has its own formula) -->
-  {#if waScalingBreakdown}
+  {#if waScalingBreakdown && !waScalingIsHealOnly}
     <div class="ds-wa-subsection">
       <div class="ds-wa-header">
         <span class="ds-sub-badge">WA</span>
@@ -2287,7 +2297,7 @@
 
 {#if runeScalingBreakdown || _draconicScalingBreakdown}
 <div class="da-section da-section--scaling">
-  <div class="da-section-title">📐 Damage Scaling</div>
+  <div class="da-section-title">📐 Rune Damage Scaling</div>
 
   {#if runeScalingBreakdown}
     <div class="ds-wa-subsection" style="margin-top:0">
@@ -2405,6 +2415,71 @@
       <span class="ds-result-eq">1 + {_draconicScalingBreakdown.totalEffectivePct}% =</span>
       <span class="ds-result-val">×{+_draconicScalingBreakdown.multiplier.toFixed(4)}</span>
     </div>
+  {/if}
+</div>
+{/if}
+
+{#if _healScalingResult.entries.length > 0 || _waHealScalingBreakdown}
+<div class="da-section da-section--scaling" style="border-color:rgba(74,222,128,.2);background:linear-gradient(160deg,var(--surface,#141715) 60%,rgba(74,222,128,.03) 100%)">
+  <div class="da-section-title" style="color:#4ade80">✦ Heal Scaling</div>
+
+  <!-- WA heal scaling subsection (khi WA là heal-only) -->
+  {#if _waHealScalingBreakdown}
+    <div class="ds-wa-subsection" style="margin-top:12px">
+      <div class="ds-wa-header">
+        <span class="ds-sub-badge" style="background:rgba(74,222,128,.16);border-color:rgba(74,222,128,.35);color:#4ade80">WA</span>
+        <span class="ds-wa-name" style="color:#4ade80">{selectedWA.name}</span>
+      </div>
+      <div class="ds-table">
+        <div class="ds-head">
+          <div class="ds-col ds-col--type">Scaling</div>
+          <div class="ds-col ds-col--val">Scaling Val</div>
+          <div class="ds-col ds-col--op"></div>
+          <div class="ds-col ds-col--boost">Your Boost</div>
+          <div class="ds-col ds-col--op"></div>
+          <div class="ds-col ds-col--contrib">Contribution</div>
+        </div>
+        {#each _waHealScalingBreakdown.rows as row}
+          <div class="ds-row">
+            <div class="ds-col ds-col--type">
+              <span class="ds-dot" style="background:{row.color}"></span>
+              <span style="color:{row.color}">{(row as any).label ?? (row.key.charAt(0).toUpperCase() + row.key.slice(1))}</span>
+            </div>
+            <div class="ds-col ds-col--val">
+              <span class="ds-num" style="color:{row.color}">{Math.round(row.scalingVal * 10000) / 10000}</span>
+            </div>
+            <div class="ds-col ds-col--op">×</div>
+            <div class="ds-col ds-col--boost">
+              {#if row.boostPct !== 0}
+                <span class="ds-boost" style={row.boostPct < 0 ? 'color:#cf6679;' : ''}>{row.boostPct > 0 ? '+' : ''}{row.boostPct}%</span>
+              {:else}
+                <span class="ds-boost ds-boost--zero">+0%</span>
+              {/if}
+            </div>
+            <div class="ds-col ds-col--op">=</div>
+            <div class="ds-col ds-col--contrib">
+              <span class="ds-contrib" class:ds-contrib--zero={row.contribution === 0}
+                style={row.contribution > 0 ? `color:${row.color}` : row.contribution < 0 ? 'color:#cf6679;' : ''}>
+                {row.contribution > 0 ? '+' : ''}{row.contribution}%
+              </span>
+            </div>
+          </div>
+        {/each}
+        <div class="ds-row ds-row--total" style="background:rgba(74,222,128,.07);border-color:rgba(74,222,128,.18)">
+          <div class="ds-col ds-col--type ds-total-label" style="color:#4ade80">Total</div>
+          <div class="ds-col ds-col--val"></div>
+          <div class="ds-col ds-col--op"></div>
+          <div class="ds-col ds-col--boost"></div>
+          <div class="ds-col ds-col--op">=</div>
+          <div class="ds-col ds-col--contrib">
+            <span class="ds-total-pct" style="color:#4ade80;text-shadow:0 0 10px rgba(74,222,128,.4)">×{+_waHealScalingBreakdown.multiplier.toFixed(4)}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    {#if _waHealScalingBreakdown.rows.some(r => r.boostPct === 0)}
+      <p class="ds-warn">⚠ Some WA heal scalings have no matching boost stat — those contribute 0%</p>
+    {/if}
   {/if}
 </div>
 {/if}
@@ -3648,6 +3723,71 @@
   }
 }
 /* ── Perk scaling section ── */
+.ds-heal-subsection {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed rgba(74,222,128,.18);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ds-heal-final-badge {
+  font-family: 'Courier New', monospace;
+  font-size: .82rem;
+  font-weight: 900;
+  color: #4ade80;
+  margin-left: auto;
+  background: rgba(74,222,128,.1);
+  border: 1px solid rgba(74,222,128,.25);
+  border-radius: 6px;
+  padding: 2px 10px;
+}
+.ds-heal-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.ds-heal-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: rgba(74,222,128,.05);
+  border: 1px solid rgba(74,222,128,.1);
+  flex-wrap: wrap;
+}
+.ds-heal-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4ade80;
+  flex-shrink: 0;
+  box-shadow: 0 0 5px rgba(74,222,128,.5);
+}
+.ds-heal-source {
+  font-size: .75rem;
+  font-weight: 700;
+  color: #4ade80;
+  flex: 1;
+  min-width: 80px;
+}
+.ds-heal-mult {
+  font-family: 'Courier New', monospace;
+  font-size: .88rem;
+  font-weight: 900;
+  color: #4ade80;
+  text-shadow: 0 0 8px rgba(74,222,128,.3);
+  flex-shrink: 0;
+}
+.ds-heal-cond {
+  font-size: .6rem;
+  color: #4ade80;
+  opacity: .55;
+  font-style: italic;
+  flex-basis: 100%;
+  padding-left: 14px;
+}
 .da-perk-scaling-divider {
   display: flex;
   align-items: center;

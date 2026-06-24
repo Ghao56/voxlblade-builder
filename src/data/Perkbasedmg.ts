@@ -225,6 +225,18 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
         condition: 'Earth ×1.5 · Water ×1.1 · others ×1.0',
         tone: 'offense',
       },
+      {
+        label: 'Base Heal (Holy)',
+        getValue: ({ perkAmount }) => 5 + 0.5 * perkAmount,
+        tone: 'utility',
+        showIf: ({ draconicColor }) => draconicColor === 'holy',
+      },
+      {
+        label: 'Base Heal (Water)',
+        getValue: ({ perkAmount }) => Math.round((1.923 + 0.1923 * perkAmount) * 1000) / 1000,
+        tone: 'utility',
+        showIf: ({ draconicColor }) => draconicColor === 'water',
+      },
     ],
   },
   // ── Dragon Bubble (Draconic Rune Infusion ability) ───────────────────────────
@@ -248,6 +260,18 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
         format: v => `×${v}`,
         condition: 'Earth ×1.5 · Water ×1.1 · others ×1.0',
         tone: 'offense',
+      },
+      {
+        label: 'Base Heal (Holy)',
+        getValue: ({ perkAmount }) => 4 + 0.4 * perkAmount,
+        tone: 'utility',
+        showIf: ({ draconicColor }) => draconicColor === 'holy',
+      },
+      {
+        label: 'Base Heal (Water)',
+        getValue: ({ perkAmount }) => Math.round((1.538 + 0.1538 * perkAmount) * 1000) / 1000,
+        tone: 'utility',
+        showIf: ({ draconicColor }) => draconicColor === 'water',
       },
     ],
   },
