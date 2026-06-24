@@ -1172,7 +1172,7 @@
         base: 0.1,
         scalingMult: waterScaling,
         dmgTypes: { heal: 1.0 },
-        combatMult: boosts.healFinalMultiplier,
+        combatMult: _healFinalMultiplier,
         isFinisher: false,
         label: `Water Pulse (every ${pulseInterval}s)`,
         isHeal: true,
