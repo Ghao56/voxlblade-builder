@@ -40,7 +40,8 @@
     draconicRuneInfusion: $build.draconicRuneInfusion,
   }
   $: _healScalingResult = calculateHealBoost(_healScalingCtx)
-  $: _healFinalMultiplier = _healScalingResult.finalMultiplier
+  $: _activeHealEntries = _healScalingResult.entries.filter(e => !disabledHealBoosts.has(e.sourceName))
+  $: _healFinalMultiplier = _activeHealEntries.reduce((acc, e) => acc * e.rawMultiplier, 1.0)
 
   $: _defenseRows = _DEF_TYPE_LIST.map(type => {
       const baseArmorDefPct = calcBaseArmorDefPct(type, stats as Record<string, number>)
@@ -443,6 +444,14 @@
     if (disabledBoosts.has(name)) disabledBoosts.delete(name)
     else disabledBoosts.add(name)
     disabledBoosts = new Set(disabledBoosts)
+  }
+
+  let disabledHealBoosts = new Set<string>()
+
+  function toggleHealBoost(name: string) {
+    if (disabledHealBoosts.has(name)) disabledHealBoosts.delete(name)
+    else disabledHealBoosts.add(name)
+    disabledHealBoosts = new Set(disabledHealBoosts)
   }
   type BoostAttackType = 'm1' | 'm2' | 'perk' | 'rune' | 'wa';
   $: activeEntries = boosts.dmgEntries.filter(e => !disabledBoosts.has(e.sourceName))
@@ -1419,10 +1428,18 @@
     <div class="da-boost-row" style="margin-top:8px">
       <span class="da-heal-label">✦ Heal</span>
       {#each _healScalingResult.entries as entry}
-        <div class="da-boost-chip da-boost-chip--heal" title={entry.condition ?? ''}>
+        {@const isDisabled = disabledHealBoosts.has(entry.sourceName)}
+        <button
+          class="da-boost-chip da-boost-chip--heal"
+          class:da-boost-chip--off={isDisabled}
+          title={entry.condition ?? ''}
+          on:click={() => toggleHealBoost(entry.sourceName)}
+        >
           <span class="da-bc-name">{entry.sourceName}</span>
           <span class="da-bc-val" style="color:#4ade80">×{+entry.rawMultiplier.toFixed(3)}</span>
-        </div>
+          <span class="da-bc-cond">{entry.condition ?? ''}</span>
+          <span class="da-bc-toggle">{isDisabled ? 'OFF' : 'ON'}</span>
+        </button>
         <span class="da-chain-op">×</span>
       {/each}
       <span class="da-chain-result" style="color:#4ade80">= ×{+_healFinalMultiplier.toFixed(4)}</span>

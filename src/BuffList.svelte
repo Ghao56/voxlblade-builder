@@ -143,7 +143,7 @@ $: groupedBuffs = Object.values(
     cantrip: 'cantrip',
   }
   function fmtPotency(v: number): string {
-    return String(Math.round(v * 1000) / 1000);
+    return String(Math.round(v * 10000) / 10000);
   }
 </script>
 
