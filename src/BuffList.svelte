@@ -239,7 +239,7 @@ $: groupedBuffs = Object.values(
 
                 <div class="bl-desc-row">
                   <span class="bl-desc-text">
-                    {getBuffDescription(group.buffName, $result.perks, group.strongest.potency)}
+                    {getBuffDescription(group.buffName, $result.perks, effectivePotency)}
                   </span>
                 </div>
 
