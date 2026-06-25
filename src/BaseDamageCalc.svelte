@@ -421,8 +421,8 @@
                                 <span class="bdc-lum-badge" title="Luminescent Fervor: 5% × perk amount of this hit's damage">✦ Luminescent</span>
                               {/if}
                               {#if hit.group === 'Rune' && draconicRunesBonus[t.label.toLowerCase()]}
-                                <span class="bdc-dr-badge"title="Draconic Bonus: +{String(draconicRunesBonus[t.label.toLowerCase()]).replace(/(?:\.0+|(\.\d+?)0+)$/, '$1')} {t.label} damage type">
-                                  ✦ +{String(draconicRunesBonus[t.label.toLowerCase()]).replace(/(?:\.0+|(\.\d+?)0+)$/, '$1')}
+                                <span class="bdc-dr-badge" title="Draconic Bonus: +{+(draconicRunesBonus[t.label.toLowerCase()] || 0).toFixed(4)} {t.label} damage type">
+                                  ✦ +{+(draconicRunesBonus[t.label.toLowerCase()] || 0).toFixed(4)}
                                 </span>
                               {/if}
                             </div>

@@ -35,6 +35,7 @@
   import DidYouMean from './DidYouMean.svelte'
   import { checkWA, getUnmetReqs, passesAtLeastOneScaling } from './data/Weaponartcheck'
   import SuggestDrop from './SuggestDrop.svelte'
+  import { getEffectiveDraconicInfusionPotency } from './data/draconicBuffs'
   
 
   $: {
@@ -296,6 +297,7 @@ $: statRows = Object.entries($result.stats).filter(([k, v]) => {
     const p = $result.perks['Draconic Blood'] ?? 0
     return Math.round(p * 100) / 100
   })()
+  $: dragonInfusionPreviewPotency = getEffectiveDraconicInfusionPotency($build.guild, 'infusion', $build.draconicColor || 'physical', draconicPerkAmt, $result.perks)
 
   $: draconicBaseCDs = { claw: 5, infusion: 35, bubble: 7 }
   $: draconicColorEffectRows = (() => {
@@ -2570,7 +2572,7 @@ $: _appWaAvgTotal = (() => {
                 <div class="dab-stat-row">
                   <span class="dab-stat-k">Dmg Type</span>
                   <span class="dab-stat-v" style={dracoColor ? `color:${dracoColor.color}` : ''}>
-                    +{Math.round(draconicPerkAmt * 0.1 * 1000)/1000} {dracoColor ? dracoColor.stat : 'physical'}
+                    +{dragonInfusionPreviewPotency} {dracoColor ? dracoColor.stat : 'physical'}
                   </span>
                 </div>
 

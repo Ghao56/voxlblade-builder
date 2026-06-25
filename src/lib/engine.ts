@@ -41,6 +41,7 @@ import { BOOST_DEFS, type BoostContext } from '../data/Boost'
 import type { BoostEntry, BoostResult } from './types'
 
 const round2 = (v: number) => Math.round((v + Number.EPSILON) * 100) / 100
+const round4 = (v: number) => Math.round((v + Number.EPSILON) * 10000) / 10000
 
 const RACE_MAP    = Object.fromEntries(races.map(r => [r.name, r]))
 const GUILD_MAP   = Object.fromEntries(guilds.map(g => [g.name, g]))
@@ -707,7 +708,7 @@ function buildWeaponResult(opts: {
   const damageTypes: Record<string, number> = { ...p1Data.damageTypes }
   for (const k in p2Data.damageTypes) {
     if (Object.prototype.hasOwnProperty.call(p2Data.damageTypes, k)) {
-      damageTypes[k] = round2((damageTypes[k] ?? 0) + p2Data.damageTypes[k])
+      damageTypes[k] = round4((damageTypes[k] ?? 0) + p2Data.damageTypes[k])
     }
   }
 

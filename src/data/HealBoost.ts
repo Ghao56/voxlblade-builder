@@ -1,4 +1,5 @@
 import { roundMultiplier } from '../lib/utils'
+import { getEffectiveDraconicInfusionPotency } from './draconicBuffs'
 
 export const HOLY_INFUSION_POTENCY_MULTIPLIER = 0.115
 
@@ -87,12 +88,13 @@ export const HEAL_SCALING_DEFS: HealBoostDef[] = [
       const perkAmt = ctx.perks['Draconic Blood'] ?? 0
       if (perkAmt <= 0) return null
       
-      const statusPotency = perkAmt * HOLY_INFUSION_POTENCY_MULTIPLIER
+      const statusPotency = getEffectiveDraconicInfusionPotency('Draconic', ctx.draconicRuneInfusion, ctx.draconicColor, perkAmt, ctx.perks)
+      if (statusPotency <= 0) return null
       const multiplier = 1 + statusPotency
       
       return {
         multiplier: roundMultiplier(multiplier),
-        condition: `Holy Infusion · ${Math.round(statusPotency * 10000) / 100}% status potency`
+        condition: `Holy Infusion · ${Math.round(statusPotency * 10000) / 100}% status potency (incl. buff-potency modifiers)`
       }
     },
   },

@@ -1,4 +1,4 @@
-import type { GrantedBuff } from './BuffData'
+import { applyBuffPerkModifiers, type GrantedBuff } from './BuffData'
 
 const DRACONIC_INFUSION_COLOR_EFFECTS: Record<string, (perkAmt: number) => string> = {
   air:   perkAmt => `+${perkAmt * 10}% Attack Speed · +${perkAmt * 20}% Knockback `,
@@ -7,6 +7,18 @@ const DRACONIC_INFUSION_COLOR_EFFECTS: Record<string, (perkAmt: number) => strin
   holy:  perkAmt => `+${perkAmt * 10}% healing  · +${perkAmt * 5}% applied buff potency`,
   water: perkAmt => `Immune to debuffs · Pulse every ${Math.max(1, 8 - perkAmt)}s (heal 0.1 · 1.0 Water scaling · cleanses)`,
   earth: perkAmt => `+${perkAmt * 15}% Poise damage · +${Math.round(perkAmt * 0.15 * 1000) / 1000} Stun Resistance `,
+}
+export function getEffectiveDraconicInfusionPotency(
+    guildName: string,
+    draconicRuneInfusion: string,
+    draconicColor: string,
+    draconicBloodPerkAmt: number,
+    perks: Record<string, number>,
+): number {
+    const rawBuffs = getDraconicInfusionBuff(guildName, draconicRuneInfusion, draconicColor, draconicBloodPerkAmt)
+    if (rawBuffs.length === 0) return 0
+    const [modified] = applyBuffPerkModifiers(rawBuffs, perks)
+    return modified.potency
 }
 
 export function getDraconicInfusionBuff(
