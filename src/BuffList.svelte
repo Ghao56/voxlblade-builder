@@ -15,7 +15,7 @@
 
 
   $: wardingPct = ($result.stats.warding ?? 0) / 100
-  $: wardingDebuffMult = wardingPct > 0 ? 1 / (1 + wardingPct) : 1
+  $: wardingDebuffMult = Math.max(0, 1 - wardingPct)
   $: itemBuffs = getActiveBuildBuffs({
     rune: $build.rune,
     ring: $build.ring,
@@ -229,7 +229,7 @@ $: groupedBuffs = Object.values(
         {#each list as group (`${group.buffName}:${group.isSelfDebuff}`)}
           {@const def = BUFF_DEFS[group.buffName]}
           {@const isSelf = group.isSelfDebuff}
-          {@const effectivePotency = isSelf && wardingDebuffMult < 1
+          {@const effectivePotency = isSelf && wardingDebuffMult !== 1
             ? Math.round(group.strongest.potency * wardingDebuffMult * 1000) / 1000
             : group.strongest.potency}
           {@const effect = calcBuffEffect(group.strongest.buffName, effectivePotency)}
@@ -300,7 +300,7 @@ $: groupedBuffs = Object.values(
                           <span class="bl-perk-badge">perk +{fmtPotency(source.bonusPotency)}</span>
                         {/if}
 
-                        {#if isSelf && wardingDebuffMult < 1}
+                        {#if isSelf && wardingDebuffMult !== 1}
                           {@const effP = Math.round(source.potency * wardingDebuffMult * 1000) / 1000}
                           <span class="bl-warding-badge">warding ×{fmtPotency(wardingDebuffMult)}</span>
                           

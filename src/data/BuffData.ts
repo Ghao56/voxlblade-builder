@@ -192,7 +192,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
   Weakness: {
     name: 'Weakness',
     color: '#8b11e9',
-    description: 'Reduce damage output.',
+    description: 'Deal x% less damage.',
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
     isDebuff: true,
@@ -240,7 +240,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
   Shatter: {
     name: 'Shatter',
     color: '#ff8183',
-    description: 'Shatter armor.',
+    description: 'Lose x Armor.',
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
     isDebuff: true,
@@ -265,6 +265,14 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     name: 'Taunt',
     color: '#e50604',
     description: 'Enemies with this debuff will only target whoever applied it.',
+    effectPerTenthPotency: 0.1,
+    effectUnit: 'flat',
+    isDebuff: true,
+  },
+  'Anti Heal': {
+    name: 'Anti Heal',
+    color: '#34ff00',
+    description: 'Reduce healing by x%.',
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
     isDebuff: true,
@@ -625,6 +633,35 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       sourceType: 'cantrip',
     },
   ],
+  'Roaring Heads': (amount) => [
+    {
+      buffName: 'Weakness',
+      potency: 0.4,
+      duration: 5,
+      condition: '65% chance on hit',
+      sourceName: 'Roaring Heads',
+      sourceType: 'perk',
+      isSelfDebuff: true,
+    },
+    {
+      buffName: 'Shatter',
+      potency: 0.5,
+      duration: 5,
+      condition: '65% chance on hit',
+      sourceName: 'Roaring Heads',
+      sourceType: 'perk',
+      isSelfDebuff: true,
+    },
+    {
+      buffName: 'Anti Heal',
+      potency: 0.5,
+      duration: 5,
+      condition: '65% chance on hit',
+      sourceName: 'Roaring Heads',
+      sourceType: 'perk',
+      isSelfDebuff: true,
+    },
+  ],
 }
 
 export const WEAPON_ART_BUFF_MAP: Record<string, GrantedBuff[]> = {
@@ -899,6 +936,18 @@ export function getBuffDescription(
   let desc = buff.dynamicDescription
     ? buff.dynamicDescription(perks, potency)
     : buff.description
+
+  if (buffName === 'Weakness') {
+    // Formula: 1 - (1 / (1 + Potency))
+    const dmgReduction = roundMultiplier(1 - (1 / (1 + potency)))
+    return `Deal ${(dmgReduction * 100).toFixed(2)}% less damage.`
+  }
+
+  if (buffName === 'Shatter') {
+    // Lowers armor by 10 per 0.1 potency
+    const armorLoss = roundMultiplier(potency * 100)
+    return `Lose ${armorLoss} Armor.`
+  }
 
   return desc.replace(/x%/g, `${+(potency * 100).toFixed(4)}%`)
 }
