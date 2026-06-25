@@ -33,11 +33,39 @@
 
   $: weaponArtBuffs = getWeaponArtBuffs($build.selectedWeaponArt)
 
-  $: baseActiveBuffs = applyBuffPerkModifiers(
-    [...itemBuffs, ...perkBuffs, ...weaponArtBuffs],
-    $result.perks,
-    $build.rune || undefined
-  )
+  $: baseActiveBuffs = (() => {
+    const buffs = applyBuffPerkModifiers(
+      [...itemBuffs, ...perkBuffs, ...weaponArtBuffs],
+      $result.perks,
+      $build.rune || undefined
+    )
+    const _infActive = $build.draconicRuneInfusion === 'infusion'
+    const color = $build.draconicColor
+    if (!_infActive || (color !== 'hex' && color !== 'holy')) {
+      return buffs
+    }
+    const _infPerkAmt = $result.perks['Draconic Blood'] ?? 0
+    const potMult = 1 + _infPerkAmt * 0.05
+
+    return buffs.map(buff => {
+      const def = BUFF_DEFS[buff.buffName]
+      if (!def) return buff
+      const isSelfDebuff = buff.isSelfDebuff || def.isSelfDebuff
+      const isDespair = buff.buffName === 'Despair'
+      
+      if (color === 'hex' && def.isDebuff && !isSelfDebuff) {
+        return { ...buff, potency: Math.round(buff.potency * potMult * 10000) / 10000 }
+      }
+      if (color === 'hex' && def.isDebuff && isSelfDebuff && isDespair) {
+        return { ...buff, potency: Math.round(buff.potency * potMult * 10000) / 10000 }
+      }
+      if (color === 'holy' && !def.isDebuff && !def.isNeutral && buff.buffName !== 'Draconic Infusion') {
+        return { ...buff, potency: Math.round(buff.potency * potMult * 10000) / 10000 }
+      }
+      
+      return buff
+    })
+  })()
 
   $: activeDebuffs = baseActiveBuffs.filter(b => BUFF_DEFS[b.buffName]?.isDebuff)
 
@@ -73,7 +101,19 @@
       const def = BUFF_DEFS[buff.buffName]
       if (!def) return buff
 
-      if (color === 'hex' && def.isDebuff) {
+      const isSelfDebuff = buff.isSelfDebuff || def.isSelfDebuff
+      const isDespair = buff.buffName === 'Despair'
+
+      if (color === 'hex' && def.isDebuff && !isSelfDebuff) {
+        const potMult = 1 + _infPerkAmt * 0.05
+        const durMult = 1 + _infPerkAmt * 0.15
+        return {
+          ...buff,
+          potency:  Math.round(buff.potency  * potMult * 10000) / 10000,
+          duration: Math.round(buff.duration * durMult),
+        }
+      }
+      if (color === 'hex' && def.isDebuff && isSelfDebuff && isDespair) {
         const potMult = 1 + _infPerkAmt * 0.05
         const durMult = 1 + _infPerkAmt * 0.15
         return {

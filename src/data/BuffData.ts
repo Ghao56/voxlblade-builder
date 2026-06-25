@@ -794,6 +794,14 @@ export function applyBuffPerkModifiers(
         if (mod.runeFilter && mod.runeFilter !== buff.sourceName) continue
         const stacks = perks[mod.label] ?? 0
         if (stacks <= 0) continue
+        
+        const def = BUFF_DEFS[buff.buffName]
+        const isSelfDebuff = buff.isSelfDebuff || def?.isSelfDebuff
+        const isContained = mod.label === 'Contained'
+        const isDespair = buff.buffName === 'Despair'
+        
+        if (isSelfDebuff && !isContained && !isDespair) continue
+        
         bonus += mod.potencyPerStack * stacks
         if (mod.durationMultiplierFormula) {
           durationMult *= mod.durationMultiplierFormula(stacks)
