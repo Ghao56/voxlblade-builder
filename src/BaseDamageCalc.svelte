@@ -8,10 +8,12 @@
   export let showCritValues: boolean = false
   export let showCritToggle: boolean = false
   export let draconicRunesBonus: Record<string, number> = {}
+  export let selfDebuffDamageMult: number = 1
 
   boosts
   disabledBoosts
   activeFinalMult
+  selfDebuffDamageMult
 
   export let weaponHits: Array<{
     group: string; index: number; count: number
@@ -192,7 +194,7 @@
       const weaponBoostMult = hit.weaponBoostMult ?? 1
       const defMult      = isHeal ? 1 : calcArmorMult(enemyDefPct, penDecimal).mult
       const typeBase     = Math.round(hit.base * mult * 10000) / 10000
-      const raw          = Math.round(typeBase * hit.scalingMult * rageMultUsed * hit.combatMult * weaponBoostMult * defMult * (isHeal ? 1 : _activeDebuffDamageMult) * 10000) / 10000
+      const raw          = Math.round(typeBase * hit.scalingMult * rageMultUsed * hit.combatMult * weaponBoostMult * defMult * (isHeal ? 1 : _activeDebuffDamageMult) * selfDebuffDamageMult * 10000) / 10000
       const critVal      = Math.round(raw * critDmgMult / 100 * 10000) / 10000
       return {
         key: k, label: info.label, color: info.color,
@@ -437,7 +439,12 @@
                               {/if}
                               {#if t.combatMult !== 1}
                                 <span class="bdc-mini-op">×</span>
-                                <span class="bdc-mini-chip bdc-mini-chip--combat" title="Combat multipliers">{fmtMult(t.combatMult)}</span>
+                                <span class="bdc-mini-chip bdc-mini-chip--combat" title="Combat multipliers">{Number(t.combatMult.toFixed(4))}</span>
+                              {/if}
+
+                              {#if selfDebuffDamageMult !== 1}
+                                <span class="bdc-mini-op">×</span>
+                                <span class="bdc-mini-chip bdc-mini-chip--selfdebuff" title="Self-Debuff multiplier (Weakness)">{Number(selfDebuffDamageMult.toFixed(4))}</span>
                               {/if}
                               {#if t.weaponBoostMult !== 1}
                                 <span class="bdc-mini-op">×</span>
@@ -1052,5 +1059,10 @@
   opacity: .75;
   text-align: center;
   letter-spacing: .03em;
+}
+.bdc-mini-chip--selfdebuff {
+  color: #a855f7;
+  border-color: rgba(168, 85, 247, 0.3);
+  background: rgba(168, 85, 247, 0.08);
 }
 </style>

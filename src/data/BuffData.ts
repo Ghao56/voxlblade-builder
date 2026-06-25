@@ -928,7 +928,7 @@ export function applyBuffPerkModifiers(
 export function getBuffDescription(
   buffName: string,
   perks: Record<string, number>,
-  potency: number = 0 // Thêm tham số potency
+  potency: number = 0
 ): string {
   const buff = BUFF_DEFS[buffName]
   if (!buff) return ''
@@ -938,18 +938,20 @@ export function getBuffDescription(
     : buff.description
 
   if (buffName === 'Weakness') {
-    // Formula: 1 - (1 / (1 + Potency))
     const dmgReduction = roundMultiplier(1 - (1 / (1 + potency)))
-    return `Deal ${(dmgReduction * 100).toFixed(2)}% less damage.`
+    return `Deal ${(dmgReduction * 100).toFixed(4).replace(/\.?0+$/, '')}% less damage.`
   }
 
   if (buffName === 'Shatter') {
-    // Lowers armor by 10 per 0.1 potency
     const armorLoss = roundMultiplier(potency * 100)
     return `Lose ${armorLoss} Armor.`
   }
+  if (buffName === 'Anti Heal') {
+    const dmgReduction = roundMultiplier(1 - (1 / (1 + potency)))
+    return `Reduce healing by ${(dmgReduction * 100).toFixed(4).replace(/\.?0+$/, '')}%.`
+  }
 
-  return desc.replace(/x%/g, `${+(potency * 100).toFixed(4)}%`)
+  return desc.replace(/x%/g, `${+(potency * 100).toFixed(4).replace(/\.?0+$/, '')}%`)
 }
 
 export function getPerkBuffs(perks: Record<string, number>): GrantedBuff[] {

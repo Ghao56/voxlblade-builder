@@ -63,10 +63,51 @@
     draconicColor: $build.draconicColor,
     guild: $build.guild,
     draconicRuneInfusion: $build.draconicRuneInfusion,
+    activeBuffs: _allActiveBuffs,
   }
   $: _healScalingResult = calculateHealBoost(_healScalingCtx)
   $: _activeHealEntries = _healScalingResult.entries.filter(e => !disabledHealBoosts.has(e.sourceName))
-  $: _healFinalMultiplier = _activeHealEntries.reduce((acc, e) => acc * e.rawMultiplier, 1.0)
+  $: wardingPct = (stats.warding ?? 0) / 100
+  $: wardingDebuffMult = Math.max(0, 1 - wardingPct)
+  $: _healFinalMultiplier = (() => {
+    const baseMult = _activeHealEntries.reduce((acc, e) => acc * e.rawMultiplier, 1.0)
+    // Apply Anti Heal reduction from self-debuffs
+    if (!disableAntiHeal && _healScalingCtx.activeBuffs) {
+      const antiHealBuffs = _healScalingCtx.activeBuffs.filter(b => b.buffName === 'Anti Heal' && b.isSelfDebuff && b.potency > 0)
+      if (antiHealBuffs.length > 0) {
+        const maxPotency = Math.max(...antiHealBuffs.map(b => b.potency))
+        const effectivePotency = wardingDebuffMult !== 1
+          ? Math.round(maxPotency * wardingDebuffMult * 1000) / 1000
+          : maxPotency
+        return roundMultiplier(baseMult / (1 + effectivePotency))
+      }
+    }
+    return baseMult
+  })()
+
+  $: _selfDebuffDefenseEffects = (() => {
+    const effects: Partial<Record<string, number>> = {}
+    for (const b of _allActiveBuffs) {
+      if (!b.isSelfDebuff) continue
+      const def = BUFF_DEFS[b.buffName]
+      if (!def?.isDebuff) continue
+      
+      const combatFx = DEBUFF_COMBAT_EFFECTS[b.buffName]
+      if (!combatFx?.defReduction) continue
+      
+      const effectivePotency = wardingDebuffMult !== 1
+        ? Math.round(b.potency * wardingDebuffMult * 1000) / 1000
+        : b.potency
+      
+      const reduction = combatFx.defReduction(effectivePotency)
+      for (const [defType, amount] of Object.entries(reduction)) {
+        if (amount !== undefined) {
+          effects[defType] = (effects[defType] ?? 0) + amount
+        }
+      }
+    }
+    return effects
+  })()
 
   $: _defenseRows = _DEF_TYPE_LIST.map(type => {
       const baseArmorDefPct = calcBaseArmorDefPct(type, stats as Record<string, number>)
@@ -92,6 +133,11 @@
           defPct,
           condition: isMagicType ? `Take ${flatDmg} less magic damage` : undefined
         })
+      }
+      // Apply self-debuff defense reduction (e.g., Shatter) - skip True damage
+      if (type !== 'true' && _selfDebuffDefenseEffects[type]) {
+        const defPct = -_selfDebuffDefenseEffects[type]
+        sources.push({ name: 'Shatter (Self)', defPct, condition: 'Self-debuff' })
       }
       return { type, color: DMG_TYPE_COLORS[type] ?? '#e8e4da', ...resolveDefenseSources(sources) }
     }).filter(r => r.percentSources.length > 0 || r.flatSources.length > 0)
@@ -508,6 +554,8 @@
   }
 
   let disabledHealBoosts = new Set<string>()
+  let disableAntiHeal = false
+  let disableWeakness = false
 
   function toggleHealBoost(name: string) {
     if (disabledHealBoosts.has(name)) disabledHealBoosts.delete(name)
@@ -517,7 +565,28 @@
   type BoostAttackType = 'm1' | 'm2' | 'perk' | 'rune' | 'wa';
   $: activeEntries = boosts.dmgEntries.filter(e => !disabledBoosts.has(e.sourceName))
   $: hasDisabledVisible = boosts.dmgEntries.some(e => disabledBoosts.has(e.sourceName))
-  $: activeFinalMult = activeEntries.reduce((acc, e) => acc * e.rawMultiplier, 1.0)
+  
+  $: _selfDebuffDamageMult = (() => {
+    if (disableWeakness) return 1
+    let mult = 1
+    for (const b of _allActiveBuffs) {
+      if (!b.isSelfDebuff) continue
+      const def = BUFF_DEFS[b.buffName]
+      if (!def?.isDebuff) continue
+
+      const combatFx = DEBUFF_COMBAT_EFFECTS[b.buffName]
+      if (!combatFx?.damageMult) continue
+
+      const effectivePotency = wardingDebuffMult !== 1
+        ? Math.round(b.potency * wardingDebuffMult * 1000) / 1000
+        : b.potency
+
+      mult *= combatFx.damageMult(effectivePotency)
+    }
+    return mult
+  })()
+  
+  $: activeFinalMult = activeEntries.reduce((acc, e) => acc * e.rawMultiplier, 1.0) * _selfDebuffDamageMult
   $: activeFinalMultRounded = roundMultiplier(activeFinalMult)
 
   function _categoryMult(type: BoostAttackType): number {
@@ -1410,6 +1479,26 @@
           {/if}
         </span>
       </div>
+      {#if _allActiveBuffs.some(b => b.buffName === 'Weakness' && b.isSelfDebuff)}
+        {@const weaknessPotency = Math.max(..._allActiveBuffs.filter(b => b.buffName === 'Weakness' && b.isSelfDebuff).map(b => b.potency))}
+        {@const weaknessEffectivePotency = wardingDebuffMult !== 1
+          ? Math.round(weaknessPotency * wardingDebuffMult * 1000) / 1000
+          : weaknessPotency}
+        {@const weaknessMultiplier = 1 / (1 + weaknessEffectivePotency)}
+        <div class="da-boost-row" style="margin-top:4px">
+          <button
+            class="da-debuff-pill"
+            class:da-debuff-pill--off={disableWeakness}
+            style="--dc: #8b11e9"
+            title="Weakness (Self) · {weaknessEffectivePotency.toFixed(2)}"
+            on:click={() => disableWeakness = !disableWeakness}
+          >
+            <span class="da-dp-abbr">Weak</span>
+            <span class="da-dp-val">{disableWeakness ? '—' : weaknessMultiplier.toFixed(4).replace(/\.?0+$/, '')}</span>
+            <span class="da-dp-toggle">{disableWeakness ? 'OFF' : 'ON'}</span>
+          </button>
+        </div>
+      {/if}
 
     {:else}
       <div class="da-boost-split">
@@ -1521,6 +1610,25 @@
       {/each}
       <span class="da-chain-result" style="color:#4ade80">= ×{+_healFinalMultiplier.toFixed(4)}</span>
     </div>
+    {#if _healScalingCtx.activeBuffs?.some(b => b.buffName === 'Anti Heal' && b.isSelfDebuff)}
+      {@const antiHealPotency = Math.max(..._healScalingCtx.activeBuffs.filter(b => b.buffName === 'Anti Heal' && b.isSelfDebuff).map(b => b.potency))}
+      {@const antiHealEffectivePotency = wardingDebuffMult !== 1
+        ? Math.round(antiHealPotency * wardingDebuffMult * 1000) / 1000
+        : antiHealPotency}
+      {@const antiHealMultiplier = 1 / (1 + antiHealEffectivePotency)}
+      <div class="da-boost-row" style="margin-top:4px">
+        <button
+          class="da-boost-chip da-boost-chip--heal"
+          class:da-boost-chip--off={disableAntiHeal}
+          on:click={() => disableAntiHeal = !disableAntiHeal}
+        >
+          <span class="da-bc-name">Anti Heal (Self)</span>
+          <span class="da-bc-val" style="color:#34ff00">x{antiHealMultiplier.toFixed(4).replace(/\.?0+$/, '')}</span>
+          <span class="da-bc-cond">Reduce healing</span>
+          <span class="da-bc-toggle">{disableAntiHeal ? 'OFF' : 'ON'}</span>
+        </button>
+      </div>
+    {/if}
   {/if}
 </div>
 
@@ -2670,6 +2778,7 @@
   rageMult={_effectiveRageMult}
   rageAffectedTypes={_effectiveRageAffectedTypes}
   luminescentPct={_luminescentPct}
+  selfDebuffDamageMult={_selfDebuffDamageMult}
   draconicRunesBonus={getDraconicBonuses({
     draconicRunesStacks: perks['Draconic Runes'] ?? 0,
     draconicColor: $build.draconicColor || 'physical',
@@ -2831,6 +2940,51 @@
   color: #4ade80;
 }
 .da-boost-chip--off .da-bc-toggle {
+  background: rgba(248,113,113,.12);
+  color: #f87171;
+}
+
+.da-debuff-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: color-mix(in srgb, var(--dc, #8b11e9) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--dc, #8b11e9) 25%, transparent);
+  border-radius: 6px;
+  font-size: .72rem;
+  font-weight: 700;
+}
+.da-dp-abbr {
+  color: var(--dc, #8b11e9);
+  font-size: .65rem;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+.da-dp-val {
+  color: var(--dc, #8b11e9);
+  font-family: 'Courier New', monospace;
+  font-size: .8rem;
+}
+.da-debuff-pill--off {
+  opacity: 0.4;
+  filter: grayscale(0.7);
+  border-style: dashed;
+}
+.da-debuff-pill--off .da-dp-val {
+  color: var(--ink-muted, #8a8d85);
+}
+.da-dp-toggle {
+  font-size: .48rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  padding: 1px 4px;
+  border-radius: 3px;
+  margin-left: 4px;
+  background: rgba(139,17,233,.15);
+  color: #8b11e9;
+}
+.da-debuff-pill--off .da-dp-toggle {
   background: rgba(248,113,113,.12);
   color: #f87171;
 }
