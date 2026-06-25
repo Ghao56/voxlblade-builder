@@ -2954,6 +2954,7 @@
   border-radius: 6px;
   font-size: .72rem;
   font-weight: 700;
+  cursor: pointer;
 }
 .da-dp-abbr {
   color: var(--dc, #8b11e9);
