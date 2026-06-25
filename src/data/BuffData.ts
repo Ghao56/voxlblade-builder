@@ -156,7 +156,6 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     },
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
-    potencyCapped: true,
   },
   'Bloodlust': {
     name: 'Bloodlust',

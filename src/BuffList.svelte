@@ -46,9 +46,16 @@
     activeDebuffs
   )
   
-  $: draconicInfusionBuff = getDraconicInfusionBuff(
+  $: rawDraconicInfusionBuff = getDraconicInfusionBuff(
     $build.guild, $build.draconicRuneInfusion, $build.draconicColor, $result.perks['Draconic Blood'] ?? 0
   )
+  
+  $: draconicInfusionBuff = (() => {
+    if (rawDraconicInfusionBuff.length === 0) return []
+    
+    // Apply Bastion Bless and other modifiers
+    return applyBuffPerkModifiers(rawDraconicInfusionBuff, $result.perks, $build.rune || undefined)
+  })()
 
   $: draconicHexDebuffs = applyBuffPerkModifiers(
     getDraconicHexDebuffs(
@@ -98,11 +105,13 @@
           duration: Math.round(buff.duration * durMult),
         }
       }
-      if (color === 'holy' && !def.isDebuff && !def.isNeutral && !def.potencyCapped) {
+      if (color === 'holy' && !def.isDebuff && !def.isNeutral && !def.potencyCapped && buff.buffName !== 'Draconic Infusion') {
         const potMult = 1 + _infPerkAmt * 0.05
         return {
           ...buff,
           potency: Math.round(buff.potency * potMult * 10000) / 10000,
+          basePotency: buff.basePotency ?? buff.potency,
+          bonusPotency: Math.round(buff.potency * potMult * 10000) / 10000 - (buff.basePotency ?? buff.potency),
         }
       }
       return buff
