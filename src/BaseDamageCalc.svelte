@@ -149,8 +149,7 @@
   }
 
   function fmtMult(n: number) {
-    const r = Math.round(n * 10000) / 10000
-    return Number.isInteger(r) ? String(r) : r.toFixed(4).replace(/\.?0+$/, '')
+    return Number.isInteger(n) ? String(n) : n.toFixed(4).replace(/\.?0+$/, '')
   }
 
   interface ComputedType {
@@ -191,7 +190,7 @@
         }
       }
       const weaponBoostMult = hit.weaponBoostMult ?? 1
-      const defMult      = isHeal ? 1 : Math.round(calcArmorMult(enemyDefPct, penDecimal).mult * 10000) / 10000
+      const defMult      = isHeal ? 1 : calcArmorMult(enemyDefPct, penDecimal).mult
       const typeBase     = Math.round(hit.base * mult * 10000) / 10000
       const raw          = Math.round(typeBase * hit.scalingMult * rageMultUsed * hit.combatMult * weaponBoostMult * defMult * (isHeal ? 1 : _activeDebuffDamageMult) * 10000) / 10000
       const critVal      = Math.round(raw * critDmgMult / 100 * 10000) / 10000
@@ -207,7 +206,7 @@
       const baseSum = types.reduce((s, t) => s + t.raw, 0)
       if (baseSum > 0) {
         const holyDefPct  = (defenses['holy'] ?? 0) + (defenses['magic'] ?? 0)
-        const holyDefMult = Math.round(calcArmorMult(holyDefPct, penDecimal).mult * 10000) / 10000
+        const holyDefMult = calcArmorMult(holyDefPct, penDecimal).mult
         const lumTypeBase = Math.round(baseSum * luminescentPct * 10000) / 10000
         const lumRaw      = Math.round(lumTypeBase * holyDefMult * 10000) / 10000
         const lumCrit     = Math.round(lumRaw * critDmgMult / 100 * 10000) / 10000

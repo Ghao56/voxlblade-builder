@@ -15,9 +15,9 @@ export const DEBUFF_COMBAT_EFFECTS: Record<string, DebuffCombatEffect> = {
   },
 
   Shatter: {
-    descFn: (p: number) => `Lose ${Math.round(p * 100)} Armor`,
+    descFn: (p: number) => `Lose ${(p * 100).toFixed(2)} Armor`,
     defReduction: (p: number) => {
-      const amt = Math.round(p * 100)
+      const amt = p * 100
       return ROOT_DEF_TYPES.reduce((acc, t) => ({ ...acc, [t]: amt }), {} as Partial<Record<string, number>>)
     },
   },
