@@ -29,7 +29,7 @@
   const _DEF_TYPE_LIST = ['physical','magic','fire','water','earth','air','hex','holy','true'] as const
   
   $: _activeDefensivePerkSources = (() => {
-    const baseSources = getActiveDefensivePerkSources(perks, _hpFillPct, _adaptivePlateTriggered, $build.inDarkness)
+    const baseSources = getActiveDefensivePerkSources(perks, _hpFillPct, _adaptivePlateTriggered, $build.inDarkness, _ragePotency > 0)
     let potMult = 1
     
     const bastionStacks = perks['Bastion Bless'] ?? 0
@@ -64,6 +64,7 @@
     draconicColor: $build.draconicColor,
     guild: $build.guild,
     draconicRuneInfusion: $build.draconicRuneInfusion,
+    ragePotency: _ragePotency,
     activeBuffs: _allActiveBuffs,
   }
   $: _healScalingResult = calculateHealBoost(_healScalingCtx)

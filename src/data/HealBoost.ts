@@ -14,6 +14,7 @@ export interface HealBoostContext {
   sliderVal?: number
   guild?: string
   draconicRuneInfusion?: string
+  ragePotency?: number
   activeBuffs?: Array<{ buffName: string; potency: number; isSelfDebuff?: boolean }>
 }
 
@@ -74,6 +75,17 @@ export const HEAL_SCALING_DEFS: HealBoostDef[] = [
       const stacks = ctx.perks['Vampire'] ?? 0
       if (stacks > 0 && !ctx.inDarkness) {
         return { multiplier: 0.5, condition: 'Healing received halved in sunlight' }
+      }
+      return null
+    },
+  },
+  {
+    sourceName: 'Frenzy (Self)',
+    sourceType: 'perk',
+    calcFn: (ctx) => {
+      const stacks = ctx.perks['Frenzy'] ?? 0
+      if (stacks > 0 && (ctx.ragePotency ?? 0) > 0) {
+        return { multiplier: 0.5, condition: 'Healing received halved while Rage is active · regardless of perk amount' }
       }
       return null
     },

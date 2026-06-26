@@ -2,11 +2,13 @@ export interface DefensivePerkSourceContext {
   hpFillPct: number
   adaptivePlateTriggered: boolean
   inDarkness: boolean
+  rageActive: boolean
 }
 
 export interface DefensivePerkSource {
   perkName: string
   drPctPerStack: number
+  fixedDefPct?: number
   maxDrPct?: number
   isFlat?: boolean
   label: string
@@ -15,7 +17,7 @@ export interface DefensivePerkSource {
   minPerkForAlways?: number
   matchedOnly?: boolean
   dependsOn?: (ctx: DefensivePerkSourceContext) => boolean
-  potencyCapped?: boolean // <-- Bổ sung thuộc tính này vào cấu hình gốc
+  potencyCapped?: boolean
 }
 
 export const DEFENSIVE_PERK_SOURCES: DefensivePerkSource[] = [
@@ -76,6 +78,15 @@ export const DEFENSIVE_PERK_SOURCES: DefensivePerkSource[] = [
     conditionLabel: 'In darkness · removed in sunlight',
     dependsOn: ctx => ctx.inDarkness,
   },
+  {
+    perkName: 'Frenzy',
+    drPctPerStack: 0,
+    fixedDefPct: -30,
+    label: 'Frenzy (Self)',
+    conditionLabel: 'While Rage is active · flat, regardless of perk amount',
+    dependsOn: ctx => ctx.rageActive,
+    potencyCapped: true,
+  },
 ]
 
 export function getActiveDefensivePerkSources(
@@ -83,9 +94,10 @@ export function getActiveDefensivePerkSources(
   hpFillPct: number = 100,
   adaptivePlateTriggered: boolean = false,
   inDarkness: boolean = true,
-): Array<{ name: string; defPct: number; isFlat?: boolean; condition: string; potencyCapped?: boolean }> { // <-- Cập nhật kiểu trả về của mảng ở đây
-  const out: Array<{ name: string; defPct: number; isFlat?: boolean; condition: string; potencyCapped?: boolean }> = [] // <-- Cập nhật kiểu khởi tạo ở đây
-  const ctx: DefensivePerkSourceContext = { hpFillPct, adaptivePlateTriggered, inDarkness }
+  rageActive: boolean = false,
+): Array<{ name: string; defPct: number; isFlat?: boolean; condition: string; potencyCapped?: boolean }> {
+  const out: Array<{ name: string; defPct: number; isFlat?: boolean; condition: string; potencyCapped?: boolean }> = []
+  const ctx: DefensivePerkSourceContext = { hpFillPct, adaptivePlateTriggered, inDarkness, rageActive }
 
   for (const def of DEFENSIVE_PERK_SOURCES) {
     const amt = perks[def.perkName] ?? 0
@@ -100,11 +112,10 @@ export function getActiveDefensivePerkSources(
     }
     if (def.dependsOn && !def.dependsOn(ctx)) continue
 
-    let defPct = def.drPctPerStack * amt
+    let defPct = def.fixedDefPct != null ? def.fixedDefPct : def.drPctPerStack * amt
     if (def.maxDrPct != null) defPct = Math.min(defPct, def.maxDrPct)
     defPct = Math.round(defPct * 100) / 100
 
-    // Đẩy thuộc tính potencyCapped từ cấu hình ra bên ngoài kết quả phân tích
     out.push({ 
       name: def.label, 
       defPct, 
