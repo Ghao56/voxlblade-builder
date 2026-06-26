@@ -819,6 +819,23 @@ export function calcMonkWeapon(gloveName: string, essenceName: string, shrineAct
     const gp = (glove as any).perks as Array<{ name: string; amount: number }> | undefined
     if (gp && gp.length > 0) result.perks[gp[0].name] = (result.perks[gp[0].name] ?? 0) + monkPerkBonus
   }
+  const _essence = getEssence(essenceName)
+  if (monkPerkBonus > 0 && _essence) {
+    const monkPct      = monkPerkBonus * MONK_RANK_MULTIPLIER
+    const baseEssStats = _essence.stats as StatMap
+    const shrineMult   = shrineActive ? (SHRINE_MULTIPLIERS[_essence.tier] ?? 1.0) : 1.0
+    for (let i = 0; i < STAT_KEYS.length; i++) {
+      const k     = STAT_KEYS[i]
+      const baseV = baseEssStats[k]
+      if (baseV == null || baseV <= 0) continue
+      const wrongVal   = round2(baseV * shrineMult)
+      const correctVal = round2(baseV * shrineMult + baseV * monkPct)
+      const diff       = round2(correctVal - wrongVal)
+      if (diff !== 0) result.stats[k] = round2((result.stats[k] ?? 0) + diff)
+      result.part2FinalStats[k] = correctVal
+      result.part2RawStats[k]   = baseV
+    }
+  }
   return result
 }
 
@@ -942,7 +959,21 @@ function accumulateMonkWeapon(
 
   const essence = getEssence(state.monkEssence)
   if (essence) {
-    addStats(state.shrineActive ? applyShrineToStats(essence.stats as StatMap, essence.tier) : essence.stats as StatMap)
+    const _monkPct  = Math.max(0, state.guildRank - 1) * MONK_RANK_MULTIPLIER
+    const _baseEss  = essence.stats as StatMap
+    if (_monkPct > 0) {
+      const _boostedEss: StatMap = {}
+      for (let i = 0; i < STAT_KEYS.length; i++) {
+        const k = STAT_KEYS[i]
+        const v = _baseEss[k]
+        if (v == null) continue
+        const _sm = state.shrineActive ? (SHRINE_MULTIPLIERS[essence.tier] ?? 1.0) : 1.0
+        _boostedEss[k] = v > 0 ? round2(v * _sm + v * _monkPct) : round2(v * _sm)
+      }
+      addStats(_boostedEss)
+    } else {
+      addStats(state.shrineActive ? applyShrineToStats(_baseEss, essence.tier) : _baseEss)
+    }
     if (essence.perkName) perks[essence.perkName] = (perks[essence.perkName] ?? 0) + (essence.perkAmount ?? 1)
     if ((essence as any).perks) addPerks((essence as any).perks)
   }
