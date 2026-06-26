@@ -43,6 +43,7 @@ const DEFAULT_BUILD: BuildState = {
   summonCount: 0,
   buffsConsumed: 0,
   inDarkness: true,
+  cdrToggles: {},
 }
 
 function loadBuild(): BuildState {

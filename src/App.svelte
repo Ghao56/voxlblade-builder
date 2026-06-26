@@ -36,8 +36,22 @@
   import { checkWA, getUnmetReqs, passesAtLeastOneScaling } from './data/Weaponartcheck'
   import SuggestDrop from './SuggestDrop.svelte'
   import { getEffectiveDraconicInfusionPotency } from './data/draconicBuffs'
-  
+  import { CDR_PERK_DATA } from './data/cdr'
 
+  
+  function toggleCdrPerk(perkName: string) {
+    build.update(s => ({
+      ...s,
+      cdrToggles: {
+        ...s.cdrToggles,
+        [perkName]: s.cdrToggles[perkName] === false ? true : false,
+      },
+    }))
+  }
+
+  $: toggleableCdrPerks = Object.keys(CDR_PERK_DATA).filter(name =>
+    CDR_PERK_DATA[name].toggleable && ($result.perks[name] ?? 0) > 0
+  )
   $: {
     const _maxSummons = 15 + ($result.perks['Swarm'] ?? 0)
     if ($build.summonCount !== _maxSummons) {
@@ -3037,8 +3051,21 @@ $: _appWaAvgTotal = (() => {
         {#each waUnmetReqs as item}<div class="wa-req-item">{item}</div>{/each}
       </div>
     {/if}
+
+    {#if toggleableCdrPerks.length > 0}
+      <div class="cdr-toggle-row">
+        {#each toggleableCdrPerks as perkName}
+          {@const isOn = $build.cdrToggles[perkName] !== false}
+          <button class="cdr-toggle-chip" class:cdr-toggle-chip--off={!isOn}
+            on:click={() => toggleCdrPerk(perkName)}>
+            {isOn ? '✓' : '✕'} {perkName}
+          </button>
+        {/each}
+      </div>
+    {/if}
     {#if hasWACDR}
       <div class="cdr-block" style="margin-top:6px;">
+        <div class="cdr-block-header"><span class="cdr-icon">⏱</span><span class="cdr-title">Weapon Art CDR</span></div>
         <div class="cdr-block-header"><span class="cdr-icon">⏱</span><span class="cdr-title">Weapon Art CDR</span></div>
         {#each cdr.waBreakdown as step}
           <div class="cdr-step">
@@ -4797,4 +4824,13 @@ $: _appWaAvgTotal = (() => {
   border-color: rgba(248,113,113,.55);
 }
 
+.cdr-toggle-row { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
+.cdr-toggle-chip {
+  font-size:.68rem; font-weight:700; padding:3px 10px; border-radius:999px;
+  border:1px solid rgba(52,211,153,.3); background:rgba(52,211,153,.1); color:#34d399;
+  cursor:pointer; font-family:var(--font-body); transition:all .15s;
+}
+.cdr-toggle-chip--off {
+  border-color:rgba(248,113,113,.3); background:rgba(248,113,113,.08); color:var(--neg); opacity:.7;
+}
 </style>

@@ -209,7 +209,8 @@ export interface BuildState {
   hpFill: number
   summonCount: number
   buffsConsumed: number
-  inDarkness: boolean  
+  inDarkness: boolean
+  cdrToggles: Record<string, boolean>
 }
 
 export type BoostAttackType = 'm1' | 'm2' | 'wa' | 'rune' | 'perk'

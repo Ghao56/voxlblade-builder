@@ -850,6 +850,7 @@ export function calcCDR(
   activeRuneName?:        string,
   activeRaceName?:        string,
   emotionalState?:        'buffs' | 'debuffs' | 'both',
+  cdrToggles?:            Record<string, boolean>, 
 ): CDRResult {
   const runeSteps: CDRStep[] = []
   const waSteps:   CDRStep[] = []
@@ -867,6 +868,8 @@ export function calcCDR(
     const perkAmount = perks[perkName]
     const data       = CDR_PERK_DATA[perkName]
     if (!data || perkAmount <= 0) continue
+
+    if (data.toggleable && cdrToggles?.[perkName] === false) continue
 
     const passesFilter = data.runeFilter == null || (activeRuneName != null && data.runeFilter.includes(activeRuneName))
     if (data.runeSetCD != null && passesFilter) runeSetCD = data.runeSetCD
@@ -1138,7 +1141,7 @@ function deriveResults(
     }
   }
 
-  const cdr = calcCDR(finalPerks, getRace(state.race)?.cooldownModifiers, state.rune || undefined, state.race || undefined, state.emotionalState)
+  const cdr = calcCDR(finalPerks, getRace(state.race)?.cooldownModifiers, state.rune || undefined, state.race || undefined, state.emotionalState,state.cdrToggles,)
 
   const boostedStats = applyStatBoostPerks(finalStats, finalPerks)
   if ((finalPerks['Gladiatorial Rage'] ?? 0) > 0) {
