@@ -1,5 +1,3 @@
-import { calcDefMultiplier } from '../lib/defense'
-
 export interface SelfDamagePerkDef {
   perkName: string
   appliesTo: Array<'wa' | 'rune'>
@@ -32,7 +30,13 @@ export function calcSelfDamage(
 
   const base = preBoostDamageDealt * def.selfDmgPct
   const perkDrMult = 1 / (1 + (def.drPctPerStack * perkAmount) / 100)
-  const multiTargetMult = calcDefMultiplier(100 * Math.max(0, enemiesHit - 1))
+  
+  // Harmonic series: 1 + 1/2 + 1/3 + ... for each enemy hit
+  let multiTargetMult = 0
+  for (let i = 1; i <= enemiesHit; i++) {
+    multiTargetMult += 1 / i
+  }
+  
   const baseTotal = base * perkDrMult * multiTargetMult
 
   const byType: Record<string, number> = {}
