@@ -1415,9 +1415,9 @@
   let enemiesHitUndeadMight = 1
   $: if (!Number.isFinite(enemiesHitUndeadMight) || enemiesHitUndeadMight < 1) enemiesHitUndeadMight = 1
 
-  function _sumPreBoostHitDamage(hits: BDCHit[], group: 'WA' | 'Rune'): number {
+  function _sumPreBoostHitDamage(hits: BDCHit[], group: 'WA' | 'Rune', label?: string): number {
     return hits
-      .filter(h => h.group === group && !h.isHeal)
+      .filter(h => h.group === group && !h.isHeal && (label === undefined || h.label === label))
       .reduce((sum, h) => {
         const dmgTypesForCalc = h.baseDmgTypes ?? h.dmgTypes
         const typeMultSum = Object.values(dmgTypesForCalc).reduce((s, m) => s + m, 0)
@@ -1436,19 +1436,30 @@
     return mults
   })()
 
-  $: _undeadMightSelfDmgBySource = (_undeadMightDef?.appliesTo ?? [])
-    .map((key): SelfDamageDisplaySource | null => {
+  $: _undeadMightSelfDmgBySource = (() => {
+    const sources: SelfDamageDisplaySource[] = []
+    for (const key of _undeadMightDef?.appliesTo ?? []) {
       const group = SELF_DAMAGE_APPLIES_TO_GROUP[key]
-      if (!group) return null
-      const preBoostDmg = _sumPreBoostHitDamage(_bdcWeaponHits, group)
-      if (_undeadMightAmt <= 0 || preBoostDmg <= 0) return null
-      const result = calcSelfDamage(_undeadMightDef!, _undeadMightAmt, preBoostDmg, enemiesHitUndeadMight, _defenseMultipliers)
-      const label = group === 'WA'
-        ? selectedWA.name
-        : (_activeRuneDmgDef?.runeName ?? _draconicBloodEntry?.displayName ?? 'Rune')
-      return { group, label, result }
-    })
-    .filter((s): s is SelfDamageDisplaySource => s !== null)
+      if (!group) continue
+
+      if (group === 'WA') {
+        const preBoostDmg = _sumPreBoostHitDamage(_bdcWeaponHits, group)
+        if (_undeadMightAmt <= 0 || preBoostDmg <= 0) continue
+        const result = calcSelfDamage(_undeadMightDef!, _undeadMightAmt, preBoostDmg, enemiesHitUndeadMight, _defenseMultipliers)
+        sources.push({ group, label: selectedWA.name, result })
+      } else if (group === 'Rune') {
+        // Get unique labels from Rune group hits
+        const runeLabels = [...new Set(_bdcWeaponHits.filter(h => h.group === 'Rune' && !h.isHeal).map(h => h.label))]
+        for (const label of runeLabels) {
+          const preBoostDmg = _sumPreBoostHitDamage(_bdcWeaponHits, group, label)
+          if (_undeadMightAmt <= 0 || preBoostDmg <= 0) continue
+          const result = calcSelfDamage(_undeadMightDef!, _undeadMightAmt, preBoostDmg, enemiesHitUndeadMight, _defenseMultipliers)
+          sources.push({ group, label: label ?? 'Rune', result })
+        }
+      }
+    }
+    return sources
+  })()
 
 </script>
 
@@ -2363,7 +2374,7 @@
     <p class="da-empty-hint">No current Weapon Art or Rune damage to scale Self Damage from.</p>
   {:else}
     <div class="da-pbd-list">
-      {#each _undeadMightSelfDmgBySource as src (src.group)}
+      {#each _undeadMightSelfDmgBySource as src (src.group + ':' + src.label)}
         <div class="da-pbd-card">
           <div class="da-pbd-head">
             <span class="da-pbd-name">Undead Might (Self Damage)</span>
