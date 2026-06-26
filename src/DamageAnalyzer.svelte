@@ -589,7 +589,7 @@
     return mult
   })()
   
-  $: activeFinalMult = activeEntries.reduce((acc, e) => acc * e.rawMultiplier, 1.0) * _selfDebuffDamageMult
+  $: activeFinalMult = activeEntries.reduce((acc, e) => acc * e.rawMultiplier, 1.0)
   $: activeFinalMultRounded = roundMultiplier(activeFinalMult)
 
   function _categoryMult(type: BoostAttackType): number {
@@ -1519,27 +1519,6 @@
           {/if}
         </span>
       </div>
-      {#if _allActiveBuffs.some(b => b.buffName === 'Weakness' && b.isSelfDebuff)}
-        {@const weaknessPotency = Math.max(..._allActiveBuffs.filter(b => b.buffName === 'Weakness' && b.isSelfDebuff).map(b => b.potency))}
-        {@const weaknessEffectivePotency = wardingDebuffMult !== 1
-          ? Math.round(weaknessPotency * wardingDebuffMult * 1000) / 1000
-          : weaknessPotency}
-        {@const weaknessMultiplier = 1 / (1 + weaknessEffectivePotency)}
-        <div class="da-boost-row" style="margin-top:4px">
-          <button
-            class="da-debuff-pill"
-            class:da-debuff-pill--off={disableWeakness}
-            style="--dc: #8b11e9"
-            title="Weakness (Self) · {weaknessEffectivePotency.toFixed(2)}"
-            on:click={() => disableWeakness = !disableWeakness}
-          >
-            <span class="da-dp-abbr">Weak</span>
-            <span class="da-dp-val">{disableWeakness ? '—' : weaknessMultiplier.toFixed(4).replace(/\.?0+$/, '')}</span>
-            <span class="da-dp-toggle">{disableWeakness ? 'OFF' : 'ON'}</span>
-          </button>
-        </div>
-      {/if}
-
     {:else}
       <div class="da-boost-split">
         <div class="da-boost-universal">
@@ -1598,6 +1577,26 @@
         </div>
       </div>
     {/if}
+    {#if _allActiveBuffs.some(b => b.buffName === 'Weakness' && b.isSelfDebuff)}
+      {@const weaknessPotency = Math.max(..._allActiveBuffs.filter(b => b.buffName === 'Weakness' && b.isSelfDebuff).map(b => b.potency))}
+      {@const weaknessEffectivePotency = wardingDebuffMult !== 1
+        ? Math.round(weaknessPotency * wardingDebuffMult * 1000) / 1000
+        : weaknessPotency}
+      {@const weaknessMultiplier = 1 / (1 + weaknessEffectivePotency)}
+      <div class="da-boost-row" style="margin-top:4px">
+        <button
+          class="da-debuff-pill"
+          class:da-debuff-pill--off={disableWeakness}
+          style="--dc: #8b11e9"
+            title="Weakness (Self) · {weaknessEffectivePotency.toFixed(2)}"
+            on:click={() => disableWeakness = !disableWeakness}
+          >
+            <span class="da-dp-abbr">Weak</span>
+            <span class="da-dp-val">{disableWeakness ? '—' : weaknessMultiplier.toFixed(4).replace(/\.?0+$/, '')}</span>
+            <span class="da-dp-toggle">{disableWeakness ? 'OFF' : 'ON'}</span>
+          </button>
+        </div>
+      {/if}
   {#if _ragePotency > 0}
     <div class="da-rage-row" style="margin-top: 8px;">
       <button
