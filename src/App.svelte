@@ -2057,7 +2057,7 @@ $: _appWaAvgTotal = (() => {
         </div>
         <div class="summary-actions">
           <button class="clear-all-btn" on:click={handleClearBuild} title="Clear all selections">
-            ✕ Clear All
+            ✕ Clear
           </button>
           {#if _undoVisible}
             <button class="undo-btn" on:click={handleUndo} title="Undo clear">
