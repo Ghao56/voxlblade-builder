@@ -695,6 +695,9 @@ export const WEAPON_ART_BUFF_MAP: Record<string, GrantedBuff[]> = {
   'Javelin': [
     { buffName: 'Slowness', potency: 0, duration: 6, sourceName: 'Javelin', sourceType: 'weaponArt' },
   ],
+  'Lightning Cloak': [
+    { buffName: 'Lightning Cloak', potency: 0, duration: 40, sourceName: 'Lightning Cloak', sourceType: 'weaponArt' },
+  ],
   'Cursed Ground': [
     { 
       buffName: 'Weakness', 
