@@ -37,6 +37,8 @@
   export let rageAffectedTypes: Set<string> = new Set()
   export let luminescentPct: number = 0
   export let appliedDebuffs: Array<{ name: string; abbr: string; color: string; potency?: number; effectLabel?: string | null; descLabel?: string | null; damageMult?: number; defReduction?: Partial<Record<string, number>> }> = []
+  export let curseRipPerkAmount: number = 0
+  export let curseRipActiveDebuffCount: number = 0
 
 
   const DMG_TYPES = [
@@ -120,9 +122,9 @@
   $: penDecimal = armorPen / 100
 
   // ── Active debuff combat effects ───────────────────────────────────────────
-  // Product of all active damageMult debuffs (e.g. Weakness → attacker deals more)
+  // Product of all active damageMult debuffs (Weakness on enemy doesn't affect damage you deal)
   $: _activeDebuffDamageMult = appliedDebuffs
-    .filter(d => !disabledDebuffs.has(d.name) && (d.damageMult ?? 1) !== 1)
+    .filter(d => !disabledDebuffs.has(d.name) && (d.damageMult ?? 1) !== 1 && d.name !== 'Weakness')
     .reduce((acc, d) => Math.round(acc * (d.damageMult ?? 1) * 10000) / 10000, 1)
 
   // Effective enemy defenses after applying debuff reductions (e.g. Shatter strips armor)
@@ -174,6 +176,7 @@
     isHeal: boolean
     isLuminescent?: boolean
     isChainLightning?: boolean
+    isCurseRip?: boolean
     forceCrit: boolean
     isCritExempt?: boolean
   }
@@ -291,6 +294,27 @@
         }
       }
     }
+
+    // ── Curse Rip Lifesteal ─────────────────────────────────────────────────────
+    if (!isHeal && curseRipPerkAmount > 0 && curseRipActiveDebuffCount > 0) {
+      const preMitSum  = computePreMitigationBase(hit)
+      const preMitBase = Math.round(preMitSum * _activeDebuffDamageMult * selfDebuffDamageMult * 10000) / 10000
+
+      if (preMitBase > 0) {
+        const healAmount = Math.round(preMitBase / 60 * 10000) / 10000
+        if (healAmount > 0) {
+          types.push({
+            key: 'heal', label: 'Heal', color: '#4ade80',
+            typeBase: healAmount, scalingMult: 1, combatMult: 1,
+            rageApplied: false, rageMultUsed: 1, weaponBoostMult: 1,
+            defMult: 1, enemyDefPct: 0,
+            raw: healAmount, critVal: healAmount,
+            isHeal: true, isCurseRip: true, forceCrit: false,
+          })
+        }
+      }
+    }
+
     return { group: hit.group, index: hit.index, count: hit.count, isFinisher: hit.isFinisher, label: hit.label, isHeal, types }
   })
 
@@ -491,6 +515,9 @@
                               {/if}
                               {#if t.isChainLightning}
                                 <span class="bdc-lum-badge bdc-chain-badge" title="Lightning Cloak: 1/3 of hit damage as Air+Magic chain lightning (up to 4 targets)">Chain</span>
+                              {/if}
+                              {#if t.isCurseRip}
+                                <span class="bdc-lum-badge bdc-curse-rip-badge" title="Curse Rip: 1/60 of damage dealt as lifesteal (requires debuffed opponent)">✦ Curse Rip</span>
                               {/if}
                               {#if hit.group === 'Rune' && draconicRunesBonus[t.label.toLowerCase()]}
                                 <span class="bdc-dr-badge" title="Draconic Bonus: +{+(draconicRunesBonus[t.label.toLowerCase()] || 0).toFixed(4)} {t.label} damage type">
@@ -1105,6 +1132,18 @@
   color: #AAFFDB;
   background: rgba(170,255,219,.12);
   border: 1px solid rgba(170,255,219,.3);
+  padding: 1px 5px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.bdc-curse-rip-badge {
+  font-size: .5rem;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  color: #e879f9;
+  background: rgba(232,121,249,.12);
+  border: 1px solid rgba(232,121,249,.3);
   padding: 1px 5px;
   border-radius: 3px;
   text-transform: uppercase;

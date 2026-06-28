@@ -267,6 +267,20 @@
   $: _lightningCloakActive = _allActiveBuffs.some(b => b.buffName === 'Lightning Cloak')
   $: _lightningCloakPct = _lightningCloakActive ? (1 / 3) : 0
 
+  let disabledDebuffs = new Set<string>()
+
+  // ── Curse Rip ─────────────────────────────────────────────────────────────
+  $: _curseRipPerkAmount = perks['Curse Rip'] ?? 0
+  $: _curseRipActiveDebuffCount = (() => {
+    if (_curseRipPerkAmount <= 0) return 0
+    return _dummyDebuffs.filter(d => !disabledDebuffs.has(d.name)).length
+  })()
+  $: _curseRipDamageBoost = (() => {
+    if (_curseRipPerkAmount <= 0 || _curseRipActiveDebuffCount <= 0) return 1
+    const bonusPct = (10 * _curseRipPerkAmount - 10 + 5 * _curseRipActiveDebuffCount) / 100
+    return 1 + bonusPct
+  })()
+
   $: _activeRageBuffs = _allActiveBuffs.filter(b => b.buffName === 'Rage')
   $: _activeReinforcePotency      = _allActiveBuffs.reduce((m, b) => b.buffName === 'Reinforce'       ? Math.max(m, b.potency) : m, 0)
   $: _activeMagicReinforcePotency = _allActiveBuffs.reduce((m, b) => b.buffName === 'Magic Reinforce' ? Math.max(m, b.potency) : m, 0)
@@ -588,6 +602,7 @@
   let disabledHealBoosts = new Set<string>()
   let disableAntiHeal = false
   let disableWeakness = false
+  let disableCurseRip = false
 
   function toggleHealBoost(name: string) {
     if (disabledHealBoosts.has(name)) disabledHealBoosts.delete(name)
@@ -595,8 +610,18 @@
     disabledHealBoosts = new Set(disabledHealBoosts)
   }
   type BoostAttackType = 'm1' | 'm2' | 'perk' | 'rune' | 'wa';
-  $: activeEntries = boosts.dmgEntries.filter(e => !disabledBoosts.has(e.sourceName))
-  $: hasDisabledVisible = boosts.dmgEntries.some(e => disabledBoosts.has(e.sourceName))
+  $: _curseRipBoostEntry = (() => {
+    if (_curseRipPerkAmount <= 0 || _curseRipActiveDebuffCount <= 0) return null
+    return {
+      sourceName: 'Curse Rip',
+      rawMultiplier: _curseRipDamageBoost,
+      condition: `${_curseRipActiveDebuffCount} unique debuff${_curseRipActiveDebuffCount > 1 ? 's' : ''} · ${_curseRipPerkAmount} stack`,
+      type: 'dmg' as const,
+      appliesTo: ['m1', 'm2', 'wa'] as BoostAttackType[],
+    }
+  })()
+  $: activeEntries = [...boosts.dmgEntries.filter(e => !disabledBoosts.has(e.sourceName)), ...(_curseRipBoostEntry && !disableCurseRip ? [_curseRipBoostEntry] : [])]
+  $: hasDisabledVisible = boosts.dmgEntries.some(e => disabledBoosts.has(e.sourceName)) || (_curseRipBoostEntry && disableCurseRip)
 
   $: _levelMult = (() => {
     const levelEntry = boosts.dmgEntries.find(e => e.sourceName === 'Level Damage')
@@ -1699,14 +1724,18 @@
   <div class="da-section-title">⚔ Combat Multipliers</div>
     {#if !_hasSpecificBoosts}
       <div class="da-boost-row">
-        {#each boosts.dmgEntries as entry}
-          {@const disabled = disabledBoosts.has(entry.sourceName)}
+        {#each [...boosts.dmgEntries, ...(_curseRipBoostEntry ? [_curseRipBoostEntry] : [])] as entry}
+          {@const disabled = entry.sourceName === 'Curse Rip' ? disableCurseRip : disabledBoosts.has(entry.sourceName)}
+          {@const effectiveMultiplier = disabled ? 1 : entry.rawMultiplier}
           <button
             class="da-boost-chip"
             class:da-boost-chip--lvl={entry.sourceName === 'Level Damage'}
             class:da-boost-chip--off={disabled}
             title={entry.condition ?? ''}
-            on:click={() => toggleBoost(entry.sourceName)}
+            on:click={() => {
+              if (entry.sourceName === 'Curse Rip') disableCurseRip = !disableCurseRip
+              else toggleBoost(entry.sourceName)
+            }}
           >
             <span class="da-bc-name">
               {entry.sourceName === 'Level Damage' ? `LV${$build.level ?? 80}` : entry.sourceName}
@@ -3154,6 +3183,8 @@
   })}
   showCritToggle={_showCrit}
   appliedDebuffs={_dummyDebuffs}
+  curseRipPerkAmount={_curseRipPerkAmount}
+  curseRipActiveDebuffCount={_curseRipActiveDebuffCount}
   bind:showCritValues
 />
 
