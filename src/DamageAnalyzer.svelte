@@ -1120,6 +1120,18 @@
   $: _activeMountRuneDef = MOUNT_RUNE_DEFS.find(d => d.runeName === $build.rune) ?? null
   let mountActive = false
   $: if (!_activeMountRuneDef && mountActive) mountActive = false
+  $: {
+    const riderAmt = perks['Rider'] ?? 0
+    if (riderAmt > 0) {
+      if (mountActive) {
+        const next = new Set(disabledBoosts)
+        next.delete('Rider')
+        disabledBoosts = next
+      } else {
+        disabledBoosts = new Set([...disabledBoosts, 'Rider'])
+      }
+    }
+  }
 
   // ── Perk Base Damage ───────────────────────────────────────────────────────
   let springblastFinisherHits = 1
