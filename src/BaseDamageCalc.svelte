@@ -101,7 +101,7 @@
   ]
 
   let activePreset: string | null = null
-  let disabledDebuffs = new Set<string>()
+  export let disabledDebuffs: Set<string> = new Set()
 
   function applyPreset(p: Preset) {
     if (activePreset === p.id) {

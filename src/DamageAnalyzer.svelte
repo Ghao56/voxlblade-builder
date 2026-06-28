@@ -3185,6 +3185,7 @@
   appliedDebuffs={_dummyDebuffs}
   curseRipPerkAmount={_curseRipPerkAmount}
   curseRipActiveDebuffCount={_curseRipActiveDebuffCount}
+  bind:disabledDebuffs
   bind:showCritValues
 />
 
