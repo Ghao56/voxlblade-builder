@@ -1575,18 +1575,51 @@
       if (!group) continue
 
       if (group === 'WA') {
-        const preBoostDmg = _sumPreBoostHitDamage(_bdcWeaponHits, group)
-        if (_undeadMightAmt <= 0 || preBoostDmg <= 0) continue
-        const result = calcSelfDamage(_undeadMightDef!, _undeadMightAmt, preBoostDmg, enemiesHitUndeadMight, _defenseMultipliers)
-        sources.push({ group, label: selectedWA.name, result })
+        const waLabels = [
+          ...new Set(
+            _bdcWeaponHits
+              .filter(h => h.group === 'WA' && !h.isHeal)
+              .map(h => h.label ?? selectedWA.name)
+          )
+        ]
+        for (const label of waLabels) {
+          const preBoostDmg = _bdcWeaponHits
+            .filter(h => h.group === 'WA' && !h.isHeal && (h.label ?? selectedWA.name) === label)
+            .reduce((sum, h) => {
+              const dmgTypesForCalc = h.baseDmgTypes ?? h.dmgTypes
+              const typeMultSum = Object.values(dmgTypesForCalc).reduce((s, m) => s + m, 0)
+              return sum + h.base * typeMultSum * h.scalingMult * _levelMult * h.count
+            }, 0)
+          if (_undeadMightAmt <= 0 || preBoostDmg <= 0) continue
+          const result = calcSelfDamage(
+            _undeadMightDef!, _undeadMightAmt, preBoostDmg,
+            enemiesHitUndeadMight, _defenseMultipliers
+          )
+          sources.push({ group, label, result })
+        }
       } else if (group === 'Rune') {
-        // Get unique labels from Rune group hits
+        const mountM1Dmg = (_activeMountRuneDef && mountActive)
+          ? _bdcWeaponHits
+              .filter(h => h.group === 'M1' && !h.isHeal)
+              .reduce((sum, h) => {
+                const dmgTypesForCalc = h.baseDmgTypes ?? h.dmgTypes
+                const typeMultSum = Object.values(dmgTypesForCalc).reduce((s, m) => s + m, 0)
+                return sum + h.base * typeMultSum * h.scalingMult * _levelMult * h.count
+              }, 0)
+          : 0
+        if (mountM1Dmg > 0) {
+          const result = calcSelfDamage(
+            _undeadMightDef!, _undeadMightAmt, mountM1Dmg,
+            enemiesHitUndeadMight, _defenseMultipliers
+          )
+          sources.push({ group: 'Rune', label: `${_activeMountRuneDef!.mountLabel} M1 (Mounted)`, result })
+        }
         const runeLabels = [...new Set(_bdcWeaponHits.filter(h => h.group === 'Rune' && !h.isHeal).map(h => h.label))]
         for (const label of runeLabels) {
-          const preBoostDmg = _sumPreBoostHitDamage(_bdcWeaponHits, group, label)
+          const preBoostDmg = _sumPreBoostHitDamage(_bdcWeaponHits, 'Rune', label)
           if (_undeadMightAmt <= 0 || preBoostDmg <= 0) continue
           const result = calcSelfDamage(_undeadMightDef!, _undeadMightAmt, preBoostDmg, enemiesHitUndeadMight, _defenseMultipliers)
-          sources.push({ group, label: label ?? 'Rune', result })
+          sources.push({ group: 'Rune', label: label ?? 'Rune', result })
         }
       }
     }
