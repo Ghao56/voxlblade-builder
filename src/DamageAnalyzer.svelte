@@ -78,6 +78,10 @@
     return baseMult
   })()
 
+  $: _curseRipHealMult = _activeHealEntries
+    .filter(e => e.sourceName !== 'Level Healing')
+    .reduce((acc, e) => acc * e.rawMultiplier, 1.0)
+
   $: _antiHealSelfMult = (() => {
     if (disableAntiHeal) return 1
     if (!_healScalingCtx.activeBuffs) return 1
@@ -3185,6 +3189,7 @@
   appliedDebuffs={_dummyDebuffs}
   curseRipPerkAmount={_curseRipPerkAmount}
   curseRipActiveDebuffCount={_curseRipActiveDebuffCount}
+  curseRipHealMult={_curseRipHealMult}
   bind:disabledDebuffs
   bind:showCritValues
 />

@@ -39,6 +39,7 @@
   export let appliedDebuffs: Array<{ name: string; abbr: string; color: string; potency?: number; effectLabel?: string | null; descLabel?: string | null; damageMult?: number; defReduction?: Partial<Record<string, number>> }> = []
   export let curseRipPerkAmount: number = 0
   export let curseRipActiveDebuffCount: number = 0
+  export let curseRipHealMult: number = 1
 
 
   const DMG_TYPES = [
@@ -179,6 +180,7 @@
     isCurseRip?: boolean
     forceCrit: boolean
     isCritExempt?: boolean
+    healBoostMult?: number
   }
   interface ComputedHit {
       group: string; index: number; count: number; isFinisher: boolean; label?: string
@@ -303,13 +305,15 @@
       if (preMitBase > 0) {
         const healAmount = Math.round(preMitBase / 60 * 10000) / 10000
         if (healAmount > 0) {
+          const healRaw = Math.round(healAmount * curseRipHealMult * antiHealSelfMult * 10000) / 10000
           types.push({
             key: 'heal', label: 'Heal', color: '#4ade80',
             typeBase: healAmount, scalingMult: 1, combatMult: 1,
             rageApplied: false, rageMultUsed: 1, weaponBoostMult: 1,
             defMult: 1, enemyDefPct: 0,
-            raw: healAmount, critVal: healAmount,
+            raw: healRaw, critVal: healRaw,
             isHeal: true, isCurseRip: true, forceCrit: false,
+            healBoostMult: curseRipHealMult !== 1 ? curseRipHealMult : undefined,
           })
         }
       }
@@ -334,10 +338,10 @@
 
   // ── Totals ──────────────────────────────────────────────────
   function hitTypeSum(hit: ComputedHit, useCrit: boolean, includeCount: boolean = false): number {
-    const sum = hit.types.reduce((s, t) => s + ((useCrit || t.forceCrit) ? t.critVal : t.raw), 0)
+    const sum = hit.types.filter(t => !t.isCurseRip).reduce((s, t) => s + ((useCrit || t.forceCrit) ? t.critVal : t.raw), 0)
     return Math.round(sum * (includeCount ? hit.count : 1) * 100) / 100
   }
-  function groupTotalSum(list: ComputedHit[], useCrit: boolean): number {return Math.round(list.filter(h => !h.isHeal).reduce((s, h) =>s +h.types.reduce((ts, t) => ts + ((useCrit || t.forceCrit) ? t.critVal : t.raw),0) * h.count,0) * 100) / 100}
+  function groupTotalSum(list: ComputedHit[], useCrit: boolean): number {return Math.round(list.filter(h => !h.isHeal).reduce((s, h) =>s +h.types.filter(t => !t.isCurseRip).reduce((ts, t) => ts + ((useCrit || t.forceCrit) ? t.critVal : t.raw),0) * h.count,0) * 100) / 100}
 </script>
 
 <div class="bdc-root da-section">
@@ -547,6 +551,10 @@
                               {#if antiHealSelfMult !== 1 && t.isHeal}
                                 <span class="bdc-mini-op">×</span>
                                 <span class="bdc-mini-chip bdc-mini-chip--selfdebuff" title="Anti Heal (Self)">{Number(antiHealSelfMult.toFixed(4))}</span>
+                              {/if}
+                              {#if t.healBoostMult !== undefined}
+                                <span class="bdc-mini-op">×</span>
+                                <span class="bdc-mini-chip bdc-mini-chip--healboost" title="Heal Boost">×{Number(t.healBoostMult.toFixed(4))}</span>
                               {/if}
                               {#if t.weaponBoostMult !== 1}
                                 <span class="bdc-mini-op">×</span>
@@ -1262,5 +1270,10 @@
   color: #a855f7;
   border-color: rgba(168, 85, 247, 0.3);
   background: rgba(168, 85, 247, 0.08);
+}
+.bdc-mini-chip--healboost {
+  color: #4ade80;
+  border-color: rgba(74,222,128,.3);
+  background: rgba(74,222,128,.08);
 }
 </style>
