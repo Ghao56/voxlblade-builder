@@ -1417,15 +1417,21 @@
 
     if (_activeMountRuneDef && mountActive) {
       const waDef = _activeMountRuneDef.wa
-      result.push({
-        group: 'WA', index: result.length, count: 1,
-        base: waDef.getBaseDamage(),
-        scalingMult: _computePerkScalingMult(waDef.getScalings()),
-        combatMult: _waCombatMult,
-        isFinisher: false,
-        dmgTypes: waDef.getDmgTypes(),
-        label: `${_activeMountRuneDef.mountLabel} WA (Mounted)`,
-      })
+      const waScalingMult = _computePerkScalingMult(waDef.getScalings())
+      const waDmgTypes = waDef.getDmgTypes()
+      for (const h of waDef.getHits()) {
+        const base = typeof h === 'number' ? h : h.n
+        const count = typeof h === 'number' ? 1 : h.count
+        result.push({
+          group: 'WA', index: result.length, count,
+          base,
+          scalingMult: waScalingMult,
+          combatMult: _waCombatMult,
+          isFinisher: false,
+          dmgTypes: waDmgTypes,
+          label: `${_activeMountRuneDef.mountLabel} WA (Mounted)`,
+        })
+      }
     }
 
     for (const entry of _activePerkDmgEntries) {
@@ -1442,7 +1448,6 @@
          
          if (healSe) {
            const baseHeal = healSe.getValue({ perkAmount: entry.perkAmount, draconicColor: _color })
-           // Apply color scaling: holy = 1.0 holy scaling, water = 1.0 water scaling
            const colorScaling = _computePerkScalingMult({ [_color]: 1.0 })
            
            result.push({
@@ -3159,7 +3164,7 @@
       <span class="ap-toggle-label">{_activeMountRuneDef.mountLabel}</span>
       <button class="ap-toggle-btn" class:ap-toggle-btn--on={mountActive}
         on:click={() => mountActive = !mountActive}>
-        {mountActive ? '🐺 Mounted' : '🚶 On Foot'}
+        {mountActive ? 'Mounted' : 'On Foot'}
       </button>
     </div>
     {#if mountActive}

@@ -1,3 +1,5 @@
+import type { WeaponHit } from '../lib/types'
+
 export interface MountRuneM1Def {
   getBaseDamage: () => number
   getDmgTypes: () => Record<string, number>
@@ -7,7 +9,7 @@ export interface MountRuneM1Def {
 }
 
 export interface MountRuneWADef {
-  getBaseDamage: () => number
+  getHits: () => WeaponHit[]
   getDmgTypes: () => Record<string, number>
   getScalings: () => Record<string, number>
   guardbreak?: boolean
@@ -35,7 +37,7 @@ export const MOUNT_RUNE_DEFS: MountRuneDef[] = [
       note: 'Affected by Attack Speed stat (hit frequency only) but unaffected by attack-speed-related Perks. Not modeled — this calculator only tracks per-hit base damage, not DPS/frequency.',
     },
     wa: {
-      getBaseDamage: () => 5.5,
+      getHits: () => [5.5],
       getDmgTypes: () => ({ physical: 1.0 }),
       getScalings: () => ({ summon: 0.5 }),
       guardbreak: true,
@@ -45,6 +47,23 @@ export const MOUNT_RUNE_DEFS: MountRuneDef[] = [
       ],
     },
     note: 'M2 not mentioned in source — assumed unchanged while mounted.',
+  },
+  {
+    runeName: 'Slizard Mount Rune',
+    mountLabel: 'Slizard',
+    m1: {
+      getBaseDamage: () => 15,
+      getDmgTypes: () => ({ physical: 1.0 }),
+      getScalings: () => ({ summon: 0.5 }),
+      note: 'Affected by Attack Speed stat (hit frequency only) but unaffected by attack-speed-related Perks. Not modeled — this calculator only tracks per-hit base damage, not DPS/frequency.',
+    },
+    wa: {
+      getHits: () => [{ n: 1.1, count: 10 }, { n: 4.4, count: 1 }],
+      getDmgTypes: () => ({ physical: 1.0 }),
+      getScalings: () => ({ summon: 0.5 }),
+      guardbreak: true,
+      setCooldown: 25,
+    },
   },
 ]
 
