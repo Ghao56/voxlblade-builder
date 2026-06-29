@@ -586,7 +586,7 @@
   }
   function isFinisher(row: any, attackType: 'm1' | 'm2', hitIndex: number): boolean {
     if (attackType === 'm2') return true
-    const hasFinisher = (row as any).hasM1Finisher ?? true
+    const hasFinisher = (row as any).m1Finisher ?? true
     if (!hasFinisher) return false
     return row.m1 ? hitIndex === row.m1.length - 1 : false
   }

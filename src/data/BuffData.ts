@@ -178,6 +178,18 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectUnit: 'flat',
     potencyCapped: true,
   },
+  'Glyph Conduit': {
+    name: 'Glyph Conduit',
+    color: '#17b3fe',
+    description: 'Deal x% more magic damage.',
+    dynamicDescription: (_perks, potency) => {
+      const pct = +(potency * 200).toFixed(4)
+      return `Deal ${pct}% more magic damage.`
+    },
+    effectPerTenthPotency: 0.2,
+    effectUnit: 'flat',
+    statKey: 'magicBoost',
+  },
 
   //Debuffs
   Slowness: {
@@ -702,6 +714,16 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       duration: 0,
       condition: 'On minion summoned · cannot reactivate while buff is active',
       sourceName: 'Minion Absorption',
+      sourceType: 'perk',
+    },
+  ],
+  'Glyph Conduit': (amount) => [
+    {
+      buffName: 'Glyph Conduit',
+      potency: 0.1 * amount,
+      duration: Math.round(7.5 * amount),
+      condition: 'On RMB or Rune use',
+      sourceName: 'Glyph Conduit',
       sourceType: 'perk',
     },
   ],

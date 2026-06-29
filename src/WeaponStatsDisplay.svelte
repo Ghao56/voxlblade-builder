@@ -98,9 +98,9 @@
     font-weight: 600;
     padding: 2px 6px;
     border-radius: 4px;
-    border: 1px solid var(--border);
-    background: var(--surface3);
-    color: var(--ink-muted);
+    background: rgba(74,222,128,.1);
+    border: 1px solid rgba(74,222,128,.2);
+    color: var(--accent);
   }
   .modal-stat-pill--dmgtype {
     background: rgba(251,146,60,.1);
