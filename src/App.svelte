@@ -1284,7 +1284,7 @@ $: _appWaAvgTotal = (() => {
           <SuggestDrop
             show={showSuggestions}
             suggestions={modalSuggestions}
-            query={modalSearch}
+            suggestQuery={modalSearch}
             on:select={(e) => applySuggestion(e.detail.label, e.detail.type)}
           />
         </div>
@@ -1319,7 +1319,7 @@ $: _appWaAvgTotal = (() => {
           <SuggestDrop
             show={showSuggestions}
             suggestions={modalSuggestions}
-            query={modalSearch}
+            suggestQuery={modalSearch}
             on:select={(e) => applySuggestion(e.detail.label, e.detail.type)}
           />
         </div>
@@ -1384,7 +1384,7 @@ $: _appWaAvgTotal = (() => {
           <SuggestDrop
             show={showSuggestions}
             suggestions={modalSuggestions}
-            query={modalSearch}
+            suggestQuery={modalSearch}
             on:select={(e) => applySuggestion(e.detail.label, e.detail.type)}
           />
         </div>
@@ -1449,7 +1449,7 @@ $: _appWaAvgTotal = (() => {
           <SuggestDrop
   show={showSuggestions}
   suggestions={modalSuggestions}
-  query={modalSearch}
+  suggestQuery={modalSearch}
   on:select={(e) => applySuggestion(e.detail.label, e.detail.type)}
 />
         </div>
@@ -1510,7 +1510,7 @@ $: _appWaAvgTotal = (() => {
           <SuggestDrop
   show={showSuggestions}
   suggestions={modalSuggestions}
-  query={modalSearch}
+  suggestQuery={modalSearch}
   on:select={(e) => applySuggestion(e.detail.label, e.detail.type)}
 />
         </div>
@@ -1560,7 +1560,7 @@ $: _appWaAvgTotal = (() => {
           <SuggestDrop
   show={showSuggestions}
   suggestions={modalSuggestions}
-  query={modalSearch}
+  suggestQuery={modalSearch}
   on:select={(e) => applySuggestion(e.detail.label, e.detail.type)}
 />
         </div>
@@ -1596,7 +1596,7 @@ $: _appWaAvgTotal = (() => {
           <DidYouMean
   {noExactResults}
   {didYouMean}
-  query={modalSearch}
+  searchQuery={modalSearch}
   on:select={(e) => { modalSearch = e.detail }}
 />
         </div>
@@ -1609,7 +1609,7 @@ $: _appWaAvgTotal = (() => {
           <SuggestDrop
   show={showSuggestions}
   suggestions={modalSuggestions}
-  query={modalSearch}
+  suggestQuery={modalSearch}
   on:select={(e) => applySuggestion(e.detail.label, e.detail.type)}
 />
         </div>
@@ -1648,7 +1648,7 @@ $: _appWaAvgTotal = (() => {
           <DidYouMean
   {noExactResults}
   {didYouMean}
-  query={modalSearch}
+  searchQuery={modalSearch}
   on:select={(e) => { modalSearch = e.detail }}
 />
         </div>
@@ -1661,7 +1661,7 @@ $: _appWaAvgTotal = (() => {
           <SuggestDrop
             show={showSuggestions}
             suggestions={modalSuggestions}
-            query={modalSearch}
+            suggestQuery={modalSearch}
             on:select={(e) => applySuggestion(e.detail.label, e.detail.type)}
           />
         </div>
@@ -1705,7 +1705,7 @@ $: _appWaAvgTotal = (() => {
           <DidYouMean
   {noExactResults}
   {didYouMean}
-  query={modalSearch}
+  searchQuery={modalSearch}
   on:select={(e) => { modalSearch = e.detail }}
 />
         </div>
@@ -1718,7 +1718,7 @@ $: _appWaAvgTotal = (() => {
           <SuggestDrop
   show={showSuggestions}
   suggestions={modalSuggestions}
-  query={modalSearch}
+  suggestQuery={modalSearch}
   on:select={(e) => applySuggestion(e.detail.label, e.detail.type)}
 />
         </div>
@@ -1775,7 +1775,7 @@ $: _appWaAvgTotal = (() => {
           <SuggestDrop
   show={showSuggestions}
   suggestions={modalSuggestions}
-  query={modalSearch}
+  suggestQuery={modalSearch}
   on:select={(e) => applySuggestion(e.detail.label, e.detail.type)}
 />
         </div>
@@ -1828,7 +1828,7 @@ $: _appWaAvgTotal = (() => {
           <SuggestDrop
             show={showSuggestions}
             suggestions={modalSuggestions}
-            query={modalSearch}
+            suggestQuery={modalSearch}
             on:select={(e) => applySuggestion(e.detail.label, e.detail.type)}
           />
         </div>
