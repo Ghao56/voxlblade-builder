@@ -106,6 +106,38 @@
   </div>
 {/if}
 <style>
+/* ── Search suggestions ── */
+.search-wrap { position: relative; margin-bottom: 12px; }
+.search-wrap .modal-search-input { margin-bottom: 0; }
+.modal-search-input {
+  width: 100%;
+  background: var(--surface3);
+  border: 1px solid rgba(167,139,250,.35);
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: .85rem;
+  padding: 9px 14px;
+  outline: none;
+  margin-bottom: 12px;
+  caret-color: var(--accent3);
+  transition: border-color .15s, box-shadow .15s;
+}
+.modal-search-input::placeholder { color: var(--ink-muted); opacity: .5; }
+.modal-search-input:focus {
+  border-color: rgba(167,139,250,.6);
+  box-shadow: 0 0 0 2px rgba(167,139,250,.12);
+}
+
+:global(.modal-hl) {
+  display: inline;
+  background: rgba(167,139,250,.3);
+  color: var(--accent3);
+  border-radius: 2px;
+  padding: 0 1px;
+  font-weight: 800;
+  font-style: normal;
+}
 
 .armor-sort-row {
     display: flex;
