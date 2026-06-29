@@ -33,6 +33,8 @@
     isHeal?: boolean
     forceCrit?: boolean
   }> = []
+  export let glyphConduitMult: number = 1
+  export let glyphConduitAffectedTypes: Set<string> = new Set()
   export let rageMult: number = 1
   export let rageAffectedTypes: Set<string> = new Set()
   export let luminescentPct: number = 0
@@ -171,6 +173,7 @@
     key: string; label: string; color: string
     typeBase: number; scalingMult: number; combatMult: number
     rageApplied: boolean; rageMultUsed: number
+    glyphApplied?: boolean; glyphMultUsed?: number
     weaponBoostMult: number; weaponBoostLabel?: string
     defMult: number; enemyDefPct: number
     raw: number; critVal: number
@@ -216,8 +219,10 @@
     const isHeal = hit.isHeal ?? false
     const types: ComputedType[] = Object.entries(hit.dmgTypes ?? {}).map(([k, mult]) => {
       const info = DMG_TYPE_MAP.get(k) ?? { label: k, color: '#e8e4da' }
-      const rageApplied  = !isHeal && rageMult > 1 && rageAffectedTypes.has(k)
+      const rageApplied = !isHeal && rageMult > 1 && rageAffectedTypes.has(k)
       const rageMultUsed = rageApplied ? rageMult : 1
+      const glyphApplied = !isHeal && glyphConduitMult > 1 && glyphConduitAffectedTypes.has(k)
+      const glyphMultUsed = glyphApplied ? glyphConduitMult : 1
 
       let enemyDefPct = 0
       if (!isHeal && k !== 'true' && k !== 'summon') {
@@ -228,15 +233,24 @@
           enemyDefPct += effectiveDefenses['magic'] ?? 0
         }
       }
+
       const weaponBoostMult = hit.weaponBoostMult ?? 1
-      const defMult      = isHeal ? 1 : calcArmorMult(enemyDefPct, penDecimal).mult
-      const typeBase     = Math.round(hit.base * mult * 10000) / 10000
-      const raw          = Math.round(typeBase * hit.scalingMult * rageMultUsed * hit.combatMult * weaponBoostMult * defMult * (isHeal ? 1 : _activeDebuffDamageMult) * (isHeal ? 1 : selfDebuffDamageMult) * (isHeal ? antiHealSelfMult : 1) * 10000) / 10000
-      const critVal      = Math.round(raw * critDmgMult / 100 * 10000) / 10000
+      const defMult = isHeal ? 1 : calcArmorMult(enemyDefPct, penDecimal).mult
+      const typeBase = Math.round(hit.base * mult * 10000) / 10000
+
+      const raw = Math.round(
+        typeBase * hit.scalingMult * rageMultUsed * glyphMultUsed *
+        hit.combatMult * weaponBoostMult * defMult *
+        (isHeal ? 1 : _activeDebuffDamageMult) * (isHeal ? 1 : selfDebuffDamageMult) *
+        (isHeal ? antiHealSelfMult : 1) * 10000
+      ) / 10000
+
+      const critVal = Math.round(raw * critDmgMult / 100 * 10000) / 10000
+      
       return {
         key: k, label: info.label, color: info.color,
         typeBase, scalingMult: hit.scalingMult, combatMult: hit.combatMult,
-        rageApplied, rageMultUsed, weaponBoostMult, weaponBoostLabel: hit.weaponBoostLabel,
+        rageApplied, rageMultUsed, glyphApplied, glyphMultUsed, weaponBoostMult, weaponBoostLabel: hit.weaponBoostLabel,
         defMult, enemyDefPct,
         raw, critVal, isHeal, forceCrit: hit.forceCrit ?? false,
       }
@@ -318,6 +332,7 @@
         }
       }
     }
+    
 
     return { group: hit.group, index: hit.index, count: hit.count, isFinisher: hit.isFinisher, label: hit.label, isHeal, types }
   })
@@ -538,6 +553,10 @@
                               {#if t.rageApplied}
                                 <span class="bdc-mini-op">×</span>
                                 <span class="bdc-mini-chip bdc-mini-chip--rage" title="Rage">💢{fmtMult(t.rageMultUsed)}</span>
+                              {/if}
+                              {#if t.glyphApplied}
+                                <span class="bdc-mini-op">×</span>
+                                <span class="bdc-mini-chip bdc-mini-chip--glyph" title="Glyph Conduit">{fmtMult(t.glyphMultUsed ?? 1)}</span>
                               {/if}
                               {#if t.combatMult !== 1}
                                 <span class="bdc-mini-op">×</span>
@@ -1275,5 +1294,10 @@
   color: #4ade80;
   border-color: rgba(74,222,128,.3);
   background: rgba(74,222,128,.08);
+}
+.bdc-mini-chip--glyph {
+  color: #35e0c3;
+  border-color: rgba(53, 224, 195, 0.35);
+  background: rgba(53, 224, 195, 0.12);
 }
 </style>

@@ -311,7 +311,16 @@
 
   let rageDisabled = false
   $: _effectiveRageMult = rageDisabled ? 1 : _rageMult
-  $: _effectiveRageAffectedTypes = rageDisabled ? new Set<string>() : _rageAffectedTypes    
+  $: _effectiveRageAffectedTypes = rageDisabled ? new Set<string>() : _rageAffectedTypes
+
+  $: _glyphConduitBuffs   = _allActiveBuffs.filter(b => b.buffName === 'Glyph Conduit')
+  $: _glyphConduitPotency = _glyphConduitBuffs.length > 0
+    ? Math.max(..._glyphConduitBuffs.map(b => b.potency))
+    : 0
+  $: _glyphConduitMult = _glyphConduitPotency > 0
+    ? roundMultiplier(1 + _glyphConduitPotency * 2)
+    : 1
+  $: _glyphConduitAffectedTypes = _glyphConduitPotency > 0 ? new Set(['magic']) : new Set<string>()
 
   type HitSeq = (number | { n: number; count: number })[]
 
@@ -3148,6 +3157,8 @@
   curseRipHealMult={_curseRipHealMult}
   bind:disabledDebuffs
   bind:showCritValues
+  glyphConduitMult={_glyphConduitMult}
+  glyphConduitAffectedTypes={_glyphConduitAffectedTypes}
 />
 
 {#if _activeMountRuneDef}
