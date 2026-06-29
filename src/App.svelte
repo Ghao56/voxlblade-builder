@@ -34,6 +34,7 @@
   import WeaponStatsDisplay from './WeaponStatsDisplay.svelte'
   import BuffList from './BuffList.svelte'
   import DidYouMean from './DidYouMean.svelte'
+import Highlight from './Highlight.svelte'
   import { checkWA, getUnmetReqs } from './data/Weaponartcheck'
   import SuggestDrop from './SuggestDrop.svelte'
   import { getEffectiveDraconicInfusionPotency } from './data/draconicBuffs'
@@ -227,11 +228,6 @@ async function updateBubble(animated = true) {
   function openModal(m: ModalType) { activeModal = m; modalSearch = ''; statFilter = new Map() }
   function closeModal() { activeModal = null; modalSearch = '' }
 
-  function highlight(text: string, query: string): string {
-    if (!query.trim()) return text
-    const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-    return text.replace(new RegExp(`(${escaped})`, 'gi'), '<mark class="modal-hl">$1</mark>')
-  }
 
   function matchSearch(name: string, perkNames: string[] = []): boolean {
     if (!modalSearch.trim()) return true
@@ -1296,7 +1292,7 @@ $: _appWaAvgTotal = (() => {
           {#each searchedRaces as r}
             <button class="modal-item" class:modal-item--active={$build.race === r.name}
               on:click={() => { build.update(s => ({...s, race: r.name})); closeModal() }}>
-              <span class="modal-item-name">{@html highlight(r.name, modalSearch)}</span>
+              <span class="modal-item-name"><Highlight text={r.name} query={modalSearch} /></span>
               <span class="modal-item-desc">{r.passive}</span>
               {#if r.statModifiers && Object.keys(r.statModifiers).length}
                 <div class="modal-item-stats">
@@ -1343,7 +1339,7 @@ $: _appWaAvgTotal = (() => {
             <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
             <div class="modal-item" class:modal-item--active={$build.guild === g.name}
               on:click={() => { setGuild(g.name, $build.guild === g.name ? $build.guildRank : 3); closeModal() }}>
-              <span class="modal-item-name">{@html highlight(g.name, modalSearch)}</span>
+              <span class="modal-item-name"><Highlight text={g.name} query={modalSearch} /></span>
               <div class="modal-rank-row">
                 {#each g.ranks as rank}
                   <button class="rank-btn" class:rank-btn--active={$build.guild === g.name && $build.guildRank === rank.rank}
@@ -1363,7 +1359,7 @@ $: _appWaAvgTotal = (() => {
                 {#if displayRank?.perks?.length}
                   <div class="modal-item-stats">
                     {#each displayRank.perks as p}
-                      <span class="modal-perk-tag">{@html highlight(p.name, modalSearch)} +{p.amount}</span>
+                      <span class="modal-perk-tag"><Highlight text={p.name} query={modalSearch} /> +{p.amount}</span>
                     {/each}
                   </div>
                 {/if}
@@ -1420,13 +1416,13 @@ $: _appWaAvgTotal = (() => {
               <button class="modal-item modal-item--sm" class:modal-item--active={$build[storeKey] === a.name}
                 on:click={() => { build.update(s => ({...s, [storeKey]: a.name})); closeModal() }}>
                 <div class="modal-item-head">
-                  <span class="modal-item-name">{@html highlight(a.name, modalSearch)}</span>
+                  <span class="modal-item-name"><Highlight text={a.name} query={modalSearch} /></span>
                   {#if _effScore !== null}
                     <span class="armor-eff-score" class:armor-eff-score--brawny={statFilterSortMode === 'brawny'}>{_effScore >= 0 ? '+' : ''}{_effScore}% lv+5</span>
                   {/if}
                 </div>
                 <span class="modal-item-desc">{part.description}</span>
-                {#if part.perkName}<span class="modal-perk-tag">{@html highlight(part.perkName, modalSearch)} +{part.perkAmount}</span>{/if}
+                {#if part.perkName}<span class="modal-perk-tag"><Highlight text={part.perkName} query={modalSearch} /> +{part.perkAmount}</span>{/if}
                 <div class="modal-item-stats">
                   {#each Object.entries(part.stats).filter(([,v]) => v !== 0) as [k,v]}
                     <span class="modal-stat-pill" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, v as number)}</span>
@@ -1484,12 +1480,12 @@ $: _appWaAvgTotal = (() => {
               <button class="modal-item modal-item--sm modal-item--inf" class:modal-item--active={$build[infKey] === a.name}
                 on:click={() => { build.update(s => ({...s, [infKey]: a.name})); closeModal() }}>
                 <div class="modal-item-head">
-                  <span class="modal-item-name">{@html highlight(a.name, modalSearch)} <span class="inf-label">×0.5</span></span>
+                  <span class="modal-item-name"><Highlight text={a.name} query={modalSearch} /> <span class="inf-label">×0.5</span></span>
                   {#if _effScoreInf !== null}
                     <span class="armor-eff-score armor-eff-score--inf" class:armor-eff-score--brawny={statFilterSortMode === 'brawny'}>+{_effScoreInf}% eff</span>
                   {/if}
                 </div>
-                {#if part.perkName}<span class="modal-perk-tag">{@html highlight(part.perkName, modalSearch)} +{part.perkAmount}</span>{/if}
+                {#if part.perkName}<span class="modal-perk-tag"><Highlight text={part.perkName} query={modalSearch} /> +{part.perkAmount}</span>{/if}
                 <div class="modal-item-stats">
                   {#each Object.entries(part.stats).filter(([,v]) => v !== 0) as [k,v]}
                     <span class="modal-stat-pill modal-stat-pill--inf" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, (v as number) * 0.5)}</span>
@@ -1534,13 +1530,13 @@ $: _appWaAvgTotal = (() => {
             <button class="modal-item modal-item--sm" class:modal-item--active={$build.ring === r.name}
               on:click={() => { build.update(s => ({...s, ring: r.name})); closeModal() }}>
               <div class="modal-item-head">
-                <span class="modal-item-name">{@html highlight(r.name, modalSearch)}</span>
+                <span class="modal-item-name"><Highlight text={r.name} query={modalSearch} /></span>
                 {#if _effScore !== null}
                   <span class="armor-eff-score" class:armor-eff-score--brawny={statFilterSortMode === 'brawny'}>{_effScore >= 0 ? '+' : ''}{_effScore}%</span>
                 {/if}
               </div>
               <span class="modal-item-desc">{r.description}</span>
-              {#if r.perkName}<span class="modal-perk-tag">{@html highlight(r.perkName, modalSearch)} +{r.perkAmount}</span>{/if}
+              {#if r.perkName}<span class="modal-perk-tag"><Highlight text={r.perkName} query={modalSearch} /> +{r.perkAmount}</span>{/if}
               <div class="modal-item-stats">
                 {#each Object.entries(r.stats).filter(([,v]) => v !== 0) as [k,v]}
                   <span class="modal-stat-pill" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, v as number)}</span>
@@ -1584,12 +1580,12 @@ $: _appWaAvgTotal = (() => {
             <button class="modal-item modal-item--sm modal-item--inf" class:modal-item--active={$build.infusionRing === r.name}
               on:click={() => { build.update(s => ({...s, infusionRing: r.name})); closeModal() }}>
               <div class="modal-item-head">
-                <span class="modal-item-name">{@html highlight(r.name, modalSearch)} <span class="inf-label">×0.5</span></span>
+                <span class="modal-item-name"><Highlight text={r.name} query={modalSearch} /> <span class="inf-label">×0.5</span></span>
                 {#if _effScoreInf !== null}
                   <span class="armor-eff-score armor-eff-score--inf" class:armor-eff-score--brawny={statFilterSortMode === 'brawny'}>+{_effScoreInf}% eff</span>
                 {/if}
               </div>
-              {#if r.perkName}<span class="modal-perk-tag">{@html highlight(r.perkName, modalSearch)} +{r.perkAmount}</span>{/if}
+              {#if r.perkName}<span class="modal-perk-tag"><Highlight text={r.perkName} query={modalSearch} /> +{r.perkAmount}</span>{/if}
               <div class="modal-item-stats">
                 {#each Object.entries(r.stats).filter(([,v]) => v !== 0) as [k,v]}
                   <span class="modal-stat-pill modal-stat-pill--inf" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, (v as number) * 0.5)}</span>
@@ -1634,14 +1630,14 @@ $: _appWaAvgTotal = (() => {
             <button class="modal-item modal-item--sm" class:modal-item--active={$build.rune === r.name}
               on:click={() => { build.update(s => ({...s, rune: r.name})); closeModal() }}>
               <div class="modal-item-head">
-                <span class="modal-item-name">{@html highlight(r.name, modalSearch)}</span>
+                <span class="modal-item-name"><Highlight text={r.name} query={modalSearch} /></span>
                 {#if _effScore !== null}
                   <span class="armor-eff-score" class:armor-eff-score--brawny={statFilterSortMode === 'brawny'}>{_effScore >= 0 ? '+' : ''}{_effScore}%</span>
                 {/if}
               </div>
               <span class="modal-item-desc">{r.description}</span>
               <span class="modal-cd-badge">CD: {r.cooldown}s</span>
-              {#if r.perkName}<span class="modal-perk-tag">{@html highlight(r.perkName, modalSearch)} +{r.perkAmount ?? 1}</span>{/if}
+              {#if r.perkName}<span class="modal-perk-tag"><Highlight text={r.perkName} query={modalSearch} /> +{r.perkAmount ?? 1}</span>{/if}
               <div class="modal-item-stats">
                 {#each Object.entries(r.stats).filter(([,v]) => v !== 0) as [k,v]}
                   <span class="modal-stat-pill" class:neg={(v as number) < 0}>{formatLabel(k)}: {formatStat(k, v as number)}</span>
@@ -1695,14 +1691,14 @@ $: _appWaAvgTotal = (() => {
             <button class="modal-item modal-item--sm modal-item--blade" class:modal-item--active={$build.weaponBlade === b.name}
               on:click={() => { build.update(s => ({...s, weaponBlade: b.name})); closeModal() }}>
               <div class="modal-item-head">
-                <span class="modal-item-name">{@html highlight(b.name, modalSearch)}</span>
+                <span class="modal-item-name"><Highlight text={b.name} query={modalSearch} /></span>
                 <span class="modal-tier-badge">T{b.tier}</span>
                 <span class="modal-type-badge modal-type-badge--blade">{b.bladeType}</span>
                 {#if b.attackSpeed != null}<span class="modal-cd-badge">{b.attackSpeed}x spd</span>{/if}
               </div>
               <WeaponStatsDisplay stats={b.stats ?? {}} />
               {#if bAny.perks?.length}
-                {#each bAny.perks as p}<span class="modal-perk-tag">{@html highlight(p.name, modalSearch)} +{p.amount}</span>{/each}
+                {#each bAny.perks as p}<span class="modal-perk-tag"><Highlight text={p.name} query={modalSearch} /> +{p.amount}</span>{/each}
               {/if}
             </button>
           {/each}
@@ -1752,14 +1748,14 @@ $: _appWaAvgTotal = (() => {
             <button class="modal-item modal-item--sm modal-item--handle" class:modal-item--active={$build.weaponHandle === h.name}
               on:click={() => { build.update(s => ({...s, weaponHandle: h.name})); closeModal() }}>
               <div class="modal-item-head">
-                <span class="modal-item-name">{@html highlight(h.name, modalSearch)}</span>
+                <span class="modal-item-name"><Highlight text={h.name} query={modalSearch} /></span>
                 <span class="modal-tier-badge modal-tier-badge--handle">T{h.tier}</span>
                 <span class="modal-type-badge modal-type-badge--handle">{h.handleType}</span>
                 {#if h.attackSpeed != null}<span class="modal-cd-badge">{h.attackSpeed}x spd</span>{/if}
               </div>
               <WeaponStatsDisplay stats={h.stats ?? {}} />
               {#if hAny.perks?.length}
-                {#each hAny.perks as p}<span class="modal-perk-tag">{@html highlight(p.name, modalSearch)} +{p.amount}</span>{/each}
+                {#each hAny.perks as p}<span class="modal-perk-tag"><Highlight text={p.name} query={modalSearch} /> +{p.amount}</span>{/each}
               {/if}
             </button>
           {/each}
@@ -1806,13 +1802,13 @@ $: _appWaAvgTotal = (() => {
             <button class="modal-item modal-item--sm modal-item--glove" class:modal-item--active={$build.monkGlove === g.name}
               on:click={() => { build.update(s => ({...s, monkGlove: g.name})); closeModal() }}>
               <div class="modal-item-head">
-                <span class="modal-item-name">{@html highlight(g.name, modalSearch)}</span>
+                <span class="modal-item-name"><Highlight text={g.name} query={modalSearch} /></span>
                 <span class="modal-tier-badge modal-tier-badge--glove">T{g.tier}</span>
                 {#if g.attackSpeed != null}<span class="modal-cd-badge">{g.attackSpeed}x spd</span>{/if}
               </div>
               <WeaponStatsDisplay stats={g.stats ?? {}} />
               {#if (g as any).perks?.length}
-                {#each (g as any).perks as p}<span class="modal-perk-tag">{@html highlight(p.name, modalSearch)} +{p.amount}</span>{/each}
+                {#each (g as any).perks as p}<span class="modal-perk-tag"><Highlight text={p.name} query={modalSearch} /> +{p.amount}</span>{/each}
               {/if}
             </button>
           {/each}
@@ -1858,13 +1854,13 @@ $: _appWaAvgTotal = (() => {
             <button class="modal-item modal-item--sm modal-item--essence" class:modal-item--active={$build.monkEssence === e.name}
               on:click={() => { build.update(s => ({...s, monkEssence: e.name})); closeModal() }}>
               <div class="modal-item-head">
-                <span class="modal-item-name">{@html highlight(e.name, modalSearch)}</span>
+                <span class="modal-item-name"><Highlight text={e.name} query={modalSearch} /></span>
                 <span class="modal-tier-badge modal-tier-badge--essence">T{e.tier}</span>
                 {#if e.attackSpeed != null}<span class="modal-cd-badge">{e.attackSpeed}x spd</span>{/if}
               </div>
               <WeaponStatsDisplay stats={e.stats ?? {}} />
               {#if (e as any).perks?.length}
-                {#each (e as any).perks as p}<span class="modal-perk-tag">{@html highlight(p.name, modalSearch)} +{p.amount}</span>{/each}
+                {#each (e as any).perks as p}<span class="modal-perk-tag"><Highlight text={p.name} query={modalSearch} /> +{p.amount}</span>{/each}
               {/if}
             </button>
           {/each}

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
-  import { highlightText } from './lib/utils'
+  import { highlightTextParts } from './lib/utils'
 
   const dispatch = createEventDispatcher<{ select: { label: string; type: 'name' | 'perk' } }>()
 
@@ -18,7 +18,15 @@
         on:mousedown|preventDefault={() => dispatch('select', { label: s.label, type: s.type })}
       >
         <span class="suggest-type">{s.type === 'perk' ? 'Perk' : 'Name'}</span>
-        <span class="suggest-label">{@html highlightText(s.label, searchQuery)}</span>
+        <span class="suggest-label">
+          {#each highlightTextParts(s.label, searchQuery) as part}
+            {#if part.highlight}
+              <mark class="modal-hl">{part.text}</mark>
+            {:else}
+              {part.text}
+            {/if}
+          {/each}
+        </span>
       </button>
     {/each}
   </div>

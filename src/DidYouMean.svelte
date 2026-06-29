@@ -1,12 +1,16 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
-  import { highlightText } from './lib/utils'
+  import { highlightTextParts } from './lib/utils'
 
   export let noExactResults: boolean = false
   export let didYouMean: Array<{ label: string; type: 'name' | 'perk'; score?: number }> = []
   export let searchQuery: string = ''
 
   const dispatch = createEventDispatcher<{ select: string }>()
+
+  function highlightParts(label: string, query: string): Array<{ text: string; highlight: boolean }> {
+    return highlightTextParts(label, query)
+  }
 </script>
 
 {#if noExactResults && didYouMean.length > 0}
@@ -19,7 +23,13 @@
           {#if s.type === 'perk'}
             <span class="perk-icon">💡</span>
           {/if}
-          {@html highlightText(s.label, searchQuery)}
+          {#each highlightParts(s.label, searchQuery) as part}
+            {#if part.highlight}
+              <em class="modal-hl">{part.text}</em>
+            {:else}
+              {part.text}
+            {/if}
+          {/each}
         </button>
       {/each}
     </div>
