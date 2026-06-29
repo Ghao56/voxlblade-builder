@@ -11,6 +11,7 @@ export interface BoostContext {
   inDarkness: boolean
   emotionalState?: string
   level?: number
+  summonBoostPct?: number
 }
 
 export interface BoostDef {
@@ -199,6 +200,22 @@ export const BOOST_DEFS: BoostDef[] = [
         return { multiplier: 0.5, condition: 'Healing received halved in sunlight' }
       }
       return null
+    },
+  },
+
+  {
+    sourceName: 'Minion Absorption',
+    type: 'dmg',
+    calcFn: (ctx) => {
+      const stacks = ctx.perks['Minion Absorption'] ?? 0
+      if (stacks <= 0) return null
+      const sb = ctx.summonBoostPct ?? 0
+      if (sb <= 0) return null
+      const potency = Math.round(0.2 * (sb / 100) * stacks * 10000) / 10000
+      return {
+        multiplier: roundMultiplier(1 + potency),
+        condition: `${sb}% Summon Boost × ${stacks} stack · potency ${potency}`,
+      }
     },
   },
 

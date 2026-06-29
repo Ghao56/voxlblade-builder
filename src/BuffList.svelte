@@ -33,11 +33,26 @@
 
   $: weaponArtBuffs = getWeaponArtBuffs($build.selectedWeaponArt)
 
-  $: baseActiveBuffs = applyBuffPerkModifiers(
-    [...itemBuffs, ...perkBuffs, ...weaponArtBuffs],
-    $result.perks,
-    $build.rune || undefined
-  )
+  $: baseActiveBuffs = (() => {
+    const modified = applyBuffPerkModifiers(
+      [...itemBuffs, ...perkBuffs, ...weaponArtBuffs],
+      $result.perks,
+      $build.rune || undefined
+    )
+
+    const _minionAbsAmt = $result.perks['Minion Absorption'] ?? 0
+    const _minionAbsSB  = ($result.stats as Record<string, number>).summonBoost ?? 0
+    if (_minionAbsAmt > 0 && _minionAbsSB > 0) {
+      const _minionAbsPotency = Math.round(0.2 * (_minionAbsSB / 100) * _minionAbsAmt * 10000) / 10000
+      for (let i = 0; i < modified.length; i++) {
+        if (modified[i].buffName === 'Minion Absorbed') {
+          modified[i] = { ...modified[i], potency: _minionAbsPotency }
+        }
+      }
+    }
+
+    return modified
+  })()
 
   $: activeDebuffs = baseActiveBuffs.filter(b => BUFF_DEFS[b.buffName]?.isDebuff)
 

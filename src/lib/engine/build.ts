@@ -110,6 +110,7 @@ function calcBoosts(
   raceName?:         string,
   hpFillPct?:        number,
   inDarkness:        boolean = true,
+  summonBoostPct:    number = 0,
 ): BoostResult {
   const dmgMap  = new Map<string, BoostEntry>()
   const healMap = new Map<string, BoostEntry>()
@@ -131,6 +132,7 @@ function calcBoosts(
   const ctx: BoostContext = {
     perks, naturalCritChance, jumpBoost, summonCount,
     ragePotency, bouncePotency, inDarkness, emotionalState, level,
+    summonBoostPct,
   }
 
   for (const def of BOOST_DEFS) {
@@ -466,6 +468,7 @@ function deriveResults(
     crit.naturalCritChance, boostedStats.jumpBoost ?? 0,
     state.summonCount ?? 0, ragePotency, bouncePotency,
     state.race, state.hpFill ?? 100, state.inDarkness ?? true,
+    boostedStats.summonBoost ?? 0,
   )
   return { stats: boostedStats, perks: finalPerks, cdr, boosts, crit }
 }

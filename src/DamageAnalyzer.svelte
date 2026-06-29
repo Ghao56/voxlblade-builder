@@ -196,6 +196,7 @@
       [...itemBuffs, ...getPerkBuffs($result.perks), ...getWeaponArtBuffs($build.selectedWeaponArt)],
       $result.perks, $build.rune || undefined
     )
+
     const _infActive = $build.draconicRuneInfusion === 'infusion'
     const color = $build.draconicColor
     if (!_infActive || (color !== 'hex' && color !== 'holy')) {

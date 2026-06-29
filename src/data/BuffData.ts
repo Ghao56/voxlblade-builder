@@ -284,6 +284,13 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectUnit: 'flat',
     isDebuff: true,
   },
+  'Minion Absorbed': {
+    name: 'Minion Absorbed',
+    color: '#ff004b',
+    description: 'Deal x% more damage.',
+    effectPerTenthPotency: 0.1,
+    effectUnit: 'flat',
+  },
 
   //Neutral
   'Last Croak': {
@@ -678,6 +685,16 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       condition: 'rank 2 in the Gladiator Guild.',
       sourceName: 'HUNT(Gladiator cantrip)',
       sourceType: 'cantrip',
+    },
+  ],
+  'Minion Absorption': (amount) => [
+    {
+      buffName: 'Minion Absorbed',
+      potency: 0,
+      duration: 0,
+      condition: 'On minion summoned · cannot reactivate while buff is active',
+      sourceName: 'Minion Absorption',
+      sourceType: 'perk',
     },
   ],
   'Roaring Heads': (amount) => [

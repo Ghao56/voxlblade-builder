@@ -32,7 +32,6 @@
     {"name":"Slizard Mount Rune","description":"Cast to mount a slizard. Your LMBs and weapon art is modified while riding.","upgrade":0,"stats":{"summonBoost":10},"cooldown":10},
     {"name":"Snarl Rune","description":"Snarl at your opponents applying a debuff that allows you to heal by hitting them!","upgrade":0,"stats":{"physicalBoost":10},"cooldown":30},
     {"name":"Snoeball Rune","description":"Gather a large snoeball then throw it to cause a massive explosion that slows.","upgrade":0,"stats":{"waterBoost":5,"magicBoost":5},"cooldown":25},
-    {"name":"Spooky Woof Mount Rune","description":"Cast to mount a skeletal winter woof. Your LMBs and weapon art are modified while riding. Obtainable during the 2025 Halloween Event","upgrade":0,"stats":{"summonBoost":10},"cooldown":10},
     {"name":"Sporeling Toss Rune","description":"Cast to throw 2 sporelings and additionally any sporelings you've summoned!","upgrade":0,"stats":{"hexBoost":5,"physicalBoost":5,"summonBoost":5},"cooldown":45},
     {"name":"Static Field Rune","description":"Create a static field to parry away your enemies attacks automatically!","upgrade":0,"stats":{"airBoost":8,"magicBoost":8},"cooldown":35},
     {"name":"Swarm Rune","description":"Cast to summon a swarm of bumblz.","upgrade":0,"stats":{"summonBoost":10},"cooldown":30},

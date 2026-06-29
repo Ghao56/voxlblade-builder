@@ -3,7 +3,7 @@
     {"name":"Bastion Ring","description":"A ring that contains a fragment of the bastion spirit.","upgrade":0,"stats":{"magicDefense":15},"perkName":"Protector Spirit","perkAmount":1},
     {"name":"Blaster Ring","description":"This ring was invented by sorcerers and represents the peak of magi-tech engineering.","upgrade":0,"stats":{"speedBoost":5,"attackSpeed":2},"perkName":"Locked And Loaded","perkAmount":1},
     {"name":"Boglord Ring","description":"This ring hums with the strength of the Lord Frogg's servants and the fury of his throne.","upgrade":0,"stats":{"summonBoost":10},"perkName":"Vassals Croak","perkAmount":1},
-    {"name":"Bumblz Honey Ring","description":"Summons become stronger when using this ring.","upgrade":0,"stats":{"summonBoost":10},"perkName":"Drone (Perk)","perkAmount":1},
+    {"name":"Bumblz Honey Ring","description":"Summons become stronger when using this ring.","upgrade":0,"stats":{"summonBoost":10},"perkName":"Drone","perkAmount":1},
     {"name":"Buni Ring","description":"Fluffy!","upgrade":0,"stats":{"speedBoost":8,"jumpBoost":1,"attackSpeed":3},"perkName":"Rabbits Foot","perkAmount":2},
     {"name":"Caster Ring","description":"Magic becomes stronger when using this ring.","upgrade":0,"stats":{"magicBoost":10},"perkName":"Caster","perkAmount":1},
     {"name":"Concussive Ring","description":"The ring reverberates with a slight rumble.","upgrade":0,"stats":{"tenacity":0.1},"perkName":"Concussion","perkAmount":1},
