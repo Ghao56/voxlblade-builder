@@ -3257,6 +3257,7 @@ $: _appWaAvgTotal = (() => {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    overflow: visible;
   }
 
   .right-column {
@@ -3275,8 +3276,27 @@ $: _appWaAvgTotal = (() => {
       width: 100%;
     }
   }
-  .summary-grid-wrap { overflow-x:auto; }
-  .summary-grid { display:grid; grid-template-columns:repeat(10,minmax(60px,1fr)); gap:6px; min-width:600px; }
+  @media (max-width: 640px) {
+    .left-column {
+      width: 100%;
+      min-width: 0;
+      overflow: visible;
+    }
+    .summary-grid {
+      grid-template-columns: repeat(10, minmax(45px, 1fr));
+      min-width: 600px;
+    }
+    .summary-grid-wrap {
+      width: 100vw;
+      margin-left: calc(-50vw + 50%);
+      margin-right: calc(-50vw + 50%);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      flex-shrink: 0;
+    }
+  }
+  .summary-grid-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  .summary-grid { display:grid; grid-template-columns:repeat(10,minmax(45px,1fr)); gap:6px; min-width:unset; }
 
   .sg-span10 { grid-column:span 10; }
   .sg-span3  { grid-column:span 3; }
@@ -4168,7 +4188,6 @@ $: _appWaAvgTotal = (() => {
 .dab-stat-k { color:var(--ink-muted); min-width:80px; font-size:.68rem; }
 .dab-stat-v { font-weight:700; color:#c8c4ba; }
   .dab-stat-v--dmg { color:var(--accent2); font-size:.95rem; text-shadow:0 0 8px rgba(245,158,11,.35); }
-  .dab-stat-v--poise { color:#f472b6; font-weight:800; }
 
 .dab-notes { font-size:.68rem; color:var(--draco-text); opacity:.65; font-style:italic; line-height:1.4; letter-spacing:.02em; }
 /* ── Search suggestions ── */
