@@ -301,4 +301,15 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     condition: 'Every 10th self-inflicted debuff · 1s CD between roars',
     note: 'Stuns on roar',
   },
+  // ── Barbed Flurry ───────────────────────────────────────────────────────────
+  {
+    perkName: 'Barbed Flurry',
+    condition: 'Reapplying Bleed on already Bleeding enemies',
+    getBaseDamage: ({ perkAmount }) => 1.6 + 0.32 * perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { physical: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { physical: 1.0, dexterity: 1.0 },
+    note: 'Cannot proc other effects. No internal cooldown. Proccing Bleed multiple times in the same hit will proc this perk multiple times.',
+  },
 ]

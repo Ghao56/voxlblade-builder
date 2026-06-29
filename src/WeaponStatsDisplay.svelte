@@ -103,7 +103,9 @@
     color: var(--ink-muted);
   }
   .modal-stat-pill--dmgtype {
-    border-color: var(--weapon-blade);
+    background: rgba(251,146,60,.1);
+    border-color: rgba(251,146,60,.25);
+    color: var(--weapon-blade);
   }
   .modal-stat-pill--scaling {
     background: rgba(167,139,250,.1);

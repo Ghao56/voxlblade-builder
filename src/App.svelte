@@ -1490,6 +1490,8 @@ $: _appWaAvgTotal = (() => {
           {showSuggestions}
           {modalSuggestions}
           {selectedTags}
+          on:focus={onSearchFocus}
+          on:blur={onSearchBlur}
           on:toggle={(e) => toggleTag(e.detail)}
           on:clear={clearTags}
           on:change={onStatFilterChange}
@@ -1534,6 +1536,8 @@ $: _appWaAvgTotal = (() => {
           {showSuggestions}
           {modalSuggestions}
           {selectedTags}
+          on:focus={onSearchFocus}
+          on:blur={onSearchBlur}
           on:toggle={(e) => toggleTag(e.detail)}
           on:clear={clearTags}
           on:change={onStatFilterChange}
@@ -1624,6 +1628,8 @@ $: _appWaAvgTotal = (() => {
           {showSuggestions}
           {modalSuggestions}
           {selectedTags}
+          on:focus={onSearchFocus}
+          on:blur={onSearchBlur}
           useWeaponStatFilter={true}
           weaponStatFilter={weaponStatFilter}
           on:toggle={(e) => toggleTag(e.detail)}
@@ -1677,6 +1683,8 @@ $: _appWaAvgTotal = (() => {
           {showSuggestions}
           {modalSuggestions}
           {selectedTags}
+          on:focus={onSearchFocus}
+          on:blur={onSearchBlur}
           useWeaponStatFilter={true}
           weaponStatFilter={weaponStatFilter}
           on:toggle={(e) => toggleTag(e.detail)}
@@ -1783,6 +1791,8 @@ $: _appWaAvgTotal = (() => {
           {showSuggestions}
           {modalSuggestions}
           {selectedTags}
+          on:focus={onSearchFocus}
+          on:blur={onSearchBlur}
           useWeaponStatFilter={true}
           weaponStatFilter={weaponStatFilter}
           on:toggle={(e) => toggleTag(e.detail)}
