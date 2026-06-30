@@ -47,7 +47,7 @@ export const DEBUFF_COMBAT_EFFECTS: Record<string, DebuffCombatEffect> = {
   'Sticky (Melting Slime)': {
     descFn: (p: number) => {
       const slowPct = Math.round(p * 10000) / 100
-      return `Move ${slowPct}% slower, deals fire and poise damage and take 20% more magic, fire and earth damage.`
+      return `Move ${slowPct}% slower and take 20% more magic, fire and earth damage.`
     },
     typeDamageMult: () => ({ magic: 1.2, fire: 1.2, earth: 1.2 }),
   },

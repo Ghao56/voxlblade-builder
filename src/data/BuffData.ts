@@ -270,7 +270,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     description: 'Move x% slower and take 20% more magic, fire and earth damage.',
     dynamicDescription: (_perks, potency) => {
       const slowPct = Math.round(potency * 10000) / 100
-      return `Move ${slowPct}% slower, deals fire and poise damage and take 20% more magic, fire and earth damage.`
+      return `Move ${slowPct}% slower and take 20% more magic, fire and earth damage.`
     },
     effectPerTenthPotency: 0.1,
     effectUnit: 'flat',
