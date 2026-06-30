@@ -137,6 +137,15 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     note: 'Base cooldown on miss is 25 seconds, when successfully landing this rune the base cooldown is instead 5 seconds',
   },
   {
+    runeName: 'Caci Rune',
+    condition: 'On cast',
+    getBaseDamage: () => 5,
+    dmgTypes: { physical: 1.0 },
+    scalings: { summon: 1.0 },
+    hits: 3,
+    note: 'Poise damage same as base damage (5 × 3 hits). Does not count as a summon.',
+  },
+  {
     runeName: 'Brainblast Rune',
     condition: 'On cast',
     getBaseDamage: () => 10,
