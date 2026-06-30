@@ -3,6 +3,7 @@ interface DefensivePerkSourceContext {
   adaptivePlateTriggered: boolean
   inDarkness: boolean
   rageActive: boolean
+  isMounted: boolean
 }
 
 interface DefensivePerkSource {
@@ -93,6 +94,13 @@ const DEFENSIVE_PERK_SOURCES: DefensivePerkSource[] = [
     label: 'Stored Corruption',
     conditionLabel: 'Increases damage taken by 5% per 1 of this perk',
   },
+  {
+    perkName: 'Mounted Defense',
+    drPctPerStack: 30,
+    label: 'Mounted Defense',
+    conditionLabel: 'While mounted on Glacial Snapper',
+    dependsOn: ctx => ctx.isMounted,
+  },
 ]
 
 export function getActiveDefensivePerkSources(
@@ -101,9 +109,10 @@ export function getActiveDefensivePerkSources(
   adaptivePlateTriggered: boolean = false,
   inDarkness: boolean = true,
   rageActive: boolean = false,
+  isMounted: boolean = false,
 ): Array<{ name: string; defPct: number; isFlat?: boolean; condition: string; potencyCapped?: boolean }> {
   const out: Array<{ name: string; defPct: number; isFlat?: boolean; condition: string; potencyCapped?: boolean }> = []
-  const ctx: DefensivePerkSourceContext = { hpFillPct, adaptivePlateTriggered, inDarkness, rageActive }
+  const ctx: DefensivePerkSourceContext = { hpFillPct, adaptivePlateTriggered, inDarkness, rageActive, isMounted }
 
   for (const def of DEFENSIVE_PERK_SOURCES) {
     const amt = perks[def.perkName] ?? 0

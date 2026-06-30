@@ -20,7 +20,7 @@
   import { MOUNT_RUNE_DEFS } from './data/mountRunes'
   import { getDraconicColorDmgMultiplier } from './data/draconicColorEffects'
   import { applyDraconicBonuses, getDraconicBonuses } from './data/draconicRunes'
-  import { calculateHealBoost } from './data/HealBoost'
+  import { calculateHealBoost, type HealSource } from './data/HealBoost'
   import { roundMultiplier } from './lib/utils'
   import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage } from './data/selfDamagePerks'
   import { resolveDamageTypes } from './lib/damageTypeResolve'
@@ -35,7 +35,7 @@
   
   $: _activeDefensivePerkSources = (() => {
     const baseSources = getActiveDefensivePerkSources(
-      perks, _hpFillPct, _adaptivePlateTriggered, _effectiveInDarkness, _ragePotency > 0
+      perks, _hpFillPct, _adaptivePlateTriggered, _effectiveInDarkness, _ragePotency > 0, mountActive
     )
     let potMult = 1
     
@@ -108,20 +108,24 @@
   })
   $: _healScalingResult = calculateHealBoost(_healScalingCtx)
   $: _activeHealEntries = _healScalingResult.entries.filter(e => !disabledHealBoosts.has(e.sourceName))
+  $: _typedHealBoostEntries = _typedBoostEntries
+    .filter(e => e.healMult !== 1)
+    .map(e => ({ sourceName: e.perkName, rawMultiplier: e.healMult, condition: e.condition, sourceType: 'perk' as HealSource }))
+  $: _allHealEntries = [..._activeHealEntries, ..._typedHealBoostEntries]
   $: wardingPct = (stats.warding ?? 0) / 100
   $: wardingDebuffMult = Math.max(0, 1 - wardingPct)
   $: _healFinalMultiplier = (() => {
-    const baseMult = _activeHealEntries.reduce((acc, e) => acc * e.rawMultiplier, 1.0)
+    const baseMult = _allHealEntries.reduce((acc, e) => acc * e.rawMultiplier, 1.0)
     return baseMult
   })()
   $: _healFinalMultiplierNoLevel = (() => {
-    const baseMult = _activeHealEntries
+    const baseMult = _allHealEntries
       .filter(e => e.sourceName !== 'Level Healing')
       .reduce((acc, e) => acc * e.rawMultiplier, 1.0)
     return baseMult
   })()
 
-  $: _curseRipHealMult = _activeHealEntries
+  $: _curseRipHealMult = _allHealEntries
     .filter(e => e.sourceName !== 'Level Healing')
     .reduce((acc, e) => acc * e.rawMultiplier, 1.0)
 
@@ -1980,10 +1984,10 @@
       {/if}
     </div>
   {/if}
-  {#if _healScalingResult.entries.length > 0}
+  {#if _allHealEntries.length > 0}
     <div class="da-boost-row" style="margin-top:8px">
       <span class="da-heal-label">✦ Heal</span>
-      {#each _healScalingResult.entries as entry}
+      {#each _allHealEntries as entry}
         {@const isDisabled = disabledHealBoosts.has(entry.sourceName)}
         <button
           class="da-boost-chip da-boost-chip--heal"

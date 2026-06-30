@@ -213,10 +213,9 @@
   }
 
   function getApplicableBoosts(k: string, isHeal: boolean): Array<{ perkName: string; label: string; mult: number }> {
-    if (isHeal) return []
     return typedBoostEntries
-      .filter(e => e.dmgMult !== 1 && e.types.includes(k))
-      .map(e => ({ perkName: e.perkName, label: e.label, mult: e.dmgMult }))
+      .filter(e => e.types.includes(k) && (isHeal ? e.healMult !== 1 : e.dmgMult !== 1))
+      .map(e => ({ perkName: e.perkName, label: e.label, mult: isHeal ? e.healMult : e.dmgMult }))
   }
 
   $: computedHits = typedBoostEntries && weaponHits.map((hit): ComputedHit => {
