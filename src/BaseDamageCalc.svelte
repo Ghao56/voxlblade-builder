@@ -591,83 +591,107 @@
                             class:bdc-hit-type-chunk--luminescent={t.isLuminescent || t.isChainLightning}
                             class:bdc-hit-type-chunk--crit={(showCritValues && !t.isCritExempt) || t.forceCrit}>
                             <div class="bdc-hit-type-top">
-                              {#if (showCritValues && !t.isCritExempt) || t.forceCrit}
-                                <span class="bdc-crit-inline-icon"><CritIcon size={12} /></span>
-                              {/if}
-                              <span class="bdc-hit-type-val">{fmt(((showCritValues && !t.isCritExempt) || t.forceCrit) ? t.critVal : t.raw)}</span>
-                              <span class="bdc-hit-type-label">{t.label}{t.isHeal && t.label.toLowerCase() !== 'heal' ? ' Heal' : ''}</span>
-                              {#if t.isLuminescent}
-                                <span class="bdc-lum-badge" title="Luminescent Fervor: 5% × perk amount of this hit's damage">✦ Luminescent</span>
-                              {/if}
-                              {#if t.isChainLightning}
-                                <span class="bdc-lum-badge bdc-chain-badge" title="Lightning Cloak: 1/3 of hit damage as Air+Magic chain lightning (up to 4 targets)">Chain</span>
-                              {/if}
-                              {#if t.isCurseRip}
-                                <span class="bdc-lum-badge bdc-curse-rip-badge" title="Curse Rip: 1/60 of damage dealt as lifesteal (requires debuffed opponent)">✦ Curse Rip</span>
-                              {/if}
-                              {#if hit.group === 'Rune' && draconicRunesBonus[t.label.toLowerCase()]}
-                                <span class="bdc-dr-badge" title="Draconic Bonus: +{+(draconicRunesBonus[t.label.toLowerCase()] || 0).toFixed(4)} {t.label} damage type">
-                                  ✦ +{+(draconicRunesBonus[t.label.toLowerCase()] || 0).toFixed(4)}
-                                </span>
-                              {/if}
+                              <div class="bdc-hit-type-val-row">
+                                {#if (showCritValues && !t.isCritExempt) || t.forceCrit}
+                                  <span class="bdc-crit-inline-icon"><CritIcon size={12} /></span>
+                                {/if}
+                                <span class="bdc-hit-type-val">{fmt(((showCritValues && !t.isCritExempt) || t.forceCrit) ? t.critVal : t.raw)}</span>
+                              </div>
+                              <div class="bdc-hit-type-label-row">
+                                <span class="bdc-hit-type-label">{t.label}{t.isHeal && t.label.toLowerCase() !== 'heal' ? ' Heal' : ''}</span>
+                                {#if t.isLuminescent}
+                                  <span class="bdc-lum-badge" title="Luminescent Fervor: 5% × perk amount of this hit's damage">✦ Luminescent</span>
+                                {/if}
+                                {#if t.isChainLightning}
+                                  <span class="bdc-lum-badge bdc-chain-badge" title="Lightning Cloak: 1/3 of hit damage as Air+Magic chain lightning (up to 4 targets)">Chain</span>
+                                {/if}
+                                {#if t.isCurseRip}
+                                  <span class="bdc-lum-badge bdc-curse-rip-badge" title="Curse Rip: 1/60 of damage dealt as lifesteal (requires debuffed opponent)">✦ Curse Rip</span>
+                                {/if}
+                                {#if hit.group === 'Rune' && draconicRunesBonus[t.label.toLowerCase()]}
+                                  <span class="bdc-dr-badge" title="Draconic Bonus: +{+(draconicRunesBonus[t.label.toLowerCase()] || 0).toFixed(4)} {t.label} damage type">
+                                    ✦ +{+(draconicRunesBonus[t.label.toLowerCase()] || 0).toFixed(4)}
+                                  </span>
+                                {/if}
+                              </div>
                             </div>
                             <div class="bdc-hit-type-formula">
-                              <span class="bdc-mini-num">{fmt(t.typeBase)}</span>
+                              <div class="bdc-fr">
+                                <span class="bdc-fr-label">Base Damage</span>
+                                <span class="bdc-fr-val">{fmt(t.typeBase)}</span>
+                              </div>
                               {#if t.scalingMult !== 1}
-                                <span class="bdc-mini-op">×</span>
-                                <span class="bdc-mini-chip bdc-mini-chip--scaling" title="Scaling">{fmtMult(t.scalingMult)}</span>
+                                <div class="bdc-fr">
+                                  <span class="bdc-fr-label">Scaling</span>
+                                  <span class="bdc-fr-val bdc-fr-val--scaling">× {fmtMult(t.scalingMult)}</span>
+                                </div>
                               {/if}
                               {#if t.applicableBoosts && t.applicableBoosts.length > 0}
                                 {#each t.applicableBoosts as boost}
-                                  <span class="bdc-mini-op">×</span>
-                                  <span class="bdc-mini-chip" 
-                                    class:bdc-mini-chip--rage={boost.perkName === 'Rage'} 
-                                    class:bdc-mini-chip--glyph={boost.perkName === 'Glyph Conduit'} 
-                                    title={boost.label}>
-                                    {#if boost.perkName === 'Rage'}💢{/if}{fmtMult(boost.mult)}
-                                  </span>
+                                  <div class="bdc-fr">
+                                    <span class="bdc-fr-label">{boost.label}</span>
+                                    <span class="bdc-fr-val" 
+                                      class:bdc-fr-val--rage={boost.perkName === 'Rage'} 
+                                      class:bdc-fr-val--glyph={boost.perkName === 'Glyph Conduit'}>× {fmtMult(boost.mult)}</span>
+                                  </div>
                                 {/each}
                               {/if}
                               {#if t.combatMult !== 1}
-                                <span class="bdc-mini-op">×</span>
-                                <span class="bdc-mini-chip bdc-mini-chip--combat" title="Combat multipliers">{Number(t.combatMult.toFixed(4))}</span>
+                                <div class="bdc-fr">
+                                  <span class="bdc-fr-label">Combat Multipliers</span>
+                                  <span class="bdc-fr-val bdc-fr-val--combat">× {Number(t.combatMult.toFixed(4))}</span>
+                                </div>
                               {/if}
-
                               {#if t.typeDebuffMult !== 1 && !t.isHeal}
-                                <span class="bdc-mini-op">×</span>
-                                <span class="bdc-mini-chip bdc-mini-chip--debuff" title={(_debuffTypeLabels[t.key] ?? ['?']).join(', ')}>{Number(t.typeDebuffMult.toFixed(4))}</span>
+                                <div class="bdc-fr">
+                                  <span class="bdc-fr-label">Debuffs ({(_debuffTypeLabels[t.key] ?? ['?']).join(', ')})</span>
+                                  <span class="bdc-fr-val bdc-fr-val--debuff">× {Number(t.typeDebuffMult.toFixed(4))}</span>
+                                </div>
                               {/if}
                               {#if selfDebuffDamageMult !== 1 && !t.isHeal}
-                                <span class="bdc-mini-op">×</span>
-                                <span class="bdc-mini-chip bdc-mini-chip--selfdebuff" title="Self-Debuff multiplier (Weakness)">{Number(selfDebuffDamageMult.toFixed(4))}</span>
+                                <div class="bdc-fr">
+                                  <span class="bdc-fr-label">Self-Debuff (Weakness)</span>
+                                  <span class="bdc-fr-val bdc-fr-val--selfdebuff">× {Number(selfDebuffDamageMult.toFixed(4))}</span>
+                                </div>
                               {/if}
                               {#if antiHealSelfMult !== 1 && t.isHeal}
-                                <span class="bdc-mini-op">×</span>
-                                <span class="bdc-mini-chip bdc-mini-chip--selfdebuff" title="Anti Heal (Self)">{Number(antiHealSelfMult.toFixed(4))}</span>
+                                <div class="bdc-fr">
+                                  <span class="bdc-fr-label">Anti Heal (Self)</span>
+                                  <span class="bdc-fr-val bdc-fr-val--selfdebuff">× {Number(antiHealSelfMult.toFixed(4))}</span>
+                                </div>
                               {/if}
                               {#if t.healBoostMult !== undefined}
-                                <span class="bdc-mini-op">×</span>
-                                <span class="bdc-mini-chip bdc-mini-chip--healboost" title="Heal Boost">×{Number(t.healBoostMult.toFixed(4))}</span>
+                                <div class="bdc-fr">
+                                  <span class="bdc-fr-label">Heal Boost</span>
+                                  <span class="bdc-fr-val bdc-fr-val--healboost">× {Number(t.healBoostMult.toFixed(4))}</span>
+                                </div>
                               {/if}
                               {#if t.weaponBoostMult !== 1}
-                                <span class="bdc-mini-op">×</span>
-                                <span class="bdc-mini-chip bdc-mini-chip--weaponboost" title={t.weaponBoostLabel ?? 'Weapon-specific boost'}>
-                                  {fmtMult(t.weaponBoostMult)}
-                                </span>
+                                <div class="bdc-fr">
+                                  <span class="bdc-fr-label">{t.weaponBoostLabel ?? 'Weapon Boost'}</span>
+                                  <span class="bdc-fr-val bdc-fr-val--weaponboost">× {fmtMult(t.weaponBoostMult)}</span>
+                                </div>
                               {/if}
                               {#if t.defMult !== 1}
-                                <span class="bdc-mini-op">×</span>
-                                <span class="bdc-mini-chip bdc-mini-chip--def" class:bdc-mini-chip--amplify={t.defMult > 1} title={`Enemy def ${fmt(t.enemyDefPct)}% vs pen ${fmt(armorPen)}`}>{fmtMult(t.defMult)}</span>
+                                <div class="bdc-fr">
+                                  <span class="bdc-fr-label">Defense ({fmt(t.enemyDefPct)}% / Pen {fmt(armorPen)})</span>
+                                  <span class="bdc-fr-val bdc-fr-val--def" class:bdc-fr-val--amplify={t.defMult > 1}>× {fmtMult(t.defMult)}</span>
+                                </div>
                               {/if}
-                              <span class="bdc-mini-op">=</span>
-                              <span class="bdc-mini-result" style="--tc:{t.color}">{fmt(t.raw)}</span>
+                              <div class="bdc-fr-divider"></div>
+                              <div class="bdc-fr bdc-fr--result">
+                                <span class="bdc-fr-label">Final Damage</span>
+                                <span class="bdc-fr-val bdc-fr-val--result" style="--tc:{t.color}">{fmt(t.raw)}</span>
+                              </div>
                               {#if (showCritValues && !t.isCritExempt) || t.forceCrit}
-                                <span class="bdc-mini-op">×</span>
-                                <span class="bdc-mini-chip bdc-mini-chip--crit" title={t.forceCrit ? 'Guaranteed crit' : 'Crit damage multiplier'}>
-                                  <CritIcon size={9}/>{fmtMult(critDmgMult / 100)}
-                                </span>
-                                <span class="bdc-mini-op">=</span>
-                                <span class="bdc-mini-result bdc-mini-result--crit" style="--tc:{t.color}">{fmt(t.critVal)}</span>
+                                <div class="bdc-fr">
+                                  <span class="bdc-fr-label">{t.forceCrit ? 'Guaranteed Crit' : 'Crit Multiplier'}</span>
+                                  <span class="bdc-fr-val bdc-fr-val--crit">× {fmtMult(critDmgMult / 100)}</span>
+                                </div>
+                                <div class="bdc-fr bdc-fr--result">
+                                  <span class="bdc-fr-label">Crit Damage</span>
+                                  <span class="bdc-fr-val bdc-fr-val--result bdc-fr-val--crit" style="--tc:{t.color}">{fmt(t.critVal)}</span>
+                                </div>
                               {/if}
                             </div>
                           </div>
@@ -1199,11 +1223,12 @@
   display: flex;
   flex-direction: column;
   gap: 0;
-  padding: 6px 12px;
+  padding: 4px 10px;
   border-radius: 11px;
   background: color-mix(in srgb, var(--tc) 12%, transparent);
   border: 1px solid color-mix(in srgb, var(--tc) 30%, transparent);
   transition: box-shadow .2s, border-color .2s;
+  position: relative;
 }
 .bdc-hit-type-chunk:hover {
   box-shadow: 0 0 18px color-mix(in srgb, var(--tc) 35%, transparent);
@@ -1214,17 +1239,17 @@
 }
 .bdc-hit-type-val {
   font-family: 'Courier New', monospace;
-  font-size: 1.65rem;
+  font-size: 1.15rem;
   font-weight: 900;
   color: var(--tc, #e8e4da);
   text-shadow:
-    0 0 20px color-mix(in srgb, var(--tc) 75%, transparent),
-    0 0 8px  color-mix(in srgb, var(--tc) 45%, transparent);
+    0 0 14px color-mix(in srgb, var(--tc) 65%, transparent),
+    0 0 6px  color-mix(in srgb, var(--tc) 35%, transparent);
   letter-spacing: -.02em;
   line-height: 1;
 }
 .bdc-hit-type-label {
-  font-size: .58rem;
+  font-size: .52rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .12em;
@@ -1239,95 +1264,138 @@
 
 .bdc-hit-type-top {
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+}
+.bdc-hit-type-val-row {
+  display: flex;
   align-items: baseline;
-  gap: 4px;
+  gap: 3px;
+}
+.bdc-hit-type-label-row {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  flex-wrap: wrap;
 }
 .bdc-dr-badge {
-  font-size: .5rem;
+  font-size: .45rem;
   font-weight: 700;
   color: #c084fc;
   background: rgba(192,132,252,.12);
   border: 1px solid rgba(192,132,252,.3);
-  padding: 1px 5px;
+  padding: 1px 4px;
   border-radius: 3px;
   text-transform: uppercase;
   letter-spacing: .05em;
 }
 .bdc-chain-badge {
-  font-size: .5rem;
+  font-size: .45rem;
   font-weight: 700;
   font-family: 'Courier New', monospace;
   color: #AAFFDB;
   background: rgba(170,255,219,.12);
   border: 1px solid rgba(170,255,219,.3);
-  padding: 1px 5px;
+  padding: 1px 4px;
   border-radius: 3px;
   text-transform: uppercase;
   letter-spacing: .05em;
 }
 .bdc-curse-rip-badge {
-  font-size: .5rem;
+  font-size: .45rem;
   font-weight: 700;
   font-family: 'Courier New', monospace;
   color: #e879f9;
   background: rgba(232,121,249,.12);
   border: 1px solid rgba(232,121,249,.3);
-  padding: 1px 5px;
+  padding: 1px 4px;
   border-radius: 3px;
   text-transform: uppercase;
   letter-spacing: .05em;
 }
 .bdc-hit-type-formula {
   display: flex;
-  align-items: center;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 3px;
-  margin-top: 3px;
-  padding-top: 3px;
-  border-top: 1px dashed color-mix(in srgb, var(--tc) 25%, transparent);
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--surface, #141715);
+  border: 1px solid rgba(255,255,255,.1);
+  box-shadow: 0 8px 24px rgba(0,0,0,.6);
+  min-width: 180px;
+
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 100;
+
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(4px);
+  transition: opacity .18s ease, transform .18s ease;
 }
-.bdc-mini-num {
-  font-family: 'Courier New', monospace;
-  font-size: .72rem;
-  font-weight: 700;
-  color: var(--ink-muted, #8a8d85);
-  opacity: .82;
+.bdc-hit-type-chunk:hover .bdc-hit-type-formula {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
 }
-.bdc-mini-op {
+.bdc-hit-type-formula::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: 14px;
+  width: 8px;
+  height: 8px;
+  background: var(--surface, #141715);
+  border-left: 1px solid rgba(255,255,255,.1);
+  border-top: 1px solid rgba(255,255,255,.1);
+  transform: rotate(45deg);
+}
+.bdc-fr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.bdc-fr-label {
   font-size: .6rem;
+  font-weight: 600;
   color: var(--ink-muted, #8a8d85);
-  opacity: .4;
+  white-space: nowrap;
 }
-.bdc-mini-chip {
+.bdc-fr-val {
   font-family: 'Courier New', monospace;
-  font-size: .65rem;
+  font-size: .68rem;
   font-weight: 800;
-  padding: 1px 5px;
-  border-radius: 5px;
-  background: rgba(255,255,255,.05);
-  border: 1px solid rgba(255,255,255,.08);
   color: var(--ink, #e8e4da);
+  text-align: right;
+  flex-shrink: 0;
 }
-.bdc-mini-chip--scaling { color: #34d399; border-color: rgba(52,211,153,.25); background: rgba(52,211,153,.06); }
-.bdc-mini-chip--rage    { color: #f70201; border-color: rgba(247,2,1,.3);    background: rgba(247,2,1,.07); }
-.bdc-mini-chip--combat  { color: #34d399; border-color: rgba(52,211,153,.25); background: rgba(52,211,153,.06); }
-.bdc-mini-chip--def     { color: #f87171; border-color: rgba(248,113,113,.25); background: rgba(248,113,113,.06); }
-.bdc-mini-chip--amplify { color: #fbbf24; border-color: rgba(251,191,36,.3); background: rgba(251,191,36,.07); }
-.bdc-mini-chip--crit    {
-  display: inline-flex; align-items: center; gap: 3px;
-  color: #e2b203; border-color: rgba(226,178,3,.3); background: rgba(226,178,3,.1);
-}
-.bdc-mini-result {
-  font-family: 'Courier New', monospace;
-  font-size: .8rem;
+.bdc-fr--result {
   font-weight: 900;
+}
+.bdc-fr--result .bdc-fr-label {
   color: var(--tc, #e8e4da);
+  font-weight: 700;
 }
-.bdc-mini-result--crit {
-  color: #e2b203;
-  font-size: .78rem;
-  text-shadow: 0 0 8px rgba(226,178,3,.4);
+.bdc-fr-divider {
+  height: 1px;
+  background: rgba(255,255,255,.08);
+  margin: 2px 0;
 }
+.bdc-fr-val--scaling    { color: #34d399; }
+.bdc-fr-val--rage       { color: #f70201; }
+.bdc-fr-val--glyph      { color: #35e0c3; }
+.bdc-fr-val--combat     { color: #34d399; }
+.bdc-fr-val--debuff     { color: #ff9349; }
+.bdc-fr-val--selfdebuff { color: #a855f7; }
+.bdc-fr-val--healboost  { color: #4ade80; }
+.bdc-fr-val--weaponboost { color: #fbbf24; }
+.bdc-fr-val--def        { color: #f87171; }
+.bdc-fr-val--amplify    { color: #fbbf24; }
+.bdc-fr-val--crit       { color: #e2b203; }
+.bdc-fr-val--result     { font-weight: 900; }
 .bdc-hit-fin { font-size: .65rem; color: #facc15; }
 .bdc-crit-inline-icon {
   display: inline-flex;
@@ -1353,10 +1421,6 @@
 }
 .bdc-hit-type-chunk--weaponboost {
   box-shadow: 0 0 8px color-mix(in srgb, var(--tc) 50%, #fbbf24);
-}
-.bdc-mini-chip--weaponboost {
-  display: inline-flex; align-items: center; gap: 3px;
-  color: #fbbf24; border-color: rgba(251,191,36,.3); background: rgba(251,191,36,.1);
 }
 .bdc-hit-type-chunk--heal {
   border-color: rgba(74,222,128,.35) !important;
@@ -1385,25 +1449,5 @@
   opacity: .75;
   text-align: center;
   letter-spacing: .03em;
-}
-.bdc-mini-chip--debuff {
-  color: #ff9349;
-  border-color: rgba(255, 147, 73, 0.3);
-  background: rgba(255, 147, 73, 0.08);
-}
-.bdc-mini-chip--selfdebuff {
-  color: #a855f7;
-  border-color: rgba(168, 85, 247, 0.3);
-  background: rgba(168, 85, 247, 0.08);
-}
-.bdc-mini-chip--healboost {
-  color: #4ade80;
-  border-color: rgba(74,222,128,.3);
-  background: rgba(74,222,128,.08);
-}
-.bdc-mini-chip--glyph {
-  color: #35e0c3;
-  border-color: rgba(53, 224, 195, 0.35);
-  background: rgba(53, 224, 195, 0.12);
 }
 </style>
