@@ -1047,7 +1047,7 @@
       "Offensive",
       "Weapon Art",
       "Guardbreak",
-      "Self-damage",
+      "Self-Damage",
       "Weapon"
     ]
   },
@@ -1155,7 +1155,6 @@
       "Damage Boost",
       "Poise",
       "Buff",
-      "Incomplete",
       "Armor"
     ]
   },
@@ -1287,7 +1286,6 @@
     "tags": [
       "Offensive",
       "Debuff",
-      "Incomplete",
       "Weapon"
     ]
   },
@@ -1316,6 +1314,7 @@
     "tags": [
       "Offensive",
       "Poise",
+      "RNG",
       "Weapon"
     ]
   },
@@ -1645,6 +1644,7 @@
       "Finisher",
       "Guardbreak",
       "Self-Damage",
+      "Healing",
       "Incomplete",
       "Weapon"
     ]
@@ -1848,7 +1848,6 @@
       "Damage Boost",
       "Offensive",
       "Healing",
-      "Incomplete",
       "Guild"
     ]
   },
@@ -2223,7 +2222,6 @@
     "tags": [
       "Debuff",
       "RNG",
-      "Incomplete",
       "Weapon"
     ]
   },
@@ -2257,7 +2255,7 @@
   },
   {
     "name": "Pyre Bloom",
-    "description": "Upon using a Weapon Art, summon a stationary Pyrebloom minion that shoots igniting fireballs at nearby opponents. Their damage counts as Weapon Art damage, and shares the same Buffs as you. If the Weapon Art summoned a minion, spawn an additional Pyrebloom. Grants Burn potency.",
+    "description": "Upon using a Weapon Art, summon a stationary Pyrebloom minion that shoots igniting fireballs at nearby opponents. Their damage counts as Weapon Art damage, and shares the same Buffs as you. Grants Burn potency.",
     "tags": [
       "Weapon Art Activated",
       "Weapon Art",
@@ -2456,7 +2454,7 @@
   },
   {
     "name": "Roaring Heads",
-    "description": "Gain a high chance on hit to self-inflict a variety of Debuffs. Each unique Debuff grants an Attack Speed Bonus, and every tenth self-inflicted Debuff releases a roar that deals damage and Stuns. Additionally, gain a large amount of negative Warding, but reduce the effects of Weakeness and Shatter.",
+    "description": "Gain a high chance on hit to self-inflict a variety of Debuffs. Each unique Debuff grants an Attack Speed Bonus, and every tenth self-inflicted Debuff releases a roar that deals damage and Stuns. Additionally, gain a large amount of negative Warding, but reduce the potency of Weakness and Shatter.",
     "tags": [
       "Self-Debuff",
       "Attack Speed",
@@ -2791,7 +2789,6 @@
     "tags": [
       "Healing",
       "Weapon Art",
-      "Incomplete",
       "Armor"
     ]
   },
@@ -3214,7 +3211,8 @@
     "description": "Gain stacks of the neutral status Torpedos when hitting an opponent. Hitting an opponent with a Weapon Art or Rune begins to drain your Torpedos until empty, dealing Physical and Water Damage.",
     "tags": [
       "Offensive",
-      "Armor"
+      "Armor",
+      "Incomplete"
     ]
   },
   {
@@ -3587,6 +3585,7 @@
     "tags": [
       "Stat Boost",
       "Defensive",
+      "RNG",
       "Buff",
       "Incomplete",
       "Armor",
