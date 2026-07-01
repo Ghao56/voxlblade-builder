@@ -1914,7 +1914,7 @@
           </button>
         </div>
       {/if}
-      {#if _ragePotency > 0 || _vampireStacks > 0 || _photosynthesisStacks > 0}
+      {#if _ragePotency > 0 || _glyphConduitEntry || _vampireStacks > 0 || _photosynthesisStacks > 0}
         <div class="da-buff-list" style="margin-top: 8px;">
           {#if _ragePotency > 0}
             <span class="da-buff">
