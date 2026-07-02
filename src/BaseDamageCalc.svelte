@@ -15,6 +15,7 @@
   export let selfDebuffDamageMult: number = 1
   export let antiHealSelfMult: number = 1
   export let lightningCloakPct: number = 0
+  export let explosiveChargePct: number = 0
   export let m1Label: string = 'M1'
 
   boosts
@@ -212,6 +213,14 @@
     const r = Math.round(n * 10000) / 10000
     return Number.isInteger(r) ? String(r) : r.toFixed(4).replace(/\.?0+$/, '')
   }
+  function fmt4(n: number) {
+    const r = Math.round(n * 10000) / 10000
+    return Number.isInteger(r) ? String(r) : r.toFixed(4).replace(/\.?0+$/, '')
+  }
+  function fmt1(n: number) {
+    const r = Math.round(n * 10) / 10
+    return Number.isInteger(r) ? String(r) : r.toFixed(1)
+  }
 
   function fmtMult(n: number) {
     return Number.isInteger(n) ? String(n) : n.toFixed(4).replace(/\.?0+$/, '')
@@ -228,6 +237,7 @@
     isHeal: boolean
     isLuminescent?: boolean
     isChainLightning?: boolean
+    isExplosiveCharge?: boolean
     isCurseRip?: boolean
     forceCrit: boolean
     isCritExempt?: boolean
@@ -296,8 +306,8 @@
         (isHeal ? 1 : _activeDebuffDamageMult * typeDebuffMult) * (isHeal ? 1 : selfDebuffDamageMult) *
         (isHeal ? antiHealSelfMult : 1)
 
-      const critVal = Math.round(raw * critDmgMult / 100 * 10000) / 10000
-      
+      const critVal = raw * critDmgMult / 100
+
       return {
         key: k, label: info.label, color: info.color,
         typeBase, scalingMult: hit.scalingMult, combatMult: hit.combatMult,
@@ -367,6 +377,36 @@
       }
     }
 
+    if (!isHeal && explosiveChargePct > 0 && hit.group === 'WA') {
+      const preMitSum  = computePreMitigationBase(hit)
+      const preMitBase = preMitSum * _activeDebuffDamageMult * selfDebuffDamageMult
+
+      if (preMitBase > 0) {
+        const explosiveTotal = preMitBase * explosiveChargePct
+        const ecResolvedTypes = resolveDamageTypes({ physical: 0.5, fire: 0.5 }, perkDmgTypeBonuses)
+
+        for (const [k, mult] of Object.entries(ecResolvedTypes)) {
+          const info = DMG_TYPE_MAP.get(k) ?? { label: k, color: '#e8e4da' }
+          const applicableBoosts = getApplicableBoosts(k, false)
+          const typedMultUsed = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
+          const ecDebuffMult = _activeDebuffTypeDamageMult[k] ?? 1
+          const ecDefPct  = defPctForType(k)
+          const ecDefMult = calcArmorMult(ecDefPct, penDecimal).mult
+          const ecTypeBase = explosiveTotal * mult
+          const ecRaw       = ecTypeBase * typedMultUsed * ecDefMult
+
+          types.push({
+            key: k, label: info.label, color: info.color,
+            typeBase: ecTypeBase, scalingMult: 1, combatMult: 1,
+            applicableBoosts, weaponBoostMult: 1, typeDebuffMult: ecDebuffMult,
+            defMult: ecDefMult, enemyDefPct: ecDefPct,
+            raw: ecRaw, critVal: Math.round(ecRaw * critDmgMult / 100 * 10000) / 10000,
+            isHeal: false, isExplosiveCharge: true, forceCrit: false,
+          })
+        }
+      }
+    }
+
     if (!isHeal && curseRipPerkAmount > 0 && curseRipActiveDebuffCount > 0) {
       const preMitSum  = computePreMitigationBase(hit)
       const preMitBase = preMitSum * _activeDebuffDamageMult * selfDebuffDamageMult
@@ -410,9 +450,9 @@
   // ── Totals ──────────────────────────────────────────────────
   function hitTypeSum(hit: ComputedHit, useCrit: boolean, includeCount: boolean = false): number {
     const sum = hit.types.filter(t => !t.isCurseRip).reduce((s, t) => s + ((useCrit || t.forceCrit) ? t.critVal : t.raw), 0)
-    return Math.round(sum * (includeCount ? hit.count : 1) * 100) / 100
+    return sum * (includeCount ? hit.count : 1)
   }
-  function groupTotalSum(list: ComputedHit[], useCrit: boolean): number {return Math.round(list.filter(h => !h.isHeal).reduce((s, h) =>s +h.types.filter(t => !t.isCurseRip).reduce((ts, t) => ts + ((useCrit || t.forceCrit) ? t.critVal : t.raw),0) * h.count,0) * 100) / 100}
+  function groupTotalSum(list: ComputedHit[], useCrit: boolean): number {return list.filter(h => !h.isHeal).reduce((s, h) =>s +h.types.filter(t => !t.isCurseRip).reduce((ts, t) => ts + ((useCrit || t.forceCrit) ? t.critVal : t.raw),0) * h.count, 0)}
 
   import { onMount } from 'svelte'
   onMount(() => {
@@ -585,7 +625,7 @@
                   {#if grp.label !== 'Perk'}
                     <span class="bdc-grp-total" class:bdc-grp-total--crit={showCritValues}>
                       {#if showCritValues}<CritIcon size={10}/>{/if}
-                      {fmt(gTotal)}
+                      {fmt1(gTotal)}
                     </span>
                   {/if}
                 </div>
@@ -648,12 +688,15 @@
                                 {#if t.isChainLightning}
                                   <span class="bdc-lum-badge bdc-chain-badge" title="Lightning Cloak: 1/3 of hit damage as Air+Magic chain lightning (up to 4 targets)">Chain</span>
                                 {/if}
+                                {#if t.isExplosiveCharge}
+                                  <span class="bdc-lum-badge bdc-explosive-badge" title="Explosive Charge: 100% of WA pre-boost damage as Physical+Fire explosion">✦ Explosive</span>
+                                {/if}
                                 {#if t.isCurseRip}
                                   <span class="bdc-lum-badge bdc-curse-rip-badge" title="Curse Rip: 1/60 of damage dealt as lifesteal (requires debuffed opponent)">✦ Curse Rip</span>
                                 {/if}
                                 {#if hit.group === 'Rune' && draconicRunesBonus[t.label.toLowerCase()]}
-                                  <span class="bdc-dr-badge" title="Draconic Bonus: +{+(draconicRunesBonus[t.label.toLowerCase()] || 0).toFixed(4)} {t.label} damage type">
-                                    ✦ +{+(draconicRunesBonus[t.label.toLowerCase()] || 0).toFixed(4)}
+                                  <span class="bdc-dr-badge" title="Draconic Bonus: +{fmt((draconicRunesBonus[t.label.toLowerCase()] || 0))} {t.label} damage type">
+                                    ✦ +{fmt((draconicRunesBonus[t.label.toLowerCase()] || 0))}
                                   </span>
                                 {/if}
                               </div>
@@ -682,31 +725,31 @@
                               {#if t.combatMult !== 1}
                                 <div class="bdc-fr">
                                   <span class="bdc-fr-label">Combat Multipliers</span>
-                                  <span class="bdc-fr-val bdc-fr-val--combat">× {Number(t.combatMult.toFixed(4))}</span>
+                                  <span class="bdc-fr-val bdc-fr-val--combat">× {fmtMult(t.combatMult)}</span>
                                 </div>
                               {/if}
                               {#if t.typeDebuffMult !== 1 && !t.isHeal}
                                 <div class="bdc-fr">
                                   <span class="bdc-fr-label">Debuffs ({(_debuffTypeLabels[t.key] ?? ['?']).join(', ')})</span>
-                                  <span class="bdc-fr-val bdc-fr-val--debuff">× {Number(t.typeDebuffMult.toFixed(4))}</span>
+                                  <span class="bdc-fr-val bdc-fr-val--debuff">× {fmtMult(t.typeDebuffMult)}</span>
                                 </div>
                               {/if}
                               {#if selfDebuffDamageMult !== 1 && !t.isHeal}
                                 <div class="bdc-fr">
                                   <span class="bdc-fr-label">Self-Debuff (Weakness)</span>
-                                  <span class="bdc-fr-val bdc-fr-val--selfdebuff">× {Number(selfDebuffDamageMult.toFixed(4))}</span>
+                                  <span class="bdc-fr-val bdc-fr-val--selfdebuff">× {fmtMult(selfDebuffDamageMult)}</span>
                                 </div>
                               {/if}
                               {#if antiHealSelfMult !== 1 && t.isHeal}
                                 <div class="bdc-fr">
                                   <span class="bdc-fr-label">Anti Heal (Self)</span>
-                                  <span class="bdc-fr-val bdc-fr-val--selfdebuff">× {Number(antiHealSelfMult.toFixed(4))}</span>
+                                  <span class="bdc-fr-val bdc-fr-val--selfdebuff">× {fmtMult(antiHealSelfMult)}</span>
                                 </div>
                               {/if}
                               {#if t.healBoostMult !== undefined}
                                 <div class="bdc-fr">
                                   <span class="bdc-fr-label">Heal Boost</span>
-                                  <span class="bdc-fr-val bdc-fr-val--healboost">× {Number(t.healBoostMult.toFixed(4))}</span>
+                                  <span class="bdc-fr-val bdc-fr-val--healboost">× {fmtMult(t.healBoostMult)}</span>
                                 </div>
                               {/if}
                               {#if t.weaponBoostMult !== 1}
@@ -746,7 +789,7 @@
                         <span class="bdc-hit-type-sum-sep">=</span>
                           <span class="bdc-hit-type-sum" class:bdc-hit-type-sum--crit={showCritValues || hitForceCrit}>
                           {#if showCritValues || hitForceCrit}<CritIcon size={11}/>{/if}
-                          {fmt(hSumWithCount)}
+                          {fmt4(hSumWithCount)}
                         </span>
                         
                         {#if hit.isFinisher}<span class="bdc-hit-fin">✦</span>{/if}
@@ -1321,6 +1364,20 @@
   align-items: baseline;
   gap: 3px;
   flex-wrap: wrap;
+}
+.bdc-lum-badge {
+  font-size: .45rem;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  padding: 1px 4px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.bdc-explosive-badge {
+  color: #f97316;
+  background: rgba(249,115,22,.12);
+  border: 1px solid rgba(249,115,22,.3);
 }
 .bdc-dr-badge {
   font-size: .45rem;

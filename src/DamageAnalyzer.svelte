@@ -367,6 +367,7 @@
   $: _luminescentPct = (perks['Luminescent Fervor'] ?? 0) > 0 ? 0.05 * (perks['Luminescent Fervor'] ?? 0) : 0
   $: _lightningCloakActive = _allActiveBuffs.some(b => b.buffName === 'Lightning Cloak')
   $: _lightningCloakPct = _lightningCloakActive ? (1 / 3) : 0
+  $: _explosiveChargePct = (perks['Explosive Charge'] ?? 0) > 0 ? 1.0 : 0
 
   let disabledDebuffs = new Set<string>()
 
@@ -1658,6 +1659,7 @@
         } : {}),
       })
     }
+
     if (_activeRuneDmgDef && Object.keys(_activeRuneDmgDef.dmgTypes).length > 0) {
       const _runeIsHeal = _activeRuneDmgDef.isHealOnly ?? false
       const _runeDmgTypesWithBonus = _runeIsHeal
@@ -1711,16 +1713,10 @@
     return result
   })()
 
-  interface SelfDamageDisplaySource {
-    group: 'WA' | 'Rune'
-    label: string
-    result: { total: number; byType: Record<string, number> }
-  }
-
   const SELF_DAMAGE_APPLIES_TO_GROUP: Record<string, 'WA' | 'Rune'> = { wa: 'WA', rune: 'Rune' }
 
-  let enemiesHitUndeadMight = 1
-  $: if (!Number.isFinite(enemiesHitUndeadMight) || enemiesHitUndeadMight < 1) enemiesHitUndeadMight = 1
+  let enemiesHit = 1
+  $: if (!Number.isFinite(enemiesHit) || enemiesHit < 1) enemiesHit = 1
 
   function _sumPreBoostHitDamage(hits: BDCHit[], group: 'WA' | 'Rune', label?: string): number {
     return hits
@@ -1732,9 +1728,6 @@
       }, 0)
   }
 
-  $: _undeadMightDef = SELF_DAMAGE_PERK_DEFS.find(d => d.perkName === 'Undead Might')
-  $: _undeadMightAmt = perks['Undead Might'] ?? 0
-
   $: _defenseMultipliers = (() => {
     const mults: Record<string, number> = {}
     for (const row of _defenseRows) {
@@ -1743,58 +1736,59 @@
     return mults
   })()
 
-  $: _undeadMightSelfDmgBySource = (() => {
-    const sources: SelfDamageDisplaySource[] = []
-    for (const key of _undeadMightDef?.appliesTo ?? []) {
-      const group = SELF_DAMAGE_APPLIES_TO_GROUP[key]
-      if (!group) continue
+  interface SelfDamageSourceEntry {
+    def: SelfDamagePerkDef
+    amount: number
+    group: 'WA' | 'Rune'
+    label: string
+    result: { total: number; byType: Record<string, number> }
+  }
 
-      if (group === 'WA') {
-        const waLabels = [
-          ...new Set(
-            _bdcWeaponHits
-              .filter(h => h.group === 'WA' && !h.isHeal)
-              .map(h => h.label ?? selectedWA.name)
-          )
-        ]
-        for (const label of waLabels) {
-          const preBoostDmg = _bdcWeaponHits
-            .filter(h => h.group === 'WA' && !h.isHeal && (h.label ?? selectedWA.name) === label)
-            .reduce((sum, h) => {
-              const dmgTypesForCalc = h.baseDmgTypes ?? h.dmgTypes
-              const typeMultSum = Object.values(dmgTypesForCalc).reduce((s, m) => s + m, 0)
-              return sum + h.base * typeMultSum * h.scalingMult * _levelMult * h.count
-            }, 0)
-          if (_undeadMightAmt <= 0 || preBoostDmg <= 0) continue
-          const result = calcSelfDamage(
-            _undeadMightDef!, _undeadMightAmt, preBoostDmg,
-            enemiesHitUndeadMight, _defenseMultipliers
-          )
-          sources.push({ group, label, result })
-        }
-      } else if (group === 'Rune') {
-        const mountM1Dmg = (_activeMountRuneDef && mountActive)
-          ? _bdcWeaponHits
-              .filter(h => h.group === 'M1' && !h.isHeal)
-              .reduce((sum, h) => {
-                const dmgTypesForCalc = h.baseDmgTypes ?? h.dmgTypes
-                const typeMultSum = Object.values(dmgTypesForCalc).reduce((s, m) => s + m, 0)
-                return sum + h.base * typeMultSum * h.scalingMult * _levelMult * h.count
-              }, 0)
-          : 0
-        if (mountM1Dmg > 0) {
-          const result = calcSelfDamage(
-            _undeadMightDef!, _undeadMightAmt, mountM1Dmg,
-            enemiesHitUndeadMight, _defenseMultipliers
-          )
-          sources.push({ group: 'Rune', label: `${_activeMountRuneDef!.mountLabel} M1 (Mounted)`, result })
-        }
-        const runeLabels = [...new Set(_bdcWeaponHits.filter(h => h.group === 'Rune' && !h.isHeal).map(h => h.label))]
-        for (const label of runeLabels) {
-          const preBoostDmg = _sumPreBoostHitDamage(_bdcWeaponHits, 'Rune', label)
-          if (_undeadMightAmt <= 0 || preBoostDmg <= 0) continue
-          const result = calcSelfDamage(_undeadMightDef!, _undeadMightAmt, preBoostDmg, enemiesHitUndeadMight, _defenseMultipliers)
-          sources.push({ group: 'Rune', label: label ?? 'Rune', result })
+  $: _selfDamageSources = (() => {
+    const sources: SelfDamageSourceEntry[] = []
+    for (const def of SELF_DAMAGE_PERK_DEFS) {
+      const amount = perks[def.perkName] ?? 0
+      if (amount <= 0) continue
+
+      for (const key of def.appliesTo) {
+        const group = SELF_DAMAGE_APPLIES_TO_GROUP[key]
+        if (!group) continue
+
+        if (group === 'WA') {
+          const waLabels = [
+            ...new Set(
+              _bdcWeaponHits
+                .filter(h => h.group === 'WA' && !h.isHeal)
+                .map(h => h.label ?? selectedWA.name)
+            )
+          ]
+          for (const label of waLabels) {
+            const preBoostDmg = _sumPreBoostHitDamage(_bdcWeaponHits, 'WA', label)
+            if (preBoostDmg <= 0) continue
+            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliers)
+            sources.push({ def, amount, group, label, result })
+          }
+        } else if (group === 'Rune') {
+          const mountM1Dmg = (_activeMountRuneDef && mountActive)
+            ? _bdcWeaponHits
+                .filter(h => h.group === 'M1' && !h.isHeal)
+                .reduce((sum, h) => {
+                  const dmgTypesForCalc = h.baseDmgTypes ?? h.dmgTypes
+                  const typeMultSum = Object.values(dmgTypesForCalc).reduce((s, m) => s + m, 0)
+                  return sum + h.base * typeMultSum * h.scalingMult * _levelMult * h.count
+                }, 0)
+            : 0
+          if (mountM1Dmg > 0) {
+            const result = calcSelfDamage(def, amount, mountM1Dmg, enemiesHit, _defenseMultipliers)
+            sources.push({ def, amount, group, label: `${_activeMountRuneDef!.mountLabel} M1 (Mounted)`, result })
+          }
+          const runeLabels = [...new Set(_bdcWeaponHits.filter(h => h.group === 'Rune' && !h.isHeal).map(h => h.label))]
+          for (const label of runeLabels) {
+            const preBoostDmg = _sumPreBoostHitDamage(_bdcWeaponHits, 'Rune', label)
+            if (preBoostDmg <= 0) continue
+            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliers)
+            sources.push({ def, amount, group, label: label ?? 'Rune', result })
+          }
         }
       }
     }
@@ -2747,7 +2741,7 @@
 
 </div><!-- end da-wbd-outer -->
 
-{#if _undeadMightAmt > 0}
+{#if _selfDamageSources.length > 0}
 <div class="da-section da-section--selfdmg">
   <div class="da-section-title">Self Damage</div>
 
@@ -2757,57 +2751,51 @@
       type="number"
       min="1"
       step="1"
-      bind:value={enemiesHitUndeadMight}
+      bind:value={enemiesHit}
       class="da-selfdmg-input"
       aria-label="Enemies Hit"
     />
   </div>
 
-  {#if _undeadMightSelfDmgBySource.length === 0}
-    <p class="da-empty-hint">No current Weapon Art or Rune damage to scale Self Damage from.</p>
-  {:else}
-    <div class="da-pbd-list">
-      {#each _undeadMightSelfDmgBySource as src (src.group + ':' + src.label)}
-        <div class="da-pbd-card">
-          <div class="da-pbd-head">
-            <span class="da-pbd-name">Undead Might (Self Damage)</span>
-            <span class="da-pbd-amt">+{fmtNum(_undeadMightAmt)}</span>
-          </div>
-          <div class="da-pbd-badges">
-            <span class="da-pbd-badge" class:da-pbd-badge--wa={src.group === 'WA'} class:da-pbd-badge--rune={src.group === 'Rune'}>
-              {src.group}
-            </span>
-          </div>
-          <div class="da-pbd-condition">
-            From {src.label}{enemiesHitUndeadMight > 1 ? ` · split across ${enemiesHitUndeadMight} enemies hit` : ''}
-          </div>
+  <div class="da-pbd-list">
+    {#each _selfDamageSources as src (src.def.perkName + ':' + src.group + ':' + src.label)}
+      <div class="da-pbd-card">
+        <div class="da-pbd-head">
+          <span class="da-pbd-name">{src.def.label}</span>
+          <span class="da-pbd-amt">+{fmtNum(src.amount)}</span>
+        </div>
+        <div class="da-pbd-badges">
+          <span class="da-pbd-badge" class:da-pbd-badge--wa={src.group === 'WA'} class:da-pbd-badge--rune={src.group === 'Rune'}>
+            {src.group}
+          </span>
+        </div>
+        <div class="da-pbd-condition">
+          From {src.label}{enemiesHit > 1 ? ` · split across ${enemiesHit} enemies hit` : ''}
+        </div>
 
-          <div class="da-pbd-dmg-row">
-            <span class="da-pbd-ctx-label">Total Self Damage</span>
-            <div class="da-hits-row">
-              <div class="da-hit-card">
-                <div class="da-hit-chunk" style="--tc:var(--neg, #f87171)">
-                  <span class="da-hit-num" style="--tc:var(--neg, #f87171)">{fmtNum(src.result.total)}</span>
-                </div>
+        <div class="da-pbd-dmg-row">
+          <span class="da-pbd-ctx-label">Total Self Damage</span>
+          <div class="da-hits-row">
+            <div class="da-hit-card">
+              <div class="da-hit-chunk" style="--tc:var(--neg, #f87171)">
+                <span class="da-hit-num" style="--tc:var(--neg, #f87171)">{fmtNum(src.result.total)}</span>
               </div>
             </div>
           </div>
-
-          <div class="da-hits-row">
-            <div class="da-hit-chunk" style="--tc:{DMG_TYPE_COLORS.hex}">
-              <span class="da-hit-num" style="--tc:{DMG_TYPE_COLORS.hex}">{fmtNum(src.result.byType.hex ?? 0)}</span>
-              <span class="da-hit-type">Hex</span>
-            </div>
-            <span class="da-hit-plus">+</span>
-            <div class="da-hit-chunk" style="--tc:{DMG_TYPE_COLORS.earth}">
-              <span class="da-hit-num" style="--tc:{DMG_TYPE_COLORS.earth}">{fmtNum(src.result.byType.earth ?? 0)}</span>
-              <span class="da-hit-type">Earth</span>
-            </div>
-          </div>
         </div>
-      {/each}
-    </div>
-  {/if}
+
+        <div class="da-hits-row">
+          {#each Object.entries(src.result.byType) as [type, val], i}
+            <div class="da-hit-chunk" style="--tc:{DMG_TYPE_COLORS[type] ?? '#e8e4da'}">
+              <span class="da-hit-num" style="--tc:{DMG_TYPE_COLORS[type] ?? '#e8e4da'}">{fmtNum(val)}</span>
+              <span class="da-hit-type">{type.charAt(0).toUpperCase() + type.slice(1)}</span>
+            </div>
+            {#if i < Object.entries(src.result.byType).length - 1}<span class="da-hit-plus">+</span>{/if}
+          {/each}
+        </div>
+      </div>
+    {/each}
+  </div>
 </div>
 {/if}
 <!-- ══════════════════ DAMAGE SCALING ══════════════════ -->
@@ -3287,6 +3275,7 @@
   selfDebuffDamageMult={_selfDebuffDamageMult}
   antiHealSelfMult={_antiHealSelfMult}
   lightningCloakPct={_lightningCloakPct}
+  explosiveChargePct={_explosiveChargePct}
   m1Label={_activeMountRuneDef && mountActive ? 'M1/M2' : 'M1'}
   draconicRunesBonus={getDraconicBonuses({
     draconicRunesStacks: perks['Draconic Runes'] ?? 0,

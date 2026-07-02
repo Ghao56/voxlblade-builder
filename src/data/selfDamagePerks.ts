@@ -17,6 +17,15 @@ export const SELF_DAMAGE_PERK_DEFS: SelfDamagePerkDef[] = [
     drPctPerStack: 15,
     label: 'Undead Might (Self Damage)',
   },
+  {
+    perkName: 'Explosive Charge',
+    appliesTo: ['wa'],
+    selfDmgPct: 1.0,
+    dmgTypes: { fire: 0.5, physical: 0.5 },
+    drPctPerStack: 0,
+    label: 'Explosive Charge (Self Damage)',
+    note: 'Guardbreaks · More points only increase AoE and Stun',
+  },
 ]
 
 export function calcSelfDamage(
