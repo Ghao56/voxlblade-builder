@@ -121,7 +121,7 @@
   },
   {
     "name": "Bellowing Ember",
-    "description": "At below a certain HP threshold, gain a Damage Boost with a chance to apply Burn when dealing any Damage. Fire Damage in specific gains yet another Damage Boost.",
+    "description": "At below a certain HP threshold, gain a Damage Boost with a chance to inflict Burn when dealing any Damage. If an attack contains Fire Damage Type, the aforementioned Damage Boost is greater.",
     "tags": [
       "Damage Boost",
       "Debuff",
@@ -172,7 +172,7 @@
   },
   {
     "name": "Blessing",
-    "description": "Healing now has a low chance to apply various unmodified Buffs at varying potency.",
+    "description": "Healing now has a low chance to grant various standard Buffs at varying potency.",
     "tags": [
       "Buff",
       "RNG",
@@ -253,7 +253,7 @@
   },
   {
     "name": "Bomber Spirit",
-    "description": "Release your Spiritual Energy with an RMB, which will launch four Bomber projectiles that causes large explosions. Additionally, grants the Buff Bursting.",
+    "description": "Release your Spiritual Energy with an RMB, which will launch four Bomber projectiles that cause large explosions. Additionally, grants the Buff Bursting.",
     "tags": [
       "Spirit (Monk)",
       "Offensive",
@@ -264,7 +264,7 @@
   },
   {
     "name": "Bounce Momentum",
-    "description": "Jumping whilst possessing Bounce will grant you the Buff Tongue Shot for a brief duration. Tongue Shot causes you to lash at an enemy with a tongue upon using a Finisher, Stunning and rendering them temporarily immobile. Additionally increases the duration of Bounce.",
+    "description": "Jumping whilst possessing Bounce will grant you the Buff Tongue Shot for a brief duration. Tongue Shot causes you to lash at an enemy with a tongue upon using a Finisher, Stunning and rendering them temporarily immobile. Additionally, increases the duration of Bounce.",
     "tags": [
       "Offensive",
       "Finisher",
@@ -395,7 +395,7 @@
   },
   {
     "name": "Carrying Winds",
-    "description": "Take and deal more Knockback with Attacks. Additionally, moves that qualify as 'High Knockback' gains a Damage Boost and an Air Boost-scaling crit chance bonus.",
+    "description": "Take and deal more Knockback with Attacks. Additionally, moves that qualify as 'High Knockback' gain a Damage Boost and an Air Boost-scaling crit chance bonus.",
     "tags": [
       "Damage Boost",
       "Crit",
@@ -428,7 +428,7 @@
   },
   {
     "name": "Cauterize",
-    "description": "All instances of Burn you inflict on opponents now instead applies Singed. Singed counts as Burn for all related effects, but instead does a burst of Fire Damage on first application rather than over time.",
+    "description": "All instances of Burn you inflict on opponents now instead applies the Debuff Singed. Singed counts as Burn for all related effects, but instead does a burst of Fire Damage on first application rather than over time.",
     "tags": [
       "Offensive",
       "Debuff",
@@ -456,7 +456,7 @@
   },
   {
     "name": "Cinder Soul",
-    "description": "While afflicted with burn, it instead heals you and increases your movement speed. Additionally killing enemies afflicts Burn to yourself. Grants Burn Potency.",
+    "description": "While afflicted with Burn, it instead heals you and increases your movement speed. Additionally killing enemies afflicts Burn to yourself. Grants Burn Potency.",
     "tags": [
       "Healing",
       "Self-Debuff",
@@ -584,7 +584,7 @@
   },
   {
     "name": "Croakernaut Spirit",
-    "description": "Release your Spiritual Energy with an RMB, which summons Spiritual Croakernauts that grants Reinforce to all nearby Allies.",
+    "description": "Release your Spiritual Energy with an RMB, which summons Spiritual Croakernauts that grant Reinforce to all nearby Allies.",
     "tags": [
       "Spirit (Monk)",
       "Buff",
@@ -602,7 +602,7 @@
   },
   {
     "name": "Cryo Engine",
-    "description": "Gain a chance to inflict Frostbite on hits as well as converting all your Slows to it. Frostbite slows the opponent and additionally increases Air and Water Damage taken by a flat amount. Applying Frostbite grants you Tailwind.",
+    "description": "Gain a chance to inflict Frostbite on hits as well as converting all instances of Slowness you inflict to it. Frostbite slows the opponent and additionally increases Air and Water Damage taken by a flat amount. Inflicting Frostbite grants you Tailwind.",
     "tags": [
       "Buff",
       "Debuff",
@@ -631,15 +631,6 @@
     ]
   },
   {
-    "name": "Stored Corruption",
-    "description": "Increases the duration of Debuffs you inflict and receive. Additionally, all Damage you receive is granted a small Multiplier.",
-    "tags": [
-      "Debuff",
-      "Self-Debuff",
-      "Guild"
-    ]
-  },
-  {
     "name": "Cursed Bark",
     "description": "Gain a small chance to inflict a random Debuff against Attackers, guaranteed if you are not Blocking. Gain Damage Reduction against opponents with Debuffs that scales on the amount of unique ones on them.",
     "tags": [
@@ -652,7 +643,7 @@
   },
   {
     "name": "Cursed Experiment",
-    "description": "Using your Rune below 50% HP grants the Buffs Regeneration, Critical Boost, and Hexigen at high potency, but inflicts you with the Slowness afterwards.",
+    "description": "Using your Rune below 50% HP grants the Buffs Regeneration, Critical Boost, and Hexigen at high potency, but inflicts you with Slowness afterwards.",
     "tags": [
       "Rune Activated",
       "Buff",
@@ -665,7 +656,7 @@
   },
   {
     "name": "Cursed Flames",
-    "description": "Burn you apply now gains a Weakening effect, with an extended duration. Additionally, it now deals and scales half as Hex.",
+    "description": "Burn you inflict now gains a Weakening effect, dealing half its damage as Hex and gaining Hex Scaling whilst losing some Fire Scaling. Additionally, your Burn lasts longer.",
     "tags": [
       "Debuff",
       "Burn Potency",
@@ -693,7 +684,7 @@
   },
   {
     "name": "Dark Magic",
-    "description": "All sources of Magic Damage gains a small amount of Hex Damage Type. Take Hex self-damage when this triggers.",
+    "description": "All sources of Magic Damage gain a small amount of Hex Damage Type. Take Hex self-damage when this triggers.",
     "tags": [
       "Damage Boost",
       "Self-Damage",
@@ -802,7 +793,7 @@
   },
   {
     "name": "Divine Crash",
-    "description": "RMB'ing whilst in the air teleports you down to the floor in an explosion. Scales on Holy and Air as well as your distance from the floor.",
+    "description": "RMB'ing whilst in the air teleports you down to the floor in an explosion. Scales on Holy and Air, as well as your distance from the floor.",
     "tags": [
       "Offensive",
       "Finisher",
@@ -927,7 +918,7 @@
   },
   {
     "name": "Echo Incineration",
-    "description": "Half of your Fire Damage is converted into Air Damage and vise versa. Additionally, you have a chance to release a fiery tornado on hit that deals Fire and Air Damage whilst inflicting Burn. Grants Burn potency.",
+    "description": "Half of your Fire Damage is converted into Air Damage and vice versa. Additionally, you have a chance to release a fiery tornado on hit that deals Fire and Air Damage whilst inflicting Burn. Grants Burn potency.",
     "tags": [
       "Offensive",
       "Debuff",
@@ -980,7 +971,7 @@
   },
   {
     "name": "Engine",
-    "description": "Your Speed Boost as well as the Tailwind Buff increases your Attack Speed.",
+    "description": "Your Speed Boost, as well as the Tailwind Buff increases your Attack Speed.",
     "tags": [
       "Attack Speed",
       "Stat Boost",
@@ -1032,7 +1023,7 @@
   },
   {
     "name": "Exhaust",
-    "description": "During and after a short duration of using your Weapon Art, every hit is guaranteed to apply Burn.",
+    "description": "During and after a short duration of using your Weapon Art, every hit is guaranteed to inflict Burn.",
     "tags": [
       "Weapon Art Activated",
       "Buff",
@@ -1170,7 +1161,7 @@
   },
   {
     "name": "Fragrance Aura",
-    "description": "Heals with a Proc Coefficient or from consumables grants you the neutral status Fragrant Aura.",
+    "description": "Heals with a Proc Coefficient or from consumables grants you the neutral status Fragrance.",
     "tags": [
       "Buff",
       "Healing",
@@ -1192,7 +1183,7 @@
   },
   {
     "name": "Frenzy",
-    "description": "Rage grants a Movement Speed and universal Damage Multiplier, but cuts healing recieved in half and also multiplies Damage taken.",
+    "description": "Rage grants a Movement Speed and universal Damage Multiplier, but cuts healing received in half and also multiplies Damage taken.",
     "tags": [
       "Buff",
       "Damage Boost",
@@ -1310,7 +1301,7 @@
   },
   {
     "name": "Glacial Buildup",
-    "description": "Dealing damage applies ice crystals which add small water damage and flat poise damage to your attacks, upon reaching enough stacks or poise breaking the opponent shatter the crystals deal damage and high poise damage.",
+    "description": "Hitting opponents applies ice crystals which adds flat Water and Poise Damage to all incoming Attacks. At high enough stacks or upon Poisebreaking the opponent, the crystals shatter, dealing Water Damage and high Poise Damage.",
     "tags": [
       "Offensive",
       "Poise",
@@ -1362,7 +1353,7 @@
   },
   {
     "name": "Golem Guillotine",
-    "description": "Finishers that slam the ground creates a fissure-like shockwave that reaches ahead and behind yourself, dealing Earth Damage.",
+    "description": "Finishers that slam the ground create a fissure-like shockwave that reaches ahead and behind yourself, dealing Earth Damage.",
     "tags": [
       "Offensive",
       "Finisher",
@@ -1372,7 +1363,7 @@
   },
   {
     "name": "Gorecast",
-    "description": "Weapon Arts that deal Magic or Physical Damage inflicts Bleed, and Weapon Arts gain a Damage Boost against Bleeding opponents. Grants Bleed Potency.",
+    "description": "Weapon Arts that deal Magic or Physical Damage inflict Bleed. Additionally, Weapon Arts gain a Damage Boost against bleeding opponents. Gain Bleed Potency.",
     "tags": [
       "Weapon Art Activated",
       "Weapon Art",
@@ -1425,7 +1416,7 @@
   },
   {
     "name": "Grounded Despair",
-    "description": "Jumping and landing creates a small Hex shockwave, inflicting yourself with the Debuff Despair. The shockwave has a Proc Coefficient.",
+    "description": "Jumping and landing creates a small Hex shockwave, inflicting yourself with the Debuff Despair, affected by your related perks. The shockwave has a Proc Coefficient.",
     "tags": [
       "Offensive",
       "Self-Debuff",
@@ -1444,7 +1435,7 @@
   },
   {
     "name": "Guiding Winds",
-    "description": "Constantly moving activates a state that steadily builds up potencies of Tailwind and similarily grants a ramping Damage Boost.",
+    "description": "Constantly moving activates a state that steadily builds up potencies of Tailwind and similarly grants a ramping Damage Boost.",
     "tags": [
       "Buff",
       "Damage Boost",
@@ -1535,7 +1526,7 @@
   },
   {
     "name": "Hex Ray",
-    "description": "Inflicting Debuffs that possesses a Weakening effect fires a ray of Hex at them. Has no Cooldown",
+    "description": "Inflicting Debuffs that possesses a Weakening effect fires a ray of Hex at them. Has no Cooldown.",
     "tags": [
       "Offensive",
       "Debuff",
@@ -1606,7 +1597,7 @@
   },
   {
     "name": "Ice Barge",
-    "description": "Speed reductions from Slowing effects and Stuns are reduced, and gain a Damage Reduction whilst inflicted with them. Additionally, your run is not cancelled by said Stuns, and gain Slowness for a short duration upon your Block being hit.",
+    "description": "Speed Reductions from Slowing effects and Stuns are reduced, and gain Damage Reduction whilst inflicted with them. Additionally, your run is not cancelled by said Stuns, and gain Slowness for a short duration upon your Block being hit.",
     "tags": [
       "Defensive",
       "Self-Debuff",
@@ -1616,7 +1607,7 @@
   },
   {
     "name": "Ice Burst",
-    "description": "Applying Shatter creates an icicle burst that inflicts brief Bleed and does Water and Physical Damage in a radius.",
+    "description": "Inflicting Shatter creates an icicle burst that inflicts brief Bleed and does Water and Physical Damage in a radius.",
     "tags": [
       "Offensive",
       "Debuff",
@@ -1771,7 +1762,7 @@
   },
   {
     "name": "Lance",
-    "description": "If you’re using a greatsword or unbalanced sword, then your weapon changes into a lance.",
+    "description": "If you're using a greatsword or unbalanced sword, your Weapon type changes to Lance.",
     "tags": [
       "Stance Change",
       "Incomplete",
@@ -1834,7 +1825,7 @@
   },
   {
     "name": "Lucky",
-    "description": "If most chance-based effects fails to proc, reroll it at a reduced percentage up to (perk amount) of times. However, grants reduced innate Protection, Warding, and Tenacity.",
+    "description": "If most chance-based effects fail to proc, reroll it at a reduced percentage up to (perk amount) of times. However, grants reduced innate Protection, Warding, and Tenacity.",
     "tags": [
       "RNG",
       "Ring"
@@ -1842,7 +1833,7 @@
   },
   {
     "name": "Luminescent Fervor",
-    "description": "Healing Allies grants the Buff Luminescent Fervor. Luminescent Fervor grants additional Holy Damage Type that counts as your Damage for Kill Credit.",
+    "description": "Healing any Ally grants the Buff Luminescent.",
     "tags": [
       "Buff",
       "Damage Boost",
@@ -1919,7 +1910,7 @@
   },
   {
     "name": "Melting Shred",
-    "description": "All DoTs now gain additional True Damage Type. Additionally, opponents inflicted with your DoTs are also inflicted with the Debuff Anti Heal. Anti Heal reduces any and all incoming healing",
+    "description": "All DoTs now gain additional True Damage Type. Additionally, opponents inflicted with your DoTs are also inflicted with the Debuff Anti Heal. Anti Heal reduces any and all incoming healing.",
     "tags": [
       "Debuff",
       "Damage Boost",
@@ -1928,7 +1919,7 @@
   },
   {
     "name": "Melting Slime",
-    "description": "The Sticky Debuff you apply now causes the mob to take 20% more Fire and Earth Damage, alongside a Fire/Earth and Poise Damage DoT that scales with Fire and Earth boost.",
+    "description": "Sticky you inflict now causes the mob to take 20% more Fire and Earth Damage, alongside a Fire/Earth and Poise Damage DoT that scales with Fire and Earth boost.",
     "tags": [
       "Offensive",
       "Debuff",
@@ -1988,7 +1979,7 @@
   },
   {
     "name": "Mycotic Bloom",
-    "description": "Enemies you have Poisoned are inflicted with Slow over 50%. Enemies below 50% take more damage from Poison instead.",
+    "description": "Enemies you have Poisoned are inflicted with Slowness over 50%. Enemies below 50% take more damage from Poison instead.",
     "tags": [
       "Debuff",
       "Ring"
@@ -1996,7 +1987,7 @@
   },
   {
     "name": "Ocean Song",
-    "description": "Using your Weapon Art creates a brief area around yourself that cleanses and heals Allies. Scales on Water, Dexterity, and the cooldown of your Weapon Art.",
+    "description": "Using your Weapon Art creates a brief area around yourself that cleanses and heals Allies. Scales on Water, Dexterity, and the Cooldown of your Weapon Art.",
     "tags": [
       "Weapon Art Activated",
       "Healing",
@@ -2218,7 +2209,7 @@
   },
   {
     "name": "Proto Tech",
-    "description": "Ocassionally emit Poison chain lightning from your character.",
+    "description": "Occasionally emit Poison chain lightning from your character.",
     "tags": [
       "Debuff",
       "RNG",
@@ -2338,7 +2329,7 @@
   },
   {
     "name": "Quickdraw",
-    "description": "Upon equipping your weapon, gain a neutral status titled Quickdraw for a brief duration.",
+    "description": "Upon equipping your weapon, gain the neutral status Quickdraw for a brief duration. Quickdraw greatly increases the damage of Weapon Arts and Runes.",
     "tags": [
       "Weapon Art",
       "Rune",
@@ -2454,7 +2445,7 @@
   },
   {
     "name": "Roaring Heads",
-    "description": "Gain a high chance on hit to self-inflict a variety of Debuffs. Each unique Debuff grants an Attack Speed Bonus, and every tenth self-inflicted Debuff releases a roar that deals damage and Stuns. Additionally, gain a large amount of negative Warding, but reduce the potency of Weakness and Shatter.",
+    "description": "Gain a high chance on hit to self-inflict a variety of Debuffs. Each unique Debuff grants an Attack Speed Bonus, and every tenth self-inflicted Debuff releases a roar that deals damage and Stuns. Additionally, gain a large amount of negative Warding, but reduce the potency of Weakeness and Shatter.",
     "tags": [
       "Self-Debuff",
       "Attack Speed",
@@ -2473,7 +2464,7 @@
   },
   {
     "name": "Roguent Spirit",
-    "description": "Release your Spiritual Energy with your RMB, which throws a spray of splinters in front of you. These splinters are guaranteed to crit and only takes partial Spiritual Energy to use, but can only be activated at max stacks.",
+    "description": "Release your Spiritual Energy with your RMB, which throws a spray of splinters in front of you. These splinters are guaranteed to crit and only take partial Spiritual Energy to use, but can only be activated at max stacks.",
     "tags": [
       "Spirit (Monk)",
       "Offensive",
@@ -2523,7 +2514,7 @@
   },
   {
     "name": "Runic Blades",
-    "description": "Weapon Arts or Runes marks the opponent with the debuff Runic Blades. Hits against said opponent launches Magical Blades at them, with a very short Cooldown.",
+    "description": "Weapon Arts or Runes marks the opponent with the debuff Runic Blades. Hits against said opponent launch Magical Blades at them, with a very short Cooldown.",
     "tags": [
       "Offensive",
       "Weapon Art Activated",
@@ -2585,7 +2576,7 @@
   },
   {
     "name": "Saw Heart",
-    "description": "If you're using an unmodified fist Weapon type, your hands grow chainsaw blades, modifying your Weapon type to Chain Fists that has an innate chance to apply Shatter and Bleed on LMB's and RMB's.",
+    "description": "If you're using an unmodified fist Weapon type, your hands grow chainsaw blades, modifying your Weapon type to Chain Fists that has an innate chance to inflict Shatter and Bleed on LMB's and RMB's.",
     "tags": [
       "Stance Change",
       "Debuff",
@@ -2699,7 +2690,7 @@
   },
   {
     "name": "Shielding Gong",
-    "description": "Finishers that land with Allies nearby creates a small burst that grants low duration and potency Reinforce. Additionally, Reinforce now grants Knockback Resistance.",
+    "description": "Finishers that land with other Allies nearby creates a small burst that grants low duration and potency Reinforce. Additionally, Reinforce now grants Knockback Resistance.",
     "tags": [
       "Buff",
       "Finisher",
@@ -2774,7 +2765,7 @@
   },
   {
     "name": "Snoeman Spirit",
-    "description": "Release your Spiritual Energy with an RMB, which conjures a much larger ice storm around yourself.",
+    "description": "Release your Spiritual Energy with an RMB, which conjures a much larger ice storm with a Proc Coefficient around yourself.",
     "tags": [
       "Spirit (Monk)",
       "Debuff",
@@ -2785,7 +2776,7 @@
   },
   {
     "name": "Solar Light",
-    "description": "Converts the Lesser Heal Weapon Art in specific to a holdable beam of light from above, which targets the Ally closest to your cursor excluding minions. Said beam of light enhances in attributes when standing in the Sun, or when under the effects of the Buff Sun Blessed.",
+    "description": "Converts the Lesser Heal Weapon Art in specific to a holdable beam of light from above, which targets the Ally closest to your cursor, excluding minions. Said beam of light enhances in attributes when standing in the Sun, or when under the effects of the Buff Sun Blessed.",
     "tags": [
       "Healing",
       "Weapon Art",
@@ -2842,7 +2833,7 @@
   },
   {
     "name": "Spirit Winds",
-    "description": "The Tailwind Buff grants you a universal Damage Boost. Additionally a portion of all Air Type Damage is converted to Magic Type Damage during so.",
+    "description": "The Tailwind Buff grants you a universal Damage Boost. Additionally, a portion of all Air Type Damage is converted to Magic Type Damage during so.",
     "tags": [
       "Buff",
       "Damage Boost",
@@ -2863,7 +2854,7 @@
   },
   {
     "name": "Spore Burst",
-    "description": "Finisher that land releases a burst of spores which inflicts Poison to opponents and yourself. Additionally, take heavily reduced damage from Poison. Grants Poison Potency.",
+    "description": "Finishers that land releases a burst of spores which inflicts Poison to opponents and yourself. Additionally, take heavily reduced damage from Poison. Grants Poison Potency.",
     "tags": [
       "Debuff",
       "Finisher",
@@ -2936,7 +2927,7 @@
   },
   {
     "name": "Star Friendship",
-    "description": "Healing an Ally grants them the Buff Friendship. Friendship grants high Weapon Art Cooldown reduction, and is consumed after activation.",
+    "description": "Healing a different Ally grants them the Buff Friendship. Friendship grants high Weapon Art Cooldown reduction, and is consumed after activation.",
     "tags": [
       "Healing",
       "Buff",
@@ -3124,7 +3115,7 @@
   },
   {
     "name": "Sweet Tooth",
-    "description": "Your minions gain a stacking chance to apply Sticky. Their hits against enemies already inflicted with Sticky removes it, but will deal bonus Damage and heal them for a % of their max HP.",
+    "description": "Your minions gain a stacking chance to inflict Sticky. Their hits against enemies already inflicted with Sticky removes it, but will deal bonus Damage and heal them for a % of their max HP.",
     "tags": [
       "Debuff",
       "Summoner",
@@ -3186,7 +3177,7 @@
   },
   {
     "name": "Thorns",
-    "description": "Gain a chance to release thorns that deals light Damage and applies Bleed when you are hit, guaranteed if you are Blocking. Grants Bleed Potency.",
+    "description": "Gain a chance to release thorns that deals light Damage and applies Bleed when you are hit, guaranteed if you were Blocking. Grants Bleed Potency.",
     "tags": [
       "Defensive",
       "Debuff",
@@ -3198,7 +3189,7 @@
   },
   {
     "name": "Toadzerker Spirit",
-    "description": "Release your Spiritual Energy with an RMB, which conjurers a Spiritual Toadzerker that leaps into the air before slamming down in a large AoE. Additionally, grants Rage and Bounce on activation.",
+    "description": "Release your Spiritual Energy with an RMB, which conjures a Spiritual Toadzerker that leaps into the air before slamming down in a large AoE. Additionally, grants Rage and Bounce on activation.",
     "tags": [
       "Spirit (Monk)",
       "Offensive",
@@ -3261,7 +3252,7 @@
   },
   {
     "name": "True Balance",
-    "description": "Your Hex and Holy Boosts are averaged out, then increased by 66%. All healing is now boosted scaling off of your Hex Boost, and all Damage is now boosted scaling off of your Holy Boost. Additionally, applying a Debuff grants you a corresponding Buff.",
+    "description": "Your Hex and Holy Boosts are averaged out, then increased by 66%. All healing is now boosted scaling off of your Hex Boost, and all Damage is now boosted scaling off of your Holy Boost. Additionally, inflicting a Debuff grants you a corresponding Buff.",
     "tags": [
       "Stat Boost",
       "Damage Boost",
@@ -3341,7 +3332,7 @@
   },
   {
     "name": "Valor",
-    "description": "If you're using a one handed weapon or spear, gain a shield in your offhand which further reduces damage taken through Block. Additionally, Weapon Arts inflict Taunt, and gain a Damage Boost against Taunted enemies.",
+    "description": "If you're using a one handed weapon or spear, gain a shield in your offhand which further reduces damage taken through Block. Additionally, Weapon Arts inflict Taunt, and gain a Damage Boost against Taunted opponents.",
     "tags": [
       "Defensive",
       "Weapon Art",
@@ -3372,7 +3363,7 @@
   },
   {
     "name": "Vassals Croak",
-    "description": "Gain a Damage Boost scaling on the amount of active minions. When your minions die, gain a stack of the neutral status Last Croak. Last Croak grants Rage to you on consumption.",
+    "description": "Gain a Damage Boost scaling on the amount of active minions. When your minions die, gain a stack of the neutral status Last Croak. Last Croak also grants Rage to you on consumption.",
     "tags": [
       "Damage Boost",
       "Buff",
@@ -3385,7 +3376,7 @@
   },
   {
     "name": "Venom Eater",
-    "description": "Landing a hit on an opponent with your Poison removes it in exchange for a guaranteed crit, Bonus Damage, and a slight heal. However, reduce overall Crit Damage at low perk amounts.",
+    "description": "Landing a hit on an opponent with your Poison removes it in exchange for a guaranteed crit, Bonus Damage, and a slight heal. However, reduce all crit Damage at low perk amounts.",
     "tags": [
       "Crit",
       "Crit Damage",
@@ -3427,7 +3418,7 @@
   },
   {
     "name": "Virulent Core",
-    "description": "Your LMB's and RMB's are replaced with poisonous blasts that inflicts Poison.",
+    "description": "Your LMB's and RMB's are replaced with poisonous blasts that inflict Poison.",
     "tags": [
       "Stance Change",
       "Debuff",
@@ -3553,7 +3544,7 @@
   },
   {
     "name": "Weakening",
-    "description": "Small chance to apply Weakeness on hit.",
+    "description": "Small chance to inflict Weakeness on hit.",
     "tags": [
       "Debuff",
       "RNG",
@@ -3594,7 +3585,7 @@
   },
   {
     "name": "Whirlwind",
-    "description": "Converts all Tailwind to the buff Whirlwind, with an increased duration. Whirlwind. Additionally, using a Weapon Art or Rune release a wind slash around yourself that inflicts Bleed.",
+    "description": "Converts all Tailwind to the Buff Whirlwind, with an increased duration. Whirlwind. Additionally, using a Weapon Art or Rune release a wind slash around yourself that inflicts Bleed.",
     "tags": [
       "Buff",
       "Weapon Art",
@@ -3606,7 +3597,7 @@
   },
   {
     "name": "Wild Bolt",
-    "description": "Enhances every aspect of the the Laser Weapon Art in specific, but causes it to become a random Elemental Damage Type (except True) and inflict a random Debuff on hit.",
+    "description": "Enhances most aspects of the the Laser Weapon Art in specific, but causes it to become a random Elemental Damage Type (except True) and inflict a random Debuff on hit.",
     "tags": [
       "Offensive",
       "Weapon Art",
