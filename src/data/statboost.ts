@@ -1,4 +1,4 @@
-import type { StatMap, StatKey } from '../lib/types'
+import { type StatMap, type StatKey, PERCENT_STATS } from '../lib/types'
 
 const WEIGHT_DISTRIBUTION_SPLIT_RATIO = 0.5
 const WEIGHT_DISTRIBUTION_MULTIPLIER = 0.1
@@ -192,7 +192,7 @@ const PERK_EXECUTION_ORDER: string[] = [
 function finalizeRounding(s: StatMap): StatMap {
   const result: StatMap = {}
   for (const [k, v] of Object.entries(s)) {
-    const rv = r(v as number)
+    const rv = PERCENT_STATS.has(k as any) ? r(v as number) : (v as number)
     if (rv !== 0) {
       result[k as StatKey] = rv
     }

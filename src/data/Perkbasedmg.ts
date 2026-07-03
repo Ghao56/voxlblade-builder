@@ -142,6 +142,19 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     guardbreak: true,
     note: 'Counts as an M1/M2 and will proc related effects.',
   },
+  // ── Void Root Spirit ───────────────────────────────────────────────────────
+  {
+    perkName: 'Void Root Spirit',
+    condition: 'On RMB (Monk)',
+    getBaseDamage: () => 1,
+    hits: 23,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { hex: 0.5, physical: 0.5 },
+    scalingMode: 'fixed',
+    scalings: { hex: 1.0, physical: 1.0 },
+    isM2: true,
+    note: 'Each hit has a chance to inflict random debuffs.',
+  },
   // ── Bounce Momentum ────────────────────────────────────────────────────────
   {
     perkName: 'Bounce Momentum',
@@ -381,5 +394,25 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     isWA: true,
     isRune: true,
     note: 'AoE wind slash. Applies Bleed for 5s. Can proc other effects.',
+  },
+  // ── Volatile Shell ──────────────────────────────────────────────────────────
+  {
+    perkName: 'Volatile Shell',
+    condition: 'When your Shield is depleted completely',
+    getBaseDamage: ({ perkAmount }) => 25 + 20 * perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { hex: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { hex: 1.0, protection: 0.1 },
+    secondaryEffects: [
+      {
+        label: 'Poison',
+        getValue: () => 5,
+        format: v => `${v}s`,
+        condition: 'Applies Poison for 5s',
+        tone: 'offense',
+      },
+    ],
+    note: 'Explosion size scales with perk amount · Protection is not a % like other Stat Boosts, making it 100x more effective in scaling',
   },
 ]

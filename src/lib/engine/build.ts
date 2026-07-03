@@ -2,7 +2,7 @@ import type { StatKey, StatMap, ArmorPart, EnchantSlot, BuildState } from '../ty
 import { STAT_KEYS, applyUpgrade } from '../types'
 import { CDR_PERK_DATA } from '../../data/cdr'
 import { applyStatBoostPerks } from '../../data/statboost'
-import { getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, convertTailwindToWhirlwind } from '../../data/BuffData'
+import { getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, convertTailwindToWhirlwind, BUFF_DEFS } from '../../data/BuffData'
 import { getActiveRaceEffect } from '../../data/raceEffects'
 import { BOOST_DEFS, type BoostContext } from '../../data/Boost'
 import type { BoostEntry, BoostResult } from '../types'
@@ -471,11 +471,17 @@ function deriveResults(
   const _tailwindBuffs   = _allBuffs.filter(b => b.buffName === 'Tailwind' || b.buffName === 'Whirlwind')
   const tailwindPotency  = _tailwindBuffs.length > 0 ? Math.max(..._tailwindBuffs.map(b => b.potency)) : 0
 
+  const _orkBuffs = state.race === 'ORK' ? _allBuffs.filter(b => {
+    const def = BUFF_DEFS[b.buffName]
+    return def && !def.isDebuff && !def.isNeutral
+  }) : []
+  const orkBuffTenacity = 0.1 * _orkBuffs.length
+
   const boosts = calcBoosts(
     finalPerks, state.emotionalState, state.level ?? 80,
     crit.naturalCritChance, boostedStats.jumpBoost ?? 0,
     state.summonCount ?? 0, ragePotency, bouncePotency,
-    tailwindPotency, finalStats.tenacity ?? 0,
+    tailwindPotency, (finalStats.tenacity ?? 0) + orkBuffTenacity,
     state.race, state.hpFill ?? 100, state.inDarkness ?? true,
     boostedStats.summonBoost ?? 0, quickdrawPotency,
     state.selectedWeaponArt,

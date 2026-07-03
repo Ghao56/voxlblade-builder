@@ -5,7 +5,7 @@
   import ScalingBreakdownRow from './ScalingBreakdownRow.svelte'
   import { WEAPON_ARTS } from './data/weaponArts'
   import { WEAPON_BASE_DMG } from './data/weapon base dmg'
-  import { DMG_TYPE_COLORS, DMG_TYPE_PRIORITY, SCALING_TO_BOOST, type WeaponBaseDmg } from './lib/types'
+  import { DMG_TYPE_COLORS, DMG_TYPE_PRIORITY, SCALING_TO_BOOST, PERCENT_STATS, type WeaponBaseDmg } from './lib/types'
   import { BUFF_DEFS, getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, calcBuffEffect, getBuffDescription, convertTailwindToWhirlwind } from './data/BuffData'
   import { DEBUFF_COMBAT_EFFECTS } from './data/debuffCombatEffects'
   import { getDraconicHexDebuffs, getEffectiveDraconicInfusionPotency } from './data/draconicBuffs'  
@@ -34,8 +34,10 @@
   const _DEF_TYPE_LIST = ['physical','magic','fire','water','earth','air','hex','holy','true'] as const
   
   $: _activeDefensivePerkSources = (() => {
+    const _hasProtection = ($result.stats.protection ?? 0) > 0
+    const _debuffCount = _dummyDebuffs.filter(d => !disabledDebuffs.has(d.name)).length
     const baseSources = getActiveDefensivePerkSources(
-      perks, _hpFillPct, _adaptivePlateTriggered, _effectiveInDarkness, _ragePotency > 0, mountActive
+      perks, _hpFillPct, _adaptivePlateTriggered, _effectiveInDarkness, _ragePotency > 0, mountActive, _hasProtection, _debuffCount
     )
     let potMult = 1
     
@@ -436,7 +438,7 @@
   $: _spiritWindsConversionRate = _spiritWindsAmt > 0 && _hasTailwindOrWhirlwind ? 0.10 * _spiritWindsAmt : 0
   $: _darkMagicAmt = perks['Dark Magic'] ?? 0
   $: _darkMagicHexBonus = _darkMagicAmt > 0 ? 0.2 * _darkMagicAmt : 0
-  $: _waArmorPenetration = _windWalkerAmt > 0 && _hasTailwindOrWhirlwind ? 10 * _windWalkerAmt : 0
+  $: _waArmorPenetration = (_windWalkerAmt > 0 && _hasTailwindOrWhirlwind ? 10 * _windWalkerAmt : 0) + ($build.race === 'ORK' ? 10 : 0)
   $: _stormRendPct = 0
   $: _explosiveChargePct = (perks['Explosive Charge'] ?? 0) > 0 ? 1.0 : 0
 
@@ -853,17 +855,7 @@
       type: 'dmg' as const,
     }
   })()
-  $: _adjustedDmgEntries = (_effectiveTenacity, _orkBuffTenacity, boosts.dmgEntries.map(e => {
-    if (e.sourceName !== 'Ferocity' || _orkBuffTenacity === 0) return e
-    const ferocityAmt = perks['Ferocity'] ?? 0
-    if (ferocityAmt <= 0) return e
-    const pct = _effectiveTenacity * 11 * ferocityAmt
-    return {
-      ...e,
-      rawMultiplier: 1 + pct / 100,
-      condition: `${_effectiveTenacity.toFixed(2)} tenacity × ${ferocityAmt} Ferocity = +${pct.toFixed(2)}%`
-    }
-  }))
+  $: _adjustedDmgEntries = boosts.dmgEntries
   $: activeEntries = (_effectiveTailwindPotency, [..._adjustedDmgEntries.filter(e => !disabledBoosts.has(e.sourceName) && !(e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0)), ...(_curseRipBoostEntry && !disableCurseRip ? [_curseRipBoostEntry] : []), ...(_reaperBoostEntry && !disableReaper ? [_reaperBoostEntry] : [])])
   $: hasDisabledVisible = (_effectiveTailwindPotency, _adjustedDmgEntries.some(e => disabledBoosts.has(e.sourceName) || (e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0)) || (_curseRipBoostEntry && disableCurseRip) || (_reaperBoostEntry && disableReaper))
 
@@ -955,6 +947,7 @@
     holy:      '#facc15',
     dexterity: '#ffe373',
     summon:    '#c084fc',
+    protection: 'rgb(68, 226, 43)',
   }
 
   interface ScalingRow {
@@ -979,8 +972,9 @@
       const contribution = Math.round(scalingVal * boostPct * 1000) / 1000
       rows.push({ key, scalingVal, boostKey, boostPct, contribution, color: SCALING_COLORS[key] ?? '#e8e4da' })
     }
-    const totalEffectivePct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 1000) / 1000
-    const multiplier = roundMultiplier(1 + totalEffectivePct / 100)
+    const totalEffective = rows.reduce((a, r) => a + r.contribution, 0)
+    const totalEffectivePct = Math.round(totalEffective * 1000) / 1000
+    const multiplier = roundMultiplier(1 + totalEffective / 100)
     return { rows, totalEffectivePct, multiplier }
   })()
 
@@ -1453,13 +1447,18 @@
   })()
 
   function _computePerkScalingMult(scalingDef: Record<string, number>): number {
-    let totalPct = 0
+    let total = 0
     for (const [key, val] of Object.entries(scalingDef)) {
       const boostKey = SCALING_TO_BOOST[key]
       if (!boostKey) continue
-      totalPct += val * ((stats as Record<string, number>)[boostKey] ?? 0)
+      const statVal = (stats as Record<string, number>)[boostKey] ?? 0
+      if (PERCENT_STATS.has(boostKey)) {
+        total += val * statVal / 100
+      } else {
+        total += val * statVal
+      }
     }
-    return 1 + totalPct / 100
+    return 1 + total
   }
 
   interface PerkDmgComputedEntry {
@@ -1851,7 +1850,7 @@
         group: 'Rune',
         index: result.length,
         count: _activeRuneDmgDef.getHits
-          ? _activeRuneDmgDef.getHits({ potency: runePotency, sliderVal: _runeSliderVal })
+          ? _activeRuneDmgDef.getHits({ potency: runePotency, sliderVal: _runeSliderVal, stats })
           : (_activeRuneDmgDef.hits ?? 1),
         base: _activeRuneDmgDef.getBaseDamage({ potency: runePotency, sliderVal: _runeSliderVal }),
         scalingMult: _computePerkScalingMult(_activeRuneDmgDef.scalings),
@@ -2777,7 +2776,7 @@
       {/if}
       {#if _activeRuneDmgDef && isActive}
         {@const _runeHits = _activeRuneDmgDef.getHits
-          ? _activeRuneDmgDef.getHits({ potency: runePotency, sliderVal: _runeSliderVal })
+          ? _activeRuneDmgDef.getHits({ potency: runePotency, sliderVal: _runeSliderVal, stats })
           : (_activeRuneDmgDef.hits ?? 1)}
         {@const _runeBase = _activeRuneDmgDef.getBaseDamage({ potency: runePotency, sliderVal: _runeSliderVal })}
         {@const _runeScalingMult = _computePerkScalingMult(_activeRuneDmgDef.scalings)}
@@ -3131,7 +3130,7 @@
         <div class="ds-col ds-col--boost">
           {#if row.boostPct !== 0}
             <span class="ds-boost" style={row.boostPct < 0 ? 'color: #cf6679;' : ''} class:ds-boost--zero={row.boostPct === 0}>
-              {row.boostPct > 0 ? '+' : ''}{row.boostPct}%
+              {row.boostPct > 0 ? '+' : ''}{roundMultiplier(row.boostPct)}%
             </span>
           {:else}
             <span class="ds-boost ds-boost--zero">+0%</span>
@@ -3204,7 +3203,7 @@
             <div class="ds-col ds-col--boost">
               {#if row.boostPct !== 0}
                 <span class="ds-boost" style={row.boostPct < 0 ? 'color: #cf6679;' : ''}>
-                  {row.boostPct > 0 ? '+' : ''}{row.boostPct}%
+                  {row.boostPct > 0 ? '+' : ''}{roundMultiplier(row.boostPct)}%
                 </span>
               {:else}
                 <span class="ds-boost ds-boost--zero">+0%</span>
@@ -3295,8 +3294,9 @@
           <div class="ds-table ds-table--perk" style="margin-top: 5px; font-size: 0.75rem; opacity: 0.9;">
             {#each Object.entries(entry.resolvedScalings ?? {}) as [key, scalingVal]}
               {@const boostKey = SCALING_TO_BOOST[key]}
-              {@const boostPct = boostKey ? (stats[boostKey as keyof typeof stats] ?? 0) : 0}
-              {@const contrib = Math.round(scalingVal * boostPct * 1000) / 1000}
+              {@const boostVal = boostKey ? (stats[boostKey as keyof typeof stats] ?? 0) : 0}
+              {@const isPct = boostKey ? PERCENT_STATS.has(boostKey) : true}
+              {@const contrib = Math.round(scalingVal * boostVal * 1000) / 1000}
               
               <div class="ds-row">
                 <div class="ds-col ds-col--type">
@@ -3309,8 +3309,8 @@
                 <div class="ds-col ds-col--op">×</div>
                 
                 <div class="ds-col ds-col--boost">
-                  <span class="ds-boost" style={boostPct < 0 ? 'color: #cf6679;' : ''}>
-                    {boostPct > 0 ? '+' : ''}{boostPct}%
+                  <span class="ds-boost" style={boostVal < 0 ? 'color: #cf6679;' : ''}>
+                    {boostVal > 0 ? '+' : ''}{roundMultiplier(boostVal)}{isPct ? '%' : ''}
                   </span>
                 </div>
                 
@@ -3318,7 +3318,7 @@
                 
                 <div class="ds-col ds-col--contrib">
                   <span class="ds-contrib" style="color: {contrib < 0 ? '#cf6679' : (SCALING_COLORS[key] ?? '#e8e4da')}">
-                    {contrib > 0 ? '+' : ''}{contrib}%
+                    {contrib > 0 ? '+' : ''}{contrib}{isPct ? '%' : ''}
                   </span>
                 </div>
               </div>
@@ -3371,24 +3371,25 @@
           <div class="ds-col ds-col--contrib">Contribution</div>
         </div>
         {#each runeScalingBreakdown.rows as row}
+          {@const isPct = row.boostKey ? PERCENT_STATS.has(row.boostKey) : true}
           <div class="ds-row">
             <div class="ds-col ds-col--type">
               <span class="ds-dot" style="background:{row.color}"></span>
               <span style="color:{row.color}">{row.key.charAt(0).toUpperCase() + row.key.slice(1)}</span>
             </div>
             <div class="ds-col ds-col--val">
-              <span class="ds-num" style="color:{row.color}">{row.scalingVal}</span>
+              <span class="ds-num" style="color:{row.color}">{roundMultiplier(row.scalingVal)}</span>
             </div>
             <div class="ds-col ds-col--op">×</div>
             <div class="ds-col ds-col--boost">
               <span class="ds-boost" style={row.boostPct < 0 ? 'color: #cf6679;' : ''}>
-                {row.boostPct > 0 ? '+' : ''}{row.boostPct}%
+                {row.boostPct > 0 ? '+' : ''}{roundMultiplier(row.boostPct)}{isPct ? '%' : ''}
               </span>
             </div>
             <div class="ds-col ds-col--op">=</div>
             <div class="ds-col ds-col--contrib">
               <span class="ds-contrib" style={row.contribution > 0 ? `color:${row.color}` : row.contribution < 0 ? 'color: #cf6679;' : ''}>
-                {row.contribution > 0 ? '+' : ''}{row.contribution}%
+                {row.contribution > 0 ? '+' : ''}{roundMultiplier(row.contribution)}{isPct ? '%' : ''}
               </span>
             </div>
           </div>

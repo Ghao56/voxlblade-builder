@@ -5,6 +5,7 @@ import { calcMaxSummonCount } from './SummonData';
 export interface RuneDmgCtx {
   potency: number
   sliderVal?: number
+  stats?: Record<string, number>
 }
 
 export interface RuneSliderDef {
@@ -163,7 +164,7 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     hits: 10,
     note: 'Applies Sticky (Hex Web) each hit for 5s. Damage ticks every ~0.5s over 5s. Guardbreaks. Counts as normal Sticky for perk effects.',
   },
-  {
+    {
     runeName: 'Brainblast Rune',
     condition: 'On cast',
     getBaseDamage: () => 10,
@@ -171,5 +172,17 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     scalings: { fire: 1.0, earth: 1.0, magic: 1.0 },
     hits: 2,
     note: 'Guardbreaks. Applies Sticky (Melting Slime) and Burn for 5s.',
+  },
+  {
+    runeName: 'Rocky Tail Rune',
+    condition: 'On cast / hold for tail slap combo',
+    getBaseDamage: () => 8,
+    dmgTypes: { earth: 0.5, physical: 0.5 },
+    scalings: { earth: 1.0, protection: 0.08 },
+    getHits: ({ stats }) => {
+      const p = stats?.protection ?? 0
+      const shield = Math.min(p, 240)
+      return Math.max(1, Math.ceil(shield / (0.01 * p + 5)) * 2)
+    },
   },
 ]

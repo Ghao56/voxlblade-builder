@@ -4,11 +4,13 @@ interface DefensivePerkSourceContext {
   inDarkness: boolean
   rageActive: boolean
   isMounted: boolean
+  hasProtection: boolean
+  uniqueDebuffCount: number
 }
 
 interface DefensivePerkSource {
   perkName: string
-  drPctPerStack: number
+  drPctPerStack?: number
   fixedDefPct?: number
   maxDrPct?: number
   isFlat?: boolean
@@ -19,6 +21,8 @@ interface DefensivePerkSource {
   matchedOnly?: boolean
   dependsOn?: (ctx: DefensivePerkSourceContext) => boolean
   potencyCapped?: boolean
+  grantsStunImmunity?: boolean
+  drPctFn?: (amt: number, ctx: DefensivePerkSourceContext) => number
 }
 
 const DEFENSIVE_PERK_SOURCES: DefensivePerkSource[] = [
@@ -101,6 +105,20 @@ const DEFENSIVE_PERK_SOURCES: DefensivePerkSource[] = [
     conditionLabel: 'While mounted on Glacial Snapper',
     dependsOn: ctx => ctx.isMounted,
   },
+  {
+    perkName: 'Carapace',
+    drPctPerStack: 15,
+    label: 'Carapace',
+    conditionLabel: 'While you have protection',
+    dependsOn: ctx => ctx.hasProtection,
+    grantsStunImmunity: true,
+  },
+  {
+    perkName: 'Cursed Bark',
+    label: 'Cursed Bark',
+    conditionLabel: 'Per unique debuff on target',
+    drPctFn: (amt, ctx) => 5 * ctx.uniqueDebuffCount * amt,
+  },
 ]
 
 export function getActiveDefensivePerkSources(
@@ -110,9 +128,11 @@ export function getActiveDefensivePerkSources(
   inDarkness: boolean = true,
   rageActive: boolean = false,
   isMounted: boolean = false,
-): Array<{ name: string; defPct: number; isFlat?: boolean; condition: string; potencyCapped?: boolean }> {
-  const out: Array<{ name: string; defPct: number; isFlat?: boolean; condition: string; potencyCapped?: boolean }> = []
-  const ctx: DefensivePerkSourceContext = { hpFillPct, adaptivePlateTriggered, inDarkness, rageActive, isMounted }
+  hasProtection: boolean = false,
+  uniqueDebuffCount: number = 0,
+): Array<{ name: string; defPct: number; isFlat?: boolean; condition: string; potencyCapped?: boolean; grantsStunImmunity?: boolean }> {
+  const out: Array<{ name: string; defPct: number; isFlat?: boolean; condition: string; potencyCapped?: boolean; grantsStunImmunity?: boolean }> = []
+  const ctx: DefensivePerkSourceContext = { hpFillPct, adaptivePlateTriggered, inDarkness, rageActive, isMounted, hasProtection, uniqueDebuffCount }
 
   for (const def of DEFENSIVE_PERK_SOURCES) {
     const amt = perks[def.perkName] ?? 0
@@ -127,7 +147,7 @@ export function getActiveDefensivePerkSources(
     }
     if (def.dependsOn && !def.dependsOn(ctx)) continue
 
-    let defPct = def.fixedDefPct != null ? def.fixedDefPct : def.drPctPerStack * amt
+    let defPct = def.fixedDefPct ?? (def.drPctFn ? def.drPctFn(amt, ctx) : (def.drPctPerStack ?? 0) * amt)
     if (def.maxDrPct != null) defPct = Math.min(defPct, def.maxDrPct)
     defPct = Math.round(defPct * 100) / 100
 
@@ -136,7 +156,8 @@ export function getActiveDefensivePerkSources(
       defPct, 
       isFlat: def.isFlat, 
       condition: def.conditionLabel,
-      potencyCapped: def.potencyCapped
+      potencyCapped: def.potencyCapped,
+      grantsStunImmunity: def.grantsStunImmunity,
     })
   }
   return out

@@ -531,6 +531,15 @@ const ITEM_BUFF_MAP: GrantedBuff[] = [
   },
 ]
 
+export const BASIC_DEBUFF_POOL: Array<{ buffName: string; potency: number; duration: number }> = [
+  { buffName: 'Bleed',    potency: 0,   duration: 5 },
+  { buffName: 'Burn',     potency: 0,   duration: 5 },
+  { buffName: 'Poison',   potency: 0,   duration: 5 },
+  { buffName: 'Shatter',  potency: 0.2, duration: 5 },
+  { buffName: 'Slowness', potency: 0.2, duration: 5 },
+  { buffName: 'Weakness', potency: 0.5, duration: 5 },
+]
+
 type PerkBuffFactory = (amount: number, allPerks: Record<string, number>) => GrantedBuff[]
 
 const PERK_BUFFS: Record<string, PerkBuffFactory> = {
@@ -769,6 +778,14 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       isSelfDebuff: true
     },
   ],
+  'Cursed Bark': (amount) => BASIC_DEBUFF_POOL.map(d => ({
+    buffName: d.buffName,
+    potency: d.potency,
+    duration: d.duration,
+    condition: amount > 0 ? 'Random debuff on being attacked (guaranteed if not blocking)' : '',
+    sourceName: 'Cursed Bark',
+    sourceType: 'perk',
+  })),
   'Aggressive Personality': (amount) => [
     {
       buffName: 'Taunt',
@@ -958,6 +975,16 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       sourceType: 'perk',
     },
   ],
+  'Volatile Shell': () => [
+    {
+      buffName: 'Poison',
+      potency: 0,
+      duration: 5,
+      condition: 'When your Shield is depleted completely',
+      sourceName: 'Volatile Shell',
+      sourceType: 'perk',
+    },
+  ],
 }
 
 const WEAPON_ART_BUFF_MAP: Record<string, GrantedBuff[]> = {
@@ -980,54 +1007,14 @@ const WEAPON_ART_BUFF_MAP: Record<string, GrantedBuff[]> = {
       sourceName: 'Cursed Ground', 
       sourceType: 'weaponArt' 
     },
-    { 
-      buffName: 'Bleed',
-      potency: 0, 
-      duration: 5, 
+    ...BASIC_DEBUFF_POOL.map(d => ({
+      buffName: d.buffName,
+      potency: d.potency,
+      duration: d.duration,
       condition: '50% chance from pool',
-      sourceName: 'Cursed Ground', 
-      sourceType: 'weaponArt' 
-    },
-    { 
-      buffName: 'Burn', 
-      potency: 0, 
-      duration: 5, 
-      condition: '50% chance from pool',
-      sourceName: 'Cursed Ground', 
-      sourceType: 'weaponArt' 
-    },
-    { 
-      buffName: 'Poison', 
-      potency: 0, 
-      duration: 5, 
-      condition: '50% chance from pool',
-      sourceName: 'Cursed Ground', 
-      sourceType: 'weaponArt' 
-    },
-    { 
-      buffName: 'Shatter', 
-      potency: 0.2, 
-      duration: 5, 
-      condition: '50% chance from pool',
-      sourceName: 'Cursed Ground', 
-      sourceType: 'weaponArt' 
-    },
-    { 
-      buffName: 'Slowness', 
-      potency: 0.2, 
-      duration: 5, 
-      condition: '50% chance from pool',
-      sourceName: 'Cursed Ground', 
-      sourceType: 'weaponArt' 
-    },
-    { 
-      buffName: 'Weakness', 
-      potency: 0.5, 
-      duration: 5, 
-      condition: '50% chance from pool',
-      sourceName: 'Cursed Ground', 
-      sourceType: 'weaponArt' 
-    },
+      sourceName: 'Cursed Ground',
+      sourceType: 'weaponArt' as any,
+    })),
   ],
 }
 
@@ -1417,14 +1404,14 @@ const RACE_BUFF_MAP: Record<string, GrantedBuff[]> = {
       sourceType: 'race' as any,
     },
   ],
-  'DARK ELF': [
-    { buffName: 'Shatter',  potency: 0.2, duration: 5, condition: 'On hit (passive - 8% chance)', sourceName: 'DARK ELF', sourceType: 'race' as any },
-    { buffName: 'Bleed',    potency: 0,   duration: 5, condition: 'On hit (passive - 8% chance)', sourceName: 'DARK ELF', sourceType: 'race' as any },
-    { buffName: 'Burn',     potency: 0,   duration: 5, condition: 'On hit (passive - 8% chance)', sourceName: 'DARK ELF', sourceType: 'race' as any },
-    { buffName: 'Poison',   potency: 0,   duration: 5, condition: 'On hit (passive - 8% chance)', sourceName: 'DARK ELF', sourceType: 'race' as any },
-    { buffName: 'Slowness', potency: 0.2, duration: 5, condition: 'On hit (passive - 8% chance)', sourceName: 'DARK ELF', sourceType: 'race' as any },
-    { buffName: 'Weakness', potency: 0.5, duration: 5, condition: 'On hit (passive - 8% chance)', sourceName: 'DARK ELF', sourceType: 'race' as any },
-  ],
+  'DARK ELF': BASIC_DEBUFF_POOL.map(d => ({
+    buffName: d.buffName,
+    potency: d.potency,
+    duration: d.duration,
+    condition: 'On hit (passive - 8% chance)',
+    sourceName: 'DARK ELF',
+    sourceType: 'race' as any,
+  })),
 }
 
 function getRaceBuffs(race: string): GrantedBuff[] {
