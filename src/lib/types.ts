@@ -84,8 +84,8 @@ export function applyUpgrade(stats: StatMap, level: number): StatMap {
     const k = STAT_KEYS[i]
     const v = stats[k]
     if (v == null) continue
-    if (v > 0) result[k] = round2(v * mult)
-    else if (v < 0) result[k] = round2(v / mult)
+    if (v > 0) result[k] = v * mult
+    else if (v < 0) result[k] = v / mult
     else result[k] = 0
   }
   return result

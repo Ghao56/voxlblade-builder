@@ -26,6 +26,14 @@ export const SELF_DAMAGE_PERK_DEFS: SelfDamagePerkDef[] = [
     label: 'Explosive Charge (Self Damage)',
     note: 'Guardbreaks · More points only increase AoE and Stun',
   },
+  {
+    perkName: 'Dark Magic',
+    appliesTo: ['wa', 'rune'],
+    selfDmgPct: 0.005,
+    dmgTypes: { hex: 1.0 },
+    drPctPerStack: 0,
+    label: 'Dark Magic (Self Damage)',
+  },
 ]
 
 export function calcSelfDamage(

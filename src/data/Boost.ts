@@ -9,6 +9,8 @@ export interface BoostContext {
   ragePotency: number
   bouncePotency: number
   quickdrawPotency: number
+  tailwindPotency: number
+  tenacity: number
   inDarkness: boolean
   emotionalState?: string
   level?: number
@@ -43,6 +45,8 @@ export const BOOST_DEFS: BoostDef[] = [
   { sourceName: 'Spell Piercer', multiplierPerPerk: 0.20, type: 'dmg', condition: 'Increase damage dealt by weapon arts and runes on crit by 20% per 1 of this perk' },
   { sourceName: 'Scourge', multiplierPerPerk: 0.2, condition: 'Gain a chance for any hit to count as a Guardbreak', type: 'dmg' },
   { sourceName: 'Sharpshooter', multiplierPerPerk: 0.20, type: 'dmg', condition: 'Hitting from range (hits with proc coefficient)' },
+  { sourceName: 'Ferocity', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Ferocity'] ?? 0; if (a <= 0 || ctx.tenacity <= 0) return null; const pct = ctx.tenacity * 11 * a; return { multiplier: 1 + pct / 100, condition: `${Math.round(ctx.tenacity * 100) / 100} tenacity × ${a} Ferocity = +${pct.toFixed(2)}%` } } },
+  { sourceName: 'Spirit Winds', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Spirit Winds'] ?? 0; if (a <= 0 || ctx.tailwindPotency <= 0) return null; const pct = (1/3 * ctx.tailwindPotency + 2/15 * a) * 100; return { multiplier: 1 + pct / 100, condition: `${Math.round(ctx.tailwindPotency * 1000) / 1000} tw potency × ${a} SW = +${pct.toFixed(2)}%` } } },
   { sourceName: 'Valor', multiplierPerPerk: 0.0666, type: 'dmg', condition: 'Damage Boost vs Taunted enemies, per 1 of this perk' },
   { sourceName: 'Gorecast', multiplierPerPerk: 0.20, type: 'dmg', condition: 'Weapon Art damage vs bleeding opponents', appliesTo: ['wa'] },
   { sourceName: 'Guardian Spin', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Guardian Spin'] ?? 0; if (a <= 0 || ctx.selectedWeaponArt !== 'Spin') return null; return { multiplier: 1 + 0.15 + 0.1725 * a, condition: 'for Spin weapon art' } }, appliesTo: ['wa'] },

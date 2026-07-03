@@ -646,6 +646,25 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
     },
   ],
 
+  'Emergency Exit': (amount) => [
+    {
+      buffName: 'Tailwind',
+      potency: 0.4 * amount,
+      duration: 5,
+      condition: 'Getting hit while not blocking',
+      sourceName: 'Emergency Exit',
+      sourceType: 'perk',
+    },
+    {
+      buffName: 'Reinforce',
+      potency: 0.3 * amount,
+      duration: 10,
+      condition: 'Getting hit while not blocking',
+      sourceName: 'Emergency Exit',
+      sourceType: 'perk',
+    },
+  ],
+
   'Blessing': (amount) => {
     const condition = `${7.5 * amount}% chance on heal`
     return [
@@ -1299,7 +1318,7 @@ export function convertTailwindToWhirlwind(
 ): GrantedBuff[] {
   const wwAmt = perks['Whirlwind'] ?? 0
   if (wwAmt <= 0) return buffs
-  return buffs.map(b => {
+  const result = buffs.map(b => {
     if (b.buffName !== 'Tailwind') return b
     return {
       ...b,
@@ -1308,6 +1327,15 @@ export function convertTailwindToWhirlwind(
       duration: Math.round(b.duration * (1.3 + 0.3 * wwAmt)),
     }
   })
+  result.push({
+    buffName: 'Bleed',
+    potency: 0,
+    duration: 5,
+    condition: 'On WA/Rune use (AoE wind slash)',
+    sourceName: 'Whirlwind',
+    sourceType: 'perk',
+  })
+  return result
 }
 
 export function getBuffDescription(

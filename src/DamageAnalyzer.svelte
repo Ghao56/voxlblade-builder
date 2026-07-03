@@ -6,7 +6,7 @@
   import { WEAPON_ARTS } from './data/weaponArts'
   import { WEAPON_BASE_DMG } from './data/weapon base dmg'
   import { DMG_TYPE_COLORS, DMG_TYPE_PRIORITY, SCALING_TO_BOOST, type WeaponBaseDmg } from './lib/types'
-  import { BUFF_DEFS, getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, calcBuffEffect, convertTailwindToWhirlwind } from './data/BuffData'
+  import { BUFF_DEFS, getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, calcBuffEffect, getBuffDescription, convertTailwindToWhirlwind } from './data/BuffData'
   import { DEBUFF_COMBAT_EFFECTS } from './data/debuffCombatEffects'
   import { getDraconicHexDebuffs, getEffectiveDraconicInfusionPotency } from './data/draconicBuffs'  
   import { WA_SUMMON_MAP, SUMMON_MAP, calcSummonStat, calcMaxSummonCount } from './data/SummonData'
@@ -23,7 +23,7 @@
   import { calculateHealBoost, type HealSource } from './data/HealBoost'
   import { roundMultiplier } from './lib/utils'
   import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage } from './data/selfDamagePerks'
-  import { resolveDamageTypes } from './lib/damageTypeResolve'
+  import { resolveDamageTypes, applyAirToMagicConversion } from './lib/damageTypeResolve'
   import { calcTypedDmgBoosts } from './data/TypedDmgBoost'
 
 
@@ -238,7 +238,7 @@
     }
   })()
 
-  $: _allActiveBuffs = (() => {
+  $: _allActiveBuffsRaw = (() => {
     const itemBuffs = getActiveBuildBuffs({
       rune: $build.rune, ring: $build.ring, infusionRing: $build.infusionRing,
       helmet: $build.helmet, chestplate: $build.chestplate, leggings: $build.leggings,
@@ -285,6 +285,7 @@
       return buff
     })
   })()
+  $: _allActiveBuffs = (_disabledKeysArr, _allActiveBuffsRaw.filter(b => !_isBuffDisabled(b)))
   $: _hasCritBoostBuff = _allActiveBuffs.some(b => b.buffName === 'Critical Boost')
 
   // ── Rage (still needed directly: defensive perk gating, PERK_DMG_DEFS condition, UI toggle row) ──
@@ -427,10 +428,25 @@
   $: _stormRendActive = _stormRendAmt > 0 && !disableStormRend
   $: _lightningCloakPct = (_lightningCloakActive && !disableLightningCloak) || _stormRendActive ? (1 / 3) : 0
   $: _windWalkerAmt = perks['Wind Walker'] ?? 0
-  $: _hasTailwindOrWhirlwind = _allActiveBuffs.some(b => b.buffName === 'Tailwind' || b.buffName === 'Whirlwind')
+  $: _hasTailwindOrWhirlwind = (_disabledKeysArr,
+    _allActiveBuffs.some(b => (b.buffName === 'Tailwind' || b.buffName === 'Whirlwind')))
+  $: _effectiveTailwindPotency = (_disabledKeysArr,
+    Math.max(0, ..._allActiveBuffs.filter(b => b.buffName === 'Tailwind' || b.buffName === 'Whirlwind').map(b => b.potency)))
+  $: _spiritWindsAmt = perks['Spirit Winds'] ?? 0
+  $: _spiritWindsConversionRate = _spiritWindsAmt > 0 && _hasTailwindOrWhirlwind ? 0.10 * _spiritWindsAmt : 0
+  $: _darkMagicAmt = perks['Dark Magic'] ?? 0
+  $: _darkMagicHexBonus = _darkMagicAmt > 0 ? 0.2 * _darkMagicAmt : 0
   $: _waArmorPenetration = _windWalkerAmt > 0 && _hasTailwindOrWhirlwind ? 10 * _windWalkerAmt : 0
   $: _stormRendPct = 0
   $: _explosiveChargePct = (perks['Explosive Charge'] ?? 0) > 0 ? 1.0 : 0
+
+  // ── Ork race: +0.1 tenacity per active buff (excludes debuffs & self-debuffs) ──
+  $: _orkBuffs = _allActiveBuffs.filter(b => {
+    const def = BUFF_DEFS[b.buffName]
+    return !def?.isDebuff && !b.isSelfDebuff && !def?.isNeutral
+  })
+  $: _orkBuffTenacity = $build.race === 'ORK' ? 0.1 * _orkBuffs.length : 0
+  $: _effectiveTenacity = (stats.tenacity ?? 0) + _orkBuffTenacity
 
   let disabledDebuffs = new Set<string>()
 
@@ -455,11 +471,24 @@
     return 1 + 0.05 * _reaperActiveDebuffCount * _reaperPerkAmount
   })()
 
-  $: _activeReinforcePotency      = _allActiveBuffs.reduce((m, b) => b.buffName === 'Reinforce'       ? Math.max(m, b.potency) : m, 0)
-  $: _activeMagicReinforcePotency = _allActiveBuffs.reduce((m, b) => b.buffName === 'Magic Reinforce' ? Math.max(m, b.potency) : m, 0)
+  $: _disabledKeysArr = [...disabledBuffKeys]
+  function _isBuffDisabled(buff: { buffName: string; sourceName: string }): boolean {
+    return disabledBuffKeys.has(`${buff.buffName}:${buff.sourceName}`)
+  }
+  $: _activeReinforcePotency      = (_disabledKeysArr,
+    _allActiveBuffs.reduce((m, b) => b.buffName === 'Reinforce'       ? Math.max(m, b.potency) : m, 0))
+  $: _activeMagicReinforcePotency = (_disabledKeysArr,
+    _allActiveBuffs.reduce((m, b) => b.buffName === 'Magic Reinforce' ? Math.max(m, b.potency) : m, 0))
 
   let rageDisabled = false
   let glyphConduitDisabled = false
+  let disabledBuffKeys = new Set<string>()
+  function toggleBuffKey(key: string) {
+    if (disabledBuffKeys.has(key)) disabledBuffKeys.delete(key)
+    else disabledBuffKeys.add(key)
+    disabledBuffKeys = disabledBuffKeys // trigger reactivity
+  }
+  const HANDLED_BUFF_NAMES = new Set(['Rage', 'Glyph Conduit', 'Extinguish', 'Lightning Cloak', 'Storm Rend'])
   let extinguishDisabled = false
 
   let environmentTouched = false
@@ -693,6 +722,14 @@
     }
     return bonuses
   })()
+  $: _waOnlyBonuses = (() => {
+    const result: Record<string, number> = {}
+    for (const [k, v] of Object.entries(_waDmgTypeBonuses)) {
+      const bv = _perkDmgTypeBonuses[k] ?? 0
+      if (v !== bv) result[k] = Math.round((v - bv) * 10000) / 10000
+    }
+    return result
+  })()
 
   function _applyDmgBonuses(base: Record<string, number>, bonuses: Record<string, number>): Record<string, number> {
     return resolveDamageTypes(base, bonuses)
@@ -739,6 +776,7 @@
   $: _weaponDmgTypesBase = (() => {
     return { ...(_weaponResult?.damageTypes ?? {}) }
   })()
+  $: _convertedWeaponDmgTypes = applyAirToMagicConversion(_weaponDmgTypes, _spiritWindsConversionRate, _darkMagicHexBonus)
 
   $: _gunDmgTypes = (() => {
     if (!_gunOverlay) return _weaponDmgTypes
@@ -815,8 +853,19 @@
       type: 'dmg' as const,
     }
   })()
-  $: activeEntries = [...boosts.dmgEntries.filter(e => !disabledBoosts.has(e.sourceName)), ...(_curseRipBoostEntry && !disableCurseRip ? [_curseRipBoostEntry] : []), ...(_reaperBoostEntry && !disableReaper ? [_reaperBoostEntry] : [])]
-  $: hasDisabledVisible = boosts.dmgEntries.some(e => disabledBoosts.has(e.sourceName)) || (_curseRipBoostEntry && disableCurseRip) || (_reaperBoostEntry && disableReaper)
+  $: _adjustedDmgEntries = (_effectiveTenacity, _orkBuffTenacity, boosts.dmgEntries.map(e => {
+    if (e.sourceName !== 'Ferocity' || _orkBuffTenacity === 0) return e
+    const ferocityAmt = perks['Ferocity'] ?? 0
+    if (ferocityAmt <= 0) return e
+    const pct = _effectiveTenacity * 11 * ferocityAmt
+    return {
+      ...e,
+      rawMultiplier: 1 + pct / 100,
+      condition: `${_effectiveTenacity.toFixed(2)} tenacity × ${ferocityAmt} Ferocity = +${pct.toFixed(2)}%`
+    }
+  }))
+  $: activeEntries = (_effectiveTailwindPotency, [..._adjustedDmgEntries.filter(e => !disabledBoosts.has(e.sourceName) && !(e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0)), ...(_curseRipBoostEntry && !disableCurseRip ? [_curseRipBoostEntry] : []), ...(_reaperBoostEntry && !disableReaper ? [_reaperBoostEntry] : [])])
+  $: hasDisabledVisible = (_effectiveTailwindPotency, _adjustedDmgEntries.some(e => disabledBoosts.has(e.sourceName) || (e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0)) || (_curseRipBoostEntry && disableCurseRip) || (_reaperBoostEntry && disableReaper))
 
   $: _levelMult = (() => {
     const levelEntry = boosts.dmgEntries.find(e => e.sourceName === 'Level Damage')
@@ -862,11 +911,11 @@
 
   $: _allUniversalChips = [..._visibleDmgEntries.filter(e => !(e as any).appliesTo), ...(_curseRipBoostEntry && !disableCurseRip ? [_curseRipBoostEntry] : []), ...(_reaperBoostEntry && !disableReaper ? [_reaperBoostEntry] : [])]
 
-  $: _universalActiveMult = Math.round(
+  $: _universalActiveMult = (_effectiveTailwindPotency, Math.round(
     _allUniversalChips
-      .filter(e => !disabledBoosts.has(e.sourceName))
+      .filter(e => !disabledBoosts.has(e.sourceName) && !(e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0))
       .reduce((acc, e) => acc * e.rawMultiplier, 1.0) * 10000
-  ) / 10000
+  ) / 10000)
 
   $: _catGroups = (() => {
     const CAT_DEFS: Array<{ key: BoostAttackType; label: string }> = [
@@ -883,7 +932,7 @@
 
     for (const { key, label } of CAT_DEFS) {
       const allChips   = allEntries.filter(e => (e as any).appliesTo?.includes(key))
-      const activeChips = allChips.filter(e => !disabledBoosts.has(e.sourceName) && !(e.sourceName === 'Curse Rip' && disableCurseRip) && !(e.sourceName === 'Reaper' && disableReaper))
+      const activeChips = allChips.filter(e => !disabledBoosts.has(e.sourceName) && !(e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0))
       const specMult   = activeChips.reduce((acc, e) => acc * e.rawMultiplier, 1.0)
       const totalMult  = roundMultiplier(_universalActiveMult * specMult)
       const sigKey     = allChips.map(e => e.sourceName).join('|')
@@ -1148,8 +1197,11 @@
   }
   $: _wildBoltElement = _wildBoltAmt > 0 && selectedWA.name === 'Laser' ? _wildBoltElements[_wildBoltElemIdx] : null
   $: _waDmgTypes = (() => {
+    const apply = (types: Record<string, number>) =>
+      applyAirToMagicConversion(types, _spiritWindsConversionRate, _darkMagicHexBonus)
+
     if (_wildBoltElement) {
-      return _applyDmgBonuses({ [_wildBoltElement]: 1 }, _waDmgTypeBonuses)
+      return apply(_applyDmgBonuses({ [_wildBoltElement]: 1 }, _waDmgTypeBonuses))
     }
     const dt = selectedWA.damageType
     const addHex = (r: Record<string, number>) => _emotionalHexBonus > 0
@@ -1157,13 +1209,13 @@
       : r
     
     if (!dt || dt === 'Same as weapon') {
-      return addHex(_weaponDmgTypes)
+      return apply(_applyDmgBonuses(addHex(_weaponDmgTypes), _waOnlyBonuses))
     }
     
     if (dt.includes('Highest damage type')) {
       const entries = Object.entries(_weaponDmgTypesBase)
       if (entries.length === 0) {
-        return addHex(_weaponDmgTypes)
+        return apply(_applyDmgBonuses(addHex(_weaponDmgTypes), _waOnlyBonuses))
       }
       const [highestKey] = entries.reduce((a, b) => {
         if (b[1] > a[1]) return b
@@ -1174,7 +1226,7 @@
         }
         return a
       })
-      return _applyDmgBonuses({ [highestKey]: 1 }, _waDmgTypeBonuses)
+      return apply(_applyDmgBonuses({ [highestKey]: 1 }, _waDmgTypeBonuses))
     }
 
     const types: Record<string, number> = {}
@@ -1188,9 +1240,9 @@
     }
 
     if (Object.keys(types).length > 0) {
-      return _applyDmgBonuses(types, _waDmgTypeBonuses)
+      return apply(_applyDmgBonuses(types, _waDmgTypeBonuses))
     } else {
-      return addHex({ ..._weaponDmgTypes })
+      return apply(_applyDmgBonuses(addHex({ ..._weaponDmgTypes }), _waOnlyBonuses))
     }
   })()
   
@@ -1277,10 +1329,11 @@
 
       const dtFinal = (() => {
         const base = _resolveHitDmgTypes(dtStr, _weaponDmgTypes, _waDmgTypeBonuses)
-        if (dtStr === 'Same as weapon' && _emotionalHexBonus > 0) {
-          return { ...base, hex: Math.round(((base.hex ?? 0) + _emotionalHexBonus) * 10000) / 10000 }
-        }
-        return base
+        let result = dtStr === 'Same as weapon' && _emotionalHexBonus > 0
+          ? { ...base, hex: Math.round(((base.hex ?? 0) + _emotionalHexBonus) * 10000) / 10000 }
+          : base
+        result = applyAirToMagicConversion(result, _spiritWindsConversionRate, _darkMagicHexBonus)
+        return result
       })()
       const types: DamageDisplayType[] = Object.entries(dtFinal).map(([k, mult]) => ({
         label: k.charAt(0).toUpperCase() + k.slice(1),
@@ -1376,7 +1429,7 @@
     disabledBoosts = new Set([...disabledBoosts, 'Rider'])
   }
   $: _prevMountActive = mountActive
-  $: _visibleDmgEntries = boosts.dmgEntries.filter(e =>
+  $: _visibleDmgEntries = _adjustedDmgEntries.filter(e =>
     e.sourceName !== 'Rider' || mountActive
   )
 
@@ -1450,7 +1503,7 @@
           : (def.dmgTypes ?? {})
 
       // Apply Draconic Runes + Dragon Infusion bonuses to rune damage
-      const resolvedDmgTypes = def.isRune
+      const baseResolvedDmgTypes = def.isRune
         ? _applyDmgBonuses(
             applyDraconicBonuses(baseDmgTypes, {
               draconicRunesStacks: perks['Draconic Runes'] ?? 0,
@@ -1463,9 +1516,10 @@
             _perkDmgTypeBonuses
           )
         : _applyDmgBonuses(baseDmgTypes, _perkDmgTypeBonuses)
+      const resolvedDmgTypes = applyAirToMagicConversion(baseResolvedDmgTypes, _spiritWindsConversionRate, _darkMagicHexBonus)
 
       // Store base damage types without Draconic Runes bonus for self damage calculation
-      const baseDmgTypesForSelfDmg = def.isRune ? baseDmgTypes : resolvedDmgTypes
+      const baseDmgTypesForSelfDmg = def.isRune ? baseDmgTypes : baseResolvedDmgTypes
 
       const resolvedScalings = def.scalingMode === 'weapon'
         ? _weaponResult?.scalings ?? {}
@@ -1570,8 +1624,8 @@
     const row = _displayRows[0]
     if (row && Object.keys(_weaponDmgTypes).length > 0) {
       const gunLabel = (row as any).gunLabel as string | undefined
-      const m1Types = (gunLabel && !(row as any).m2Only)   ? _gunDmgTypes : _weaponDmgTypes
-      const m2Types = (gunLabel && !(row as any).m2NoLock) ? _gunDmgTypes : _weaponDmgTypes
+      const m1Types = (gunLabel && !(row as any).m2Only)   ? _gunDmgTypes : _convertedWeaponDmgTypes
+      const m2Types = (gunLabel && !(row as any).m2NoLock) ? _gunDmgTypes : _convertedWeaponDmgTypes
       if (row.m1 && !(_activeMountRuneDef && mountActive)) {
         row.m1.forEach((h: any, i: number) => {
           const base = typeof h === 'number' ? h : h.n
@@ -1649,9 +1703,9 @@
         const hitDt = selectedWA.hitDamageTypes?.length
          ? (() => {
              const _hdt = selectedWA.hitDamageTypes[Math.min(i, selectedWA.hitDamageTypes.length - 1)]
-             return _hdt === 'Same as weapon' && _emotionalHexBonus > 0
-               ? { ..._weaponDmgTypes, hex: Math.round(((_weaponDmgTypes.hex ?? 0) + _emotionalHexBonus) * 10000) / 10000 }
-               : _resolveHitDmgTypes(_hdt, _weaponDmgTypes, _waDmgTypeBonuses)
+              return _hdt === 'Same as weapon'
+                ? _applyDmgBonuses({ ..._weaponDmgTypes }, _waOnlyBonuses)
+                : _resolveHitDmgTypes(_hdt, _weaponDmgTypes, _waDmgTypeBonuses)
            })()
          : _waDmgTypes
          
@@ -1778,16 +1832,20 @@
       const _runeIsHeal = _activeRuneDmgDef.isHealOnly ?? false
       const _runeDmgTypesWithBonus = _runeIsHeal
         ? _activeRuneDmgDef.dmgTypes
-        : _applyDmgBonuses(
-            applyDraconicBonuses(_activeRuneDmgDef.dmgTypes, {
-              draconicRunesStacks: perks['Draconic Runes'] ?? 0,
-              draconicColor: $build.draconicColor || 'physical',
-            }, {
-              isActive: $build.draconicRuneInfusion === 'infusion',
-              buffPotency: getEffectiveDraconicInfusionPotency($build.guild, $build.draconicRuneInfusion, $build.draconicColor || 'physical', perks['Draconic Blood'] ?? 0, perks),
-              draconicColor: $build.draconicColor || 'physical',
-            }),
-            _perkDmgTypeBonuses
+        : applyAirToMagicConversion(
+            _applyDmgBonuses(
+              applyDraconicBonuses(_activeRuneDmgDef.dmgTypes, {
+                draconicRunesStacks: perks['Draconic Runes'] ?? 0,
+                draconicColor: $build.draconicColor || 'physical',
+              }, {
+                isActive: $build.draconicRuneInfusion === 'infusion',
+                buffPotency: getEffectiveDraconicInfusionPotency($build.guild, $build.draconicRuneInfusion, $build.draconicColor || 'physical', perks['Draconic Blood'] ?? 0, perks),
+                draconicColor: $build.draconicColor || 'physical',
+              }),
+              _perkDmgTypeBonuses
+            ),
+            _spiritWindsConversionRate,
+            _darkMagicHexBonus
           )
       result.push({
         group: 'Rune',
@@ -2004,7 +2062,7 @@
     {#if !_hasSpecificBoosts}
       <div class="da-boost-row">
         {#each [..._visibleDmgEntries, ...(_curseRipBoostEntry ? [_curseRipBoostEntry] : []), ...(_reaperBoostEntry ? [_reaperBoostEntry] : [])] as entry}
-          {@const disabled = entry.sourceName === 'Curse Rip' ? disableCurseRip : entry.sourceName === 'Reaper' ? disableReaper : disabledBoosts.has(entry.sourceName)}
+          {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (entry.sourceName === 'Curse Rip' && disableCurseRip) || (entry.sourceName === 'Reaper' && disableReaper)}
           {@const effectiveMultiplier = disabled ? 1 : entry.rawMultiplier}
           <button
             class="da-boost-chip"
@@ -2012,6 +2070,7 @@
             class:da-boost-chip--off={disabled}
             title={entry.condition ?? ''}
             on:click={() => {
+              if (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) return
               if (entry.sourceName === 'Curse Rip') disableCurseRip = !disableCurseRip
               else if (entry.sourceName === 'Reaper') disableReaper = !disableReaper
               else toggleBoost(entry.sourceName)
@@ -2037,13 +2096,14 @@
       <div class="da-boost-split">
         <div class="da-boost-universal">
           {#each _allUniversalChips as entry}
-            {@const disabled = entry.sourceName === 'Curse Rip' ? disableCurseRip : entry.sourceName === 'Reaper' ? disableReaper : disabledBoosts.has(entry.sourceName)}
+            {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (entry.sourceName === 'Curse Rip' && disableCurseRip) || (entry.sourceName === 'Reaper' && disableReaper)}
             <button
               class="da-boost-chip"
               class:da-boost-chip--lvl={entry.sourceName === 'Level Damage'}
               class:da-boost-chip--off={disabled}
               title={entry.condition ?? ''}
               on:click={() => {
+                if (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) return
                 if (entry.sourceName === 'Curse Rip') disableCurseRip = !disableCurseRip
                 else if (entry.sourceName === 'Reaper') disableReaper = !disableReaper
                 else toggleBoost(entry.sourceName)
@@ -2071,12 +2131,12 @@
 
               {#if grp.allChips.length > 0}
                 {#each grp.allChips as entry}
-                  {@const disabled = disabledBoosts.has(entry.sourceName)}
+                  {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0)}
                   <button
                     class="da-boost-chip da-boost-chip--sm"
                     class:da-boost-chip--off={disabled}
                     title={entry.condition ?? ''}
-                    on:click={() => toggleBoost(entry.sourceName)}
+                    on:click={() => { if (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) return; toggleBoost(entry.sourceName) }}
                   >
                     <span class="da-bc-name">{entry.sourceName}</span>
                     <span class="da-bc-val">{disabled ? '—' : `×${+entry.rawMultiplier.toFixed(4)}`}</span>
@@ -2115,7 +2175,7 @@
           </button>
         </div>
       {/if}
-      {#if _ragePotency > 0 || _glyphConduitEntry || _vampireStacks > 0 || _photosynthesisStacks > 0 || (perks['Extinguish'] ?? 0) > 0 || _lightningCloakActive || _stormRendAmt > 0}
+      {#if _ragePotency > 0 || _glyphConduitEntry || _vampireStacks > 0 || _photosynthesisStacks > 0 || (perks['Extinguish'] ?? 0) > 0 || _lightningCloakActive || _stormRendAmt > 0 || _allActiveBuffsRaw.some(b => !HANDLED_BUFF_NAMES.has(b.buffName))}
         <div class="da-buff-list" style="margin-top: 8px;">
           {#if _ragePotency > 0}
             <span class="da-buff">
@@ -2196,7 +2256,31 @@
               </button>
             </span>
           {/if}
+          {#each _allActiveBuffsRaw.filter(b => !HANDLED_BUFF_NAMES.has(b.buffName) && !BUFF_DEFS[b.buffName]?.isDebuff) as buff, i (buff.buffName + buff.sourceName + i)}
+            {@const def = BUFF_DEFS[buff.buffName]}
+            {@const key = `${buff.buffName}:${buff.sourceName}`}
+            {@const isOff = disabledBuffKeys.has(key)}
+            {#if def}
+              <span class="da-buff">
+                <button class="da-boost-chip" class:da-boost-chip--off={isOff}
+                  style="background:color-mix(in srgb,{def.color} 10%,transparent);border-color:color-mix(in srgb,{def.color} 35%,transparent)"
+                  on:click={() => toggleBuffKey(key)}>
+                  <span class="da-bc-name">{def.name}</span>
+                  <span class="da-bc-val" style="color:{def.color}">{isOff ? '—' : buff.potency}</span>
+                  <span class="da-bc-cond">{getBuffDescription(buff.buffName, $result.perks, buff.potency)}</span>
+                  <span class="da-bc-toggle" style={isOff ? '' : `background:color-mix(in srgb,${def.color} 25%,transparent);color:${def.color}`}>{isOff ? 'OFF' : 'ON'}</span>
+                  <span class="da-buff-sources">{buff.sourceName}</span>
+                </button>
+              </span>
+            {/if}
+          {/each}
         </div>
+        {#if _orkBuffTenacity > 0}
+          <div class="da-ork-tenacity" style="margin-top: 6px; font-size: .7rem; color: var(--ink-muted); display: flex; gap: 4px; align-items: center;">
+            <span>Ork Tenacity: <strong style="color: var(--accent);">{_effectiveTenacity.toFixed(2)}</strong></span>
+            <span style="opacity: .6;">(base <strong>{stats.tenacity.toFixed(2)}</strong> + <strong>{_orkBuffTenacity.toFixed(2)}</strong> from {_orkBuffs.length} buff{_orkBuffs.length !== 1 ? 's' : ''})</span>
+          </div>
+        {/if}
           {#if _vampireStacks > 0 || _photosynthesisStacks > 0}
             <div class="ap-toggle-row">
               <span class="ap-toggle-label">Environment</span>
@@ -2364,8 +2448,8 @@
     {@const gunLabel = (row as any).gunLabel as string | undefined}
     {@const m2Only = (row as any).m2Only as boolean | undefined}
     {@const hasDmgTypes = isActive && Object.keys(_weaponDmgTypes).length > 0}
-    {@const m1DmgTypes = (isActive && gunLabel && !m2Only) ? _gunDmgTypes : _weaponDmgTypes}
-    {@const m2DmgTypes = (isActive && gunLabel && !(row as any).m2NoLock) ? _gunDmgTypes : _weaponDmgTypes}
+    {@const m1DmgTypes = (isActive && gunLabel && !m2Only) ? _gunDmgTypes : _convertedWeaponDmgTypes}
+    {@const m2DmgTypes = (isActive && gunLabel && !(row as any).m2NoLock) ? _gunDmgTypes : _convertedWeaponDmgTypes}
     {@const m1Typed = hasDmgTypes && row.m1 ? seqWithTypes(row.m1, m1DmgTypes, 1, 1, new Set(), 1) : null}
     {@const m2Typed = hasDmgTypes && row.m2 ? seqWithTypes(row.m2, m2DmgTypes, 1, 1, new Set(), 1) : null}  
     <div class="da-wbd-card" class:da-wbd-card--active={isActive || isGunActive} class:da-wbd-card--gun={isGunActive}>
@@ -2608,6 +2692,12 @@
                   </div>
                 {/each}
               {/if}
+              {#if (_waOnlyBonuses.air ?? 0) > 0}
+                <span class="da-ww-badge" title="+{_waOnlyBonuses.air.toFixed(2)} Air from WA-specific bonuses while Tailwind is active">
+                  <span class="da-ww-air">+{_waOnlyBonuses.air.toFixed(2)} Air</span>
+                  <span class="da-ww-label">WA+</span>
+                </span>
+              {/if}
               {#if selectedWA.scaling && selectedWA.scaling !== 'Same as weapon'}
                 <span class="da-range-scl">{selectedWA.scaling === 'None' ? 'No Scaling' : `Scaling: ${selectedWA.scaling}`}</span>
               {/if}
@@ -2716,7 +2806,8 @@
                 draconicColor: _draconicColor,
               })
               const bonusEntries = Object.entries(_perkDmgTypeBonuses).filter(([, v]) => v > 0)
-              return bonusEntries.length > 0 ? resolveDamageTypes(base, _perkDmgTypeBonuses) : base
+              const resolved = bonusEntries.length > 0 ? resolveDamageTypes(base, _perkDmgTypeBonuses) : base
+              return applyAirToMagicConversion(resolved, _spiritWindsConversionRate, _darkMagicHexBonus)
             })()}
         
         <div class="da-wbd-section">
@@ -4336,6 +4427,14 @@
   border-radius: 999px;
   border: 1px solid rgba(255,255,255,.07);
 }
+.da-ww-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: .6rem; padding: 1px 6px;
+  background: rgba(170,255,219,.1); border: 1px solid rgba(170,255,219,.25);
+  border-radius: 999px;
+}
+.da-ww-air { color: #AAFFDB; font-weight: 700; }
+.da-ww-label { color: rgba(170,255,219,.6); font-size: .52rem; }
 .da-heal-hits-row {
   display: flex;
   align-items: center;

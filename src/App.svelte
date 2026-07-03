@@ -41,6 +41,7 @@ import Highlight from './Highlight.svelte'
   import { checkWA, getUnmetReqs } from './data/Weaponartcheck'
   import SuggestDrop from './SuggestDrop.svelte'
   import { getEffectiveDraconicInfusionPotency } from './data/draconicBuffs'
+  import { BUFF_DEFS, getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, convertTailwindToWhirlwind } from './data/BuffData'
   import { CDR_PERK_DATA } from './data/cdr'
   import { calcMaxSummonCount } from './data/SummonData'
   import ModalSearchHeader from './ModalSearchHeader.svelte'
@@ -274,6 +275,23 @@ $: gladRageArmorPen = (() => {
   return highestBoost / 15
 })()
 
+$: _orkBuffCount = $build.race === 'ORK' ? (() => {
+  const itemBuffs = getActiveBuildBuffs({
+    rune: $build.rune, ring: $build.ring, infusionRing: $build.infusionRing,
+    helmet: $build.helmet, chestplate: $build.chestplate, leggings: $build.leggings,
+    weaponBlade: $build.weaponBlade, weaponHandle: $build.weaponHandle,
+    monkGlove: $build.monkGlove, race: $build.race,
+  })
+  const baseBuffs = [...itemBuffs, ...getPerkBuffs($result.perks), ...getWeaponArtBuffs($build.selectedWeaponArt)]
+  const processed = convertTailwindToWhirlwind(applyBuffPerkModifiers(baseBuffs, $result.perks, $build.rune || undefined), $result.perks)
+  return processed.filter(b => {
+    const def = BUFF_DEFS[b.buffName]
+    return !def?.isDebuff && !b.isSelfDebuff && !def?.isNeutral
+  }).length
+})() : 0
+$: _orkTenacityBonus = 0.1 * _orkBuffCount
+$: _effectiveTenacity = ($result.stats.tenacity ?? 0) + _orkTenacityBonus
+
 $: statRows = Object.entries($result.stats).filter(([k, v]) => {
     if (k === 'armorPenetration') {
       const displayVal = (v as number) - raceArmorPen - gladRageArmorPen
@@ -282,6 +300,7 @@ $: statRows = Object.entries($result.stats).filter(([k, v]) => {
     return v !== 0
   }).map(([k, v]) => {
     if (k === 'armorPenetration') return [k, (v as number) - raceArmorPen - gladRageArmorPen] as [string, number]
+    if (k === 'tenacity') return [k, _effectiveTenacity] as [string, number]
     return [k, v] as [string, number]
   }).sort(([a],[b]) => a.localeCompare(b))
 
@@ -4208,12 +4227,12 @@ $: _appWaAvgTotal = (() => {
 .dab-cd-arrow { font-size:.6rem; color:var(--ink-muted); opacity:.35; }
 .dab-duration { font-size:.65rem; color:var(--infusion); padding:2px 7px; background:rgba(56,189,248,.1); border:1px solid rgba(56,189,248,.2); border-radius:999px; }
 .dab-stats { display:flex; flex-direction:column; gap:3px; }
-.dab-stat-row { display:flex; align-items:center; gap:6px; font-size:.77rem; padding:3px 6px; border-radius:5px; background:var(--surface3); }
-.dab-stat-k { color:var(--ink-muted); min-width:80px; font-size:.68rem; }
-.dab-stat-v { font-weight:700; color:#c8c4ba; }
-  .dab-stat-v--dmg { color:var(--accent2); font-size:.95rem; text-shadow:0 0 8px rgba(245,158,11,.35); }
+:global(.dab-stat-row) { display:flex; align-items:center; gap:6px; font-size:.77rem; padding:3px 6px; border-radius:5px; background:var(--surface3); }
+:global(.dab-stat-k) { color:var(--ink-muted); min-width:80px; font-size:.68rem; }
+:global(.dab-stat-v) { font-weight:700; color:#c8c4ba; }
+:global(.dab-stat-v--dmg) { color:var(--accent2); font-size:.95rem; text-shadow:0 0 8px rgba(245,158,11,.35); }
 
-.dab-notes { font-size:.68rem; color:var(--draco-text); opacity:.65; font-style:italic; line-height:1.4; letter-spacing:.02em; }
+:global(.dab-notes) { font-size:.68rem; color:var(--draco-text); opacity:.65; font-style:italic; line-height:1.4; letter-spacing:.02em; }
 /* ── Search suggestions ── */
 .search-wrap { position: relative; margin-bottom: 12px; }
 .search-wrap .modal-search-input { margin-bottom: 0; }

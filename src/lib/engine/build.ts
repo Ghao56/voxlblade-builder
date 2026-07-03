@@ -106,6 +106,8 @@ function calcBoosts(
   summonCount:       number = 0,
   ragePotency:       number = 0,
   bouncePotency:     number = 0,
+  tailwindPotency:   number = 0,
+  tenacity:          number = 0,
   raceName?:         string,
   hpFillPct?:        number,
   inDarkness:        boolean = true,
@@ -132,8 +134,9 @@ function calcBoosts(
 
   const ctx: BoostContext = {
     perks, naturalCritChance, jumpBoost, summonCount,
-    ragePotency, bouncePotency, inDarkness, emotionalState, level,
-    summonBoostPct, quickdrawPotency, selectedWeaponArt,
+    ragePotency, bouncePotency, quickdrawPotency,
+    tailwindPotency, tenacity, inDarkness, emotionalState, level,
+    summonBoostPct, selectedWeaponArt,
   }
 
   for (const def of BOOST_DEFS) {
@@ -463,13 +466,16 @@ function deriveResults(
   const _bounceBuffs  = _allBuffs.filter(b => b.buffName === 'Bounce')
   const bouncePotency = _bounceBuffs.length > 0 ? Math.max(..._bounceBuffs.map(b => b.potency)) : 0
 
-  const _quickdrawBuffs = _allBuffs.filter(b => b.buffName === 'Quickdraw')
+  const _quickdrawBuffs  = _allBuffs.filter(b => b.buffName === 'Quickdraw')
   const quickdrawPotency = _quickdrawBuffs.length > 0 ? Math.max(..._quickdrawBuffs.map(b => b.potency)) : 0
+  const _tailwindBuffs   = _allBuffs.filter(b => b.buffName === 'Tailwind' || b.buffName === 'Whirlwind')
+  const tailwindPotency  = _tailwindBuffs.length > 0 ? Math.max(..._tailwindBuffs.map(b => b.potency)) : 0
 
   const boosts = calcBoosts(
     finalPerks, state.emotionalState, state.level ?? 80,
     crit.naturalCritChance, boostedStats.jumpBoost ?? 0,
     state.summonCount ?? 0, ragePotency, bouncePotency,
+    tailwindPotency, finalStats.tenacity ?? 0,
     state.race, state.hpFill ?? 100, state.inDarkness ?? true,
     boostedStats.summonBoost ?? 0, quickdrawPotency,
     state.selectedWeaponArt,
