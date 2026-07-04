@@ -25,6 +25,7 @@ export type SecondaryEffectTone = 'defense' | 'offense' | 'utility'
 
 export interface HpGate {
   hpThreshold: number
+  getThreshold?: (perkAmount: number) => number
   aboveThreshold: boolean
   alwaysActiveAtPerkAmount?: number
 }
@@ -32,7 +33,14 @@ export interface HpGate {
 export function isHpGateActive(gate: HpGate | undefined, hpFillPct: number, perkAmount: number): boolean {
   if (!gate) return true
   if (gate.alwaysActiveAtPerkAmount != null && perkAmount >= gate.alwaysActiveAtPerkAmount) return true
-  return gate.aboveThreshold ? hpFillPct > gate.hpThreshold : hpFillPct <= gate.hpThreshold
+  const threshold = gate.getThreshold ? gate.getThreshold(perkAmount) : gate.hpThreshold
+  return gate.aboveThreshold ? hpFillPct > threshold : hpFillPct <= threshold
+}
+
+export function getHpThreshold(gate: HpGate | undefined, perkAmount: number): number | undefined {
+  if (!gate) return undefined
+  if (gate.alwaysActiveAtPerkAmount != null && perkAmount >= gate.alwaysActiveAtPerkAmount) return undefined
+  return gate.getThreshold ? gate.getThreshold(perkAmount) : gate.hpThreshold
 }
 
 export interface SecondaryEffect {
@@ -99,6 +107,19 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     condition: 'On RMB (Monk)',
     getBaseDamage: () => 9,
     hits: 3,
+    dmgTypeMode: 'weapon',
+    scalingMode: 'weapon',
+    isM2: true,
+    isFinisher: true,
+    guardbreak: true,
+    note: 'Each hit counts as individual M1/M2 and procs related effects.',
+  },
+  // ── Buni Spirit ────────────────────────────────────────────────────────────
+  {
+    perkName: 'Buni Spirit',
+    condition: 'On RMB (Monk)',
+    getBaseDamage: () => 2,
+    hits: 20,
     dmgTypeMode: 'weapon',
     scalingMode: 'weapon',
     isM2: true,
@@ -394,6 +415,22 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     isWA: true,
     isRune: true,
     note: 'AoE wind slash. Applies Bleed for 5s. Can proc other effects.',
+  },
+  // ── Dragon State ──────────────────────────────────────────────────────────
+  {
+    perkName: 'Dragon State',
+    condition: 'On M1/M2 while above HP threshold · Once per M1/M2',
+    getBaseDamage: ({ perkAmount }) => 1.5 + 1.5 * perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { magic: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { magic: 0.75, dexterity: 0.75, holy: 0.75 },
+    hpGate: {
+      hpThreshold: 80,
+      aboveThreshold: true,
+      getThreshold: (perkAmount) => 85 - 5 * perkAmount,
+    },
+    note: 'Can only activate once per M1/M2. Can proc other effects.',
   },
   // ── Volatile Shell ──────────────────────────────────────────────────────────
   {

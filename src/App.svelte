@@ -71,6 +71,9 @@ import Highlight from './Highlight.svelte'
     }
   }
 
+  $: _dragonStateAmt = $result.perks['Dragon State'] ?? 0
+  $: _dragonStateThreshold = _dragonStateAmt > 0 ? 85 - 5 * _dragonStateAmt : undefined
+
   let weaponStatFilter: Map<string, 'include' | 'exclude'> = new Map()
   let weaponStatFilterRef: WeaponStatFilter
 
@@ -1883,7 +1886,7 @@ $: _appWaAvgTotal = (() => {
       <div class="panel summary-panel">
         <div class="summary-title-row">
           <h3 class="panel-title summary-title">Build Summary</h3>
-          <LevelBar protection={$result.stats.protection ?? 0} />
+          <LevelBar protection={$result.stats.protection ?? 0} hpThreshold={_dragonStateThreshold} />
         </div>
         <div class="summary-actions">
           <button class="clear-all-btn" on:click={handleClearBuild} title="Clear all selections">
@@ -3113,6 +3116,9 @@ $: _appWaAvgTotal = (() => {
     </div>
     {:else}
       <div class="analyze-wrap">
+        <div class="analyze-hp-bar">
+          <LevelBar protection={$result.stats.protection ?? 0} hpThreshold={_dragonStateThreshold} />
+        </div>
         <DamageAnalyzer />
       </div>
     {/if}
@@ -3153,6 +3159,7 @@ $: _appWaAvgTotal = (() => {
   .header-hint { font-size:.72rem; color:var(--ink-muted); letter-spacing:.1em; text-transform:uppercase; opacity:.6; }
 
   .workspace { display:flex; flex-direction:column; gap:14px; }
+  .analyze-hp-bar { display:flex; padding:0 4px 8px 4px; }
 
   /* ── MODAL ── */
   .modal-overlay {

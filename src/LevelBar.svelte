@@ -4,6 +4,7 @@
 
   // ── Props ─────────────────────────────────────────────────────────────────
   export let protection: number = 0
+  export let hpThreshold: number | undefined = undefined
 
   const BASE_HP      = 120
   const HP_PER_LEVEL = 0.0125
@@ -94,6 +95,7 @@
   $: currentHP = Math.round(effectiveMaxHP * fillPct / 100)
   $: fillFrac  = (effectiveMaxHP / baseMaxHP) * (fillPct / 100)
   $: thumbPos  = fillFrac * 100
+  $: thresholdFrac = hpThreshold != null ? (effectiveMaxHP / baseMaxHP) * (hpThreshold / 100) : 0
 
   // Đưa logic màu sắc/glow thành biến đơn giản để gán vào CSS Variable
   $: barColor = fillPct > 50 ? '#4ade80' : fillPct > 25 ? '#facc15' : '#f87171'
@@ -171,6 +173,10 @@
           <div class="lb-notch" style="left:{(i + 1) * 10}%"></div>
         {/each}
       </div>
+
+      {#if hpThreshold != null && thresholdFrac > 0 && thresholdFrac < 1}
+        <div class="lb-threshold-line" style="left:{thresholdFrac * 100}%" title="HP threshold: {hpThreshold}%"></div>
+      {/if}
 
       {#if fillFrac > 0.01 && fillFrac < 0.99}
         <div class="lb-thumb" style="left:{thumbPos}%"></div>
@@ -384,6 +390,18 @@
     width: 1px;
     background: rgba(0,0,0,0.28);
     transform: translateX(-50%);
+  }
+
+  /* Threshold line */
+  .lb-threshold-line {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 2px;
+    background: rgba(251,191,36,0.85);
+    transform: translateX(-50%);
+    z-index: 6;
+    pointer-events: none;
+    box-shadow: 0 0 6px rgba(251,191,36,0.6);
   }
 
   /* Drag thumb */

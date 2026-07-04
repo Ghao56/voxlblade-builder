@@ -420,6 +420,15 @@
   $: stats = $result.stats
   $: perks = $result.perks
   $: _luminescentPct = (perks['Luminescent Fervor'] ?? 0) > 0 ? 0.05 * (perks['Luminescent Fervor'] ?? 0) : 0
+  $: _dragonStateAmt = perks['Dragon State'] ?? 0
+  $: _dragonStateHpGateActive = _dragonStateAmt > 0 && isHpGateActive(
+    { hpThreshold: 80, aboveThreshold: true, getThreshold: (pa) => 85 - 5 * pa },
+    _hpFillPct,
+    _dragonStateAmt
+  )
+  $: _dragonStateTotalDmg = _dragonStateAmt > 0 && _dragonStateHpGateActive
+    ? (1.5 + 1.5 * _dragonStateAmt) * _computePerkScalingMult({ magic: 0.75, dexterity: 0.75, holy: 0.75 }) * _perkCombatMult
+    : 0
   $: _waveRiderAmt = perks['Wave Rider'] ?? 0
   $: _oceanSongAmt = perks['Ocean Song'] ?? 0
   $: _wildBoltAmt = perks['Wild Bolt'] ?? 0
@@ -1489,6 +1498,7 @@
     for (const def of PERK_DMG_DEFS) {
       const perkAmount = perks[def.perkName] ?? 0
       if (perkAmount <= 0) continue
+      if (def.perkName === 'Dragon State') continue
       if (def.activeIf && !def.activeIf({ draconicRuneInfusion: $build.draconicRuneInfusion, draconicColor: $build.draconicColor })) continue
 
       const combatMult = def.isWA   ? _waCombatMult
@@ -3329,9 +3339,9 @@
       </div>
 
       {#each _nonDraconicPerkEntries as entry}
-        {#if (entry.dmgTypeMode === 'fixed' ||entry.dmgTypeMode === 'dynamic')&& Object.keys(entry.resolvedScalings ?? {}).length > 0}
+        {#if Object.keys(entry.resolvedScalings ?? {}).length > 0}
           <div class="da-perk-scaling-divider">
-            <span class="da-perk-scaling-label">Perk Damage</span>
+            <span class="da-perk-scaling-label">{entry.perkName}</span>
           </div>
 
           <div class="ds-table ds-table--perk" style="margin-top: 5px; font-size: 0.75rem; opacity: 0.9;">
@@ -3371,6 +3381,9 @@
           <div class="ds-result-row ds-result-row--perk" style="background: rgba(251, 146, 60, 0.05); border-color: rgba(251, 146, 60, 0.15);">
             <div style="display:flex;flex-direction:column;gap:2px;flex:1;">
               <span class="ds-result-label" style="color: #fb923c;">Perk: {entry.perkName} Scaling</span>
+              {#if entry.dmgTypeMode === 'weapon'}
+                <span class="ds-applies-to" style="opacity:.5;font-size:.58rem;">Same as weapon</span>
+              {/if}
             </div>
             <span class="ds-result-eq">Multiplier =</span>
             <span class="ds-result-val">×{+entry.scalingMult.toFixed(4)}</span>
@@ -3626,6 +3639,7 @@
   lightningCloakPct={_lightningCloakPct}
   stormRendPct={_stormRendPct}
   explosiveChargePct={_explosiveChargePct}
+  dragonStateTotalDmg={_dragonStateTotalDmg}
   waArmorPenetration={_waArmorPenetration}
   m1Label={_activeMountRuneDef && mountActive ? 'M1/M2' : 'M1'}
   draconicRunesBonus={getDraconicBonuses({

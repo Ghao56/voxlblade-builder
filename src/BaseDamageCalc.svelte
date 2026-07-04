@@ -17,6 +17,7 @@
   export let lightningCloakPct: number = 0
   export let stormRendPct: number = 0
   export let explosiveChargePct: number = 0
+  export let dragonStateTotalDmg: number = 0
   export let waArmorPenetration: number = 0
   export let m1Label: string = 'M1'
 
@@ -245,6 +246,7 @@
     isLuminescent?: boolean
     isChainLightning?: boolean
     isExplosiveCharge?: boolean
+    isDragonState?: boolean
     isCurseRip?: boolean
     forceCrit: boolean
     isCritExempt?: boolean
@@ -421,6 +423,32 @@
       }
     }
 
+    if (!isHeal && dragonStateTotalDmg > 0 && (hit.group === 'M1' || hit.group === 'M2')) {
+      const dsAmount = dragonStateTotalDmg * _activeDebuffDamageMult * selfDebuffDamageMult
+      if (dsAmount > 0) {
+        const dsResolvedTypes = resolveDamageTypes({ magic: 1.0 }, perkDmgTypeBonuses)
+        for (const [k, mult] of Object.entries(dsResolvedTypes)) {
+          const info = DMG_TYPE_MAP.get(k) ?? { label: k, color: '#e8e4da' }
+          const applicableBoosts = getApplicableBoosts(k, false)
+          const typedMultUsed = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
+          const dsDebuffMult = _activeDebuffTypeDamageMult[k] ?? 1
+          const dsDefPct  = defPctForType(k)
+          const dsDefMult = calcArmorMult(dsDefPct, basePenDecimal).mult
+          const dsTypeBase = dsAmount * mult
+          const dsRaw       = dsTypeBase * typedMultUsed * dsDefMult * dsDebuffMult
+
+          types.push({
+            key: k, label: info.label, color: info.color,
+            typeBase: dsTypeBase, scalingMult: 1, combatMult: 1,
+            applicableBoosts, weaponBoostMult: 1, typeDebuffMult: dsDebuffMult,
+            defMult: dsDefMult, enemyDefPct: dsDefPct,
+            raw: dsRaw, critVal: Math.round(dsRaw * critDmgMult / 100 * 10000) / 10000,
+            isHeal: false, isDragonState: true, forceCrit: false,
+          })
+        }
+      }
+    }
+
     if (!isHeal && curseRipPerkAmount > 0 && curseRipActiveDebuffCount > 0) {
       const preMitSum  = computePreMitigationBase(hit)
       const preMitBase = preMitSum * _activeDebuffDamageMult * selfDebuffDamageMult
@@ -472,14 +500,24 @@
 
   // ── Totals ──────────────────────────────────────────────────
   function hitTypeSum(hit: ComputedHit, useCrit: boolean, includeCount: boolean = false): number {
-    const sum = hit.types.filter(t => !t.isHeal && !t.isCurseRip).reduce((s, t) => s + ((useCrit || t.forceCrit) ? t.critVal : t.raw), 0)
-    return sum * (includeCount ? hit.count : 1)
+    const perHitSum = hit.types.filter(t => !t.isHeal && !t.isCurseRip && !t.isDragonState).reduce((s, t) => s + ((useCrit || t.forceCrit) ? t.critVal : t.raw), 0)
+    const onceSum = hit.types.filter(t => t.isDragonState).reduce((s, t) => s + ((useCrit || t.forceCrit) ? t.critVal : t.raw), 0)
+    return perHitSum * (includeCount ? hit.count : 1) + (includeCount ? onceSum : 0)
   }
   function hitHealSum(hit: ComputedHit, useCrit: boolean, includeCount: boolean = false): number {
     const sum = hit.types.filter(t => t.isHeal).reduce((s, t) => s + ((useCrit || t.forceCrit) ? t.critVal : t.raw), 0)
     return sum * (includeCount ? hit.count : 1)
   }
-  function groupTotalSum(list: ComputedHit[], useCrit: boolean): number {return list.filter(h => !h.isHeal).reduce((s, h) =>s +h.types.filter(t => !t.isHeal && !t.isCurseRip).reduce((ts, t) => ts + ((useCrit || t.forceCrit) ? t.critVal : t.raw),0) * h.count, 0)}
+  function groupTotalSum(list: ComputedHit[], useCrit: boolean): number {
+    let total = 0, onceTotal = 0
+    for (const h of list) {
+      if (!h.isHeal) {
+        total += h.types.filter(t => !t.isHeal && !t.isCurseRip && !t.isDragonState).reduce((ts, t) => ts + ((useCrit || t.forceCrit) ? t.critVal : t.raw), 0) * h.count
+        onceTotal += h.types.filter(t => t.isDragonState).reduce((ts, t) => ts + ((useCrit || t.forceCrit) ? t.critVal : t.raw), 0)
+      }
+    }
+    return total + onceTotal
+  }
   function groupHealTotalSum(list: ComputedHit[], useCrit: boolean): number {return list.reduce((s, h) =>s +h.types.filter(t => t.isHeal).reduce((ts, t) => ts + ((useCrit || t.forceCrit) ? t.critVal : t.raw),0) * h.count, 0)}
 
   import { onMount } from 'svelte'
@@ -680,7 +718,7 @@
                             class:bdc-hit-type-chunk--rage={t.applicableBoosts?.some(b => b.perkName === 'Rage')}
                             class:bdc-hit-type-chunk--heal={t.isHeal}
                             class:bdc-hit-type-chunk--weaponboost={t.weaponBoostMult !== 1}
-                            class:bdc-hit-type-chunk--luminescent={t.isLuminescent || t.isChainLightning}
+                            class:bdc-hit-type-chunk--luminescent={t.isLuminescent || t.isChainLightning || t.isDragonState}
                             class:bdc-hit-type-chunk--crit={(showCritValues && !t.isCritExempt) || t.forceCrit}
                             role="group"
                             on:mouseenter={(e) => {
@@ -724,6 +762,10 @@
                                 {/if}
                                 {#if t.isExplosiveCharge}
                                   <span class="bdc-lum-badge bdc-explosive-badge" title="Explosive Charge: 100% of WA pre-boost damage as Physical+Fire explosion">✦ Explosive</span>
+                                {/if}
+                                {#if t.isDragonState}
+                                  <span class="bdc-lum-badge bdc-dragon-badge" title="Dragon State: additional wave of Magic above HP threshold · Once per M1/M2">✦ Dragon</span>
+                                  <span class="bdc-dragon-count">×1</span>
                                 {/if}
                                 {#if t.isCurseRip}
                                   <span class="bdc-lum-badge bdc-curse-rip-badge" title="Curse Rip: 1/60 of damage dealt as lifesteal (requires debuffed opponent)">✦ Curse Rip</span>
@@ -1449,6 +1491,17 @@
   color: #f97316;
   background: rgba(249,115,22,.12);
   border: 1px solid rgba(249,115,22,.3);
+}
+.bdc-dragon-badge {
+  color: #a78bfa;
+  background: rgba(167,139,250,.12);
+  border: 1px solid rgba(167,139,250,.3);
+}
+.bdc-dragon-count {
+  font-size: .45rem;
+  font-weight: 700;
+  color: rgba(167,139,250,.6);
+  margin-left: 2px;
 }
 .bdc-dr-badge {
   font-size: .45rem;
