@@ -1054,7 +1054,7 @@
     }
     if (!rows.length) return null
 
-    const totalEffectivePct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 1000) / 1000
+    const totalEffectivePct = Math.round(rows.reduce((a, r) => a + (PERCENT_STATS.has(r.boostKey) ? r.contribution : r.contribution * 100), 0) * 1000) / 1000
     const multiplier = roundMultiplier(1 + totalEffectivePct / 100)
     return { rows, totalEffectivePct, multiplier }
   })()
@@ -1072,8 +1072,9 @@
       rows.push({ key, scalingVal, boostKey, boostPct, contribution, color: SCALING_COLORS[key] ?? '#e8e4da' })
     }
     if (!rows.length) return null
-    const totalEffectivePct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 1000) / 1000
-    return { rows, totalEffectivePct, multiplier: roundMultiplier(1 + totalEffectivePct / 100) }
+    const totalEffectivePct = Math.round(rows.reduce((a, r) => a + (PERCENT_STATS.has(r.boostKey) ? r.contribution : r.contribution * 100), 0) * 1000) / 1000
+    const multiplier = roundMultiplier(1 + totalEffectivePct / 100)
+    return { rows, totalEffectivePct, multiplier }
   })()
 
   $: _draconicScalingBreakdown = (() => {
@@ -1090,8 +1091,9 @@
       rows.push({ key, scalingVal, boostKey, boostPct, contribution, color: SCALING_COLORS[key] ?? '#e8e4da' })
     }
     if (!rows.length) return null
-    const totalEffectivePct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 1000) / 1000
-    return { rows, totalEffectivePct, multiplier: roundMultiplier(1 + totalEffectivePct / 100) }
+    const totalEffectivePct = Math.round(rows.reduce((a, r) => a + (PERCENT_STATS.has(r.boostKey) ? r.contribution : r.contribution * 100), 0) * 1000) / 1000
+    const multiplier = roundMultiplier(1 + totalEffectivePct / 100)
+    return { rows, totalEffectivePct, multiplier }
   })()
 
   $: waScalingSameAsWeapon = selectedWA.scaling === 'Same as weapon'
@@ -1850,7 +1852,7 @@
         group: 'Rune',
         index: result.length,
         count: _activeRuneDmgDef.getHits
-          ? _activeRuneDmgDef.getHits({ potency: runePotency, sliderVal: _runeSliderVal, stats })
+          ? _activeRuneDmgDef.getHits({ potency: runePotency, sliderVal: _runeSliderVal, stats, perks, selfDamage: _runeSelfDamagePerHit })
           : (_activeRuneDmgDef.hits ?? 1),
         base: _activeRuneDmgDef.getBaseDamage({ potency: runePotency, sliderVal: _runeSliderVal }),
         scalingMult: _computePerkScalingMult(_activeRuneDmgDef.scalings),
@@ -1932,6 +1934,47 @@
     }
     return mults
   })()
+  $: _defenseMultipliersNoBark = (() => {
+    const mults: Record<string, number> = {}
+    for (const row of _defenseRows) {
+      let mult = row.finalMultiplier
+      for (const s of row.percentSources) {
+        if (s.name === 'Cursed Bark') mult /= s.mult
+      }
+      for (const s of row.flatSources) {
+        if (s.name === 'Cursed Bark') mult /= s.mult
+      }
+      mults[row.type] = roundMultiplier(mult)
+    }
+    return mults
+  })()
+
+  $: _runeSelfDamagePerHit = (() => {
+    const undeadMightAmt = perks['Undead Might'] ?? 0
+    if (undeadMightAmt <= 0 || !_activeRuneDmgDef) return 0
+
+    const base = _activeRuneDmgDef.getBaseDamage({ potency: runePotency, sliderVal: _runeSliderVal })
+    const scalingMult = _computePerkScalingMult(_activeRuneDmgDef.scalings)
+    const typeMultSum = Object.values(_activeRuneDmgDef.dmgTypes).reduce((s, m) => s + m, 0)
+    const perHitDmg = base * typeMultSum * scalingMult * _levelMult
+
+    const selfDmgPct = 1 / 15
+    const drMult = 1 / (1 + (15 * undeadMightAmt) / 100)
+
+    let harmonic = 0
+    for (let i = 1; i <= enemiesHit; i++) {
+      harmonic += 1 / i
+    }
+
+    const sDef = SELF_DAMAGE_PERK_DEFS.find(d => d.perkName === 'Undead Might')
+    let defMult = 0
+    if (sDef) {
+      for (const [type, mult] of Object.entries(sDef.dmgTypes)) {
+        defMult += mult * (_defenseMultipliersNoBark[type] ?? 1)
+      }
+    }
+    return perHitDmg * selfDmgPct * drMult * harmonic * defMult
+  })()
 
   interface SelfDamageSourceEntry {
     def: SelfDamagePerkDef
@@ -1962,7 +2005,7 @@
           for (const label of waLabels) {
             const preBoostDmg = _sumPreBoostHitDamage(_bdcWeaponHits, 'WA', label)
             if (preBoostDmg <= 0) continue
-            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliers)
+            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark)
             sources.push({ def, amount, group, label, result })
           }
         } else if (group === 'Rune') {
@@ -1976,14 +2019,14 @@
                 }, 0)
             : 0
           if (mountM1Dmg > 0) {
-            const result = calcSelfDamage(def, amount, mountM1Dmg, enemiesHit, _defenseMultipliers)
+            const result = calcSelfDamage(def, amount, mountM1Dmg, enemiesHit, _defenseMultipliersNoBark)
             sources.push({ def, amount, group, label: `${_activeMountRuneDef!.mountLabel} M1 (Mounted)`, result })
           }
           const runeLabels = [...new Set(_bdcWeaponHits.filter(h => h.group === 'Rune' && !h.isHeal).map(h => h.label))]
           for (const label of runeLabels) {
             const preBoostDmg = _sumPreBoostHitDamage(_bdcWeaponHits, 'Rune', label)
             if (preBoostDmg <= 0) continue
-            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliers)
+            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark)
             sources.push({ def, amount, group, label: label ?? 'Rune', result })
           }
         }
@@ -2776,7 +2819,7 @@
       {/if}
       {#if _activeRuneDmgDef && isActive}
         {@const _runeHits = _activeRuneDmgDef.getHits
-          ? _activeRuneDmgDef.getHits({ potency: runePotency, sliderVal: _runeSliderVal, stats })
+          ? _activeRuneDmgDef.getHits({ potency: runePotency, sliderVal: _runeSliderVal, stats, perks, selfDamage: _runeSelfDamagePerHit })
           : (_activeRuneDmgDef.hits ?? 1)}
         {@const _runeBase = _activeRuneDmgDef.getBaseDamage({ potency: runePotency, sliderVal: _runeSliderVal })}
         {@const _runeScalingMult = _computePerkScalingMult(_activeRuneDmgDef.scalings)}
@@ -3389,7 +3432,7 @@
             <div class="ds-col ds-col--op">=</div>
             <div class="ds-col ds-col--contrib">
               <span class="ds-contrib" style={row.contribution > 0 ? `color:${row.color}` : row.contribution < 0 ? 'color: #cf6679;' : ''}>
-                {row.contribution > 0 ? '+' : ''}{roundMultiplier(row.contribution)}{isPct ? '%' : ''}
+                {row.contribution > 0 ? '+' : ''}{roundMultiplier(isPct ? row.contribution : row.contribution * 100)}%
               </span>
             </div>
           </div>
@@ -3444,7 +3487,9 @@
           <div class="ds-col ds-col--type ds-total-label">Total</div>
           <div class="ds-col ds-col--val"></div><div class="ds-col ds-col--op"></div><div class="ds-col ds-col--boost"></div>
           <div class="ds-col ds-col--op">=</div>
-          <div class="ds-col ds-col--contrib"><span class="ds-total-pct">+{_draconicScalingBreakdown.totalEffectivePct}%</span></div>
+          <div class="ds-col ds-col--contrib">
+            <span class="ds-total-pct">+{_draconicScalingBreakdown.totalEffectivePct}%</span>
+          </div>
         </div>
       </div>
     </div>
@@ -3479,7 +3524,9 @@
           <div class="ds-col ds-col--type ds-total-label">Total</div>
           <div class="ds-col ds-col--val"></div><div class="ds-col ds-col--op"></div><div class="ds-col ds-col--boost"></div>
           <div class="ds-col ds-col--op">=</div>
-          <div class="ds-col ds-col--contrib"><span class="ds-total-pct">+{_mountRuneScalingBreakdown.totalEffectivePct}%</span></div>
+          <div class="ds-col ds-col--contrib">
+            <span class="ds-total-pct">+{_mountRuneScalingBreakdown.totalEffectivePct}%</span>
+          </div>
         </div>
       </div>
     </div>

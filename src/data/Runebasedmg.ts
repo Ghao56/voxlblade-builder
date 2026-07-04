@@ -6,6 +6,8 @@ export interface RuneDmgCtx {
   potency: number
   sliderVal?: number
   stats?: Record<string, number>
+  perks?: Record<string, number>
+  selfDamage?: number
 }
 
 export interface RuneSliderDef {
@@ -179,10 +181,11 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     getBaseDamage: () => 8,
     dmgTypes: { earth: 0.5, physical: 0.5 },
     scalings: { earth: 1.0, protection: 0.08 },
-    getHits: ({ stats }) => {
+    getHits: ({ stats, selfDamage = 0, perks = {} }) => {
       const p = stats?.protection ?? 0
-      const shield = Math.min(p, 240)
-      return Math.max(1, Math.ceil(shield / (0.01 * p + 5)) * 2)
+      const vs = perks['Volatile Shell'] ?? 0
+      const protRes = vs > 0 ? 0.7 + 0.15 * vs : 0.75
+      return Math.max(1, Math.ceil(p / (0.01 * p + 5 + selfDamage * protRes)) * 2)
     },
   },
 ]

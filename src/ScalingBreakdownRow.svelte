@@ -96,7 +96,7 @@
   <div class="ds-col ds-col--contrib">
     <span class="ds-contrib" class:ds-contrib--zero={row.contribution === 0}
       style={row.contribution > 0 ? `color:${row.color}` : row.contribution < 0 ? 'color:#cf6679;' : ''}>
-      {row.contribution > 0 ? '+' : ''}{row.contribution}{_isPct ? '%' : ''}
+      {row.contribution > 0 ? '+' : ''}{roundMultiplier(_isPct ? row.contribution : row.contribution * 100)}%
     </span>
   </div>
 </div>
