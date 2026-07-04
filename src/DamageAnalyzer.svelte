@@ -22,7 +22,7 @@
   import { applyDraconicBonuses, getDraconicBonuses } from './data/draconicRunes'
   import { calculateHealBoost, type HealSource } from './data/HealBoost'
   import { roundMultiplier } from './lib/utils'
-  import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage } from './data/selfDamagePerks'
+  import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage, type SelfDamagePerkDef } from './data/selfDamagePerks'
   import { resolveDamageTypes, applyAirToMagicConversion } from './lib/damageTypeResolve'
   import { calcTypedDmgBoosts } from './data/TypedDmgBoost'
 
@@ -287,7 +287,7 @@
       return buff
     })
   })()
-  $: _allActiveBuffs = (_disabledKeysArr, _allActiveBuffsRaw.filter(b => !_isBuffDisabled(b)))
+  $: _allActiveBuffs = (_disabledKeysArr.length, _allActiveBuffsRaw.filter(b => !_isBuffDisabled(b)))
   $: _hasCritBoostBuff = _allActiveBuffs.some(b => b.buffName === 'Critical Boost')
 
   // ── Rage (still needed directly: defensive perk gating, PERK_DMG_DEFS condition, UI toggle row) ──
@@ -442,9 +442,9 @@
   $: _stormRendActive = _stormRendAmt > 0 && !disableStormRend
   $: _lightningCloakPct = (_lightningCloakActive && !disableLightningCloak) || _stormRendActive ? (1 / 3) : 0
   $: _windWalkerAmt = perks['Wind Walker'] ?? 0
-  $: _hasTailwindOrWhirlwind = (_disabledKeysArr,
+  $: _hasTailwindOrWhirlwind = (_disabledKeysArr.length,
     _allActiveBuffs.some(b => (b.buffName === 'Tailwind' || b.buffName === 'Whirlwind')))
-  $: _effectiveTailwindPotency = (_disabledKeysArr,
+  $: _effectiveTailwindPotency = (_disabledKeysArr.length,
     Math.max(0, ..._allActiveBuffs.filter(b => b.buffName === 'Tailwind' || b.buffName === 'Whirlwind').map(b => b.potency)))
   $: _spiritWindsAmt = perks['Spirit Winds'] ?? 0
   $: _spiritWindsConversionRate = _spiritWindsAmt > 0 && _hasTailwindOrWhirlwind ? 0.10 * _spiritWindsAmt : 0
@@ -489,9 +489,9 @@
   function _isBuffDisabled(buff: { buffName: string; sourceName: string }): boolean {
     return disabledBuffKeys.has(`${buff.buffName}:${buff.sourceName}`)
   }
-  $: _activeReinforcePotency      = (_disabledKeysArr,
+  $: _activeReinforcePotency      = (_disabledKeysArr.length,
     _allActiveBuffs.reduce((m, b) => b.buffName === 'Reinforce'       ? Math.max(m, b.potency) : m, 0))
-  $: _activeMagicReinforcePotency = (_disabledKeysArr,
+  $: _activeMagicReinforcePotency = (_disabledKeysArr.length,
     _allActiveBuffs.reduce((m, b) => b.buffName === 'Magic Reinforce' ? Math.max(m, b.potency) : m, 0))
 
   let rageDisabled = false
@@ -868,8 +868,8 @@
     }
   })()
   $: _adjustedDmgEntries = boosts.dmgEntries
-  $: activeEntries = (_effectiveTailwindPotency, [..._adjustedDmgEntries.filter(e => !disabledBoosts.has(e.sourceName) && !(e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0)), ...(_curseRipBoostEntry && !disableCurseRip ? [_curseRipBoostEntry] : []), ...(_reaperBoostEntry && !disableReaper ? [_reaperBoostEntry] : [])])
-  $: hasDisabledVisible = (_effectiveTailwindPotency, _adjustedDmgEntries.some(e => disabledBoosts.has(e.sourceName) || (e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0)) || (_curseRipBoostEntry && disableCurseRip) || (_reaperBoostEntry && disableReaper))
+  $: activeEntries = [..._adjustedDmgEntries.filter(e => !disabledBoosts.has(e.sourceName) && !(e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0)), ...(_curseRipBoostEntry && !disableCurseRip ? [_curseRipBoostEntry] : []), ...(_reaperBoostEntry && !disableReaper ? [_reaperBoostEntry] : [])]
+  $: hasDisabledVisible = _adjustedDmgEntries.some(e => disabledBoosts.has(e.sourceName) || (e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0)) || (_curseRipBoostEntry && disableCurseRip) || (_reaperBoostEntry && disableReaper)
 
   $: _levelMult = (() => {
     const levelEntry = boosts.dmgEntries.find(e => e.sourceName === 'Level Damage')
@@ -915,11 +915,11 @@
 
   $: _allUniversalChips = [..._visibleDmgEntries.filter(e => !(e as any).appliesTo), ...(_curseRipBoostEntry && !disableCurseRip ? [_curseRipBoostEntry] : []), ...(_reaperBoostEntry && !disableReaper ? [_reaperBoostEntry] : [])]
 
-  $: _universalActiveMult = (_effectiveTailwindPotency, Math.round(
+  $: _universalActiveMult = Math.round(
     _allUniversalChips
       .filter(e => !disabledBoosts.has(e.sourceName) && !(e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0))
       .reduce((acc, e) => acc * e.rawMultiplier, 1.0) * 10000
-  ) / 10000)
+  ) / 10000
 
   $: _catGroups = (() => {
     const CAT_DEFS: Array<{ key: BoostAttackType; label: string }> = [
@@ -1372,7 +1372,7 @@
   })()
 
   $: _waScalingDiffers = _waScalingMult !== _scalingMult
-  $: _showWACol = !showAllWeapons && (!!_waHitsSeq || !!selectedWA.baseDamage || !!_waSummonDef)
+  $: _showWACol = !!_waHitsSeq || !!selectedWA.baseDamage || !!_waSummonDef
 
 
   function parseRangeDamage(s: string): { min: number; minLabel: string; max: number; maxLabel: string } | null {
@@ -2341,7 +2341,7 @@
         {#if _orkBuffTenacity > 0}
           <div class="da-ork-tenacity" style="margin-top: 6px; font-size: .7rem; color: var(--ink-muted); display: flex; gap: 4px; align-items: center;">
             <span>Ork Tenacity: <strong style="color: var(--accent);">{_effectiveTenacity.toFixed(2)}</strong></span>
-            <span style="opacity: .6;">(base <strong>{stats.tenacity.toFixed(2)}</strong> + <strong>{_orkBuffTenacity.toFixed(2)}</strong> from {_orkBuffs.length} buff{_orkBuffs.length !== 1 ? 's' : ''})</span>
+            <span style="opacity: .6;">(base <strong>{(stats.tenacity ?? 0).toFixed(2)}</strong> + <strong>{_orkBuffTenacity.toFixed(2)}</strong> from {_orkBuffs.length} buff{_orkBuffs.length !== 1 ? 's' : ''})</span>
           </div>
         {/if}
           {#if _vampireStacks > 0 || _photosynthesisStacks > 0}
@@ -2494,27 +2494,31 @@
       {#if _currentLabel}
         <span class="da-wbd-current-badge">{_currentLabel}</span>
       {/if}
-      <button class="da-wbd-toggle" on:click={() => showAllWeapons = !showAllWeapons}>
-        {showAllWeapons ? 'Show current only' : 'Show all weapons'}
-      </button>
-    </div>
-  </div>
-
-  {#if !_currentLabel && !showAllWeapons}
-    <p class="da-empty-hint">No weapon selected. <button class="da-wbd-link" on:click={() => showAllWeapons = true}>Show all weapon types</button></p>
-  {:else}
-    {@const rows = showAllWeapons ? WEAPON_BASE_DMG.map(r => ({...r})) : _displayRows}
-<div class="da-wbd-cards">
-  {#each rows as row}
-    {@const isActive   = !showAllWeapons || row.type === _baseWeaponType}
-    {@const isGunActive = showAllWeapons && !!_gunOverlay && row.type === _gunOverlay.type}
+      {#if showAllWeapons}
+        <button class="da-wbd-toggle da-wbd-toggle--open" on:click={() => showAllWeapons = false}>
+          <span class="da-wbd-toggle-arr">▼</span>
+          <span class="da-wbd-toggle-lbl">All Weapons</span>
+          <span class="da-wbd-toggle-cnt">{WEAPON_BASE_DMG.length}</span>
+        </button>
+      {:else}
+        <button class="da-wbd-toggle" on:click={() => showAllWeapons = true}>
+          <span class="da-wbd-toggle-arr">▶</span>
+          <span class="da-wbd-toggle-lbl">All Weapons</span>
+          <span class="da-wbd-toggle-cnt">{WEAPON_BASE_DMG.length}</span>
+        </button>
+      {/if}
+      {#if showAllWeapons}
+<div class="da-wbd-cards da-wbd-cards--dropdown">
+  {#each WEAPON_BASE_DMG as row}
+    {@const isActive   = _currentLabel && row.type === _baseWeaponType}
+    {@const isGunActive = !!_gunOverlay && row.type === _gunOverlay.type}
     {@const gunLabel = (row as any).gunLabel as string | undefined}
     {@const m2Only = (row as any).m2Only as boolean | undefined}
     {@const hasDmgTypes = isActive && Object.keys(_weaponDmgTypes).length > 0}
     {@const m1DmgTypes = (isActive && gunLabel && !m2Only) ? _gunDmgTypes : _convertedWeaponDmgTypes}
     {@const m2DmgTypes = (isActive && gunLabel && !(row as any).m2NoLock) ? _gunDmgTypes : _convertedWeaponDmgTypes}
     {@const m1Typed = hasDmgTypes && row.m1 ? seqWithTypes(row.m1, m1DmgTypes, 1, 1, new Set(), 1) : null}
-    {@const m2Typed = hasDmgTypes && row.m2 ? seqWithTypes(row.m2, m2DmgTypes, 1, 1, new Set(), 1) : null}  
+    {@const m2Typed = hasDmgTypes && row.m2 ? seqWithTypes(row.m2, m2DmgTypes, 1, 1, new Set(), 1) : null}
     <div class="da-wbd-card" class:da-wbd-card--active={isActive || isGunActive} class:da-wbd-card--gun={isGunActive}>
 
       <div class="da-wbd-card-head">
@@ -2527,6 +2531,147 @@
         {#if showAllWeapons && isActive}
           <span class="da-wbd-equipped-badge">✦ Equipped</span>
         {/if}
+        {#if isGunActive}
+          <span class="da-wbd-gun-active-badge">✦ Active Gun</span>
+        {/if}
+      </div>
+      <div class="da-wbd-card-divider"></div>
+
+      <div class="da-wbd-section">
+        <div class="da-wbd-row-label da-wbd-row-label--m1">
+          <span class="da-wbd-lbl-badge da-wbd-lbl-badge--m1">M1</span>
+          <span class="da-wbd-lbl-text">Combo</span>
+        </div>
+        <div class="da-hits-row">
+          {#if m1Typed}
+            {#each m1Typed as hit, hi}
+              {#if hi > 0}<span class="da-hit-divider">›</span>{/if}
+              {@const finisher = isFinisher(row, 'm1', hi)}
+              <div class="da-hit-wrapper">
+                <div class="da-hit-card" class:da-hit-card--finisher={finisher}>
+                  {#each hit.types as t, ti}
+                    {#if ti > 0}<span class="da-hit-plus">+</span>{/if}
+                    <div class="da-hit-chunk" style="--tc:{t.color}">
+                      <span class="da-hit-num" style="--tc:{t.color}">{fmtNum(t.val)}</span>
+                    </div>
+                  {/each}
+                </div>
+                <div class="da-hit-card-info">
+                  <span class="da-hit-label">{hit.label}</span>
+                </div>
+              </div>
+            {/each}
+          {:else if (row as any).noM1}
+            <div class="da-hits-row">
+              <span class="da-wbd-na">N/A</span>
+            </div>
+          {:else if row.m1}
+            {#each row.m1 as hit, hi}
+              {#if hi > 0}<span class="da-hit-divider">›</span>{/if}
+              <div class="da-plain-pill">
+                <span class="da-plain-num">{typeof hit === 'number' ? hit : hit.n}</span>
+                {#if typeof hit !== 'number' && hit.count > 1}
+                  <span class="da-plain-count">×{hit.count}</span>
+                {/if}
+              </div>
+            {/each}
+          {/if}
+        </div>
+      </div>
+
+      <div class="da-wbd-section">
+        <div class="da-wbd-row-label da-wbd-row-label--m2">
+          <span class="da-wbd-lbl-badge da-wbd-lbl-badge--m2">M2</span>
+          <span class="da-wbd-lbl-text">Heavy
+            {#if !m2Only && gunLabel}
+              <span class="da-wbd-gun-lbl">(Gun)</span>
+            {/if}
+          </span>
+        </div>
+        <div class="da-hits-row">
+          {#if (row as any).noM2}
+            <span class="da-wbd-na">N/A</span>
+          {:else if m2Typed}
+            {#each m2Typed as hit, hi}
+              {#if hi > 0}<span class="da-hit-divider">›</span>{/if}
+              <div class="da-hit-wrapper">
+                <div class="da-hit-card da-hit-card--finisher">
+                  {#each hit.types as t, ti}
+                    {#if ti > 0}<span class="da-hit-plus">+</span>{/if}
+                    <div class="da-hit-chunk" style="--tc:{t.color}">
+                      <span class="da-hit-num" style="--tc:{t.color}">{fmtNum(t.val)}</span>
+                    </div>
+                  {/each}
+                  <span class="da-finisher-crown">✦</span>
+                </div>
+              </div>
+              {#if hit.count > 1}
+                <span class="da-hit-repeat">×{hit.count}<span class="da-hit-repeat-label">hits</span></span>
+              {/if}
+            {/each}
+          {:else if row.m2}
+            {#each row.m2 as hit, hi}
+              {#if hi > 0}<span class="da-hit-divider">›</span>{/if}
+              <div class="da-plain-pill">
+                <span class="da-plain-num">{typeof hit === 'number' ? hit : hit.n}</span>
+                {#if typeof hit !== 'number' && hit.count > 1}
+                  <span class="da-plain-count">×{hit.count}</span>
+                {/if}
+              </div>
+            {/each}
+          {:else}
+            <span class="da-wbd-na">N/A</span>
+          {/if}
+          {#if gunLabel && !m2Only}
+            <span class="da-wbd-m2-src">from {gunLabel}</span>
+          {/if}
+        </div>
+      </div>
+
+      {#if isActive && _showWACol}
+      <div class="da-wbd-section">
+        <div class="da-wbd-row-label da-wbd-row-label--wa">
+          <span class="da-wbd-lbl-badge da-wbd-lbl-badge--wa">WA</span>
+          <span class="da-wbd-lbl-text da-wbd-lbl-text--wa">{selectedWA.name}</span>
+        </div>
+        <div class="da-hits-row">
+          <span class="da-wbd-na">N/A</span>
+        </div>
+      </div>
+      {/if}
+    </div>
+  {/each}
+</div>
+{/if}
+    </div>
+  </div>
+
+  <div class="da-wbd-body">
+  {#if !_currentLabel && !showAllWeapons}
+    <p class="da-empty-hint">No weapon selected. <button class="da-wbd-toggle" on:click={() => showAllWeapons = true}><span class="da-wbd-toggle-arr">▶</span><span class="da-wbd-toggle-lbl">All Weapons</span><span class="da-wbd-toggle-cnt">{WEAPON_BASE_DMG.length}</span></button></p>
+  {:else}
+    {#if _currentLabel}
+      {@const rows2 = _displayRows}
+<div class="da-wbd-cards">
+  {#each rows2 as row}
+    {@const isActive   = true}
+    {@const isGunActive = false}
+    {@const gunLabel = (row as any).gunLabel as string | undefined}
+    {@const m2Only = (row as any).m2Only as boolean | undefined}
+    {@const hasDmgTypes = Object.keys(_weaponDmgTypes).length > 0}
+    {@const m1DmgTypes = (gunLabel && !m2Only) ? _gunDmgTypes : _convertedWeaponDmgTypes}
+    {@const m2DmgTypes = (gunLabel && !(row as any).m2NoLock) ? _gunDmgTypes : _convertedWeaponDmgTypes}
+    {@const m1Typed = hasDmgTypes && row.m1 ? seqWithTypes(row.m1, m1DmgTypes, 1, 1, new Set(), 1) : null}
+    {@const m2Typed = hasDmgTypes && row.m2 ? seqWithTypes(row.m2, m2DmgTypes, 1, 1, new Set(), 1) : null}  
+    <div class="da-wbd-card da-wbd-card--active">
+
+      <div class="da-wbd-card-head">
+        {#if isActive}<span class="da-wbd-dot" class:da-wbd-dot--gun={!!gunLabel}></span>{/if}
+        {#if isGunActive}<span class="da-wbd-dot da-wbd-dot--gun"></span>{/if}
+
+        <span class="da-wbd-card-name">{row.type}</span>
+        {#if gunLabel}<span class="da-wbd-gun-badge">{gunLabel}</span>{/if}
+
         {#if isGunActive}
           <span class="da-wbd-gun-active-badge">✦ Active Gun</span>
         {/if}
@@ -2827,8 +2972,8 @@
               <div class="da-wb-line">Base 19.5 → 18.75 · +{_wildBoltAmt * 25}% Dmg</div>
               <div class="da-wb-line">
                 Element:
-                <span class="da-wb-elem" style="color:{DMG_TYPE_COLORS[_wildBoltElement]}">
-                  {_wildBoltElement.charAt(0).toUpperCase() + _wildBoltElement.slice(1)}
+                <span class="da-wb-elem" style="color:{DMG_TYPE_COLORS[_wildBoltElement!]}">
+                  {_wildBoltElement!.charAt(0).toUpperCase() + _wildBoltElement!.slice(1)}
                 </span>
                 ({_wildBoltElemIdx + 1}/{_wildBoltElements.length})
               </div>
@@ -2921,7 +3066,8 @@
         </div>
         {/if}
     </div>
-  {/each} {#if _draconicBloodEntry}
+  {/each}
+  {#if _draconicBloodEntry}
     <div class="da-wbd-card da-wbd-card--active da-wbd-card--gun">
       <div class="da-wbd-card-head">
         <span class="da-wbd-dot da-wbd-dot--gun"></span>
@@ -2953,18 +3099,27 @@
             </div>
           {/each}
         </div>
-    {/if}
-    <p class="da-wbd-note">M1 = light attack combo · M2 = heavy attack · × = repeated hits</p>
-  </div>
+      {/if}
+    </div>
+  {/if}
+</div><!-- end da-wbd-cards (current weapon) -->
 {/if}
-</div>
+
+
+
+{#if _currentLabel}
+  <p class="da-wbd-note">M1 = light attack combo · M2 = heavy attack · × = repeated hits</p>
 {/if}
+{/if}
+</div><!-- end da-wbd-body -->
 </div><!-- end da-section--wbd -->
 
 <!-- ── Perk Base Damage ── -->
 {#if _nonDraconicPerkEntries.length > 0}
 <div class="da-section da-section--pbd">
-  <div class="da-section-title">Perk Base Damage</div>
+  <div class="da-section-title-row">
+    <span class="da-section-title">Perk Base Damage</span>
+  </div>
   <div class="da-pbd-list">
     {#each _nonDraconicPerkEntries as entry}
       <div class="da-pbd-card">
@@ -3955,6 +4110,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  position: relative;
 }
 .da-wbd-current-badge {
   font-size: .65rem;
@@ -3966,32 +4122,43 @@
   color: #fb923c;
 }
 .da-wbd-toggle {
-  font-size: .62rem;
-  font-weight: 700;
-  padding: 3px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
   border-radius: 6px;
-  border: 1px solid rgba(255,255,255,.1);
-  background: var(--surface2, #1a1d1b);
-  color: var(--ink-muted, #8a8d85);
+  border: 1px solid rgba(251,146,60,.18);
+  background: rgba(251,146,60,.07);
+  color: #fb923c;
   cursor: pointer;
   font-family: inherit;
   transition: all .12s;
+  font-size: .72rem;
+  font-weight: 700;
 }
 .da-wbd-toggle:hover {
+  background: rgba(251,146,60,.13);
   border-color: rgba(251,146,60,.35);
-  color: #fb923c;
 }
-.da-wbd-link {
-  background: none;
-  border: none;
-  color: #fb923c;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: inherit;
-  text-decoration: underline;
-  padding: 0;
+.da-wbd-toggle--open {
+  background: rgba(251,146,60,.11);
+  border-color: rgba(251,146,60,.25);
 }
-
+.da-wbd-toggle-arr {
+  font-size: .55rem;
+  opacity: .6;
+}
+.da-wbd-toggle-lbl {
+  letter-spacing: .04em;
+}
+.da-wbd-toggle-cnt {
+  font-size: .6rem;
+  background: rgba(251,146,60,.15);
+  border: 1px solid rgba(251,146,60,.25);
+  border-radius: 999px;
+  padding: 1px 6px;
+  font-weight: 800;
+}
 /* Table */
 
 .da-wbd-na {
@@ -4326,10 +4493,47 @@
   }
 }
 
+.da-wbd-body {
+  position: relative;
+}
 .da-wbd-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 380px));
   gap: 8px;
+}
+.da-wbd-cards--dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  width: auto;
+  min-width: 420px;
+  z-index: 40;
+  max-height: 420px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(251,146,60,.25) transparent;
+  background: var(--surface, #141715);
+  border: 1px solid rgba(251,146,60,.15);
+  border-radius: 8px;
+  padding: 10px 12px;
+  animation: daFadeIn .12s ease;
+}
+.da-wbd-cards--dropdown::-webkit-scrollbar {
+  width: 5px;
+}
+.da-wbd-cards--dropdown::-webkit-scrollbar-track {
+  background: transparent;
+}
+.da-wbd-cards--dropdown::-webkit-scrollbar-thumb {
+  background: rgba(251,146,60,.2);
+  border-radius: 999px;
+}
+.da-wbd-cards--dropdown::-webkit-scrollbar-thumb:hover {
+  background: rgba(251,146,60,.35);
+}
+@keyframes daFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .da-wbd-card {
@@ -4753,6 +4957,7 @@
   display: flex;
   gap: 12px;
   align-items: flex-start;
+  width: 100%;
 }
 .da-section--wbd-inner {
   flex: 1 1 0;
@@ -4776,11 +4981,12 @@
 .da-pbd-card {
   background: var(--surface2, #1a1d1b);
   border: 1px solid rgba(167,139,250,.14);
+  border-left: 3px solid rgba(167,139,250,.18);
   border-radius: 8px;
-  padding: 9px 11px;
+  padding: 11px 13px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 7px;
 }
 
 .da-pbd-head {
@@ -4832,7 +5038,10 @@
   font-size: .62rem;
   color: var(--ink-muted, #8a8d85);
   font-style: italic;
-  padding: 2px 0;
+  padding: 3px 7px;
+  background: rgba(255,255,255,.02);
+  border-radius: 4px;
+  line-height: 1.4;
 }
 
 .da-pbd-dmg-row {
@@ -4852,11 +5061,12 @@
 .da-pbd-note {
   font-size: .62rem;
   color: var(--ink-muted, #8a8d85);
-  opacity: .6;
+  opacity: .65;
   font-style: italic;
   line-height: 1.4;
-  padding-top: 2px;
-  border-top: 1px dashed rgba(255,255,255,.05);
+  padding-top: 5px;
+  margin-top: 2px;
+  border-top: 1px solid rgba(255,255,255,.04);
 }
 
 /* ── Springblast finisher hits slider ── */
