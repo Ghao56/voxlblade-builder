@@ -3,7 +3,7 @@
   import DmgTotalTooltip from './DmgTotalTooltip.svelte'
   import { resolveDamageTypes } from './lib/damageTypeResolve'
   import type { TypedDmgBoostEntry } from './data/TypedDmgBoost'
-  import { BADGE_CONFIG, type ComputedType, type ComputedHit } from './lib/dmgTypes'
+  import { BADGE_CONFIG, type ComputedType, type ComputedHit, type PerkOnHitDmg } from './lib/dmgTypes'
 
   export let perkDmgTypeBonuses: Record<string, number> = {}
   export let boosts: any
@@ -23,14 +23,7 @@
   export let dragonStateScalingMult: number = 1
   export let dragonStateCombatMult: number = 1
   export let dragonStateTotalDmg: number = 0
-  export let sporeBurstBaseDmg: number = 0
-  export let sporeBurstScalingMult: number = 1
-  export let sporeBurstCombatMult: number = 1
-  export let sporeBurstTotalDmg: number = 0
-  export let royalFinisherBaseDmg: number = 0
-  export let royalFinisherScalingMult: number = 1
-  export let royalFinisherCombatMult: number = 1
-  export let royalFinisherTotalDmg: number = 0
+  export let perkOnHitDamages: PerkOnHitDmg[] = []
   export let waArmorPenetration: number = 0
   export let m1Label: string = 'M1'
 
@@ -475,54 +468,30 @@ isHeal: false, tag: 'Chain', forceCrit: false,
       }
     }
 
-    if (!isHeal && sporeBurstTotalDmg > 0 && hit.isFinisher) {
-      const sbDebuffMult = _activeDebuffDamageMult * selfDebuffDamageMult
-      if (sbDebuffMult > 0) {
-        const sbResolvedTypes = resolveDamageTypes({ hex: 1.0 }, perkDmgTypeBonuses)
-        for (const [k, mult] of Object.entries(sbResolvedTypes)) {
-          const info = DMG_TYPE_MAP.get(k) ?? { label: k, color: '#e8e4da' }
-          const applicableBoosts = getApplicableBoosts(k, false)
-          const typedMultUsed = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
-          const sbTypeDebuffMult = _activeDebuffTypeDamageMult[k] ?? 1
-          const sbDefPct  = defPctForType(k)
-          const sbDefMult = calcArmorMult(sbDefPct, basePenDecimal).mult
-          const sbTypeBase = sporeBurstBaseDmg * mult
-          const sbRaw = sbTypeBase * sporeBurstScalingMult * sporeBurstCombatMult * sbDebuffMult * typedMultUsed * sbDefMult * sbTypeDebuffMult
+    for (const ph of perkOnHitDamages) {
+      if (!isHeal && ph.totalDmg > 0 && hit.isFinisher) {
+        const debuffMult = _activeDebuffDamageMult * selfDebuffDamageMult
+        if (debuffMult > 0) {
+          const resolvedTypes = resolveDamageTypes(ph.dmgTypes, perkDmgTypeBonuses)
+          for (const [k, mult] of Object.entries(resolvedTypes)) {
+            const info = DMG_TYPE_MAP.get(k) ?? { label: k, color: '#e8e4da' }
+            const applicableBoosts = getApplicableBoosts(k, false)
+            const typedMultUsed = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
+            const typeDebuffMult = _activeDebuffTypeDamageMult[k] ?? 1
+            const defPct  = defPctForType(k)
+            const defMult = calcArmorMult(defPct, basePenDecimal).mult
+            const typeBase = ph.baseDmg * mult
+            const raw = typeBase * ph.scalingMult * ph.combatMult * debuffMult * typedMultUsed * defMult * typeDebuffMult
 
-          types.push({
-            key: k, label: info.label, color: info.color,
-            typeBase: sbTypeBase, scalingMult: sporeBurstScalingMult, combatMult: sporeBurstCombatMult,
-            applicableBoosts, weaponBoostMult: 1, typeDebuffMult: sbTypeDebuffMult,
-            defMult: sbDefMult, enemyDefPct: sbDefPct,
-            raw: sbRaw, critVal: Math.round(sbRaw * critDmgMult / 100 * 10000) / 10000,
-            isHeal: false, tag: 'Spore Burst', oncePerGroup: true, forceCrit: false,
-          })
-        }
-      }
-    }
-
-    if (!isHeal && royalFinisherTotalDmg > 0 && hit.isFinisher) {
-      const rfDebuffMult = _activeDebuffDamageMult * selfDebuffDamageMult
-      if (rfDebuffMult > 0) {
-        const rfResolvedTypes = resolveDamageTypes({ magic: 1.0 }, perkDmgTypeBonuses)
-        for (const [k, mult] of Object.entries(rfResolvedTypes)) {
-          const info = DMG_TYPE_MAP.get(k) ?? { label: k, color: '#e8e4da' }
-          const applicableBoosts = getApplicableBoosts(k, false)
-          const typedMultUsed = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
-          const rfTypeDebuffMult = _activeDebuffTypeDamageMult[k] ?? 1
-          const rfDefPct  = defPctForType(k)
-          const rfDefMult = calcArmorMult(rfDefPct, basePenDecimal).mult
-          const rfTypeBase = royalFinisherBaseDmg * mult
-          const rfRaw = rfTypeBase * royalFinisherScalingMult * royalFinisherCombatMult * rfDebuffMult * typedMultUsed * rfDefMult * rfTypeDebuffMult
-
-          types.push({
-            key: k, label: info.label, color: info.color,
-            typeBase: rfTypeBase, scalingMult: royalFinisherScalingMult, combatMult: royalFinisherCombatMult,
-            applicableBoosts, weaponBoostMult: 1, typeDebuffMult: rfTypeDebuffMult,
-            defMult: rfDefMult, enemyDefPct: rfDefPct,
-            raw: rfRaw, critVal: Math.round(rfRaw * critDmgMult / 100 * 10000) / 10000,
-            isHeal: false, tag: 'Royal Finisher', oncePerGroup: true, forceCrit: false,
-          })
+            types.push({
+              key: k, label: info.label, color: info.color,
+              typeBase, scalingMult: ph.scalingMult, combatMult: ph.combatMult,
+              applicableBoosts, weaponBoostMult: 1, typeDebuffMult,
+              defMult, enemyDefPct: defPct,
+              raw, critVal: Math.round(raw * critDmgMult / 100 * 10000) / 10000,
+              isHeal: false, tag: ph.tag, oncePerGroup: true, forceCrit: false,
+            })
+          }
         }
       }
     }

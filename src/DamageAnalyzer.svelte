@@ -444,6 +444,10 @@
   $: _royalFinisherScalingMult = _computePerkScalingMult({ magic: 1.0 })
   $: _royalFinisherCombatMult = _perkCombatMult
   $: _royalFinisherTotalDmg = _royalFinisherBaseDmg * _royalFinisherScalingMult * _royalFinisherCombatMult
+  $: _perkOnHitDamages = [
+    { tag: 'Spore Burst', baseDmg: _sporeBurstBaseDmg, scalingMult: _sporeBurstScalingMult, combatMult: _sporeBurstCombatMult, totalDmg: _sporeBurstTotalDmg, dmgTypes: { hex: 1.0 } as Record<string, number> },
+    { tag: 'Royal Finisher', baseDmg: _royalFinisherBaseDmg, scalingMult: _royalFinisherScalingMult, combatMult: _royalFinisherCombatMult, totalDmg: _royalFinisherTotalDmg, dmgTypes: { magic: 1.0 } as Record<string, number> },
+  ]
   $: _waveRiderAmt = perks['Wave Rider'] ?? 0
   $: _oceanSongAmt = perks['Ocean Song'] ?? 0
   $: _wildBoltAmt = perks['Wild Bolt'] ?? 0
@@ -1442,13 +1446,17 @@
   // ── Mount Runes (override M1 + WA while riding) ──────────────────────────
   $: _activeMountRuneDef = MOUNT_RUNE_DEFS.find(d => d.runeName === $build.rune) ?? null
   let mountActive = true
-  let _prevMountActive = false
   $: if (!_activeMountRuneDef && mountActive) mountActive = false
-  // Auto-disable Rider when transitioning from mounted → unmounted, but never force-enable
-  $: if (_prevMountActive && !mountActive && (perks['Rider'] ?? 0) > 0) {
-    disabledBoosts = new Set([...disabledBoosts, 'Rider'])
+  $: if ((perks['Rider'] ?? 0) > 0) {
+    const hasRider = disabledBoosts.has('Rider')
+    if (!mountActive && !hasRider) {
+      disabledBoosts = new Set([...disabledBoosts, 'Rider'])
+    } else if (mountActive && hasRider) {
+      const next = new Set(disabledBoosts)
+      next.delete('Rider')
+      disabledBoosts = next
+    }
   }
-  $: _prevMountActive = mountActive
   $: _visibleDmgEntries = _adjustedDmgEntries.filter(e =>
     e.sourceName !== 'Rider' || mountActive
   )
@@ -3850,14 +3858,7 @@
   dragonStateScalingMult={_dragonStateScalingMult}
   dragonStateCombatMult={_dragonStateCombatMult}
   dragonStateTotalDmg={_dragonStateTotalDmg}
-  sporeBurstBaseDmg={_sporeBurstBaseDmg}
-  sporeBurstScalingMult={_sporeBurstScalingMult}
-  sporeBurstCombatMult={_sporeBurstCombatMult}
-  sporeBurstTotalDmg={_sporeBurstTotalDmg}
-  royalFinisherBaseDmg={_royalFinisherBaseDmg}
-  royalFinisherScalingMult={_royalFinisherScalingMult}
-  royalFinisherCombatMult={_royalFinisherCombatMult}
-  royalFinisherTotalDmg={_royalFinisherTotalDmg}
+  perkOnHitDamages={_perkOnHitDamages}
   waArmorPenetration={_waArmorPenetration}
   m1Label={_activeMountRuneDef && mountActive ? 'M1/M2' : 'M1'}
   draconicRunesBonus={getDraconicBonuses({

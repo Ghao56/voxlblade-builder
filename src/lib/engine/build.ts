@@ -111,6 +111,7 @@ function calcBoosts(
   raceName?:         string,
   hpFillPct?:        number,
   inDarkness:        boolean = true,
+  mountActive:       boolean = true,
   summonBoostPct:    number = 0,
   quickdrawPotency:  number = 0,
   selectedWeaponArt?: string,
@@ -136,7 +137,7 @@ function calcBoosts(
     perks, naturalCritChance, jumpBoost, summonCount,
     ragePotency, bouncePotency, quickdrawPotency,
     tailwindPotency, tenacity, inDarkness, emotionalState, level,
-    summonBoostPct, selectedWeaponArt,
+    mountActive, summonBoostPct, selectedWeaponArt,
   }
 
   for (const def of BOOST_DEFS) {
@@ -477,12 +478,14 @@ function deriveResults(
   }) : []
   const orkBuffTenacity = 0.1 * _orkBuffs.length
 
+  const isMountRune = state.rune.endsWith('Mount Rune')
   const boosts = calcBoosts(
     finalPerks, state.emotionalState, state.level ?? 80,
     crit.naturalCritChance, boostedStats.jumpBoost ?? 0,
     state.summonCount ?? 0, ragePotency, bouncePotency,
     tailwindPotency, (finalStats.tenacity ?? 0) + orkBuffTenacity,
     state.race, state.hpFill ?? 100, state.inDarkness ?? true,
+    isMountRune,
     boostedStats.summonBoost ?? 0, quickdrawPotency,
     state.selectedWeaponArt,
   )

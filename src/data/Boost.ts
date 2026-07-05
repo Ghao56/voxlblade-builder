@@ -14,6 +14,7 @@ export interface BoostContext {
   inDarkness: boolean
   emotionalState?: string
   level?: number
+  mountActive?: boolean
   summonBoostPct?: number
   selectedWeaponArt?: string
 }
@@ -52,7 +53,7 @@ export const BOOST_DEFS: BoostDef[] = [
   { sourceName: 'Guardian Spin', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Guardian Spin'] ?? 0; if (a <= 0 || ctx.selectedWeaponArt !== 'Spin') return null; return { multiplier: 1 + 0.15 + 0.1725 * a, condition: 'for Spin weapon art' } }, appliesTo: ['wa'] },
   { sourceName: 'Wild Bolt', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Wild Bolt'] ?? 0; if (a <= 0 || ctx.selectedWeaponArt !== 'Laser') return null; return { multiplier: 1 + 0.25 * a, condition: 'for Laser weapon art' } }, appliesTo: ['wa'] },
   { sourceName: 'Undead Might', multiplierPerPerk: 0.25, type: 'dmg', condition: 'Weapon Art & Rune Damage Boost', appliesTo: ['wa', 'rune'] },
-  { sourceName: 'Rider', multiplierPerPerk: 0.20, type: 'dmg', condition: 'While mounted · +0.1s stun resist/stack' },
+  { sourceName: 'Rider', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Rider'] ?? 0; if (a <= 0 || !ctx.mountActive) return null; return { multiplier: 1 + 0.20 * a, condition: 'While mounted · +0.1s stun resist/stack' } } },
   {
     sourceName: 'Quickdraw',
     type: 'dmg',

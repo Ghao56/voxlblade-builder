@@ -26,6 +26,15 @@ export interface ComputedType {
   healBoostMult?: number
 }
 
+export interface PerkOnHitDmg {
+  tag: string
+  baseDmg: number
+  scalingMult: number
+  combatMult: number
+  totalDmg: number
+  dmgTypes: Record<string, number>
+}
+
 export interface ComputedHit {
     group: string; index: number; count: number; isFinisher: boolean; label?: string
     isHeal: boolean
