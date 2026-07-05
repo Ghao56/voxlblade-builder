@@ -76,7 +76,7 @@
   let _ttHit: any = null
   let _ttStyleStr: string = ''
   let _ttFormula: {
-    t: typeof hit.types[0]
+    t: ComputedType
     style: string
   } | null = null
 
@@ -419,7 +419,7 @@
       }
     }
 
-    if (!isHeal && dragonStateTotalDmg > 0 && (hit.group === 'M1' || hit.group === 'M2' || hit.isM1 || hit.isM2)) {
+    if (!isHeal && dragonStateTotalDmg > 0 && (hit.group === 'M1' || hit.group === 'M2' || hit.isM1 || hit.isM2 || hit.isFinisher)) {
       const dsDebuffMult = _activeDebuffDamageMult * selfDebuffDamageMult
       if (dsDebuffMult > 0) {
         const dsResolvedTypes = resolveDamageTypes({ magic: 1.0 }, perkDmgTypeBonuses)
@@ -1485,12 +1485,6 @@ isHeal: false, tag: 'Chain', forceCrit: false,
   background: rgba(226,178,3,.12);
   border-color: rgba(226,178,3,.3);
   text-shadow: 0 0 10px rgba(226,178,3,.35);
-}
-.bdc-hit-type-pct {
-  font-size: .7rem;
-  font-weight: 600;
-  opacity: .55;
-  margin-left: 2px;
 }
 
 .bdc-hit-type-heal-sum {

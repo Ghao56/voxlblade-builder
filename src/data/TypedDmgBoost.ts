@@ -7,7 +7,7 @@ export interface TypedDmgBoostCtx {
   draconicColor?: string
 }
 
-export interface TypedDmgBoostDef {
+interface TypedDmgBoostDef {
   perkName: string
   label: string
   potencySource: 'buff' | 'perkAmount'
