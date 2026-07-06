@@ -3259,8 +3259,12 @@
               {#each entry.typedHits_m2 as t, ti}
                 {#if ti > 0}<span class="da-hit-plus">+</span>{/if}
                 <div class="da-hit-chunk" style="--tc:{t.color}" class:da-hit-chunk--rage={t.rageApplied}>
-                  <span class="da-hit-num" class:da-hit-num--crit={showCritValues} style="--tc:{t.color}">
-                    {fmtNum(showCritValues ? Math.round(t.val * _critMult * 1000) / 1000 : t.val)}
+                  {#if t.val !== t.rawVal}
+                    <span class="da-hit-raw">{fmtNum(t.rawVal)}</span>
+                    <span class="da-hit-arrow">→</span>
+                  {/if}
+                  <span class="da-hit-num" style="--tc:{t.color}">
+                    {fmtNum(t.val)}
                   </span>
                   <span class="da-hit-type">{t.label}</span>
                 </div>
@@ -3270,11 +3274,6 @@
               {/if}
               {#if entry.isFinisher}
                 <span class="da-finisher-crown">✦</span>
-              {/if}
-              {#if showCritValues}
-                <span class="da-crit-mini-badge">
-                  <CritIcon size={12}/>
-                </span>
               {/if}
             </div>
           </div>
@@ -3292,16 +3291,13 @@
                       <span class="da-hit-raw">{fmtNum(t.rawVal)}</span>
                       <span class="da-hit-arrow">→</span>
                     {/if}
-                    <span class="da-hit-num" class:da-hit-num--crit={showCritValues} style="--tc:{t.color}">
-                      {fmtNum(showCritValues ? Math.round(t.val * _critMult * 1000) / 1000 : t.val)}
+                    <span class="da-hit-num" style="--tc:{t.color}">
+                      {fmtNum(t.val)}
                     </span>
                     <span class="da-hit-type">{t.label}</span>
                   </div>
                 {/each}
                 <span class="da-finisher-crown">✦</span>
-                {#if showCritValues}
-                  <span class="da-crit-mini-badge"><CritIcon size={12}/></span>
-                {/if}
               </div>
             </div>
           </div>
@@ -3315,8 +3311,8 @@
                 {#each entry.typedHits_m2 as t, ti}
                   {#if ti > 0}<span class="da-hit-plus">+</span>{/if}
                   <div class="da-hit-chunk" style="--tc:{t.color}">
-                    <span class="da-hit-num" class:da-hit-num--crit={showCritValues} style="--tc:{t.color}">
-                      {fmtNum(Math.round(t.val * springblastFinisherHits * (showCritValues ? _critMult : 1) * 10000) / 10000)}
+                    <span class="da-hit-num" style="--tc:{t.color}">
+                      {fmtNum(Math.round(t.val * springblastFinisherHits * 10000) / 10000)}
                     </span>
                     <span class="da-hit-type">{t.label}</span>
                   </div>
