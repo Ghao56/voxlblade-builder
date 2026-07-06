@@ -3,8 +3,14 @@
   import EmotionalTracker from './EmotionalTracker.svelte';
   import { build } from './lib/store'
   import type { BuildState } from './lib/types'
+  import {
+    BUILD_STATE_DEFAULTS as DEFAULTS,
+    SAVE_KEY_MAP as KEY_MAP, SAVE_KEY_UNMAP as KEY_UNMAP,
+    ENCH_MAP, ENCH_UNMAP,
+    MAX_BUILD_SLOTS, CONFIRM_TIMEOUT_MS
+  } from './lib/constants'
 
-  const MAX_SLOTS = 5
+  const MAX_SLOTS = MAX_BUILD_SLOTS
   const STORAGE_KEY = 'voxlbuilder_saves'
 
   interface SaveSlot {
@@ -86,7 +92,7 @@
      
       const timer = window.setTimeout(() => { 
         if (confirmLoad === i) confirmLoad = null 
-      }, 3000);
+      }, CONFIRM_TIMEOUT_MS);
       timeouts.push(timer);
     }
   }
@@ -101,7 +107,7 @@
       confirmDelete = i
       const timer = window.setTimeout(() => { 
         if (confirmDelete === i) confirmDelete = null 
-      }, 3000);
+      }, CONFIRM_TIMEOUT_MS);
       timeouts.push(timer);
     }
   }
@@ -121,31 +127,6 @@
     if (state.selectedWeaponArt) parts.push(`WA: ${state.selectedWeaponArt}`)
     
     return parts.join(' · ') || 'Empty build'
-  }
-
-  const KEY_MAP: Record<string, string> = {
-    race:'ra', guild:'gu', guildRank:'gr', helmet:'he', chestplate:'cp',
-    leggings:'le', ring:'ri', rune:'ru', enchantments:'en',
-    infusionHelmet:'ih', infusionChestplate:'ic', infusionLeggings:'il', infusionRing:'ir',
-    weaponBlade:'wb', weaponHandle:'wh', monkGlove:'mg', monkEssence:'me',
-    shrineActive:'sh', upgradeHelmet:'uh', upgradeChestplate:'uc',
-    upgradeLeggings:'ul', upgradeRing:'ur', upgradeRune:'uu', selectedWeaponArt:'wa', draconicColor:'dc',
-    draconicRuneInfusion:'dri', emotionalState: 'es'
-  }
-  const KEY_UNMAP = Object.fromEntries(Object.entries(KEY_MAP).map(([k,v])=>[v,k]))
-
-  const ENCH_MAP: Record<string, string> = {
-    helmet:'he', chestplate:'cp', leggings:'le', ring:'ri', rune:'ru'
-  }
-  const ENCH_UNMAP = Object.fromEntries(Object.entries(ENCH_MAP).map(([k,v])=>[v,k]))
-
-  const DEFAULTS: Record<string, any> = {
-    race:'', 
-    guild:'', guildRank:1, helmet:'', chestplate:'', leggings:'',
-    ring:'', rune:'', infusionHelmet:'', infusionChestplate:'', infusionLeggings:'',
-    infusionRing:'', weaponBlade:'', weaponHandle:'', monkGlove:'', monkEssence:'',
-    shrineActive:false, upgradeHelmet:0, upgradeChestplate:0, upgradeLeggings:0,
-    upgradeRing:0, upgradeRune:0, selectedWeaponArt:'Lunge', draconicColor:'', draconicRuneInfusion:'', emotionalState: 'buffs'
   }
   async function readStream(readable: ReadableStream<Uint8Array>): Promise<Uint8Array> {
     const chunks: Uint8Array[] = []

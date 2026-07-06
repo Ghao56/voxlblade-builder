@@ -1038,6 +1038,19 @@
     protection: 'rgb(68, 226, 43)',
   }
 
+  function buildScalingRows(scalings: Record<string, number>): ScalingRow[] {
+    const rows: ScalingRow[] = []
+    for (const [key, scalingVal] of Object.entries(scalings)) {
+      if (!scalingVal) continue
+      const boostKey = SCALING_TO_BOOST[key]
+      if (!boostKey) continue
+      const boostPct = (stats as Record<string, number>)[boostKey] ?? 0
+      const contribution = Math.round(scalingVal * boostPct * 1000) / 1000
+      rows.push({ key, scalingVal, boostKey, boostPct, contribution, color: SCALING_COLORS[key] ?? '#e8e4da' })
+    }
+    return rows
+  }
+
   interface ScalingRow {
     key: string
     label?: string 
@@ -1051,15 +1064,7 @@
   $: scalingBreakdown = (() => {
     if (!_weaponResult) return { rows: [] as ScalingRow[], totalEffectivePct: 0, multiplier: 1 }
     const scalings = _weaponResult.scalings
-    const rows: ScalingRow[] = []
-    for (const [key, scalingVal] of Object.entries(scalings)) {
-      if (!scalingVal) continue
-      const boostKey = SCALING_TO_BOOST[key]
-      if (!boostKey) continue
-      const boostPct = (stats as Record<string, number>)[boostKey] ?? 0
-      const contribution = Math.round(scalingVal * boostPct * 1000) / 1000
-      rows.push({ key, scalingVal, boostKey, boostPct, contribution, color: SCALING_COLORS[key] ?? '#e8e4da' })
-    }
+    const rows = buildScalingRows(scalings)
     const totalEffective = rows.reduce((a, r) => a + r.contribution, 0)
     const totalEffectivePct = Math.round(totalEffective * 1000) / 1000
     const multiplier = roundMultiplier(1 + totalEffective / 100)
@@ -1111,15 +1116,7 @@
     let m: RegExpExecArray | null
     while ((m = re.exec(sc)) !== null)
       parsed[/dex/i.test(m[2]) ? 'dexterity' : m[2].toLowerCase()] = parseFloat(m[1])
-    const rows: ScalingRow[] = []
-    for (const [key, scalingVal] of Object.entries(parsed)) {
-      const boostKey = SCALING_TO_BOOST[key]
-      if (!boostKey) continue
-      const boostPct = (stats as Record<string, number>)[boostKey] ?? 0
-      rows.push({ key, scalingVal, boostKey, boostPct,
-        contribution: Math.round(scalingVal * boostPct * 1000) / 1000,
-        color: SCALING_COLORS[key] ?? '#e8e4da' })
-    }
+    const rows = buildScalingRows(parsed)
     if (!rows.length) return null
     const totalEffectivePct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 1000) / 1000
     return { rows, totalEffectivePct,
@@ -1131,15 +1128,7 @@
     const scalings = _activeRuneDmgDef.scalings
     if (!scalings || Object.keys(scalings).length === 0) return null
 
-    const rows: ScalingRow[] = []
-    for (const [key, scalingVal] of Object.entries(scalings)) {
-      if (!scalingVal) continue
-      const boostKey = SCALING_TO_BOOST[key]
-      if (!boostKey) continue
-      const boostPct = (stats as Record<string, number>)[boostKey] ?? 0
-      const contribution = Math.round(scalingVal * boostPct * 1000) / 1000
-      rows.push({ key, scalingVal, boostKey, boostPct, contribution, color: SCALING_COLORS[key] ?? '#e8e4da' })
-    }
+    const rows = buildScalingRows(scalings)
     if (!rows.length) return null
 
     const totalEffectivePct = Math.round(rows.reduce((a, r) => a + (PERCENT_STATS.has(r.boostKey) ? r.contribution : r.contribution * 100), 0) * 1000) / 1000
@@ -1150,15 +1139,7 @@
     if (!_activeMountRuneDef || !mountActive) return null
     const scalings = _activeMountRuneDef.m1.getScalings()
     if (!scalings || Object.keys(scalings).length === 0) return null
-    const rows: ScalingRow[] = []
-    for (const [key, scalingVal] of Object.entries(scalings)) {
-      if (!scalingVal) continue
-      const boostKey = SCALING_TO_BOOST[key]
-      if (!boostKey) continue
-      const boostPct = (stats as Record<string, number>)[boostKey] ?? 0
-      const contribution = Math.round(scalingVal * boostPct * 1000) / 1000
-      rows.push({ key, scalingVal, boostKey, boostPct, contribution, color: SCALING_COLORS[key] ?? '#e8e4da' })
-    }
+    const rows = buildScalingRows(scalings)
     if (!rows.length) return null
     const totalEffectivePct = Math.round(rows.reduce((a, r) => a + (PERCENT_STATS.has(r.boostKey) ? r.contribution : r.contribution * 100), 0) * 1000) / 1000
     const multiplier = roundMultiplier(1 + totalEffectivePct / 100)
@@ -1169,15 +1150,7 @@
     if (!_draconicBloodEntry) return null
     const scalings = _draconicBloodEntry.resolvedScalings
     if (!scalings || Object.keys(scalings).length === 0) return null
-    const rows: ScalingRow[] = []
-    for (const [key, scalingVal] of Object.entries(scalings)) {
-      if (!scalingVal) continue
-      const boostKey = SCALING_TO_BOOST[key]
-      if (!boostKey) continue
-      const boostPct = (stats as Record<string, number>)[boostKey] ?? 0
-      const contribution = Math.round(scalingVal * boostPct * 1000) / 1000
-      rows.push({ key, scalingVal, boostKey, boostPct, contribution, color: SCALING_COLORS[key] ?? '#e8e4da' })
-    }
+    const rows = buildScalingRows(scalings)
     if (!rows.length) return null
     const totalEffectivePct = Math.round(rows.reduce((a, r) => a + (PERCENT_STATS.has(r.boostKey) ? r.contribution : r.contribution * 100), 0) * 1000) / 1000
     const multiplier = roundMultiplier(1 + totalEffectivePct / 100)
@@ -1205,16 +1178,7 @@
     
     if (!healSe) return null
     
-    const scalings = { [_color]: 1.0 }
-    const rows: ScalingRow[] = []
-    for (const [key, scalingVal] of Object.entries(scalings)) {
-      if (!scalingVal) continue
-      const boostKey = SCALING_TO_BOOST[key]
-      if (!boostKey) continue
-      const boostPct = (stats as Record<string, number>)[boostKey] ?? 0
-      const contribution = Math.round(scalingVal * boostPct * 1000) / 1000
-      rows.push({ key, scalingVal, boostKey, boostPct, contribution, color: SCALING_COLORS[key] ?? '#e8e4da' })
-    }
+    const rows = buildScalingRows({ [_color]: 1.0 })
     if (!rows.length) return null
     
     const totalEffectivePct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 1000) / 1000

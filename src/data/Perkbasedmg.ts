@@ -30,17 +30,17 @@ export interface HpGate {
   alwaysActiveAtPerkAmount?: number
 }
 
-export function isHpGateActive(gate: HpGate | undefined, hpFillPct: number, perkAmount: number): boolean {
-  if (!gate) return true
-  if (gate.alwaysActiveAtPerkAmount != null && perkAmount >= gate.alwaysActiveAtPerkAmount) return true
-  const threshold = gate.getThreshold ? gate.getThreshold(perkAmount) : gate.hpThreshold
-  return gate.aboveThreshold ? hpFillPct > threshold : hpFillPct <= threshold
-}
-
-function getHpThreshold(gate: HpGate | undefined, perkAmount: number): number | undefined {
+function gateThreshold(gate: HpGate | undefined, perkAmount: number): number | undefined {
   if (!gate) return undefined
   if (gate.alwaysActiveAtPerkAmount != null && perkAmount >= gate.alwaysActiveAtPerkAmount) return undefined
   return gate.getThreshold ? gate.getThreshold(perkAmount) : gate.hpThreshold
+}
+
+export function isHpGateActive(gate: HpGate | undefined, hpFillPct: number, perkAmount: number): boolean {
+  if (!gate) return true
+  const threshold = gateThreshold(gate, perkAmount)
+  if (threshold == null) return true
+  return gate.aboveThreshold ? hpFillPct > threshold : hpFillPct <= threshold
 }
 
 export interface SecondaryEffect {

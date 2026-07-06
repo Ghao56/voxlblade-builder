@@ -234,10 +234,6 @@
     const r = Math.round(n * 10000) / 10000
     return Number.isInteger(r) ? String(r) : r.toFixed(4).replace(/\.?0+$/, '')
   }
-  function fmt4(n: number) {
-    const r = Math.round(n * 10000) / 10000
-    return Number.isInteger(r) ? String(r) : r.toFixed(4).replace(/\.?0+$/, '')
-  }
   function fmt1(n: number) {
     const r = Math.round(n * 10) / 10
     return Number.isInteger(r) ? String(r) : r.toFixed(1)
@@ -914,13 +910,13 @@ isHeal: false, tag: 'Chain', forceCrit: false,
                             }} on:mouseleave={() => { _ttHit = null; _ttStyleStr = ''; }}>
                           <span class="bdc-hit-type-sum" class:bdc-hit-type-sum--crit={showCritValues || hitForceCrit}>
                           {#if showCritValues || hitForceCrit}<CritIcon size={11}/>{/if}
-                          {fmt4(hSumWithCount)}
+                          {fmt(hSumWithCount)}
                         </span>
                         </span>
                         {/if}
                         {#if hHealSumWithCount > 0}
                           {#if hSumWithCount === 0}<span class="bdc-hit-type-sum-sep">=</span>{/if}
-                          <span class="bdc-hit-type-heal-sum">{fmt4(hHealSumWithCount)}</span>
+                          <span class="bdc-hit-type-heal-sum">{fmt(hHealSumWithCount)}</span>
                         {/if}
                         
                         {#if hit.isFinisher}<span class="bdc-hit-fin">✦</span>{/if}

@@ -39,7 +39,6 @@
   import DidYouMean from './DidYouMean.svelte'
 import Highlight from './Highlight.svelte'
   import { checkWA, getUnmetReqs } from './data/Weaponartcheck'
-  import SuggestDrop from './SuggestDrop.svelte'
   import { getEffectiveDraconicInfusionPotency } from './data/draconicBuffs'
   import { BUFF_DEFS, getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, convertTailwindToWhirlwind } from './data/BuffData'
   import { CDR_PERK_DATA } from './data/cdr'
@@ -339,12 +338,8 @@ $: statRows = Object.entries($result.stats).filter(([k, v]) => {
     build.update(s => ({ ...s, draconicRuneInfusion: ids[(idx + 1) % ids.length] }))
   }
 
-  function dragonClawDmg(perkAmt: number) { return DRAGON_CLAW_BASE_DAMAGE + DRAGON_CLAW_DAMAGE_PER_STACK * perkAmt }
-  function dragonClawHealHoly(perkAmt: number) { return DRAGON_CLAW_HOLY_HEAL_BASE + DRAGON_CLAW_HOLY_HEAL_PER_STACK * perkAmt }
-  function dragonClawHealWater(perkAmt: number) { return +(DRAGON_CLAW_WATER_HEAL_BASE + DRAGON_CLAW_WATER_HEAL_PER_STACK * perkAmt).toFixed(3) }
-  function dragonBubbleDmg(perkAmt: number) { return DRAGON_BUBBLE_BASE_DAMAGE + DRAGON_BUBBLE_DAMAGE_PER_STACK * perkAmt }
-  function dragonBubbleHealHoly(perkAmt: number) { return DRAGON_BUBBLE_HOLY_HEAL_BASE + DRAGON_BUBBLE_HOLY_HEAL_PER_STACK * perkAmt }
-  function dragonBubbleHealWater(perkAmt: number) { return +(DRAGON_BUBBLE_WATER_HEAL_BASE + DRAGON_BUBBLE_WATER_HEAL_PER_STACK * perkAmt).toFixed(3) }
+  function linearDmg(base: number, perStack: number, pa: number) { return base + perStack * pa }
+  function linearHeal(base: number, perStack: number, pa: number) { return +(base + perStack * pa).toFixed(3) }
 
   $: draconicPerkAmt = (() => {
     const p = $result.perks['Draconic Blood'] ?? 0
@@ -687,23 +682,8 @@ function applyEnchantToAll(slot: EnchantSlot) {
     return g.ranks.some(r => (r.perks ?? []).some((p: any) => perkMatchesTags(p.name)))
   })
 
-  $: searchedRings = (
-    void selectedTags,
-    void statFilter,
-    void statFilterSortMode,
-    void weaponResult,
-    void modalSearch,
-    filterAccessoryItems(rings, modalSearch)
-  )
-
-  $: searchedRunes = (
-    void selectedTags,
-    void statFilter,
-    void statFilterSortMode,
-    void weaponResult,
-    void modalSearch,
-    filterAccessoryItems(runes, modalSearch)
-  )
+  $: searchedRings = (void selectedTags, void statFilter, void statFilterSortMode, void weaponResult, void modalSearch, filterAccessoryItems(rings, modalSearch))
+  $: searchedRunes = (void selectedTags, void statFilter, void statFilterSortMode, void weaponResult, void modalSearch, filterAccessoryItems(runes, modalSearch))
 
   function filterWeaponItems(items: any[], search: string) {
     return sortByStatFilter(
@@ -897,21 +877,16 @@ function onStatFilterChange( e: CustomEvent<{
     return perkNames.some(n => perkMatchesTags(n))
   }
 
-  $: filteredBlades = blades.filter(b =>
-    (!bladeFilterTier || b.tier === Number(bladeFilterTier)) &&
-    (!bladeFilterType || b.bladeType === bladeFilterType)
-  )
-  $: filteredHandles = handles.filter(h =>
-    (!handleFilterTier || h.tier === Number(handleFilterTier)) &&
-    (!handleFilterType || h.handleType === handleFilterType)
-  )
-  $: filteredGloves = gloves.filter(g =>
-    (!gloveFilterTier || g.tier === Number(gloveFilterTier)) &&
-    (!gloveFilterType || g.gloveType === gloveFilterType)
-  )
-  $: filteredEssences = essences.filter(e =>
-    (!essenceFilterTier || e.tier === Number(essenceFilterTier))
-  )
+  function tierFilter(items: any[], tierVar: string, typeVar?: string, typeKey?: string) {
+    return items.filter(i =>
+      (!tierVar || i.tier === Number(tierVar)) &&
+      (!typeVar || !typeKey || i[typeKey] === typeVar)
+    )
+  }
+  $: filteredBlades = tierFilter(blades, bladeFilterTier, bladeFilterType, 'bladeType')
+  $: filteredHandles = tierFilter(handles, handleFilterTier, handleFilterType, 'handleType')
+  $: filteredGloves = tierFilter(gloves, gloveFilterTier, gloveFilterType, 'gloveType')
+  $: filteredEssences = tierFilter(essences, essenceFilterTier)
 // ── Weapon enchant damage type bonuses ────────────────────────────────────────
 interface PerkDmgTypeBonusDef {
   perkName: string
@@ -1302,17 +1277,17 @@ $: _appWaAvgTotal = (() => {
       <button class="modal-close" on:click={closeModal}>✕</button>
 
       {#if activeModal === 'race'}
-        <h2 class="modal-title">Select Race</h2>
-        <div class="search-wrap">
-          <input class="modal-search-input" type="text" bind:value={modalSearch} placeholder="Search name..."
-            on:focus={onSearchFocus} on:blur={onSearchBlur} />
-          <SuggestDrop
-            show={showSuggestions}
-            suggestions={modalSuggestions}
-            suggestQuery={modalSearch}
-            on:select={(e) => applySuggestion(e.detail.label, e.detail.type)}
-          />
-        </div>
+        <ModalSearchHeader
+          title="Select Race"
+          bind:modalSearch
+          {showSuggestions}
+          {modalSuggestions}
+          hideTagFilter
+          hideStatFilter
+          on:focus={onSearchFocus}
+          on:blur={onSearchBlur}
+          on:select={(e) => applySuggestion(e.detail.label, e.detail.type)}
+        />
         <div class="modal-list">
           {#each searchedRaces as r}
             <button class="modal-item" class:modal-item--active={$build.race === r.name}
@@ -1511,6 +1486,7 @@ $: _appWaAvgTotal = (() => {
           {showSuggestions}
           {modalSuggestions}
           modalSelectedTags={selectedTags}
+          hideTags={[]}
           on:focus={onSearchFocus}
           on:blur={onSearchBlur}
           on:toggle={(e) => toggleTag(e.detail)}
@@ -1556,6 +1532,7 @@ $: _appWaAvgTotal = (() => {
           {showSuggestions}
           {modalSuggestions}
           modalSelectedTags={selectedTags}
+          hideTags={[]}
           on:focus={onSearchFocus}
           on:blur={onSearchBlur}
           on:toggle={(e) => toggleTag(e.detail)}
@@ -1648,6 +1625,7 @@ $: _appWaAvgTotal = (() => {
           {showSuggestions}
           {modalSuggestions}
           modalSelectedTags={selectedTags}
+          hideTags={[]}
           on:focus={onSearchFocus}
           on:blur={onSearchBlur}
           useWeaponStatFilter={true}
@@ -1703,6 +1681,7 @@ $: _appWaAvgTotal = (() => {
           {showSuggestions}
           {modalSuggestions}
           modalSelectedTags={selectedTags}
+          hideTags={[]}
           on:focus={onSearchFocus}
           on:blur={onSearchBlur}
           useWeaponStatFilter={true}
@@ -1758,6 +1737,7 @@ $: _appWaAvgTotal = (() => {
           {showSuggestions}
           {modalSuggestions}
           modalSelectedTags={selectedTags}
+          hideTags={[]}
           useWeaponStatFilter={true}
           weaponStatFilter={weaponStatFilter}
           on:focus={onSearchFocus}
@@ -1808,6 +1788,7 @@ $: _appWaAvgTotal = (() => {
           {showSuggestions}
           {modalSuggestions}
           modalSelectedTags={selectedTags}
+          hideTags={[]}
           on:focus={onSearchFocus}
           on:blur={onSearchBlur}
           useWeaponStatFilter={true}
@@ -2419,13 +2400,13 @@ $: _appWaAvgTotal = (() => {
               <div class="dab-stats">
                 <div class="dab-stat-row">
                   <span class="dab-stat-k">Damage</span>
-                  <span class="dab-stat-v dab-stat-v--dmg">{dragonClawDmg(draconicPerkAmt)}</span>
+                  <span class="dab-stat-v dab-stat-v--dmg">{linearDmg(DRAGON_CLAW_BASE_DAMAGE, DRAGON_CLAW_DAMAGE_PER_STACK, draconicPerkAmt)}</span>
                 </div>
                 <DraconicAbilityStats
                   {dracoColor}
                   poiseDmg={60}
-                  healHoly={dragonClawHealHoly(draconicPerkAmt)}
-                  healWater={dragonClawHealWater(draconicPerkAmt)}
+                  healHoly={linearHeal(DRAGON_CLAW_HOLY_HEAL_BASE, DRAGON_CLAW_HOLY_HEAL_PER_STACK, draconicPerkAmt)}
+                  healWater={linearHeal(DRAGON_CLAW_WATER_HEAL_BASE, DRAGON_CLAW_WATER_HEAL_PER_STACK, draconicPerkAmt)}
                   showHoly={$build.draconicColor === 'holy'}
                   showWater={$build.draconicColor === 'water'}
                 />
@@ -2499,13 +2480,13 @@ $: _appWaAvgTotal = (() => {
               <div class="dab-stats">
                 <div class="dab-stat-row">
                   <span class="dab-stat-k">Damage</span>
-                  <span class="dab-stat-v dab-stat-v--dmg">{dragonBubbleDmg(draconicPerkAmt)}</span>
+                  <span class="dab-stat-v dab-stat-v--dmg">{linearDmg(DRAGON_BUBBLE_BASE_DAMAGE, DRAGON_BUBBLE_DAMAGE_PER_STACK, draconicPerkAmt)}</span>
                 </div>
                 <DraconicAbilityStats
                   {dracoColor}
                   poiseDmg={45}
-                  healHoly={dragonBubbleHealHoly(draconicPerkAmt)}
-                  healWater={dragonBubbleHealWater(draconicPerkAmt)}
+                  healHoly={linearHeal(DRAGON_BUBBLE_HOLY_HEAL_BASE, DRAGON_BUBBLE_HOLY_HEAL_PER_STACK, draconicPerkAmt)}
+                  healWater={linearHeal(DRAGON_BUBBLE_WATER_HEAL_BASE, DRAGON_BUBBLE_WATER_HEAL_PER_STACK, draconicPerkAmt)}
                   showHoly={$build.draconicColor === 'holy'}
                   showWater={$build.draconicColor === 'water'}
                 />
@@ -3184,7 +3165,6 @@ $: _appWaAvgTotal = (() => {
     transition:background .15s,color .15s;
   }
   .modal-close:hover { background:rgba(248,113,113,.15); color:var(--neg); }
-  .modal-title { font-family:var(--font-display); font-size:1.3rem; font-weight:400; color:var(--ink); margin-bottom:16px; }
   .modal-filters { display:flex; gap:8px; margin-bottom:12px; }
   .modal-filter-sel {
     flex:1; appearance:none; background:var(--surface2); border:1px solid var(--border-strong);

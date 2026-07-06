@@ -232,7 +232,7 @@ const EMPTY_ENCHANTS: Record<string, [string, string, string]> = {
 // ──────────────────────────────────────────────
 // Build save defaults
 // ──────────────────────────────────────────────
-const BUILD_STATE_DEFAULTS: Record<string, any> = {
+export const BUILD_STATE_DEFAULTS: Record<string, any> = {
   race: '', guild: '', guildRank: 1, helmet: '', chestplate: '', leggings: '',
   ring: '', rune: '', infusionHelmet: '', infusionChestplate: '', infusionLeggings: '',
   infusionRing: '', weaponBlade: '', weaponHandle: '', monkGlove: '', monkEssence: '',
@@ -243,7 +243,7 @@ const BUILD_STATE_DEFAULTS: Record<string, any> = {
 // ──────────────────────────────────────────────
 // Build save key map (short → long)
 // ──────────────────────────────────────────────
-const SAVE_KEY_MAP: Record<string, string> = {
+export const SAVE_KEY_MAP: Record<string, string> = {
   race:'ra', guild:'gu', guildRank:'gr', helmet:'he', chestplate:'cp',
   leggings:'le', ring:'ri', rune:'ru', enchantments:'en',
   infusionHelmet:'ih', infusionChestplate:'ic', infusionLeggings:'il', infusionRing:'ir',
@@ -252,18 +252,18 @@ const SAVE_KEY_MAP: Record<string, string> = {
   upgradeLeggings:'ul', upgradeRing:'ur', upgradeRune:'uu', selectedWeaponArt:'wa', draconicColor:'dc',
   draconicRuneInfusion:'dri', emotionalState: 'es',
 }
-const SAVE_KEY_UNMAP = Object.fromEntries(Object.entries(SAVE_KEY_MAP).map(([k,v])=>[v,k]))
+export const SAVE_KEY_UNMAP = Object.fromEntries(Object.entries(SAVE_KEY_MAP).map(([k,v])=>[v,k]))
 
-const ENCH_MAP: Record<string, string> = {
+export const ENCH_MAP: Record<string, string> = {
   helmet:'he', chestplate:'cp', leggings:'le', ring:'ri', rune:'ru',
 }
-const ENCH_UNMAP = Object.fromEntries(Object.entries(ENCH_MAP).map(([k,v])=>[v,k]))
+export const ENCH_UNMAP = Object.fromEntries(Object.entries(ENCH_MAP).map(([k,v])=>[v,k]))
 
 // ──────────────────────────────────────────────
 // Build save config
 // ──────────────────────────────────────────────
-const MAX_BUILD_SLOTS = 5
-const CONFIRM_TIMEOUT_MS = 3000
+export const MAX_BUILD_SLOTS = 5
+export const CONFIRM_TIMEOUT_MS = 3000
 
 // ──────────────────────────────────────────────
 // Generic stat keys

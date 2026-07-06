@@ -5,7 +5,13 @@
   export let modalSearch: string;
   export let showSuggestions: boolean;
   export let modalSuggestions: any[];
-  export let modalSelectedTags: Set<string>;
+  export let modalSelectedTags: Set<string> = new Set();
+  /** When true, hides TagFilter entirely */
+  export let hideTagFilter: boolean = false;
+  /** Tags to hide from TagFilter (e.g. Stance Change for weapon modals) */
+  export let hideTags: string[] = ['Stance Change'];
+  /** When true, hides StatFilter/WeaponStatFilter */
+  export let hideStatFilter: boolean = false;
   /** When true, renders WeaponStatFilter instead of StatFilter */
   export let useWeaponStatFilter: boolean = false;
   /** Required when useWeaponStatFilter is true */
@@ -70,17 +76,21 @@
   />
 </div>
 
+{#if !hideTagFilter}
 <TagFilter
   selectedTags={modalSelectedTags}
-  hideTags={['Stance Change']}
+  {hideTags}
   on:toggle={handleToggle}
   on:clear={handleClear}
 />
+{/if}
 
-{#if useWeaponStatFilter}
-  <WeaponStatFilter filterValue={weaponStatFilter} on:change={handleWeaponStatFilterChange} />
-{:else}
-  <StatFilter on:change={handleChange} />
+{#if !hideStatFilter}
+  {#if useWeaponStatFilter}
+    <WeaponStatFilter filterValue={weaponStatFilter} on:change={handleWeaponStatFilterChange} />
+  {:else}
+    <StatFilter on:change={handleChange} />
+  {/if}
 {/if}
 
 {#if showSortButtons && weaponResult}
@@ -106,6 +116,7 @@
   </div>
 {/if}
 <style>
+.modal-title { font-family:var(--font-display); font-size:1.3rem; font-weight:400; color:var(--ink); margin-bottom:16px; }
 /* ── Search suggestions ── */
 :global(.search-wrap) { position: relative; margin-bottom: 12px; }
 :global(.search-wrap .modal-search-input) { margin-bottom: 0; }
