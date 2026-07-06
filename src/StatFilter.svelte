@@ -3,6 +3,7 @@
   import { ELEMENTAL_BOOST_STATS, NEGATIVE_ELEMENTAL_BOOST_STATS } from './lib/stats/elementalBoosts'
   import { createFilterActions } from './lib/stats/filterActions'
   import { UI_COLORS } from './lib/uiConstants'
+  import StatChip, { buildStatMaps } from './lib/StatFilterShared.svelte'
 
   const dispatch = createEventDispatcher<{
     change: {
@@ -71,19 +72,7 @@
     },
   ]
 
-  const STAT_LABEL_MAP = new Map<string, string>()
-  const STAT_COLOR_MAP = new Map<string, string>()
-
-  function initMaps(groups: Array<{ label: string; color: string; stats: { key: string; label: string }[] }>) {
-    for (const g of groups) {
-      for (const s of g.stats) {
-        STAT_LABEL_MAP.set(s.key, s.label)
-        STAT_COLOR_MAP.set(s.key, g.color)
-      }
-    }
-  }
-  initMaps(STAT_GROUPS)
-  initMaps(NEG_STAT_GROUPS)
+  const { labelMap: STAT_LABEL_MAP, colorMap: STAT_COLOR_MAP } = buildStatMaps([...STAT_GROUPS, ...NEG_STAT_GROUPS])
 
   let activeTab: 'positive' | 'negative' = 'positive'
   let sortMode: 'highest' | 'lowest' | 'alphabetical' = 'highest'
@@ -132,20 +121,17 @@
     {#if activeCount > 0}
       <div class="sf-active-row">
         {#each [...active.entries()] as [key, state]}
-          <button
-            class="sf-chip sf-chip--active"
-            class:sf-chip--include={state === 'include'}
-            class:sf-chip--exclude={state === 'exclude'}
-            style="--c:{STAT_COLOR_MAP.get(key) ?? '#8a8d85'}"
+          <StatChip
+            {state}
+            color={STAT_COLOR_MAP.get(key) ?? '#8a8d85'}
             title="Click to cycle · Right-click or press Delete to remove"
             aria-label="Filter {STAT_LABEL_MAP.get(key) ?? key}: {state}. Click to cycle, Delete to remove."
             on:click={() => toggle(key)}
-            on:contextmenu|preventDefault={() => remove(key)}
-            on:keydown={(e) => handleChipKeyDown(e, key)}
+            on:contextmenu={() => remove(key)}
+            on:keydown={(e) => handleChipKeyDown(e.detail, key)}
           >
-            <span class="sf-sign">{state === 'include' ? '+' : '−'}</span>
             {STAT_LABEL_MAP.get(key) ?? key}
-          </button>
+          </StatChip>
         {/each}
         <button class="sf-clear" on:click={clear}>Clear all</button>
       </div>
@@ -222,26 +208,17 @@
           {#each group.stats as stat}
             {@const state = active.get(stat.key)}
             {@const dimmed = currentHiddenSet.has(activeTab === 'negative' ? stat.key.slice(4) : stat.key)}
-            <button
-              class="sf-chip"
-              class:sf-chip--include={state === 'include'}
-              class:sf-chip--exclude={state === 'exclude'}
-              class:sf-chip--dimmed={dimmed}
-              style="--c:{group.color}"
-              aria-pressed={!!state}
+            <StatChip
+              {state}
+              color={group.color}
+              dimmed={dimmed}
               aria-label="{activeTab === 'negative' ? 'Negative ' : ''}{stat.label} stat filter. Current: {state ?? 'off'}."
-              disabled={dimmed}
               on:click={() => toggle(stat.key)}
-              on:contextmenu|preventDefault={() => remove(stat.key)}
-              on:keydown={(e) => handleChipKeyDown(e, stat.key)}
+              on:contextmenu={() => remove(stat.key)}
+              on:keydown={(e) => handleChipKeyDown(e.detail, stat.key)}
             >
-              {#if state}
-                <span class="sf-sign">
-                  {state === 'include' ? '+' : '−'}
-                </span>
-              {/if}
               {stat.label}
-            </button>
+            </StatChip>
           {/each}
         </div>
       </div>
@@ -296,30 +273,6 @@
     opacity:.7;flex-shrink:0;min-width:50px;text-align:right;
   }
   .sf-chips { display:flex;flex-wrap:wrap;gap:3px;flex:1; }
-  .sf-chip {
-    display:inline-flex;align-items:center;gap:3px;font-size:.62rem;font-weight:600;
-    padding:2px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.08);
-    background:rgba(255,255,255,.03);color:#8a8d85;cursor:pointer;transition:all .12s;
-    font-family:inherit;line-height:1.5;user-select:none;
-  }
-  .sf-chip:hover {
-    border-color:color-mix(in srgb,var(--c,#fb923c) 50%,transparent);
-    color:var(--c,#fb923c);
-    background:color-mix(in srgb,var(--c,#fb923c) 10%,transparent);
-  }
-  .sf-chip--include {
-    background:rgba(74,222,128,.14);border-color:rgba(74,222,128,.45);
-    color:#4ade80;font-weight:700;box-shadow:0 0 6px rgba(74,222,128,.15);
-  }
-  .sf-chip--include:hover { background:rgba(74,222,128,.22);border-color:rgba(74,222,128,.7);color:#4ade80; }
-  .sf-chip--exclude {
-    background:rgba(248,113,113,.12);border-color:rgba(248,113,113,.4);
-    color:#f87171;font-weight:700;box-shadow:0 0 6px rgba(248,113,113,.12);
-  }
-  .sf-chip--exclude:hover { background:rgba(248,113,113,.22);border-color:rgba(248,113,113,.65);color:#f87171; }
-  .sf-chip--dimmed { opacity:.28; pointer-events:none; }
-  .sf-sign { font-size:.7rem;font-weight:900;line-height:1;margin-right:1px; }
-  
   .sf-tab-row { display: flex; gap: 4px; margin-bottom: 4px; }
   .sf-tab {
     flex: 1;

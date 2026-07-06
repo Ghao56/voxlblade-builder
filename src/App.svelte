@@ -1342,7 +1342,7 @@ $: _appWaAvgTotal = (() => {
           bind:modalSearch
           {showSuggestions}
           {modalSuggestions}
-          {selectedTags}
+          modalSelectedTags={selectedTags}
           on:focus={onSearchFocus}
           on:blur={onSearchBlur}
           on:select={(e) => applySuggestion(e.detail.label, e.detail.type)}
@@ -1402,7 +1402,7 @@ $: _appWaAvgTotal = (() => {
           bind:modalSearch
           {showSuggestions}
           {modalSuggestions}
-          {selectedTags}
+          modalSelectedTags={selectedTags}
           showSortButtons
           {weaponResult}
           bind:statFilterSortMode
@@ -1458,7 +1458,7 @@ $: _appWaAvgTotal = (() => {
           bind:modalSearch
           {showSuggestions}
           {modalSuggestions}
-          {selectedTags}
+          modalSelectedTags={selectedTags}
           showSortButtons
           {weaponResult}
           bind:statFilterSortMode
@@ -1510,13 +1510,12 @@ $: _appWaAvgTotal = (() => {
           bind:modalSearch
           {showSuggestions}
           {modalSuggestions}
-          {selectedTags}
+          modalSelectedTags={selectedTags}
           on:focus={onSearchFocus}
           on:blur={onSearchBlur}
           on:toggle={(e) => toggleTag(e.detail)}
           on:clear={clearTags}
           on:change={onStatFilterChange}
-          on:select={(e) => applySuggestion(e.detail.label, e.detail.type)}
         />
         <div class="modal-list modal-list--compact">
           <button class="modal-item modal-item--sm" class:modal-item--active={$build.ring === ''}
@@ -1556,7 +1555,7 @@ $: _appWaAvgTotal = (() => {
           bind:modalSearch
           {showSuggestions}
           {modalSuggestions}
-          {selectedTags}
+          modalSelectedTags={selectedTags}
           on:focus={onSearchFocus}
           on:blur={onSearchBlur}
           on:toggle={(e) => toggleTag(e.detail)}
@@ -1601,7 +1600,7 @@ $: _appWaAvgTotal = (() => {
           bind:modalSearch
           {showSuggestions}
           {modalSuggestions}
-          {selectedTags}
+          modalSelectedTags={selectedTags}
           on:focus={onSearchFocus}
           on:blur={onSearchBlur}
           on:select={(e) => applySuggestion(e.detail.label, e.detail.type)}
@@ -1648,7 +1647,7 @@ $: _appWaAvgTotal = (() => {
           bind:modalSearch
           {showSuggestions}
           {modalSuggestions}
-          {selectedTags}
+          modalSelectedTags={selectedTags}
           on:focus={onSearchFocus}
           on:blur={onSearchBlur}
           useWeaponStatFilter={true}
@@ -1703,7 +1702,7 @@ $: _appWaAvgTotal = (() => {
           bind:modalSearch
           {showSuggestions}
           {modalSuggestions}
-          {selectedTags}
+          modalSelectedTags={selectedTags}
           on:focus={onSearchFocus}
           on:blur={onSearchBlur}
           useWeaponStatFilter={true}
@@ -1753,24 +1752,21 @@ $: _appWaAvgTotal = (() => {
         </div>
 
       {:else if activeModal === 'glove'}
-        <h2 class="modal-title">Select Glove</h2>
-        <div class="search-wrap">
-          <input class="modal-search-input" type="text" bind:value={modalSearch} placeholder="Search name or perk..."
-            on:focus={onSearchFocus} on:blur={onSearchBlur} />
-          <SuggestDrop
-  show={showSuggestions}
-  suggestions={modalSuggestions}
-  suggestQuery={modalSearch}
-  on:select={(e) => applySuggestion(e.detail.label, e.detail.type)}
-/>
-        </div>
-        <TagFilter
-          {selectedTags}
-          hideTags={['Stance Change']}
+        <ModalSearchHeader
+          title="Select Glove"
+          bind:modalSearch
+          {showSuggestions}
+          {modalSuggestions}
+          modalSelectedTags={selectedTags}
+          useWeaponStatFilter={true}
+          weaponStatFilter={weaponStatFilter}
+          on:focus={onSearchFocus}
+          on:blur={onSearchBlur}
           on:toggle={(e) => toggleTag(e.detail)}
           on:clear={clearTags}
+          on:select={(e) => applySuggestion(e.detail.label, e.detail.type)}
+          on:weaponStatFilterChange={e => weaponStatFilter = e.detail}
         />
-        <WeaponStatFilter filterValue={weaponStatFilter} on:change={e => weaponStatFilter = e.detail} />
         <div class="modal-filters">
           <select bind:value={gloveFilterTier} class="modal-filter-sel">
             <option value="">All Tiers</option>
@@ -1811,7 +1807,7 @@ $: _appWaAvgTotal = (() => {
           bind:modalSearch
           {showSuggestions}
           {modalSuggestions}
-          {selectedTags}
+          modalSelectedTags={selectedTags}
           on:focus={onSearchFocus}
           on:blur={onSearchBlur}
           useWeaponStatFilter={true}
@@ -4240,38 +4236,6 @@ $: _appWaAvgTotal = (() => {
 :global(.dab-stat-v--dmg) { color:var(--accent2); font-size:.95rem; text-shadow:0 0 8px rgba(245,158,11,.35); }
 
 :global(.dab-notes) { font-size:.68rem; color:var(--draco-text); opacity:.65; font-style:italic; line-height:1.4; letter-spacing:.02em; }
-/* ── Search suggestions ── */
-.search-wrap { position: relative; margin-bottom: 12px; }
-.search-wrap .modal-search-input { margin-bottom: 0; }
-.modal-search-input {
-  width: 100%;
-  background: var(--surface3);
-  border: 1px solid rgba(167,139,250,.35);
-  border-radius: var(--radius-sm);
-  color: var(--ink);
-  font-family: var(--font-body);
-  font-size: .85rem;
-  padding: 9px 14px;
-  outline: none;
-  margin-bottom: 12px;
-  caret-color: var(--accent3);
-  transition: border-color .15s, box-shadow .15s;
-}
-.modal-search-input::placeholder { color: var(--ink-muted); opacity: .5; }
-.modal-search-input:focus {
-  border-color: rgba(167,139,250,.6);
-  box-shadow: 0 0 0 2px rgba(167,139,250,.12);
-}
-
-:global(.modal-hl) {
-  display: inline;
-  background: rgba(167,139,250,.3);
-  color: var(--accent3);
-  border-radius: 2px;
-  padding: 0 1px;
-  font-weight: 800;
-  font-style: normal;
-}
 
 .cdr-mult--increase { color: var(--neg); }
 .summary-title-row {

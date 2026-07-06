@@ -6,9 +6,9 @@
   import { WEAPON_ARTS } from './data/weaponArts'
   import { WEAPON_BASE_DMG } from './data/weapon base dmg'
   import { DMG_TYPE_COLORS, DMG_TYPE_PRIORITY, SCALING_TO_BOOST, PERCENT_STATS, type WeaponBaseDmg } from './lib/types'
-  import { BUFF_DEFS, getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, calcBuffEffect, getBuffDescription, convertTailwindToWhirlwind } from './data/BuffData'
+  import { BUFF_DEFS, getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, calcBuffEffect, getBuffDescription, convertTailwindToWhirlwind, getTrueBalanceBuffs } from './data/BuffData'
   import { DEBUFF_COMBAT_EFFECTS } from './data/debuffCombatEffects'
-  import { getDraconicHexDebuffs, getEffectiveDraconicInfusionPotency } from './data/draconicBuffs'  
+  import { getDraconicInfusionBuff, getDraconicHexDebuffs, getEffectiveDraconicInfusionPotency } from './data/draconicBuffs'  
   import { WA_SUMMON_MAP, SUMMON_MAP, calcSummonStat, calcMaxSummonCount } from './data/SummonData'
   import CritIcon from './CritIcon.svelte'
   import { PERK_DMG_DEFS, SECONDARY_TONE_COLORS, isHpGateActive } from './data/Perkbasedmg'
@@ -114,8 +114,20 @@
     .filter(e => e.healMult !== 1)
     .map(e => ({ sourceName: e.perkName, rawMultiplier: e.healMult, condition: e.condition, sourceType: 'perk' as HealSource }))
   $: _activeTypedHealEntries = _typedHealBoostEntries.filter(e => !disabledHealBoosts.has(e.sourceName))
-  $: _allHealEntriesForDisplay = [..._healScalingResult.entries, ..._typedHealBoostEntries]
-  $: _allHealEntries = [..._activeHealEntries, ..._activeTypedHealEntries]
+  $: _tbHealEntry = (() => {
+    const amt = perks['True Balance'] ?? 0
+    if (amt <= 0) return null
+    const hex = stats.hexBoost ?? 0
+    if (hex <= 0) return null
+    return {
+      sourceName: 'True Balance',
+      rawMultiplier: roundMultiplier(1 + hex * amt / 1500),
+      condition: `${hex}% Hex Boost (True Balance)`,
+      sourceType: 'perk' as HealSource,
+    }
+  })()
+  $: _allHealEntriesForDisplay = [..._healScalingResult.entries, ..._typedHealBoostEntries, ...(_tbHealEntry ? [_tbHealEntry] : [])]
+  $: _allHealEntries = [..._activeHealEntries, ..._activeTypedHealEntries, ...(_tbHealEntry && !disabledHealBoosts.has('True Balance') ? [_tbHealEntry] : [])]
   $: wardingPct = (stats.warding ?? 0) / 100
   $: wardingDebuffMult = Math.max(0, 1 - wardingPct)
   $: _healFinalMultiplier = (() => {
@@ -138,7 +150,6 @@
     : 0
 
   $: _antiHealSelfMult = (() => {
-    if (disableAntiHeal) return 1
     if (!_healScalingCtx.activeBuffs) return 1
     const antiHealBuffs = _healScalingCtx.activeBuffs.filter(b => b.buffName === 'Anti Heal' && b.isSelfDebuff && b.potency > 0)
     if (antiHealBuffs.length === 0) return 1
@@ -257,6 +268,23 @@
       const wa = WEAPON_ARTS.find(wa => wa.name === $build.selectedWeaponArt)
       if (wa?.cooldown) {
         baseBuffs[_exhaustIdx] = { ...baseBuffs[_exhaustIdx], duration: wa.cooldown / 2 }
+      }
+    }
+
+    const tbAmt = $result.perks['True Balance'] ?? 0
+    if (tbAmt > 0) {
+      const enemyDebuffs = baseBuffs.filter(b => {
+        if (b.isSelfDebuff) return false
+        const def = BUFF_DEFS[b.buffName]
+        return def?.isDebuff
+      })
+      if (enemyDebuffs.length > 0) {
+        const tbBuffs = applyBuffPerkModifiers(
+          getTrueBalanceBuffs(tbAmt, enemyDebuffs),
+          $result.perks,
+          $build.rune || undefined
+        )
+        baseBuffs.push(...tbBuffs)
       }
     }
 
@@ -444,9 +472,17 @@
   $: _royalFinisherScalingMult = _computePerkScalingMult({ magic: 1.0 })
   $: _royalFinisherCombatMult = _perkCombatMult
   $: _royalFinisherTotalDmg = _royalFinisherBaseDmg * _royalFinisherScalingMult * _royalFinisherCombatMult
+  $: _springblastAmt = perks['Springblast'] ?? 0
+  $: _springblastBaseDmgPerHit = _springblastAmt > 0
+    ? Math.round(((6 + 2 * _springblastAmt) * (1 + 0.1 * _springblastAmt)) / (0.5 + springblastFinisherHits / 2) * 1000) / 1000
+    : 0
+  $: _springblastScalingMult = _computePerkScalingMult({ physical: 1.0 })
+  $: _springblastCombatMult = _perkCombatMult
+  $: _springblastTotalDmg = _springblastBaseDmgPerHit * _springblastScalingMult * _springblastCombatMult * springblastFinisherHits
   $: _perkOnHitDamages = [
     { tag: 'Spore Burst', baseDmg: _sporeBurstBaseDmg, scalingMult: _sporeBurstScalingMult, combatMult: _sporeBurstCombatMult, totalDmg: _sporeBurstTotalDmg, dmgTypes: { hex: 1.0 } as Record<string, number> },
     { tag: 'Royal Finisher', baseDmg: _royalFinisherBaseDmg, scalingMult: _royalFinisherScalingMult, combatMult: _royalFinisherCombatMult, totalDmg: _royalFinisherTotalDmg, dmgTypes: { magic: 1.0 } as Record<string, number> },
+    { tag: 'Springblast', baseDmg: _springblastBaseDmgPerHit, scalingMult: _springblastScalingMult, combatMult: _springblastCombatMult, totalDmg: _springblastTotalDmg, dmgTypes: { physical: 1.0 } as Record<string, number> },
   ]
   $: _waveRiderAmt = perks['Wave Rider'] ?? 0
   $: _oceanSongAmt = perks['Ocean Song'] ?? 0
@@ -715,6 +751,7 @@
       const amt = perks[def.perkName] ?? 0
       if (amt <= 0) continue
       if (def.condition && !def.condition({ ragePotency: _ragePotency, draconicRuneInfusion: $build.draconicRuneInfusion, emotionalState: $build.emotionalState })) continue
+      if (def.perkName === 'Draconic Blood' && draconicInfusionDisabled) continue
       const type = def.getType ? def.getType({ draconicColor: $build.draconicColor }) : def.type
       if (!type) continue
       const amountPerStack = def.getAmountPerStack
@@ -864,8 +901,7 @@
   }
 
   let disabledHealBoosts = new Set<string>(['Extinguish'])
-  let disableAntiHeal = false
-  let disableWeakness = false
+  let draconicInfusionDisabled = false
   let disableCurseRip = false
   let disableReaper = false
   let disableLightningCloak = false
@@ -876,27 +912,37 @@
     disabledHealBoosts = new Set(disabledHealBoosts)
   }
   type BoostAttackType = 'm1' | 'm2' | 'perk' | 'rune' | 'wa';
-  $: _curseRipBoostEntry = (() => {
-    if (_curseRipPerkAmount <= 0 || _curseRipActiveDebuffCount <= 0) return null
-    return {
-      sourceName: 'Curse Rip',
-      rawMultiplier: _curseRipDamageBoost,
-      condition: `${_curseRipActiveDebuffCount} unique debuff${_curseRipActiveDebuffCount > 1 ? 's' : ''} · ${_curseRipPerkAmount} stack`,
-      type: 'dmg' as const,
+  $: _syntheticDmgBoostEntries = (() => {
+    const entries: Array<{ sourceName: string; rawMultiplier: number; condition: string; type: 'dmg' }> = []
+
+    const cr = _curseRipPerkAmount > 0 && _curseRipActiveDebuffCount > 0
+    if (cr) entries.push({ sourceName: 'Curse Rip', rawMultiplier: _curseRipDamageBoost, condition: `${_curseRipActiveDebuffCount} unique debuff${_curseRipActiveDebuffCount > 1 ? 's' : ''} · ${_curseRipPerkAmount} stack`, type: 'dmg' })
+
+    const rp = _reaperPerkAmount > 0 && _reaperActiveDebuffCount > 0
+    if (rp) entries.push({ sourceName: 'Reaper', rawMultiplier: _reaperDamageBoost, condition: `${_reaperActiveDebuffCount} unique debuff${_reaperActiveDebuffCount > 1 ? 's' : ''} · ${_reaperPerkAmount} stack`, type: 'dmg' })
+
+    const tbAmt = perks['True Balance'] ?? 0
+    if (tbAmt > 0) {
+      const holy = stats.holyBoost ?? 0
+      if (holy > 0) entries.push({ sourceName: 'True Balance', rawMultiplier: roundMultiplier(1 + holy * tbAmt / 800), condition: `${holy}% Holy Boost (True Balance)`, type: 'dmg' })
     }
-  })()
-  $: _reaperBoostEntry = (() => {
-    if (_reaperPerkAmount <= 0 || _reaperActiveDebuffCount <= 0) return null
-    return {
-      sourceName: 'Reaper',
-      rawMultiplier: _reaperDamageBoost,
-      condition: `${_reaperActiveDebuffCount} unique debuff${_reaperActiveDebuffCount > 1 ? 's' : ''} · ${_reaperPerkAmount} stack`,
-      type: 'dmg' as const,
+
+    const frenzyStacks = perks['Frenzy'] ?? 0
+    if (frenzyStacks > 0 && _ragePotency > 0) {
+      const pct = (0.05 + (1 / 6) * _ragePotency) * frenzyStacks
+      entries.push({ sourceName: 'Frenzy', rawMultiplier: roundMultiplier(1 + pct), condition: `Rage active · potency ${Math.round(_ragePotency * 1000) / 1000}`, type: 'dmg' })
     }
+
+    return entries
   })()
   $: _adjustedDmgEntries = boosts.dmgEntries
-  $: activeEntries = [..._adjustedDmgEntries.filter(e => !disabledBoosts.has(e.sourceName) && !(e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) && !(e.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive))), ...(_curseRipBoostEntry && !disableCurseRip ? [_curseRipBoostEntry] : []), ...(_reaperBoostEntry && !disableReaper ? [_reaperBoostEntry] : [])]
-  $: hasDisabledVisible = _adjustedDmgEntries.some(e => disabledBoosts.has(e.sourceName) || (e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0)) || (_curseRipBoostEntry && disableCurseRip) || (_reaperBoostEntry && disableReaper)
+  $: activeEntries = [..._adjustedDmgEntries.filter(e => !disabledBoosts.has(e.sourceName) && !(e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) && !(e.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)) && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance' && e.sourceName !== 'Frenzy'), ..._syntheticDmgBoostEntries.filter(e => {
+    if (e.sourceName === 'Curse Rip' && disableCurseRip) return false
+    if (e.sourceName === 'Reaper' && disableReaper) return false
+    if (disabledBoosts.has(e.sourceName)) return false
+    return true
+  })]
+  $: hasDisabledVisible = _adjustedDmgEntries.some(e => disabledBoosts.has(e.sourceName) || (e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0)) || (_curseRipPerkAmount > 0 && disableCurseRip) || (_reaperPerkAmount > 0 && disableReaper) || ((perks['True Balance'] ?? 0) > 0 && disabledBoosts.has('True Balance')) || ((perks['Frenzy'] ?? 0) > 0 && disabledBoosts.has('Frenzy'))
 
   $: _levelMult = (() => {
     const levelEntry = boosts.dmgEntries.find(e => e.sourceName === 'Level Damage')
@@ -904,7 +950,6 @@
   })()
   
   $: _selfDebuffDamageMult = (() => {
-    if (disableWeakness) return 1
     let mult = 1
     for (const b of _allActiveBuffs) {
       if (!b.isSelfDebuff) continue
@@ -940,7 +985,11 @@
 
   $: _hasSpecificBoosts = boosts.dmgEntries.some(e => !!(e as any).appliesTo)
 
-  $: _allUniversalChips = [..._visibleDmgEntries.filter(e => !(e as any).appliesTo), ...(_curseRipBoostEntry && !disableCurseRip ? [_curseRipBoostEntry] : []), ...(_reaperBoostEntry && !disableReaper ? [_reaperBoostEntry] : [])]
+  $: _allUniversalChips = [..._visibleDmgEntries.filter(e => !(e as any).appliesTo), ..._syntheticDmgBoostEntries.filter(e => {
+    if (e.sourceName === 'Curse Rip' && disableCurseRip) return false
+    if (e.sourceName === 'Reaper' && disableReaper) return false
+    return true
+  })]
 
   $: _universalActiveMult = Math.round(
     _allUniversalChips
@@ -1469,7 +1518,7 @@
     }
   }
   $: _visibleDmgEntries = _adjustedDmgEntries.filter(e =>
-    e.sourceName !== 'Rider' || mountActive
+    (e.sourceName !== 'Rider' || mountActive) && e.sourceName !== 'Frenzy' && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance'
   )
 
   // ── Perk Base Damage ───────────────────────────────────────────────────────
@@ -1644,8 +1693,14 @@
     }
     return out
   })()
-  $: _draconicBloodEntry = _activePerkDmgEntries.find(e => e.perkName === 'Draconic Blood') ?? null
+  $: _draconicBloodEntry = _activePerkDmgEntries.find(e => e.perkName === 'Draconic Blood' && !draconicInfusionDisabled) ?? null
   $: _nonDraconicPerkEntries = _activePerkDmgEntries.filter(e => e.perkName !== 'Draconic Blood')
+  $: _draconicInfusionDisplay = (() => {
+    const raw = getDraconicInfusionBuff($build.guild, $build.draconicRuneInfusion, $build.draconicColor, $result.perks['Draconic Blood'] ?? 0)
+    if (raw.length === 0) return null
+    const [modified] = applyBuffPerkModifiers(raw, $result.perks, $build.rune || undefined)
+    return modified
+  })()
   interface BDCHit {
     group: string
     index: number
@@ -2155,7 +2210,7 @@
   <div class="da-section-title">⚔ Combat Multipliers</div>
     {#if !_hasSpecificBoosts}
       <div class="da-boost-row">
-        {#each [..._visibleDmgEntries, ...(_curseRipBoostEntry ? [_curseRipBoostEntry] : []), ...(_reaperBoostEntry ? [_reaperBoostEntry] : [])] as entry}
+        {#each [..._visibleDmgEntries, ..._syntheticDmgBoostEntries] as entry}
           {@const _venomEaterDisabled = entry.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)}
           {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (entry.sourceName === 'Curse Rip' && disableCurseRip) || (entry.sourceName === 'Reaper' && disableReaper) || _venomEaterDisabled}
           {@const effectiveMultiplier = disabled ? 1 : entry.rawMultiplier}
@@ -2254,28 +2309,12 @@
         </div>
       </div>
     {/if}
-    {#if _allActiveBuffs.some(b => b.buffName === 'Weakness' && b.isSelfDebuff)}
-      {@const weaknessPotency = Math.max(..._allActiveBuffs.filter(b => b.buffName === 'Weakness' && b.isSelfDebuff).map(b => b.potency))}
-      {@const weaknessEffectivePotency = wardingDebuffMult !== 1
-        ? Math.round(weaknessPotency * wardingDebuffMult * 1000) / 1000
-        : weaknessPotency}
-      {@const weaknessMultiplier = 1 / (1 + weaknessEffectivePotency)}
-      <div class="da-boost-row" style="margin-top:4px">
-        <button
-          class="da-debuff-pill"
-          class:da-debuff-pill--off={disableWeakness}
-          style="--dc: #8b11e9"
-            title="Weakness (Self) · {weaknessEffectivePotency.toFixed(2)}"
-            on:click={() => disableWeakness = !disableWeakness}
-          >
-            <span class="da-dp-abbr">Weak</span>
-            <span class="da-dp-val">{disableWeakness ? '—' : weaknessMultiplier.toFixed(4).replace(/\.?0+$/, '')}</span>
-            <span class="da-dp-toggle">{disableWeakness ? 'OFF' : 'ON'}</span>
-          </button>
-        </div>
-      {/if}
-      {#if _ragePotency > 0 || _glyphConduitEntry || _vampireStacks > 0 || _photosynthesisStacks > 0 || (perks['Extinguish'] ?? 0) > 0 || _lightningCloakActive || _stormRendAmt > 0 || _allActiveBuffsRaw.some(b => !HANDLED_BUFF_NAMES.has(b.buffName))}
+
+      {#if _ragePotency > 0 || _glyphConduitEntry || _vampireStacks > 0 || _photosynthesisStacks > 0 || (perks['Extinguish'] ?? 0) > 0 || _lightningCloakActive || _stormRendAmt > 0 || _draconicInfusionDisplay || _allActiveBuffsRaw.some(b => !HANDLED_BUFF_NAMES.has(b.buffName))}
         <div class="da-buff-list" style="margin-top: 8px;">
+          {#if _ragePotency > 0 || _glyphConduitEntry || (perks['Extinguish'] ?? 0) > 0 || _lightningCloakActive || _stormRendAmt > 0 || _allActiveBuffsRaw.some(b => !HANDLED_BUFF_NAMES.has(b.buffName) && !BUFF_DEFS[b.buffName]?.isDebuff && !BUFF_DEFS[b.buffName]?.isNeutral)}
+            <span class="da-buff-divider da-buff-divider--buff">Buffs</span>
+          {/if}
           {#if _ragePotency > 0}
             <span class="da-buff">
               <button
@@ -2355,7 +2394,21 @@
               </button>
             </span>
           {/if}
-          {#each _allActiveBuffsRaw.filter(b => !HANDLED_BUFF_NAMES.has(b.buffName) && !BUFF_DEFS[b.buffName]?.isDebuff) as buff, i (buff.buffName + buff.sourceName + i)}
+          {#if _draconicInfusionDisplay}
+            {@const def = BUFF_DEFS['Draconic Infusion']}
+            <span class="da-buff">
+              <button class="da-boost-chip" class:da-boost-chip--off={draconicInfusionDisabled}
+                style="background:color-mix(in srgb,{def.color} 10%,transparent);border-color:color-mix(in srgb,{def.color} 35%,transparent)"
+                on:click={() => draconicInfusionDisabled = !draconicInfusionDisabled}>
+                <span class="da-bc-name">Draconic Infusion</span>
+                <span class="da-bc-val" style="color:{def.color}">{draconicInfusionDisabled ? '—' : _draconicInfusionDisplay.potency}</span>
+                <span class="da-bc-cond">{getBuffDescription('Draconic Infusion', $result.perks, _draconicInfusionDisplay.potency)}</span>
+                <span class="da-bc-toggle" style={draconicInfusionDisabled ? '' : `background:color-mix(in srgb,${def.color} 25%,transparent);color:${def.color}`}>{draconicInfusionDisabled ? 'OFF' : 'ON'}</span>
+                <span class="da-buff-sources">{_draconicInfusionDisplay.sourceName}</span>
+              </button>
+            </span>
+          {/if}
+          {#each _allActiveBuffsRaw.filter(b => !HANDLED_BUFF_NAMES.has(b.buffName) && !BUFF_DEFS[b.buffName]?.isDebuff && !BUFF_DEFS[b.buffName]?.isNeutral) as buff, i (buff.buffName + buff.sourceName + i)}
             {@const def = BUFF_DEFS[buff.buffName]}
             {@const key = `${buff.buffName}:${buff.sourceName}`}
             {@const isOff = disabledBuffKeys.has(key)}
@@ -2373,6 +2426,48 @@
               </span>
             {/if}
           {/each}
+          {#if _allActiveBuffsRaw.some(b => !HANDLED_BUFF_NAMES.has(b.buffName) && BUFF_DEFS[b.buffName]?.isDebuff && b.isSelfDebuff)}
+            <span class="da-buff-divider da-buff-divider--debuff">Self Debuffs</span>
+            {#each _allActiveBuffsRaw.filter(b => !HANDLED_BUFF_NAMES.has(b.buffName) && BUFF_DEFS[b.buffName]?.isDebuff && b.isSelfDebuff) as buff, i (buff.buffName + buff.sourceName + i)}
+              {@const def = BUFF_DEFS[buff.buffName]}
+              {@const key = `${buff.buffName}:${buff.sourceName}`}
+              {@const isOff = disabledBuffKeys.has(key)}
+              {#if def}
+                <span class="da-buff">
+                  <button class="da-boost-chip da-boost-chip--debuff" class:da-boost-chip--off={isOff}
+                    style="background:color-mix(in srgb,{def.color} 10%,transparent);border-color:color-mix(in srgb,{def.color} 35%,transparent)"
+                    on:click={() => toggleBuffKey(key)}>
+                    <span class="da-bc-name">{def.name}</span>
+                    <span class="da-bc-val" style="color:{def.color}">{isOff ? '—' : buff.potency}</span>
+                    <span class="da-bc-cond">{getBuffDescription(buff.buffName, $result.perks, buff.potency)}</span>
+                    <span class="da-bc-toggle" style={isOff ? '' : `background:color-mix(in srgb,${def.color} 25%,transparent);color:${def.color}`}>{isOff ? 'OFF' : 'ON'}</span>
+                    <span class="da-buff-sources">{buff.sourceName}</span>
+                  </button>
+                </span>
+              {/if}
+            {/each}
+          {/if}
+          {#if _allActiveBuffsRaw.some(b => !HANDLED_BUFF_NAMES.has(b.buffName) && BUFF_DEFS[b.buffName]?.isNeutral)}
+            <span class="da-buff-divider da-buff-divider--neutral">Neutral</span>
+            {#each _allActiveBuffsRaw.filter(b => !HANDLED_BUFF_NAMES.has(b.buffName) && BUFF_DEFS[b.buffName]?.isNeutral) as buff, i (buff.buffName + buff.sourceName + i)}
+              {@const def = BUFF_DEFS[buff.buffName]}
+              {@const key = `${buff.buffName}:${buff.sourceName}`}
+              {@const isOff = disabledBuffKeys.has(key)}
+              {#if def}
+                <span class="da-buff">
+                  <button class="da-boost-chip da-boost-chip--neutral" class:da-boost-chip--off={isOff}
+                    style="background:color-mix(in srgb,{def.color} 10%,transparent);border-color:color-mix(in srgb,{def.color} 35%,transparent)"
+                    on:click={() => toggleBuffKey(key)}>
+                    <span class="da-bc-name">{def.name}</span>
+                    <span class="da-bc-val" style="color:{def.color}">{isOff ? '—' : buff.potency}</span>
+                    <span class="da-bc-cond">{getBuffDescription(buff.buffName, $result.perks, buff.potency)}</span>
+                    <span class="da-bc-toggle" style={isOff ? '' : `background:color-mix(in srgb,${def.color} 25%,transparent);color:${def.color}`}>{isOff ? 'OFF' : 'ON'}</span>
+                    <span class="da-buff-sources">{buff.sourceName}</span>
+                  </button>
+                </span>
+              {/if}
+            {/each}
+          {/if}
         </div>
         {#if _orkBuffTenacity > 0}
           <div class="da-ork-tenacity" style="margin-top: 6px; font-size: .7rem; color: var(--ink-muted); display: flex; gap: 4px; align-items: center;">
@@ -2433,25 +2528,7 @@
       {/each}
       <span class="da-chain-result" style="color:#4ade80">= ×{+_healFinalMultiplier.toFixed(4)}</span>
     </div>
-    {#if _healScalingCtx.activeBuffs?.some(b => b.buffName === 'Anti Heal' && b.isSelfDebuff)}
-      {@const antiHealPotency = Math.max(..._healScalingCtx.activeBuffs.filter(b => b.buffName === 'Anti Heal' && b.isSelfDebuff).map(b => b.potency))}
-      {@const antiHealEffectivePotency = wardingDebuffMult !== 1
-        ? Math.round(antiHealPotency * wardingDebuffMult * 1000) / 1000
-        : antiHealPotency}
-      {@const antiHealMultiplier = 1 / (1 + antiHealEffectivePotency)}
-      <div class="da-boost-row" style="margin-top:4px">
-        <button
-          class="da-boost-chip da-boost-chip--heal"
-          class:da-boost-chip--off={disableAntiHeal}
-          on:click={() => disableAntiHeal = !disableAntiHeal}
-        >
-          <span class="da-bc-name">Anti Heal (Self)</span>
-          <span class="da-bc-val" style="color:#34ff00">x{antiHealMultiplier.toFixed(4).replace(/\.?0+$/, '')}</span>
-          <span class="da-bc-cond">Reduce healing</span>
-          <span class="da-bc-toggle">{disableAntiHeal ? 'OFF' : 'ON'}</span>
-        </button>
-      </div>
-    {/if}
+
   {/if}
 </div>
 
@@ -4076,51 +4153,7 @@
   color: #f87171;
 }
 
-.da-debuff-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  background: color-mix(in srgb, var(--dc, #8b11e9) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--dc, #8b11e9) 25%, transparent);
-  border-radius: 6px;
-  font-size: .72rem;
-  font-weight: 700;
-  cursor: pointer;
-}
-.da-dp-abbr {
-  color: var(--dc, #8b11e9);
-  font-size: .65rem;
-  letter-spacing: .05em;
-  text-transform: uppercase;
-}
-.da-dp-val {
-  color: var(--dc, #8b11e9);
-  font-family: 'Courier New', monospace;
-  font-size: .8rem;
-}
-.da-debuff-pill--off {
-  opacity: 0.4;
-  filter: grayscale(0.7);
-  border-style: dashed;
-}
-.da-debuff-pill--off .da-dp-val {
-  color: var(--ink-muted, #8a8d85);
-}
-.da-dp-toggle {
-  font-size: .48rem;
-  font-weight: 800;
-  letter-spacing: .1em;
-  padding: 1px 4px;
-  border-radius: 3px;
-  margin-left: 4px;
-  background: rgba(139,17,233,.15);
-  color: #8b11e9;
-}
-.da-debuff-pill--off .da-dp-toggle {
-  background: rgba(248,113,113,.12);
-  color: #f87171;
-}
+
 
 .da-chain-result--dimmed {
   color: #fb923c;
@@ -5740,5 +5773,32 @@
 }
 .da-buff {
   display: inline-flex;
+}
+.da-buff-divider {
+  width: 100%;
+  font-size: .6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  padding: 3px 0 2px;
+  margin: 6px 0 2px;
+}
+.da-buff-divider--buff {
+  color: #4ade80;
+  border-top: 1px solid rgba(74,222,128,.25);
+}
+.da-buff-divider--debuff {
+  color: #f87171;
+  border-top: 1px solid rgba(248,113,113,.25);
+}
+.da-buff-divider--neutral {
+  color: #818cf8;
+  border-top: 1px solid rgba(129,140,248,.25);
+}
+.da-boost-chip--debuff {
+  border-style: dashed;
+}
+.da-boost-chip--neutral {
+  border-style: dotted;
 }
 </style>

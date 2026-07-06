@@ -1,4 +1,4 @@
-const round4 = (v: number) => Math.round((v + Number.EPSILON) * 10000) / 10000
+import { round4 } from './engine/_utils'
 
 export function resolveDamageTypes(
   baseTypes: Record<string, number>,

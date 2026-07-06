@@ -4,6 +4,7 @@ export const BADGE_CONFIG: Record<string, { color: string; label: string; title:
   'Chain':   { color: '#AAFFDB', label: 'Chain', title: 'Lightning Cloak: 1/3 of hit damage as Air+Magic chain lightning (up to 4 targets)' },
   'Luminescent': { color: '#fbbf24', label: '✦ Luminescent', title: 'Luminescent Fervor: 5% × perk amount of this hit\'s damage' },
   'Explosive': { color: '#f97316', label: '✦ Explosive', title: 'Explosive Charge: 100% of WA pre-boost damage as Physical+Fire explosion' },
+  'Springblast': { color: '#f438d7', label: '✦ Springblast', title: 'Springblast: explosion on finisher while Bounce active · Per finisher hit' },
   'Royal Finisher': { color: '#60a5fa', label: '✦ Royal Finisher', title: 'Royal Finisher: damaging wave of Magic on finisher · Once per finisher' },
   'Curse Rip': { color: '#e879f9', label: '✦ Curse Rip', title: 'Curse Rip: 1/60 of damage dealt as lifesteal (requires debuffed opponent)' },
   'Venom Eater': { color: '#4ade80', label: '✦ Venom Eater', title: 'Venom Eater: heal 0.1 HP per stack on crit vs poisoned target' },

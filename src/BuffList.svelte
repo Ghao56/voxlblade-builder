@@ -15,6 +15,7 @@
   } from './data/BuffData'
   import { getDraconicInfusionBuff, getDraconicHexDebuffs } from './data/draconicBuffs'
   import { WEAPON_ARTS } from './data/weaponArts'
+  import { UI_COLORS, SOURCE_LABELS } from './lib/uiConstants'
 
 
   $: wardingPct = ($result.stats.warding ?? 0) / 100
@@ -85,10 +86,14 @@
 
   $: activeDebuffs = baseActiveBuffs.filter(b => BUFF_DEFS[b.buffName]?.isDebuff)
 
-  $: trueBalanceBuffs = getTrueBalanceBuffs(
-    $result.perks['True Balance'] ?? 0,
-    activeDebuffs
-  )
+  $: trueBalanceBuffs = (() => {
+    const buffs = getTrueBalanceBuffs(
+      $result.perks['True Balance'] ?? 0,
+      activeDebuffs
+    )
+    if (buffs.length === 0) return buffs
+    return applyBuffPerkModifiers(buffs, $result.perks, $build.rune || undefined)
+  })()
   
   $: rawDraconicInfusionBuff = getDraconicInfusionBuff(
     $build.guild, $build.draconicRuneInfusion, $build.draconicColor, $result.perks['Draconic Blood'] ?? 0
@@ -212,19 +217,19 @@ $: groupedBuffs = (() => {
   let activeTab: 'buffs' | 'debuffs' | 'neutral' = 'buffs'
 
   const SRC_COLOR: Record<string, string> = {
-    rune:   '#a78bfa',
-    perk:   '#fbbf24',
-    weaponArt: '#38bdf8',
-    race:      '#34d399',
-    cantrip: '#38ff49',
+    rune:   UI_COLORS.rune,
+    perk:   UI_COLORS.perk,
+    weaponArt: UI_COLORS.weaponArt,
+    race:      UI_COLORS.race,
+    cantrip: UI_COLORS.cantrip,
   }
 
   const SRC_LABEL: Record<string, string> = {
-    rune:       'Rune',
-    perk:       'Perk',
-    weaponArt:  'W. Art',
-    race:       'Race',
-    cantrip: 'cantrip',
+    rune: SOURCE_LABELS.rune,
+    perk: SOURCE_LABELS.perk,
+    weaponArt: SOURCE_LABELS.weaponArt,
+    race: SOURCE_LABELS.race,
+    cantrip: SOURCE_LABELS.cantrip,
   }
   function fmtPotency(v: number): string {
     return String(Math.round(v * 10000) / 10000);

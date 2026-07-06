@@ -4,6 +4,19 @@
   import { resolveDamageTypes } from './lib/damageTypeResolve'
   import type { TypedDmgBoostEntry } from './data/TypedDmgBoost'
   import { BADGE_CONFIG, type ComputedType, type ComputedHit, type PerkOnHitDmg } from './lib/dmgTypes'
+  import {
+    DMG_TYPE_META,
+    DEF_TRACKED_TYPES,
+    DEF_INHERITANCE,
+    PHYSICAL_INHERITED_TYPES,
+    MAGIC_INHERITED_TYPES,
+    FALLBACK_DMG_COLOR,
+    STORAGE_KEY_DEFENSES as DEF_STORAGE_KEY,
+    ARMOR_PEN_BRANCH_THRESHOLD,
+    VENOM_EATER_HEAL_PER_STACK,
+    CURSE_RIP_DIVISOR,
+    BASE_CRIT_DMG_PCT,
+  } from './lib/constants'
 
   export let perkDmgTypeBonuses: Record<string, number> = {}
   export let boosts: any
@@ -95,32 +108,16 @@
   }
 
 
-  const DMG_TYPES = [
-    { id: 'physical', label: 'Physical', color: '#fb923c' },
-    { id: 'magic',    label: 'Magic',    color: '#818cf8' },
-    { id: 'fire',     label: 'Fire',     color: '#f97316' },
-    { id: 'water',    label: 'Water',    color: '#38bdf8' },
-    { id: 'earth',    label: 'Earth',    color: '#a3e635' },
-    { id: 'air',      label: 'Air',      color: '#AAFFDB' },
-    { id: 'hex',      label: 'Hex',      color: '#e879f9' },
-    { id: 'holy',     label: 'Holy',     color: '#facc15' },
-    { id: 'true',     label: 'True',     color: '#f87171' },
-    { id: 'summon',   label: 'Summon',   color: '#c084fc' },
-    { id: 'heal',     label: 'Heal',     color: '#4ade80' },
-  ]
-  const DMG_TYPE_MAP = new Map(DMG_TYPES.map(t => [t.id, t]))
-
-  const DEF_TYPE_IDS = ['physical','magic','fire','water','earth','air','hex','holy']
-  const DEF_STORAGE_KEY = 'voxlbuilder_defenses_v1'
+  const DMG_TYPE_MAP = new Map(Object.entries(DMG_TYPE_META).map(([id, meta]) => [id, meta]))
 
   function loadDefenses(): Record<string, number> {
     try {
       const raw = localStorage.getItem(DEF_STORAGE_KEY)
-      if (!raw) return Object.fromEntries(DEF_TYPE_IDS.map(t => [t, 0]))
+      if (!raw) return Object.fromEntries(DEF_TRACKED_TYPES.map(t => [t, 0]))
       const parsed = JSON.parse(raw)
-      return Object.fromEntries(DEF_TYPE_IDS.map(t => [t, parsed[t] ?? 0]))
+      return Object.fromEntries(DEF_TRACKED_TYPES.map(t => [t, parsed[t] ?? 0]))
     } catch {
-      return Object.fromEntries(DEF_TYPE_IDS.map(t => [t, 0]))
+      return Object.fromEntries(DEF_TRACKED_TYPES.map(t => [t, 0]))
     }
   }
 
@@ -162,12 +159,12 @@
       resetDefenses()
       return
     }
-    defenses = Object.fromEntries(DEF_TYPE_IDS.map(t => [t, p.values[t] ?? 0]))
+    defenses = Object.fromEntries(DEF_TRACKED_TYPES.map(t => [t, p.values[t] ?? 0]))
     activePreset = p.id
   }
 
   function resetDefenses() {
-    defenses = Object.fromEntries(DEF_TYPE_IDS.map(t => [t, 0]))
+    defenses = Object.fromEntries(DEF_TRACKED_TYPES.map(t => [t, 0]))
     activePreset = null
   }
 
@@ -224,7 +221,7 @@
 
   function calcArmorMult(defPct: number, pen: number): { mult: number; branch: 'low'|'high' } {
     const def = defPct / 100
-    if (def <= pen + 0.2) {
+    if (def <= pen + ARMOR_PEN_BRANCH_THRESHOLD) {
       const am = def - pen
       return { mult: am > 0 ? 1 / (1 + am) : 1 - am, branch: 'low' }
     } else {
@@ -251,14 +248,14 @@
   }
 
   $: critChance  = crit?.effectiveCritChance ?? 0
-  $: critDmgMult = crit?.critDamageMultiplier ?? 100
+  $: critDmgMult = crit?.critDamageMultiplier ?? BASE_CRIT_DMG_PCT
   $: _venomEaterActive = venomEaterStacks > 0 && showCritValues && resolvedDebuffs.some(d => d.name === 'Poison')
 
   function defPctForType(k: string): number {
     if (k === 'true' || k === 'summon') return 0
     let pct = effectiveDefenses[k] ?? 0
-    if (k === 'air' || k === 'earth') pct += effectiveDefenses['physical'] ?? 0
-    else if (k === 'fire' || k === 'water' || k === 'hex' || k === 'holy') pct += effectiveDefenses['magic'] ?? 0
+    const parentKey = DEF_INHERITANCE[k]
+    if (parentKey) pct += effectiveDefenses[parentKey] ?? 0
     return pct
   }
 
@@ -294,15 +291,7 @@
       const applicableBoosts = getApplicableBoosts(k, typeIsHeal, hit.group)
       const typedMultUsed = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
 
-      let enemyDefPct = 0
-      if (!typeIsHeal && k !== 'true' && k !== 'summon') {
-        enemyDefPct = effectiveDefenses[k] ?? 0
-        if (k === 'air' || k === 'earth') {
-          enemyDefPct += effectiveDefenses['physical'] ?? 0
-        } else if (k === 'fire' || k === 'water' || k === 'hex' || k === 'holy') {
-          enemyDefPct += effectiveDefenses['magic'] ?? 0
-        }
-      }
+      const enemyDefPct = typeIsHeal ? 0 : defPctForType(k)
 
       const weaponBoostMult = hit.weaponBoostMult ?? 1
       const defMult = typeIsHeal ? 1 : calcArmorMult(enemyDefPct, hitPenDecimal).mult
@@ -519,7 +508,7 @@ isHeal: false, tag: 'Chain', forceCrit: false,
     }
 
     if (!isHeal && _venomEaterActive) {
-      const veHeal = 0.1 * venomEaterStacks
+      const veHeal = VENOM_EATER_HEAL_PER_STACK * venomEaterStacks
       if (veHeal > 0) {
         types.push({
           key: 'heal', label: 'Heal', color: '#4ade80',
@@ -710,17 +699,18 @@ isHeal: false, tag: 'Chain', forceCrit: false,
       </div>
 
       <div class="bdc-def-grid">
-        {#each DMG_TYPES.filter(t => t.id !== 'true' && t.id !== 'summon' && t.id !== 'heal') as t}
-          <div class="bdc-def-row" style="--tc:{t.color}">
-            <span class="bdc-def-type">{t.label}</span>
+        {#each DEF_TRACKED_TYPES as id}
+          {@const meta = DMG_TYPE_META[id]}
+          <div class="bdc-def-row" style="--tc:{meta.color}">
+            <span class="bdc-def-type">{meta.label}</span>
             <input
               class="bdc-def-input"
               type="number"
               min="-200"
               max="1000"
               step="1"
-              value={defenses[t.id]}
-              on:input={e => { defenses[t.id] = parseFloat((e.target as HTMLInputElement).value) || 0; defenses = defenses; activePreset = null }}
+              value={defenses[id]}
+              on:input={e => { defenses[id] = parseFloat((e.target as HTMLInputElement).value) || 0; defenses = defenses; activePreset = null }}
             />
             <span class="bdc-def-pct">%</span>
           </div>

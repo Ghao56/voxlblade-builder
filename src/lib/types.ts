@@ -72,8 +72,6 @@ export type EnchantSlot = "helmet" | "chestplate" | "leggings" | "ring" | "rune"
 export const UPGRADE_MAX = 5
 const UPGRADE_MULTIPLIER = 1.1
 
-const round2 = (v: number) => Math.round((v + Number.EPSILON) * 100) / 100
-
 /** Áp dụng cấp độ nâng cấp: tối ưu vòng lặp tĩnh tránh sinh rác bộ nhớ */
 export function applyUpgrade(stats: StatMap, level: number): StatMap {
   if (level <= 0) return { ...stats }

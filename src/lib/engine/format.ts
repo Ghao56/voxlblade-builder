@@ -1,6 +1,5 @@
 import { PERCENT_STATS } from '../types'
-
-const round2 = (v: number) => Math.round((v + Number.EPSILON) * 100) / 100
+import { round2 } from './_utils'
 
 export function formatStat(key: string, value: number): string {
   const rounded   = round2(value)

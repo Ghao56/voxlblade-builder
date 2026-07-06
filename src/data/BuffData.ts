@@ -1133,8 +1133,14 @@ interface BuffPotencyModifier {
   durationMultiplierFormula?: (stacks: number) => number
 }
 
+function durationMultFromStack(base: number, perStack: number): (stacks: number) => number {
+  return (stacks: number) => base + perStack * stacks
+}
+
+const BOUNCE_DURATION_MULT = durationMultFromStack(1.3, 0.3)
+
 const BUFF_POTENCY_MODIFIERS: BuffPotencyModifier[] = [
-  { buffName: 'Bounce', potencyPerStack: 0, label: 'Bounce Momentum', durationMultiplierFormula: stacks => 1.3 + 0.3 * stacks },
+  { buffName: 'Bounce', potencyPerStack: 0, label: 'Bounce Momentum', durationMultiplierFormula: BOUNCE_DURATION_MULT },
 
   { buffName: 'Rage', potencyPerStack: 0.1, label: 'Gladiatorial Rage' },
   { buffName: 'Rage', potencyPerStack: 0.1, label: 'Mage Rage' },
@@ -1360,7 +1366,7 @@ export function convertTailwindToWhirlwind(
       ...b,
       buffName: 'Whirlwind',
       sourceName: 'Whirlwind',
-      duration: Math.round(b.duration * (1.3 + 0.3 * wwAmt)),
+      duration: Math.round(b.duration * BOUNCE_DURATION_MULT(wwAmt)),
     }
   })
   result.push({

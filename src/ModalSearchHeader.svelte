@@ -5,7 +5,7 @@
   export let modalSearch: string;
   export let showSuggestions: boolean;
   export let modalSuggestions: any[];
-  export let selectedTags: Set<string>;
+  export let modalSelectedTags: Set<string>;
   /** When true, renders WeaponStatFilter instead of StatFilter */
   export let useWeaponStatFilter: boolean = false;
   /** Required when useWeaponStatFilter is true */
@@ -71,7 +71,7 @@
 </div>
 
 <TagFilter
-  {selectedTags}
+  selectedTags={modalSelectedTags}
   hideTags={['Stance Change']}
   on:toggle={handleToggle}
   on:clear={handleClear}
@@ -107,9 +107,9 @@
 {/if}
 <style>
 /* ── Search suggestions ── */
-.search-wrap { position: relative; margin-bottom: 12px; }
-.search-wrap .modal-search-input { margin-bottom: 0; }
-.modal-search-input {
+:global(.search-wrap) { position: relative; margin-bottom: 12px; }
+:global(.search-wrap .modal-search-input) { margin-bottom: 0; }
+:global(.modal-search-input) {
   width: 100%;
   background: var(--surface3);
   border: 1px solid rgba(167,139,250,.35);
@@ -123,8 +123,8 @@
   caret-color: var(--accent3);
   transition: border-color .15s, box-shadow .15s;
 }
-.modal-search-input::placeholder { color: var(--ink-muted); opacity: .5; }
-.modal-search-input:focus {
+:global(.modal-search-input::placeholder) { color: var(--ink-muted); opacity: .5; }
+:global(.modal-search-input:focus) {
   border-color: rgba(167,139,250,.6);
   box-shadow: 0 0 0 2px rgba(167,139,250,.12);
 }

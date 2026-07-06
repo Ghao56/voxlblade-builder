@@ -1,7 +1,7 @@
 import type { StatKey, StatMap, ArmorPart, EnchantSlot, BuildState } from '../types'
 import { STAT_KEYS, applyUpgrade } from '../types'
 import { CDR_PERK_DATA } from '../../data/cdr'
-import { applyStatBoostPerks } from '../../data/statboost'
+import { applyStatBoostPerks, OFFENSIVE_BOOSTS } from '../../data/statboost'
 import { getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, convertTailwindToWhirlwind, BUFF_DEFS } from '../../data/BuffData'
 import { getActiveRaceEffect } from '../../data/raceEffects'
 import { BOOST_DEFS, type BoostContext } from '../../data/Boost'
@@ -284,6 +284,26 @@ function accumulateStandardWeapon(
   }
 }
 
+function processEnchantedSlot(
+  itemName: string,
+  getItem: (name: string) => any,
+  upgrade: number,
+  enchants: [string, string, string],
+  addStats: (s: StatMap | undefined | null) => void,
+  addPerkMap: (map: Record<string, number>) => void,
+): void {
+  if (!itemName) return
+  const item = getItem(itemName)
+  if (!item) return
+  const slotResult = applyEnchantmentsToSlot(
+    applyUpgrade(item.stats, upgrade),
+    item.perkName ? { [item.perkName]: item.perkAmount ?? 1 } : {},
+    enchants,
+  )
+  addStats(slotResult.stats)
+  addPerkMap(slotResult.perks)
+}
+
 function accumulateEquipment(state: BuildState): { stats: StatMap; perks: Record<string, number> } {
   const stats: StatMap                = {}
   const perks: Record<string, number> = {}
@@ -338,31 +358,8 @@ function accumulateEquipment(state: BuildState): { stats: StatMap; perks: Record
     addPerkMap(slotResult.perks)
   }
 
-  if (state.ring) {
-    const ring = getRing(state.ring)
-    if (ring) {
-      const slotResult = applyEnchantmentsToSlot(
-        applyUpgrade(ring.stats, state.upgradeRing ?? 0),
-        ring.perkName ? { [ring.perkName]: ring.perkAmount ?? 1 } : {},
-        state.enchantments.ring,
-      )
-      addStats(slotResult.stats)
-      addPerkMap(slotResult.perks)
-    }
-  }
-
-  if (state.rune) {
-    const rune = getRune(state.rune)
-    if (rune) {
-      const slotResult = applyEnchantmentsToSlot(
-        applyUpgrade(rune.stats, state.upgradeRune ?? 0),
-        rune.perkName ? { [rune.perkName]: rune.perkAmount ?? 1 } : {},
-        state.enchantments.rune,
-      )
-      addStats(slotResult.stats)
-      addPerkMap(slotResult.perks)
-    }
-  }
+  processEnchantedSlot(state.ring, getRing, state.upgradeRing ?? 0, state.enchantments.ring, addStats, addPerkMap)
+  processEnchantedSlot(state.rune, getRune, state.upgradeRune ?? 0, state.enchantments.rune, addStats, addPerkMap)
 
   if (isMonkGuild(state.guild)) {
     accumulateMonkWeapon(state, perks, addStats, addPerks)
@@ -409,6 +406,51 @@ function finalizePerks(rawPerks: Record<string, number>): Record<string, number>
   return finalPerks
 }
 
+function applyEmotionalAttackSpeed(boostedStats: StatMap, finalPerks: Record<string, number>, emotionalState?: string): void {
+  const emotionalAmt = finalPerks['Emotional'] ?? 0
+  if (emotionalAmt > 0 && emotionalState === 'debuffs') {
+    boostedStats.attackSpeed = (boostedStats.attackSpeed ?? 0) + 0.2 * emotionalAmt
+  }
+}
+
+function applyGladiatorialRage(boostedStats: StatMap, finalPerks: Record<string, number>): void {
+  if ((finalPerks['Gladiatorial Rage'] ?? 0) <= 0) return
+  let highestBoost = 0
+  for (let i = 0; i < OFFENSIVE_BOOSTS.length; i++) {
+    const bV = boostedStats[OFFENSIVE_BOOSTS[i]] ?? 0
+    if (bV > highestBoost) highestBoost = bV
+  }
+  const armorPen = highestBoost / 15
+  if (armorPen > 0) boostedStats['armorPenetration'] = (boostedStats['armorPenetration'] ?? 0) + armorPen
+}
+
+function computeBuffs(state: BuildState, finalPerks: Record<string, number>): { allBuffs: any[]; orkBuffTenacity: number } {
+  const _itemBuffs = getActiveBuildBuffs({
+    rune: state.rune, ring: state.ring, infusionRing: state.infusionRing,
+    helmet: state.helmet, chestplate: state.chestplate, leggings: state.leggings,
+    weaponBlade: state.weaponBlade, weaponHandle: state.weaponHandle,
+    monkGlove: state.monkGlove, race: state.race,
+  })
+  const allBuffs = convertTailwindToWhirlwind(applyBuffPerkModifiers(
+    [..._itemBuffs, ...getPerkBuffs(finalPerks), ...getWeaponArtBuffs(state.selectedWeaponArt)],
+    finalPerks,
+    state.rune || undefined,
+  ), finalPerks)
+
+  const orkBuffs = state.race === 'ORK' ? allBuffs.filter(b => {
+    const def = BUFF_DEFS[b.buffName]
+    return def && !def.isDebuff && !def.isNeutral
+  }) : []
+  const orkBuffTenacity = 0.1 * orkBuffs.length
+  return { allBuffs, orkBuffTenacity }
+}
+
+function maxBuffPotency(allBuffs: any[], buffName: string | string[]): number {
+  const names = Array.isArray(buffName) ? buffName : [buffName]
+  const vals  = allBuffs.filter(b => names.includes(b.buffName)).map(b => b.potency)
+  return vals.length > 0 ? Math.max(...vals) : 0
+}
+
 function deriveResults(
   rawStats:   StatMap,
   finalPerks: Record<string, number>,
@@ -432,51 +474,16 @@ function deriveResults(
   )
 
   const boostedStats = applyStatBoostPerks(finalStats, finalPerks)
-  const emotionalAmt = finalPerks['Emotional'] ?? 0
-  if (emotionalAmt > 0 && state.emotionalState === 'debuffs') {
-    boostedStats.attackSpeed = (boostedStats.attackSpeed ?? 0) + 0.2 * emotionalAmt
-  }
-  if ((finalPerks['Gladiatorial Rage'] ?? 0) > 0) {
-    const BOOST_KEYS: StatKey[] = ['dexterityBoost','physicalBoost','magicBoost','fireBoost','waterBoost','earthBoost','airBoost','hexBoost','holyBoost']
-    let highestBoost = 0
-    for (let i = 0; i < BOOST_KEYS.length; i++) {
-      const bV = boostedStats[BOOST_KEYS[i]] ?? 0
-      if (bV > highestBoost) highestBoost = bV
-    }
-    const armorPen = highestBoost / 15
-    if (armorPen > 0) boostedStats['armorPenetration'] = (boostedStats['armorPenetration'] ?? 0) + armorPen
-  }
+  applyEmotionalAttackSpeed(boostedStats, finalPerks, state.emotionalState)
+  applyGladiatorialRage(boostedStats, finalPerks)
 
   const crit = calcCrit(boostedStats, finalPerks)
 
-  const _itemBuffs = getActiveBuildBuffs({
-    rune: state.rune, ring: state.ring, infusionRing: state.infusionRing,
-    helmet: state.helmet, chestplate: state.chestplate, leggings: state.leggings,
-    weaponBlade: state.weaponBlade, weaponHandle: state.weaponHandle,
-    monkGlove: state.monkGlove, race: state.race,
-  })
-  const _allBuffs = convertTailwindToWhirlwind(applyBuffPerkModifiers(
-    [..._itemBuffs, ...getPerkBuffs(finalPerks), ...getWeaponArtBuffs(state.selectedWeaponArt)],
-    finalPerks,
-    state.rune || undefined,
-  ), finalPerks)
-
-  const _rageBuffs  = _allBuffs.filter(b => b.buffName === 'Rage')
-  const ragePotency = _rageBuffs.length > 0 ? Math.max(..._rageBuffs.map(b => b.potency)) : 0
-
-  const _bounceBuffs  = _allBuffs.filter(b => b.buffName === 'Bounce')
-  const bouncePotency = _bounceBuffs.length > 0 ? Math.max(..._bounceBuffs.map(b => b.potency)) : 0
-
-  const _quickdrawBuffs  = _allBuffs.filter(b => b.buffName === 'Quickdraw')
-  const quickdrawPotency = _quickdrawBuffs.length > 0 ? Math.max(..._quickdrawBuffs.map(b => b.potency)) : 0
-  const _tailwindBuffs   = _allBuffs.filter(b => b.buffName === 'Tailwind' || b.buffName === 'Whirlwind')
-  const tailwindPotency  = _tailwindBuffs.length > 0 ? Math.max(..._tailwindBuffs.map(b => b.potency)) : 0
-
-  const _orkBuffs = state.race === 'ORK' ? _allBuffs.filter(b => {
-    const def = BUFF_DEFS[b.buffName]
-    return def && !def.isDebuff && !def.isNeutral
-  }) : []
-  const orkBuffTenacity = 0.1 * _orkBuffs.length
+  const { allBuffs, orkBuffTenacity } = computeBuffs(state, finalPerks)
+  const ragePotency      = maxBuffPotency(allBuffs, 'Rage')
+  const bouncePotency    = maxBuffPotency(allBuffs, 'Bounce')
+  const quickdrawPotency = maxBuffPotency(allBuffs, 'Quickdraw')
+  const tailwindPotency  = maxBuffPotency(allBuffs, ['Tailwind', 'Whirlwind'])
 
   const isMountRune = state.rune.endsWith('Mount Rune')
   const boosts = calcBoosts(

@@ -2,6 +2,10 @@ import type { StatMap } from './types'
 
 const CRIT_DISABLED_PERKS = ['Seismic Momentum', 'Fractured Energy'] as const
 
+const BASE_CRIT_DAMAGE = 150
+const DEX_CRIT_DIVISOR = 10
+const PRIMAL_DIVISOR = 4
+
 interface CritSource {
   label: string
   calc: (stats: StatMap, perks: Record<string, number>) => number
@@ -11,7 +15,7 @@ interface CritSource {
 
 const calcDexterity = (stats: StatMap) => {
   const dex = stats.dexterityBoost ?? 0
-  return dex > 0 ? round(dex / 10) : 0
+  return dex > 0 ? round(dex / DEX_CRIT_DIVISOR) : 0
 }
 
 const calcElementalBoost = (
@@ -199,7 +203,7 @@ export function calcCrit(stats: StatMap, perks: Record<string, number>): CritRes
   const naturalCritChance = round(naturalBreakdown.reduce((a, b) => a + b.amount, 0))
   const primalStacks = perks['Primal'] ?? 0
 
-  const effectiveNaturalCrit = primalStacks > 0 ? round(naturalCritChance / 4) : naturalCritChance
+  const effectiveNaturalCrit = primalStacks > 0 ? round(naturalCritChance / PRIMAL_DIVISOR) : naturalCritChance
 
   const extraBreakdown: Array<{ source: string; amount: number }> = []
   for (const src of EXTRA_CRIT_SOURCES) {
@@ -219,7 +223,7 @@ export function calcCrit(stats: StatMap, perks: Record<string, number>): CritRes
   const critFormula = '1 - ' + chances.map(v => `(1 - ${(v * 100).toFixed(2)}%)`).join(' * ')
 
   const displayedNaturalBreakdown = primalStacks > 0
-    ? naturalBreakdown.map(s => ({ ...s, amount: round(s.amount / 4) }))
+    ? naturalBreakdown.map(s => ({ ...s, amount: round(s.amount / PRIMAL_DIVISOR) }))
     : naturalBreakdown
 
   const allCritBreakdown: Array<{ source: string; amount: number; isExtra: boolean }> = [
@@ -228,21 +232,21 @@ export function calcCrit(stats: StatMap, perks: Record<string, number>): CritRes
   ]
 
   const critDmgBreakdown: Array<{ source: string; amount: number; naturalEquivalent?: boolean }> = [
-    { source: 'Base', amount: 150 },
+    { source: 'Base', amount: BASE_CRIT_DAMAGE },
   ]
   for (const src of CRIT_DMG_SOURCES) {
     const amount = src.calc(stats, perks)
     if (amount !== 0) critDmgBreakdown.push({ source: src.label, amount, naturalEquivalent: src.naturalEquivalent })
   }
 
-  let critDamageMultiplier = 150
+  let critDamageMultiplier = BASE_CRIT_DAMAGE
   if (primalStacks > 0) {
     for (const src of critDmgBreakdown) {
       if (src.source === 'Base') continue
       if (src.amount < 0 || !src.naturalEquivalent) {
         critDamageMultiplier += src.amount 
       } else {
-        critDamageMultiplier += src.amount / 4 
+        critDamageMultiplier += src.amount / PRIMAL_DIVISOR
       }
     }
     critDamageMultiplier = round(critDamageMultiplier)
@@ -254,7 +258,7 @@ export function calcCrit(stats: StatMap, perks: Record<string, number>): CritRes
     ? critDmgBreakdown.map(s => 
         (s.source === 'Base' || s.amount < 0 || !s.naturalEquivalent) 
           ? { source: s.source, amount: s.amount }
-          : { source: s.source, amount: round(s.amount / 4) }
+          : { source: s.source, amount: round(s.amount / PRIMAL_DIVISOR) }
       )
     : critDmgBreakdown.map(s => ({ source: s.source, amount: s.amount }))
 

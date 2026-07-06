@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { CD_MINIMUM } from './lib/constants'
+
   interface CdrStep {
     multiplier: number;
     isMultiply?: boolean;
@@ -49,7 +51,7 @@
 
     {#if isLast}
       {@const floored = Math.floor(nextCD)}
-      {@const capped = Math.max(1, floored)}
+      {@const capped = Math.max(CD_MINIMUM, floored)}
       <div class="cdr-calc-row cdr-calc-row--floor">
         <span class="cdr-floor-label">floor</span>
         <span class="cdr-arrow">→</span>

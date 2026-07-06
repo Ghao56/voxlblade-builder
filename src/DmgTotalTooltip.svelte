@@ -2,10 +2,9 @@
   import { onMount, tick } from 'svelte'
   import { BADGE_CONFIG, type ComputedHit } from './lib/dmgTypes'
 
-  let { hit, useCrit = false, groupTotal = 0 }: {
+  let { hit, useCrit = false }: {
     hit: ComputedHit
     useCrit?: boolean
-    groupTotal?: number
   } = $props()
 
   let groups = $derived(buildGroups(hit, useCrit))

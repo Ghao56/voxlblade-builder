@@ -6,6 +6,15 @@ import { round2, round4 } from './_utils'
 
 export const MONK_RANK_MULTIPLIER = 0.25
 
+const SCALE_KEYS = [
+  "dexterityScaling","physicalScaling","magicScaling","fireScaling","waterScaling",
+  "earthScaling","airScaling","hexScaling","holyScaling","summonScaling",
+] as const
+
+const DMG_TYPE_KEYS = [
+  "trueType","physicalType","magicType","fireType","waterType","earthType","airType","hexType","holyType","summonType",
+] as const
+
 // ─── Hybrid check ─────────────────────────────────────────────────────────────
 
 function checkHybrid(
@@ -13,25 +22,21 @@ function checkHybrid(
   part2: { [key: string]: any } | undefined,
 ): boolean {
   if (!part1 || !part2) return false
-  const scaleKeys = [
-    "dexterityScaling","physicalScaling","magicScaling","fireScaling","waterScaling",
-    "earthScaling","airScaling","hexScaling","holyScaling","summonScaling",
-  ]
   const s1 = part1.stats ?? part1
   const s2 = part2.stats ?? part2
 
   let p1Has = false, p2Has = false
   const scalings1 = new Set<string>()
 
-  for (let i = 0; i < scaleKeys.length; i++) {
-    const k = scaleKeys[i]
+  for (let i = 0; i < SCALE_KEYS.length; i++) {
+    const k = SCALE_KEYS[i]
     if (s1[k] != null && s1[k] !== 0) { scalings1.add(k); p1Has = true }
     if (s2[k] != null && s2[k] !== 0) p2Has = true
   }
   if (!p1Has || !p2Has) return false
 
-  for (let i = 0; i < scaleKeys.length; i++) {
-    const k = scaleKeys[i]
+  for (let i = 0; i < SCALE_KEYS.length; i++) {
+    const k = SCALE_KEYS[i]
     if (s2[k] != null && s2[k] !== 0 && scalings1.has(k)) return false
   }
   return true
@@ -164,9 +169,6 @@ export interface WeaponResult {
 // ─── Extraction helpers ───────────────────────────────────────────────────────
 
 function extractDamageAndScalings(part: any) {
-  const dtKeys    = ["trueType","physicalType","magicType","fireType","waterType","earthType","airType","hexType","holyType","summonType"]
-  const scaleKeys = ["dexterityScaling","physicalScaling","magicScaling","fireScaling","waterScaling","earthScaling","airScaling","hexScaling","holyScaling","summonScaling"]
-
   const damageTypes: Record<string, number> = {}
   const rawScalings: Record<string, number> = {}
   const rawStats:    StatMap                = {}
@@ -174,12 +176,12 @@ function extractDamageAndScalings(part: any) {
   if (!part) return { damageTypes, rawScalings, rawStats }
   const src = part.stats ?? part
 
-  for (let i = 0; i < dtKeys.length; i++) {
-    const key = dtKeys[i]
+  for (let i = 0; i < DMG_TYPE_KEYS.length; i++) {
+    const key = DMG_TYPE_KEYS[i]
     if (src[key]) damageTypes[key.replace("Type", "")] = src[key]
   }
-  for (let i = 0; i < scaleKeys.length; i++) {
-    const key = scaleKeys[i]
+  for (let i = 0; i < SCALE_KEYS.length; i++) {
+    const key = SCALE_KEYS[i]
     if (src[key]) rawScalings[key.replace("Scaling", "")] = src[key]
   }
   for (let i = 0; i < STAT_KEYS.length; i++) {
@@ -219,6 +221,18 @@ function mergePartPerks(
   return { perks, attackSpeed }
 }
 
+function applyShrineToPart<T extends Record<string, number>>(data: T, part: any, shrineActive: boolean, fn: (d: T, t: number) => T): T {
+  return shrineActive && part ? fn(data, part.tier) : { ...data }
+}
+
+function mergeRecords<T extends Record<string, number>>(a: T, b: T): T {
+  const result = { ...a }
+  for (const k in b) {
+    if (Object.prototype.hasOwnProperty.call(b, k)) (result as any)[k] = ((result as any)[k] ?? 0) + b[k]
+  }
+  return result
+}
+
 function mergeScalingsAndStats(
   p1Data:       ReturnType<typeof extractDamageAndScalings>,
   p2Data:       ReturnType<typeof extractDamageAndScalings>,
@@ -235,20 +249,14 @@ function mergeScalingsAndStats(
   part1FinalStats:    StatMap
   part2FinalStats:    StatMap
 } {
-  const part1FinalScalings = shrineActive && part1 ? applyShrineToScalings(p1Data.rawScalings, part1.tier) : { ...p1Data.rawScalings }
-  const part2FinalScalings = shrineActive && part2 ? applyShrineToScalings(p2Data.rawScalings, part2.tier) : { ...p2Data.rawScalings }
-  const part1FinalStats    = shrineActive && part1 ? applyShrineToStats(part1.stats as StatMap, part1.tier) : { ...p1Data.rawStats }
-  const part2FinalStats    = shrineActive && part2 ? applyShrineToStats(part2.stats as StatMap, part2.tier) : { ...p2Data.rawStats }
+  const part1FinalScalings = applyShrineToPart(p1Data.rawScalings, part1, shrineActive, applyShrineToScalings)
+  const part2FinalScalings = applyShrineToPart(p2Data.rawScalings, part2, shrineActive, applyShrineToScalings)
+  const part1FinalStats    = applyShrineToPart(p1Data.rawStats, part1, shrineActive, applyShrineToStats as any)
+  const part2FinalStats    = applyShrineToPart(p2Data.rawStats, part2, shrineActive, applyShrineToStats as any)
 
   const hybridActive = checkHybrid(part1 ?? undefined, part2 ?? undefined)
 
-  const baseScalings: Record<string, number> = {}
-  for (const k in part1FinalScalings) {
-    if (Object.prototype.hasOwnProperty.call(part1FinalScalings, k)) baseScalings[k] = (baseScalings[k] ?? 0) + part1FinalScalings[k]
-  }
-  for (const k in part2FinalScalings) {
-    if (Object.prototype.hasOwnProperty.call(part2FinalScalings, k)) baseScalings[k] = (baseScalings[k] ?? 0) + part2FinalScalings[k]
-  }
+  const baseScalings = mergeRecords(part1FinalScalings, part2FinalScalings)
 
   const scalings: Record<string, number> = { ...baseScalings }
   if (hybridActive) {
@@ -257,15 +265,7 @@ function mergeScalingsAndStats(
     }
   }
 
-  const combinedStats: StatMap = {}
-  const mergeInto = (s: StatMap) => {
-    for (let i = 0; i < STAT_KEYS.length; i++) {
-      const k = STAT_KEYS[i]
-      if (s[k] != null) combinedStats[k] = (combinedStats[k] ?? 0) + (s[k] ?? 0)
-    }
-  }
-  mergeInto(part1FinalStats)
-  mergeInto(part2FinalStats)
+  const combinedStats = mergeRecords(part1FinalStats, part2FinalStats)
 
   const stats: StatMap = {}
   for (let i = 0; i < STAT_KEYS.length; i++) {

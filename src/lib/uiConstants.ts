@@ -38,7 +38,7 @@ export const UI_COLORS = {
   supportNegative: '#86efac',
 } as const
 
-const SOURCE_LABELS = {
+export const SOURCE_LABELS = {
   rune: 'Rune',
   perk: 'Perk',
   weaponArt: 'W. Art',

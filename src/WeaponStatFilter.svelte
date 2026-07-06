@@ -3,6 +3,7 @@
   import { ELEMENTAL_BOOST_STATS } from './lib/stats/elementalBoosts'
   import { createFilterActions } from './lib/stats/filterActions'
   import { UI_COLORS } from './lib/uiConstants'
+  import StatChip, { buildStatMaps } from './lib/StatFilterShared.svelte'
 
   const dispatch = createEventDispatcher<{ change: Map<string, 'include' | 'exclude'> }>()
   export let filterValue: Map<string, 'include' | 'exclude'> = new Map()
@@ -61,28 +62,11 @@
   const GROUPS = [DMG_TYPE_GROUP, SCALING_GROUP, BOOST_GROUP]
 
   // TỐI ƯU HÓA: Bản đồ tra cứu nhanh để tránh lặp lồng nhau O(N^2) trong HTML UI
-  const STAT_LABEL_MAP = new Map<string, string>()
-  const STAT_COLOR_MAP = new Map<string, string>()
+  const { labelMap: STAT_LABEL_MAP, colorMap: STAT_COLOR_MAP } = buildStatMaps([DMG_TYPE_GROUP, SCALING_GROUP, BOOST_GROUP])
   const STAT_TAG_MAP = new Map<string, string>()
-
-  function initLookupMaps() {
-    for (const s of DMG_TYPE_GROUP.stats) {
-      STAT_LABEL_MAP.set(s.key, s.label)
-      STAT_COLOR_MAP.set(s.key, DMG_TYPE_GROUP.color)
-      STAT_TAG_MAP.set(s.key, 'DMG')
-    }
-    for (const s of SCALING_GROUP.stats) {
-      STAT_LABEL_MAP.set(s.key, s.label)
-      STAT_COLOR_MAP.set(s.key, SCALING_GROUP.color)
-      STAT_TAG_MAP.set(s.key, 'SCL')
-    }
-    for (const s of BOOST_GROUP.stats) {
-      STAT_LABEL_MAP.set(s.key, s.label)
-      STAT_COLOR_MAP.set(s.key, BOOST_GROUP.color)
-      STAT_TAG_MAP.set(s.key, 'STAT')
-    }
-  }
-  initLookupMaps()
+  for (const s of DMG_TYPE_GROUP.stats) STAT_TAG_MAP.set(s.key, 'DMG')
+  for (const s of SCALING_GROUP.stats) STAT_TAG_MAP.set(s.key, 'SCL')
+  for (const s of BOOST_GROUP.stats) STAT_TAG_MAP.set(s.key, 'STAT')
 
   // ── State ───────────────────────────────────────────────────────────────────
   let active: Map<string, 'include' | 'exclude'> = new Map(filterValue)
@@ -127,21 +111,18 @@
     {#if activeCount > 0}
       <div class="wsf-active-row">
         {#each [...active.entries()] as [key, state]}
-          <button
-            class="wsf-chip wsf-chip--active"
-            class:wsf-chip--include={state === 'include'}
-            class:wsf-chip--exclude={state === 'exclude'}
-            style="--c:{STAT_COLOR_MAP.get(key) ?? '#8a8d85'}"
+          <StatChip
+            {state}
+            color={STAT_COLOR_MAP.get(key) ?? '#8a8d85'}
             title="Click to cycle · Right-click or press Delete to remove"
             aria-label="Weapon filter {STAT_LABEL_MAP.get(key) ?? key}: {state}. Click to cycle, Delete to remove."
+            prefix={STAT_TAG_MAP.get(key) ?? 'STAT'}
             on:click={() => toggle(key)}
-            on:contextmenu|preventDefault={() => remove(key)}
-            on:keydown={(e) => handleChipKeyDown(e, key)}
+            on:contextmenu={() => remove(key)}
+            on:keydown={(e) => handleChipKeyDown(e.detail, key)}
           >
-            <span class="wsf-tag">{STAT_TAG_MAP.get(key) ?? 'STAT'}</span>
-            <span class="wsf-sign">{state === 'include' ? '+' : '−'}</span>
             {STAT_LABEL_MAP.get(key) ?? key}
-          </button>
+          </StatChip>
         {/each}
         <button class="wsf-clear" on:click={clear}>Clear all</button>
       </div>
@@ -165,22 +146,16 @@
           <div class="wsf-chips">
             {#each group.stats as stat}
               {@const state = active.get(stat.key)}
-              <button
-                class="wsf-chip"
-                class:wsf-chip--include={state === 'include'}
-                class:wsf-chip--exclude={state === 'exclude'}
-                style="--c:{group.color}"
-                aria-pressed={!!state}
+              <StatChip
+                {state}
+                color={group.color}
                 aria-label="{stat.label} weapon filter. Current state: {state ?? 'off'}."
                 on:click={() => toggle(stat.key)}
-                on:contextmenu|preventDefault={() => remove(stat.key)}
-                on:keydown={(e) => handleChipKeyDown(e, stat.key)}
+                on:contextmenu={() => remove(stat.key)}
+                on:keydown={(e) => handleChipKeyDown(e.detail, stat.key)}
               >
-                {#if state}
-                  <span class="wsf-sign">{state === 'include' ? '+' : '−'}</span>
-                {/if}
                 {stat.label}
-              </button>
+              </StatChip>
             {/each}
           </div>
         </div>
@@ -277,47 +252,5 @@
   }
   .wsf-chips { display: flex; flex-wrap: wrap; gap: 3px; padding-left: 4px; }
 
-  /* Chips */
-  .wsf-chip {
-    display: inline-flex; align-items: center; gap: 3px;
-    font-size: .62rem;
-    font-weight: 600;
-    padding: 2px 8px; border-radius: 999px;
-    border: 1px solid rgba(255,255,255,.08);
-    background: rgba(255,255,255,.03);
-    color: #8a8d85; cursor: pointer; transition: all .12s;
-    font-family: inherit; line-height: 1.5; user-select: none;
-  }
-  .wsf-chip:hover {
-    border-color: color-mix(in srgb, var(--c, #fb923c) 50%, transparent);
-    color: var(--c, #fb923c);
-    background: color-mix(in srgb, var(--c, #fb923c) 10%, transparent);
-  }
-  .wsf-chip--include {
-    background: rgba(74,222,128,.14);
-    border-color: rgba(74,222,128,.45);
-    color: #4ade80; font-weight: 700;
-    box-shadow: 0 0 6px rgba(74,222,128,.15);
-  }
-  .wsf-chip--include:hover { background: rgba(74,222,128,.22); border-color: rgba(74,222,128,.7); color: #4ade80; }
-  .wsf-chip--exclude {
-    background: rgba(248,113,113,.12);
-    border-color: rgba(248,113,113,.4);
-    color: #f87171; font-weight: 700;
-    box-shadow: 0 0 6px rgba(248,113,113,.12);
-  }
-  .wsf-chip--exclude:hover { background: rgba(248,113,113,.22); border-color: rgba(248,113,113,.65); color: #f87171; }
 
-  .wsf-sign { font-size: .7rem; font-weight: 900; line-height: 1; margin-right: 1px; }
-
-  /* Tag badge (DMG / SCL / STAT) shown in active row */
-  .wsf-tag {
-    font-size: .48rem;
-    font-weight: 800; letter-spacing: .1em;
-    padding: 1px 4px; border-radius: 3px;
-    background: color-mix(in srgb, var(--c, #fb923c) 18%, transparent);
-    color: var(--c, #fb923c);
-    border: 1px solid color-mix(in srgb, var(--c, #fb923c) 35%, transparent);
-    flex-shrink: 0;
-  }
 </style>
