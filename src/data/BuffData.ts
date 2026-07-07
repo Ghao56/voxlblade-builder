@@ -1524,3 +1524,15 @@ export function calcBuffEffect(
 
   return { value, unit: def.effectUnit, label }
 }
+
+export function calcPotencyPercent(perkAmount: number): number {
+  return Math.floor(
+    Math.pow(perkAmount, Math.min(1, perkAmount) + 1)
+    * (1 + perkAmount / 1.5)
+    * 100
+  ) / 100
+}
+
+export function formatPerkDescription(desc: string, count: number): string {
+  return desc.replace(/x%/g, Math.round(calcPotencyPercent(count) * 100) / 100 + '%')
+}

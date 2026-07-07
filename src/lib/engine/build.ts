@@ -11,7 +11,7 @@ import type { CritResult } from '../crit'
 import { roundMultiplier } from '../utils'
 import {
   getRace, getGuild, getGuildRank, getArmorPart, getRing, getRune,
-  getBlade, getHandle, getGlove, getEssence, isMonkGuild,
+  getBlade, getHandle, getGlove, getEssence, isMonkGuild, getPerk,
 } from './data'
 import { applyEnchantmentsToSlot, applyPerkEffectiveness, applyInfusion } from './enchant'
 import { applyShrineToStats, SHRINE_MULTIPLIERS } from './shrine'
@@ -404,6 +404,19 @@ function finalizePerks(rawPerks: Record<string, number>): Record<string, number>
   }
 
   if (finalPerks["Buckler"] != null) finalPerks["Parry"] = (finalPerks["Parry"] ?? 0) + finalPerks["Buckler"]
+
+  // Grantor perks (Ignition, Trickster, etc.) contribute their final amount to Potency perks
+  const POTENCY_PERKS = new Set(['Bleed Potency', 'Burn Potency', 'Poison Potency'])
+  for (const k of Object.keys(finalPerks)) {
+    if (POTENCY_PERKS.has(k)) continue
+    const def = getPerk(k)
+    if (!def) continue
+    for (const tag of def.tags) {
+      if (POTENCY_PERKS.has(tag)) {
+        finalPerks[tag] = (finalPerks[tag] ?? 0) + finalPerks[k]
+      }
+    }
+  }
 
   return finalPerks
 }

@@ -341,7 +341,7 @@
   },
   {
     "name": "Burn Potency",
-    "description": "Increases the damage of the burn status",
+    "description": "Increases the damage of the burn status by x%",
     "tags": [
       "Burn Potency",
       "Debuff",
@@ -2114,7 +2114,7 @@
   },
   {
     "name": "Poison Potency",
-    "description": "Increases the damage of the poisoned status",
+    "description": "Increases the damage of the poison status by x%",
     "tags": [
       "Poison Potency",
       "Debuff",

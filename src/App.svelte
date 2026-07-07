@@ -40,7 +40,7 @@
 import Highlight from './Highlight.svelte'
   import { checkWA, getUnmetReqs } from './data/Weaponartcheck'
   import { getEffectiveDraconicInfusionPotency } from './data/draconicBuffs'
-  import { BUFF_DEFS, getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, convertTailwindToWhirlwind } from './data/BuffData'
+  import { BUFF_DEFS, getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, convertTailwindToWhirlwind, formatPerkDescription } from './data/BuffData'
   import { CDR_PERK_DATA } from './data/cdr'
   import { calcMaxSummonCount } from './data/SummonData'
   import ModalSearchHeader from './ModalSearchHeader.svelte'
@@ -2300,7 +2300,7 @@ $: _appWaAvgTotal = (() => {
                       <span class="perk-name">{name} <span class="perk-val">+{Math.round(count * 100) / 100}</span></span>
                     </div>
                     {#if perk?.description}
-                      <p class="perk-desc">{perk.description}</p>
+                      <p class="perk-desc">{formatPerkDescription(perk.description, count)}</p>
                     {/if}
                     {#if name === 'Emotional'}
                       <EmotionalTracker />
