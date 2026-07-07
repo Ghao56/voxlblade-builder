@@ -43,6 +43,12 @@ export function isHpGateActive(gate: HpGate | undefined, hpFillPct: number, perk
   return gate.aboveThreshold ? hpFillPct > threshold : hpFillPct <= threshold
 }
 
+export const DRAGON_STATE_HP_GATE: HpGate = {
+  hpThreshold: 80,
+  aboveThreshold: true,
+  getThreshold: (perkAmount) => 85 - 5 * perkAmount,
+}
+
 export interface SecondaryEffect {
   label: string
   getValue: (ctx: PerkDmgCtx) => number
@@ -429,11 +435,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     scalingMode: 'fixed',
     scalings: { magic: 0.75, dexterity: 0.75, holy: 0.75 },
     isRider: true,
-    hpGate: {
-      hpThreshold: 80,
-      aboveThreshold: true,
-      getThreshold: (perkAmount) => 85 - 5 * perkAmount,
-    },
+    hpGate: DRAGON_STATE_HP_GATE,
     note: 'Can only activate once per M1/M2. Can proc other effects.',
   },
   // ── Volatile Shell ──────────────────────────────────────────────────────────

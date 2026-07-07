@@ -3,7 +3,7 @@ import { STAT_KEYS, applyUpgrade } from '../types'
 import { CDR_PERK_DATA } from '../../data/cdr'
 import { applyStatBoostPerks, OFFENSIVE_BOOSTS } from '../../data/statboost'
 import { getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, convertTailwindToWhirlwind, BUFF_DEFS } from '../../data/BuffData'
-import { getActiveRaceEffect } from '../../data/raceEffects'
+import { getActiveRaceEffect, calcOrkTenacityBonus } from '../../data/raceEffects'
 import { BOOST_DEFS, type BoostContext } from '../../data/Boost'
 import type { BoostEntry, BoostResult } from '../types'
 import { calcCrit } from '../crit'
@@ -452,11 +452,7 @@ function computeBuffs(state: BuildState, finalPerks: Record<string, number>): { 
     state.rune || undefined,
   ), finalPerks)
 
-  const orkBuffs = state.race === 'ORK' ? allBuffs.filter(b => {
-    const def = BUFF_DEFS[b.buffName]
-    return def && !def.isDebuff && !def.isNeutral
-  }) : []
-  const orkBuffTenacity = 0.1 * orkBuffs.length
+  const orkBuffTenacity = state.race === 'ORK' ? calcOrkTenacityBonus(allBuffs, BUFF_DEFS) : 0
   return { allBuffs, orkBuffTenacity }
 }
 

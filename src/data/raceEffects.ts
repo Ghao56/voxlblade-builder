@@ -24,3 +24,22 @@ const RACE_CONDITIONAL_EFFECTS: RaceConditionalEffect[] = [
 export function getActiveRaceEffect(raceName: string, hpFillPct: number): RaceConditionalEffect | undefined {
   return RACE_CONDITIONAL_EFFECTS.find(e => e.raceName === raceName && isHpGateActive(e.hpGate, hpFillPct, 0))
 }
+
+export const ORK_TENACITY_PER_BUFF = 0.1
+
+export function getOrkTenacityBuffs<T extends { buffName: string; isSelfDebuff?: boolean }>(
+  buffs: T[],
+  buffDefs: Record<string, { isDebuff?: boolean; isNeutral?: boolean } | undefined>,
+): T[] {
+  return buffs.filter(b => {
+    const def = buffDefs[b.buffName]
+    return !def?.isDebuff && !b.isSelfDebuff && !def?.isNeutral
+  })
+}
+
+export function calcOrkTenacityBonus<T extends { buffName: string; isSelfDebuff?: boolean }>(
+  buffs: T[],
+  buffDefs: Record<string, { isDebuff?: boolean; isNeutral?: boolean } | undefined>,
+): number {
+  return ORK_TENACITY_PER_BUFF * getOrkTenacityBuffs(buffs, buffDefs).length
+}

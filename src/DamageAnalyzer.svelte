@@ -11,9 +11,9 @@
   import { getDraconicInfusionBuff, getDraconicHexDebuffs, getEffectiveDraconicInfusionPotency } from './data/draconicBuffs'  
   import { WA_SUMMON_MAP, SUMMON_MAP, calcSummonStat, calcMaxSummonCount } from './data/SummonData'
   import CritIcon from './CritIcon.svelte'
-  import { PERK_DMG_DEFS, SECONDARY_TONE_COLORS, isHpGateActive } from './data/Perkbasedmg'
+  import { PERK_DMG_DEFS, SECONDARY_TONE_COLORS, isHpGateActive, DRAGON_STATE_HP_GATE } from './data/Perkbasedmg'
   import { resolveDefenseSources, calcBaseArmorDefPct, DEF_GROUP, type DefenseSource } from './lib/defense'
-  import { getActiveRaceEffect } from './data/raceEffects'
+  import { getActiveRaceEffect, getOrkTenacityBuffs, ORK_TENACITY_PER_BUFF } from './data/raceEffects'
   import { getActiveDefensivePerkSources } from './data/defensivePerks'
   import { getWeaponConditionalBoost } from './data/weaponConditionalBoosts'
   import { RUNE_DMG_DEFS } from './data/Runebasedmg'
@@ -468,7 +468,7 @@
   $: _luminescentPct = (perks['Luminescent Fervor'] ?? 0) > 0 ? 0.05 * (perks['Luminescent Fervor'] ?? 0) : 0
   $: _dragonStateAmt = perks['Dragon State'] ?? 0
   $: _dragonStateHpGateActive = _dragonStateAmt > 0 && isHpGateActive(
-    { hpThreshold: 80, aboveThreshold: true, getThreshold: (pa) => 85 - 5 * pa },
+    DRAGON_STATE_HP_GATE,
     _hpFillPct,
     _dragonStateAmt
   )
@@ -502,11 +502,8 @@
   $: _blubBlubAmt = perks['Blub Blub'] ?? 0
 
   // ── Ork race: +0.1 tenacity per active buff (excludes debuffs & self-debuffs) ──
-  $: _orkBuffs = _allActiveBuffs.filter(b => {
-    const def = BUFF_DEFS[b.buffName]
-    return !def?.isDebuff && !b.isSelfDebuff && !def?.isNeutral
-  })
-  $: _orkBuffTenacity = $build.race === 'ORK' ? 0.1 * _orkBuffs.length : 0
+  $: _orkBuffs = $build.race === 'ORK' ? getOrkTenacityBuffs(_allActiveBuffs, BUFF_DEFS) : []
+  $: _orkBuffTenacity = ORK_TENACITY_PER_BUFF * _orkBuffs.length
   $: _effectiveTenacity = (stats.tenacity ?? 0) + _orkBuffTenacity
 
   let disabledDebuffs = new Set<string>()
