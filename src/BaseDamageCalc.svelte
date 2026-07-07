@@ -28,6 +28,7 @@
   export let showCritToggle: boolean = false
   export let draconicRunesBonus: Record<string, number> = {}
   export let selfDebuffDamageMult: number = 1
+  export let selfDebuffNames: string[] = []
   export let antiHealSelfMult: number = 1
   export let lightningCloakPct: number = 0
   export let stormRendPct: number = 0
@@ -931,7 +932,7 @@
                               {/if}
                               {#if selfDebuffDamageMult !== 1 && !t.isHeal}
                                 <div class="bdc-fr">
-                                  <span class="bdc-fr-label">Self-Debuff (Weakness)</span>
+                                  <span class="bdc-fr-label">Self-Debuff ({selfDebuffNames.join(', ')})</span>
                                   <span class="bdc-fr-val bdc-fr-val--selfdebuff">× {fmtMult(selfDebuffDamageMult)}</span>
                                 </div>
                               {/if}
@@ -1071,7 +1072,7 @@
     {/if}
     {#if selfDebuffDamageMult !== 1 && !t.isHeal}
       <div class="bdc-fr">
-        <span class="bdc-fr-label">Self-Debuff (Weakness)</span>
+        <span class="bdc-fr-label">Self-Debuff ({selfDebuffNames.join(', ')})</span>
         <span class="bdc-fr-val bdc-fr-val--selfdebuff">× {fmtMult(selfDebuffDamageMult)}</span>
       </div>
     {/if}

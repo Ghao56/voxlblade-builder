@@ -978,6 +978,19 @@
     }
     return mult
   })()
+
+  $: _selfDebuffNames = (() => {
+    const names: string[] = []
+    for (const b of _allActiveBuffs) {
+      if (!b.isSelfDebuff) continue
+      const def = BUFF_DEFS[b.buffName]
+      if (!def?.isDebuff) continue
+      const combatFx = DEBUFF_COMBAT_EFFECTS[b.buffName]
+      if (!combatFx?.damageMult) continue
+      names.push(b.buffName)
+    }
+    return names
+  })()
   
   $: activeFinalMult = activeEntries.reduce((acc, e) => acc * e.rawMultiplier, 1.0)
   $: activeFinalMultRounded = roundMultiplier(activeFinalMult)
@@ -3948,6 +3961,7 @@
   typedBoostEntries={_typedBoostEntries}
   luminescentPct={_luminescentPct}
   selfDebuffDamageMult={_selfDebuffDamageMult}
+  selfDebuffNames={_selfDebuffNames}
   antiHealSelfMult={_antiHealSelfMult}
   lightningCloakPct={_lightningCloakPct}
   stormRendPct={_stormRendPct}
