@@ -209,9 +209,9 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
   },
   Despair: {
     name: 'Despair',
-    color: '#54405d',
-    description: 'Inflict despair.',
-    effectPerTenthPotency: 0.1,
+    color: '#54425d',
+    description: 'Deal x% more damage.',
+    effectPerTenthPotency: 0.085,
     effectUnit: 'flat',
     isDebuff: true,
   },
@@ -1014,6 +1014,17 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       sourceType: 'perk',
     },
   ],
+  'Grounded Despair': (amount) => [
+    {
+      buffName: 'Despair',
+      potency: 0.1 * amount,
+      duration: 3 * amount,
+      condition: 'On jump and land',
+      sourceName: 'Grounded Despair',
+      sourceType: 'perk',
+      isSelfDebuff: true,
+    },
+  ],
 }
 
 const WEAPON_ART_BUFF_MAP: Record<string, GrantedBuff[]> = {
@@ -1289,6 +1300,23 @@ function getGenericDebuffModifiers(
   }
 }
 
+function getTricksterReflection(
+  buff: GrantedBuff,
+  def: BuffDefinition | undefined,
+  perks: Record<string, number>
+): number {
+  const tricksterStacks = perks['Trickster'] ?? 0
+  if (tricksterStacks <= 0) return 0
+
+  const isSelfDebuff = buff.isSelfDebuff || def?.isSelfDebuff
+  if (!isSelfDebuff) return 0
+  if (!def?.isDebuff) return 0
+
+  // Formula: originalPotency + (perkAmount/10 * (1 + originalPotency))
+  // Returns the bonus added by Trickster reflection
+  return roundMultiplier((tricksterStacks / 10) * (1 + buff.potency))
+}
+
 export function applyBuffPerkModifiers(
   buffs: GrantedBuff[],
   perks: Record<string, number>,
@@ -1301,9 +1329,10 @@ export function applyBuffPerkModifiers(
 
     const specific = getSpecificBuffModifiers(buff, def, perks)
     const bastionBonus = getBastionBlessBonus(buff, def, perks)
+    const tricksterBonus = getTricksterReflection(buff, def, perks)
     const generic = getGenericDebuffModifiers(buff, def, perks)
 
-    const bonus = specific.bonus + bastionBonus
+    const bonus = specific.bonus + bastionBonus + tricksterBonus
     const durationMult =
       specific.durationMult * generic.durationMult
 

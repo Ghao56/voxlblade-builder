@@ -483,4 +483,15 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     isRider: true,
     note: 'Only activates once per finisher.',
   },
+  // ── Grounded Despair ─────────────────────────────────────────────────
+  {
+    perkName: 'Grounded Despair',
+    condition: 'On jump and land',
+    getBaseDamage: ({ perkAmount }) => 0.45 + 0.45 * perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { physical: 0.5, hex: 0.5 },
+    scalingMode: 'fixed',
+    scalings: { physical: 1.0, magic: 1.0 },
+    canProc: true,
+  },
 ]

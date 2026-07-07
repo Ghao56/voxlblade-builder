@@ -286,9 +286,7 @@
       .filter(e => canProc !== false || !e.needsProcCoeff)
       .map(e => ({ perkName: e.perkName, label: e.label, mult: isHeal ? e.healMult : e.dmgMult }))
   }
-
-  $: _groupFinisherTotals = weaponHits.reduce((map, h) => { if (h.isFinisher) map[h.group] = (map[h.group] ?? 0) + h.count; return map }, {} as Record<string, number>)
-
+ 
   $: computedHits = typedBoostEntries && weaponHits.map((hit): ComputedHit => {
     const isHeal = hit.isHeal ?? false
     const basePenDecimal = armorPen / 100
@@ -449,7 +447,7 @@
             const defMult = calcArmorMult(defPct, basePenDecimal).mult
             let baseForType: number
             if (ph.rawFinisherNumerator != null) {
-              const fh = _groupFinisherTotals[hit.group] ?? 1
+              const fh = hit.count
               baseForType = Math.round(ph.rawFinisherNumerator / (0.5 + fh / 2) * 1000) / 1000
             } else {
               baseForType = ph.baseDmg

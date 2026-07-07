@@ -290,7 +290,7 @@
 
     const _infActive = $build.draconicRuneInfusion === 'infusion'
     const color = $build.draconicColor
-    if (!_infActive || (color !== 'hex' && color !== 'holy')) {
+    if (!_infActive || draconicInfusionDisabled || (color !== 'hex' && color !== 'holy')) {
       return baseBuffs
     }
     const _infPerkAmt = $result.perks['Draconic Blood'] ?? 0
@@ -317,6 +317,21 @@
   })()
   $: _allActiveBuffs = (_disabledKeysArr.length, _allActiveBuffsRaw.filter(b => !_isBuffDisabled(b)))
   $: _hasCritBoostBuff = _allActiveBuffs.some(b => b.buffName === 'Critical Boost')
+
+  $: _dedupedActiveBuffs = (_disabledKeysArr.length, (() => {
+    const map = new Map<string, typeof _allActiveBuffsRaw[0] & { _isOff: boolean; _allSources: string[] }>()
+    for (const b of _allActiveBuffsRaw) {
+      const key = b.buffName
+      const existing = map.get(key)
+      if (!existing || b.potency > existing.potency) {
+        map.set(key, { ...b, _isOff: _isBuffDisabled(b), _allSources: [b.sourceName] })
+      } else if (existing._allSources) {
+        existing._allSources.push(b.sourceName)
+        if (!_isBuffDisabled(b)) existing._isOff = false
+      }
+    }
+    return [...map.values()].map(b => ({ ...b, sourceName: b._allSources.join(', ') }))
+  })())
 
   // ── Rage (still needed directly: defensive perk gating, PERK_DMG_DEFS condition, UI toggle row) ──
   $: _activeRageBuffs = _allActiveBuffs.filter(b => b.buffName === 'Rage')
@@ -534,6 +549,16 @@
     if (disabledBuffKeys.has(key)) disabledBuffKeys.delete(key)
     else disabledBuffKeys.add(key)
     disabledBuffKeys = disabledBuffKeys // trigger reactivity
+  }
+  function toggleBuffByName(name: string) {
+    const sources = _dedupedActiveBuffs.find(b => b.buffName === name)?._allSources ?? _allActiveBuffsRaw.filter(b => b.buffName === name).map(b => b.sourceName)
+    if (!sources.length) return
+    const allDisabled = sources.every(s => disabledBuffKeys.has(`${name}:${s}`))
+    for (const s of sources) {
+      if (allDisabled) disabledBuffKeys.delete(`${name}:${s}`)
+      else disabledBuffKeys.add(`${name}:${s}`)
+    }
+    disabledBuffKeys = disabledBuffKeys
   }
   const HANDLED_BUFF_NAMES = new Set(['Rage', 'Glyph Conduit', 'Extinguish', 'Lightning Cloak', 'Storm Rend'])
   let extinguishDisabled = false
@@ -1606,7 +1631,7 @@
       const halfActivations = isSpringblast ? (perkAmount > 0 && ((_gunOverlay?.type === 'Dual Guns') || _baseWeaponType === 'Storm Caster')) : undefined
       const oncePerFinisher = isSpringblast ? false : undefined
 
-      const isActive = isHpGateActive(def.hpGate, _hpFillPct, perkAmount)
+      const isActive = isHpGateActive(def.hpGate, _hpFillPct, perkAmount) && (!isSpringblast || _allActiveBuffs.some(b => b.buffName === 'Bounce'))
 
       const secondaryEffects = (def.secondaryEffects ?? []).filter(se => !se.showIf || se.showIf({ draconicColor: $build.draconicColor })).map(se => {
         let raw = Math.round(se.getValue({ perkAmount, draconicColor: $build.draconicColor }) * 1000) / 1000
@@ -1645,8 +1670,8 @@
         isWA: def.isWA, isRune: def.isRune, isRider: def.isRider, guardbreak: def.guardbreak,
         canProc: def.canProc,
         note: def.note,
-        typedHits_m2: buildTypedHits(baseDmg_m2),
-        typedHits_m1f: buildTypedHits(baseDmg_m1f),
+        typedHits_m2: buildTypedHits(isSpringblast ? baseDmg : baseDmg_m2),
+        typedHits_m1f: buildTypedHits(isSpringblast ? baseDmg : baseDmg_m1f),
         scalingMult,
         combatMult,
         resolvedDmgTypes,
@@ -1673,6 +1698,7 @@
       rawFinisherNumerator?: number; halfActivations?: boolean; oncePerFinisher?: boolean
     }> = []
     for (const e of _activePerkDmgEntries) {
+      if (!e.isActive) continue
       if (!e.isRider && e.perkName !== 'Springblast') continue
       out.push({
         tag: e.displayName,
@@ -2020,6 +2046,9 @@
     }
     return result
   })()
+
+  $: _allFinisherHitCounts = [...new Set(_bdcWeaponHits.filter(h => h.isFinisher).map(h => h.count))]
+  $: if (_allFinisherHitCounts.length === 0) _allFinisherHitCounts = [1]
 
   const SELF_DAMAGE_APPLIES_TO_GROUP: Record<string, 'WA' | 'Rune'> = { wa: 'WA', rune: 'Rune' }
 
@@ -2415,15 +2444,14 @@
               </button>
             </span>
           {/if}
-          {#each _allActiveBuffsRaw.filter(b => !HANDLED_BUFF_NAMES.has(b.buffName) && !BUFF_DEFS[b.buffName]?.isDebuff && !BUFF_DEFS[b.buffName]?.isNeutral) as buff, i (buff.buffName + buff.sourceName + i)}
+          {#each _dedupedActiveBuffs.filter(b => !HANDLED_BUFF_NAMES.has(b.buffName) && !BUFF_DEFS[b.buffName]?.isDebuff && !BUFF_DEFS[b.buffName]?.isNeutral) as buff}
             {@const def = BUFF_DEFS[buff.buffName]}
-            {@const key = `${buff.buffName}:${buff.sourceName}`}
-            {@const isOff = disabledBuffKeys.has(key)}
+            {@const isOff = buff._isOff}
             {#if def}
               <span class="da-buff">
                 <button class="da-boost-chip" class:da-boost-chip--off={isOff}
                   style="background:color-mix(in srgb,{def.color} 10%,transparent);border-color:color-mix(in srgb,{def.color} 35%,transparent)"
-                  on:click={() => toggleBuffKey(key)}>
+                  on:click={() => toggleBuffByName(buff.buffName)}>
                   <span class="da-bc-name">{def.name}</span>
                   <span class="da-bc-val" style="color:{def.color}">{isOff ? '—' : buff.potency}</span>
                   <span class="da-bc-cond">{getBuffDescription(buff.buffName, $result.perks, buff.potency)}</span>
@@ -2439,14 +2467,17 @@
               {@const def = BUFF_DEFS[buff.buffName]}
               {@const key = `${buff.buffName}:${buff.sourceName}`}
               {@const isOff = disabledBuffKeys.has(key)}
+              {@const effectivePotency = wardingDebuffMult !== 1
+                ? Math.round(buff.potency * wardingDebuffMult * 1000) / 1000
+                : buff.potency}
               {#if def}
                 <span class="da-buff">
                   <button class="da-boost-chip da-boost-chip--debuff" class:da-boost-chip--off={isOff}
                     style="background:color-mix(in srgb,{def.color} 10%,transparent);border-color:color-mix(in srgb,{def.color} 35%,transparent)"
                     on:click={() => toggleBuffKey(key)}>
                     <span class="da-bc-name">{def.name}</span>
-                    <span class="da-bc-val" style="color:{def.color}">{isOff ? '—' : buff.potency}</span>
-                    <span class="da-bc-cond">{getBuffDescription(buff.buffName, $result.perks, buff.potency)}</span>
+                    <span class="da-bc-val" style="color:{def.color}">{isOff ? '—' : effectivePotency}</span>
+                    <span class="da-bc-cond">{getBuffDescription(buff.buffName, $result.perks, effectivePotency)}</span>
                     <span class="da-bc-toggle" style={isOff ? '' : `background:color-mix(in srgb,${def.color} 25%,transparent);color:${def.color}`}>{isOff ? 'OFF' : 'ON'}</span>
                     <span class="da-buff-sources">{buff.sourceName}</span>
                   </button>
@@ -3295,6 +3326,13 @@
               {/if}
             </div>
           </div>
+          {#if entry.rawFinisherNumerator != null && _allFinisherHitCounts.some(h => h > 1)}
+            <div class="da-pbd-ctx-grp">
+              {#each _allFinisherHitCounts.filter(h => h > 1) as hc}
+                <span class="da-pbd-ctx-label">×{hc} hits → {fmtNum(roundMultiplier(entry.baseDmg / (0.5 + hc / 2)))} per hit</span>
+              {/each}
+            </div>
+          {/if}
         </div>
         <!-- M1 finisher context (only when different from M2) -->
         {#if entry.isFinisher && !entry.isM2 && Number(_m1FinisherHits) !== Number(_m2FinisherHits)}
@@ -5160,6 +5198,12 @@
   display: flex;
   flex-direction: column;
   gap: 3px;
+}
+.da-pbd-ctx-grp {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-top: 3px;
 }
 .da-pbd-ctx-label {
   font-size: .55rem;

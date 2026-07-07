@@ -75,4 +75,11 @@ export const DEBUFF_COMBAT_EFFECTS: Record<string, DebuffCombatEffect> = {
       }
     },
   },
+  Despair: {
+    descFn: (p: number) => {
+      const pct = Math.round((p / 0.1) * 8.5 * 100) / 100
+      return `+${pct}% all damage dealt`
+    },
+    damageMult: (p: number) => 1 + (p / 0.1) * 0.085,
+  },
 }

@@ -42,6 +42,15 @@ Never:
 - replace working code with equivalent code
 - rewrite files to match personal preference
 
+## Perk Design: Debuff Pipeline
+
+When a perk applies a debuff (including to self):
+
+- The debuff MUST go through the existing `getPerkBuffs()` → `applyBuffPerkModifiers()` → `_allActiveBuffsRaw` pipeline.
+- Do NOT manually inject, hardcode, or special-case the debuff's effects outside this pipeline.
+- Perk interactions (Trickster, Warding, Endless Despair, Hex Draconic Infusion, etc.) must emerge naturally from the pipeline—do not add per-perk special-case logic for them.
+- Specifically, do NOT add code like `if (hasTrickster) { potency *= ... }` inside the perk's own logic. Trickster, if implemented, should operate on the buff list generically.
+
 ## Output
 
 When proposing changes:
