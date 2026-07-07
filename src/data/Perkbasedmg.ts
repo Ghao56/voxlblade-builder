@@ -101,7 +101,6 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     scalingMode: 'fixed',
     scalings: { physical: 1.0 },
     guardbreak: true,
-    canProc: false,
     note: 'Activates on every finisher hit. Reduced chance to proc other effects. Deals high knockback. Half activations with Dual Guns or Storm Caster.',
   },
   // ── Basic Spirit ───────────────────────────────────────────────────────────

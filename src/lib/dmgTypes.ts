@@ -9,6 +9,7 @@ export const BADGE_CONFIG: Record<string, { color: string; label: string; title:
   'Curse Rip': { color: '#e879f9', label: '✦ Curse Rip', title: 'Curse Rip: 1/60 of damage dealt as lifesteal (requires debuffed opponent)' },
   'Venom Eater': { color: '#4ade80', label: '✦ Venom Eater', title: 'Venom Eater: heal 0.1 HP per stack on crit vs poisoned target' },
   'Blub':  { color: '#38bdf8', label: '✦ Blub', title: 'Blub Blub: 15% × perk amount of this hit\'s damage as Water · 2 hits · 50% proc chance' },
+  'Blood Thirsty': { color: '#ef4444', label: '✦ Blood Thirsty', title: 'Blood Thirsty: heal 0.3 HP per stack on hit vs Bleeding target' },
 }
 
 export interface ComputedType {
@@ -27,6 +28,8 @@ export interface ComputedType {
   isCritExempt?: boolean
   healBoostMult?: number
   canProc?: boolean
+  hitCount?: number
+  activationDivisor?: number
 }
 
 export interface PerkOnHitDmg {
@@ -37,6 +40,9 @@ export interface PerkOnHitDmg {
   totalDmg: number
   dmgTypes: Record<string, number>
   canProc?: boolean
+  rawFinisherNumerator?: number
+  halfActivations?: boolean
+  oncePerFinisher?: boolean
 }
 
 export interface ComputedHit {

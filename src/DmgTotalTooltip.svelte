@@ -25,7 +25,7 @@
     const count = h.count
     for (const t of h.types) {
       if (t.isHeal || t.isCurseRip) continue
-      const val = (crit || t.forceCrit) ? t.critVal : t.raw
+      const val = ((crit || t.forceCrit) ? t.critVal : t.raw) / (t.activationDivisor ?? 1)
       const dsCount = t.oncePerGroup && (h.group === 'M1' || h.group === 'M2') ? 1 : count
       const total = t.oncePerGroup ? val * dsCount : val * count
       let g = map.get(t.key)

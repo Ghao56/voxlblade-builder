@@ -441,6 +441,7 @@
   })()
 
   $: _dummyHasPoisonActive = _dummyDebuffs.some(d => d.name === 'Poison' && !disabledDebuffs.has(d.name))
+  $: _dummyHasBleedActive = _dummyDebuffs.some(d => d.name === 'Bleed' && !disabledDebuffs.has(d.name))
   $: _venomEaterCanShow = (perks['Venom Eater'] ?? 0) > 0 && _dummyHasPoisonActive
   $: _showCrit = crit.effectiveCritChance > 0 || _hasCritBoostBuff || crit.hasCritRelevantPerks || _venomEaterCanShow
   $: _critMult = crit.critDamageMultiplier / 100  
@@ -463,28 +464,6 @@
   $: _dragonStateTotalDmg = _dragonStateAmt > 0 && _dragonStateHpGateActive
     ? _dragonStateBaseDmg * _dragonStateScalingMult * _dragonStateCombatMult
     : 0
-  $: _sporeBurstAmt = perks['Spore Burst'] ?? 0
-  $: _sporeBurstBaseDmg = _sporeBurstAmt > 0 ? _sporeBurstAmt * 1 : 0
-  $: _sporeBurstScalingMult = _computePerkScalingMult({ dexterity: 1.0, hex: 1.0, earth: 1.0 })
-  $: _sporeBurstCombatMult = _perkCombatMult
-  $: _sporeBurstTotalDmg = _sporeBurstBaseDmg * _sporeBurstScalingMult * _sporeBurstCombatMult
-  $: _royalFinisherAmt = perks['Royal Finisher'] ?? 0
-  $: _royalFinisherBaseDmg = _royalFinisherAmt > 0 ? (3 + _royalFinisherAmt * 1) : 0
-  $: _royalFinisherScalingMult = _computePerkScalingMult({ magic: 1.0 })
-  $: _royalFinisherCombatMult = _perkCombatMult
-  $: _royalFinisherTotalDmg = _royalFinisherBaseDmg * _royalFinisherScalingMult * _royalFinisherCombatMult
-  $: _springblastAmt = perks['Springblast'] ?? 0
-  $: _springblastBaseDmgPerHit = _springblastAmt > 0
-    ? Math.round(((6 + 2 * _springblastAmt) * (1 + 0.1 * _springblastAmt)) / (0.5 + springblastFinisherHits / 2) * 1000) / 1000
-    : 0
-  $: _springblastScalingMult = _computePerkScalingMult({ physical: 1.0 })
-  $: _springblastCombatMult = _perkCombatMult
-  $: _springblastTotalDmg = _springblastBaseDmgPerHit * _springblastScalingMult * _springblastCombatMult * springblastFinisherHits
-  $: _perkOnHitDamages = [
-    { tag: 'Spore Burst', baseDmg: _sporeBurstBaseDmg, scalingMult: _sporeBurstScalingMult, combatMult: _sporeBurstCombatMult, totalDmg: _sporeBurstTotalDmg, dmgTypes: { hex: 1.0 } as Record<string, number>, canProc: PERK_DMG_DEFS.find(d => d.perkName === 'Spore Burst')?.canProc },
-    { tag: 'Royal Finisher', baseDmg: _royalFinisherBaseDmg, scalingMult: _royalFinisherScalingMult, combatMult: _royalFinisherCombatMult, totalDmg: _royalFinisherTotalDmg, dmgTypes: { magic: 1.0 } as Record<string, number>, canProc: PERK_DMG_DEFS.find(d => d.perkName === 'Royal Finisher')?.canProc },
-    { tag: 'Springblast', baseDmg: _springblastBaseDmgPerHit, scalingMult: _springblastScalingMult, combatMult: _springblastCombatMult, totalDmg: _springblastTotalDmg, dmgTypes: { physical: 1.0 } as Record<string, number>, canProc: PERK_DMG_DEFS.find(d => d.perkName === 'Springblast')?.canProc },
-  ]
   $: _waveRiderAmt = perks['Wave Rider'] ?? 0
   $: _oceanSongAmt = perks['Ocean Song'] ?? 0
   $: _wildBoltAmt = perks['Wild Bolt'] ?? 0
@@ -493,7 +472,7 @@
   $: _stormRendAmt = perks['Storm Rend'] ?? 0
   let disableStormRend = false
   $: _stormRendActive = _stormRendAmt > 0 && !disableStormRend
-  $: _lightningCloakPct = (_lightningCloakActive && !disableLightningCloak) || _stormRendActive ? (1 / 3) : 0
+  $: _lightningCloakPct = _lightningCloakActive && !disableLightningCloak ? (1 / 3) : 0
   $: _windWalkerAmt = perks['Wind Walker'] ?? 0
   $: _hasTailwindOrWhirlwind = (_disabledKeysArr.length,
     _allActiveBuffs.some(b => (b.buffName === 'Tailwind' || b.buffName === 'Whirlwind')))
@@ -504,7 +483,7 @@
   $: _darkMagicAmt = perks['Dark Magic'] ?? 0
   $: _darkMagicHexBonus = _darkMagicAmt > 0 ? 0.2 * _darkMagicAmt : 0
   $: _waArmorPenetration = (_windWalkerAmt > 0 && _hasTailwindOrWhirlwind ? 10 * _windWalkerAmt : 0) + ($build.race === 'ORK' ? 10 : 0)
-  $: _stormRendPct = 0
+  $: _stormRendPct = _stormRendActive ? (1 / 3) : 0
   $: _explosiveChargePct = (perks['Explosive Charge'] ?? 0) > 0 ? 1.0 : 0
   $: _blubBlubAmt = perks['Blub Blub'] ?? 0
 
@@ -695,9 +674,10 @@
         if (_gunOverlay) {
           const gun = WEAPON_BASE_DMG.find(w => w.type === _gunOverlay.type)
           if (_gunOverlay.m2Only) {
-            rows.push({ type: _baseWeaponType, m1: base.m1, m2: gun?.m2 ?? null, gunLabel: _gunOverlay.type, m2Only: true, m2NoLock: _gunOverlay.m2NoLock })
+            rows.push({ type: _baseWeaponType, m1: base.m1, m2: gun?.m2 ?? null, gunLabel: _gunOverlay.type, m2Only: true, m2NoLock: _gunOverlay.m2NoLock } as any as MergedRow)
           } else {
-            rows.push({ type: _baseWeaponType, m1: gun?.m1 ?? null, m2: gun?.m2 ?? null, gunLabel: _gunOverlay.type, m2Only: false, m2NoLock: _gunOverlay.m2NoLock })
+            const g = gun!
+            rows.push({ type: _baseWeaponType, m1: g.m1, m2: g.m2, gunLabel: _gunOverlay.type, m2Only: false, m2NoLock: _gunOverlay.m2NoLock, m1Finisher: g.m1Finisher } as any as MergedRow)
           }
         } else {
           rows.push({ ...base })
@@ -881,6 +861,10 @@
   function fmtMult(n: number): string {
     return `×${n.toFixed(4)}`
   }
+  function fmtCritMult(v: number): string {
+    const s = (v / 100).toFixed(3).replace(/(\.\d*?)0+$/, '$1')
+    return s.replace(/\.$/, '.0') + '\u00d7'
+  }
   function isFinisher(row: any, attackType: 'm1' | 'm2', hitIndex: number): boolean {
     if (attackType === 'm2') return true
     const hasFinisher = (row as any).m1Finisher ?? true
@@ -938,7 +922,7 @@
     return entries
   })()
   $: _adjustedDmgEntries = boosts.dmgEntries
-  $: activeEntries = [..._adjustedDmgEntries.filter(e => !disabledBoosts.has(e.sourceName) && !(e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) && !(e.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)) && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance' && e.sourceName !== 'Frenzy'), ..._syntheticDmgBoostEntries.filter(e => {
+  $: activeEntries = [..._adjustedDmgEntries.filter(e => !disabledBoosts.has(e.sourceName) && !(e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) && !(e.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)) && !(e.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive) && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance' && e.sourceName !== 'Frenzy'), ..._syntheticDmgBoostEntries.filter(e => {
     if (e.sourceName === 'Curse Rip' && disableCurseRip) return false
     if (e.sourceName === 'Reaper' && disableReaper) return false
     if (disabledBoosts.has(e.sourceName)) return false
@@ -1489,7 +1473,7 @@
   )
 
   // ── Perk Base Damage ───────────────────────────────────────────────────────
-  let springblastFinisherHits = 1
+  $: springblastFinisherHits = _m2FinisherHits
 
   /** Total hit count in the current weapon's M2 (used as finisher hits context) */
   $: _m2FinisherHits = (() => {
@@ -1541,6 +1525,11 @@
     resolvedScalings: Record<string, number>
     dmgTypeMode: 'weapon' | 'fixed' | 'dynamic'
     isActive: boolean
+    baseDmg: number
+    totalDmg: number
+    rawFinisherNumerator?: number
+    halfActivations?: boolean
+    oncePerFinisher?: boolean
     secondaryEffects: Array<{ label: string; display: string; condition?: string; color: string; isActive: boolean }>
   }
 
@@ -1603,10 +1592,19 @@
         label: k.charAt(0).toUpperCase() + k.slice(1),
       }))
 
-      const _fhM2  = def.perkName === 'Springblast' ? springblastFinisherHits : _m2FinisherHits
-      const _fhM1f = def.perkName === 'Springblast' ? springblastFinisherHits : _m1FinisherHits
+      const _fhM2  = _m2FinisherHits
+      const _fhM1f = _m1FinisherHits
       const baseDmg_m2  = def.getBaseDamage({ perkAmount, finisherHits: _fhM2,  draconicColor: $build.draconicColor })
       const baseDmg_m1f = def.getBaseDamage({ perkAmount, finisherHits: _fhM1f, draconicColor: $build.draconicColor })
+
+      const isSpringblast = def.perkName === 'Springblast'
+      const baseDmg = isSpringblast
+        ? Math.round((6 + 2 * perkAmount) * (1 + 0.1 * perkAmount) * 1000) / 1000
+        : baseDmg_m1f
+      const totalDmg = isSpringblast ? 1 : baseDmg * scalingMult * combatMult
+      const rawFinisherNumerator = isSpringblast ? baseDmg : undefined
+      const halfActivations = isSpringblast ? (perkAmount > 0 && ((_gunOverlay?.type === 'Dual Guns') || _baseWeaponType === 'Storm Caster')) : undefined
+      const oncePerFinisher = isSpringblast ? false : undefined
 
       const isActive = isHpGateActive(def.hpGate, _hpFillPct, perkAmount)
 
@@ -1656,6 +1654,11 @@
         resolvedScalings,
         dmgTypeMode: def.dmgTypeMode,
         isActive,
+        baseDmg,
+        totalDmg,
+        rawFinisherNumerator,
+        halfActivations,
+        oncePerFinisher,
         secondaryEffects,
       })
     }
@@ -1663,6 +1666,29 @@
   })()
   $: _draconicBloodEntry = _activePerkDmgEntries.find(e => e.perkName === 'Draconic Blood' && !draconicInfusionDisabled) ?? null
   $: _nonDraconicPerkEntries = _activePerkDmgEntries.filter(e => e.perkName !== 'Draconic Blood')
+  $: _perkOnHitDamages = (() => {
+    const out: Array<{
+      tag: string; baseDmg: number; scalingMult: number; combatMult: number; totalDmg: number
+      dmgTypes: Record<string, number>; canProc?: boolean
+      rawFinisherNumerator?: number; halfActivations?: boolean; oncePerFinisher?: boolean
+    }> = []
+    for (const e of _activePerkDmgEntries) {
+      if (!e.isRider && e.perkName !== 'Springblast') continue
+      out.push({
+        tag: e.displayName,
+        baseDmg: e.baseDmg,
+        scalingMult: e.scalingMult,
+        combatMult: e.combatMult,
+        totalDmg: e.totalDmg,
+        dmgTypes: e.resolvedDmgTypes,
+        canProc: e.canProc,
+        ...(e.rawFinisherNumerator != null ? { rawFinisherNumerator: e.rawFinisherNumerator } : {}),
+        ...(e.halfActivations != null ? { halfActivations: e.halfActivations } : {}),
+        ...(e.oncePerFinisher != null ? { oncePerFinisher: e.oncePerFinisher } : {}),
+      })
+    }
+    return out
+  })()
   $: _draconicInfusionDisplay = (() => {
     const raw = getDraconicInfusionBuff($build.guild, $build.draconicRuneInfusion, $build.draconicColor, $result.perks['Draconic Blood'] ?? 0)
     if (raw.length === 0) return null
@@ -2153,7 +2179,7 @@
 
         <div class="da-stat-card da-stat-card--critdmg">
           <div class="da-stat-label">Crit Damage Multiplier</div>
-          <div class="da-stat-val" style="color:#a78bfa">{crit.critDamageMultiplier.toFixed(1)}%</div>
+          <div class="da-stat-val" style="color:#a78bfa">{fmtCritMult(crit.critDamageMultiplier)}</div>
           <div class="da-sources">
             {#each critDmgSources as s}
               <div class="da-source-row">
@@ -2188,7 +2214,8 @@
       <div class="da-boost-row">
         {#each [..._visibleDmgEntries, ..._syntheticDmgBoostEntries] as entry}
           {@const _venomEaterDisabled = entry.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)}
-          {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (entry.sourceName === 'Curse Rip' && disableCurseRip) || (entry.sourceName === 'Reaper' && disableReaper) || _venomEaterDisabled}
+          {@const _bloodThirstyDisabled = entry.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive}
+          {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (entry.sourceName === 'Curse Rip' && disableCurseRip) || (entry.sourceName === 'Reaper' && disableReaper) || _venomEaterDisabled || _bloodThirstyDisabled}
           {@const effectiveMultiplier = disabled ? 1 : entry.rawMultiplier}
           <button
             class="da-boost-chip"
@@ -2198,6 +2225,7 @@
             on:click={() => {
               if (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) return
               if (_venomEaterDisabled) return
+              if (_bloodThirstyDisabled) return
               if (entry.sourceName === 'Curse Rip') disableCurseRip = !disableCurseRip
               else if (entry.sourceName === 'Reaper') disableReaper = !disableReaper
               else toggleBoost(entry.sourceName)
@@ -2224,7 +2252,8 @@
         <div class="da-boost-universal">
           {#each _allUniversalChips as entry}
             {@const _venomEaterDisabled = entry.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)}
-            {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (entry.sourceName === 'Curse Rip' && disableCurseRip) || (entry.sourceName === 'Reaper' && disableReaper) || _venomEaterDisabled}
+            {@const _bloodThirstyDisabled = entry.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive}
+            {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (entry.sourceName === 'Curse Rip' && disableCurseRip) || (entry.sourceName === 'Reaper' && disableReaper) || _venomEaterDisabled || _bloodThirstyDisabled}
             <button
               class="da-boost-chip"
               class:da-boost-chip--lvl={entry.sourceName === 'Level Damage'}
@@ -2233,6 +2262,7 @@
               on:click={() => {
                 if (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) return
                 if (_venomEaterDisabled) return
+                if (_bloodThirstyDisabled) return
                 if (entry.sourceName === 'Curse Rip') disableCurseRip = !disableCurseRip
                 else if (entry.sourceName === 'Reaper') disableReaper = !disableReaper
                 else toggleBoost(entry.sourceName)
@@ -2261,12 +2291,13 @@
               {#if grp.allChips.length > 0}
                 {#each grp.allChips as entry}
                   {@const _venomEaterDisabled = entry.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)}
-                  {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || _venomEaterDisabled}
+                  {@const _bloodThirstyDisabled = entry.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive}
+                  {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || _venomEaterDisabled || _bloodThirstyDisabled}
                   <button
                     class="da-boost-chip da-boost-chip--sm"
                     class:da-boost-chip--off={disabled}
                     title={entry.condition ?? ''}
-                    on:click={() => { if (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) return; if (_venomEaterDisabled) return; toggleBoost(entry.sourceName) }}
+                    on:click={() => { if (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) return; if (_venomEaterDisabled) return; if (_bloodThirstyDisabled) return; toggleBoost(entry.sourceName) }}
                   >
                     <span class="da-bc-name">{entry.sourceName}</span>
                     <span class="da-bc-val">{disabled ? '—' : `×${+entry.rawMultiplier.toFixed(4)}`}</span>
@@ -3233,19 +3264,6 @@
         {#if entry.condition}
           <div class="da-pbd-condition">{entry.condition}</div>
         {/if}
-        <!-- Springblast: finisher hit count slider -->
-        {#if entry.perkName === 'Springblast'}
-          <div class="da-sb-slider-wrap">
-            <span class="da-sb-slider-label">Finisher hits</span>
-            <input
-              type="range" min="1" max="20" step="1"
-              bind:value={springblastFinisherHits}
-              class="da-sb-slider"
-              style="--fill:{((springblastFinisherHits - 1) / 19) * 100}%"
-            />
-            <span class="da-sb-slider-val">{springblastFinisherHits}</span>
-          </div>
-        {/if}
         <!-- Typed damage: M2/main finisher -->
         <div class="da-pbd-dmg-row" class:da-pbd-dmg-row--inactive={!entry.isActive}>
           {#if entry.isFinisher && _m2FinisherHits > 1}
@@ -3298,25 +3316,6 @@
                   </div>
                 {/each}
                 <span class="da-finisher-crown">✦</span>
-              </div>
-            </div>
-          </div>
-        {/if}
-        <!-- Springblast: total damage across all finisher hits -->
-        {#if entry.perkName === 'Springblast' && springblastFinisherHits > 1}
-          <div class="da-pbd-dmg-row">
-            <span class="da-pbd-ctx-label">Total (×{springblastFinisherHits} hits)</span>
-            <div class="da-hits-row">
-              <div class="da-hit-card">
-                {#each entry.typedHits_m2 as t, ti}
-                  {#if ti > 0}<span class="da-hit-plus">+</span>{/if}
-                  <div class="da-hit-chunk" style="--tc:{t.color}">
-                    <span class="da-hit-num" style="--tc:{t.color}">
-                      {fmtNum(Math.round(t.val * springblastFinisherHits * 10000) / 10000)}
-                    </span>
-                    <span class="da-hit-type">{t.label}</span>
-                  </div>
-                {/each}
               </div>
             </div>
           </div>
@@ -3939,6 +3938,7 @@
   curseRipHealMult={_curseRipHealMult}
   healCritDmgMult={_healCritDmgMult}
   venomEaterStacks={perks['Venom Eater'] ?? 0}
+  bloodThirstyStacks={perks['Blood Thirsty'] ?? 0}
   bind:disabledDebuffs
   bind:showCritValues
 />
@@ -5181,62 +5181,7 @@
   border-top: 1px solid rgba(255,255,255,.04);
 }
 
-/* ── Springblast finisher hits slider ── */
-.da-sb-slider-wrap {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 5px 8px;
-  border-radius: 6px;
-  background: rgba(251,146,60,.05);
-  border: 1px solid rgba(251,146,60,.18);
-  min-width: 0;
-  overflow: hidden;
-}
-.da-sb-slider-label {
-  font-size: .55rem;
-  font-weight: 800;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: #fb923c;
-  opacity: .75;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-.da-sb-slider {
-  flex: 1;
-  min-width: 0;
-  width: 0;
-  appearance: none;
-  height: 5px;
-  border-radius: 999px;
-  outline: none;
-  cursor: pointer;
-  background: linear-gradient(
-    90deg,
-    #fb923c var(--fill, 0%),
-    rgba(255,255,255,.1) var(--fill, 0%)
-  );
-}
-.da-sb-slider::-webkit-slider-thumb {
-  appearance: none;
-  width: 14px; height: 14px;
-  border-radius: 50%;
-  background: #fbbf24;
-  border: 2px solid rgba(0,0,0,.5);
-  cursor: grab;
-  box-shadow: 0 0 0 3px rgba(251,191,36,.2);
-}
-.da-sb-slider::-webkit-slider-thumb:active { cursor: grabbing; }
-.da-sb-slider-val {
-  font-family: 'Courier New', monospace;
-  font-size: .82rem;
-  font-weight: 800;
-  color: #fbbf24;
-  min-width: 16px;
-  text-align: right;
-  flex-shrink: 0;
-}
+
 
 @media (max-width: 700px) {
   .da-wbd-outer {

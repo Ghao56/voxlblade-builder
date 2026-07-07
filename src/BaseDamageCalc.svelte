@@ -90,6 +90,7 @@
   export let curseRipHealMult: number = 1
   export let healCritDmgMult: number = 0
   export let venomEaterStacks: number = 0
+  export let bloodThirstyStacks: number = 0
 
   let activeVariants = new Map<string, number>()
   let _ttHit: any = null
@@ -255,6 +256,7 @@
   $: critChance  = crit?.effectiveCritChance ?? 0
   $: critDmgMult = crit?.critDamageMultiplier ?? BASE_CRIT_DMG_PCT
   $: _venomEaterActive = venomEaterStacks > 0 && showCritValues && resolvedDebuffs.some(d => d.name === 'Poison')
+  $: _bloodThirstyActive = bloodThirstyStacks > 0 && resolvedDebuffs.some(d => d.name === 'Bleed')
 
   function defPctForType(k: string): number {
     if (k === 'true' || k === 'summon') return 0
@@ -284,6 +286,8 @@
       .filter(e => canProc !== false || !e.needsProcCoeff)
       .map(e => ({ perkName: e.perkName, label: e.label, mult: isHeal ? e.healMult : e.dmgMult }))
   }
+
+  $: _groupFinisherTotals = weaponHits.reduce((map, h) => { if (h.isFinisher) map[h.group] = (map[h.group] ?? 0) + h.count; return map }, {} as Record<string, number>)
 
   $: computedHits = typedBoostEntries && weaponHits.map((hit): ComputedHit => {
     const isHeal = hit.isHeal ?? false
@@ -356,6 +360,11 @@
       if (preMitBase > 0) addProcEffect(preMitBase, lightningCloakPct, { air: 0.5, magic: 0.5 }, 'Chain')
     }
 
+    if (!isHeal && stormRendPct > 0 && hit.canProc !== false) {
+      const preMitBase = computePreMitigationBase(hit) * _activeDebuffDamageMult * selfDebuffDamageMult
+      if (preMitBase > 0) addProcEffect(preMitBase, stormRendPct, { air: 0.5, magic: 0.5 }, 'Chain')
+    }
+
     if (!isHeal && explosiveChargePct > 0 && hit.group === 'WA' && hit.canProc !== false) {
       const preMitBase = computePreMitigationBase(hit) * _activeDebuffDamageMult * selfDebuffDamageMult
       if (preMitBase > 0) addProcEffect(preMitBase, explosiveChargePct, { physical: 0.5, fire: 0.5 }, 'Explosive')
@@ -378,14 +387,14 @@
           const blubDefPct  = defPctForType(k)
           const blubDefMult = calcArmorMult(blubDefPct, basePenDecimal).mult
           const blubTypeBase = blubPerHit * mult
-          const blubRaw = blubTypeBase * typedMultUsed * blubDefMult * blubDebuffMult * 2
+          const blubRawPerHit = blubTypeBase * typedMultUsed * (hit.combatMult ?? 1) * blubDefMult * blubDebuffMult * 2
           
           types.push({
             key: k, label: info.label, color: info.color,
-            typeBase: blubTypeBase, scalingMult: 1, combatMult: 1,
+            typeBase: blubTypeBase, scalingMult: 1, combatMult: hit.combatMult ?? 1,
             applicableBoosts, weaponBoostMult: 1, typeDebuffMult: blubDebuffMult,
             defMult: blubDefMult, enemyDefPct: blubDefPct,
-            raw: blubRaw, critVal: Math.round(blubRaw * critDmgMult / 100 * 10000) / 10000,
+            raw: blubRawPerHit, critVal: Math.round(blubRawPerHit * critDmgMult / 100 * 10000) / 10000,
             isHeal: false, tag: 'Blub', forceCrit: false, canProc: false, hitCount: 2,
           })
         }
@@ -418,6 +427,10 @@
             const dsPreMitBase = dragonStateBaseDmg * dragonStateScalingMult * dragonStateCombatMult * _activeDebuffDamageMult * selfDebuffDamageMult
             if (dsPreMitBase > 0) addProcEffect(dsPreMitBase, lightningCloakPct, { air: 0.5, magic: 0.5 }, 'Chain')
           }
+          if (stormRendPct > 0) {
+            const dsPreMitBase = dragonStateBaseDmg * dragonStateScalingMult * dragonStateCombatMult * _activeDebuffDamageMult * selfDebuffDamageMult
+            if (dsPreMitBase > 0) addProcEffect(dsPreMitBase, stormRendPct, { air: 0.5, magic: 0.5 }, 'Chain')
+          }
         }
       }
     }
@@ -434,7 +447,14 @@
             const typeDebuffMult = _activeDebuffTypeDamageMult[k] ?? 1
             const defPct  = defPctForType(k)
             const defMult = calcArmorMult(defPct, basePenDecimal).mult
-            const typeBase = ph.baseDmg * mult
+            let baseForType: number
+            if (ph.rawFinisherNumerator != null) {
+              const fh = _groupFinisherTotals[hit.group] ?? 1
+              baseForType = Math.round(ph.rawFinisherNumerator / (0.5 + fh / 2) * 1000) / 1000
+            } else {
+              baseForType = ph.baseDmg
+            }
+            const typeBase = baseForType * mult
             const raw = typeBase * ph.scalingMult * ph.combatMult * debuffMult * typedMultUsed * defMult * typeDebuffMult
 
             types.push({
@@ -443,7 +463,8 @@
               applicableBoosts, weaponBoostMult: 1, typeDebuffMult,
               defMult, enemyDefPct: defPct,
               raw, critVal: Math.round(raw * critDmgMult / 100 * 10000) / 10000,
-              isHeal: false, tag: ph.tag, oncePerGroup: true, forceCrit: false,
+              isHeal: false, tag: ph.tag, oncePerGroup: ph.oncePerFinisher ?? true, forceCrit: false,
+              ...(ph.halfActivations ? { activationDivisor: 2 } : {}),
             })
           }
 
@@ -451,6 +472,7 @@
             const preMitBase = ph.totalDmg * debuffMult
             if (luminescentPct > 0) addProcEffect(preMitBase, luminescentPct, { holy: 1.0 }, 'Luminescent')
             if (lightningCloakPct > 0) addProcEffect(preMitBase, lightningCloakPct, { air: 0.5, magic: 0.5 }, 'Chain')
+            if (stormRendPct > 0) addProcEffect(preMitBase, stormRendPct, { air: 0.5, magic: 0.5 }, 'Chain')
             if (explosiveChargePct > 0 && hit.group === 'WA') addProcEffect(preMitBase, explosiveChargePct, { physical: 0.5, fire: 0.5 }, 'Explosive')
             if (blubBlubAmt > 0) {
               const blubDmgSum = Object.values(ph.dmgTypes).reduce((s, m) => s + m, 0)
@@ -473,6 +495,51 @@
                   defMult: blubDefMult, enemyDefPct: blubDefPct,
                   raw: blubRaw, critVal: Math.round(blubRaw * critDmgMult / 100 * 10000) / 10000,
                   isHeal: false, tag: 'Blub', forceCrit: false, canProc: false, hitCount: 2,
+                })
+              }
+            }
+            if (curseRipPerkAmount > 0 && curseRipActiveDebuffCount > 0) {
+              if (preMitBase > 0) {
+                const healAmount = preMitBase / 60
+                if (healAmount > 0) {
+                  const healRaw = healAmount * curseRipHealMult * antiHealSelfMult
+                  types.push({
+                    key: 'heal', label: 'Heal', color: '#4ade80',
+                    typeBase: healAmount, scalingMult: 1, combatMult: 1,
+                    applicableBoosts: [], weaponBoostMult: 1, typeDebuffMult: 1,
+                    defMult: 1, enemyDefPct: 0,
+                    raw: healRaw, critVal: healRaw,
+                    isHeal: true, isCurseRip: true, tag: 'Curse Rip', isCritExempt: true, forceCrit: false,
+                    healBoostMult: curseRipHealMult !== 1 ? curseRipHealMult : undefined,
+                  })
+                }
+              }
+            }
+            if (_venomEaterActive) {
+              const veHeal = VENOM_EATER_HEAL_PER_STACK * venomEaterStacks
+              if (veHeal > 0) {
+                types.push({
+                  key: 'heal', label: 'Heal', color: '#4ade80',
+                  typeBase: veHeal, scalingMult: 1, combatMult: 1,
+                  applicableBoosts: [], weaponBoostMult: 1, typeDebuffMult: 1,
+                  defMult: 1, enemyDefPct: 0,
+                  raw: veHeal, critVal: veHeal,
+                  isHeal: true, isCritExempt: true, forceCrit: false,
+                  tag: 'Venom Eater',
+                })
+              }
+            }
+            if (_bloodThirstyActive) {
+              const btHeal = 0.3 * bloodThirstyStacks
+              if (btHeal > 0) {
+                types.push({
+                  key: 'heal', label: 'Heal', color: '#4ade80',
+                  typeBase: btHeal, scalingMult: 1, combatMult: 1,
+                  applicableBoosts: [], weaponBoostMult: 1, typeDebuffMult: 1,
+                  defMult: 1, enemyDefPct: 0,
+                  raw: btHeal, critVal: btHeal,
+                  isHeal: true, isCritExempt: true, forceCrit: false,
+                  tag: 'Blood Thirsty',
                 })
               }
             }
@@ -518,6 +585,21 @@
       }
     }
 
+    if (!isHeal && _bloodThirstyActive && hit.canProc !== false) {
+      const btHeal = 0.3 * bloodThirstyStacks
+      if (btHeal > 0) {
+        types.push({
+          key: 'heal', label: 'Heal', color: '#4ade80',
+          typeBase: btHeal, scalingMult: 1, combatMult: 1,
+          applicableBoosts: [], weaponBoostMult: 1, typeDebuffMult: 1,
+          defMult: 1, enemyDefPct: 0,
+          raw: btHeal, critVal: btHeal,
+          isHeal: true, isCritExempt: true, forceCrit: false,
+          tag: 'Blood Thirsty',
+        })
+      }
+    }
+
     return { group: hit.group, index: hit.index, count: hit.count, isFinisher: hit.isFinisher, label: hit.label, isHeal, types }
   })
 
@@ -525,7 +607,7 @@
   $: m2Hits   = computedHits.filter(h => h.group === 'M2')
   $: waHits   = computedHits.filter(h => h.group === 'WA')
   $: runeHits = computedHits.filter(h => h.group === 'Rune')
-  $: perkHits = computedHits.filter(h => h.group !== 'M1' && h.group !== 'M2' && h.group !== 'WA' && h.group !== 'Rune')
+  $: perkHits = computedHits.filter(h => h.group !== 'M1' && h.group !== 'M2' && h.group !== 'WA' && h.group !== 'Rune' && h.label !== 'Springblast')
 
   $: _groupedPerks = (() => {
     const map = new Map<string, typeof perkHits>()
@@ -546,8 +628,8 @@
 
   // ── Totals ──────────────────────────────────────────────────
   function hitTypeSum(hit: ComputedHit, useCrit: boolean, includeCount: boolean = false): number {
-    const perHitSum = hit.types.filter(t => !t.isHeal && !t.isCurseRip && !t.oncePerGroup).reduce((s, t) => s + ((useCrit || t.forceCrit) ? t.critVal : t.raw), 0)
-    const onceSum = hit.types.filter(t => t.oncePerGroup).reduce((s, t) => s + ((useCrit || t.forceCrit) ? t.critVal : t.raw), 0)
+    const perHitSum = hit.types.filter(t => !t.isHeal && !t.isCurseRip && !t.oncePerGroup).reduce((s, t) => s + ((useCrit || t.forceCrit) ? t.critVal : t.raw) / (t.activationDivisor ?? 1), 0)
+    const onceSum = hit.types.filter(t => t.oncePerGroup).reduce((s, t) => s + ((useCrit || t.forceCrit) ? t.critVal : t.raw) / (t.activationDivisor ?? 1), 0)
     const dsCount = (hit.group === 'M1' || hit.group === 'M2') ? 1 : hit.count
     return perHitSum * (includeCount ? hit.count : 1) + (includeCount ? onceSum * dsCount : onceSum)
   }
@@ -559,9 +641,9 @@
     let total = 0
     for (const h of list) {
       if (!h.isHeal) {
-        total += h.types.filter(t => !t.isHeal && !t.isCurseRip && !t.oncePerGroup).reduce((ts, t) => ts + ((useCrit || t.forceCrit) ? t.critVal : t.raw), 0) * h.count
+        total += h.types.filter(t => !t.isHeal && !t.isCurseRip && !t.oncePerGroup).reduce((ts, t) => ts + ((useCrit || t.forceCrit) ? t.critVal : t.raw) / (t.activationDivisor ?? 1), 0) * h.count
         const dsCount = (h.group === 'M1' || h.group === 'M2') ? 1 : h.count
-        total += h.types.filter(t => t.oncePerGroup).reduce((ts, t) => ts + ((useCrit || t.forceCrit) ? t.critVal : t.raw), 0) * dsCount
+        total += h.types.filter(t => t.oncePerGroup).reduce((ts, t) => ts + ((useCrit || t.forceCrit) ? t.critVal : t.raw) / (t.activationDivisor ?? 1), 0) * dsCount
       }
     }
     return total
@@ -791,7 +873,7 @@
                                   <span class="bdc-crit-inline-icon"><CritIcon size={12} /></span>
                                 {/if}
                                 <span class="bdc-hit-type-val">{fmt(((showCritValues && !t.isCritExempt) || t.forceCrit) ? (t.hitCount ? t.critVal / t.hitCount : t.critVal) : (t.hitCount ? t.raw / t.hitCount : t.raw))}</span>
-                                {#if t.hitCount}
+                                {#if t.hitCount && t.tag !== 'Blub'}
                                   <span class="bdc-hit-cnt">×{t.hitCount}</span>
                                 {/if}
                               </div>
@@ -801,6 +883,12 @@
                                   <span class="bdc-lum-badge" style="color:{BADGE_CONFIG[t.tag].color};background:{BADGE_CONFIG[t.tag].color}22;border:1px solid {BADGE_CONFIG[t.tag].color}44" title={BADGE_CONFIG[t.tag].title}>{BADGE_CONFIG[t.tag].label}</span>
                                   {#if t.tag === 'Dragon'}
                                     <span class="bdc-dragon-count">×{hit.group === 'M1' || hit.group === 'M2' ? 1 : hit.count}</span>
+                                  {/if}
+                                  {#if t.tag === 'Blub'}
+                                    <span class="bdc-dragon-count">×{t.hitCount ?? hit.count}</span>
+                                  {/if}
+                                  {#if t.tag === 'Springblast'}
+                                    <span class="bdc-dragon-count">×{t.activationDivisor ? Math.round(hit.count / t.activationDivisor) : hit.count}</span>
                                   {/if}
                                 {/if}
                                 {#if hit.group === 'Rune' && draconicRunesBonus[t.label.toLowerCase()]}
