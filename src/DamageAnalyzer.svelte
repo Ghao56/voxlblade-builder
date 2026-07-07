@@ -2441,7 +2441,7 @@
                   style="background:color-mix(in srgb,{def.color} 10%,transparent);border-color:color-mix(in srgb,{def.color} 35%,transparent)"
                   on:click={() => toggleBuffByName(buff.buffName)}>
                   <span class="da-bc-name">{def.name}</span>
-                  <span class="da-bc-val" style="color:{def.color}">{isOff ? '—' : buff.potency}</span>
+                  <span class="da-bc-val" style="color:{def.color}">{isOff ? '—' : roundMultiplier(buff.potency)}</span>
                   <span class="da-bc-cond">{getBuffDescription(buff.buffName, $result.perks, buff.potency)}</span>
                   <span class="da-bc-toggle" style={isOff ? '' : `background:color-mix(in srgb,${def.color} 25%,transparent);color:${def.color}`}>{isOff ? 'OFF' : 'ON'}</span>
                   <span class="da-buff-sources">{buff.sourceName}</span>
@@ -2450,22 +2450,22 @@
             {/if}
           {/each}
           {#if _allActiveBuffsRaw.some(b => !HANDLED_BUFF_NAMES.has(b.buffName) && BUFF_DEFS[b.buffName]?.isDebuff && b.isSelfDebuff)}
-            <span class="da-buff-divider da-buff-divider--debuff">Self Debuffs</span>
-            {#each _allActiveBuffsRaw.filter(b => !HANDLED_BUFF_NAMES.has(b.buffName) && BUFF_DEFS[b.buffName]?.isDebuff && b.isSelfDebuff) as buff, i (buff.buffName + buff.sourceName + i)}
-              {@const def = BUFF_DEFS[buff.buffName]}
-              {@const key = `${buff.buffName}:${buff.sourceName}`}
-              {@const isOff = disabledBuffKeys.has(key)}
-              {@const effectivePotency = wardingDebuffMult !== 1
-                ? Math.round(buff.potency * wardingDebuffMult * 1000) / 1000
-                : buff.potency}
-              {#if def}
-                <span class="da-buff">
-                  <button class="da-boost-chip da-boost-chip--debuff" class:da-boost-chip--off={isOff}
-                    style="background:color-mix(in srgb,{def.color} 10%,transparent);border-color:color-mix(in srgb,{def.color} 35%,transparent)"
-                    on:click={() => toggleBuffKey(key)}>
-                    <span class="da-bc-name">{def.name}</span>
-                    <span class="da-bc-val" style="color:{def.color}">{isOff ? '—' : effectivePotency}</span>
-                    <span class="da-bc-cond">{getBuffDescription(buff.buffName, $result.perks, effectivePotency)}</span>
+              <span class="da-buff-divider da-buff-divider--debuff">Self Debuffs</span>
+              {#each _allActiveBuffsRaw.filter(b => !HANDLED_BUFF_NAMES.has(b.buffName) && BUFF_DEFS[b.buffName]?.isDebuff && b.isSelfDebuff) as buff, i (buff.buffName + buff.sourceName + i)}
+                {@const def = BUFF_DEFS[buff.buffName]}
+                {@const key = `${buff.buffName}:${buff.sourceName}`}
+                {@const isOff = disabledBuffKeys.has(key)}
+                {@const effectivePotency = wardingDebuffMult !== 1
+                  ? Math.round(buff.potency * wardingDebuffMult * 1000) / 1000
+                  : roundMultiplier(buff.potency)}
+                {#if def}
+                  <span class="da-buff">
+                    <button class="da-boost-chip da-boost-chip--debuff" class:da-boost-chip--off={isOff}
+                      style="background:color-mix(in srgb,{def.color} 10%,transparent);border-color:color-mix(in srgb,{def.color} 35%,transparent)"
+                      on:click={() => toggleBuffKey(key)}>
+                      <span class="da-bc-name">{def.name}</span>
+                      <span class="da-bc-val" style="color:{def.color}">{isOff ? '—' : effectivePotency}</span>
+                      <span class="da-bc-cond">{getBuffDescription(buff.buffName, $result.perks, effectivePotency)}</span>
                     <span class="da-bc-toggle" style={isOff ? '' : `background:color-mix(in srgb,${def.color} 25%,transparent);color:${def.color}`}>{isOff ? 'OFF' : 'ON'}</span>
                     <span class="da-buff-sources">{buff.sourceName}</span>
                   </button>
@@ -2478,14 +2478,14 @@
             {#each _allActiveBuffsRaw.filter(b => !HANDLED_BUFF_NAMES.has(b.buffName) && BUFF_DEFS[b.buffName]?.isNeutral) as buff, i (buff.buffName + buff.sourceName + i)}
               {@const def = BUFF_DEFS[buff.buffName]}
               {@const key = `${buff.buffName}:${buff.sourceName}`}
-              {@const isOff = disabledBuffKeys.has(key)}
+              {@const isOff = buff.buffName === 'Quickdraw' ? disabledBoosts.has(buff.buffName) : disabledBuffKeys.has(key)}
               {#if def}
                 <span class="da-buff">
                   <button class="da-boost-chip da-boost-chip--neutral" class:da-boost-chip--off={isOff}
                     style="background:color-mix(in srgb,{def.color} 10%,transparent);border-color:color-mix(in srgb,{def.color} 35%,transparent)"
-                    on:click={() => toggleBuffKey(key)}>
+                    on:click={() => buff.buffName === 'Quickdraw' ? toggleBoost(buff.buffName) : toggleBuffKey(key)}>
                     <span class="da-bc-name">{def.name}</span>
-                    <span class="da-bc-val" style="color:{def.color}">{isOff ? '—' : buff.potency}</span>
+                    <span class="da-bc-val" style="color:{def.color}">{isOff ? '—' : roundMultiplier(buff.potency)}</span>
                     <span class="da-bc-cond">{getBuffDescription(buff.buffName, $result.perks, buff.potency)}</span>
                     <span class="da-bc-toggle" style={isOff ? '' : `background:color-mix(in srgb,${def.color} 25%,transparent);color:${def.color}`}>{isOff ? 'OFF' : 'ON'}</span>
                     <span class="da-buff-sources">{buff.sourceName}</span>
