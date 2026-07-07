@@ -897,7 +897,7 @@
                               </div>
                               <div class="bdc-hit-type-label-row">
                                 <span class="bdc-hit-type-label">{t.label}{t.isHeal && t.label.toLowerCase() !== 'heal' ? ' Heal' : ''}</span>
-                                {#if t.tag}
+                                {#if t.tag && BADGE_CONFIG[t.tag]}
                                   <span class="bdc-lum-badge" style="color:{BADGE_CONFIG[t.tag].color};background:{BADGE_CONFIG[t.tag].color}22;border:1px solid {BADGE_CONFIG[t.tag].color}44" title={BADGE_CONFIG[t.tag].title}>{BADGE_CONFIG[t.tag].label}</span>
                                   {#if t.tag === 'Dragon'}
                                     <span class="bdc-dragon-count">×{hit.group === 'M1' || hit.group === 'M2' ? 1 : hit.count}</span>
