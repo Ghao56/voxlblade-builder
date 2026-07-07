@@ -121,6 +121,19 @@
 
   const DMG_TYPE_MAP = new Map(Object.entries(DMG_TYPE_META).map(([id, meta]) => [id, meta]))
 
+  // Pre-built index: damage type → matching typedBoostEntries (avoids scanning entire array per call)
+  let _boostsByType = new Map<string, Array<{ perkName: string; label: string; dmgMult: number; healMult: number; types: string[]; appliesToGroups?: string[]; needsProcCoeff?: boolean }>>()
+  $: {
+    const map = new Map<string, typeof typedBoostEntries[0][]>()
+    for (const e of typedBoostEntries) {
+      for (const type of e.types) {
+        if (!map.has(type)) map.set(type, [])
+        map.get(type)!.push(e)
+      }
+    }
+    _boostsByType = map
+  }
+
   function loadDefenses(): Record<string, number> {
     try {
       const raw = localStorage.getItem(DEF_STORAGE_KEY)
@@ -281,11 +294,17 @@
   }
 
   function getApplicableBoosts(k: string, isHeal: boolean, group?: string, canProc?: boolean): Array<{ perkName: string; label: string; mult: number }> {
-    return typedBoostEntries
-      .filter(e => e.types.includes(k) && (isHeal ? e.healMult !== 1 : e.dmgMult !== 1))
-      .filter(e => !e.appliesToGroups || (group && e.appliesToGroups.includes(group)))
-      .filter(e => canProc !== false || !e.needsProcCoeff)
-      .map(e => ({ perkName: e.perkName, label: e.label, mult: isHeal ? e.healMult : e.dmgMult }))
+    const candidates = _boostsByType.get(k)
+    if (!candidates) return []
+    const results: Array<{ perkName: string; label: string; mult: number }> = []
+    for (const e of candidates) {
+      const mult = isHeal ? e.healMult : e.dmgMult
+      if (mult === 1) continue
+      if (e.appliesToGroups && (!group || !e.appliesToGroups.includes(group))) continue
+      if (canProc === false && e.needsProcCoeff) continue
+      results.push({ perkName: e.perkName, label: e.label, mult })
+    }
+    return results
   }
  
   $: computedHits = typedBoostEntries && weaponHits.map((hit): ComputedHit => {
@@ -316,6 +335,10 @@
         })
       }
     }
+
+    // Cache pre-mitigation base for this hit (used by all proc effects below)
+    const _hitPreMitBase = computePreMitigationBase(hit)
+    const _hitDebuffedPreMitBase = _hitPreMitBase * _activeDebuffDamageMult * selfDebuffDamageMult
 
     const types: ComputedType[] = Object.entries(hit.dmgTypes ?? {}).map(([k, mult]) => {
       const info = DMG_TYPE_MAP.get(k) ?? { label: k, color: '#e8e4da' }
@@ -350,23 +373,19 @@
       }
     })
     if (!isHeal && luminescentPct > 0 && hit.canProc !== false) {
-      const preMitBase = computePreMitigationBase(hit) * _activeDebuffDamageMult * selfDebuffDamageMult
-      if (preMitBase > 0) addProcEffect(preMitBase, luminescentPct, { holy: 1.0 }, 'Luminescent')
+      if (_hitDebuffedPreMitBase > 0) addProcEffect(_hitDebuffedPreMitBase, luminescentPct, { holy: 1.0 }, 'Luminescent')
     }
     
     if (!isHeal && lightningCloakPct > 0 && hit.canProc !== false) {
-      const preMitBase = computePreMitigationBase(hit) * _activeDebuffDamageMult * selfDebuffDamageMult
-      if (preMitBase > 0) addProcEffect(preMitBase, lightningCloakPct, { air: 0.5, magic: 0.5 }, 'Chain')
+      if (_hitDebuffedPreMitBase > 0) addProcEffect(_hitDebuffedPreMitBase, lightningCloakPct, { air: 0.5, magic: 0.5 }, 'Chain')
     }
 
     if (!isHeal && stormRendPct > 0 && hit.canProc !== false) {
-      const preMitBase = computePreMitigationBase(hit) * _activeDebuffDamageMult * selfDebuffDamageMult
-      if (preMitBase > 0) addProcEffect(preMitBase, stormRendPct, { air: 0.5, magic: 0.5 }, 'Chain')
+      if (_hitDebuffedPreMitBase > 0) addProcEffect(_hitDebuffedPreMitBase, stormRendPct, { air: 0.5, magic: 0.5 }, 'Chain')
     }
 
     if (!isHeal && explosiveChargePct > 0 && hit.group === 'WA' && hit.canProc !== false) {
-      const preMitBase = computePreMitigationBase(hit) * _activeDebuffDamageMult * selfDebuffDamageMult
-      if (preMitBase > 0) addProcEffect(preMitBase, explosiveChargePct, { physical: 0.5, fire: 0.5 }, 'Explosive')
+      if (_hitDebuffedPreMitBase > 0) addProcEffect(_hitDebuffedPreMitBase, explosiveChargePct, { physical: 0.5, fire: 0.5 }, 'Explosive')
     }
 
     if (!isHeal && blubBlubAmt > 0 && hit.canProc !== false) {
@@ -402,6 +421,8 @@
 
     if (!isHeal && dragonStateTotalDmg > 0 && (hit.group === 'M1' || hit.group === 'M2' || hit.isM1 || hit.isM2 || hit.isFinisher)) {
       const dsDebuffMult = _activeDebuffDamageMult * selfDebuffDamageMult
+      // Cache Dragon State pre-mit base for proc effects below
+      const _dsPreMitBase = dragonStateBaseDmg * dragonStateScalingMult * dragonStateCombatMult * dsDebuffMult
       if (dsDebuffMult > 0) {
         const dsResolvedTypes = withDarkMagicHex(resolveDamageTypes({ magic: 1.0 }, perkDmgTypeBonuses))
         for (const [k, mult] of Object.entries(dsResolvedTypes)) {
@@ -423,12 +444,10 @@
             isHeal: false, tag: 'Dragon', oncePerGroup: true, forceCrit: false,
           })
           if (lightningCloakPct > 0) {
-            const dsPreMitBase = dragonStateBaseDmg * dragonStateScalingMult * dragonStateCombatMult * _activeDebuffDamageMult * selfDebuffDamageMult
-            if (dsPreMitBase > 0) addProcEffect(dsPreMitBase, lightningCloakPct, { air: 0.5, magic: 0.5 }, 'Chain')
+            if (_dsPreMitBase > 0) addProcEffect(_dsPreMitBase, lightningCloakPct, { air: 0.5, magic: 0.5 }, 'Chain')
           }
           if (stormRendPct > 0) {
-            const dsPreMitBase = dragonStateBaseDmg * dragonStateScalingMult * dragonStateCombatMult * _activeDebuffDamageMult * selfDebuffDamageMult
-            if (dsPreMitBase > 0) addProcEffect(dsPreMitBase, stormRendPct, { air: 0.5, magic: 0.5 }, 'Chain')
+            if (_dsPreMitBase > 0) addProcEffect(_dsPreMitBase, stormRendPct, { air: 0.5, magic: 0.5 }, 'Chain')
           }
         }
       }

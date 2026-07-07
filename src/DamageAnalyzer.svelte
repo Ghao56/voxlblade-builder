@@ -141,9 +141,8 @@
     return baseMult
   })()
 
-  $: _curseRipHealMult = _allHealEntries
-    .filter(e => e.sourceName !== 'Level Healing')
-    .reduce((acc, e) => acc * e.rawMultiplier, 1.0)
+  // _curseRipHealMult is identical to _healFinalMultiplierNoLevel (excludes Level Healing)
+  $: _curseRipHealMult = _healFinalMultiplierNoLevel
 
   $: _healCritDmgMult = (perks['Critical Healing'] ?? 0) > 0
     ? 120 + (stats.holyBoost ?? 0) / 5 + 16.5 * (perks['Critical Healing'] ?? 0)
