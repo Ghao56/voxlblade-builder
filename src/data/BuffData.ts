@@ -1312,6 +1312,9 @@ function getTricksterReflection(
   if (!isSelfDebuff) return 0
   if (!def?.isDebuff) return 0
 
+  // Only Despair (Grounded Despair) gets Trickster reflection
+  if (buff.buffName !== 'Despair') return 0
+
   // Formula: originalPotency + (perkAmount/10 * (1 + originalPotency))
   // Returns the bonus added by Trickster reflection
   return roundMultiplier((tricksterStacks / 10) * (1 + buff.potency))
