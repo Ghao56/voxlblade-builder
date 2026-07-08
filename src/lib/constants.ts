@@ -237,7 +237,10 @@ export const BUILD_STATE_DEFAULTS: Record<string, any> = {
   ring: '', rune: '', infusionHelmet: '', infusionChestplate: '', infusionLeggings: '',
   infusionRing: '', weaponBlade: '', weaponHandle: '', monkGlove: '', monkEssence: '',
   shrineActive: false, upgradeHelmet: 0, upgradeChestplate: 0, upgradeLeggings: 0,
-  upgradeRing: 0, upgradeRune: 0, selectedWeaponArt: 'Lunge', draconicColor: '', draconicRuneInfusion: '', emotionalState: 'buffs',
+  upgradeRing: 0, upgradeRune: 0, selectedWeaponArt: 'Lunge', draconicColor: '',
+  draconicRuneInfusion: '', emotionalState: 'buffs',
+  level: 80, hpFill: 100, summonCount: 0, buffsConsumed: 0, sporelingsSummoned: 0,
+  inDarkness: true, cdrToggles: {},
 }
 
 // ──────────────────────────────────────────────

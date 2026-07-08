@@ -208,37 +208,90 @@
     return compressToBase64(JSON.stringify(slim))
   }
 
+  const DANGEROUS_KEYS = new Set(['__proto__', 'constructor', 'prototype'])
+  const VALID_ENCH_SLOTS = new Set(['helmet', 'chestplate', 'leggings', 'ring', 'rune'])
+
+  function isDangerousKey(k: string): boolean {
+    return DANGEROUS_KEYS.has(k)
+  }
+
+  function sanitizeField(key: string, value: unknown): { ok: boolean; value?: unknown } {
+    if (!(key in DEFAULTS)) return { ok: false }
+    const defaultVal = (DEFAULTS as Record<string, unknown>)[key]
+    const expectedType = typeof defaultVal
+
+    if (expectedType === 'number') {
+      const n = typeof value === 'number' ? value : NaN
+      if (!Number.isFinite(n)) return { ok: false }
+      return { ok: true, value: n }
+    }
+    if (expectedType === 'boolean') {
+      return typeof value === 'boolean' ? { ok: true, value } : { ok: false }
+    }
+    if (expectedType === 'string') {
+      return typeof value === 'string' ? { ok: true, value } : { ok: false }
+    }
+    if (expectedType === 'object' && defaultVal !== null) {
+      if (typeof value !== 'object' || value === null || Array.isArray(value)) return { ok: false }
+      const clean: Record<string, unknown> = {}
+      for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+        if (isDangerousKey(k)) continue
+        clean[k] = v
+      }
+      return { ok: true, value: clean }
+    }
+    return { ok: false }
+  }
+
   async function decodeState(code: string): Promise<BuildState> {
     let slim: Record<string, any>
     try {
       const json = await decompressFromBase64(code)
-      slim = JSON.parse(json)
+      const parsed = JSON.parse(json)
+      if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+        throw new Error('Malformed payload')
+      }
+      slim = parsed
     } catch {
       try {
-        slim = JSON.parse(decodeURIComponent(escape(atob(code.trim()))))
-     
-        if (slim.race !== undefined) return slim as BuildState
+        const parsed = JSON.parse(decodeURIComponent(escape(atob(code.trim()))))
+        if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+          throw new Error('Malformed payload')
+        }
+        if (parsed.race !== undefined) {
+          slim = parsed
+        } else {
+          throw new Error('Invalid code')
+        }
       } catch {
         throw new Error('Invalid code')
       }
     }
 
     const full: Record<string, any> = { ...DEFAULTS }
-    for (const [k, v] of Object.entries(slim)) {
-      if (k === 'en') continue
-      full[KEY_UNMAP[k] ?? k] = v
+    for (const [rawKey, v] of Object.entries(slim)) {
+      if (rawKey === 'en') continue
+      if (isDangerousKey(rawKey)) continue
+      const key = KEY_UNMAP[rawKey] ?? rawKey
+      if (isDangerousKey(key)) continue
+      const result = sanitizeField(key, v)
+      if (result.ok) full[key] = result.value
     }
 
     const enchFull: Record<string, [string,string,string]> = {
       helmet:['','',''], chestplate:['','',''], leggings:['','',''],
       ring:['','',''], rune:['','','']
     }
-    if (slim['en']) {
+    if (slim['en'] && typeof slim['en'] === 'object' && !Array.isArray(slim['en'])) {
       for (const [sk, v] of Object.entries(slim['en'] as Record<string,any>)) {
+        if (isDangerousKey(sk)) continue
         const slot = ENCH_UNMAP[sk] ?? sk
-        if (typeof v === 'string') enchFull[slot] = [v,'','']
-        else if (Array.isArray(v)) {
-          enchFull[slot] = [v[0]??'', v[1]??'', v[2]??''] as [string,string,string]
+        if (!VALID_ENCH_SLOTS.has(slot)) continue
+        if (typeof v === 'string') {
+          enchFull[slot] = [v, '', '']
+        } else if (Array.isArray(v)) {
+          const safe = v.filter(x => typeof x === 'string').slice(0, 3)
+          enchFull[slot] = [safe[0] ?? '', safe[1] ?? '', safe[2] ?? ''] as [string,string,string]
         }
       }
     }
