@@ -51,6 +51,16 @@
     return out
   }
 
+  function resolveTypeInfo(k: string, penDecimal: number, canProc?: boolean) {
+    const info = DMG_TYPE_MAP.get(k) ?? { label: k, color: FALLBACK_DMG_COLOR }
+    const applicableBoosts = getApplicableBoosts(k, false, undefined, canProc)
+    const typedMultUsed = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
+    const typeDebuffMult = _activeDebuffTypeDamageMult[k] ?? 1
+    const defPct = defPctForType(k)
+    const defMult = calcArmorMult(defPct, penDecimal).mult
+    return { info, applicableBoosts, typedMultUsed, typeDebuffMult, defPct, defMult }
+  }
+
   boosts
   disabledBoosts
   activeFinalMult
@@ -412,12 +422,7 @@
         const blubResolvedTypes = resolveDamageTypes({ water: 1.0 }, perkDmgTypeBonuses)
 
         for (const [k, mult] of Object.entries(blubResolvedTypes)) {
-          const info = DMG_TYPE_MAP.get(k) ?? { label: k, color: '#e8e4da' }
-          const applicableBoosts = getApplicableBoosts(k, false)
-          const typedMultUsed = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
-          const blubDebuffMult = _activeDebuffTypeDamageMult[k] ?? 1
-          const blubDefPct  = defPctForType(k)
-          const blubDefMult = calcArmorMult(blubDefPct, basePenDecimal).mult
+          const { info, applicableBoosts, typedMultUsed, typeDebuffMult: blubDebuffMult, defPct: blubDefPct, defMult: blubDefMult } = resolveTypeInfo(k, basePenDecimal)
           const blubTypeBase = blubPerHit * mult
           const blubRawPerHit = blubTypeBase * typedMultUsed * (hit.combatMult ?? 1) * blubDefMult * blubDebuffMult * 2
           
@@ -440,12 +445,7 @@
       if (dsDebuffMult > 0) {
         const dsResolvedTypes = withDarkMagicHex(resolveDamageTypes({ magic: 1.0 }, perkDmgTypeBonuses))
         for (const [k, mult] of Object.entries(dsResolvedTypes)) {
-          const info = DMG_TYPE_MAP.get(k) ?? { label: k, color: '#e8e4da' }
-          const applicableBoosts = getApplicableBoosts(k, false)
-          const typedMultUsed = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
-          const dsTypeDebuffMult = _activeDebuffTypeDamageMult[k] ?? 1
-          const dsDefPct  = defPctForType(k)
-          const dsDefMult = calcArmorMult(dsDefPct, basePenDecimal).mult
+          const { info, applicableBoosts, typedMultUsed, typeDebuffMult: dsTypeDebuffMult, defPct: dsDefPct, defMult: dsDefMult } = resolveTypeInfo(k, basePenDecimal)
           const dsTypeBase = dragonStateBaseDmg * mult
           const dsRaw = dsTypeBase * dragonStateScalingMult * dragonStateCombatMult * dsDebuffMult * typedMultUsed * dsDefMult * dsTypeDebuffMult
 
@@ -512,12 +512,7 @@
               const blubPerHit = blubPreMitBase * 0.15 * blubBlubAmt
               const blubResolvedTypes = resolveDamageTypes({ water: 1.0 }, perkDmgTypeBonuses)
               for (const [k, mult] of Object.entries(blubResolvedTypes)) {
-                const info = DMG_TYPE_MAP.get(k) ?? { label: k, color: '#e8e4da' }
-                const applicableBoosts = getApplicableBoosts(k, false)
-                const typedMultUsed = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
-                const blubDebuffMult = _activeDebuffTypeDamageMult[k] ?? 1
-                const blubDefPct  = defPctForType(k)
-                const blubDefMult = calcArmorMult(blubDefPct, basePenDecimal).mult
+                const { info, applicableBoosts, typedMultUsed, typeDebuffMult: blubDebuffMult, defPct: blubDefPct, defMult: blubDefMult } = resolveTypeInfo(k, basePenDecimal)
                 const blubTypeBase = blubPerHit * mult
                 const blubRaw = blubTypeBase * typedMultUsed * blubDefMult * blubDebuffMult * 2
                 types.push({

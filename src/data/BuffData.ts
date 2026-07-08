@@ -1553,7 +1553,7 @@ export function calcBuffEffect(
   return { value, unit: def.effectUnit, label }
 }
 
-export function calcPotencyPercent(perkAmount: number): number {
+function calcPotencyPercent(perkAmount: number): number {
   const p = perkAmount / 10
   return Math.floor(
     Math.pow(p, Math.min(1, p) + 1)*100

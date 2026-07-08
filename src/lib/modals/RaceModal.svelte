@@ -14,7 +14,7 @@
   export let didYouMean: Array<{label: string; type: 'name' | 'perk'; score?: number}>
   export let onFocus: () => void
   export let onBlur: () => void
-  export let onSelect: (e: CustomEvent<{label: string; type: string}>) => void
+  export let onSelect: (e: CustomEvent<{label: string; type: 'name' | 'perk'}>) => void
 
   $: searched = races.filter(r => {
     if (!modalSearch.trim()) return true

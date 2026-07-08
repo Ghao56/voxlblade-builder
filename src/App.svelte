@@ -669,7 +669,7 @@ function applyEnchantToAll(slot: EnchantSlot) {
   $: searchedEssences = (void weaponStatFilter, void selectedTags, void modalSearch, filterWeaponItems(filteredEssences, modalSearch))
 
   $: searchedArmorsForModal = (() => {
-    void selectedTags; void statFilter; void statFilterSortMode; void weaponResult;
+    void selectedTags; void statFilter; void statFilterSortMode; void weaponResult; void modalSearch;
     const slotName = activeModal === 'armor-helmet' || activeModal === 'infusion-helmet' ? 'Helmet' : activeModal === 'armor-chestplate' || activeModal === 'infusion-chestplate' ? 'Chestplate' : activeModal === 'armor-leggings' || activeModal === 'infusion-leggings' ? 'Leggings' : null;
     if (!slotName) return [];
 
@@ -710,6 +710,8 @@ function applyEnchantToAll(slot: EnchantSlot) {
       statFilterSortMode as 'highest'|'lowest'|'alphabetical'
     );
   })();
+
+  $: searchedModalItems = (void selectedTags, void statFilter, void statFilterSortMode, void weaponResult, void modalSearch, modalItems(activeModal ?? ''));
 
   function matchSearchReactive(name: string, perkNames: string[], query: string): boolean {
     if (!query.trim()) return true
@@ -1303,7 +1305,7 @@ $: _appWaAvgTotal = (() => {
     onSelect={(e) => applySuggestion(e.detail.label, e.detail.type)}
     {selectedTags} {toggleTag} {clearTags}
     modalType={activeModal}
-    searchedItems={modalItems(activeModal)}
+    searchedItems={searchedModalItems}
     {weaponStatFilter}
     onWeaponStatFilterChange={e => weaponStatFilter = e.detail}
     tierFilterOptions={[1,2,3,4,5]}
@@ -1319,7 +1321,7 @@ $: _appWaAvgTotal = (() => {
     onSelect={(e) => applySuggestion(e.detail.label, e.detail.type)}
     {selectedTags} {toggleTag} {clearTags} onChange={onStatFilterChange}
     modalType={activeModal}
-    searchedItems={modalItems(activeModal)}
+    searchedItems={searchedModalItems}
     showSortButtons={activeModal !== 'ring' && activeModal !== 'infusion-ring'}
     hideTags={activeModal === 'ring' || activeModal === 'infusion-ring' ? [] : undefined} />
 {/if}
