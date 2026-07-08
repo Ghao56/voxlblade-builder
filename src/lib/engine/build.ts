@@ -139,7 +139,7 @@ function calcBoosts(
     perks, naturalCritChance, jumpBoost, summonCount,
     ragePotency, bouncePotency, quickdrawPotency,
     tailwindPotency, speedBoost, attackSpeed, tenacity, inDarkness, emotionalState, level,
-    mountActive, summonBoostPct, selectedWeaponArt,
+    mountActive, summonBoostPct, selectedWeaponArt, hpFillPct,
   }
 
   for (const def of BOOST_DEFS) {
@@ -508,13 +508,22 @@ function deriveResults(
   const quickdrawPotency = maxBuffPotency(allBuffs, 'Quickdraw')
   const tailwindPotency  = maxBuffPotency(allBuffs, ['Tailwind', 'Whirlwind'])
 
+  const _rawFill = state.hpFill ?? 100
+  const _protection = boostedStats.protection ?? 0
+  let _actualHpFill = _rawFill
+  if (_protection < 0) {
+    const _baseMaxHP = Math.round(120 * (1 + (state.level ?? 80) * 0.0125))
+    const _effMaxHP  = Math.max(Math.round(_baseMaxHP * 0.1), _baseMaxHP + Math.round(_protection))
+    _actualHpFill = Math.min(100, Math.round(_rawFill * _effMaxHP / _baseMaxHP * 100) / 100)
+  }
+
   const isMountRune = state.rune.endsWith('Mount Rune')
   const boosts = calcBoosts(
     finalPerks, state.emotionalState, state.level ?? 80,
     crit.naturalCritChance, boostedStats.jumpBoost ?? 0,
     state.summonCount ?? 0, ragePotency, bouncePotency,
     tailwindPotency, boostedStats.speedBoost ?? 0, boostedStats.attackSpeed ?? 0, (finalStats.tenacity ?? 0) + orkBuffTenacity,
-    state.race, state.hpFill ?? 100, state.inDarkness ?? true,
+    state.race, _actualHpFill, state.inDarkness ?? true,
     isMountRune,
     boostedStats.summonBoost ?? 0, quickdrawPotency,
     state.selectedWeaponArt,

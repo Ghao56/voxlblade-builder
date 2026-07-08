@@ -1,6 +1,12 @@
 import { roundMultiplier } from '../lib/utils'
 import type { BoostAttackType } from '../lib/types'
 
+/** Penance: damage boost scales with missing HP. Bleed procs at ≤35% HP. */
+export const PENANCE_HP_THRESHOLD = 35       // percent (≤35% HP → max boost + bleed proc)
+export const PENANCE_MAX_BOOST = 0.25        // +25% dmg cap
+export const PENANCE_BLEED_POTENCY = 0       // status-only bleed, no damage
+export const PENANCE_BLEED_DURATION = 5      // seconds
+
 export interface BoostContext {
   perks: Record<string, number>
   naturalCritChance: number
@@ -19,6 +25,7 @@ export interface BoostContext {
   mountActive?: boolean
   summonBoostPct?: number
   selectedWeaponArt?: string
+  hpFillPct?: number
 }
 
 export interface BoostDef {
@@ -261,6 +268,24 @@ export const BOOST_DEFS: BoostDef[] = [
       return {
         multiplier: roundMultiplier(1 + potency),
         condition: `${sb}% Summon Boost × ${stacks} stack · potency ${potency}`,
+      }
+    },
+  },
+
+  {
+    sourceName: 'Penance',
+    type: 'dmg',
+    calcFn: (ctx) => {
+      const amount = ctx.perks['Penance'] ?? 0
+      if (amount <= 0) return null
+      const hpFill = ctx.hpFillPct ?? 100
+      const hpPercent = hpFill / 100
+      const boostPerStack = Math.min(PENANCE_MAX_BOOST, PENANCE_MAX_BOOST * (1 - hpPercent) / (1 - PENANCE_HP_THRESHOLD / 100))
+      const totalBoost = 1 + boostPerStack * amount
+      const pct = Math.round((totalBoost - 1) * 10000) / 100
+      return {
+        multiplier: totalBoost,
+        condition: `${hpFill}% HP → +${pct}% dmg`,
       }
     },
   },

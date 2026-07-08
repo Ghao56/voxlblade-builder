@@ -17,6 +17,7 @@
   import { getDraconicInfusionBuff, getDraconicHexDebuffs } from './data/draconicBuffs'
   import { WEAPON_ARTS } from './data/weaponArts'
   import { UI_COLORS, SOURCE_LABELS } from './lib/uiConstants'
+import { getAutoDebuffs } from './data/perkAutoDebuffs'
 
 
   $: wardingDebuffMult = calcWardingDebuffMultiplier($result.stats.warding ?? 0)
@@ -69,18 +70,15 @@
       }
     }
 
-    const _hasExhaust = modified.some(b => b.buffName === 'Exhaust')
-    const _hasBurn = modified.some(b => b.buffName === 'Burn')
-    if (_hasExhaust && !_hasBurn) {
-      modified.push({
-        buffName: 'Burn',
-        potency: 0,
-        duration: 5,
-        condition: 'On hit during Exhaust',
-        sourceName: 'Exhaust',
-        sourceType: 'perk',
-      })
-    }
+    const autoDebuffs = getAutoDebuffs({
+      existingBuffNames: modified.map(b => b.buffName),
+      playerBuffNames: modified.map(b => b.buffName),
+      perks: $result.perks,
+      hpFill: $build.hpFill ?? 100,
+      level: $build.level ?? 80,
+      protection: ($result.stats as Record<string, number>).protection ?? 0,
+    })
+    modified.push(...autoDebuffs)
 
     return modified
   })()

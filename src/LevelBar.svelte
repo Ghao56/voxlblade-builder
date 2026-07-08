@@ -131,7 +131,7 @@
       <span class="lb-hp-nums">
         <span class="lb-hp-cur">{currentHP}</span>
         <span class="lb-hp-sep">/</span>
-        <span class="lb-hp-max">{effectiveMaxHP}</span>
+        <span class="lb-hp-max">{baseMaxHP}</span>
         {#if effectiveProt !== 0}
           <span class="lb-prot-badge"
             class:lb-prot-badge--pos={effectiveProt > 0}

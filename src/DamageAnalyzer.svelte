@@ -25,8 +25,9 @@
   import { roundMultiplier, calcWardingDebuffMultiplier } from './lib/utils'
   import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage, type SelfDamagePerkDef } from './data/selfDamagePerks'
   import { resolveDamageTypes, applyAirToMagicConversion } from './lib/damageTypeResolve'
-  import { calcTypedDmgBoosts } from './data/TypedDmgBoost'
-  import { resolveStanceOverlay } from './data/stanceOverlays'
+import { calcTypedDmgBoosts } from './data/TypedDmgBoost'
+import { resolveStanceOverlay } from './data/stanceOverlays'
+import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
 
 
   $: _m1FinisherWeaponBoost = getWeaponConditionalBoost(perks, _baseWeaponType, 'm1Finisher')
@@ -229,7 +230,7 @@
       return { type, color: DMG_TYPE_COLORS[type] ?? '#e8e4da', ...resolveDefenseSources(sources) }
     }).filter(r => r.percentSources.length > 0 || r.flatSources.length > 0)
 
-  $: _hpFillPct = $build.hpFill ?? 100
+  $: _hpFillPct = calcActualHpFillPct($build.hpFill ?? 100, $build.level ?? 80, $result.stats.protection ?? 0)
   let _adaptivePlateTriggered = false
 
   $: _waSummonDef = (() => {
@@ -403,13 +404,22 @@
         inner.set(b.buffName, b.potency)
       }
     }
-    if (_allActiveBuffs.some(b => b.buffName === 'Exhaust')) {
-      if (!groups.has('Burn')) groups.set('Burn', new Map())
-      const inner = groups.get('Burn')!
-      if (!inner.has('Burn') || 0 > (inner.get('Burn') ?? 0)) {
-        inner.set('Burn', 0)
+    const autoDebuffs = getAutoDebuffs({
+      existingBuffNames: [...groups.keys()],
+      playerBuffNames: _allActiveBuffs.map(b => b.buffName),
+      perks,
+      hpFill: $build.hpFill ?? 100,
+      level: $build.level ?? 80,
+      protection: $result.stats.protection ?? 0,
+    })
+    for (const d of autoDebuffs) {
+      if (!groups.has(d.buffName)) groups.set(d.buffName, new Map())
+      const inner = groups.get(d.buffName)!
+      if (!inner.has(d.buffName) || d.potency > (inner.get(d.buffName) ?? 0)) {
+        inner.set(d.buffName, d.potency)
       }
     }
+
     // Melting Slime overrides every sticky into Melting Slime Sticky
     if ((perks['Melting Slime'] ?? 0) > 0) {
       for (const inner of groups.values()) {
