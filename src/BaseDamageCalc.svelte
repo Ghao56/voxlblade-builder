@@ -176,21 +176,34 @@
     },
   ]
 
-  let activePreset: string | null = null
+  let activePresets: Set<string> = new Set()
   export let disabledDebuffs: Set<string> = new Set()
 
   function applyPreset(p: Preset) {
-    if (activePreset === p.id) {
-      resetDefenses()
-      return
+    if (activePresets.has(p.id)) {
+      activePresets.delete(p.id)
+      activePresets = new Set(activePresets)
+    } else {
+      activePresets = new Set([...activePresets, p.id])
     }
-    defenses = Object.fromEntries(DEF_TRACKED_TYPES.map(t => [t, p.values[t] ?? 0]))
-    activePreset = p.id
+    rebuildDefensesFromPresets()
+  }
+
+  function rebuildDefensesFromPresets() {
+    const out = Object.fromEntries(DEF_TRACKED_TYPES.map(t => [t, 0]))
+    for (const pid of activePresets) {
+      const preset = DAILY_PRESETS.find(p => p.id === pid)
+      if (!preset) continue
+      for (const [k, v] of Object.entries(preset.values)) {
+        out[k] = (out[k] ?? 0) + (v ?? 0)
+      }
+    }
+    defenses = out
   }
 
   function resetDefenses() {
     defenses = Object.fromEntries(DEF_TRACKED_TYPES.map(t => [t, 0]))
-    activePreset = null
+    activePresets = new Set()
   }
 
   // ── Armor pen ─────────────────────────────────────────────────────────────
@@ -236,7 +249,7 @@
         reductions[typeKey] = (reductions[typeKey] ?? 0) + (v ?? 0)
       }
     }
-    if (Object.keys(reductions).length === 0) return defenses
+    if (Object.keys(reductions).length === 0) return { ...defenses }
     const out = { ...defenses }
     for (const [k, v] of Object.entries(reductions)) {
       out[k] = (out[k] ?? 0) - v
@@ -308,7 +321,7 @@
     return results
   }
  
-  $: computedHits = typedBoostEntries && weaponHits.map((hit): ComputedHit => {
+  $: computedHits = typedBoostEntries && effectiveDefenses && weaponHits.map((hit): ComputedHit => {
     const isHeal = hit.isHeal ?? false
     const basePenDecimal = (armorPen + globalArmorPenetration) / 100
     const hitPenDecimal = hit.group === 'WA' || hit.group === 'Rune' ? (armorPen + globalArmorPenetration + waArmorPenetration) / 100 : basePenDecimal
@@ -785,7 +798,7 @@
           {#each DAILY_PRESETS as p}
             <button
               class="bdc-preset-chip"
-              class:bdc-preset-chip--active={activePreset === p.id}
+              class:bdc-preset-chip--active={activePresets.has(p.id)}
               style="--pc:{p.color}"
               title={p.desc}
               on:click={() => applyPreset(p)}
@@ -807,7 +820,7 @@
               max="1000"
               step="1"
               value={defenses[id]}
-              on:input={e => { defenses[id] = parseFloat((e.target as HTMLInputElement).value) || 0; defenses = defenses; activePreset = null }}
+              on:input={e => { defenses = { ...defenses, [id]: parseFloat((e.target as HTMLInputElement).value) || 0 }; activePresets = new Set() }}
             />
             <span class="bdc-def-pct">%</span>
           </div>
