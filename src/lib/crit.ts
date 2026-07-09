@@ -1,4 +1,5 @@
-import type { StatMap } from './types'
+import type { ProcCoefficient, StatMap } from './types'
+import { calcProcChance } from './utils'
 
 const CRIT_DISABLED_PERKS = ['Seismic Momentum', 'Fractured Energy'] as const
 
@@ -177,24 +178,36 @@ function hasActiveGatingPerks(sources: CritSource[], perks: Record<string, numbe
 export interface CritResult {
   naturalCritChance: number
   effectiveNaturalCrit: number
+  effectiveNaturalCritWithProc: number
   critDamageMultiplier: number
   naturalBreakdown: Array<{ source: string; amount: number }>
   extraCritChance: number
   extraBreakdown: Array<{ source: string; amount: number }>
   allCritBreakdown: Array<{ source: string; amount: number; isExtra: boolean }>
   effectiveCritChance: number
+  effectiveCritChanceWithProc: number
   critFormula: string
   critDmgBreakdown: Array<{ source: string; amount: number }>
   primalActive: boolean
   primalStacks: number
   hasCritRelevantPerks: boolean
+  /**
+   * Natural crit sources are positiveOnly-scaled.
+   * Carrying Winds is ignore-scaled.
+   * King's Luck is positiveOnly-scaled.
+   * Golden Crits is a boost (not a crit source), handled separately.
+   */
+  procScalingInfo?: {
+    naturalCritChanceWithProcCoeff: number
+    kingLuckChanceWithProcCoeff: number
+  }
 }
 
 function round(n: number): number {
   return Math.round(n * 100) / 100
 }
 
-export function calcCrit(stats: StatMap, perks: Record<string, number>): CritResult {
+export function calcCrit(stats: StatMap, perks: Record<string, number>, hitProcCoeff?: ProcCoefficient): CritResult {
   const naturalBreakdown: Array<{ source: string; amount: number }> = []
   for (const src of NATURAL_CRIT_SOURCES) {
     const amount = src.calc(stats, perks)
@@ -205,12 +218,23 @@ export function calcCrit(stats: StatMap, perks: Record<string, number>): CritRes
 
   const effectiveNaturalCrit = primalStacks > 0 ? round(naturalCritChance / PRIMAL_DIVISOR) : naturalCritChance
 
+  // Natural Crits are positiveOnly: only buffed by procCoeff > 1, never nerfed
+  const effectiveNaturalCritWithProc = hitProcCoeff
+    ? round(calcProcChance(effectiveNaturalCrit / 100, hitProcCoeff, 'positiveOnly') * 100)
+    : effectiveNaturalCrit
+
   const extraBreakdown: Array<{ source: string; amount: number }> = []
   for (const src of EXTRA_CRIT_SOURCES) {
     const amount = src.calc(stats, perks)
     if (amount !== 0) extraBreakdown.push({ source: src.label, amount })
   }
   const extraCritChance = round(extraBreakdown.reduce((a, b) => a + b.amount, 0))
+
+  // King's Luck (Caci King Spirit) is positiveOnly
+  const kingsLuckAmt = extraBreakdown.find(e => e.source.includes("King's Luck"))?.amount ?? 0
+  const kingsLuckWithProc = hitProcCoeff
+    ? round(calcProcChance(kingsLuckAmt / 100, hitProcCoeff, 'positiveOnly') * 100)
+    : kingsLuckAmt
 
   const chances = [
     Math.min(effectiveNaturalCrit, 100) / 100,
@@ -219,6 +243,20 @@ export function calcCrit(stats: StatMap, perks: Record<string, number>): CritRes
 
   const combined = 1 - chances.reduce((acc, chance) => acc * (1 - chance), 1)
   const effectiveCritChance = round(combined * 100)
+
+  // Recompute with proc-scaled values for informational purposes
+  const chancesWithProc = hitProcCoeff
+    ? [
+        Math.min(effectiveNaturalCritWithProc, 100) / 100,
+        ...extraBreakdown.map(src => {
+          if (src.source.includes("King's Luck")) return Math.min(kingsLuckWithProc, 100) / 100
+          // Carrying Winds is ignore-scaled (unchanged)
+          return Math.min(src.amount, 100) / 100
+        }),
+      ]
+    : chances
+  const combinedWithProc = 1 - chancesWithProc.reduce((acc, chance) => acc * (1 - chance), 1)
+  const effectiveCritChanceWithProc = round(combinedWithProc * 100)
 
   const critFormula = '1 - ' + chances.map(v => `(1 - ${(v * 100).toFixed(2)}%)`).join(' * ')
 
@@ -267,16 +305,22 @@ export function calcCrit(stats: StatMap, perks: Record<string, number>): CritRes
   return {
     naturalCritChance,
     effectiveNaturalCrit,
+    effectiveNaturalCritWithProc,
     critDamageMultiplier,
     naturalBreakdown,
     extraCritChance,
     extraBreakdown,
     allCritBreakdown,
     effectiveCritChance,
+    effectiveCritChanceWithProc,
     critFormula,
     critDmgBreakdown: displayedCritDmgBreakdown,
     primalActive: primalStacks > 0,
     primalStacks,
     hasCritRelevantPerks,
+    procScalingInfo: hitProcCoeff ? {
+      naturalCritChanceWithProcCoeff: effectiveNaturalCritWithProc,
+      kingLuckChanceWithProcCoeff: kingsLuckWithProc,
+    } : undefined,
   }
 }

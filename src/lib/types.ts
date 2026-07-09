@@ -215,6 +215,22 @@ export interface BuildState {
   cdrToggles: Record<string, boolean>
 }
 
+export type ProcCoefficient =
+  | { type: 'noProc' }
+  | { type: 'hasCoeff'; value: number }
+
+export function getProcCoeffValue(pc: ProcCoefficient | undefined): number {
+  if (!pc) return 1
+  if (pc.type === 'noProc') return 0
+  return pc.value
+}
+
+export function canProc(pc: ProcCoefficient | undefined): boolean {
+  return getProcCoeffValue(pc) > 0
+}
+
+export type ProcScalingType = 'normal' | 'ignore' | 'positiveOnly'
+
 export type BoostAttackType = 'm1' | 'm2' | 'wa' | 'rune' | 'perk'
 
 export interface BoostEntry {
@@ -224,6 +240,8 @@ export interface BoostEntry {
   type: 'dmg' | 'heal'
   appliesTo?: BoostAttackType[]
   needsProcCoeff?: boolean
+  procScaling?: ProcScalingType
+  hasToggle?: boolean
 }
 
 export interface BoostResult {

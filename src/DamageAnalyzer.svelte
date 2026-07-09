@@ -5,7 +5,7 @@
   import ScalingBreakdownRow from './ScalingBreakdownRow.svelte'
   import { WEAPON_ARTS } from './data/weaponArts'
   import { WEAPON_BASE_DMG } from './data/weapon base dmg'
-  import { DMG_TYPE_COLORS, DMG_TYPE_PRIORITY, SCALING_TO_BOOST, PERCENT_STATS, type WeaponBaseDmg } from './lib/types'
+  import { DMG_TYPE_COLORS, DMG_TYPE_PRIORITY, SCALING_TO_BOOST, PERCENT_STATS, canProc, type WeaponBaseDmg, type ProcCoefficient } from './lib/types'
   import { BUFF_DEFS, getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, calcBuffEffect, getBuffDescription, convertTailwindToWhirlwind, getTrueBalanceBuffs } from './data/BuffData'
   import { DEBUFF_COMBAT_EFFECTS } from './data/debuffCombatEffects'
   import { getDraconicInfusionBuff, getDraconicHexDebuffs, getEffectiveDraconicInfusionPotency } from './data/draconicBuffs'  
@@ -513,10 +513,10 @@ import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
   $: _waArmorPenetration = (_windWalkerAmt > 0 && _hasTailwindOrWhirlwind ? 10 * _windWalkerAmt : 0) + (getRace($build.race)?.waArmorPenetration ?? 0) + (disabledBoosts.has('Highlander') ? 0 : (perks['Highlander'] ?? 0) * 10)
   $: _stormRendPct = _stormRendActive ? (1 / 3) : 0
   $: _explosiveChargePct = (perks['Explosive Charge'] ?? 0) > 0 ? 1.0 : 0
-  $: _blubBlubAmt = perks['Blub Blub'] ?? 0
+  $: _blubBlubAmt = (perks['Blub Blub'] ?? 0) && !disabledEffects.has('blubBlub') ? perks['Blub Blub'] ?? 0 : 0
   $: _crushingPressureAmt = perks['Crushing Pressure'] ?? 0
   $: _echoIncinerationAmt = perks['Echo Incineration'] ?? 0
-  $: _echoIncinerationBaseDmg = _echoIncinerationAmt > 0 ? 7 + 1.25 * _echoIncinerationAmt : 0
+  $: _echoIncinerationBaseDmg = (_echoIncinerationAmt > 0 && !disabledEffects.has('echoIncineration')) ? 7 + 1.25 * _echoIncinerationAmt : 0
   $: _echoIncinerationScalings = PERK_DMG_DEFS.find(d => d.perkName === 'Echo Incineration')?.scalings ?? {}
   $: _echoIncinerationScalingMult = _echoIncinerationAmt > 0 ? _computePerkScalingMult(_echoIncinerationScalings) : 1
 
@@ -905,6 +905,19 @@ import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
     disabledBoosts = new Set(disabledBoosts)
   }
 
+  /**
+   * Toggle set for chance-based optional effects.
+   * Each key corresponds to an effect's toggle identifier.
+   * When disabled, the effect's contribution is completely excluded.
+   */
+  let disabledEffects = new Set<string>()
+
+  function toggleEffect(name: string) {
+    if (disabledEffects.has(name)) disabledEffects.delete(name)
+    else disabledEffects.add(name)
+    disabledEffects = new Set(disabledEffects)
+  }
+
   let disabledHealBoosts = new Set<string>(['Extinguish'])
   let draconicInfusionDisabled = false
   let disableCurseRip = false
@@ -994,10 +1007,10 @@ import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
   $: activeFinalMult = activeEntries.reduce((acc, e) => acc * e.rawMultiplier, 1.0)
   $: activeFinalMultRounded = roundMultiplier(activeFinalMult)
 
-  function _categoryMult(type: BoostAttackType, canProc: boolean = true): number {
+  function _categoryMult(type: BoostAttackType, procAllowed: boolean = true): number {
     return activeEntries
       .filter(e => !(e as any).appliesTo || (e as any).appliesTo.includes(type))
-      .filter(e => canProc || !(e as any).needsProcCoeff)
+      .filter(e => procAllowed || !(e as any).needsProcCoeff)
       .reduce((acc, e) => acc * e.rawMultiplier, 1.0)
   }
 
@@ -1557,7 +1570,7 @@ import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
     hits?: number
     isM1?: boolean; isM2?: boolean; isFinisher?: boolean;     isWA?: boolean; isRune?: boolean; isProcHit?: boolean
     guardbreak?: boolean
-    canProc?: boolean
+    procCoefficient?: ProcCoefficient
     note?: string
     typedHits_m2:  Array<{ rawVal: number; val: number; color: string; label: string; rageApplied?: boolean }>
     typedHits_m1f: Array<{ rawVal: number; val: number; color: string; label: string; rageApplied?: boolean }>
@@ -1588,7 +1601,7 @@ import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
                       : (def.isM2 || def.isFinisher) ? 'm2'
                       : def.isM1  ? 'm1'
                       : 'perk'
-      const combatMult = _categoryMult(hitType, def.canProc !== false)
+      const combatMult = _categoryMult(hitType, canProc(def.procCoefficient))
 
       const baseDmgTypes = def.dmgTypeMode === 'weapon'
         ? _weaponDmgTypes
@@ -1686,7 +1699,7 @@ import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
         hits: def.getHits ? def.getHits({ perkAmount }) : def.hits,
         isM1: def.isM1, isM2: def.isM2, isFinisher: def.isFinisher,
         isWA: def.isWA, isRune: def.isRune, isProcHit: def.isProcHit, guardbreak: def.guardbreak,
-        canProc: def.canProc,
+        procCoefficient: def.procCoefficient,
         note: def.note,
         typedHits_m2: buildTypedHits(isSpringblast ? baseDmg : baseDmg_m2),
         typedHits_m1f: buildTypedHits(isSpringblast ? baseDmg : baseDmg_m1f),
@@ -1712,7 +1725,7 @@ import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
   $: _perkOnHitDamages = (() => {
     const out: Array<{
       tag: string; baseDmg: number; scalingMult: number; combatMult: number; totalDmg: number
-      dmgTypes: Record<string, number>; canProc?: boolean; isProcHit?: boolean
+      dmgTypes: Record<string, number>; procCoefficient?: ProcCoefficient; isProcHit?: boolean
       rawFinisherNumerator?: number; halfActivations?: boolean; oncePerFinisher?: boolean
     }> = []
     for (const e of _activePerkDmgEntries) {
@@ -1725,7 +1738,7 @@ import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
         combatMult: e.combatMult,
         totalDmg: e.totalDmg,
         dmgTypes: e.resolvedDmgTypes,
-        canProc: e.canProc,
+        procCoefficient: e.procCoefficient,
         isProcHit: e.isProcHit,
         ...(e.rawFinisherNumerator != null ? { rawFinisherNumerator: e.rawFinisherNumerator } : {}),
         ...(e.halfActivations != null ? { halfActivations: e.halfActivations } : {}),
@@ -1758,7 +1771,7 @@ import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
     dmgTypeCombatMults?: Record<string, number>
     dmgTypeIsHeal?: Record<string, boolean>
     dmgTypeIsCritExempt?: Record<string, boolean>
-    canProc?: boolean
+    procCoefficient?: ProcCoefficient
   }
 
   $: _bdcWeaponHits = (() => {
@@ -1977,7 +1990,7 @@ import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
         label: entry.displayName,
         isM1: entry.isM1,
         isM2: entry.isM2,
-        canProc: entry.canProc,
+        procCoefficient: entry.procCoefficient,
         ...(_colorMult !== 1 ? {
           weaponBoostMult: _colorMult,
           weaponBoostLabel: `${$build.draconicColor.charAt(0).toUpperCase()}${$build.draconicColor.slice(1)} Color Bonus`,
@@ -2369,6 +2382,37 @@ import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
         </div>
       </div>
     {/if}
+
+      {#if _echoIncinerationAmt > 0 || (perks['Blub Blub'] ?? 0) > 0}
+        <div class="da-boost-row" style="margin-top: 6px;">
+          {#if _echoIncinerationAmt > 0}
+            <button
+              class="da-boost-chip"
+              class:da-boost-chip--off={disabledEffects.has('echoIncineration')}
+              title="Echo Incineration: (10+2.5×perkAmount)% chance · normal scaling"
+              on:click={() => toggleEffect('echoIncineration')}
+            >
+              <span class="da-bc-name">Echo Incineration</span>
+              <span class="da-bc-val">{disabledEffects.has('echoIncineration') ? '—' : `+${(7 + 1.25 * _echoIncinerationAmt).toFixed(2)}`}</span>
+              <span class="da-bc-cond">{(10 + 2.5 * _echoIncinerationAmt)}% chance</span>
+              <span class="da-bc-toggle">{disabledEffects.has('echoIncineration') ? 'OFF' : 'ON'}</span>
+            </button>
+          {/if}
+          {#if (perks['Blub Blub'] ?? 0) > 0}
+            <button
+              class="da-boost-chip"
+              class:da-boost-chip--off={disabledEffects.has('blubBlub')}
+              title="Blub Blub: 50% proc chance · normal scaling"
+              on:click={() => toggleEffect('blubBlub')}
+            >
+              <span class="da-bc-name">Blub Blub</span>
+              <span class="da-bc-val">{disabledEffects.has('blubBlub') ? '—' : `${(perks['Blub Blub'] ?? 0)}×`}</span>
+              <span class="da-bc-cond">50% chance</span>
+              <span class="da-bc-toggle">{disabledEffects.has('blubBlub') ? 'OFF' : 'ON'}</span>
+            </button>
+          {/if}
+        </div>
+      {/if}
 
       {#if _ragePotency > 0 || _glyphConduitEntry || _vampireStacks > 0 || _photosynthesisStacks > 0 || (perks['Extinguish'] ?? 0) > 0 || _lightningCloakActive || _stormRendAmt > 0 || _draconicInfusionDisplay || _allActiveBuffsRaw.some(b => !HANDLED_BUFF_NAMES.has(b.buffName))}
         <div class="da-buff-list" style="margin-top: 8px;">

@@ -1,5 +1,5 @@
 import { roundMultiplier } from '../lib/utils'
-import type { BoostAttackType } from '../lib/types'
+import type { BoostAttackType, ProcScalingType } from '../lib/types'
 
 /** Penance: damage boost scales with missing HP. Bleed procs at ≤35% HP. */
 export const PENANCE_HP_THRESHOLD = 35       // percent (≤35% HP → max boost + bleed proc)
@@ -43,6 +43,11 @@ export interface BoostDef {
   // For boost that only applies to specific attack types
   appliesTo?: BoostAttackType[]
   needsProcCoeff?: boolean
+
+  // How this boost scales with proc coefficient
+  procScaling?: ProcScalingType
+  // Whether this boost has a user-facing toggle to enable/disable it
+  hasToggle?: boolean
 }
 
 export const BOOST_DEFS: BoostDef[] = [
@@ -50,10 +55,10 @@ export const BOOST_DEFS: BoostDef[] = [
   {sourceName: 'Blood Thirsty', multiplierPerPerk: 0.20, type: 'dmg', condition: 'Hitting an opponent with your Bleed', needsProcCoeff: true},
   {sourceName:'Perfection',multiplierPerPerk: 0.10, type: 'dmg', condition: 'at max potency',},
   {sourceName:'Stealth',multiplierPerPerk: 0.10, type: 'dmg', condition: "gain a Damage Boost against enemies that aren't targeting you",},
-  { sourceName: 'Golden Crits', multiplierPerPerk: 0.50, type: 'dmg', condition: '40% chance on crit' },
+  { sourceName: 'Golden Crits', multiplierPerPerk: 0.50, type: 'dmg', condition: '40% chance on crit', procScaling: 'positiveOnly', hasToggle: true },
   { sourceName: 'Royal Parry', multiplierPerPerk: 0.50, type: 'dmg', condition: 'on the hit that activated the Critical Boost status per 1 of this perk.' },
   { sourceName: 'Spell Piercer', multiplierPerPerk: 0.20, type: 'dmg', condition: 'Increase damage dealt by weapon arts and runes on crit by 20% per 1 of this perk' },
-  { sourceName: 'Scourge', multiplierPerPerk: 0.2, condition: 'Gain a chance for any hit to count as a Guardbreak', type: 'dmg' },
+  { sourceName: 'Scourge', multiplierPerPerk: 0.2, condition: 'Gain a chance for any hit to count as a Guardbreak', type: 'dmg', needsProcCoeff: true },
   { sourceName: 'Sharpshooter', multiplierPerPerk: 0.20, type: 'dmg', condition: 'Hitting from range (hits with proc coefficient)', needsProcCoeff: true },
   { sourceName: 'Venom Eater', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Venom Eater'] ?? 0; if (a <= 0) return null; return { multiplier: 1 + 0.10 * a, condition: `+10% dmg/stack on Crit hit vs Poisoned target` } }, needsProcCoeff: true },
   { sourceName: 'Ferocity', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Ferocity'] ?? 0; if (a <= 0 || ctx.tenacity <= 0) return null; const pct = ctx.tenacity * 11 * a; return { multiplier: 1 + pct / 100, condition: `${Math.round(ctx.tenacity * 100) / 100} tenacity × ${a} Ferocity = +${pct.toFixed(2)}%` } } },

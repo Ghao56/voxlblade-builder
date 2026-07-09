@@ -1,4 +1,6 @@
-﻿export const BADGE_CONFIG: Record<string, { color: string; label: string; title: string }> = {
+﻿import type { ProcCoefficient } from '../lib/types'
+
+export const BADGE_CONFIG: Record<string, { color: string; label: string; title: string }> = {
   'Dragon State':  { color: '#a78bfa', label: '✦ Dragon', title: 'Dragon State: additional wave of Magic above HP threshold · Once per M1/M2' },
   'Spore Burst': { color: '#d900ff', label: '✦ Spore Burst', title: 'Spore Burst: burst of poison on finisher · Once per finisher' },
   'Chain':   { color: '#AAFFDB', label: 'Chain', title: 'Lightning Cloak: 1/3 of hit damage as Air+Magic chain lightning (up to 4 targets)' },
@@ -28,7 +30,7 @@ export interface ComputedType {
   forceCrit: boolean
   isCritExempt?: boolean
   healBoostMult?: number
-  canProc?: boolean
+  procCoefficient?: ProcCoefficient
   hitCount?: number
   activationDivisor?: number
 }
@@ -40,7 +42,7 @@ export interface PerkOnHitDmg {
   combatMult: number
   totalDmg: number
   dmgTypes: Record<string, number>
-  canProc?: boolean
+  procCoefficient?: ProcCoefficient
   isProcHit?: boolean
   rawFinisherNumerator?: number
   halfActivations?: boolean
@@ -51,4 +53,5 @@ export interface ComputedHit {
     group: string; index: number; count: number; isFinisher: boolean; label?: string
     isHeal: boolean
     types: ComputedType[]
+    procCoefficient?: ProcCoefficient
 }

@@ -83,3 +83,31 @@ export function highlightTextParts(text: string, query: string): Array<{ text: s
 
   return parts
 }
+
+import type { ProcCoefficient, ProcScalingType } from './types'
+
+/**
+ * Pure utility: computes the actual proc chance for a given effect.
+ * Does NOT know about toggles, damage, or UI.
+ *
+ * @param baseChance - base probability (0..1)
+ * @param procCoeff - the hit's proc coefficient
+ * @param scaling - how this effect scales with proc coefficient
+ * @returns actual chance (0..1)
+ */
+export function calcProcChance(
+  baseChance: number,
+  procCoeff: ProcCoefficient,
+  scaling: ProcScalingType
+): number {
+  if (scaling === 'ignore') return baseChance
+  if (procCoeff.type === 'noProc') {
+    return scaling === 'positiveOnly' ? baseChance : 0
+  }
+  switch (scaling) {
+    case 'normal':
+      return baseChance * procCoeff.value
+    case 'positiveOnly':
+      return baseChance * Math.max(1, procCoeff.value)
+  }
+}

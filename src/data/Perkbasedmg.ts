@@ -1,4 +1,5 @@
 import { getDraconicColorDmgMultiplier } from '../data/draconicColorEffects'
+import type { ProcCoefficient } from '../lib/types'
 
 export const DRAGON_CLAW_BASE_DAMAGE = 25
 export const DRAGON_CLAW_DAMAGE_PER_STACK = 2.5
@@ -91,7 +92,7 @@ export interface PerkDmgDef {
   isRune?: boolean
   isProcHit?: boolean
   guardbreak?: boolean
-  canProc?: boolean
+  procCoefficient?: ProcCoefficient
   note?: string
   hpGate?: HpGate
   secondaryEffects?: SecondaryEffect[]
@@ -368,7 +369,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     dmgTypes: { physical: 1.0 },
     scalingMode: 'fixed',
     scalings: { physical: 1.0, dexterity: 1.0 },
-    canProc: false,
+    procCoefficient: { type: 'noProc' },
     note: 'Cannot proc other effects. No internal cooldown. Proccing Bleed multiple times in the same hit will proc this perk multiple times.',
   },
   // ── Honey Arts ────────────────────────────────────────────────────────────
@@ -381,7 +382,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     scalingMode: 'fixed',
     scalings: { magic: 1.0 },
     isWA: true,
-    canProc: false,
+    procCoefficient: { type: 'noProc' },
     secondaryEffects: [
       {
         label: 'Sticky',
@@ -474,7 +475,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     scalingMode: 'fixed',
     scalings: { dexterity: 1.0, hex: 1.0, earth: 1.0 },
     isProcHit: true,
-    canProc: false,
+    procCoefficient: { type: 'noProc' },
     note: 'Base damage unknown (???). Only activates once per finisher. Inflicts Poison on self and enemies.',
   },
   // ── Royal Finisher ────────────────────────────────────────────────────
@@ -510,6 +511,6 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     scalingMode: 'fixed',
     scalings: { fire: 1.0, air: 1.0 },
     guardbreak: true,
-    canProc: false,
+    procCoefficient: { type: 'noProc' },
   },
 ]

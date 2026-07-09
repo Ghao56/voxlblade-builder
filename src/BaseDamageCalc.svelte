@@ -4,7 +4,8 @@
   import { resolveDamageTypes } from './lib/damageTypeResolve'
   import type { TypedDmgBoostEntry } from './data/TypedDmgBoost'
   import { BADGE_CONFIG, type ComputedType, type ComputedHit, type PerkOnHitDmg } from './lib/dmgTypes'
-  import { SCALING_TO_BOOST, PERCENT_STATS } from './lib/types'
+  import type { ProcCoefficient } from './lib/types'
+  import { SCALING_TO_BOOST, PERCENT_STATS, canProc } from './lib/types'
   import {
     DMG_TYPE_META,
     DEF_TRACKED_TYPES,
@@ -55,9 +56,9 @@
     return out
   }
 
-  function resolveTypeInfo(k: string, penDecimal: number, canProc?: boolean) {
+  function resolveTypeInfo(k: string, penDecimal: number, procCoeff?: ProcCoefficient) {
     const info = DMG_TYPE_MAP.get(k) ?? { label: k, color: FALLBACK_DMG_COLOR }
-    const applicableBoosts = getApplicableBoosts(k, false, undefined, canProc)
+    const applicableBoosts = getApplicableBoosts(k, false, undefined, procCoeff)
     const typedMultUsed = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
     const typeDebuffMult = _activeDebuffTypeDamageMult[k] ?? 1
     const defPct = defPctForType(k)
@@ -87,7 +88,7 @@
     dmgTypeCombatMults?: Record<string, number>
     dmgTypeIsHeal?: Record<string, boolean>
     dmgTypeIsCritExempt?: Record<string, boolean>
-    canProc?: boolean
+    procCoefficient?: ProcCoefficient
   }> = []
   export let typedBoostEntries: TypedDmgBoostEntry[] = []
   export let luminescentPct: number = 0
@@ -327,7 +328,7 @@
     return baseSum * (hit.scalingMult ?? 1) * (hit.combatMult ?? 1) * (hit.weaponBoostMult ?? 1)
   }
 
-  function getApplicableBoosts(k: string, isHeal: boolean, group?: string, canProc?: boolean): Array<{ perkName: string; label: string; mult: number }> {
+  function getApplicableBoosts(k: string, isHeal: boolean, group?: string, procCoeff?: ProcCoefficient): Array<{ perkName: string; label: string; mult: number }> {
     const candidates = _boostsByType.get(k)
     if (!candidates) return []
     const results: Array<{ perkName: string; label: string; mult: number }> = []
@@ -335,7 +336,7 @@
       const mult = isHeal ? e.healMult : e.dmgMult
       if (mult === 1) continue
       if (e.appliesToGroups && (!group || !e.appliesToGroups.includes(group))) continue
-      if (canProc === false && e.needsProcCoeff) continue
+      if (e.needsProcCoeff && !canProc(procCoeff)) continue
       results.push({ perkName: e.perkName, label: e.label, mult })
     }
     return results
@@ -352,7 +353,7 @@
       const resolvedTypes = withDarkMagicHex(resolveDamageTypes(dmgTypes, perkDmgTypeBonuses))
       for (const [k, mult] of Object.entries(resolvedTypes)) {
         const info = DMG_TYPE_MAP.get(k) ?? { label: k, color: '#e8e4da' }
-        const applicableBoosts = getApplicableBoosts(k, false, undefined, hit?.canProc)
+        const applicableBoosts = getApplicableBoosts(k, false, undefined, hit?.procCoefficient)
         const typedMultUsed = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
         const debuffMult = _activeDebuffTypeDamageMult[k] ?? 1
         const defPct   = defPctForType(k)
@@ -366,7 +367,7 @@
           applicableBoosts, weaponBoostMult: 1, typeDebuffMult: debuffMult,
           defMult, enemyDefPct: defPct,
           raw, critVal: Math.round(raw * critDmgMult / 100 * 10000) / 10000,
-          isHeal: false, tag, forceCrit: false, canProc: false,
+          isHeal: false, tag, forceCrit: false, procCoefficient: { type: 'noProc' },
         })
       }
     }
@@ -380,7 +381,7 @@
       const typeIsHeal   = hit.dmgTypeIsHeal?.[k] ?? isHeal
       const typeCombat   = hit.dmgTypeCombatMults?.[k] ?? hit.combatMult
       const typeNoCrit   = healCritDmgMult > 0 && typeIsHeal ? false : (hit.dmgTypeIsCritExempt?.[k] ?? typeIsHeal)
-      const applicableBoosts = getApplicableBoosts(k, typeIsHeal, hit.group, hit.canProc)
+      const applicableBoosts = getApplicableBoosts(k, typeIsHeal, hit.group, hit.procCoefficient)
       const typedMultUsed = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
 
       const enemyDefPct = typeIsHeal ? 0 : defPctForType(k)
@@ -408,23 +409,23 @@
         raw, critVal, isHeal: typeIsHeal, isCritExempt: typeNoCrit, forceCrit: hit.forceCrit ?? false,
       }
     })
-    if (!isHeal && luminescentPct > 0 && hit.canProc !== false) {
+    if (!isHeal && luminescentPct > 0 && canProc(hit.procCoefficient)) {
       if (_hitDebuffedPreMitBase > 0) addProcEffect(_hitDebuffedPreMitBase, luminescentPct, { holy: 1.0 }, 'Luminescent')
     }
     
-    if (!isHeal && lightningCloakPct > 0 && hit.canProc !== false) {
+    if (!isHeal && lightningCloakPct > 0 && canProc(hit.procCoefficient)) {
       if (_hitDebuffedPreMitBase > 0) addProcEffect(_hitDebuffedPreMitBase, lightningCloakPct, { air: 0.5, magic: 0.5 }, 'Chain')
     }
 
-    if (!isHeal && stormRendPct > 0 && hit.canProc !== false) {
+    if (!isHeal && stormRendPct > 0 && canProc(hit.procCoefficient)) {
       if (_hitDebuffedPreMitBase > 0) addProcEffect(_hitDebuffedPreMitBase, stormRendPct, { air: 0.5, magic: 0.5 }, 'Chain')
     }
 
-    if (!isHeal && explosiveChargePct > 0 && hit.group === 'WA' && hit.canProc !== false) {
+    if (!isHeal && explosiveChargePct > 0 && hit.group === 'WA' && canProc(hit.procCoefficient)) {
       if (_hitDebuffedPreMitBase > 0) addProcEffect(_hitDebuffedPreMitBase, explosiveChargePct, { physical: 0.5, fire: 0.5 }, 'Explosive')
     }
 
-    if (!isHeal && blubBlubAmt > 0 && hit.canProc !== false) {
+    if (!isHeal && blubBlubAmt > 0 && canProc(hit.procCoefficient)) {
       const preMitSum = Object.values(hit.baseDmgTypes ?? hit.dmgTypes)
         .reduce((s, m) => s + hit.base * m, 0)
       const preMitBase = preMitSum * (hit.scalingMult ?? 1) * _activeDebuffDamageMult * selfDebuffDamageMult
@@ -445,13 +446,13 @@
             applicableBoosts, weaponBoostMult: 1, typeDebuffMult: blubDebuffMult,
             defMult: blubDefMult, enemyDefPct: blubDefPct,
             raw: blubRawPerHit, critVal: Math.round(blubRawPerHit * critDmgMult / 100 * 10000) / 10000,
-            isHeal: false, tag: 'Blub', forceCrit: false, canProc: false, hitCount: 2,
+            isHeal: false, tag: 'Blub', forceCrit: false, procCoefficient: { type: 'noProc' }, hitCount: 2,
           })
         }
       }
     }
 
-    if (!isHeal && echoIncinerationBaseDmg > 0 && hit.canProc !== false) {
+    if (!isHeal && echoIncinerationBaseDmg > 0 && canProc(hit.procCoefficient)) {
       addProcEffect(echoIncinerationBaseDmg, 1, { fire: 0.5, air: 0.5 }, 'Echo Incineration', echoIncinerationScalingMult, hit.combatMult)
     }
 
@@ -482,6 +483,7 @@
             if (_dsPreMitBase > 0) addProcEffect(_dsPreMitBase, stormRendPct, { air: 0.5, magic: 0.5 }, 'Chain')
           }
         }
+        if (echoIncinerationBaseDmg > 0) addProcEffect(echoIncinerationBaseDmg, 1, { fire: 0.5, air: 0.5 }, 'Echo Incineration', echoIncinerationScalingMult, dragonStateCombatMult)
       }
     }
 
@@ -492,7 +494,7 @@
           const resolvedTypes = withDarkMagicHex(resolveDamageTypes(ph.dmgTypes, perkDmgTypeBonuses))
           for (const [k, mult] of Object.entries(resolvedTypes)) {
             const info = DMG_TYPE_MAP.get(k) ?? { label: k, color: '#e8e4da' }
-            const applicableBoosts = getApplicableBoosts(k, false, undefined, hit.canProc)
+            const applicableBoosts = getApplicableBoosts(k, false, undefined, hit.procCoefficient)
             const typedMultUsed = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
             const typeDebuffMult = _activeDebuffTypeDamageMult[k] ?? 1
             const defPct  = defPctForType(k)
@@ -519,8 +521,9 @@
             })
           }
 
-          if (ph.canProc !== false) {
+          if (canProc(ph.procCoefficient)) {
             const preMitBase = ph.totalDmg * debuffMult
+            if (echoIncinerationBaseDmg > 0) addProcEffect(echoIncinerationBaseDmg, 1, { fire: 0.5, air: 0.5 }, 'Echo Incineration', echoIncinerationScalingMult, ph.combatMult)
             if (luminescentPct > 0) addProcEffect(preMitBase, luminescentPct, { holy: 1.0 }, 'Luminescent')
             if (lightningCloakPct > 0) addProcEffect(preMitBase, lightningCloakPct, { air: 0.5, magic: 0.5 }, 'Chain')
             if (stormRendPct > 0) addProcEffect(preMitBase, stormRendPct, { air: 0.5, magic: 0.5 }, 'Chain')
@@ -541,7 +544,7 @@
                   applicableBoosts, weaponBoostMult: 1, typeDebuffMult: blubDebuffMult,
                   defMult: blubDefMult, enemyDefPct: blubDefPct,
                   raw: blubRaw, critVal: Math.round(blubRaw * critDmgMult / 100 * 10000) / 10000,
-                  isHeal: false, tag: 'Blub', forceCrit: false, canProc: false, hitCount: 2,
+                  isHeal: false, tag: 'Blub', forceCrit: false, procCoefficient: { type: 'noProc' }, hitCount: 2,
                 })
               }
             }
@@ -595,7 +598,7 @@
       }
     }
 
-    if (!isHeal && curseRipPerkAmount > 0 && curseRipActiveDebuffCount > 0 && hit.canProc !== false) {
+    if (!isHeal && curseRipPerkAmount > 0 && curseRipActiveDebuffCount > 0 && canProc(hit.procCoefficient)) {
       const preMitSum  = computePreMitigationBase(hit)
       const preMitBase = preMitSum * _activeDebuffDamageMult * selfDebuffDamageMult
 
@@ -617,7 +620,7 @@
       }
     }
 
-    if (!isHeal && _venomEaterActive && hit.canProc !== false) {
+    if (!isHeal && _venomEaterActive && canProc(hit.procCoefficient)) {
       const veHeal = VENOM_EATER_HEAL_PER_STACK * venomEaterStacks
       if (veHeal > 0) {
         types.push({
@@ -632,7 +635,7 @@
       }
     }
 
-    if (!isHeal && _bloodThirstyActive && hit.canProc !== false) {
+    if (!isHeal && _bloodThirstyActive && canProc(hit.procCoefficient)) {
       const btHeal = 0.3 * bloodThirstyStacks
       if (btHeal > 0) {
         types.push({
