@@ -931,10 +931,10 @@ import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
   }
   type BoostAttackType = 'm1' | 'm2' | 'perk' | 'rune' | 'wa';
   $: _syntheticDmgBoostEntries = (() => {
-    const entries: Array<{ sourceName: string; rawMultiplier: number; condition: string; type: 'dmg' }> = []
+    const entries: Array<{ sourceName: string; rawMultiplier: number; condition: string; type: 'dmg'; needsProcCoeff?: boolean }> = []
 
     const cr = _curseRipPerkAmount > 0 && _curseRipActiveDebuffCount > 0
-    if (cr) entries.push({ sourceName: 'Curse Rip', rawMultiplier: _curseRipDamageBoost, condition: `${_curseRipActiveDebuffCount} unique debuff${_curseRipActiveDebuffCount > 1 ? 's' : ''} · ${_curseRipPerkAmount} stack`, type: 'dmg' })
+    if (cr) entries.push({ sourceName: 'Curse Rip', rawMultiplier: _curseRipDamageBoost, condition: `${_curseRipActiveDebuffCount} unique debuff${_curseRipActiveDebuffCount > 1 ? 's' : ''} · ${_curseRipPerkAmount} stack`, type: 'dmg', needsProcCoeff: true })
 
     const rp = _reaperPerkAmount > 0 && _reaperActiveDebuffCount > 0
     if (rp) entries.push({ sourceName: 'Reaper', rawMultiplier: _reaperDamageBoost, condition: `${_reaperActiveDebuffCount} unique debuff${_reaperActiveDebuffCount > 1 ? 's' : ''} · ${_reaperPerkAmount} stack`, type: 'dmg' })
@@ -1589,7 +1589,7 @@ import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
     secondaryEffects: Array<{ label: string; display: string; condition?: string; color: string; isActive: boolean }>
   }
 
-  $: _activePerkDmgEntries = (() => {
+  $: _activePerkDmgEntries = (void activeEntries, (() => {
     const out: PerkDmgComputedEntry[] = []
     for (const def of PERK_DMG_DEFS) {
       const perkAmount = perks[def.perkName] ?? 0
@@ -1719,7 +1719,7 @@ import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
       })
     }
     return out
-  })()
+  })())
   $: _draconicBloodEntry = _activePerkDmgEntries.find(e => e.perkName === 'Draconic Blood' && !draconicInfusionDisabled) ?? null
   $: _nonDraconicPerkEntries = _activePerkDmgEntries.filter(e => e.perkName !== 'Draconic Blood')
   $: _perkOnHitDamages = (() => {
@@ -4047,6 +4047,7 @@ import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
   curseRipPerkAmount={_curseRipPerkAmount}
   curseRipActiveDebuffCount={_curseRipActiveDebuffCount}
   curseRipHealMult={_curseRipHealMult}
+  disableCurseRip={disableCurseRip}
   healCritDmgMult={_healCritDmgMult}
   venomEaterStacks={perks['Venom Eater'] ?? 0}
   bloodThirstyStacks={perks['Blood Thirsty'] ?? 0}

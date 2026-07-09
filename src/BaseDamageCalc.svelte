@@ -25,6 +25,7 @@
   export let crit: any
   export let stats: any
   export let disabledBoosts: Set<string> = new Set(['Thief Training (would-crit bonus)'])
+  export let disableCurseRip: boolean = false
   export let activeFinalMult: number = 1
   export let showCritValues: boolean = false
   export let showCritToggle: boolean = false
@@ -298,8 +299,8 @@
 
   $: critChance  = crit?.effectiveCritChance ?? 0
   $: critDmgMult = crit?.critDamageMultiplier ?? BASE_CRIT_DMG_PCT
-  $: _venomEaterActive = venomEaterStacks > 0 && showCritValues && resolvedDebuffs.some(d => d.name === 'Poison')
-  $: _bloodThirstyActive = bloodThirstyStacks > 0 && resolvedDebuffs.some(d => d.name === 'Bleed')
+  $: _venomEaterActive = venomEaterStacks > 0 && showCritValues && !disabledBoosts.has('Venom Eater') && resolvedDebuffs.some(d => d.name === 'Poison')
+  $: _bloodThirstyActive = bloodThirstyStacks > 0 && !disabledBoosts.has('Blood Thirsty') && resolvedDebuffs.some(d => d.name === 'Bleed')
 
   function defPctForType(k: string): number {
     if (k === 'true' || k === 'summon') return 0
@@ -488,7 +489,7 @@
     }
 
     for (const ph of perkOnHitDamages) {
-      if (!isHeal && ph.totalDmg > 0 && (hit.isFinisher || ph.isProcHit) && ph.tag !== 'Dragon State') {
+      if (!isHeal && ph.totalDmg > 0 && hit.isFinisher && ph.tag !== 'Dragon State') {
         const debuffMult = _activeDebuffDamageMult * selfDebuffDamageMult
         if (debuffMult > 0) {
           const resolvedTypes = withDarkMagicHex(resolveDamageTypes(ph.dmgTypes, perkDmgTypeBonuses))
@@ -548,7 +549,7 @@
                 })
               }
             }
-            if (curseRipPerkAmount > 0 && curseRipActiveDebuffCount > 0) {
+            if (curseRipPerkAmount > 0 && curseRipActiveDebuffCount > 0 && !disableCurseRip) {
               if (preMitBase > 0) {
                 const healAmount = preMitBase / 60
                 if (healAmount > 0) {
@@ -598,7 +599,7 @@
       }
     }
 
-    if (!isHeal && curseRipPerkAmount > 0 && curseRipActiveDebuffCount > 0 && canProc(hit.procCoefficient)) {
+    if (!isHeal && curseRipPerkAmount > 0 && curseRipActiveDebuffCount > 0 && !disableCurseRip && canProc(hit.procCoefficient)) {
       const preMitSum  = computePreMitigationBase(hit)
       const preMitBase = preMitSum * _activeDebuffDamageMult * selfDebuffDamageMult
 

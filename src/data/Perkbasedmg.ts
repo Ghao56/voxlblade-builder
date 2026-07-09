@@ -381,7 +381,6 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     dmgTypes: { magic: 1.0 },
     scalingMode: 'fixed',
     scalings: { magic: 1.0 },
-    isWA: true,
     procCoefficient: { type: 'noProc' },
     secondaryEffects: [
       {
