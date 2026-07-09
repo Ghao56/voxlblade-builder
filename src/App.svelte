@@ -711,7 +711,7 @@ function applyEnchantToAll(slot: EnchantSlot) {
     );
   })();
 
-  $: searchedModalItems = (void selectedTags, void statFilter, void statFilterSortMode, void weaponResult, void modalSearch, modalItems(activeModal ?? ''));
+  $: searchedModalItems = (void selectedTags, void statFilter, void statFilterSortMode, void weaponResult, void modalSearch, void weaponStatFilter, modalItems(activeModal ?? ''));
 
   function matchSearchReactive(name: string, perkNames: string[], query: string): boolean {
     if (!query.trim()) return true

@@ -25,7 +25,7 @@
   }
 
   function formatStat(key: string, value: number): string {
-    if (key.includes('Boost') || key.includes('Defense')) {
+    if (key.includes('Boost') || key.includes('Defense') || key === 'warding') {
       return `${value > 0 ? '+' : ''}${value}%`
     }
     return `${value > 0 ? '+' : ''}${value}`
