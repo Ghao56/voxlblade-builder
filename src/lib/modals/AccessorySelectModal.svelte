@@ -1,6 +1,8 @@
 <script lang="ts">
   import { build } from '../store'
   import { getArmorPart, formatStat, formatLabel } from '../engine'
+  import { SCALING_TO_BOOST } from '../types'
+  import { OFFENSIVE_BOOSTS } from '../../data/statboost'
   import Modal from '../Modal.svelte'
   import ModalSearchHeader from '../../ModalSearchHeader.svelte'
   import DidYouMean from '../../DidYouMean.svelte'
@@ -23,6 +25,8 @@
   export let modalType: string
   export let searchedItems: any[]
   export let showSortButtons = false
+  export let weaponResult: any = null
+  export let statFilterSortMode: string = 'highest'
   export let effectiveLabel = 'boost'
   export let hideTags: string[] | undefined = undefined
 
@@ -77,6 +81,44 @@
     return null
   }
 
+  function computeItemEffectiveBoost(item: any): number {
+    if (!weaponResult?.scalings) return 0
+    const stats = getItemStats(item)
+    const scalings = weaponResult.scalings as Record<string, number>
+    let total = 0
+    for (const [key, scalingVal] of Object.entries(scalings)) {
+      const boostKey = SCALING_TO_BOOST[key]
+      if (!boostKey) continue
+      total += scalingVal * (stats[boostKey] ?? 0)
+    }
+    return Math.round(total * 100) / 100
+  }
+
+  function computeItemBrawnyBoost(item: any): number {
+    if (!weaponResult?.scalings) return 0
+    const brawnyAmt = Math.max(1, weaponResult.perks?.['Brawny'] ?? 0)
+    const convRate = Math.min(brawnyAmt, 1.0)
+    const stats = { ...getItemStats(item) }
+    const scalings = weaponResult.scalings as Record<string, number>
+    let gained = 0
+    for (const key of OFFENSIVE_BOOSTS) {
+      if (key === 'physicalBoost') continue
+      const val = stats[key] ?? 0
+      if (val <= 0) continue
+      const c = val * convRate
+      stats[key] = val - c
+      gained += c
+    }
+    stats['physicalBoost'] = (stats['physicalBoost'] ?? 0) + gained
+    let total = 0
+    for (const [key, scalingVal] of Object.entries(scalings)) {
+      const boostKey = SCALING_TO_BOOST[key]
+      if (!boostKey) continue
+      total += scalingVal * (stats[boostKey] ?? 0)
+    }
+    return Math.round(total * 100) / 100
+  }
+
   function getItemDesc(item: any): string | undefined {
     if (slotName) {
       const part = getArmorPart(item.name, slotName as any)
@@ -94,6 +136,8 @@
     {modalSuggestions}
     modalSelectedTags={selectedTags}
     {showSortButtons}
+    {weaponResult}
+    bind:statFilterSortMode
     {hideTags}
     {effectiveLabel}
     on:focus={onFocus}
@@ -116,6 +160,11 @@
             <Highlight text={item.name} query={modalSearch} />
             {#if isInfusion}<span class="inf-label">×0.5</span>{/if}
           </span>
+          {#if statFilterSortMode === 'most-effective' && weaponResult?.scalings}
+            <span class="modal-ef-badge">+{computeItemEffectiveBoost(item)}%</span>
+          {:else if statFilterSortMode === 'brawny' && weaponResult?.scalings}
+            <span class="modal-ef-badge modal-ef-badge--brawny">+{computeItemBrawnyBoost(item)}%</span>
+          {/if}
         </div>
         {#if getItemDesc(item)}
           <span class="modal-item-desc">{getItemDesc(item)}</span>
@@ -145,3 +194,21 @@
     />
   </div>
 </Modal>
+
+<style>
+  .modal-ef-badge {
+    font-size: .62rem;
+    font-weight: 800;
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: rgba(167,139,250,.15);
+    border: 1px solid rgba(167,139,250,.3);
+    color: #a78bfa;
+    flex-shrink: 0;
+  }
+  .modal-ef-badge--brawny {
+    background: rgba(251,146,60,.15);
+    border-color: rgba(251,146,60,.3);
+    color: #fb923c;
+  }
+</style>

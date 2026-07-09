@@ -1322,7 +1322,10 @@ $: _appWaAvgTotal = (() => {
     {selectedTags} {toggleTag} {clearTags} onChange={onStatFilterChange}
     modalType={activeModal}
     searchedItems={searchedModalItems}
-    showSortButtons={activeModal !== 'ring' && activeModal !== 'infusion-ring'}
+    showSortButtons={true}
+    {weaponResult}
+    bind:statFilterSortMode
+    effectiveLabel={activeModal?.startsWith('infusion-') ? 'armor boost' : 'boost'}
     hideTags={activeModal === 'ring' || activeModal === 'infusion-ring' ? [] : undefined} />
 {/if}
 
