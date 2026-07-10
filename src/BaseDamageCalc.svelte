@@ -175,7 +175,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
 
   let _woundTooltip: {
     style: string
-    finalDmgPrimary: number
+    preMitBase: number
     woundPotency: number
     trueDmg: number
   } | null = null
@@ -420,7 +420,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     const woundPotency = d.type === 'Bleed'
       ? (resolvedDebuffs.find(r => r.name === 'Wound' && !disabledDebuffs.has(r.name))?.potency ?? 0)
       : 0
-    const woundTrueDmg = woundPotency > 0 ? finalDmgPrimary * woundPotency : 0
+    const woundTrueDmg = woundPotency > 0 ? preMitBase * woundPotency : 0
     const woundAmt = woundPotency > 0 ? Math.round(woundPotency * 10) : 0
 
     const lifeDrinkerHeal = lifeDrinkerAmt > 0
@@ -1333,7 +1333,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
                           const spaceBelow = window.innerHeight - r.bottom
                           const left = Math.max(8, Math.min(r.left, window.innerWidth - 260))
                           _woundTooltip = {
-                            finalDmgPrimary: dot.finalDmgPrimary,
+                            preMitBase: dot.preMitBase,
                             woundPotency: dot.woundPotency ?? 0,
                             trueDmg: dot.woundTrueDmg!,
                             style: spaceBelow > 180
@@ -1478,8 +1478,8 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   {@const wt = _woundTooltip}
   <div class="bdc-tt-formula-fixed" style={wt.style}>
     <div class="bdc-fr">
-      <span class="bdc-fr-label">Final Bleed Dmg <span class="bdc-tt-muted">(after all mults)</span></span>
-      <span class="bdc-fr-val">{fmt(wt.finalDmgPrimary)}</span>
+      <span class="bdc-fr-label">Pre-Mitigation Bleed Dmg</span>
+      <span class="bdc-fr-val">{fmt(wt.preMitBase)}</span>
     </div>
     <div class="bdc-fr">
       <span class="bdc-fr-label">Wound Potency <span class="bdc-tt-muted">(10% per stack)</span></span>
