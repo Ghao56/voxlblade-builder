@@ -483,7 +483,7 @@ const ITEM_BUFF_MAP: GrantedBuff[] = [
   },
   {
     buffName: 'Slowness',
-    potency: 0,
+    potency: 1,
     duration: 12,
     condition: 'On Weapon Art hit',
     sourceName: 'Glacial Snapper Mount Rune',

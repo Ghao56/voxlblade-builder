@@ -499,12 +499,9 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
   $: _dummyHasPoisonActive = _dummyDebuffs.some(d => d.name === 'Poison' && !disabledDebuffs.has(d.name))
   $: _dummyHasBleedActive = _dummyDebuffs.some(d => d.name === 'Bleed' && !disabledDebuffs.has(d.name))
   $: _venomEaterCanShow = (perks['Venom Eater'] ?? 0) > 0 && _dummyHasPoisonActive
-  $: _slowDuration = Math.max(
-    0,
-    ..._allActiveBuffsRaw
-      .filter(b => b.buffName === 'Slowness' && !b.isSelfDebuff)
-      .map(b => b.duration ?? 0),
-  )
+  $: _slowActive = _allActiveBuffsRaw.filter(b => b.buffName === 'Slowness' && !b.isSelfDebuff)
+  $: _slowPotency = Math.max(0, ..._slowActive.map(b => b.potency ?? 0))
+  $: _slowDuration = Math.max(0, ..._slowActive.map(b => b.duration ?? 0))
   function dotScalingMult(type: string): number {
     const scalings = DOT_SCALINGS[type] ?? {}
     let totalPct = 0
@@ -3979,7 +3976,7 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
           <div class="ds-row">
             <div class="ds-col ds-col--type" style="flex:1.2;">
               <span class="ds-dot" style="background:{row.color}"></span>
-              <span style="color:{row.color}">{row.key}</span>
+              <span style="color:{row.color}">{row.key.charAt(0).toUpperCase() + row.key.slice(1)}</span>
             </div>
             <div class="ds-col ds-col--val" style="flex:1;">
               <span class="ds-num" style="color:{row.color}">{roundMultiplier(row.scalingVal)}</span>
