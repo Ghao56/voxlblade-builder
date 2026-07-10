@@ -1,5 +1,6 @@
 import { PENANCE_HP_THRESHOLD, PENANCE_BLEED_POTENCY, PENANCE_BLEED_DURATION } from './Boost'
 import type { GrantedBuff } from './BuffData'
+import { canProc, type ProcCoefficient } from '../lib/types'
 
 export interface AutoDebuffInput {
   existingBuffNames: string[]
@@ -8,6 +9,7 @@ export interface AutoDebuffInput {
   hpFill: number
   level: number
   protection: number
+  selectedWAProcCoefficient?: ProcCoefficient
 }
 
 export function calcActualHpFillPct(
@@ -23,12 +25,13 @@ export function calcActualHpFillPct(
 
 export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
   const debuffs: GrantedBuff[] = []
-  const { existingBuffNames, playerBuffNames, perks, hpFill, level, protection } = input
+  const { existingBuffNames, playerBuffNames, perks, hpFill, level, protection, selectedWAProcCoefficient } = input
 
   const hasExhaust = playerBuffNames.includes('Exhaust')
   const hasBurn = existingBuffNames.includes('Burn')
+  const exhaustCanProc = canProc(selectedWAProcCoefficient)
 
-  if (hasExhaust && !hasBurn) {
+  if (hasExhaust && !hasBurn && exhaustCanProc) {
     debuffs.push({
       buffName: 'Burn',
       potency: 0,

@@ -468,7 +468,13 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
   {
     perkName: 'Spore Burst',
     condition: 'On Finisher',
-    getBaseDamage: ({ perkAmount }) => perkAmount * 1,
+    getBaseDamage: ({ perkAmount, statuses }) => {
+      const perkPotency = perkAmount * 0.1
+      const poisonPotency = (statuses?.poisonPotency ?? 0) * 0.1
+      const base = 0.875 * (1 + perkPotency)
+      const mult = Math.pow(1 + poisonPotency, 1 + Math.min(1, poisonPotency))
+      return Math.round(base * mult * 1000) / 1000
+    },
     hits: 1,
     dmgTypeMode: 'fixed',
     dmgTypes: { hex: 1.0 },
@@ -476,7 +482,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     scalings: { dexterity: 1.0, hex: 1.0, earth: 1.0 },
     isProcHit: true,
     procCoefficient: { type: 'noProc' },
-    note: 'Base damage unknown (???). Only activates once per finisher. Inflicts Poison on self and enemies.',
+    note: 'Only activates once per finisher. Inflicts Poison on self and enemies.',
   },
   // ── Royal Finisher ────────────────────────────────────────────────────
   {

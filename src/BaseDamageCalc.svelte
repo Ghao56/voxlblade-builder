@@ -6,6 +6,7 @@
   import { BADGE_CONFIG, type ComputedType, type ComputedHit, type PerkOnHitDmg } from './lib/dmgTypes'
   import type { ProcCoefficient } from './lib/types'
   import { SCALING_TO_BOOST, PERCENT_STATS, canProc } from './lib/types'
+import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   import {
     DMG_TYPE_META,
     DEF_TRACKED_TYPES,
@@ -49,6 +50,18 @@
   export let echoIncinerationBaseDmg: number = 0
   export let echoIncinerationScalingMult: number = 1
   export let m1Label: string = 'M1'
+
+  const DOT_COLORS: Record<string, string> = {
+    Bleed: '#ff0004',
+    Burn: '#fd5d00',
+    Poison: '#d900ff',
+    'Caustic Slow': '#a855f7',
+  }
+  const BADGE_COLORS: Record<string, string> = {
+    physical: '#9a3412', magic: '#4338ca', fire: '#9a3412',
+    water: '#075985',    earth: '#3f6212', air: '#065f46',
+    hex: '#6b21a8',      holy: '#713f12',  true: '#52525b',
+  }
 
   function withDarkMagicHex(types: Record<string, number>): Record<string, number> {
     if (darkMagicHexBonus <= 0 || (types.magic ?? 0) <= 0) return types
@@ -109,6 +122,10 @@
   export let healCritDmgMult: number = 0
   export let venomEaterStacks: number = 0
   export let bloodThirstyStacks: number = 0
+  export let dotTicks: Array<{
+    type: string; tickDamage: number; dotPotency?: number; inflictionPotency?: number
+    debuffName?: string; slowDuration?: number; baseTick?: number
+  }> = []
 
   let activeVariants = new Map<string, number>()
   let _ttHit: any = null
@@ -116,6 +133,19 @@
   let _ttFormula: {
     t: ComputedType
     style: string
+  } | null = null
+  let _dotTooltip: {
+    type: string
+    tickDamage: number
+    dotPotency: number
+    inflictionPotency: number
+    style: string
+    slowDuration?: number
+    baseTick?: number
+    dmgType?: string
+    defPct?: number
+    defMult?: number
+    finalDmg?: number
   } | null = null
 
   $: resolvedDebuffs = appliedDebuffs.map(d => {
@@ -302,6 +332,19 @@
   $: _venomEaterActive = venomEaterStacks > 0 && showCritValues && !disabledBoosts.has('Venom Eater') && resolvedDebuffs.some(d => d.name === 'Poison')
   $: _bloodThirstyActive = bloodThirstyStacks > 0 && !disabledBoosts.has('Blood Thirsty') && resolvedDebuffs.some(d => d.name === 'Bleed')
 
+  $: _activeDotTicks = dotTicks.filter(d => {
+    const debuffToCheck = d.debuffName ?? d.type
+    const isOnDummy = resolvedDebuffs.some(r => r.name === debuffToCheck && !disabledDebuffs.has(r.name))
+    return isOnDummy && d.tickDamage > 0
+  }).map(d => {
+    const dmgType = DOT_DMG_TYPE_MAP[d.type] ?? 'true'
+    const defPct = defPctForType(dmgType)
+    const totalPen = armorPen + globalArmorPenetration
+    const { mult: defMult } = calcArmorMult(defPct, totalPen / 100)
+    const finalDmg = Math.round(d.tickDamage * defMult * 1000) / 1000
+    return { ...d, dmgType, defPct, defMult, finalDmg }
+  })
+
   function defPctForType(k: string): number {
     if (k === 'true' || k === 'summon') return 0
     let pct = effectiveDefenses[k] ?? 0
@@ -485,6 +528,20 @@
           }
         }
         if (echoIncinerationBaseDmg > 0) addProcEffect(echoIncinerationBaseDmg, 1, { fire: 0.5, air: 0.5 }, 'Echo Incineration', echoIncinerationScalingMult, dragonStateCombatMult)
+        if (_bloodThirstyActive) {
+          const btHeal = 0.3 * bloodThirstyStacks
+          if (btHeal > 0) {
+            types.push({
+              key: 'heal', label: 'Heal', color: '#4ade80',
+              typeBase: btHeal, scalingMult: 1, combatMult: 1,
+              applicableBoosts: [], weaponBoostMult: 1, typeDebuffMult: 1,
+              defMult: 1, enemyDefPct: 0,
+              raw: btHeal, critVal: btHeal,
+              isHeal: true, isCritExempt: true, forceCrit: false,
+              tag: 'Blood Thirsty',
+            })
+          }
+        }
       }
     }
 
@@ -1077,6 +1134,65 @@
             {/if}
           {/each}
         </div>
+        {#if _activeDotTicks.length > 0}
+          <div class="bdc-hit-list-grp">
+            <div class="bdc-grp-head">
+              <span class="bdc-hit-grp-label">DoT Dmg</span>
+            </div>
+            <div class="bdc-hit-list-rows">
+              {#each _activeDotTicks as dot}
+                {@const _dc = DOT_COLORS[dot.type] ?? '#e8e4da'}
+                <div class="bdc-hit-row">
+                  <div class="bdc-hit-row-types">
+                    <!-- svelte-ignore a11y_no_static_element_interactions -->
+                    <div class="bdc-hit-type-chunk" style="--tc:{_dc}"
+                      on:mouseenter={(e) => {
+                        const r = (e.currentTarget as HTMLElement).getBoundingClientRect()
+                        const spaceBelow = window.innerHeight - r.bottom
+                        const left = Math.max(8, Math.min(r.left, window.innerWidth - 260))
+                        _dotTooltip = {
+                          type: dot.type,
+                          tickDamage: dot.tickDamage,
+                          dotPotency: dot.dotPotency ?? 0,
+                          inflictionPotency: dot.inflictionPotency ?? 0,
+                          slowDuration: dot.slowDuration,
+                          baseTick: dot.baseTick,
+                          dmgType: dot.dmgType,
+                          defPct: dot.defPct,
+                          defMult: dot.defMult,
+                          finalDmg: dot.finalDmg,
+                          style: spaceBelow > 180
+                            ? `left:${left}px;top:${r.bottom + 4}px;`
+                            : `left:${left}px;bottom:${window.innerHeight - r.top + 4}px;`,
+                        }
+                      }}
+                      on:mouseleave={() => { _dotTooltip = null }}>
+                      <div class="bdc-hit-type-top">
+                        <div class="bdc-hit-type-val-row">
+                          <span class="bdc-hit-type-val">{fmt(dot.finalDmg ?? dot.tickDamage)}</span>
+                        </div>
+                        <div class="bdc-hit-type-label-row">
+                          <span class="bdc-hit-type-label">{dot.type}</span>
+                          {#if dot.dmgType}
+                            <span class="bdc-dot-dmg-badge" style="background:{BADGE_COLORS[dot.dmgType] ?? '#6b7280'}">{dot.dmgType}</span>
+                          {/if}
+                        </div>
+                        {#if dot.defMult != null && dot.defMult < 1}
+                          <div class="bdc-dot-raw-line">raw {fmt(dot.tickDamage)}</div>
+                        {/if}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="bdc-hit-row-end">
+                    <span class="bdc-hit-type-sum-sep">=</span>
+                    <span class="bdc-hit-type-sum">{fmt(dot.finalDmg ?? dot.tickDamage)}</span>
+                  </div>
+                </div>
+              {/each}
+            </div>
+            <div class="bdc-dot-footnote">Per tick</div>
+          </div>
+        {/if}
       {/if}
     </div>
   </div>
@@ -1085,6 +1201,43 @@
 {#if _ttHit && _ttStyleStr}
   <div class="bdc-tt-fixed" style={_ttStyleStr}>
     <DmgTotalTooltip hit={_ttHit} useCrit={showCritValues}/>
+  </div>
+{/if}
+
+{#if _dotTooltip}
+  {@const _dtc = DOT_COLORS[_dotTooltip.type] ?? '#e8e4da'}
+  <div class="bdc-tt-formula-fixed" style={_dotTooltip.style}>
+    <div class="bdc-fr">
+      <span class="bdc-fr-label">DoT Base</span>
+      <span class="bdc-fr-val">{fmt(1.75 * (1 + _dotTooltip.inflictionPotency / 1.1))}</span>
+    </div>
+    <div class="bdc-fr">
+      <span class="bdc-fr-label">Potency Mult</span>
+      <span class="bdc-fr-val"><span class="bdc-tt-paren">(1 + {fmt(_dotTooltip.dotPotency)})</span><sup>{fmt(1 + Math.min(1, _dotTooltip.dotPotency))}</sup> = {fmt(Math.pow(1 + _dotTooltip.dotPotency, 1 + Math.min(1, _dotTooltip.dotPotency)))}</span>
+    </div>
+    {#if _dotTooltip.slowDuration && _dotTooltip.slowDuration > 0 && _dotTooltip.baseTick != null}
+      <div class="bdc-fr">
+        <span class="bdc-fr-label">Slow Boost <span class="bdc-tt-hint">(rem. {_dotTooltip.slowDuration}s)</span></span>
+        <span class="bdc-fr-val">× {fmt(1 + _dotTooltip.slowDuration * 0.1)}</span>
+      </div>
+    {/if}
+    {#if _dotTooltip.baseTick != null}
+      <div class="bdc-fr">
+        <span class="bdc-fr-label">Base Tick</span>
+        <span class="bdc-fr-val">{fmt(_dotTooltip.baseTick)}</span>
+      </div>
+    {/if}
+    {#if _dotTooltip.defPct != null && _dotTooltip.defMult != null}
+      <div class="bdc-fr">
+        <span class="bdc-fr-label">{_dotTooltip.dmgType ?? '?'} Defense</span>
+        <span class="bdc-fr-val"><span class="bdc-tt-muted">{fmt(_dotTooltip.defPct)}%</span> → × {fmt(_dotTooltip.defMult)}</span>
+      </div>
+    {/if}
+    <div class="bdc-fr-divider"></div>
+    <div class="bdc-fr bdc-fr--result">
+      <span class="bdc-fr-label">After Defense</span>
+      <span class="bdc-fr-val bdc-fr-val--result" style="--tc:{_dtc}">{fmt(_dotTooltip.finalDmg ?? _dotTooltip.tickDamage)}</span>
+    </div>
   </div>
 {/if}
 
@@ -1954,14 +2107,55 @@
   z-index: 100;
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  padding: 8px 10px;
+  gap: 4px;
+  padding: 10px 12px;
   border-radius: 8px;
   background: var(--surface, #141715);
   border: 1px solid rgba(255,255,255,.1);
   box-shadow: 0 8px 24px rgba(0,0,0,.6);
-  min-width: 180px;
+  min-width: 200px;
   width: max-content;
+}
+.bdc-tt-formula-fixed sup {
+  font-size: .55rem;
+  vertical-align: super;
+  line-height: 1;
+  color: var(--ink-muted, #8a8d85);
+}
+.bdc-tt-paren {
+  color: var(--ink-muted, #8a8d85);
+}
+.bdc-tt-hint {
+  font-weight: 400;
+  opacity: .6;
+  font-size: .65rem;
+}
+.bdc-tt-muted {
+  color: var(--ink-muted, #8a8d85);
+  font-size: .65rem;
+}
+.bdc-dot-footnote {
+  font-size: .65rem;
+  color: var(--ink-muted, #8a8d85);
+  opacity: .6;
+  padding: 2px 12px 0;
+}
+.bdc-dot-dmg-badge {
+  font-size: .55rem;
+  padding: 0 4px;
+  border-radius: 3px;
+  color: #fff;
+  text-shadow: 0 0 2px rgba(0,0,0,.5);
+  margin-left: 4px;
+  line-height: 1.4;
+  vertical-align: middle;
+}
+.bdc-dot-raw-line {
+  font-size: .6rem;
+  color: var(--ink-muted, #8a8d85);
+  opacity: .6;
+  line-height: 1;
+  margin-top: 1px;
 }
 
 </style>

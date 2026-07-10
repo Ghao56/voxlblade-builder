@@ -22,12 +22,14 @@
   import { getDraconicColorDmgMultiplier } from './data/draconicColorEffects'
   import { applyDraconicBonuses, getDraconicBonuses } from './data/draconicRunes'
   import { calculateHealBoost, type HealSource } from './data/HealBoost'
-  import { roundMultiplier, calcWardingDebuffMultiplier } from './lib/utils'
+  import { roundMultiplier, calcWardingDebuffMultiplier, calcProcChance } from './lib/utils'
   import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage, type SelfDamagePerkDef } from './data/selfDamagePerks'
   import { resolveDamageTypes, applyAirToMagicConversion } from './lib/damageTypeResolve'
 import { calcTypedDmgBoosts } from './data/TypedDmgBoost'
 import { resolveStanceOverlay } from './data/stanceOverlays'
 import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
+import { calcDotTick, calcCausticSlow, toGamePotency, DOT_TYPE_LIST } from './data/DoTDamage'
+import { WEAPON_PROC_COEFFS, DEFAULT_PROC_COEFF, WA_PROC_COEFFS } from './data/procCoefficients'
 
 
   $: _m1FinisherWeaponBoost = getWeaponConditionalBoost(perks, _baseWeaponType, 'm1Finisher')
@@ -411,6 +413,7 @@ import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
       hpFill: $build.hpFill ?? 100,
       level: $build.level ?? 80,
       protection: $result.stats.protection ?? 0,
+      selectedWAProcCoefficient: WA_PROC_COEFFS[selectedWA.name] ?? DEFAULT_PROC_COEFF,
     })
     for (const d of autoDebuffs) {
       if (!groups.has(d.buffName)) groups.set(d.buffName, new Map())
@@ -469,6 +472,36 @@ import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
   $: _dummyHasPoisonActive = _dummyDebuffs.some(d => d.name === 'Poison' && !disabledDebuffs.has(d.name))
   $: _dummyHasBleedActive = _dummyDebuffs.some(d => d.name === 'Bleed' && !disabledDebuffs.has(d.name))
   $: _venomEaterCanShow = (perks['Venom Eater'] ?? 0) > 0 && _dummyHasPoisonActive
+  $: _slowDuration = Math.max(
+    0,
+    ..._allActiveBuffsRaw
+      .filter(b => b.buffName === 'Slowness' && !b.isSelfDebuff)
+      .map(b => b.duration ?? 0),
+  )
+  $: _dotTicks = (() => {
+    const ticks: Array<{
+      type: string; tickDamage: number; dotPotency?: number; inflictionPotency?: number
+      debuffName?: string; slowDuration?: number; baseTick?: number
+    }> = DOT_TYPE_LIST.map(type => {
+      const dotPot = perks[`${type} Potency`] ?? 0
+      const gamePot = toGamePotency(dotPot)
+      return { type, tickDamage: calcDotTick(gamePot, gamePot), dotPotency: gamePot, inflictionPotency: gamePot }
+    })
+    if ((perks['Caustic Slow'] ?? 0) > 0) {
+      const poisonPot = perks['Poison Potency'] ?? 0
+      const { baseTick, tickDamage, slowMult } = calcCausticSlow(poisonPot, _slowDuration)
+      ticks.push({
+        type: 'Caustic Slow',
+        tickDamage,
+        dotPotency: toGamePotency(poisonPot),
+        inflictionPotency: toGamePotency(poisonPot),
+        debuffName: 'Slowness',
+        slowDuration: _slowDuration,
+        baseTick,
+      })
+    }
+    return ticks
+  })()
   $: _showCrit = crit.effectiveCritChance > 0 || _hasCritBoostBuff || crit.hasCritRelevantPerks || _venomEaterCanShow
   $: _critMult = crit.critDamageMultiplier / 100  
   let showCritValues = false
@@ -1528,6 +1561,19 @@ import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
     (e.sourceName !== 'Rider' || mountActive) && e.sourceName !== 'Frenzy' && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance'
   )
 
+  $: _goldenCritsBaseChance = 0.40
+  $: _goldenCritsEffectiveChance = (() => {
+    const coeff = WEAPON_PROC_COEFFS[_baseWeaponType]?.m2 ?? DEFAULT_PROC_COEFF
+    return calcProcChance(_goldenCritsBaseChance, coeff, 'positiveOnly')
+  })()
+  $: _procScaledConditions = (() => {
+    const map = new Map<string, string>()
+    if (_goldenCritsEffectiveChance > 0) {
+      map.set('Golden Crits', `${Math.round(_goldenCritsEffectiveChance * 100)}% chance on crit`)
+    }
+    return map
+  })()
+
   // ── Perk Base Damage ───────────────────────────────────────────────────────
   $: springblastFinisherHits = _m2FinisherHits
 
@@ -1650,8 +1696,9 @@ import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
 
       const _fhM2  = _m2FinisherHits
       const _fhM1f = _m1FinisherHits
-      const baseDmg_m2  = def.getBaseDamage({ perkAmount, finisherHits: _fhM2,  draconicColor: $build.draconicColor })
-      const baseDmg_m1f = def.getBaseDamage({ perkAmount, finisherHits: _fhM1f, draconicColor: $build.draconicColor })
+      const _perkCtxStatuses: Record<string, number> = { poisonPotency: perks['Poison Potency'] ?? 0 }
+      const baseDmg_m2  = def.getBaseDamage({ perkAmount, finisherHits: _fhM2,  draconicColor: $build.draconicColor, statuses: _perkCtxStatuses })
+      const baseDmg_m1f = def.getBaseDamage({ perkAmount, finisherHits: _fhM1f, draconicColor: $build.draconicColor, statuses: _perkCtxStatuses })
 
       const isSpringblast = def.perkName === 'Springblast'
       const baseDmg = isSpringblast
@@ -2301,7 +2348,7 @@ import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
               {entry.sourceName === 'Level Damage' ? `LV${$build.level ?? 80}` : entry.sourceName}
             </span>
             <span class="da-bc-val">{disabled ? '—' : entry.sourceName === 'Bellowing Ember' && _hasFireDmg ? '×1.23' : `×${+entry.rawMultiplier.toFixed(4)}`}</span>
-            {#if entry.condition}<span class="da-bc-cond">{entry.condition}</span>{/if}
+            {#if entry.condition || _procScaledConditions.has(entry.sourceName)}<span class="da-bc-cond">{_procScaledConditions.get(entry.sourceName) ?? entry.condition}</span>{/if}
             <span class="da-bc-toggle">{disabled ? 'OFF' : 'ON'}</span>
           </button>
           <span class="da-chain-op">×</span>
@@ -2338,7 +2385,7 @@ import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
                 {entry.sourceName === 'Level Damage' ? `LV${$build.level ?? 80}` : entry.sourceName}
               </span>
               <span class="da-bc-val">{disabled ? '—' : entry.sourceName === 'Bellowing Ember' && _hasFireDmg ? '×1.23' : `×${+entry.rawMultiplier.toFixed(4)}`}</span>
-              {#if entry.condition}<span class="da-bc-cond">{entry.condition}</span>{/if}
+              {#if entry.condition || _procScaledConditions.has(entry.sourceName)}<span class="da-bc-cond">{_procScaledConditions.get(entry.sourceName) ?? entry.condition}</span>{/if}
               <span class="da-bc-toggle">{disabled ? 'OFF' : 'ON'}</span>
             </button>
             <span class="da-chain-op">×</span>
@@ -4051,6 +4098,7 @@ import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
   healCritDmgMult={_healCritDmgMult}
   venomEaterStacks={perks['Venom Eater'] ?? 0}
   bloodThirstyStacks={perks['Blood Thirsty'] ?? 0}
+  dotTicks={_dotTicks}
   bind:disabledDebuffs
   bind:showCritValues
 />

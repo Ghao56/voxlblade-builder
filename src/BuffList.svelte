@@ -18,6 +18,7 @@
   import { WEAPON_ARTS } from './data/weaponArts'
   import { UI_COLORS, SOURCE_LABELS } from './lib/uiConstants'
 import { getAutoDebuffs } from './data/perkAutoDebuffs'
+import { WA_PROC_COEFFS, DEFAULT_PROC_COEFF } from './data/procCoefficients'
 
 
   $: wardingDebuffMult = calcWardingDebuffMultiplier($result.stats.warding ?? 0)
@@ -77,6 +78,7 @@ import { getAutoDebuffs } from './data/perkAutoDebuffs'
       hpFill: $build.hpFill ?? 100,
       level: $build.level ?? 80,
       protection: ($result.stats as Record<string, number>).protection ?? 0,
+      selectedWAProcCoefficient: WA_PROC_COEFFS[$build.selectedWeaponArt] ?? DEFAULT_PROC_COEFF,
     })
     modified.push(...autoDebuffs)
 
