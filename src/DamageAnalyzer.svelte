@@ -520,19 +520,25 @@ import { WEAPON_PROC_COEFFS, DEFAULT_PROC_COEFF, WA_PROC_COEFFS } from './data/p
     const ticks: Array<{
       type: string; tickDamage: number; dotPotency?: number; inflictionPotency?: number
       debuffName?: string; slowDuration?: number; baseTick?: number
-      dotBase: number; potencyMult: number
+      dotBase: number; potencyMult: number; levelMult: number
       scalingMult: number; combatMult: number
+      meltingShredFactor?: number
+      scalingRows: ScalingRow[]; totalEffectivePct: number
     }> = DOT_TYPE_LIST.map(type => {
       const dotPot = perks[`${type} Potency`] ?? 0
       const gamePot = toGamePotency(dotPot)
-      const base = getDotBase(gamePot)
+      const edAmt = perks['Endless Despair'] ?? 0
+      const inflictionPot = edAmt > 0 ? gamePot * (1 + 0.35 * edAmt) + 0.1 : gamePot
+      const level = __daBuildVal.level ?? 80
+      const levelMult = 1 + level / 80
+      const base = getDotBase(inflictionPot)
       const mult = getDotPotencyMult(gamePot)
-      const tick = Math.round(base * mult * 1000) / 1000
+      const tick = base * mult
       const rows = buildScalingRows(DOT_SCALINGS[type])
       const totalPct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 1000) / 1000
       return {
-        type, tickDamage: tick, dotPotency: dotPot, inflictionPotency: gamePot,
-        dotBase: base, potencyMult: mult,
+        type, tickDamage: tick, dotPotency: dotPot, inflictionPotency: inflictionPot,
+        dotBase: base, potencyMult: mult, levelMult: 1,
         baseTick: tick,
         scalingMult: dotScalingMult(type), combatMult: _dotCombatMult,
         scalingRows: rows, totalEffectivePct: totalPct,
@@ -541,26 +547,36 @@ import { WEAPON_PROC_COEFFS, DEFAULT_PROC_COEFF, WA_PROC_COEFFS } from './data/p
     if ((perks['Caustic Slow'] ?? 0) > 0) {
       const poisonPot = perks['Poison Potency'] ?? 0
       const gamePot = toGamePotency(poisonPot)
-      const base = getDotBase(gamePot)
+      const edAmt = perks['Endless Despair'] ?? 0
+      const inflictionPot = edAmt > 0 ? gamePot * (1 + 0.35 * edAmt) + 0.1 : gamePot
+      const level = __daBuildVal.level ?? 80
+      const levelMult = 1 + level / 80
+      const base = getDotBase(inflictionPot)
       const mult = getDotPotencyMult(gamePot)
-      const tick = Math.round(base * mult * 1000) / 1000
+      const tick = base * mult
       const slowAmp = _slowDuration > 0 ? 1 + _slowDuration * 0.1 : 1
-      const tickDamage = Math.round(tick * slowAmp * 1000) / 1000
+      const tickDamage = tick * slowAmp
       const csRows = buildScalingRows(DOT_SCALINGS['Caustic Slow'])
       const csTotalPct = Math.round(csRows.reduce((a, r) => a + r.contribution, 0) * 1000) / 1000
       ticks.push({
         type: 'Caustic Slow',
         tickDamage,
         dotPotency: poisonPot,
-        inflictionPotency: gamePot,
+        inflictionPotency: inflictionPot,
         debuffName: 'Slowness',
         slowDuration: _slowDuration,
         dotBase: base, potencyMult: mult * slowAmp,
-        baseTick: tick,
+        levelMult: 1, baseTick: tick,
         scalingMult: dotScalingMult('Caustic Slow'), combatMult: _dotCombatMult,
         scalingRows: csRows, totalEffectivePct: csTotalPct,
       })
     }
+    const meltingShredAmt = perks['Melting Shred'] ?? 0
+    if (meltingShredAmt > 0) {
+      const factor = 0.15 * meltingShredAmt
+      for (const t of ticks) t.meltingShredFactor = factor
+    }
+
     return ticks
   })()
   $: _showCrit = crit.effectiveCritChance > 0 || _hasCritBoostBuff || crit.hasCritRelevantPerks || _venomEaterCanShow
@@ -1053,7 +1069,7 @@ import { WEAPON_PROC_COEFFS, DEFAULT_PROC_COEFF, WA_PROC_COEFFS } from './data/p
     }
     return e
   })
-  $: activeEntries = [..._adjustedDmgEntries.filter(e => !disabledBoosts.has(e.sourceName) && !(e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) && !(e.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)) && !(e.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive) && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance' && e.sourceName !== 'Frenzy'), ..._syntheticDmgBoostEntries.filter(e => {
+  $: activeEntries = [..._adjustedDmgEntries.filter(e => !disabledBoosts.has(e.sourceName) && !(e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) && !(e.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)) && !(e.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive) && !(e.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive) && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance' && e.sourceName !== 'Frenzy'), ..._syntheticDmgBoostEntries.filter(e => {
     if (e.sourceName === 'Curse Rip' && disableCurseRip) return false
     if (e.sourceName === 'Reaper' && disableReaper) return false
     if (disabledBoosts.has(e.sourceName)) return false
@@ -1774,8 +1790,9 @@ import { WEAPON_PROC_COEFFS, DEFAULT_PROC_COEFF, WA_PROC_COEFFS } from './data/p
         : baseDmg_m1f
       const totalDmg = isSpringblast ? 1 : baseDmg * scalingMult * combatMult
       const rawFinisherNumerator = isSpringblast ? baseDmg : undefined
-      const halfActivations = isSpringblast ? (perkAmount > 0 && ((_gunOverlay?.type === 'Dual Guns') || _baseWeaponType === 'Storm Caster')) : undefined
-      const oncePerFinisher = isSpringblast ? false : undefined
+      const hasHalfActivations = def.halfActivations && perkAmount > 0 && ((_gunOverlay?.type === 'Dual Guns') || _baseWeaponType === 'Storm Caster')
+      const halfActivations = hasHalfActivations || undefined
+      const oncePerFinisher = isSpringblast ? false : (def.isProcHit ? undefined : undefined)
 
       const isActive = isHpGateActive(def.hpGate, _hpFillPct, perkAmount) && (!isSpringblast || _allActiveBuffs.some(b => b.buffName === 'Bounce'))
 
@@ -1842,10 +1859,12 @@ import { WEAPON_PROC_COEFFS, DEFAULT_PROC_COEFF, WA_PROC_COEFFS } from './data/p
       tag: string; baseDmg: number; scalingMult: number; combatMult: number; totalDmg: number
       dmgTypes: Record<string, number>; procCoefficient?: ProcCoefficient; isProcHit?: boolean
       rawFinisherNumerator?: number; halfActivations?: boolean; oncePerFinisher?: boolean
+      getFinisherHitBaseDmg?: (ctx: { baseDmg: number; hitIndex: number }) => number
     }> = []
     for (const e of _activePerkDmgEntries) {
       if (!e.isActive) continue
       if (!e.isProcHit && e.perkName !== 'Springblast') continue
+      const perkDef = PERK_DMG_DEFS.find(d => d.perkName === e.perkName)
       out.push({
         tag: e.displayName,
         baseDmg: e.baseDmg,
@@ -1858,6 +1877,7 @@ import { WEAPON_PROC_COEFFS, DEFAULT_PROC_COEFF, WA_PROC_COEFFS } from './data/p
         ...(e.rawFinisherNumerator != null ? { rawFinisherNumerator: e.rawFinisherNumerator } : {}),
         ...(e.halfActivations != null ? { halfActivations: e.halfActivations } : {}),
         ...(e.oncePerFinisher != null ? { oncePerFinisher: e.oncePerFinisher } : {}),
+        ...(perkDef?.getFinisherHitBaseDmg ? { getFinisherHitBaseDmg: perkDef.getFinisherHitBaseDmg } : {}),
       })
     }
     return out
@@ -2195,6 +2215,36 @@ import { WEAPON_PROC_COEFFS, DEFAULT_PROC_COEFF, WA_PROC_COEFFS } from './data/p
       })
     }
 
+    const _fpAmt = perks['Fungal Prototype'] ?? 0
+    if (_fpAmt > 0) {
+      const pushFp = (preMit: number, label: string) => {
+        if (preMit <= 0) return
+        const fpPerTick = preMit * _fpAmt / 30
+        result.push({
+          group: 'Perk', index: result.length, count: 10, base: fpPerTick,
+          scalingMult: 1, combatMult: _perkCombatMult,
+          isFinisher: false, dmgTypes: { hex: 1.0 },
+          label: 'Fungal Prototype (' + label + ' →)',
+          procCoefficient: { type: 'noProc' },
+        })
+      }
+      if (_activeMountRuneDef && mountActive) {
+        const waDef = _activeMountRuneDef.wa
+        const m1Def = _activeMountRuneDef.m1
+        const waScaling = _computePerkScalingMult(waDef.getScalings())
+        const m1Scaling = _computePerkScalingMult(m1Def.getScalings())
+        const waHits = waDef.getHits()
+        if (waHits.length > 0) {
+          pushFp((typeof waHits[0] === 'number' ? waHits[0] : waHits[0].n) * waScaling, _activeMountRuneDef.mountLabel + ' WA')
+        }
+        pushFp(m1Def.getBaseDamage() * m1Scaling, _activeMountRuneDef.mountLabel + ' M1')
+      } else if (_waHitsSeq && _waHitsSeq.length > 0) {
+        pushFp(_waHitsSeq[0].n * _waScalingMult, selectedWA.name + ' WA')
+      } else if (_activeRuneDmgDef) {
+        pushFp(_activeRuneDmgDef.getBaseDamage({ potency: runePotency, sliderVal: _runeSliderVal })
+          * _computePerkScalingMult(_activeRuneDmgDef.scalings), 'Rune')
+      }
+    }
 
     return result
   })()
@@ -2396,7 +2446,8 @@ import { WEAPON_PROC_COEFFS, DEFAULT_PROC_COEFF, WA_PROC_COEFFS } from './data/p
         {#each [..._visibleDmgEntries, ..._syntheticDmgBoostEntries] as entry}
           {@const _venomEaterDisabled = entry.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)}
           {@const _bloodThirstyDisabled = entry.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive}
-          {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (entry.sourceName === 'Curse Rip' && disableCurseRip) || (entry.sourceName === 'Reaper' && disableReaper) || _venomEaterDisabled || _bloodThirstyDisabled}
+          {@const _venomSpitterDisabled = entry.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive}
+          {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (entry.sourceName === 'Curse Rip' && disableCurseRip) || (entry.sourceName === 'Reaper' && disableReaper) || _venomEaterDisabled || _bloodThirstyDisabled || _venomSpitterDisabled}
           {@const effectiveMultiplier = disabled ? 1 : entry.rawMultiplier}
           <button
             class="da-boost-chip"
@@ -2407,6 +2458,7 @@ import { WEAPON_PROC_COEFFS, DEFAULT_PROC_COEFF, WA_PROC_COEFFS } from './data/p
               if (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) return
               if (_venomEaterDisabled) return
               if (_bloodThirstyDisabled) return
+              if (_venomSpitterDisabled) return
               if (entry.sourceName === 'Curse Rip') disableCurseRip = !disableCurseRip
               else if (entry.sourceName === 'Reaper') disableReaper = !disableReaper
               else toggleBoost(entry.sourceName)
@@ -2434,7 +2486,8 @@ import { WEAPON_PROC_COEFFS, DEFAULT_PROC_COEFF, WA_PROC_COEFFS } from './data/p
           {#each _allUniversalChips as entry}
             {@const _venomEaterDisabled = entry.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)}
             {@const _bloodThirstyDisabled = entry.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive}
-            {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (entry.sourceName === 'Curse Rip' && disableCurseRip) || (entry.sourceName === 'Reaper' && disableReaper) || _venomEaterDisabled || _bloodThirstyDisabled}
+            {@const _venomSpitterDisabled = entry.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive}
+            {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (entry.sourceName === 'Curse Rip' && disableCurseRip) || (entry.sourceName === 'Reaper' && disableReaper) || _venomEaterDisabled || _bloodThirstyDisabled || _venomSpitterDisabled}
             <button
               class="da-boost-chip"
               class:da-boost-chip--lvl={entry.sourceName === 'Level Damage'}
@@ -2444,6 +2497,7 @@ import { WEAPON_PROC_COEFFS, DEFAULT_PROC_COEFF, WA_PROC_COEFFS } from './data/p
                 if (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) return
                 if (_venomEaterDisabled) return
                 if (_bloodThirstyDisabled) return
+                if (_venomSpitterDisabled) return
                 if (entry.sourceName === 'Curse Rip') disableCurseRip = !disableCurseRip
                 else if (entry.sourceName === 'Reaper') disableReaper = !disableReaper
                 else toggleBoost(entry.sourceName)
@@ -2473,12 +2527,13 @@ import { WEAPON_PROC_COEFFS, DEFAULT_PROC_COEFF, WA_PROC_COEFFS } from './data/p
                 {#each grp.allChips as entry}
                   {@const _venomEaterDisabled = entry.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)}
                   {@const _bloodThirstyDisabled = entry.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive}
-                  {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || _venomEaterDisabled || _bloodThirstyDisabled}
+                  {@const _venomSpitterDisabled = entry.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive}
+                  {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || _venomEaterDisabled || _bloodThirstyDisabled || _venomSpitterDisabled}
                   <button
                     class="da-boost-chip da-boost-chip--sm"
                     class:da-boost-chip--off={disabled}
                     title={entry.condition ?? ''}
-                    on:click={() => { if (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) return; if (_venomEaterDisabled) return; if (_bloodThirstyDisabled) return; toggleBoost(entry.sourceName) }}
+                    on:click={() => { if (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) return; if (_venomEaterDisabled) return; if (_bloodThirstyDisabled) return; if (_venomSpitterDisabled) return; toggleBoost(entry.sourceName) }}
                   >
                     <span class="da-bc-name">{entry.sourceName}</span>
                     <span class="da-bc-val">{disabled ? '—' : `×${+entry.rawMultiplier.toFixed(4)}`}</span>
@@ -4234,6 +4289,7 @@ import { WEAPON_PROC_COEFFS, DEFAULT_PROC_COEFF, WA_PROC_COEFFS } from './data/p
   healCritDmgMult={_healCritDmgMult}
   venomEaterStacks={perks['Venom Eater'] ?? 0}
   bloodThirstyStacks={perks['Blood Thirsty'] ?? 0}
+  lifeDrinkerAmt={perks['Life Drinker'] ?? 0}
   dotTicks={_dotTicks}
   bind:disabledDebuffs
   bind:showCritValues

@@ -43,7 +43,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   export let dragonStateCombatMult: number = 1
   export let dragonStateTotalDmg: number = 0
   export let darkMagicHexBonus: number = 0
-  export let perkOnHitDamages: PerkOnHitDmg[] = []
+  export let perkOnHitDamages: Array<PerkOnHitDmg & { getFinisherHitBaseDmg?: (ctx: { baseDmg: number; hitIndex: number }) => number }> = []
   export let waArmorPenetration: number = 0
   export let globalArmorPenetration: number = 0
   export let crushingPressureAmt: number = 0
@@ -60,7 +60,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   const BADGE_COLORS: Record<string, string> = {
     physical: '#9a3412', magic: '#4338ca', fire: '#9a3412',
     water: '#075985',    earth: '#3f6212', air: '#065f46',
-    hex: '#6b21a8',      holy: '#713f12',  true: '#52525b',
+    hex: '#6b21a8',      holy: '#713f12',  true: '#f87171',
   }
 
   function withDarkMagicHex(types: Record<string, number>): Record<string, number> {
@@ -122,11 +122,13 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   export let healCritDmgMult: number = 0
   export let venomEaterStacks: number = 0
   export let bloodThirstyStacks: number = 0
+  export let lifeDrinkerAmt: number = 0
   export let dotTicks: Array<{
     type: string; tickDamage: number; dotPotency?: number; inflictionPotency?: number
     debuffName?: string; slowDuration?: number; baseTick?: number
     dotBase: number; potencyMult: number
     scalingMult: number; combatMult: number
+    meltingShredFactor?: number
   }> = []
 
   let activeVariants = new Map<string, number>()
@@ -157,6 +159,17 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     typeDebuffMult: number
     debuffMult: number
     finalDmg: number
+  } | null = null
+
+  let _meltingTooltip: {
+    style: string
+    preMitBase: number
+    meltingShredFactor: number
+    typedMult: number
+    typeDebuffMult: number
+    debuffMult: number
+    selfDebuffDamageMult: number
+    trueDmg: number
   } | null = null
 
   $: resolvedDebuffs = appliedDebuffs.map(d => {
@@ -315,7 +328,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   })()
 
   function calcArmorMult(defPct: number, pen: number): { mult: number; branch: 'low'|'high' } {
-    if (defPct <= 0) return { mult: 1, branch: 'low' }
+    if (defPct <= 0 && pen <= 0) return { mult: 1, branch: 'low' }
     const def = defPct / 100
     if (def <= pen + ARMOR_PEN_BRANCH_THRESHOLD) {
       const am = def - pen
@@ -365,9 +378,17 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     const typeDebuffMult = _activeDebuffTypeDamageMult[dmgType] ?? 1
     const debuffMult = _activeDebuffDamageMult
 
-    const finalDmg = Math.round(preMitBase * typedMult * defMult * typeDebuffMult * debuffMult * selfDebuffDamageMult * 1000) / 1000
+    const finalDmg = preMitBase * typedMult * defMult * typeDebuffMult * debuffMult * selfDebuffDamageMult
 
-    return { ...d, dmgType, scalingMult, combatMult, preMitBase, applicableBoosts, typedMult, defPct, defMult, typeDebuffMult, debuffMult, finalDmg }
+    const trueDmg = d.meltingShredFactor != null
+      ? preMitBase * d.meltingShredFactor
+      : 0
+
+    const lifeDrinkerHeal = lifeDrinkerAmt > 0
+      ? 0.01 * preMitBase * lifeDrinkerAmt + 0.1
+      : 0
+
+    return { ...d, dmgType, scalingMult, combatMult, preMitBase, applicableBoosts, typedMult, defPct, defMult, typeDebuffMult, debuffMult, finalDmg, trueDmg, lifeDrinkerHeal }
   })
 
   function defPctForType(k: string): number {
@@ -584,7 +605,9 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
             const crushPen = crushingPenForType(k)
             const defMult = calcArmorMult(defPct, basePenDecimal + crushPen / 100).mult
             let baseForType: number
-            if (ph.rawFinisherNumerator != null) {
+            if (ph.getFinisherHitBaseDmg) {
+              baseForType = ph.getFinisherHitBaseDmg({ baseDmg: ph.baseDmg, hitIndex: hit.index })
+            } else if (ph.rawFinisherNumerator != null) {
               const fh = hit.count
               baseForType = Math.round(ph.rawFinisherNumerator / (0.5 + fh / 2) * 1000) / 1000
             } else {
@@ -1216,10 +1239,46 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
                         {/if}
                       </div>
                     </div>
+                    {#if dot.trueDmg}
+                      <span class="bdc-hit-plus">+</span>
+                      <!-- svelte-ignore a11y_no_static_element_interactions -->
+                      <div class="bdc-hit-type-chunk" style="--tc:{BADGE_COLORS['true'] ?? '#52525b'}"
+                        on:mouseenter={(e) => {
+                          const r = (e.currentTarget as HTMLElement).getBoundingClientRect()
+                          const spaceBelow = window.innerHeight - r.bottom
+                          const left = Math.max(8, Math.min(r.left, window.innerWidth - 260))
+                          _meltingTooltip = {
+                            preMitBase: dot.preMitBase,
+                            meltingShredFactor: dot.meltingShredFactor ?? 0.15,
+                            typedMult: dot.typedMult,
+                            typeDebuffMult: dot.typeDebuffMult,
+                            debuffMult: dot.debuffMult,
+                            selfDebuffDamageMult: selfDebuffDamageMult,
+                            trueDmg: dot.trueDmg!,
+                            style: spaceBelow > 180
+                              ? `left:${left}px;top:${r.bottom + 4}px;`
+                              : `left:${left}px;bottom:${window.innerHeight - r.top + 4}px;`,
+                          }
+                        }}
+                        on:mouseleave={() => { _meltingTooltip = null }}>
+                        <div class="bdc-hit-type-top">
+                          <div class="bdc-hit-type-val-row">
+                            <span class="bdc-hit-type-val">{fmt(dot.trueDmg)}</span>
+                          </div>
+                          <div class="bdc-hit-type-label-row">
+                            <span class="bdc-hit-type-label">True</span>
+                            <span class="bdc-dot-dmg-badge" style="background:{BADGE_COLORS['true'] ?? '#52525b'}">true</span>
+                          </div>
+                        </div>
+                      </div>
+                    {/if}
                   </div>
                   <div class="bdc-hit-row-end">
                     <span class="bdc-hit-type-sum-sep">=</span>
-                    <span class="bdc-hit-type-sum">{fmt(dot.finalDmg ?? dot.tickDamage)}</span>
+                    <span class="bdc-hit-type-sum">{fmt((dot.finalDmg ?? dot.tickDamage) + (dot.trueDmg ?? 0))}</span>
+                    {#if dot.lifeDrinkerHeal}
+                      <span class="bdc-hit-type-heal-sum">{fmt(dot.lifeDrinkerHeal)}</span>
+                    {/if}
                   </div>
                 </div>
               {/each}
@@ -1245,16 +1304,16 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   {@const _hasDebuffMult = _dotTooltip.debuffMult !== 1}
   {@const _hasSelfDebuff = selfDebuffDamageMult !== 1}
   <div class="bdc-tt-formula-fixed" style={_dotTooltip.style}>
-    <div class="bdc-fr">
-      <span class="bdc-fr-label">DoT Base <span class="bdc-tt-muted">(1.75 × (1 + {fmt(_dotTooltip.inflictionPotency)}/1.1))</span></span>
-      <span class="bdc-fr-val">{fmt(_dotTooltip.dotBase)}</span>
-    </div>
-    {#if _dotTooltip.potencyMult !== 1}
       <div class="bdc-fr">
-        <span class="bdc-fr-label">Potency Mult</span>
-        <span class="bdc-fr-val bdc-fr-val--scaling">× {fmtMult(_dotTooltip.potencyMult)}</span>
+        <span class="bdc-fr-label">DoT Base <span class="bdc-tt-muted">(1.75 × (1 + {fmt(_dotTooltip.inflictionPotency)}/1.1))</span></span>
+        <span class="bdc-fr-val">{fmt(_dotTooltip.dotBase)}</span>
       </div>
-    {/if}
+      {#if _dotTooltip.potencyMult !== 1}
+        <div class="bdc-fr">
+          <span class="bdc-fr-label">Potency Mult</span>
+          <span class="bdc-fr-val bdc-fr-val--scaling">× {fmtMult(_dotTooltip.potencyMult)}</span>
+        </div>
+      {/if}
     {#if _dotTooltip.scalingMult !== 1}
       <div class="bdc-fr">
         <span class="bdc-fr-label">Scaling</span>
@@ -1299,10 +1358,33 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
         <span class="bdc-fr-val bdc-fr-val--debuff">× {fmtMult(selfDebuffDamageMult)}</span>
       </div>
     {/if}
+
     <div class="bdc-fr-divider"></div>
     <div class="bdc-fr bdc-fr--result">
       <span class="bdc-fr-label">Final DoT Tick</span>
       <span class="bdc-fr-val bdc-fr-val--result" style="--tc:{_dtc}">{fmt(_dotTooltip.finalDmg)}</span>
+    </div>
+  </div>
+{/if}
+
+{#if _meltingTooltip}
+  {@const mt = _meltingTooltip}
+  {@const _hasMtTypeDebuff = mt.typeDebuffMult !== 1}
+  {@const _hasMtDebuffMult = mt.debuffMult !== 1}
+  {@const _hasMtSelfDebuff = mt.selfDebuffDamageMult !== 1}
+  <div class="bdc-tt-formula-fixed" style={mt.style}>
+    <div class="bdc-fr">
+      <span class="bdc-fr-label">Pre-Mit Base <span class="bdc-tt-muted">(tick × scaling × combat)</span></span>
+      <span class="bdc-fr-val">{fmt(mt.preMitBase)}</span>
+    </div>
+    <div class="bdc-fr">
+      <span class="bdc-fr-label">Melting Shred Factor <span class="bdc-tt-muted">(15% × perk)</span></span>
+      <span class="bdc-fr-val bdc-fr-val--scaling">× {fmtMult(mt.meltingShredFactor)}</span>
+    </div>
+    <div class="bdc-fr-divider"></div>
+    <div class="bdc-fr bdc-fr--result">
+      <span class="bdc-fr-label">Melting Shred True</span>
+      <span class="bdc-fr-val bdc-fr-val--result" style="--tc:#f87171">+ {fmt(mt.trueDmg)}</span>
     </div>
   </div>
 {/if}

@@ -57,6 +57,46 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
     }
   }
 
+  const meltingShredAmt = perks['Melting Shred'] ?? 0
+  if (meltingShredAmt > 0) {
+    const dotDebuffs = ['Bleed', 'Burn', 'Poison', 'Slowness']
+    const hasDotActive = dotDebuffs.some(d => existingBuffNames.includes(d))
+    if (hasDotActive && !existingBuffNames.includes('Anti Heal')) {
+      debuffs.push({
+        buffName: 'Anti Heal',
+        potency: 0.5,
+        duration: 0,
+        condition: 'Active while target has your DoT',
+        sourceName: 'Melting Shred',
+        sourceType: 'perk',
+      })
+    }
+  }
+
+  const fpAmt = perks['Fungal Prototype'] ?? 0
+  if (fpAmt > 0 && !existingBuffNames.includes('Poison')) {
+    debuffs.push({
+      buffName: 'Poison',
+      potency: fpAmt,
+      duration: 0,
+      condition: 'Active while WA/Rune hit procced Fungal Prototype',
+      sourceName: 'Fungal Prototype',
+      sourceType: 'perk',
+    })
+  }
+
+  const vsAmt = perks['Venom Spitter'] ?? 0
+  if (vsAmt > 0 && !existingBuffNames.includes('Poison')) {
+    debuffs.push({
+      buffName: 'Poison',
+      potency: vsAmt,
+      duration: 0,
+      condition: 'Venom Spitter finisher applies Poison',
+      sourceName: 'Venom Spitter',
+      sourceType: 'perk',
+    })
+  }
+
   const bellowingAmt = perks['Bellowing Ember'] ?? 0
   if (bellowingAmt > 0) {
     const actualHpPct = calcActualHpFillPct(hpFill, level, protection)

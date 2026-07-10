@@ -77,6 +77,7 @@ export interface PerkDmgDef {
   label?: string
   condition?: string
   getBaseDamage: (ctx: PerkDmgCtx) => number
+  getFinisherHitBaseDmg?: (ctx: { baseDmg: number; hitIndex: number }) => number
   hits?: number
   getHits?: (ctx: PerkDmgCtx) => number 
   dmgTypeMode: 'weapon' | 'fixed' | 'dynamic'
@@ -91,6 +92,7 @@ export interface PerkDmgDef {
   isWA?: boolean
   isRune?: boolean
   isProcHit?: boolean
+  halfActivations?: boolean
   guardbreak?: boolean
   procCoefficient?: ProcCoefficient
   note?: string
@@ -518,5 +520,30 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     scalings: { fire: 1.0, air: 1.0 },
     guardbreak: true,
     procCoefficient: { type: 'noProc' },
+  },
+  // ── Venom Spitter ────────────────────────────────────────────────
+  {
+    perkName: 'Venom Spitter',
+    label: 'Venom Spitter',
+    condition: 'On Finisher hit',
+    getBaseDamage: ({ perkAmount, finisherHits = 1 }) => {
+      const base = 2 + 0.6 * perkAmount
+      let total = 0
+      for (let i = 0; i < finisherHits; i++) {
+        total += base / (1 + i / 3)
+      }
+      return Math.round(total * 1000) / 1000
+    },
+    getFinisherHitBaseDmg: ({ baseDmg, hitIndex }) =>
+      Math.round(baseDmg * 1000 / (1 + hitIndex / 3)) / 1000,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { hex: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { hex: 1.0, earth: 1.0 },
+    isProcHit: true,
+    isFinisher: true,
+    procCoefficient: { type: 'noProc' },
+    halfActivations: true,
+    note: 'Cannot proc other effects. Half activations on Dual Guns or Storm Caster. Grants +10% damage vs Poisoned per 1 of this perk.',
   },
 ]

@@ -53,6 +53,7 @@ export interface BoostDef {
 export const BOOST_DEFS: BoostDef[] = [
   // Simple dmg boosts
   {sourceName: 'Blood Thirsty', multiplierPerPerk: 0.20, type: 'dmg', condition: 'Hitting an opponent with your Bleed', needsProcCoeff: true},
+  {sourceName: 'Venom Spitter', multiplierPerPerk: 0.10, type: 'dmg', condition: 'vs Poisoned opponents'},
   {sourceName:'Perfection',multiplierPerPerk: 0.10, type: 'dmg', condition: 'at max potency',},
   {sourceName:'Stealth',multiplierPerPerk: 0.10, type: 'dmg', condition: "gain a Damage Boost against enemies that aren't targeting you",},
   { sourceName: 'Golden Crits', multiplierPerPerk: 0.50, type: 'dmg', condition: '40% chance on crit', procScaling: 'positiveOnly', hasToggle: true },
