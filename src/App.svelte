@@ -955,14 +955,17 @@ $: highestDamageType = (() => {
 
   function buildSlotCard(title: string, label: string, description: string, baseStats: StatMap, basePerks: Record<string, number>, enchSlot: EnchantSlot, extras?: string[], upgradeLevel: number = 0): DetailCard {
     const enchNames = $build.enchantments[enchSlot]
-    const slotResult = applyEnchantmentsToSlot(baseStats, basePerks, enchNames)
-    const preUpgradeArmorPen = slotResult.stats.armorPenetration
-    const finalStats = upgradeLevel > 0 ? applyUpgrade(slotResult.stats, upgradeLevel) : { ...slotResult.stats }
-    if (finalStats.armorPenetration !== preUpgradeArmorPen) {
-      finalStats.armorPenetration = preUpgradeArmorPen
+    let upgradedStats = { ...baseStats }
+    if (upgradeLevel > 0) {
+      const preUpgradeArmorPen = upgradedStats.armorPenetration
+      upgradedStats = applyUpgrade(upgradedStats, upgradeLevel)
+      if (upgradedStats.armorPenetration !== preUpgradeArmorPen) {
+        upgradedStats.armorPenetration = preUpgradeArmorPen
+      }
     }
+    const slotResult = applyEnchantmentsToSlot(upgradedStats, basePerks, enchNames)
     const filteredStats: Record<string, number> = {}
-    for (const [k, v] of Object.entries(finalStats)) {
+    for (const [k, v] of Object.entries(slotResult.stats)) {
       const rounded = Math.round((v + Number.EPSILON) * 100) / 100
       if (rounded !== 0) filteredStats[k] = rounded
     }
