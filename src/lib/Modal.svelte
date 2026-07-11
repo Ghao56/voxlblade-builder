@@ -28,7 +28,7 @@
 </div>
 
 <script context="module">
-  function focusOnOpen(node: HTMLElement) {
+  function focusOnOpen(node) {
     requestAnimationFrame(() => {
       const first = node.querySelector<HTMLElement>('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')
       first?.focus()

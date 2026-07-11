@@ -14,7 +14,7 @@
     applyToxinTransferDuration,
     type GrantedBuff,
   } from './data/BuffData'
-  import { getDraconicInfusionBuff, getDraconicHexDebuffs } from './data/draconicBuffs'
+  import { getDraconicInfusionBuff, getDraconicAbilityDebuffs } from './data/draconicBuffs'
   import { WEAPON_ARTS } from './data/weaponArts'
   import { UI_COLORS, SOURCE_LABELS } from './lib/uiConstants'
 import { getAutoDebuffs } from './data/perkAutoDebuffs'
@@ -107,8 +107,8 @@ import { WA_PROC_COEFFS, DEFAULT_PROC_COEFF } from './data/procCoefficients'
     return applyBuffPerkModifiers(rawDraconicInfusionBuff, $result.perks, $build.rune || undefined)
   })()
 
-  $: draconicHexDebuffs = applyBuffPerkModifiers(
-    getDraconicHexDebuffs(
+  $: draconicAbilityDebuffs = applyBuffPerkModifiers(
+    getDraconicAbilityDebuffs(
       $build.guild, $build.draconicRuneInfusion, $build.draconicColor, $result.perks['Draconic Blood'] ?? 0
     ),
     $result.perks,
@@ -119,7 +119,7 @@ import { WA_PROC_COEFFS, DEFAULT_PROC_COEFF } from './data/procCoefficients'
     ...baseActiveBuffs,
     ...trueBalanceBuffs,
     ...draconicInfusionBuff,
-    ...draconicHexDebuffs,
+    ...draconicAbilityDebuffs,
   ]
 
   // Dragon Infusion color modifiers applied to display values
@@ -173,17 +173,25 @@ import { WA_PROC_COEFFS, DEFAULT_PROC_COEFF } from './data/procCoefficients'
     return displayBuffs.map(buff => {
       if (!dotNames.includes(buff.buffName)) return buff
       if (buff.isSelfDebuff) return buff
-      const potPerk = $result.perks[`${buff.buffName} Potency`] ?? 0
-      if (potPerk <= 0) return buff
-      const basePot = roundMultiplier(potPerk * 0.1)
+      const currentPot = buff.potency ?? 0
+      let potPerk = $result.perks[`${buff.buffName} Potency`] ?? 0
+      if (buff.buffName === 'Burn' && _infActive && $build.draconicColor === 'fire') {
+        potPerk = roundMultiplier(potPerk * (1 + _infPerkAmt * 0.15))
+      }
+      let perkBase = roundMultiplier(potPerk * 0.1)
+      if (_infActive && $build.draconicColor === 'hex') {
+        perkBase = roundMultiplier(perkBase * (1 + _infPerkAmt * 0.05))
+      }
+      const totalPot = roundMultiplier(currentPot + perkBase)
       const edAmt = $result.perks['Endless Despair'] ?? 0
       const potency = edAmt > 0
-        ? roundMultiplier(basePot * (1 + 0.35 * edAmt) + 0.1)
-        : basePot
+        ? roundMultiplier(totalPot * (1 + 0.35 * edAmt) + 0.1)
+        : totalPot
+      const extra = roundMultiplier(potency - currentPot)
       return {
         ...buff,
-        basePotency: basePot,
-        bonusPotency: potency !== basePot ? roundMultiplier(potency - basePot) : undefined,
+        basePotency: currentPot,
+        bonusPotency: extra > 0 ? extra : undefined,
         potency,
       }
     })

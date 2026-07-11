@@ -38,7 +38,7 @@ export function getDraconicInfusionBuff(
     const effectFn    = color ? DRACONIC_INFUSION_COLOR_EFFECTS[color] : undefined
     const colorEffect = effectFn ? `${colorLabel}: ${effectFn(perkAmt)}` : 'No Dragon Blooded color → Physical damage type'
 
-    return [{
+    const buffs: GrantedBuff[] = [{
         buffName:   'Draconic Infusion',
         isSelfDebuff: false,
         potency,
@@ -47,9 +47,23 @@ export function getDraconicInfusionBuff(
         sourceName: 'Dragon Infusion',
         sourceType: 'rune' as const,
     }]
+
+    if (color === 'fire') {
+        buffs.push({
+            buffName: 'Burn',
+            potency: 0,
+            duration: 5,
+            condition: `${colorLabel} · on hit (proc-affected)`,
+            sourceName: 'Dragon Infusion',
+            sourceType: 'rune' as const,
+            isSelfDebuff: false,
+        })
+    }
+
+    return buffs
 }
 
-export function getDraconicHexDebuffs(
+export function getDraconicAbilityDebuffs(
     guildName: string,
     draconicRuneInfusion: string,
     draconicColor: string,
@@ -57,24 +71,34 @@ export function getDraconicHexDebuffs(
 ): GrantedBuff[] {
     if (guildName !== 'Draconic') return []
     const ability = draconicRuneInfusion
-    if (draconicColor !== 'hex') return []
     if (ability !== 'claw' && ability !== 'bubble') return []
 
     const perkAmt = draconicBloodPerkAmt
     const abilityLabel = ability === 'claw' ? 'Dragon Claw' : 'Dragon Bubble'
-    const srcName  = `${abilityLabel} (Hex)`
-    const poolCond = `${abilityLabel} · Hex · 3 random chances from pool`
 
-    return [
-        { buffName: 'Weakness', potency: Math.round(perkAmt * 0.1 * 1000) / 1000, duration: 5, condition: `${abilityLabel} · Hex · on hit (guaranteed)`, sourceName: srcName, sourceType: 'rune' as const, isSelfDebuff: false },
-        ...BASIC_DEBUFF_POOL.map(d => ({
-            buffName: d.buffName,
-            potency: d.potency,
-            duration: d.duration,
-            condition: poolCond,
-            sourceName: srcName,
-            sourceType: 'rune' as const,
-            isSelfDebuff: false as const,
-        })),
-    ]
+    if (draconicColor === 'hex') {
+        const srcName  = `${abilityLabel} (Hex)`
+        const poolCond = `${abilityLabel} · Hex · 3 random chances from pool`
+
+        return [
+            { buffName: 'Weakness', potency: Math.round(perkAmt * 0.1 * 1000) / 1000, duration: 5, condition: `${abilityLabel} · Hex · on hit (guaranteed)`, sourceName: srcName, sourceType: 'rune' as const, isSelfDebuff: false },
+            ...BASIC_DEBUFF_POOL.map(d => ({
+                buffName: d.buffName,
+                potency: d.potency,
+                duration: d.duration,
+                condition: poolCond,
+                sourceName: srcName,
+                sourceType: 'rune' as const,
+                isSelfDebuff: false as const,
+            })),
+        ]
+    }
+
+    if (draconicColor === 'fire') {
+        return [
+            { buffName: 'Burn', potency: 0, duration: 5, condition: `${abilityLabel} · Fire · on hit`, sourceName: `${abilityLabel} (Fire)`, sourceType: 'rune' as const, isSelfDebuff: false },
+        ]
+    }
+
+    return []
 }

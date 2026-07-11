@@ -8,7 +8,7 @@
   import { DMG_TYPE_COLORS, DMG_TYPE_PRIORITY, SCALING_TO_BOOST, PERCENT_STATS, canProc, type WeaponBaseDmg, type ProcCoefficient } from './lib/types'
   import { BUFF_DEFS, getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, calcBuffEffect, getBuffDescription, convertTailwindToWhirlwind, getTrueBalanceBuffs } from './data/BuffData'
   import { DEBUFF_COMBAT_EFFECTS } from './data/debuffCombatEffects'
-  import { getDraconicInfusionBuff, getDraconicHexDebuffs, getEffectiveDraconicInfusionPotency } from './data/draconicBuffs'  
+  import { getDraconicInfusionBuff, getDraconicAbilityDebuffs, getEffectiveDraconicInfusionPotency } from './data/draconicBuffs'  
   import { WA_SUMMON_MAP, SUMMON_MAP, calcSummonStat, calcMaxSummonCount } from './data/SummonData'
   import CritIcon from './CritIcon.svelte'
   import { PERK_DMG_DEFS, SECONDARY_TONE_COLORS, isHpGateActive, DRAGON_STATE_HP_GATE } from './data/Perkbasedmg'
@@ -382,10 +382,15 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
     return entries
   })()
 
-  $: _draconicHexDebuffsForDummy = applyBuffPerkModifiers(
-    getDraconicHexDebuffs(
-      $build.guild, $build.draconicRuneInfusion, $build.draconicColor, $result.perks['Draconic Blood'] ?? 0
-    ),
+  $: _draconicAbilityDebuffsForDummy = applyBuffPerkModifiers(
+    [
+      ...getDraconicAbilityDebuffs(
+        $build.guild, $build.draconicRuneInfusion, $build.draconicColor, $result.perks['Draconic Blood'] ?? 0
+      ),
+      ...getDraconicInfusionBuff(
+        $build.guild, $build.draconicRuneInfusion, $build.draconicColor, $result.perks['Draconic Blood'] ?? 0
+      ).filter(b => b.buffName !== 'Draconic Infusion'),
+    ],
     $result.perks,
     $build.rune || undefined
   )
@@ -399,7 +404,7 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
       ['Sticky (Hex Web)', 'Sticky'],
     ])
     const groups = new Map<string, Map<string, number>>()
-    for (const b of [..._allActiveBuffs, ..._draconicHexDebuffsForDummy]) {
+    for (const b of [..._allActiveBuffs, ..._draconicAbilityDebuffsForDummy]) {
       if (b.isSelfDebuff) continue
       const def = BUFF_DEFS[b.buffName]
       if (!def?.isDebuff) continue
@@ -475,7 +480,16 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
     // For DoT debuffs (Bleed/Burn/Poison), use player's {type} Potency perk value
     for (const debuff of result) {
       if (['Bleed', 'Burn', 'Poison'].includes(debuff.name)) {
-        const potPerk = perks[`${debuff.name} Potency`] ?? 0
+        let potPerk = perks[`${debuff.name} Potency`] ?? 0
+        if (__daBuildVal.draconicRuneInfusion === 'infusion') {
+          const dbAmt = perks['Draconic Blood'] ?? 0
+          if (__daBuildVal.draconicColor === 'fire' && debuff.name === 'Burn') {
+            potPerk = roundMultiplier(potPerk * (1 + dbAmt * 0.15))
+          }
+          if (__daBuildVal.draconicColor === 'hex') {
+            potPerk = roundMultiplier(potPerk * (1 + dbAmt * 0.05))
+          }
+        }
         if (potPerk > 0) {
           const gamePot = roundMultiplier(potPerk * 0.1)
           const effect = calcBuffEffect(debuff.name, gamePot)
@@ -522,7 +536,16 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
       meltingShredFactor?: number
       scalingRows: ScalingRow[]; totalEffectivePct: number
     }> = DOT_TYPE_LIST.map(type => {
-      const dotPot = perks[`${type} Potency`] ?? 0
+      let dotPot = perks[`${type} Potency`] ?? 0
+      if (__daBuildVal.draconicRuneInfusion === 'infusion') {
+        const draconicBloodAmt = perks['Draconic Blood'] ?? 0
+        if (__daBuildVal.draconicColor === 'fire' && type === 'Burn') {
+          dotPot *= 1 + draconicBloodAmt * 0.15
+        }
+        if (__daBuildVal.draconicColor === 'hex') {
+          dotPot *= 1 + draconicBloodAmt * 0.05
+        }
+      }
       const gamePot = toGamePotency(dotPot)
       const edAmt = perks['Endless Despair'] ?? 0
       const inflictionPot = edAmt > 0 ? gamePot * (1 + 0.35 * edAmt) + 0.1 : gamePot
