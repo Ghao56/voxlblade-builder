@@ -14,7 +14,7 @@
   import { PERK_DMG_DEFS, SECONDARY_TONE_COLORS, isHpGateActive, DRAGON_STATE_HP_GATE } from './data/Perkbasedmg'
   import { resolveDefenseSources, calcBaseArmorDefPct, DEF_GROUP, type DefenseSource } from './lib/defense'
   import { getActiveRaceEffect, getOrkTenacityBuffs, calcOrkTenacityBonus } from './data/raceEffects'
-  import { getActiveDefensivePerkSources } from './data/defensivePerks'
+  import { getActiveDefensivePerkSources, calcDefensivePotencyMult } from './data/defensivePerks'
   import { getWeaponConditionalBoost } from './data/weaponConditionalBoosts'
   import { getRace } from './lib/engine/data/character'
   import { RUNE_DMG_DEFS } from './data/Runebasedmg'
@@ -30,6 +30,7 @@ import { resolveStanceOverlay } from './data/stanceOverlays'
 import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
 import { calcDotTick, getDotBase, getDotPotencyMult, toGamePotency, DOT_TYPE_LIST, DOT_SCALINGS } from './data/DoTDamage'
 import { WEAPON_PROC_COEFFS, DEFAULT_PROC_COEFF, WA_PROC_COEFFS } from './data/procCoefficients'
+import { BOOST_DEF_MAP } from './data/Boost'
 import { WILD_BOLT_ELEMENTS } from './lib/constants'
 
 
@@ -51,20 +52,8 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
     const baseSources = getActiveDefensivePerkSources(
       perka, hpFillPct, adaptivePlateTriggered, effectiveInDarkness, ragePotency > 0, mountActive, _hasProtection, _debuffCount
     )
-    let potMult = 1
-    
-    const bastionStacks = perka['Bastion Bless'] ?? 0
-    if (bastionStacks > 0) {
-      potMult += 0.1 * bastionStacks
-    }
-    
-    const _infActive = buildVal.draconicRuneInfusion === 'infusion'
-    const color = buildVal.draconicColor
-    if (_infActive && color === 'holy') {
-      const _infPerkAmt = perka['Draconic Blood'] ?? 0
-      potMult *= 1 + _infPerkAmt * 0.05
-    }
-    
+    const potMult = calcDefensivePotencyMult(perka, buildVal.draconicRuneInfusion, buildVal.draconicColor)
+
     if (potMult === 1) return baseSources
     
     return baseSources.map(s => {
@@ -520,6 +509,9 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
     }
     return 1 + totalPct / 100
   }
+
+  let _dotCollapsed = true
+  $: _topDotTick = _dotTicks.length > 0 ? _dotTicks.reduce((best, dt) => dt.totalEffectivePct > best.totalEffectivePct ? dt : best) : null
 
   $: _dotTicks = (() => {
     const ticks: Array<{
@@ -1099,7 +1091,7 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
     }
     return e
   })
-  $: activeEntries = [..._adjustedDmgEntries.filter(e => !disabledBoosts.has(e.sourceName) && !(e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) && !(e.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)) && !(e.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive) && !(e.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive) && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance' && e.sourceName !== 'Frenzy'), ..._syntheticDmgBoostEntries.filter(e => {
+  $: activeEntries = [..._adjustedDmgEntries.filter(e => !disabledBoosts.has(e.sourceName) && !(e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) && !(e.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)) && !(e.sourceName === 'Golden Crits' && !showCritValues) && !(e.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive) && !(e.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive) && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance' && e.sourceName !== 'Frenzy'), ..._syntheticDmgBoostEntries.filter(e => {
     if (e.sourceName === 'Curse Rip' && disableCurseRip) return false
     if (e.sourceName === 'Reaper' && disableReaper) return false
     if (disabledBoosts.has(e.sourceName)) return false
@@ -1674,7 +1666,7 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
     (e.sourceName !== 'Rider' || mountActive) && e.sourceName !== 'Frenzy' && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance'
   )
 
-  $: _goldenCritsBaseChance = 0.40
+  $: _goldenCritsBaseChance = BOOST_DEF_MAP.get('Golden Crits')?.baseProcChance ?? 0.40
   $: _goldenCritsEffectiveChance = (() => {
     const coeff = WEAPON_PROC_COEFFS[_baseWeaponType]?.m2 ?? DEFAULT_PROC_COEFF
     return calcProcChance(_goldenCritsBaseChance, coeff, 'positiveOnly')
@@ -1829,17 +1821,7 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
         let raw = Math.round(se.getValue({ perkAmount, draconicColor: $build.draconicColor }) * 1000) / 1000
         
         if (se.tone === 'defense') {
-          let potMult = 1
-          const bastionStacks = perks['Bastion Bless'] ?? 0
-          if (bastionStacks > 0) {
-            potMult += 0.1 * bastionStacks
-          }
-          const _infActive = $build.draconicRuneInfusion === 'infusion'
-          const color = $build.draconicColor
-          if (_infActive && color === 'holy') {
-            const _infPerkAmt = perks['Draconic Blood'] ?? 0
-            potMult *= 1 + _infPerkAmt * 0.05
-          }
+          const potMult = calcDefensivePotencyMult(perks, $build.draconicRuneInfusion, $build.draconicColor)
           raw = Math.round(raw * potMult * 1000) / 1000
         }
         
@@ -2476,7 +2458,8 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
           {@const _venomEaterDisabled = entry.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)}
           {@const _bloodThirstyDisabled = entry.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive}
           {@const _venomSpitterDisabled = entry.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive}
-          {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (entry.sourceName === 'Curse Rip' && disableCurseRip) || (entry.sourceName === 'Reaper' && disableReaper) || _venomEaterDisabled || _bloodThirstyDisabled || _venomSpitterDisabled}
+          {@const _goldenCritsDisabled = entry.sourceName === 'Golden Crits' && !showCritValues}
+          {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (entry.sourceName === 'Curse Rip' && disableCurseRip) || (entry.sourceName === 'Reaper' && disableReaper) || _venomEaterDisabled || _bloodThirstyDisabled || _venomSpitterDisabled || _goldenCritsDisabled}
           {@const effectiveMultiplier = disabled ? 1 : entry.rawMultiplier}
           <button
             class="da-boost-chip"
@@ -2488,6 +2471,7 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
               if (_venomEaterDisabled) return
               if (_bloodThirstyDisabled) return
               if (_venomSpitterDisabled) return
+              if (_goldenCritsDisabled) return
               if (entry.sourceName === 'Curse Rip') disableCurseRip = !disableCurseRip
               else if (entry.sourceName === 'Reaper') disableReaper = !disableReaper
               else toggleBoost(entry.sourceName)
@@ -2516,7 +2500,8 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
             {@const _venomEaterDisabled = entry.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)}
             {@const _bloodThirstyDisabled = entry.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive}
             {@const _venomSpitterDisabled = entry.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive}
-            {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (entry.sourceName === 'Curse Rip' && disableCurseRip) || (entry.sourceName === 'Reaper' && disableReaper) || _venomEaterDisabled || _bloodThirstyDisabled || _venomSpitterDisabled}
+            {@const _goldenCritsDisabled = entry.sourceName === 'Golden Crits' && !showCritValues}
+            {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (entry.sourceName === 'Curse Rip' && disableCurseRip) || (entry.sourceName === 'Reaper' && disableReaper) || _venomEaterDisabled || _bloodThirstyDisabled || _venomSpitterDisabled || _goldenCritsDisabled}
             <button
               class="da-boost-chip"
               class:da-boost-chip--lvl={entry.sourceName === 'Level Damage'}
@@ -2527,6 +2512,7 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
                 if (_venomEaterDisabled) return
                 if (_bloodThirstyDisabled) return
                 if (_venomSpitterDisabled) return
+                if (_goldenCritsDisabled) return
                 if (entry.sourceName === 'Curse Rip') disableCurseRip = !disableCurseRip
                 else if (entry.sourceName === 'Reaper') disableReaper = !disableReaper
                 else toggleBoost(entry.sourceName)
@@ -2557,12 +2543,13 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
                   {@const _venomEaterDisabled = entry.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)}
                   {@const _bloodThirstyDisabled = entry.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive}
                   {@const _venomSpitterDisabled = entry.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive}
-                  {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || _venomEaterDisabled || _bloodThirstyDisabled || _venomSpitterDisabled}
+                  {@const _goldenCritsDisabled = entry.sourceName === 'Golden Crits' && !showCritValues}
+                  {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || _venomEaterDisabled || _bloodThirstyDisabled || _venomSpitterDisabled || _goldenCritsDisabled}
                   <button
                     class="da-boost-chip da-boost-chip--sm"
                     class:da-boost-chip--off={disabled}
                     title={entry.condition ?? ''}
-                    on:click={() => { if (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) return; if (_venomEaterDisabled) return; if (_bloodThirstyDisabled) return; if (_venomSpitterDisabled) return; toggleBoost(entry.sourceName) }}
+                    on:click={() => { if (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) return; if (_venomEaterDisabled) return; if (_bloodThirstyDisabled) return; if (_venomSpitterDisabled) return; if (_goldenCritsDisabled) return; toggleBoost(entry.sourceName) }}
                   >
                     <span class="da-bc-name">{entry.sourceName}</span>
                     <span class="da-bc-val">{disabled ? '—' : `×${+entry.rawMultiplier.toFixed(4)}`}</span>
@@ -3965,71 +3952,141 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
   </div>
 {/if}
 
-{#if _dotTicks.length > 0}
+{#if _dotTicks.some(dt => dt.totalEffectivePct !== 0)}
   <div class="da-section da-section--scaling">
-    <div class="da-section-title">📐 DoT Damage Scaling</div>
+    <div class="da-section-title">
+      📐 DoT Damage Scaling
+      <button class="da-collapse-btn" on:click={() => _dotCollapsed = !_dotCollapsed}>{_dotCollapsed ? '▲' : '▼'}</button>
+    </div>
     <div class="ds-formula-hint">Effective Boost = Σ (Scaling × Boost%) → adds to base as ×(1 + Effective%)</div>
-    {#each _dotTicks as dt, i}
-      {@const _dc = DOT_COLORS[dt.type] ?? '#e8e4da'}
-      {#if i > 0}<div class="da-perk-scaling-divider"></div>{/if}
-      <div class="ds-table ds-table--perk" style="margin-top:6px;">
-        <div class="ds-head">
-          <div class="ds-col ds-col--type" style="flex:1.2;">
-            <span class="ds-dot" style="background:{_dc}"></span>
-            <span style="color:{_dc}">{dt.type}</span>
-          </div>
-          <div class="ds-col ds-col--val" style="flex:1;">Scaling</div>
-          <div class="ds-col ds-col--op" style="flex:0.3;"></div>
-          <div class="ds-col ds-col--boost" style="flex:1.2;">Your Boost</div>
-          <div class="ds-col ds-col--op" style="flex:0.3;"></div>
-          <div class="ds-col ds-col--contrib" style="flex:1;">Contribution</div>
-        </div>
-        {#each dt.scalingRows as row}
-          <div class="ds-row">
+    {#if _dotCollapsed}
+      {#if _topDotTick && _topDotTick.totalEffectivePct !== 0}
+        {#each [_topDotTick] as dt}
+        {@const _dc = DOT_COLORS[dt.type] ?? '#e8e4da'}
+        <div class="ds-table ds-table--perk" style="margin-top:6px;">
+          <div class="ds-head">
             <div class="ds-col ds-col--type" style="flex:1.2;">
-              <span class="ds-dot" style="background:{row.color}"></span>
-              <span style="color:{row.color}">{row.key.charAt(0).toUpperCase() + row.key.slice(1)}</span>
+              <span class="ds-dot" style="background:{_dc}"></span>
+              <span style="color:{_dc}">{dt.type}</span>
             </div>
-            <div class="ds-col ds-col--val" style="flex:1;">
-              <span class="ds-num" style="color:{row.color}">{roundMultiplier(row.scalingVal)}</span>
-            </div>
-            <div class="ds-col ds-col--op" style="flex:0.3;">×</div>
-            <div class="ds-col ds-col--boost" style="flex:1.2;">
-              {#if row.boostPct !== 0}
-                <span class="ds-boost" class:ds-boost--zero={row.boostPct === 0}>
-                  {row.boostPct > 0 ? '+' : ''}{roundMultiplier(row.boostPct)}%
+            <div class="ds-col ds-col--val" style="flex:1;">Scaling</div>
+            <div class="ds-col ds-col--op" style="flex:0.3;"></div>
+            <div class="ds-col ds-col--boost" style="flex:1.2;">Your Boost</div>
+            <div class="ds-col ds-col--op" style="flex:0.3;"></div>
+            <div class="ds-col ds-col--contrib" style="flex:1;">Contribution</div>
+          </div>
+          {#each dt.scalingRows as row}
+            <div class="ds-row">
+              <div class="ds-col ds-col--type" style="flex:1.2;">
+                <span class="ds-dot" style="background:{row.color}"></span>
+                <span style="color:{row.color}">{row.key.charAt(0).toUpperCase() + row.key.slice(1)}</span>
+              </div>
+              <div class="ds-col ds-col--val" style="flex:1;">
+                <span class="ds-num" style="color:{row.color}">{roundMultiplier(row.scalingVal)}</span>
+              </div>
+              <div class="ds-col ds-col--op" style="flex:0.3;">×</div>
+              <div class="ds-col ds-col--boost" style="flex:1.2;">
+                {#if row.boostPct !== 0}
+                  <span class="ds-boost" class:ds-boost--zero={row.boostPct === 0}>
+                    {row.boostPct > 0 ? '+' : ''}{roundMultiplier(row.boostPct)}%
+                  </span>
+                {:else}
+                  <span class="ds-boost ds-boost--zero">+0%</span>
+                {/if}
+              </div>
+              <div class="ds-col ds-col--op" style="flex:0.3;">=</div>
+              <div class="ds-col ds-col--contrib" style="flex:1;">
+                <span class="ds-contrib" class:ds-contrib--zero={row.contribution === 0} style={row.contribution > 0 ? `color:${row.color}` : row.contribution < 0 ? 'color: #cf6679;' : ''}>
+                  {row.contribution > 0 ? '+' : ''}{row.contribution}%
                 </span>
-              {:else}
-                <span class="ds-boost ds-boost--zero">+0%</span>
-              {/if}
+              </div>
             </div>
-            <div class="ds-col ds-col--op" style="flex:0.3;">=</div>
-            <div class="ds-col ds-col--contrib" style="flex:1;">
-              <span class="ds-contrib" class:ds-contrib--zero={row.contribution === 0} style={row.contribution > 0 ? `color:${row.color}` : row.contribution < 0 ? 'color: #cf6679;' : ''}>
-                {row.contribution > 0 ? '+' : ''}{row.contribution}%
-              </span>
+          {/each}
+          <div class="ds-row ds-row--total">
+            <div class="ds-col ds-col--type ds-total-label">Total Effective Boost</div>
+            <div class="ds-col ds-col--val"></div>
+            <div class="ds-col ds-col--op"></div>
+            <div class="ds-col ds-col--boost"></div>
+            <div class="ds-col ds-col--op">=</div>
+            <div class="ds-col ds-col--contrib">
+              <span class="ds-total-pct">+{dt.totalEffectivePct}%</span>
             </div>
           </div>
+        </div>
+        <div class="ds-result-row ds-result-row--perk" style="background:rgba(251,146,60,.05);border-color:rgba(251,146,60,.15);">
+          <div style="display:flex;flex-direction:column;gap:2px;flex:1;">
+            <span class="ds-result-label" style="color:#fb923c;">{dt.type} Scaling Multiplier</span>
+          </div>
+          <span class="ds-result-eq">1 + {dt.totalEffectivePct}% =</span>
+          <span class="ds-result-val">×{+dt.scalingMult.toFixed(4)}</span>
+        </div>
         {/each}
-        <div class="ds-row ds-row--total">
-          <div class="ds-col ds-col--type ds-total-label">Total Effective Boost</div>
-          <div class="ds-col ds-col--val"></div>
-          <div class="ds-col ds-col--op"></div>
-          <div class="ds-col ds-col--boost"></div>
-          <div class="ds-col ds-col--op">=</div>
-          <div class="ds-col ds-col--contrib">
-            <span class="ds-total-pct">+{dt.totalEffectivePct}%</span>
+      {/if}
+    {:else}
+      {#each _dotTicks as dt, i}
+        {#if dt.totalEffectivePct !== 0}
+        {@const _dc = DOT_COLORS[dt.type] ?? '#e8e4da'}
+        {#if i > 0}<div class="da-perk-scaling-divider"></div>{/if}
+        <div class="ds-table ds-table--perk" style="margin-top:6px;">
+          <div class="ds-head">
+            <div class="ds-col ds-col--type" style="flex:1.2;">
+              <span class="ds-dot" style="background:{_dc}"></span>
+              <span style="color:{_dc}">{dt.type}</span>
+            </div>
+            <div class="ds-col ds-col--val" style="flex:1;">Scaling</div>
+            <div class="ds-col ds-col--op" style="flex:0.3;"></div>
+            <div class="ds-col ds-col--boost" style="flex:1.2;">Your Boost</div>
+            <div class="ds-col ds-col--op" style="flex:0.3;"></div>
+            <div class="ds-col ds-col--contrib" style="flex:1;">Contribution</div>
+          </div>
+          {#each dt.scalingRows as row}
+            <div class="ds-row">
+              <div class="ds-col ds-col--type" style="flex:1.2;">
+                <span class="ds-dot" style="background:{row.color}"></span>
+                <span style="color:{row.color}">{row.key.charAt(0).toUpperCase() + row.key.slice(1)}</span>
+              </div>
+              <div class="ds-col ds-col--val" style="flex:1;">
+                <span class="ds-num" style="color:{row.color}">{roundMultiplier(row.scalingVal)}</span>
+              </div>
+              <div class="ds-col ds-col--op" style="flex:0.3;">×</div>
+              <div class="ds-col ds-col--boost" style="flex:1.2;">
+                {#if row.boostPct !== 0}
+                  <span class="ds-boost" class:ds-boost--zero={row.boostPct === 0}>
+                    {row.boostPct > 0 ? '+' : ''}{roundMultiplier(row.boostPct)}%
+                  </span>
+                {:else}
+                  <span class="ds-boost ds-boost--zero">+0%</span>
+                {/if}
+              </div>
+              <div class="ds-col ds-col--op" style="flex:0.3;">=</div>
+              <div class="ds-col ds-col--contrib" style="flex:1;">
+                <span class="ds-contrib" class:ds-contrib--zero={row.contribution === 0} style={row.contribution > 0 ? `color:${row.color}` : row.contribution < 0 ? 'color: #cf6679;' : ''}>
+                  {row.contribution > 0 ? '+' : ''}{row.contribution}%
+                </span>
+              </div>
+            </div>
+          {/each}
+          <div class="ds-row ds-row--total">
+            <div class="ds-col ds-col--type ds-total-label">Total Effective Boost</div>
+            <div class="ds-col ds-col--val"></div>
+            <div class="ds-col ds-col--op"></div>
+            <div class="ds-col ds-col--boost"></div>
+            <div class="ds-col ds-col--op">=</div>
+            <div class="ds-col ds-col--contrib">
+              <span class="ds-total-pct">+{dt.totalEffectivePct}%</span>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="ds-result-row ds-result-row--perk" style="background:rgba(251,146,60,.05);border-color:rgba(251,146,60,.15);">
-        <div style="display:flex;flex-direction:column;gap:2px;flex:1;">
-          <span class="ds-result-label" style="color:#fb923c;">{dt.type} Scaling Multiplier</span>
+        <div class="ds-result-row ds-result-row--perk" style="background:rgba(251,146,60,.05);border-color:rgba(251,146,60,.15);">
+          <div style="display:flex;flex-direction:column;gap:2px;flex:1;">
+            <span class="ds-result-label" style="color:#fb923c;">{dt.type} Scaling Multiplier</span>
+          </div>
+          <span class="ds-result-eq">1 + {dt.totalEffectivePct}% =</span>
+          <span class="ds-result-val">×{+dt.scalingMult.toFixed(4)}</span>
         </div>
-        <span class="ds-result-eq">1 + {dt.totalEffectivePct}% =</span>
-        <span class="ds-result-val">×{+dt.scalingMult.toFixed(4)}</span>
-      </div>
-    {/each}
+      {/if}
+      {/each}
+    {/if}
   </div>
 {/if}
 
@@ -4384,7 +4441,24 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
     color: var(--ink-muted, #8a8d85);
     border-bottom: 1px solid var(--border, rgba(255,255,255,.06));
     padding-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
+  .da-collapse-btn {
+    background: none;
+    border: 1px solid var(--border, rgba(255,255,255,.1));
+    border-radius: 4px;
+    color: var(--ink-muted, #8a8d85);
+    cursor: pointer;
+    font-size: .6rem;
+    padding: 2px 6px;
+    line-height: 1.4;
+    opacity: .7;
+    transition: opacity .15s, border-color .15s;
+    margin-left: auto;
+  }
+  .da-collapse-btn:hover { opacity: 1; border-color: var(--ink-muted, #8a8d85); }
 
   /* ── Crit grid ── */
   .da-crit-grid {

@@ -48,6 +48,8 @@ export interface BoostDef {
   procScaling?: ProcScalingType
   // Whether this boost has a user-facing toggle to enable/disable it
   hasToggle?: boolean
+  // Base chance (0..1) before proc-coefficient scaling, for boosts with chance-based triggers
+  baseProcChance?: number
 }
 
 export const BOOST_DEFS: BoostDef[] = [
@@ -56,7 +58,7 @@ export const BOOST_DEFS: BoostDef[] = [
   {sourceName: 'Venom Spitter', multiplierPerPerk: 0.10, type: 'dmg', condition: 'vs Poisoned opponents'},
   {sourceName:'Perfection',multiplierPerPerk: 0.10, type: 'dmg', condition: 'at max potency',},
   {sourceName:'Stealth',multiplierPerPerk: 0.10, type: 'dmg', condition: "gain a Damage Boost against enemies that aren't targeting you",},
-  { sourceName: 'Golden Crits', multiplierPerPerk: 0.50, type: 'dmg', condition: '40% chance on crit', procScaling: 'positiveOnly', hasToggle: true },
+  { sourceName: 'Golden Crits', multiplierPerPerk: 0.50, type: 'dmg', condition: '40% chance on crit', procScaling: 'positiveOnly', hasToggle: true, baseProcChance: 0.40 },
   { sourceName: 'Royal Parry', multiplierPerPerk: 0.50, type: 'dmg', condition: 'on the hit that activated the Critical Boost status per 1 of this perk.' },
   { sourceName: 'Spell Piercer', multiplierPerPerk: 0.20, type: 'dmg', condition: 'Increase damage dealt by weapon arts and runes on crit by 20% per 1 of this perk' },
   { sourceName: 'Scourge', multiplierPerPerk: 0.2, condition: 'Gain a chance for any hit to count as a Guardbreak', type: 'dmg', needsProcCoeff: true },
@@ -335,4 +337,4 @@ export const BOOST_DEFS: BoostDef[] = [
   },
 ]
 
-const BOOST_DEF_MAP = new Map(BOOST_DEFS.map(d => [d.sourceName, d]))
+export const BOOST_DEF_MAP = new Map(BOOST_DEFS.map(d => [d.sourceName, d]))

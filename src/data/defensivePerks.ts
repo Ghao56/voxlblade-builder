@@ -162,3 +162,23 @@ export function getActiveDefensivePerkSources(
   }
   return out
 }
+
+export function calcDefensivePotencyMult(
+  perks: Record<string, number>,
+  draconicRuneInfusion: string,
+  draconicColor: string,
+): number {
+  let potMult = 1
+
+  const bastionStacks = perks['Bastion Bless'] ?? 0
+  if (bastionStacks > 0) {
+    potMult += 0.1 * bastionStacks
+  }
+
+  if (draconicRuneInfusion === 'infusion' && draconicColor === 'holy') {
+    const infPerkAmt = perks['Draconic Blood'] ?? 0
+    potMult *= 1 + infPerkAmt * 0.05
+  }
+
+  return potMult
+}
