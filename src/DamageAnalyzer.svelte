@@ -856,7 +856,7 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
 
   const PERK_DMG_TYPE_BONUS_DEFS: PerkDmgTypeBonusDef[] = [
     { perkName: 'Void Rage', type: 'hex', amountPerStack: 0.1, condition: ctx => !ctx.rageDisabled && ctx.ragePotency > 0 },
-    { perkName: 'Channeled Weapon', type: 'magic', amountPerStack: 0.05 },
+    { perkName: 'Channeled Weapon', type: 'magic', amountPerStack: 0.05, appliesWithoutProc: false },
     { perkName: 'Emotional', type: 'fire', amountPerStack: 0.1, condition: ctx => ctx.emotionalState === 'debuffs' },
     {
       perkName: 'Draconic Blood',
