@@ -856,7 +856,7 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
 
   const PERK_DMG_TYPE_BONUS_DEFS: PerkDmgTypeBonusDef[] = [
     { perkName: 'Void Rage', type: 'hex', amountPerStack: 0.1, condition: ctx => !ctx.rageDisabled && ctx.ragePotency > 0 },
-    { perkName: 'Channeled Weapon', type: 'magic', amountPerStack: 0.05, appliesWithoutProc: false },
+    { perkName: 'Channeled Weapon', type: 'magic', amountPerStack: 0.05 },
     { perkName: 'Emotional', type: 'fire', amountPerStack: 0.1, condition: ctx => ctx.emotionalState === 'debuffs' },
     {
       perkName: 'Draconic Blood',
@@ -876,9 +876,10 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
     perks: Record<string, number>; ragePotency: number; draconicRuneInfusion: string;
     emotionalState: string; draconicColor: string; guild: string;
     draconicInfusionDisabled: boolean; toxinTransferHexBonus: number; rageDisabled: boolean;
-  }): Record<string, number> {
+  }, excludePerks?: Set<string>): Record<string, number> {
     const bonus: Record<string, number> = {}
     for (const def of PERK_DMG_TYPE_BONUS_DEFS) {
+      if (excludePerks?.has(def.perkName)) continue
       if (!includeNoProcExempt && def.appliesWithoutProc === false) continue
       const amt = ctx.perks[def.perkName] ?? 0
       if (amt <= 0) continue
@@ -909,6 +910,12 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
     guild: $build.guild, draconicInfusionDisabled, toxinTransferHexBonus: _toxinTransferHexBonus,
     rageDisabled,
   })
+  $: _perkDmgTypeBonusesDoT = buildDmgTypeBonuses(false, {
+    perks, ragePotency: _ragePotency, draconicRuneInfusion: $build.draconicRuneInfusion,
+    emotionalState: $build.emotionalState, draconicColor: $build.draconicColor,
+    guild: $build.guild, draconicInfusionDisabled, toxinTransferHexBonus: _toxinTransferHexBonus,
+    rageDisabled,
+  }, new Set(['Channeled Weapon']))
 
   $: _emotionalHexBonus = (() => {
     const amt = perks['Emotional'] ?? 0
@@ -4361,6 +4368,7 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
   weaponHits={_bdcWeaponHits}
   perkDmgTypeBonuses={_perkDmgTypeBonuses}
   perkDmgTypeBonusesNoProc={_perkDmgTypeBonusesNoProc}
+  perkDmgTypeBonusesDoT={_perkDmgTypeBonusesDoT}
   typedBoostEntries={_typedBoostEntries}
   luminescentPct={_luminescentPct}
   selfDebuffDamageMult={_selfDebuffDamageMult}

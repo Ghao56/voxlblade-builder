@@ -23,6 +23,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
 
   export let perkDmgTypeBonuses: Record<string, number> = {}
   export let perkDmgTypeBonusesNoProc: Record<string, number> = {}
+  export let perkDmgTypeBonusesDoT: Record<string, number> = {}
   export let boosts: any
   export let crit: any
   export let stats: any
@@ -381,7 +382,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     const combatMult = d.combatMult
     const preMitBase = d.tickDamage * scalingMult * combatMult
 
-    const resolvedTypes = resolveDamageTypes({ [dmgType]: 1.0 }, perkDmgTypeBonusesNoProc)
+    const resolvedTypes = resolveDamageTypes({ [dmgType]: 1.0 }, perkDmgTypeBonusesDoT)
 
     const applicableBoosts = getApplicableBoosts(dmgType, false, undefined, { type: 'noProc' as const })
     const typedMult = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
