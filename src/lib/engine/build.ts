@@ -8,7 +8,7 @@ import { BOOST_DEFS, type BoostContext } from '../../data/Boost'
 import type { BoostEntry, BoostResult } from '../types'
 import { calcCrit } from '../crit'
 import type { CritResult } from '../crit'
-import { roundMultiplier } from '../utils'
+import { roundMultiplier, calcWardingDebuffMultiplier } from '../utils'
 import {
   getRace, getGuild, getGuildRank, getArmorPart, getRing, getRune,
   getBlade, getHandle, getGlove, getEssence, isMonkGuild, getPerk,
@@ -448,7 +448,7 @@ function applyGladiatorialRage(boostedStats: StatMap, finalPerks: Record<string,
   if (armorPen > 0) boostedStats['armorPenetration'] = (boostedStats['armorPenetration'] ?? 0) + armorPen
 }
 
-function computeBuffs(state: BuildState, finalPerks: Record<string, number>): { allBuffs: any[]; orkBuffTenacity: number } {
+function computeBuffs(state: BuildState, finalPerks: Record<string, number>, wardingDebuffMult: number): { allBuffs: any[]; orkBuffTenacity: number } {
   const _itemBuffs = getActiveBuildBuffs({
     rune: state.rune, ring: state.ring, infusionRing: state.infusionRing,
     helmet: state.helmet, chestplate: state.chestplate, leggings: state.leggings,
@@ -459,6 +459,7 @@ function computeBuffs(state: BuildState, finalPerks: Record<string, number>): { 
     [..._itemBuffs, ...getPerkBuffs(finalPerks), ...getWeaponArtBuffs(state.selectedWeaponArt)],
     finalPerks,
     state.rune || undefined,
+    wardingDebuffMult,
   ), finalPerks)
 
   const orkBuffTenacity = state.race === 'ORK' ? calcOrkTenacityBonus(allBuffs, BUFF_DEFS) : 0
@@ -499,7 +500,8 @@ function deriveResults(
 
   const crit = calcCrit(boostedStats, finalPerks)
 
-  const { allBuffs, orkBuffTenacity } = computeBuffs(state, finalPerks)
+  const wardingDebuffMult = calcWardingDebuffMultiplier(boostedStats.warding ?? 0)
+  const { allBuffs, orkBuffTenacity } = computeBuffs(state, finalPerks, wardingDebuffMult)
   const ragePotency      = maxBuffPotency(allBuffs, 'Rage')
   const bouncePotency    = maxBuffPotency(allBuffs, 'Bounce')
   const quickdrawPotency = maxBuffPotency(allBuffs, 'Quickdraw')

@@ -1442,10 +1442,20 @@ export function applyBuffPerkModifiers(
       ? generic.flatBonus / wMult
       : generic.flatBonus
 
-    const finalPotency = roundMultiplier(
-      (buff.potency + bonus) * generic.potencyMult +
-        effectiveFlatBonus
-    )
+    const tricksterStacks = perks['Trickster'] ?? 0
+    const isDespairWithTrickster = buff.buffName === 'Despair' && tricksterStacks > 0
+
+    let finalPotency
+    if (isDespairWithTrickster) {
+      const preTricksterDisplayed = (buff.potency + specific.bonus + bastionBonus) * generic.potencyMult * wMult + generic.flatBonus
+      const tricksterDisplayed = (tricksterStacks / 10) * (1 + preTricksterDisplayed)
+      finalPotency = roundMultiplier((preTricksterDisplayed + tricksterDisplayed) / wMult)
+    } else {
+      finalPotency = roundMultiplier(
+        (buff.potency + bonus) * generic.potencyMult +
+          effectiveFlatBonus
+      )
+    }
 
     return {
       ...buff,
