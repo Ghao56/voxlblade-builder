@@ -173,7 +173,7 @@ import { WA_PROC_COEFFS, DEFAULT_PROC_COEFF } from './data/procCoefficients'
     return displayBuffs.map(buff => {
       if (!dotNames.includes(buff.buffName)) return buff
       if (buff.isSelfDebuff) return buff
-      const currentPot = buff.potency ?? 0
+      const currentPot = buff.basePotency ?? buff.potency ?? 0
       let potPerk = $result.perks[`${buff.buffName} Potency`] ?? 0
       if (buff.buffName === 'Burn' && _infActive && $build.draconicColor === 'fire') {
         potPerk = roundMultiplier(potPerk * (1 + _infPerkAmt * 0.15))
