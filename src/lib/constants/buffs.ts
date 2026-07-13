@@ -1,0 +1,147 @@
+// ──────────────────────────────────────────────
+// Buff/debuff potency & duration constants (from BuffData.ts)
+// ──────────────────────────────────────────────
+
+// Buff effect per 0.1 potency
+export const BUFF_EFFECT_PER_TENTH = 0.1
+
+// Exceptional buffs with non-standard effectPerTenthPotency
+export const WHIRLWIND_EFFECT_PER_TENTH = 0.0666
+export const GLYPH_CONDUIT_EFFECT_PER_TENTH = 0.2
+export const DESPAIR_EFFECT_PER_TENTH = 0.085
+
+// Luminescent % per potency (not 0.1 scale)
+export const LUMINESCENT_PCT_PER_POTENCY = 5
+
+// ──────────────────────────────────────────────
+// Item buff potencies & durations
+// ──────────────────────────────────────────────
+
+// Rune-granted buffs
+export const RAGE_RUNE_BUFF_POTENCY = 0.3
+export const RAGE_RUNE_BUFF_DURATION = 10
+export const TOAD_SLAM_RAGE_POTENCY = 0.2
+export const TOAD_SLAM_RAGE_DURATION = 10
+export const BOUNCE_RUNE_POTENCY = 0.3
+export const BOUNCE_RUNE_DURATION = 10
+export const BEENADE_RUNE_POTENCY = 5
+export const ANCIENT_CLERIC_SHIELD_POTENCY = 20
+export const ANCIENT_CLERIC_SHIELD_DURATION = 15
+export const BOOSTSHROOM_POISON_DURATION = 5
+export const SPORELING_POISON_DURATION = 5
+export const THUNDEROUS_CLOAK_POTENCY = 1.0
+export const THUNDEROUS_CLOAK_DURATION = 5
+export const WINTER_WOOF_SHATTER_POTENCY = 0.2
+export const WINTER_WOOF_SHATTER_DURATION = 10
+export const GLACIAL_SNAPPER_SLOWNESS_POTENCY = 1
+export const GLACIAL_SNAPPER_SLOWNESS_DURATION = 12
+export const GLACIAL_SNAPPER_BLEED_DURATION = 4
+export const CACITROPS_BLEED_DURATION = 5
+export const BRAINBLAST_BURN_DURATION = 5
+export const BRAINBLAST_STICKY_POTENCY = 0.1
+export const BRAINBLAST_STICKY_DURATION = 5
+export const HEX_WEB_STICKY_POTENCY = 0.1
+export const HEX_WEB_STICKY_DURATION = 5
+
+// Basic debuff pool
+export const BASIC_DEBUFF_POTENCY = 0
+export const BASIC_DEBUFF_DURATION = 5
+export const BASIC_SHATTER_POTENCY = 0.2
+export const BASIC_SLOWNESS_POTENCY = 0.2
+export const BASIC_WEAKNESS_POTENCY = 0.5
+
+// Weapon-art-granted buffs
+export const WARRIOR_STOMP_RAGE_POTENCY = 0.3
+export const WARRIOR_STOMP_RAGE_DURATION = 10
+export const WARRIOR_STOMP_TAUNT_POTENCY = 1.0
+export const WARRIOR_STOMP_TAUNT_DURATION = 15
+export const JAVELIN_SLOWNESS_DURATION = 6
+export const LIGHTNING_CLOAK_DURATION_WA = 40
+export const CURSED_GROUND_WEAKNESS_POTENCY = 1.0
+export const CURSED_GROUND_WEAKNESS_DURATION = 15
+
+// True Balance conversions
+export const TRUE_BALANCE_POTENCY_COEFF = 0.1
+export const TRUE_BALANCE_REGEN_DURATION_BASE = 1
+export const TRUE_BALANCE_TAILWIND_DURATION_BASE = 3
+export const TRUE_BALANCE_REINFORCE_POTENCY_BASE = 0.1
+export const TRUE_BALANCE_RAGE_DURATION_BASE = 3
+export const TRUE_BALANCE_INSPIRED_DURATION_BASE = 4
+
+// PERK_BUFFS factory constants
+export const PERFECTION_POTENCY_PER_AMOUNT = 5
+export const BOUNCE_MOMENTUM_BUFF_POTENCY = 1.0
+export const BOUNCE_MOMENTUM_DURATION_PER_AMOUNT = 3
+export const TOADZERKER_BUFF_POTENCY = 0.2
+export const TOADZERKER_BUFF_DURATION = 10
+export const IRON_BOUNCE_DURATION_BASE = 8
+export const IRON_BOUNCE_DURATION_PER_AMOUNT = 2
+export const SPRINGBLAST_BUFF_POTENCY_PER_AMOUNT = 0.1
+export const SPRINGBLAST_BUFF_DURATION_BASE = 8
+export const SPRINGBLAST_BUFF_DURATION_PER_AMOUNT = 2
+export const WRATHFUL_CRITS_POTENCY_PER_AMOUNT = 0.1
+export const WRATHFUL_CRITS_DURATION_BASE = 5
+export const WRATHFUL_CRITS_DURATION_PER_AMOUNT = 2
+export const BLOOD_LUST_POTENCY_PER_AMOUNT = 2.5
+export const BLOOD_LUST_DURATION_PER_AMOUNT = 7
+export const LUMINESCENT_BUFF_POTENCY_PER_AMOUNT = 0.1
+export const LUMINESCENT_BUFF_DURATION = 25
+export const BEASTIAL_RAGE_POTENCY_PER_AMOUNT = 0.3
+export const BEASTIAL_RAGE_DURATION = 15
+export const VASSALS_CROAK_MAX_SUMMONS_BASE = 15
+export const VASSALS_CROAK_RAGE_DURATION = 10
+export const IRON_SLAYER_POTENCY_PER_AMOUNT = 0.2
+export const IRON_SLAYER_DURATION = 10
+export const BASTION_REGEN_POTENCY = 0.5
+export const BASTION_REINFORCE_POTENCY = 0.5
+export const BASTION_RATE_PER_AMOUNT = 5
+export const BASTION_BUFF_DURATION = 15
+export const AIR_PRESSURE_BUFF_POTENCY_PER_AMOUNT = 0.1
+export const AIR_PRESSURE_BUFF_DURATION = 15
+export const APOLLO_TAUNT_POTENCY = 1.0
+export const APOLLO_TAUNT_DURATION = 15
+export const VALOR_TAUNT_POTENCY = 1.0
+export const VALOR_TAUNT_DURATION = 16
+export const CHANNELED_REINFORCE_POTENCY = 0.1
+export const CHANNELED_REINFORCE_DURATION = 20
+export const GLADIATORIAL_RAGE_POTENCY = 0.1
+export const GLADIATORIAL_RAGE_DURATION = 5
+export const GLYPH_CONDUIT_POTENCY_PER_AMOUNT = 0.1
+export const GLYPH_CONDUIT_DURATION_MULT = 7.5
+export const ROARING_WEAKNESS_POTENCY = 0.4
+export const ROARING_SHATTER_POTENCY = 0.5
+export const ROARING_ANTI_HEAL_POTENCY = 0.5
+export const ROARING_DEBUFF_DURATION = 5
+export const STORM_REND_POTENCY_PER_AMOUNT = 0.1
+export const STORM_REND_DURATION = 10
+export const EROSION_POTENCY_BASE = 0.1
+export const EROSION_POTENCY_PER_AMOUNT = 0.1
+export const EROSION_DURATION = 5
+export const QUICKDRAW_POTENCY_PER_AMOUNT = 0.1
+export const QUICKDRAW_DURATION = 5
+export const TAILWIND_BUFF_POTENCY = 0.1
+export const TAILWIND_BUFF_DURATION = 8
+export const TOXIN_TRANSFER_DURATION_EXTRA = 5
+export const GROUNDED_DESPAIR_POTENCY_PER_AMOUNT = 0.1
+export const GROUNDED_DESPAIR_DURATION_PER_AMOUNT = 3
+
+// BUFF_POTENCY_MODIFIERS
+export const BOUNCE_DURATION_BASE = 1.3
+export const BOUNCE_DURATION_PER_STACK = 0.3
+export const MOD_GLADIATORIAL_POTENCY = 0.1
+export const MOD_MAGE_RAGE_POTENCY = 0.1
+export const MOD_OCEANS_RAGE_POTENCY = 0.1
+export const MOD_SLAYER_RAGE_POTENCY = 0.2
+export const MOD_SLAYER_WEAKNESS_POTENCY = 0.1
+export const MOD_IRON_SLAYER_POTENCY = 0.2
+export const MOD_IRON_SLAYER_DURATION = 2
+export const MOD_FURY_DURATION = 1.5
+export const MOD_TAILWIND_POTENCY = 0.1
+export const MOD_WIND_WALKER_DURATION_DIVISOR = 8
+export const MOD_SLOW_LEAK_DURATION = 1.5
+
+// GENERIC_DEBUFF_MODIFIERS
+export const ENDLESS_DESPAIR_POTENCY_PER_STACK = 0.35
+export const ENDLESS_DESPAIR_FLAT_BONUS = 0.1
+export const ENDLESS_DESPAIR_DURATION_PER_STACK = 0.75
+export const STORED_CORRUPTION_DURATION_PER_STACK = 0.1

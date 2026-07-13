@@ -1,19 +1,25 @@
 import { getDraconicColorDmgMultiplier } from '../data/draconicColorEffects'
 import type { ProcCoefficient } from '../lib/types'
-
-export const DRAGON_CLAW_BASE_DAMAGE = 25
-export const DRAGON_CLAW_DAMAGE_PER_STACK = 2.5
-export const DRAGON_CLAW_HOLY_HEAL_BASE = 5
-export const DRAGON_CLAW_HOLY_HEAL_PER_STACK = 0.5
-export const DRAGON_CLAW_WATER_HEAL_BASE = 1.923
-export const DRAGON_CLAW_WATER_HEAL_PER_STACK = 0.1923
-
-export const DRAGON_BUBBLE_BASE_DAMAGE = 20
-export const DRAGON_BUBBLE_DAMAGE_PER_STACK = 2
-export const DRAGON_BUBBLE_HOLY_HEAL_BASE = 4
-export const DRAGON_BUBBLE_HOLY_HEAL_PER_STACK = 0.4
-export const DRAGON_BUBBLE_WATER_HEAL_BASE = 1.538
-export const DRAGON_BUBBLE_WATER_HEAL_PER_STACK = 0.1538
+import {
+  DRAGON_STATE_HP_BASE,
+  DRAGON_STATE_HP_PER_STACK,
+  DRAGON_STATE_BASE,
+  DRAGON_STATE_PER_STACK,
+  DRAGON_CLAW_BASE_DAMAGE,
+  DRAGON_CLAW_DAMAGE_PER_STACK,
+  DRAGON_CLAW_HOLY_HEAL_BASE,
+  DRAGON_CLAW_HOLY_HEAL_PER_STACK,
+  DRAGON_CLAW_WATER_HEAL_BASE,
+  DRAGON_CLAW_WATER_HEAL_PER_STACK,
+  DRAGON_BUBBLE_BASE_DAMAGE,
+  DRAGON_BUBBLE_DAMAGE_PER_STACK,
+  DRAGON_BUBBLE_HOLY_HEAL_BASE,
+  DRAGON_BUBBLE_HOLY_HEAL_PER_STACK,
+  DRAGON_BUBBLE_WATER_HEAL_BASE,
+  DRAGON_BUBBLE_WATER_HEAL_PER_STACK,
+  BELLOWING_EMBER_HP_GATE_THRESHOLD,
+  BELLOWING_EMBER_HP_GATE_PER_STACK,
+} from '../lib/constants'
 
 export interface PerkDmgCtx {
   perkAmount: number
@@ -47,13 +53,13 @@ export function isHpGateActive(gate: HpGate | undefined, hpFillPct: number, perk
 export const DRAGON_STATE_HP_GATE: HpGate = {
   hpThreshold: 80,
   aboveThreshold: true,
-  getThreshold: (perkAmount) => 85 - 5 * perkAmount,
+  getThreshold: (perkAmount) => DRAGON_STATE_HP_BASE - DRAGON_STATE_HP_PER_STACK * perkAmount,
 }
 
 export const BELLOWING_EMBER_HP_GATE: HpGate = {
-  hpThreshold: 40,
+  hpThreshold: BELLOWING_EMBER_HP_GATE_THRESHOLD,
   aboveThreshold: false,
-  getThreshold: (perkAmount) => 40 + 5 * (perkAmount - 1),
+  getThreshold: (perkAmount) => BELLOWING_EMBER_HP_GATE_THRESHOLD + BELLOWING_EMBER_HP_GATE_PER_STACK * (perkAmount - 1),
 }
 
 export interface SecondaryEffect {
@@ -101,6 +107,10 @@ export interface PerkDmgDef {
   activeIf?: (ctx: { draconicRuneInfusion: string; draconicColor: string }) => boolean
 }
 
+export function calcSpringblastBaseDamage(perkAmount: number): number {
+  return (6 + 2 * perkAmount) * (1 + 0.1 * perkAmount)
+}
+
 export const PERK_DMG_DEFS: PerkDmgDef[] = [
   // ── Springblast ────────────────────────────────────────────────────────────
   {
@@ -108,7 +118,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     condition: 'On Finisher while Bounce active',
     getBaseDamage: ({ perkAmount, finisherHits = 1 }) =>
       Math.round(
-        ((6 + 2 * perkAmount) * (1 + 0.1 * perkAmount)) /
+        calcSpringblastBaseDamage(perkAmount) /
           (0.5 + finisherHits / 2) * 1000
       ) / 1000,
     dmgTypeMode: 'fixed',
@@ -438,7 +448,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
   {
     perkName: 'Dragon State',
     condition: 'On M1/M2 while above HP threshold · Once per M1/M2',
-    getBaseDamage: ({ perkAmount }) => 1.5 + 1.5 * perkAmount,
+    getBaseDamage: ({ perkAmount }) => DRAGON_STATE_BASE + DRAGON_STATE_PER_STACK * perkAmount,
     dmgTypeMode: 'fixed',
     dmgTypes: { magic: 1.0 },
     scalingMode: 'fixed',

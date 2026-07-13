@@ -1,4 +1,5 @@
 import { roundMultiplier } from '../lib/utils'
+import { BASTION_BLESS_MULT } from '../lib/constants'
 
 export interface BuffDefinition {
   name: string
@@ -1328,7 +1329,7 @@ function getBastionBlessBonus(
     !def.isNeutral &&
     !def.potencyCapped
   ) {
-    return 0.1 * stacks * buff.potency
+    return BASTION_BLESS_MULT * stacks * buff.potency
   }
 
   return 0

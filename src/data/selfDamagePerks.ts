@@ -1,3 +1,6 @@
+export const UNDEAD_MIGHT_SELF_DMG_FRACTION = 1 / 15
+export const UNDEAD_MIGHT_DR_PCT_PER_STACK = 15
+
 export interface SelfDamagePerkDef {
   perkName: string
   appliesTo: Array<'wa' | 'rune'>
@@ -12,9 +15,9 @@ export const SELF_DAMAGE_PERK_DEFS: SelfDamagePerkDef[] = [
   {
     perkName: 'Undead Might',
     appliesTo: ['wa', 'rune'],
-    selfDmgPct: 1 / 15,
+    selfDmgPct: UNDEAD_MIGHT_SELF_DMG_FRACTION,
     dmgTypes: { hex: 0.5, earth: 0.5 },
-    drPctPerStack: 15,
+    drPctPerStack: UNDEAD_MIGHT_DR_PCT_PER_STACK,
     label: 'Undead Might (Self Damage)',
   },
   {

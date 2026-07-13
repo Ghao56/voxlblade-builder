@@ -25,6 +25,8 @@
     DRAGON_BUBBLE_BASE_DAMAGE, DRAGON_BUBBLE_DAMAGE_PER_STACK,
     DRAGON_BUBBLE_HOLY_HEAL_BASE, DRAGON_BUBBLE_HOLY_HEAL_PER_STACK,
     DRAGON_BUBBLE_WATER_HEAL_BASE, DRAGON_BUBBLE_WATER_HEAL_PER_STACK,
+  } from './lib/constants'
+  import {
     DRAGON_STATE_HP_GATE,
     gateThreshold
   } from './data/Perkbasedmg'
@@ -703,7 +705,7 @@ function applyEnchantToAll(slot: EnchantSlot) {
     );
   })();
 
-  $: searchedModalItems = (void selectedTags, void statFilter, void statFilterSortMode, void weaponResult, void modalSearch, void weaponStatFilter, modalItems(activeModal ?? ''));
+  $: searchedModalItems = (void selectedTags, void statFilter, void statFilterSortMode, void weaponResult, void modalSearch, void weaponStatFilter, void bladeFilterTier, void bladeFilterType, void handleFilterTier, void handleFilterType, void gloveFilterTier, void essenceFilterTier, modalItems(activeModal ?? ''));
 
   function matchSearchReactive(name: string, perkNames: string[], query: string): boolean {
     if (!query.trim()) return true

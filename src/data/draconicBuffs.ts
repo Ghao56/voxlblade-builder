@@ -1,4 +1,12 @@
+import { DRACONIC_INFUSION_POT_MULT, DRACONIC_INFUSION_DUR_MULT } from '../lib/constants'
 import { applyBuffPerkModifiers, BASIC_DEBUFF_POOL, type GrantedBuff } from './BuffData'
+
+export function getDraconicInfusionPotMult(perkAmt: number): number {
+  return 1 + perkAmt * DRACONIC_INFUSION_POT_MULT
+}
+export function getDraconicInfusionDurMult(perkAmt: number): number {
+  return 1 + perkAmt * DRACONIC_INFUSION_DUR_MULT
+}
 
 const DRACONIC_INFUSION_COLOR_EFFECTS: Record<string, (perkAmt: number) => string> = {
   air:   perkAmt => `+${perkAmt * 10}% Attack Speed · +${perkAmt * 20}% Knockback `,

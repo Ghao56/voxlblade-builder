@@ -1,5 +1,14 @@
 import { roundMultiplier } from '../lib/utils'
+import { FRENZY_BASE, FRENZY_RAGE_MULT, MINION_ABSORPTION_MULT } from '../lib/constants'
 import type { BoostAttackType, ProcScalingType } from '../lib/types'
+
+export function calcMinionAbsorptionPotency(summonBoostPct: number, stacks: number): number {
+  return Math.round(MINION_ABSORPTION_MULT * (summonBoostPct / 100) * stacks * 10000) / 10000
+}
+
+export function calcFrenzyPct(ragePotency: number): number {
+  return FRENZY_BASE + FRENZY_RAGE_MULT * ragePotency
+}
 
 /** Penance: damage boost scales with missing HP. Bleed procs at ≤35% HP. */
 export const PENANCE_HP_THRESHOLD = 35       // percent (≤35% HP → max boost + bleed proc)
@@ -176,7 +185,7 @@ export const BOOST_DEFS: BoostDef[] = [
     calcFn: (ctx) => {
       const stacks = ctx.perks['Frenzy'] ?? 0
       if (stacks > 0 && ctx.ragePotency > 0) {
-        const frenzyPct = (0.05 + (1 / 6) * ctx.ragePotency) * stacks
+        const frenzyPct = calcFrenzyPct(ctx.ragePotency) * stacks
         return {
           multiplier: 1 + frenzyPct,
           condition: `Rage active · potency ${Math.round(ctx.ragePotency * 1000) / 1000}`,
@@ -272,7 +281,7 @@ export const BOOST_DEFS: BoostDef[] = [
       if (stacks <= 0) return null
       const sb = ctx.summonBoostPct ?? 0
       if (sb <= 0) return null
-      const potency = Math.round(0.2 * (sb / 100) * stacks * 10000) / 10000
+      const potency = calcMinionAbsorptionPotency(sb, stacks)
       return {
         multiplier: roundMultiplier(1 + potency),
         condition: `${sb}% Summon Boost × ${stacks} stack · potency ${potency}`,

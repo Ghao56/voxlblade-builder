@@ -1,0 +1,5 @@
+export const CRIT_HEALING_BASE = 120
+export const CRIT_HEALING_HOLY_BOOST_DIVISOR = 5
+export const CRIT_HEALING_PER_STACK = 16.5
+
+export const OCEAN_SONG_PER_STACK = 0.1

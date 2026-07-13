@@ -8,10 +8,10 @@
   import { DMG_TYPE_COLORS, DMG_TYPE_PRIORITY, SCALING_TO_BOOST, PERCENT_STATS, canProc, type WeaponBaseDmg, type ProcCoefficient } from './lib/types'
   import { BUFF_DEFS, getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, calcBuffEffect, getBuffDescription, convertTailwindToWhirlwind, getTrueBalanceBuffs, assembleActiveBuffs } from './data/BuffData'
   import { DEBUFF_COMBAT_EFFECTS } from './data/debuffCombatEffects'
-  import { getDraconicInfusionBuff, getDraconicAbilityDebuffs, getEffectiveDraconicInfusionPotency } from './data/draconicBuffs'  
+  import { getDraconicInfusionBuff, getDraconicAbilityDebuffs, getEffectiveDraconicInfusionPotency, getDraconicInfusionPotMult, getDraconicInfusionDurMult } from './data/draconicBuffs'  
   import { WA_SUMMON_MAP, SUMMON_MAP, calcSummonStat, calcMaxSummonCount } from './data/SummonData'
   import CritIcon from './CritIcon.svelte'
-  import { PERK_DMG_DEFS, SECONDARY_TONE_COLORS, isHpGateActive, DRAGON_STATE_HP_GATE } from './data/Perkbasedmg'
+  import { PERK_DMG_DEFS, SECONDARY_TONE_COLORS, isHpGateActive, DRAGON_STATE_HP_GATE, calcSpringblastBaseDamage } from './data/Perkbasedmg'
   import { resolveDefenseSources, calcBaseArmorDefPct, DEF_GROUP, type DefenseSource } from './lib/defense'
   import { getActiveRaceEffect, getOrkTenacityBuffs, calcOrkTenacityBonus } from './data/raceEffects'
   import { getActiveDefensivePerkSources, calcDefensivePotencyMult } from './data/defensivePerks'
@@ -23,15 +23,39 @@
   import { applyDraconicBonuses, getDraconicBonuses } from './data/draconicRunes'
   import { calculateHealBoost, type HealSource } from './data/HealBoost'
   import { roundMultiplier, calcWardingDebuffMultiplier, calcProcChance } from './lib/utils'
-  import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage, type SelfDamagePerkDef } from './data/selfDamagePerks'
+  import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage, UNDEAD_MIGHT_SELF_DMG_FRACTION, UNDEAD_MIGHT_DR_PCT_PER_STACK, type SelfDamagePerkDef } from './data/selfDamagePerks'
   import { resolveDamageTypes, applyAirToMagicConversion } from './lib/damageTypeResolve'
 import { calcTypedDmgBoosts } from './data/TypedDmgBoost'
 import { resolveStanceOverlay } from './data/stanceOverlays'
 import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
 import { calcDotTick, getDotBase, getDotPotencyMult, toGamePotency, DOT_TYPE_LIST, DOT_SCALINGS } from './data/DoTDamage'
 import { WEAPON_PROC_COEFFS, DEFAULT_PROC_COEFF, WA_PROC_COEFFS } from './data/procCoefficients'
-import { BOOST_DEF_MAP } from './data/Boost'
-import { WILD_BOLT_ELEMENTS } from './lib/constants'
+import { BOOST_DEF_MAP, calcFrenzyPct } from './data/Boost'
+import {
+  WILD_BOLT_ELEMENTS,
+  LIGHTNING_CLOAK_FRACTION,
+  LUMINESCENT_PCT_PER_STACK,
+  SPIRIT_WINDS_PCT_PER_STACK,
+  DARK_MAGIC_PCT_PER_STACK,
+  WIND_WALKER_PEN_PER_STACK,
+  REAPER_PCT_PER_DEBUFF_PER_STACK,
+  EXTINGUISH_MULT_PER_STACK,
+  EXPLOSIVE_CHARGE_PCT,
+  WILD_BOLT_DMG_REDUCTION,
+  CRIT_HEALING_BASE,
+  CRIT_HEALING_HOLY_BOOST_DIVISOR,
+  CRIT_HEALING_PER_STACK,
+  TRUE_BALANCE_DMG_DIVISOR,
+  TRUE_BALANCE_HEAL_DIVISOR,
+  CURSE_RIP_DMG_BOOST_CONST,
+  CURSE_RIP_DMG_BOOST_PER_DEBUFF,
+  OCEAN_SONG_PER_STACK,
+  EMOTIONAL_PCT_PER_STACK,
+  TOXIN_TRANSFER_PCT_PER_STACK,
+  VOID_RAGE_PCT_PER_STACK,
+  CHANNELED_WEAPON_PCT_PER_STACK,
+  DRACONIC_BLOOD_PCT_PER_STACK,
+} from './lib/constants'
 
 
   $: _m1FinisherWeaponBoost = getWeaponConditionalBoost(perks, _baseWeaponType, 'm1Finisher')
@@ -122,7 +146,7 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
     if (hex <= 0) return null
     return {
       sourceName: 'True Balance',
-      rawMultiplier: roundMultiplier(1 + hex * amt / 1500),
+      rawMultiplier: roundMultiplier(1 + hex * amt / TRUE_BALANCE_HEAL_DIVISOR),
       condition: `${hex}% Hex Boost (True Balance)`,
       sourceType: 'perk' as HealSource,
     }
@@ -145,7 +169,7 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
   $: _curseRipHealMult = _healFinalMultiplierNoLevel
 
   $: _healCritDmgMult = (perks['Critical Healing'] ?? 0) > 0
-    ? 120 + (stats.holyBoost ?? 0) / 5 + 16.5 * (perks['Critical Healing'] ?? 0)
+    ? CRIT_HEALING_BASE + (stats.holyBoost ?? 0) / CRIT_HEALING_HOLY_BOOST_DIVISOR + CRIT_HEALING_PER_STACK * (perks['Critical Healing'] ?? 0)
     : 0
 
   $: _antiHealSelfMult = (() => {
@@ -286,7 +310,7 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
       return baseBuffs
     }
     const _infPerkAmt = $result.perks['Draconic Blood'] ?? 0
-    const potMult = 1 + _infPerkAmt * 0.05
+    const potMult = getDraconicInfusionPotMult(_infPerkAmt)
 
     const infusedBuffs = baseBuffs.map(buff => {
       const def = BUFF_DEFS[buff.buffName]
@@ -363,8 +387,8 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
         perkName: 'Extinguish',
         label: 'Extinguish',
         types: ['water'],
-        dmgMult: 1 + 0.5 * extinguishAmt,
-        healMult: 1 + 0.5 * extinguishAmt,
+        dmgMult: 1 + EXTINGUISH_MULT_PER_STACK * extinguishAmt,
+        healMult: 1 + EXTINGUISH_MULT_PER_STACK * extinguishAmt,
         condition: 'vs Burning enemies',
         needsProcCoeff: true,
       })
@@ -474,10 +498,10 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
         if (__daBuildVal.draconicRuneInfusion === 'infusion') {
           const dbAmt = perks['Draconic Blood'] ?? 0
           if (__daBuildVal.draconicColor === 'fire' && debuff.name === 'Burn') {
-            potPerk = roundMultiplier(potPerk * (1 + dbAmt * 0.15))
+            potPerk = roundMultiplier(potPerk * getDraconicInfusionDurMult(dbAmt))
           }
           if (__daBuildVal.draconicColor === 'hex') {
-            potPerk = roundMultiplier(potPerk * (1 + dbAmt * 0.05))
+            potPerk = roundMultiplier(potPerk * getDraconicInfusionPotMult(dbAmt))
           }
         }
         if (potPerk > 0) {
@@ -530,10 +554,10 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
       if (__daBuildVal.draconicRuneInfusion === 'infusion') {
         const draconicBloodAmt = perks['Draconic Blood'] ?? 0
         if (__daBuildVal.draconicColor === 'fire' && type === 'Burn') {
-          dotPot *= 1 + draconicBloodAmt * 0.15
+          dotPot *= getDraconicInfusionDurMult(draconicBloodAmt)
         }
         if (__daBuildVal.draconicColor === 'hex') {
-          dotPot *= 1 + draconicBloodAmt * 0.05
+          dotPot *= getDraconicInfusionPotMult(draconicBloodAmt)
         }
       }
       const gamePot = toGamePotency(dotPot)
@@ -592,7 +616,7 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
   $: boosts = $result.boosts
   $: stats = $result.stats
   $: perks = $result.perks
-  $: _luminescentPct = (perks['Luminescent Fervor'] ?? 0) > 0 && _allActiveBuffs.some(b => b.buffName === 'Luminescent') ? 0.05 * (perks['Luminescent Fervor'] ?? 0) : 0
+  $: _luminescentPct = (perks['Luminescent Fervor'] ?? 0) > 0 && _allActiveBuffs.some(b => b.buffName === 'Luminescent') ? LUMINESCENT_PCT_PER_STACK * (perks['Luminescent Fervor'] ?? 0) : 0
   $: _dragonStateAmt = perks['Dragon State'] ?? 0
   $: _dragonStateHpGateActive = _dragonStateAmt > 0 && isHpGateActive(
     DRAGON_STATE_HP_GATE,
@@ -617,20 +641,20 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
   $: _stormRendAmt = perks['Storm Rend'] ?? 0
   let disableStormRend = false
   $: _stormRendActive = _stormRendAmt > 0 && !disableStormRend
-  $: _lightningCloakPct = _lightningCloakActive && !disableLightningCloak ? (1 / 3) : 0
+  $: _lightningCloakPct = _lightningCloakActive && !disableLightningCloak ? LIGHTNING_CLOAK_FRACTION : 0
   $: _windWalkerAmt = perks['Wind Walker'] ?? 0
   $: _hasTailwindOrWhirlwind = (_disabledKeysArr.length,
     _allActiveBuffs.some(b => (b.buffName === 'Tailwind' || b.buffName === 'Whirlwind')))
   $: _effectiveTailwindPotency = (_disabledKeysArr.length,
     Math.max(0, ..._allActiveBuffs.filter(b => b.buffName === 'Tailwind' || b.buffName === 'Whirlwind').map(b => b.potency)))
   $: _spiritWindsAmt = perks['Spirit Winds'] ?? 0
-  $: _spiritWindsConversionRate = _spiritWindsAmt > 0 && _hasTailwindOrWhirlwind ? 0.10 * _spiritWindsAmt : 0
+  $: _spiritWindsConversionRate = _spiritWindsAmt > 0 && _hasTailwindOrWhirlwind ? SPIRIT_WINDS_PCT_PER_STACK * _spiritWindsAmt : 0
   $: _darkMagicAmt = perks['Dark Magic'] ?? 0
-  $: _darkMagicHexBonus = _darkMagicAmt > 0 ? 0.2 * _darkMagicAmt : 0
+  $: _darkMagicHexBonus = _darkMagicAmt > 0 ? DARK_MAGIC_PCT_PER_STACK * _darkMagicAmt : 0
   $: _raceGlobalArmorPen = getRace($build.race)?.globalArmorPenetration ?? 0
-  $: _waArmorPenetration = (_windWalkerAmt > 0 && _hasTailwindOrWhirlwind ? 10 * _windWalkerAmt : 0) + (getRace($build.race)?.waArmorPenetration ?? 0) + (disabledBoosts.has('Highlander') ? 0 : (perks['Highlander'] ?? 0) * 10)
-  $: _stormRendPct = _stormRendActive ? (1 / 3) : 0
-  $: _explosiveChargePct = (perks['Explosive Charge'] ?? 0) > 0 ? 1.0 : 0
+  $: _waArmorPenetration = (_windWalkerAmt > 0 && _hasTailwindOrWhirlwind ? WIND_WALKER_PEN_PER_STACK * _windWalkerAmt : 0) + (getRace($build.race)?.waArmorPenetration ?? 0) + (disabledBoosts.has('Highlander') ? 0 : (perks['Highlander'] ?? 0) * 10)
+  $: _stormRendPct = _stormRendActive ? LIGHTNING_CLOAK_FRACTION : 0
+  $: _explosiveChargePct = (perks['Explosive Charge'] ?? 0) > 0 ? EXPLOSIVE_CHARGE_PCT : 0
   $: _blubBlubAmt = (perks['Blub Blub'] ?? 0) && !disabledEffects.has('blubBlub') ? perks['Blub Blub'] ?? 0 : 0
   $: _crushingPressureAmt = perks['Crushing Pressure'] ?? 0
   $: _echoIncinerationAmt = perks['Echo Incineration'] ?? 0
@@ -656,7 +680,7 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
   })()
   $: _curseRipDamageBoost = (() => {
     if (_curseRipPerkAmount <= 0 || _curseRipActiveDebuffCount <= 0) return 1
-    const bonusPct = (10 * _curseRipPerkAmount - 10 + 5 * _curseRipActiveDebuffCount) / 100
+    const bonusPct = (CURSE_RIP_DMG_BOOST_CONST * _curseRipPerkAmount - CURSE_RIP_DMG_BOOST_CONST + CURSE_RIP_DMG_BOOST_PER_DEBUFF * _curseRipActiveDebuffCount) / 100
     return 1 + bonusPct
   })()
   $: _reaperPerkAmount = perks['Reaper'] ?? 0
@@ -666,7 +690,7 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
   })()
   $: _reaperDamageBoost = (() => {
     if (_reaperPerkAmount <= 0 || _reaperActiveDebuffCount <= 0) return 1
-    return 1 + 0.05 * _reaperActiveDebuffCount * _reaperPerkAmount
+    return 1 + REAPER_PCT_PER_DEBUFF_PER_STACK * _reaperActiveDebuffCount * _reaperPerkAmount
   })()
 
   $: _disabledKeysArr = [...disabledBuffKeys]
@@ -851,13 +875,13 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
   }
 
   const PERK_DMG_TYPE_BONUS_DEFS: PerkDmgTypeBonusDef[] = [
-    { perkName: 'Void Rage', type: 'hex', amountPerStack: 0.1, condition: ctx => !ctx.rageDisabled && ctx.ragePotency > 0 },
-    { perkName: 'Channeled Weapon', type: 'magic', amountPerStack: 0.05 },
-    { perkName: 'Emotional', type: 'fire', amountPerStack: 0.1, condition: ctx => ctx.emotionalState === 'debuffs' },
+    { perkName: 'Void Rage', type: 'hex', amountPerStack: VOID_RAGE_PCT_PER_STACK, condition: ctx => !ctx.rageDisabled && ctx.ragePotency > 0 },
+    { perkName: 'Channeled Weapon', type: 'magic', amountPerStack: CHANNELED_WEAPON_PCT_PER_STACK },
+    { perkName: 'Emotional', type: 'fire', amountPerStack: EMOTIONAL_PCT_PER_STACK, condition: ctx => ctx.emotionalState === 'debuffs' },
     {
       perkName: 'Draconic Blood',
       getType: ctx => ctx.draconicColor || 'physical',
-      amountPerStack: 0.1,
+      amountPerStack: DRACONIC_BLOOD_PCT_PER_STACK,
       getAmountPerStack: ctx => {
         if (ctx.perkAmount <= 0) return 0
         const effective = getEffectiveDraconicInfusionPotency(ctx.guild, ctx.draconicRuneInfusion, ctx.draconicColor || 'physical', ctx.perkAmount, ctx.perks)
@@ -917,7 +941,7 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
     const amt = perks['Emotional'] ?? 0
     if (amt <= 0) return 0
     if ($build.emotionalState !== 'buffs') return 0
-    return Math.round(amt * 0.1 * 10000) / 10000
+    return Math.round(amt * EMOTIONAL_PCT_PER_STACK * 10000) / 10000
   })()
 
   $: _toxinTransferHexBonus = (() => {
@@ -925,14 +949,14 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
     if (amt <= 0) return 0
     const hasSelfPoison = _allActiveBuffs.some(b => b.buffName === 'Poison' && b.isSelfDebuff)
     if (!hasSelfPoison) return 0
-    return Math.round(amt * 0.1 * 10000) / 10000
+    return Math.round(amt * TOXIN_TRANSFER_PCT_PER_STACK * 10000) / 10000
   })()
 
   $: _emotionalFireBonus = (() => {
     const amt = perks['Emotional'] ?? 0
     if (amt <= 0) return 0
     if ($build.emotionalState !== 'debuffs') return 0
-    return Math.round(amt * 0.1 * 10000) / 10000
+    return Math.round(amt * EMOTIONAL_PCT_PER_STACK * 10000) / 10000
   })()
 
   $: _waDmgTypeBonuses = (() => {
@@ -1090,12 +1114,12 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
     const tbAmt = perks['True Balance'] ?? 0
     if (tbAmt > 0) {
       const holy = stats.holyBoost ?? 0
-      if (holy > 0) entries.push({ sourceName: 'True Balance', rawMultiplier: roundMultiplier(1 + holy * tbAmt / 800), condition: `${holy}% Holy Boost (True Balance)`, type: 'dmg' })
+      if (holy > 0) entries.push({ sourceName: 'True Balance', rawMultiplier: roundMultiplier(1 + holy * tbAmt / TRUE_BALANCE_DMG_DIVISOR), condition: `${holy}% Holy Boost (True Balance)`, type: 'dmg' })
     }
 
     const frenzyStacks = perks['Frenzy'] ?? 0
     if (frenzyStacks > 0 && _ragePotency > 0) {
-      const pct = (0.05 + (1 / 6) * _ragePotency) * frenzyStacks
+      const pct = calcFrenzyPct(_ragePotency) * frenzyStacks
       entries.push({ sourceName: 'Frenzy', rawMultiplier: roundMultiplier(1 + pct), condition: `Rage active · potency ${Math.round(_ragePotency * 1000) / 1000}`, type: 'dmg' })
     }
 
@@ -1432,7 +1456,7 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
   $: _waAllHits = parseWAHitsAll(selectedWA.baseDamage)
   $: _waHitsSeq = _waAllHits.dmg.length > 0 ? _waAllHits.dmg.map(h => 
     _wildBoltAmt > 0 && selectedWA.name === 'Laser' 
-      ? { ...h, n: parseWAHitsAll(selectedWA.baseDamage).dmg[0]?.n - 0.75 } 
+      ? { ...h, n: parseWAHitsAll(selectedWA.baseDamage).dmg[0]?.n - WILD_BOLT_DMG_REDUCTION } 
       : h
   ) : null
   $: _waHealSeq = _waAllHits.heal.length > 0 ? _waAllHits.heal : null
@@ -1833,7 +1857,7 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
 
       const isSpringblast = def.perkName === 'Springblast'
       const baseDmg = isSpringblast
-        ? Math.round((6 + 2 * perkAmount) * (1 + 0.1 * perkAmount) * 1000) / 1000
+        ? Math.round(calcSpringblastBaseDamage(perkAmount) * 1000) / 1000
         : baseDmg_m1f
       const totalDmg = isSpringblast ? 1 : baseDmg * scalingMult * combatMult
       const rawFinisherNumerator = isSpringblast ? baseDmg : undefined
@@ -2245,7 +2269,7 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
     }
     if (_oceanSongAmt > 0) {
       const osScaling = _computePerkScalingMult({ water: 1.0, dexterity: 1.0 })
-      const baseHeal = (1 + 0.1 * _oceanSongAmt) * (1 + selectedWA.cooldown / 30)
+      const baseHeal = (1 + OCEAN_SONG_PER_STACK * _oceanSongAmt) * (1 + selectedWA.cooldown / 30)
       result.push({
         group: 'Perk', index: result.length, count: 1, base: baseHeal, scalingMult: osScaling, combatMult: _healFinalMultiplier,
         isFinisher: false, dmgTypes: { heal: 1.0 }, label: 'Ocean Song', isHeal: true,
@@ -2335,8 +2359,8 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
     const typeMultSum = Object.values(_activeRuneDmgDef.dmgTypes).reduce((s, m) => s + m, 0)
     const perHitDmg = base * typeMultSum * scalingMult * _levelMult
 
-    const selfDmgPct = 1 / 15
-    const drMult = 1 / (1 + (15 * undeadMightAmt) / 100)
+    const selfDmgPct = UNDEAD_MIGHT_SELF_DMG_FRACTION
+    const drMult = 1 / (1 + (UNDEAD_MIGHT_DR_PCT_PER_STACK * undeadMightAmt) / 100)
 
     let harmonic = 0
     for (let i = 1; i <= enemiesHit; i++) {

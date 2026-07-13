@@ -14,7 +14,8 @@
     applyToxinTransferDuration,
     type GrantedBuff,
   } from './data/BuffData'
-  import { getDraconicInfusionBuff, getDraconicAbilityDebuffs } from './data/draconicBuffs'
+  import { getDraconicInfusionBuff, getDraconicAbilityDebuffs, getDraconicInfusionPotMult, getDraconicInfusionDurMult } from './data/draconicBuffs'
+  import { calcMinionAbsorptionPotency } from './data/Boost'
   import { WEAPON_ARTS } from './data/weaponArts'
   import { UI_COLORS, SOURCE_LABELS } from './lib/uiConstants'
 import { getAutoDebuffs } from './data/perkAutoDebuffs'
@@ -63,7 +64,7 @@ import { WA_PROC_COEFFS, DEFAULT_PROC_COEFF } from './data/procCoefficients'
     const _minionAbsAmt = $result.perks['Minion Absorption'] ?? 0
     const _minionAbsSB  = ($result.stats as Record<string, number>).summonBoost ?? 0
     if (_minionAbsAmt > 0 && _minionAbsSB > 0) {
-      const _minionAbsPotency = Math.round(0.2 * (_minionAbsSB / 100) * _minionAbsAmt * 10000) / 10000
+      const _minionAbsPotency = calcMinionAbsorptionPotency(_minionAbsSB, _minionAbsAmt)
       for (let i = 0; i < modified.length; i++) {
         if (modified[i].buffName === 'Minion Absorbed') {
           modified[i] = { ...modified[i], potency: _minionAbsPotency }
@@ -138,8 +139,8 @@ import { WA_PROC_COEFFS, DEFAULT_PROC_COEFF } from './data/procCoefficients'
       const isDespair = buff.buffName === 'Despair'
 
       if (color === 'hex' && def.isDebuff && !isSelfDebuff) {
-        const potMult = 1 + _infPerkAmt * 0.05
-        const durMult = 1 + _infPerkAmt * 0.15
+        const potMult = getDraconicInfusionPotMult(_infPerkAmt)
+        const durMult = getDraconicInfusionDurMult(_infPerkAmt)
         return {
           ...buff,
           potency:  Math.round(buff.potency  * potMult * 10000) / 10000,
@@ -147,8 +148,8 @@ import { WA_PROC_COEFFS, DEFAULT_PROC_COEFF } from './data/procCoefficients'
         }
       }
       if (color === 'hex' && def.isDebuff && isSelfDebuff && isDespair) {
-        const potMult = 1 + _infPerkAmt * 0.05
-        const durMult = 1 + _infPerkAmt * 0.15
+        const potMult = getDraconicInfusionPotMult(_infPerkAmt)
+        const durMult = getDraconicInfusionDurMult(_infPerkAmt)
         return {
           ...buff,
           potency:  Math.round(buff.potency  * potMult * 10000) / 10000,
@@ -156,7 +157,7 @@ import { WA_PROC_COEFFS, DEFAULT_PROC_COEFF } from './data/procCoefficients'
         }
       }
       if (color === 'holy' && !def.isDebuff && !def.isNeutral && !def.potencyCapped && buff.buffName !== 'Draconic Infusion') {
-        const potMult = 1 + _infPerkAmt * 0.05
+        const potMult = getDraconicInfusionPotMult(_infPerkAmt)
         return {
           ...buff,
           potency: Math.round(buff.potency * potMult * 10000) / 10000,
@@ -176,11 +177,11 @@ import { WA_PROC_COEFFS, DEFAULT_PROC_COEFF } from './data/procCoefficients'
       const currentPot = buff.basePotency ?? buff.potency ?? 0
       let potPerk = $result.perks[`${buff.buffName} Potency`] ?? 0
       if (buff.buffName === 'Burn' && _infActive && $build.draconicColor === 'fire') {
-        potPerk = roundMultiplier(potPerk * (1 + _infPerkAmt * 0.15))
+        potPerk = roundMultiplier(potPerk * getDraconicInfusionDurMult(_infPerkAmt))
       }
       let perkBase = roundMultiplier(potPerk * 0.1)
       if (_infActive && $build.draconicColor === 'hex') {
-        perkBase = roundMultiplier(perkBase * (1 + _infPerkAmt * 0.05))
+        perkBase = roundMultiplier(perkBase * getDraconicInfusionPotMult(_infPerkAmt))
       }
       const totalPot = roundMultiplier(currentPot + perkBase)
       const edAmt = $result.perks['Endless Despair'] ?? 0

@@ -1,3 +1,6 @@
+import { BASTION_BLESS_MULT } from '../lib/constants'
+import { getDraconicInfusionPotMult } from './draconicBuffs'
+
 interface DefensivePerkSourceContext {
   hpFillPct: number
   adaptivePlateTriggered: boolean
@@ -172,12 +175,12 @@ export function calcDefensivePotencyMult(
 
   const bastionStacks = perks['Bastion Bless'] ?? 0
   if (bastionStacks > 0) {
-    potMult += 0.1 * bastionStacks
+    potMult += BASTION_BLESS_MULT * bastionStacks
   }
 
   if (draconicRuneInfusion === 'infusion' && draconicColor === 'holy') {
     const infPerkAmt = perks['Draconic Blood'] ?? 0
-    potMult *= 1 + infPerkAmt * 0.05
+    potMult *= getDraconicInfusionPotMult(infPerkAmt)
   }
 
   return potMult

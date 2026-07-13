@@ -1,0 +1,10 @@
+export const DRACONIC_INFUSION_POT_MULT = 0.05
+export const DRACONIC_INFUSION_DUR_MULT = 0.15
+
+export const DRAGON_STATE_HP_BASE = 85
+export const DRAGON_STATE_HP_PER_STACK = 5
+
+export const DRAGON_STATE_BASE = 1.5
+export const DRAGON_STATE_PER_STACK = 1.5
+
+export const BASTION_BLESS_MULT = 0.1

@@ -696,7 +696,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
             }
             if (curseRipPerkAmount > 0 && curseRipActiveDebuffCount > 0 && !disableCurseRip) {
               if (preMitBase > 0) {
-                const healAmount = preMitBase / 60
+                const healAmount = preMitBase / CURSE_RIP_DIVISOR
                 if (healAmount > 0) {
                   const healRaw = healAmount * curseRipHealMult * antiHealSelfMult
                   types.push({
@@ -749,7 +749,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       const preMitBase = preMitSum * _activeDebuffDamageMult * selfDebuffDamageMult
 
       if (preMitBase > 0) {
-        const healAmount = preMitBase / 60
+        const healAmount = preMitBase / CURSE_RIP_DIVISOR
         if (healAmount > 0) {
           const healRaw = healAmount * curseRipHealMult * antiHealSelfMult
           
