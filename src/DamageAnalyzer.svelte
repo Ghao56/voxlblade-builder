@@ -6,7 +6,7 @@
   import { WEAPON_ARTS } from './data/weaponArts'
   import { WEAPON_BASE_DMG } from './data/weapon base dmg'
   import { DMG_TYPE_COLORS, DMG_TYPE_PRIORITY, SCALING_TO_BOOST, PERCENT_STATS, canProc, type WeaponBaseDmg, type ProcCoefficient } from './lib/types'
-  import { BUFF_DEFS, getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, calcBuffEffect, getBuffDescription, convertTailwindToWhirlwind, getTrueBalanceBuffs } from './data/BuffData'
+  import { BUFF_DEFS, getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, calcBuffEffect, getBuffDescription, convertTailwindToWhirlwind, getTrueBalanceBuffs, assembleActiveBuffs } from './data/BuffData'
   import { DEBUFF_COMBAT_EFFECTS } from './data/debuffCombatEffects'
   import { getDraconicInfusionBuff, getDraconicAbilityDebuffs, getEffectiveDraconicInfusionPotency } from './data/draconicBuffs'  
   import { WA_SUMMON_MAP, SUMMON_MAP, calcSummonStat, calcMaxSummonCount } from './data/SummonData'
@@ -251,17 +251,7 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
   })()
 
   $: _allActiveBuffsRaw = (() => {
-    const itemBuffs = getActiveBuildBuffs({
-      rune: $build.rune, ring: $build.ring, infusionRing: $build.infusionRing,
-      helmet: $build.helmet, chestplate: $build.chestplate, leggings: $build.leggings,
-      weaponBlade: $build.weaponBlade, weaponHandle: $build.weaponHandle,
-      monkGlove: $build.monkGlove, race: $build.race,
-    })    
-    const baseBuffs = convertTailwindToWhirlwind(applyBuffPerkModifiers(
-      [...itemBuffs, ...getPerkBuffs($result.perks), ...getWeaponArtBuffs($build.selectedWeaponArt)],
-      $result.perks, $build.rune || undefined,
-      wardingDebuffMult
-    ), $result.perks)
+    const baseBuffs = assembleActiveBuffs($build, $result.perks, wardingDebuffMult)
 
     const _exhaustIdx = baseBuffs.findIndex(b => b.buffName === 'Exhaust')
     if (_exhaustIdx !== -1) {
@@ -609,8 +599,11 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
     _hpFillPct,
     _dragonStateAmt
   )
-  $: _dragonStateBaseDmg = _dragonStateAmt > 0 ? (1.5 + 1.5 * _dragonStateAmt) : 0
-  $: _dragonStateScalingMult = _computePerkScalingMult({ magic: 0.75, dexterity: 0.75, holy: 0.75 })
+  $: _dragonStateDef = PERK_DMG_DEFS.find(d => d.perkName === 'Dragon State')
+  $: _dragonStateBaseDmg = _dragonStateAmt > 0 && _dragonStateDef
+    ? _dragonStateDef.getBaseDamage({ perkAmount: _dragonStateAmt })
+    : 0
+  $: _dragonStateScalingMult = _computePerkScalingMult(_dragonStateDef?.scalings ?? {})
   $: _dragonStateCombatMult = _perkCombatMult
   $: _dragonStateTotalDmg = _dragonStateAmt > 0 && _dragonStateHpGateActive
     ? _dragonStateBaseDmg * _dragonStateScalingMult * _dragonStateCombatMult
@@ -641,8 +634,11 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
   $: _blubBlubAmt = (perks['Blub Blub'] ?? 0) && !disabledEffects.has('blubBlub') ? perks['Blub Blub'] ?? 0 : 0
   $: _crushingPressureAmt = perks['Crushing Pressure'] ?? 0
   $: _echoIncinerationAmt = perks['Echo Incineration'] ?? 0
-  $: _echoIncinerationBaseDmg = (_echoIncinerationAmt > 0 && !disabledEffects.has('echoIncineration')) ? 7 + 1.25 * _echoIncinerationAmt : 0
-  $: _echoIncinerationScalings = PERK_DMG_DEFS.find(d => d.perkName === 'Echo Incineration')?.scalings ?? {}
+  $: _echoIncinerationDef = PERK_DMG_DEFS.find(d => d.perkName === 'Echo Incineration')
+  $: _echoIncinerationBaseDmg = (_echoIncinerationAmt > 0 && !disabledEffects.has('echoIncineration') && _echoIncinerationDef)
+    ? _echoIncinerationDef.getBaseDamage({ perkAmount: _echoIncinerationAmt })
+    : 0
+  $: _echoIncinerationScalings = _echoIncinerationDef?.scalings ?? {}
   $: _echoIncinerationScalingMult = _echoIncinerationAmt > 0 ? _computePerkScalingMult(_echoIncinerationScalings) : 1
 
   // ── Ork race: +0.1 tenacity per active buff (excludes debuffs & self-debuffs) ──
@@ -2609,7 +2605,7 @@ import { WILD_BOLT_ELEMENTS } from './lib/constants'
               on:click={() => toggleEffect('echoIncineration')}
             >
               <span class="da-bc-name">Echo Incineration</span>
-              <span class="da-bc-val">{disabledEffects.has('echoIncineration') ? '—' : `+${(7 + 1.25 * _echoIncinerationAmt).toFixed(2)}`}</span>
+              <span class="da-bc-val">{disabledEffects.has('echoIncineration') ? '—' : `+${(_echoIncinerationDef?.getBaseDamage({ perkAmount: _echoIncinerationAmt }) ?? 0).toFixed(2)}`}</span>
               <span class="da-bc-cond">{(10 + 2.5 * _echoIncinerationAmt)}% chance</span>
               <span class="da-bc-toggle">{disabledEffects.has('echoIncineration') ? 'OFF' : 'ON'}</span>
             </button>

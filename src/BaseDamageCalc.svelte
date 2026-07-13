@@ -604,7 +604,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
             applicableBoosts, weaponBoostMult: 1, typeDebuffMult: dsTypeDebuffMult,
             defMult: dsDefMult, enemyDefPct: dsDefPct,
             raw: dsRaw, critVal: Math.round(dsRaw * critDmgMult / 100 * 10000) / 10000,
-            isHeal: false, tag: 'Dragon State', forceCrit: false,
+            isHeal: false, tag: 'Dragon State', forceCrit: false, oncePerGroup: true,
           })
           if (lightningCloakPct > 0) {
             if (_dsPreMitBase > 0) addProcEffect(_dsPreMitBase, lightningCloakPct, { air: 0.5, magic: 0.5 }, 'Chain')

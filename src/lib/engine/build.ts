@@ -2,7 +2,7 @@ import type { StatKey, StatMap, ArmorPart, EnchantSlot, BuildState } from '../ty
 import { STAT_KEYS, applyUpgrade } from '../types'
 import { CDR_PERK_DATA } from '../../data/cdr'
 import { applyStatBoostPerks, OFFENSIVE_BOOSTS } from '../../data/statboost'
-import { getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, convertTailwindToWhirlwind, BUFF_DEFS } from '../../data/BuffData'
+import { getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, convertTailwindToWhirlwind, assembleActiveBuffs, BUFF_DEFS } from '../../data/BuffData'
 import { getActiveRaceEffect, calcOrkTenacityBonus } from '../../data/raceEffects'
 import { BOOST_DEFS, type BoostContext } from '../../data/Boost'
 import type { BoostEntry, BoostResult } from '../types'
@@ -449,18 +449,7 @@ function applyGladiatorialRage(boostedStats: StatMap, finalPerks: Record<string,
 }
 
 function computeBuffs(state: BuildState, finalPerks: Record<string, number>, wardingDebuffMult: number): { allBuffs: any[]; orkBuffTenacity: number } {
-  const _itemBuffs = getActiveBuildBuffs({
-    rune: state.rune, ring: state.ring, infusionRing: state.infusionRing,
-    helmet: state.helmet, chestplate: state.chestplate, leggings: state.leggings,
-    weaponBlade: state.weaponBlade, weaponHandle: state.weaponHandle,
-    monkGlove: state.monkGlove, race: state.race,
-  })
-  const allBuffs = convertTailwindToWhirlwind(applyBuffPerkModifiers(
-    [..._itemBuffs, ...getPerkBuffs(finalPerks), ...getWeaponArtBuffs(state.selectedWeaponArt)],
-    finalPerks,
-    state.rune || undefined,
-    wardingDebuffMult,
-  ), finalPerks)
+  const allBuffs = assembleActiveBuffs(state, finalPerks, wardingDebuffMult)
 
   const orkBuffTenacity = state.race === 'ORK' ? calcOrkTenacityBonus(allBuffs, BUFF_DEFS) : 0
   return { allBuffs, orkBuffTenacity }

@@ -1609,6 +1609,46 @@ function getRaceBuffs(race: string): GrantedBuff[] {
   return RACE_BUFF_MAP[race] ?? []
 }
 
+export interface ActiveBuffsBuildInput {
+  rune: string
+  ring: string
+  infusionRing: string
+  helmet: string
+  chestplate: string
+  leggings: string
+  weaponBlade: string
+  weaponHandle: string
+  monkGlove: string
+  race?: string
+  selectedWeaponArt: string
+}
+
+/**
+ * Shared assembly pipeline: item buffs + raw perk buffs + weapon art buffs,
+ * merged through convertTailwindToWhirlwind(applyBuffPerkModifiers(...)).
+ * Only use this where perk buffs are NOT pre-modified/filtered before assembly
+ * (e.g. BuffList.svelte customizes Exhaust/Wild Bolt before merging and must
+ * NOT use this helper).
+ */
+export function assembleActiveBuffs(
+  build: ActiveBuffsBuildInput,
+  perks: Record<string, number>,
+  wardingDebuffMult?: number,
+): GrantedBuff[] {
+  const itemBuffs = getActiveBuildBuffs({
+    rune: build.rune, ring: build.ring, infusionRing: build.infusionRing,
+    helmet: build.helmet, chestplate: build.chestplate, leggings: build.leggings,
+    weaponBlade: build.weaponBlade, weaponHandle: build.weaponHandle,
+    monkGlove: build.monkGlove, race: build.race,
+  })
+  return convertTailwindToWhirlwind(applyBuffPerkModifiers(
+    [...itemBuffs, ...getPerkBuffs(perks), ...getWeaponArtBuffs(build.selectedWeaponArt)],
+    perks,
+    build.rune || undefined,
+    wardingDebuffMult,
+  ), perks)
+}
+
 export function calcBuffEffect(
   buffName: string,
   potency: number

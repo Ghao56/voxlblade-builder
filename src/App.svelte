@@ -38,7 +38,7 @@
   import BuffList from './BuffList.svelte'
   import { checkWA, getUnmetReqs } from './data/Weaponartcheck'
   import { getEffectiveDraconicInfusionPotency } from './data/draconicBuffs'
-  import { BUFF_DEFS, getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, convertTailwindToWhirlwind, formatPerkDescription } from './data/BuffData'
+  import { BUFF_DEFS, getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, convertTailwindToWhirlwind, assembleActiveBuffs, formatPerkDescription } from './data/BuffData'
   import { calcOrkTenacityBonus } from './data/raceEffects'
   import { CDR_PERK_DATA } from './data/cdr'
   import { calcMaxSummonCount } from './data/SummonData'
@@ -242,17 +242,9 @@ $: gladRageArmorPen = (() => {
   return highestBoost / 15
 })()
 
-$: _orkTenacityBonus = $build.race === 'ORK' ? (() => {
-  const itemBuffs = getActiveBuildBuffs({
-    rune: $build.rune, ring: $build.ring, infusionRing: $build.infusionRing,
-    helmet: $build.helmet, chestplate: $build.chestplate, leggings: $build.leggings,
-    weaponBlade: $build.weaponBlade, weaponHandle: $build.weaponHandle,
-    monkGlove: $build.monkGlove, race: $build.race,
-  })
-  const baseBuffs = [...itemBuffs, ...getPerkBuffs($result.perks), ...getWeaponArtBuffs($build.selectedWeaponArt)]
-  const processed = convertTailwindToWhirlwind(applyBuffPerkModifiers(baseBuffs, $result.perks, $build.rune || undefined), $result.perks)
-  return calcOrkTenacityBonus(processed, BUFF_DEFS)
-})() : 0
+$: _orkTenacityBonus = $build.race === 'ORK'
+  ? calcOrkTenacityBonus(assembleActiveBuffs($build, $result.perks), BUFF_DEFS)
+  : 0
 $: _effectiveTenacity = ($result.stats.tenacity ?? 0) + _orkTenacityBonus
 
 $: statRows = Object.entries($result.stats).filter(([k, v]) => {
