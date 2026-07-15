@@ -1915,7 +1915,7 @@ import {
       const halfActivations = hasHalfActivations || undefined
       const oncePerFinisher = isSpringblast ? false : (def.isProcHit ? undefined : undefined)
 
-      const isActive = isHpGateActive(def.hpGate, _hpFillPct, perkAmount) && (!isSpringblast || _allActiveBuffs.some(b => b.buffName === 'Bounce')) && (def.perkName !== 'Steam Charge' || _allActiveBuffs.some(b => b.buffName === 'Steam Buildup'))
+      const isActive = isHpGateActive(def.hpGate, _hpFillPct, perkAmount) && (!isSpringblast || _allActiveBuffs.some(b => b.buffName === 'Bounce')) && (!def.requiredBuff || _allActiveBuffs.some(b => b.buffName === def.requiredBuff))
 
       const secondaryEffects = (def.secondaryEffects ?? []).filter(se => !se.showIf || se.showIf({ draconicColor: $build.draconicColor })).map(se => {
         let raw = Math.round(se.getValue({ perkAmount, draconicColor: $build.draconicColor }) * 1000) / 1000

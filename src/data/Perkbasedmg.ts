@@ -106,6 +106,7 @@ export interface PerkDmgDef {
   hpGate?: HpGate
   secondaryEffects?: SecondaryEffect[]
   activeIf?: (ctx: { draconicRuneInfusion: string; draconicColor: string }) => boolean
+  requiredBuff?: string
 }
 
 export function calcSpringblastBaseDamage(perkAmount: number): number {
@@ -589,6 +590,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     isFinisher: true,
     guardbreak: true,
     procCoefficient: { type: 'hasCoeff', value: 0.5 },
+    requiredBuff: 'Steam Buildup',
     note: 'Replaces RMB with a 10-hit Steam Blast at max Steam Buildup. Guardsbreak. Reduced chance to proc other effects.',
   },
 ]
