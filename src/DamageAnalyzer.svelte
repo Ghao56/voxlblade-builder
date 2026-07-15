@@ -643,9 +643,8 @@ import {
   $: _lightningCloakActive = _allActiveBuffs.some(b => b.buffName === 'Lightning Cloak')
   $: _activeLightningCloakBuffs = _allActiveBuffs.filter(b => b.buffName === 'Lightning Cloak')
   $: _stormRendAmt = perks['Storm Rend'] ?? 0
-  let disableStormRend = false
-  $: _stormRendActive = _stormRendAmt > 0 && !disableStormRend
-  $: _lightningCloakPct = _lightningCloakActive && !disableLightningCloak ? LIGHTNING_CLOAK_FRACTION : 0
+  $: _lightningCloakPct = _lightningCloakActive && lightningCloakState !== 'off'
+    ? (lightningCloakState === 'twoThirds' ? 2 * LIGHTNING_CLOAK_FRACTION : LIGHTNING_CLOAK_FRACTION) : 0
   $: _windWalkerAmt = perks['Wind Walker'] ?? 0
   $: _hasTailwindOrWhirlwind = (_disabledKeysArr.length,
     _allActiveBuffs.some(b => (b.buffName === 'Tailwind' || b.buffName === 'Whirlwind')))
@@ -657,7 +656,8 @@ import {
   $: _darkMagicHexBonus = _darkMagicAmt > 0 ? DARK_MAGIC_PCT_PER_STACK * _darkMagicAmt : 0
   $: _raceGlobalArmorPen = getRace($build.race)?.globalArmorPenetration ?? 0
   $: _waArmorPenetration = (_windWalkerAmt > 0 && _hasTailwindOrWhirlwind ? WIND_WALKER_PEN_PER_STACK * _windWalkerAmt : 0) + (getRace($build.race)?.waArmorPenetration ?? 0) + (disabledBoosts.has('Highlander') ? 0 : (perks['Highlander'] ?? 0) * 10)
-  $: _stormRendPct = _stormRendActive ? LIGHTNING_CLOAK_FRACTION : 0
+  $: _stormRendPct = _stormRendAmt > 0 && stormRendState !== 'off'
+    ? (stormRendState === 'twoThirds' ? 2 * LIGHTNING_CLOAK_FRACTION : LIGHTNING_CLOAK_FRACTION) : 0
   $: _explosiveChargePct = (perks['Explosive Charge'] ?? 0) > 0 ? EXPLOSIVE_CHARGE_PCT : 0
   $: _blubBlubAmt = (perks['Blub Blub'] ?? 0) && !disabledEffects.has('blubBlub') ? perks['Blub Blub'] ?? 0 : 0
   $: _crushingPressureAmt = perks['Crushing Pressure'] ?? 0
@@ -1141,7 +1141,20 @@ import {
   let draconicInfusionDisabled = false
   let disableCurseRip = false
   let disableReaper = false
-  let disableLightningCloak = false
+  type LightningCloakState = 'off' | 'third' | 'twoThirds'
+  let lightningCloakState: LightningCloakState = 'third'
+  let stormRendState: LightningCloakState = 'third'
+
+  function cycleLightningState() {
+    if (lightningCloakState === 'off') lightningCloakState = 'third'
+    else if (lightningCloakState === 'third') lightningCloakState = 'twoThirds'
+    else lightningCloakState = 'off'
+  }
+  function cycleStormRendState() {
+    if (stormRendState === 'off') stormRendState = 'third'
+    else if (stormRendState === 'third') stormRendState = 'twoThirds'
+    else stormRendState = 'off'
+  }
 
   function toggleHealBoost(name: string) {
     if (disabledHealBoosts.has(name)) disabledHealBoosts.delete(name)
@@ -2757,14 +2770,14 @@ import {
             <span class="da-buff">
               <button
                 class="da-boost-chip"
-                class:da-boost-chip--off={disableLightningCloak}
+                class:da-boost-chip--off={lightningCloakState === 'off'}
                 style="background:rgba(170,255,219,.08);border-color:rgba(170,255,219,.2)"
-                on:click={() => disableLightningCloak = !disableLightningCloak}
+                on:click={cycleLightningState}
               >
                 <span class="da-bc-name">Lightning Cloak</span>
-                <span class="da-bc-val" style="color:#aaffdb">{disableLightningCloak ? '—' : '1/3'}</span>
+                <span class="da-bc-val" style="color:#aaffdb">{lightningCloakState === 'off' ? '—' : lightningCloakState === 'twoThirds' ? '2/3' : '1/3'}</span>
                 <span class="da-bc-cond">Air + Magic</span>
-                <span class="da-bc-toggle" style={disableLightningCloak ? '' : 'background:rgba(170,255,219,.15);color:#aaffdb'}>{disableLightningCloak ? 'OFF' : 'ON'}</span>
+                <span class="da-bc-toggle" style={lightningCloakState === 'off' ? '' : 'background:rgba(170,255,219,.15);color:#aaffdb'}>{lightningCloakState === 'off' ? 'OFF' : lightningCloakState === 'twoThirds' ? '2/3' : '1/3'}</span>
                 <span class="da-buff-sources">{_activeLightningCloakBuffs.toSorted((a,b) => b.potency - a.potency).slice(0,1).map(b => `${b.sourceName} (${b.potency})`)}</span>
               </button>
             </span>
@@ -2773,14 +2786,14 @@ import {
             <span class="da-buff">
               <button
                 class="da-boost-chip"
-                class:da-boost-chip--off={disableStormRend}
+                class:da-boost-chip--off={stormRendState === 'off'}
                 style="background:rgba(255,242,122,.08);border-color:rgba(255,242,122,.2)"
-                on:click={() => disableStormRend = !disableStormRend}
+                on:click={cycleStormRendState}
               >
                 <span class="da-bc-name">Storm Rend</span>
-                <span class="da-bc-val" style="color:#fff27a">{disableStormRend ? '—' : '1/3'}</span>
+                <span class="da-bc-val" style="color:#fff27a">{stormRendState === 'off' ? '—' : stormRendState === 'twoThirds' ? '2/3' : '1/3'}</span>
                 <span class="da-bc-cond">Lightning Cloak</span>
-                <span class="da-bc-toggle" style={disableStormRend ? '' : 'background:rgba(255,242,122,.15);color:#fff27a'}>{disableStormRend ? 'OFF' : 'ON'}</span>
+                <span class="da-bc-toggle" style={stormRendState === 'off' ? '' : 'background:rgba(255,242,122,.15);color:#fff27a'}>{stormRendState === 'off' ? 'OFF' : stormRendState === 'twoThirds' ? '2/3' : '1/3'}</span>
                 <span class="da-buff-sources">Perk ({_stormRendAmt})</span>
               </button>
             </span>
