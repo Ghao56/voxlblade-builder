@@ -362,10 +362,12 @@
 </button>
 
 {#if open}
-  <div class="saves-panel">
+  <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+  <div class="saves-panel" on:click|self={() => open = false}>
     <div class="saves-header">
       <span class="saves-title">Saved Builds</span>
       <span class="saves-hint">Click load/delete twice to confirm</span>
+      <button class="saves-close" on:click={() => open = false} aria-label="Close saves panel">✕</button>
     </div>
     <div class="saves-list">
       {#each slots as slot, i}
@@ -565,8 +567,17 @@
   }
   .btn-paste:hover { background: rgba(251,191,36,.18); }
 
+  .saves-close {
+    display:none; background:none; border:none; color:var(--ink-muted);
+    font-size:1.1rem; cursor:pointer; padding:2px 6px; border-radius:4px;
+    line-height:1; margin-left:auto;
+  }
+  .saves-close:hover{background:var(--surface3);color:var(--ink);}
+
   @media (max-width:640px) {
     .saves-panel { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 100; border-radius: 0; min-width: unset; padding: 16px; }
     .saves-list { max-height: calc(100vh - 200px); overflow-y: auto; }
+    .saves-close { display: block; }
+    .saves-hint { display: none; }
   }
 </style>
