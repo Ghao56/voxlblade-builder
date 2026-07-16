@@ -1,5 +1,8 @@
 <script lang="ts">
+  import { createEventDispatcher } from 'svelte'
   import CritIcon from './CritIcon.svelte'
+  import MountIcon from './MountIcon.svelte'
+  const dispatch = createEventDispatcher()
   import DmgTotalTooltip from './DmgTotalTooltip.svelte'
   import { resolveDamageTypes, applyFireAirConversion } from './lib/damageTypeResolve'
   import type { TypedDmgBoostEntry } from './data/TypedDmgBoost'
@@ -54,6 +57,8 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
 export let cauterizeBaseDmg: number = 0
 export let cauterizeScalingMult: number = 1
   export let m1Label: string = 'M1'
+  export let mountActive: boolean = false
+  export let mountLabel: string = ''
 
   const DOT_COLORS: Record<string, string> = {
     Bleed: '#ff0004',
@@ -1014,15 +1019,26 @@ export let cauterizeScalingMult: number = 1
     </div>
 
     <div class="bdc-calc-col">
-      {#if showCritToggle}
+      {#if showCritToggle || mountLabel}
         <div class="bdc-crit-toggle-row">
-          <button
-            class="bdc-crit-toggle"
-            class:bdc-crit-toggle--on={showCritValues}
-            on:click={() => showCritValues = !showCritValues}
-          >
-            <CritIcon size={12}/> {showCritValues ? 'Crit ON' : 'Crit OFF'}
-          </button>
+          {#if showCritToggle}
+            <button
+              class="bdc-crit-toggle"
+              class:bdc-crit-toggle--on={showCritValues}
+              on:click={() => showCritValues = !showCritValues}
+            >
+              <CritIcon size={12}/> {showCritValues ? 'Crit ON' : 'Crit OFF'}
+            </button>
+          {/if}
+          {#if mountLabel}
+            <button
+              class="bdc-crit-toggle"
+              class:bdc-crit-toggle--on={mountActive}
+              on:click={() => dispatch('mountToggle')}
+            >
+              <MountIcon size={12}/> {mountActive ? 'Mounted' : 'On Foot'}
+            </button>
+          {/if}
         </div>
       {/if}
 

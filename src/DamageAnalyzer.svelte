@@ -2516,6 +2516,60 @@ import {
 </script>
 
 <div class="da-root">
+  <BaseDamageCalc {boosts} {crit} {stats} {disabledBoosts} {activeFinalMult}
+    weaponHits={_bdcWeaponHits}
+    perkDmgTypeBonuses={_perkDmgTypeBonuses}
+    perkDmgTypeBonusesNoProc={_perkDmgTypeBonusesNoProc}
+    perkDmgTypeBonusesDoT={_perkDmgTypeBonusesDoT}
+    typedBoostEntries={_typedBoostEntries}
+    luminescentPct={_luminescentPct}
+    selfDebuffDamageMult={_selfDebuffDamageMult}
+    selfDebuffNames={_selfDebuffNames}
+    antiHealSelfMult={_antiHealSelfMult}
+    lightningCloakPct={_lightningCloakPct}
+    stormRendPct={_stormRendPct}
+    explosiveChargePct={_explosiveChargePct}
+    blubBlubAmt={_blubBlubAmt}
+    dragonStateBaseDmg={_dragonStateHpGateActive ? _dragonStateBaseDmg : 0}
+    dragonStateScalingMult={_dragonStateScalingMult}
+    dragonStateCombatMult={_dragonStateCombatMult}
+    dragonStateTotalDmg={_dragonStateTotalDmg}
+    darkMagicHexBonus={_darkMagicHexBonus}
+    perkOnHitDamages={_perkOnHitDamages}
+    waArmorPenetration={_waArmorPenetration}
+    globalArmorPenetration={_raceGlobalArmorPen}
+    crushingPressureAmt={_crushingPressureAmt}
+    echoIncinerationBaseDmg={_echoIncinerationBaseDmg}
+    echoIncinerationScalingMult={_echoIncinerationScalingMult}
+    cauterizeBaseDmg={_cauterizeBaseDmg}
+    cauterizeScalingMult={_cauterizeScalingMult}
+    m1Label={_activeMountRuneDef && mountActive ? 'M1/M2' : 'M1'}
+    draconicRunesBonus={getDraconicBonuses({
+      draconicRunesStacks: perks['Draconic Runes'] ?? 0,
+      draconicColor: $build.draconicColor || 'physical',
+    }, {
+      isActive: $build.draconicRuneInfusion === 'infusion',
+      buffPotency: getEffectiveDraconicInfusionPotency($build.guild, $build.draconicRuneInfusion, $build.draconicColor || 'physical', perks['Draconic Blood'] ?? 0, perks),
+      draconicColor: $build.draconicColor || 'physical',
+    })}
+    showCritToggle={_showCrit}
+    appliedDebuffs={_dummyDebuffs}
+    curseRipPerkAmount={_curseRipPerkAmount}
+    curseRipActiveDebuffCount={_curseRipActiveDebuffCount}
+    curseRipHealMult={_curseRipHealMult}
+    disableCurseRip={disableCurseRip}
+    healCritDmgMult={_healCritDmgMult}
+    venomEaterStacks={perks['Venom Eater'] ?? 0}
+    bloodThirstyStacks={perks['Blood Thirsty'] ?? 0}
+    lifeDrinkerAmt={perks['Life Drinker'] ?? 0}
+    dotTicks={_dotTicks}
+    {mountActive}
+    mountLabel={_activeMountRuneDef?.mountLabel ?? ''}
+    on:mountToggle={() => mountActive = !mountActive}
+    bind:disabledDebuffs
+    bind:showCritValues
+  />
+
   <!-- ══════════════════ TOP ROW: CRIT + APEN ══════════════════ -->
   <div class="da-top-row">
 
@@ -3860,14 +3914,17 @@ import {
     {/each}
 
     <!-- Total row -->
-    <div class="ds-row ds-row--total">
-      <div class="ds-col ds-col--type ds-total-label">Total Effective Boost</div>
+    <div class="ds-row">
+      <div class="ds-col ds-col--type">
+        <span class="ds-dot" style="background:#34d399"></span>
+        <span style="color:#34d399">Total</span>
+      </div>
       <div class="ds-col ds-col--val"></div>
       <div class="ds-col ds-col--op"></div>
       <div class="ds-col ds-col--boost"></div>
       <div class="ds-col ds-col--op">=</div>
       <div class="ds-col ds-col--contrib">
-        <span class="ds-total-pct">+{scalingBreakdown.totalEffectivePct}%</span>
+        <span class="ds-contrib" style="color:#34d399">+{scalingBreakdown.totalEffectivePct}%</span>
       </div>
     </div>
   </div>
@@ -4034,7 +4091,20 @@ import {
                   </span>
                 </div>
               </div>
-            {/each} 
+            {/each}
+            <div class="ds-row">
+              <div class="ds-col ds-col--type">
+                <span class="ds-dot" style="background:#34d399"></span>
+                <span style="color:#34d399">Total</span>
+              </div>
+              <div class="ds-col ds-col--val"></div>
+              <div class="ds-col ds-col--op"></div>
+              <div class="ds-col ds-col--boost"></div>
+              <div class="ds-col ds-col--op">=</div>
+              <div class="ds-col ds-col--contrib">
+                <span class="ds-contrib" style="color:#34d399">+{roundMultiplier((entry.scalingMult - 1) * 100)}%</span>
+              </div>
+            </div>
           </div>
 
           <div class="ds-result-row ds-result-row--perk" style="background: rgba(251, 146, 60, 0.05); border-color: rgba(251, 146, 60, 0.15);">
@@ -4116,14 +4186,17 @@ import {
               </div>
             </div>
           {/each}
-          <div class="ds-row ds-row--total">
-            <div class="ds-col ds-col--type ds-total-label">Total Effective Boost</div>
-            <div class="ds-col ds-col--val"></div>
-            <div class="ds-col ds-col--op"></div>
-            <div class="ds-col ds-col--boost"></div>
-            <div class="ds-col ds-col--op">=</div>
-            <div class="ds-col ds-col--contrib">
-              <span class="ds-total-pct">+{dt.totalEffectivePct}%</span>
+          <div class="ds-row">
+            <div class="ds-col ds-col--type" style="flex:1.2;">
+              <span class="ds-dot" style="background:#34d399"></span>
+              <span style="color:#34d399">Total</span>
+            </div>
+            <div class="ds-col ds-col--val" style="flex:1;"></div>
+            <div class="ds-col ds-col--op" style="flex:0.3;"></div>
+            <div class="ds-col ds-col--boost" style="flex:1.2;"></div>
+            <div class="ds-col ds-col--op" style="flex:0.3;">=</div>
+            <div class="ds-col ds-col--contrib" style="flex:1;">
+              <span class="ds-contrib" style="color:#34d399">+{dt.totalEffectivePct}%</span>
             </div>
           </div>
         </div>
@@ -4180,14 +4253,17 @@ import {
               </div>
             </div>
           {/each}
-          <div class="ds-row ds-row--total">
-            <div class="ds-col ds-col--type ds-total-label">Total Effective Boost</div>
-            <div class="ds-col ds-col--val"></div>
-            <div class="ds-col ds-col--op"></div>
-            <div class="ds-col ds-col--boost"></div>
-            <div class="ds-col ds-col--op">=</div>
-            <div class="ds-col ds-col--contrib">
-              <span class="ds-total-pct">+{dt.totalEffectivePct}%</span>
+          <div class="ds-row">
+            <div class="ds-col ds-col--type" style="flex:1.2;">
+              <span class="ds-dot" style="background:#34d399"></span>
+              <span style="color:#34d399">Total</span>
+            </div>
+            <div class="ds-col ds-col--val" style="flex:1;"></div>
+            <div class="ds-col ds-col--op" style="flex:0.3;"></div>
+            <div class="ds-col ds-col--boost" style="flex:1.2;"></div>
+            <div class="ds-col ds-col--op" style="flex:0.3;">=</div>
+            <div class="ds-col ds-col--contrib" style="flex:1;">
+              <span class="ds-contrib" style="color:#34d399">+{dt.totalEffectivePct}%</span>
             </div>
           </div>
         </div>
@@ -4429,74 +4505,6 @@ import {
 </div><!-- end da-right-col -->
 </div><!-- end da-main-row -->
 
-{#if _activeMountRuneDef}
-  <div class="da-section da-section--mount">
-    <div class="da-section-title">{_activeMountRuneDef.mountLabel} Mount</div>
-    <div class="ap-toggle-row">
-      <span class="ap-toggle-label">{_activeMountRuneDef.mountLabel}</span>
-      <button class="ap-toggle-btn" class:ap-toggle-btn--on={mountActive}
-        on:click={() => mountActive = !mountActive}>
-        {mountActive ? 'Mounted' : 'On Foot'}
-      </button>
-    </div>
-    {#if mountActive}
-      <p class="da-empty-hint">
-        WA Guardbreaks · applies {_activeMountRuneDef.wa.secondaryEffects?.[0]?.display ?? ''} Shatter · sets WA CD to {_activeMountRuneDef.wa.setCooldown}s (CD override not wired into CDR system yet)
-      </p>
-    {/if}
-  </div>
-{/if}
-
-<BaseDamageCalc {boosts} {crit} {stats} {disabledBoosts} {activeFinalMult}
-  weaponHits={_bdcWeaponHits}
-  perkDmgTypeBonuses={_perkDmgTypeBonuses}
-  perkDmgTypeBonusesNoProc={_perkDmgTypeBonusesNoProc}
-  perkDmgTypeBonusesDoT={_perkDmgTypeBonusesDoT}
-  typedBoostEntries={_typedBoostEntries}
-  luminescentPct={_luminescentPct}
-  selfDebuffDamageMult={_selfDebuffDamageMult}
-  selfDebuffNames={_selfDebuffNames}
-  antiHealSelfMult={_antiHealSelfMult}
-  lightningCloakPct={_lightningCloakPct}
-  stormRendPct={_stormRendPct}
-  explosiveChargePct={_explosiveChargePct}
-  blubBlubAmt={_blubBlubAmt}
-  dragonStateBaseDmg={_dragonStateHpGateActive ? _dragonStateBaseDmg : 0}
-  dragonStateScalingMult={_dragonStateScalingMult}
-  dragonStateCombatMult={_dragonStateCombatMult}
-  dragonStateTotalDmg={_dragonStateTotalDmg}
-  darkMagicHexBonus={_darkMagicHexBonus}
-  perkOnHitDamages={_perkOnHitDamages}
-  waArmorPenetration={_waArmorPenetration}
-  globalArmorPenetration={_raceGlobalArmorPen}
-  crushingPressureAmt={_crushingPressureAmt}
-  echoIncinerationBaseDmg={_echoIncinerationBaseDmg}
-  echoIncinerationScalingMult={_echoIncinerationScalingMult}
-  cauterizeBaseDmg={_cauterizeBaseDmg}
-  cauterizeScalingMult={_cauterizeScalingMult}
-  m1Label={_activeMountRuneDef && mountActive ? 'M1/M2' : 'M1'}
-  draconicRunesBonus={getDraconicBonuses({
-    draconicRunesStacks: perks['Draconic Runes'] ?? 0,
-    draconicColor: $build.draconicColor || 'physical',
-  }, {
-    isActive: $build.draconicRuneInfusion === 'infusion',
-    buffPotency: getEffectiveDraconicInfusionPotency($build.guild, $build.draconicRuneInfusion, $build.draconicColor || 'physical', perks['Draconic Blood'] ?? 0, perks),
-    draconicColor: $build.draconicColor || 'physical',
-  })}
-  showCritToggle={_showCrit}
-  appliedDebuffs={_dummyDebuffs}
-  curseRipPerkAmount={_curseRipPerkAmount}
-  curseRipActiveDebuffCount={_curseRipActiveDebuffCount}
-  curseRipHealMult={_curseRipHealMult}
-  disableCurseRip={disableCurseRip}
-  healCritDmgMult={_healCritDmgMult}
-  venomEaterStacks={perks['Venom Eater'] ?? 0}
-  bloodThirstyStacks={perks['Blood Thirsty'] ?? 0}
-  lifeDrinkerAmt={perks['Life Drinker'] ?? 0}
-  dotTicks={_dotTicks}
-  bind:disabledDebuffs
-  bind:showCritValues
-/>
 </div>
 
 <style>

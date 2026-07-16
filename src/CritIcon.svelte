@@ -3,7 +3,7 @@
   const uid = Math.random().toString(36).slice(2, 7)
 </script>
 
-<svg viewBox="0 0 100 100" width={size} height={size} style="display:inline-block;vertical-align:middle;flex-shrink:0">
+<svg viewBox="0 0 128 128" width={size} height={size} style="display:inline-block;vertical-align:middle;flex-shrink:0">
     <defs>
     <linearGradient id="cg-{uid}" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#d84b55"/>
