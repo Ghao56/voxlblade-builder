@@ -1020,7 +1020,7 @@ export let cauterizeScalingMult: number = 1
 
     <div class="bdc-calc-col">
       {#if showCritToggle || mountLabel}
-        <div class="bdc-crit-toggle-row">
+        <div class="bdc-toggle-row">
           {#if showCritToggle}
             <button
               class="bdc-crit-toggle"
@@ -1032,8 +1032,8 @@ export let cauterizeScalingMult: number = 1
           {/if}
           {#if mountLabel}
             <button
-              class="bdc-crit-toggle"
-              class:bdc-crit-toggle--on={mountActive}
+              class="bdc-mount-toggle"
+              class:bdc-mount-toggle--on={mountActive}
               on:click={() => dispatch('mountToggle')}
             >
               <MountIcon size={12}/> {mountActive ? 'Mounted' : 'On Foot'}
@@ -1932,7 +1932,7 @@ export let cauterizeScalingMult: number = 1
 }
 
 /* Crit Toggle Row */
-.bdc-crit-toggle-row {
+.bdc-toggle-row {
   display: flex;
   justify-content: flex-end;
 }
@@ -1956,6 +1956,27 @@ export let cauterizeScalingMult: number = 1
   background: rgba(226,178,3,.12);
   color: #e2b203;
   box-shadow: 0 0 8px rgba(226,178,3,.2);
+}
+.bdc-mount-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: .62rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(56,189,248,.25);
+  background: var(--surface2, #1a1d1b);
+  color: var(--ink-muted, #8a8d85);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .12s;
+}
+.bdc-mount-toggle--on {
+  border-color: rgba(56,189,248,.6);
+  background: rgba(56,189,248,.12);
+  color: #38bdf8;
+  box-shadow: 0 0 8px rgba(56,189,248,.2);
 }
 
 @media (max-width: 600px) {
