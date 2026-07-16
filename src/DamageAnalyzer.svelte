@@ -758,6 +758,12 @@ import {
     if (disabledBuffKeys.has(key)) disabledBuffKeys.delete(key)
     else disabledBuffKeys.add(key)
     disabledBuffKeys = disabledBuffKeys // trigger reactivity
+
+    if (key === 'Burn:Smoldering') {
+      if (disabledBuffKeys.has(key)) disabledBoosts.add('Smoldering')
+      else disabledBoosts.delete('Smoldering')
+      disabledBoosts = new Set(disabledBoosts)
+    }
   }
   function toggleBuffByName(name: string) {
     const sources = _dedupedActiveBuffs.find(b => b.buffName === name)?._allSources ?? _allActiveBuffsRaw.filter(b => b.buffName === name).map(b => b.sourceName)
@@ -1124,6 +1130,13 @@ import {
     if (disabledBoosts.has(name)) disabledBoosts.delete(name)
     else disabledBoosts.add(name)
     disabledBoosts = new Set(disabledBoosts)
+
+    if (name === 'Smoldering') {
+      const burnKey = 'Burn:Smoldering'
+      if (disabledBoosts.has(name)) disabledBuffKeys.add(burnKey)
+      else disabledBuffKeys.delete(burnKey)
+      disabledBuffKeys = disabledBuffKeys
+    }
   }
 
   /**

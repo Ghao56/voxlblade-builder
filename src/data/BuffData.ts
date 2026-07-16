@@ -752,6 +752,17 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       sourceType: 'perk',
     },
   ],
+  'Smoldering': (amount) => [
+    {
+      buffName: 'Burn',
+      potency: 0,
+      duration: 10,
+      condition: 'On Weapon Art activation',
+      sourceName: 'Smoldering',
+      sourceType: 'perk',
+      isSelfDebuff: true,
+    },
+  ],
   'Cursed Experiment': (amount) => [
     { buffName: 'Rage',           potency: 0.3 + 0.1 * amount, duration: 5 + 2 * amount, condition: 'Rune used below 50% HP', sourceName: 'Cursed Experiment', sourceType: 'perk' },
     { buffName: 'Critical Boost', potency: 1.0,                 duration: 5 + 2 * amount, condition: 'Rune used below 50% HP', sourceName: 'Cursed Experiment', sourceType: 'perk' },

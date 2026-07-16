@@ -57,6 +57,8 @@ export interface BoostContext {
   selectedWeaponArt?: string
   hpFillPct?: number
   hasFireDmg?: boolean
+  burnPotency: number
+  hasBurn: boolean
 }
 
 export interface BoostDef {
@@ -295,6 +297,20 @@ export const BOOST_DEFS: BoostDef[] = [
     },
   },
 
+  {
+    sourceName: 'Smoldering',
+    type: 'dmg',
+    calcFn: (ctx) => {
+      const stacks = ctx.perks['Smoldering'] ?? 0
+      if (stacks > 0 && ctx.hasBurn) {
+        return {
+          multiplier: 1 + 0.20 * stacks,
+          condition: `Burning self · +${20 * stacks}% dmg`,
+        }
+      }
+      return null
+    },
+  },
   {
     sourceName: 'Minion Absorption',
     type: 'dmg',

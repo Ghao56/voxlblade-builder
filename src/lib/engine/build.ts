@@ -117,6 +117,8 @@ function calcBoosts(
   summonBoostPct:    number = 0,
   quickdrawPotency:  number = 0,
   selectedWeaponArt?: string,
+  burnPotency:       number = 0,
+  hasBurn:           boolean = false,
 ): BoostResult {
   const dmgMap  = new Map<string, BoostEntry>()
   const healMap = new Map<string, BoostEntry>()
@@ -139,7 +141,7 @@ function calcBoosts(
     perks, naturalCritChance, jumpBoost, summonCount,
     ragePotency, bouncePotency, quickdrawPotency,
     tailwindPotency, speedBoost, attackSpeed, tenacity, inDarkness, emotionalState, level,
-    mountActive, summonBoostPct, selectedWeaponArt, hpFillPct,
+    mountActive, summonBoostPct, selectedWeaponArt, hpFillPct, burnPotency, hasBurn,
   }
 
   for (const def of BOOST_DEFS) {
@@ -495,6 +497,8 @@ function deriveResults(
   const bouncePotency    = maxBuffPotency(allBuffs, 'Bounce')
   const quickdrawPotency = maxBuffPotency(allBuffs, 'Quickdraw')
   const tailwindPotency  = maxBuffPotency(allBuffs, ['Tailwind', 'Whirlwind'])
+  const burnPotency      = maxBuffPotency(allBuffs, 'Burn')
+  const hasBurn          = allBuffs.some((b: any) => b.buffName === 'Burn')
 
   const _rawFill = state.hpFill ?? 100
   const _protection = boostedStats.protection ?? 0
@@ -515,6 +519,8 @@ function deriveResults(
     isMountRune,
     boostedStats.summonBoost ?? 0, quickdrawPotency,
     state.selectedWeaponArt,
+    burnPotency,
+    hasBurn,
   )
   return { stats: boostedStats, perks: finalPerks, cdr, boosts, crit }
 }
