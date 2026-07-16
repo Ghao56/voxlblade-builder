@@ -20,6 +20,8 @@ import {
   DRAGON_BUBBLE_WATER_HEAL_PER_STACK,
   BELLOWING_EMBER_HP_GATE_THRESHOLD,
   BELLOWING_EMBER_HP_GATE_PER_STACK,
+  SPORE_BURST_BASE,
+  SPORE_BURST_POTENCY_MULT,
 } from '../lib/constants'
 
 export interface PerkDmgCtx {
@@ -483,9 +485,9 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     perkName: 'Spore Burst',
     condition: 'On Finisher',
     getBaseDamage: ({ perkAmount, statuses }) => {
-      const perkPotency = perkAmount * 0.1
-      const poisonPotency = (statuses?.poisonPotency ?? 0) * 0.1
-      const base = 0.875 * (1 + perkPotency)
+      const perkPotency = perkAmount * SPORE_BURST_POTENCY_MULT
+      const poisonPotency = (statuses?.poisonPotency ?? 0) * SPORE_BURST_POTENCY_MULT
+      const base = SPORE_BURST_BASE * (1 + perkPotency)
       const mult = Math.pow(1 + poisonPotency, 1 + Math.min(1, poisonPotency))
       return Math.round(base * mult * 1000) / 1000
     },

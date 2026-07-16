@@ -1,8 +1,6 @@
 import { roundMultiplier } from '../lib/utils'
 import { getEffectiveDraconicInfusionPotency } from './draconicBuffs'
 
-const HOLY_INFUSION_POTENCY_MULTIPLIER = 0.115
-
 export type HealSource = 'perk' | 'rune' | 'weaponArt' | 'passive'
 
 export interface HealBoostContext {

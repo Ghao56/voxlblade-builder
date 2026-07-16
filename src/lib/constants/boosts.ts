@@ -4,3 +4,49 @@ export const FRENZY_RAGE_MULT = 1 / 6
 export const MINION_ABSORPTION_MULT = 0.2
 
 export const VENOM_EATER_HEAL_PER_STACK = 0.1
+
+export const HOLY_INFUSION_POTENCY_MULT = 0.115
+
+export const BELLOWING_EMBER_BASE_MULT = 1.10
+export const BELLOWING_EMBER_FIRE_MULT = 1.23
+
+// ── Simple multiplier-per-stack boosts ────────────
+export const BLOOD_THIRSTY_MULT_PER_STACK = 0.20
+export const VENOM_SPITTER_MULT_PER_STACK = 0.10
+export const PERFECTION_MULT_PER_STACK = 0.10
+export const STEALTH_MULT_PER_STACK = 0.10
+export const GOLDEN_CRITS_MULT_PER_STACK = 0.50
+export const GOLDEN_CRITS_BASE_PROC_CHANCE = 0.40
+export const ROYAL_PARRY_MULT_PER_STACK = 0.50
+export const SPELL_PIERCER_MULT_PER_STACK = 0.20
+export const SCOURGE_MULT_PER_STACK = 0.2
+export const SHARPSHOOTER_MULT_PER_STACK = 0.20
+export const VALOR_MULT_PER_STACK = 0.0666
+export const GORECAST_MULT_PER_STACK = 0.20
+export const UNDEAD_MIGHT_MULT_PER_STACK = 0.25
+export const HIGHLANDER_MULT_PER_STACK = 0.20
+export const EMOTIONAL_MULT_PER_STACK = 0.20
+export const HEAL_BOOST_MULT_PER_STACK = 0.10
+export const OCEANS_RAGE_MULT_PER_STACK = 0.1
+
+// ── Complex boost calcFn internals ────────────────
+export const VENOM_EATER_DMG_MULT_PER_STACK = 0.10
+export const FEROCITY_TENACITY_MULT = 11
+export const SPIRIT_WINDS_TAILWIND_MULT = 1 / 3
+export const SPIRIT_WINDS_PER_STACK = 2 / 15
+export const GUARDIAN_SPIN_BASE = 0.15
+export const GUARDIAN_SPIN_MULT_PER_STACK = 0.1725
+export const WILD_BOLT_MULT_PER_STACK = 0.25
+export const WEIGHTY_SLAM_MULT_PER_STACK = 0.20
+export const RIDER_MULT_PER_STACK = 0.20
+export const QUICKDRAW_MULT = 3
+export const SPRING_POWERED_MULT = 0.0075
+export const THIEF_TRAINING_BEHIND_MULT = 1.20
+export const THIEF_TRAINING_WOULD_CRIT_MULT = 1.30
+export const VASSALS_CROAK_MULT_PER_STACK = 0.02
+export const RAGING_BOUNCE_MULT = 0.70
+export const GUIDING_WINDS_MULT_PER_STACK = 0.40
+export const GUIDING_WINDS_WA_MULT_PER_STACK = 0.30
+export const CIVILIAN_MULT_PER_STACK = 0.40
+export const VAMPIRE_DIVISOR = 15
+export const VAMPIRE_SUNLIGHT_HEAL_MULT = 0.5

@@ -1,4 +1,4 @@
-import { DRACONIC_INFUSION_POT_MULT, DRACONIC_INFUSION_DUR_MULT } from '../lib/constants'
+import { DRACONIC_INFUSION_POT_MULT, DRACONIC_INFUSION_DUR_MULT, HOLY_INFUSION_POTENCY_MULT } from '../lib/constants'
 import { applyBuffPerkModifiers, BASIC_DEBUFF_POOL, type GrantedBuff } from './BuffData'
 
 export function getDraconicInfusionPotMult(perkAmt: number): number {
@@ -40,7 +40,7 @@ export function getDraconicInfusionBuff(
 
     const perkAmt = draconicBloodPerkAmt
     const color   = draconicColor
-    const potency = Math.round(perkAmt * (color === 'holy' ? 0.115 : 0.1) * 1000) / 1000
+    const potency = Math.round(perkAmt * (color === 'holy' ? HOLY_INFUSION_POTENCY_MULT : 0.1) * 1000) / 1000
 
     const colorLabel = color ? color.charAt(0).toUpperCase() + color.slice(1) : ''
     const effectFn    = color ? DRACONIC_INFUSION_COLOR_EFFECTS[color] : undefined

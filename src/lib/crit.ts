@@ -1,11 +1,26 @@
 import type { ProcCoefficient, StatMap } from './types'
 import { calcProcChance } from './utils'
+import {
+  BASE_CRIT_DAMAGE,
+  DEX_CRIT_DIVISOR,
+  PRIMAL_DIVISOR,
+  FLOWING_CRITS_BOOST_MULT,
+  SPELL_SLINGER_BOOST_MULT,
+  SHARP_CRITS_BOOST_MULT,
+  SEISMIC_MOMENTUM_BOOST_MULT,
+  PERFECTION_CRIT_PER_STACK,
+  CACI_KING_SPIRIT_CRIT_PER_STACK,
+  THIEF_TRAINING_CRIT_DMG_MULT,
+  THIEF_TRAINING_CRIT_DMG_SUB,
+  VENOM_EATER_CRIT_DMG_SUB,
+  VENOM_EATER_CRIT_DMG_MULT,
+  VITAL_STRIKES_CRIT_DMG_PER_STACK,
+  SPARK_CRIT_DMG_PER_STACK,
+  CRITICAL_MASTER_CRIT_DMG_PER_STACK,
+  SPLINTER_CRIT_DMG_PER_STACK,
+} from './constants'
 
 const CRIT_DISABLED_PERKS = ['Seismic Momentum', 'Fractured Energy'] as const
-
-const BASE_CRIT_DAMAGE = 150
-const DEX_CRIT_DIVISOR = 10
-const PRIMAL_DIVISOR = 4
 
 interface CritSource {
   label: string
@@ -33,26 +48,26 @@ const calcElementalBoost = (
 
 const calcPerfection = (perks: Record<string, number>) => {
   const stacks = perks['Perfection'] ?? 0
-  return stacks > 0 ? stacks * 5 : 0
+  return stacks > 0 ? stacks * PERFECTION_CRIT_PER_STACK : 0
 }
 
 const ELEMENTAL_CRIT_SOURCES: Array<CritSource> = [
   {
     label: 'Flowing Crits (Air)',
     naturalEquivalent: true,
-    calc: (stats, perks) => calcElementalBoost(perks, 'Flowing Crits', stats.airBoost, 0.0875),
+    calc: (stats, perks) => calcElementalBoost(perks, 'Flowing Crits', stats.airBoost, FLOWING_CRITS_BOOST_MULT),
     gatingPerks: ['Flowing Crits'],
   },
   {
     label: 'Spell Slinger (Magic)',
     naturalEquivalent: true,
-    calc: (stats, perks) => calcElementalBoost(perks, 'Spell Slinger', stats.magicBoost, 0.075),
+    calc: (stats, perks) => calcElementalBoost(perks, 'Spell Slinger', stats.magicBoost, SPELL_SLINGER_BOOST_MULT),
     gatingPerks: ['Spell Slinger'],
   },
   {
     label: 'Sharp Crits (Physical)',
     naturalEquivalent: true,
-    calc: (stats, perks) => calcElementalBoost(perks, 'Sharp Crits', stats.physicalBoost, 0.075),
+    calc: (stats, perks) => calcElementalBoost(perks, 'Sharp Crits', stats.physicalBoost, SHARP_CRITS_BOOST_MULT),
     gatingPerks: ['Sharp Crits'],
   },
   {
@@ -75,7 +90,7 @@ const NATURAL_CRIT_SOURCES: Array<CritSource> = [
     {
       label: 'Seismic Momentum (Earth)',
       naturalEquivalent: true,
-      calc: (stats, perks) => calcElementalBoost(perks, 'Seismic Momentum', stats.earthBoost, 0.075),
+      calc: (stats, perks) => calcElementalBoost(perks, 'Seismic Momentum', stats.earthBoost, SEISMIC_MOMENTUM_BOOST_MULT),
       gatingPerks: ['Seismic Momentum'],
     },
   ...ELEMENTAL_CRIT_SOURCES,
@@ -96,7 +111,7 @@ const EXTRA_CRIT_SOURCES: Array<CritSource> = [
     label: "Caci King Spirit(King's Luck)",
     calc: (_stats, perks) => {
       const stacks = perks['Caci King Spirit'] ?? 0
-      return stacks > 0 ? round(stacks * 20) : 0
+      return stacks > 0 ? round(stacks * CACI_KING_SPIRIT_CRIT_PER_STACK) : 0
     },
     gatingPerks: ['Caci King Spirit'],
   },
@@ -107,7 +122,7 @@ const CRIT_DMG_SOURCES: Array<CritSource> = [
     label: 'Thief Training',
     calc: (_stats, perks) => {
       const stacks = perks['Thief Training'] ?? 0
-      return stacks > 0 ? stacks * 10 - 50 : 0
+      return stacks > 0 ? stacks * THIEF_TRAINING_CRIT_DMG_MULT - THIEF_TRAINING_CRIT_DMG_SUB : 0
     },
     gatingPerks: ['Thief Training'],
   },
@@ -120,7 +135,7 @@ const CRIT_DMG_SOURCES: Array<CritSource> = [
   },
   {
     label: 'Seismic Momentum (Earth)',
-    calc: (stats, perks) => calcElementalBoost(perks, 'Seismic Momentum', stats.earthBoost, 0.075),
+    calc: (stats, perks) => calcElementalBoost(perks, 'Seismic Momentum', stats.earthBoost, SEISMIC_MOMENTUM_BOOST_MULT),
     gatingPerks: ['Seismic Momentum'],
   },
   ...ELEMENTAL_CRIT_SOURCES,
@@ -128,14 +143,14 @@ const CRIT_DMG_SOURCES: Array<CritSource> = [
     label: 'Venom Eater',
     calc: (_stats, perks) => {
       const stacks = perks['Venom Eater'] ?? 0
-      return stacks > 0 ? round(-30 + stacks * 10) : 0
+      return stacks > 0 ? round(-VENOM_EATER_CRIT_DMG_SUB + stacks * VENOM_EATER_CRIT_DMG_MULT) : 0
     },
   },
   {
     label: 'Vital Strikes',
     calc: (_stats, perks) => {
       const stacks = perks['Vital Strikes'] ?? 0
-      return stacks > 0 ? round(stacks * 25) : 0
+      return stacks > 0 ? round(stacks * VITAL_STRIKES_CRIT_DMG_PER_STACK) : 0
     },
     gatingPerks: ['Vital Strikes'],
   },
@@ -143,7 +158,7 @@ const CRIT_DMG_SOURCES: Array<CritSource> = [
     label: 'Spark (to burning enemies)',
     calc: (_stats, perks) => {
       const stacks = perks['Spark'] ?? 0
-      return stacks > 0 ? round(stacks * 50) : 0
+      return stacks > 0 ? round(stacks * SPARK_CRIT_DMG_PER_STACK) : 0
     },
     gatingPerks: ['Spark'],
   },
@@ -151,7 +166,7 @@ const CRIT_DMG_SOURCES: Array<CritSource> = [
     label: 'Critical Master',
     calc: (_stats, perks) => {
       const stacks = perks['Critical Master'] ?? 0
-      return stacks > 0 ? round(stacks * 5) : 0
+      return stacks > 0 ? round(stacks * CRITICAL_MASTER_CRIT_DMG_PER_STACK) : 0
     },
     gatingPerks: ['Critical Master'],
   },
@@ -159,7 +174,7 @@ const CRIT_DMG_SOURCES: Array<CritSource> = [
     label: 'Splinter',
     calc: (_stats, perks) => {
       const stacks = perks['Splinter'] ?? 0
-      return stacks > 0 ? round(stacks * 10) : 0
+      return stacks > 0 ? round(stacks * SPLINTER_CRIT_DMG_PER_STACK) : 0
     },
     gatingPerks: ['Splinter'],
   },

@@ -1458,9 +1458,15 @@ export function applyBuffPerkModifiers(
     const tricksterBonus = getTricksterReflection(buff, def, perks, wMult)
     const generic = getGenericDebuffModifiers(buff, def, perks)
 
+    const isNeutral = def?.isNeutral
+    const containedStacks = perks['Contained'] ?? 0
+    const containedMult = !isNeutral && containedStacks > 0
+      ? 1 + 0.33 * containedStacks
+      : 1
+
     const bonus = specific.bonus + bastionBonus + tricksterBonus
     const durationMult =
-      specific.durationMult * generic.durationMult
+      specific.durationMult * generic.durationMult * containedMult
 
     if (
       bonus === 0 &&

@@ -55,6 +55,8 @@ import {
   VOID_RAGE_PCT_PER_STACK,
   CHANNELED_WEAPON_PCT_PER_STACK,
   DRACONIC_BLOOD_PCT_PER_STACK,
+  BELLOWING_EMBER_BASE_MULT,
+  BELLOWING_EMBER_FIRE_MULT,
 } from './lib/constants'
 
 
@@ -1183,6 +1185,20 @@ import {
       entries.push({ sourceName: 'Frenzy', rawMultiplier: roundMultiplier(1 + pct), condition: `Rage active · potency ${Math.round(_ragePotency * 1000) / 1000}`, type: 'dmg' })
     }
 
+    const beAmt = perks['Bellowing Ember'] ?? 0
+    if (beAmt > 0) {
+      const threshold = BELLOWING_EMBER_HP_GATE_THRESHOLD + BELLOWING_EMBER_HP_GATE_PER_STACK * (beAmt - 1)
+      if ((_hpFillPct ?? 100) <= threshold) {
+        const mult = _hasFireDmg ? BELLOWING_EMBER_FIRE_MULT : BELLOWING_EMBER_BASE_MULT
+        entries.push({
+          sourceName: 'Bellowing Ember',
+          rawMultiplier: mult,
+          condition: `HP ≤${threshold}% · +10% dmg boost${_hasFireDmg ? ' · +23% (Fire Type)' : ''}`,
+          type: 'dmg',
+        })
+      }
+    }
+
     const convertedEnergyEntry = _typedBoostResult.activeEntries.find(e => e.perkName === 'Hex Shield')
     if (convertedEnergyEntry && convertedEnergyEntry.dmgMult !== 1) {
       entries.push({
@@ -1195,19 +1211,13 @@ import {
 
     return entries
   })()
-  $: _adjustedDmgEntries = boosts.dmgEntries.map(e => {
-    if (e.sourceName === 'Bellowing Ember' && _hasFireDmg) {
-      return { ...e, rawMultiplier: 1.23 }
-    }
-    return e
-  })
-  $: activeEntries = [..._adjustedDmgEntries.filter(e => !disabledBoosts.has(e.sourceName) && !(e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) && !(e.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)) && !(e.sourceName === 'Golden Crits' && !showCritValues) && !(e.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive) && !(e.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive) && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance' && e.sourceName !== 'Frenzy'), ..._syntheticDmgBoostEntries.filter(e => {
+  $: activeEntries = [...boosts.dmgEntries.filter(e => !disabledBoosts.has(e.sourceName) && !(e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) && !(e.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)) && !(e.sourceName === 'Golden Crits' && !showCritValues) && !(e.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive) && !(e.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive) && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance' && e.sourceName !== 'Frenzy'), ..._syntheticDmgBoostEntries.filter(e => {
     if (e.sourceName === 'Curse Rip' && disableCurseRip) return false
     if (e.sourceName === 'Reaper' && disableReaper) return false
     if (disabledBoosts.has(e.sourceName)) return false
     return true
   })]
-  $: hasDisabledVisible = _adjustedDmgEntries.some(e => disabledBoosts.has(e.sourceName) || (e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0)) || (_curseRipPerkAmount > 0 && disableCurseRip) || (_reaperPerkAmount > 0 && disableReaper) || ((perks['True Balance'] ?? 0) > 0 && disabledBoosts.has('True Balance')) || ((perks['Frenzy'] ?? 0) > 0 && disabledBoosts.has('Frenzy'))
+  $: hasDisabledVisible = boosts.dmgEntries.some(e => disabledBoosts.has(e.sourceName) || (e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0)) || (_curseRipPerkAmount > 0 && disableCurseRip) || (_reaperPerkAmount > 0 && disableReaper) || ((perks['True Balance'] ?? 0) > 0 && disabledBoosts.has('True Balance')) || ((perks['Frenzy'] ?? 0) > 0 && disabledBoosts.has('Frenzy'))
 
   $: _levelMult = (() => {
     const levelEntry = boosts.dmgEntries.find(e => e.sourceName === 'Level Damage')
@@ -1772,7 +1782,7 @@ import {
       disabledBoosts = next
     }
   }
-  $: _visibleDmgEntries = _adjustedDmgEntries.filter(e =>
+  $: _visibleDmgEntries = boosts.dmgEntries.filter(e =>
     (e.sourceName !== 'Rider' || mountActive) && e.sourceName !== 'Frenzy' && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance'
   )
 
@@ -2663,7 +2673,7 @@ import {
             <span class="da-bc-name">
               {entry.sourceName === 'Level Damage' ? `LV${$build.level ?? 80}` : entry.sourceName}
             </span>
-            <span class="da-bc-val">{disabled ? '—' : entry.sourceName === 'Bellowing Ember' && _hasFireDmg ? '×1.23' : `×${+entry.rawMultiplier.toFixed(4)}`}</span>
+            <span class="da-bc-val">{disabled ? '—' : `×${+entry.rawMultiplier.toFixed(4)}`}</span>
             {#if entry.condition || _procScaledConditions.has(entry.sourceName)}<span class="da-bc-cond">{_procScaledConditions.get(entry.sourceName) ?? entry.condition}</span>{/if}
             <span class="da-bc-toggle">{disabled ? 'OFF' : 'ON'}</span>
           </button>
@@ -2704,7 +2714,7 @@ import {
               <span class="da-bc-name">
                 {entry.sourceName === 'Level Damage' ? `LV${$build.level ?? 80}` : entry.sourceName}
               </span>
-              <span class="da-bc-val">{disabled ? '—' : entry.sourceName === 'Bellowing Ember' && _hasFireDmg ? '×1.23' : `×${+entry.rawMultiplier.toFixed(4)}`}</span>
+              <span class="da-bc-val">{disabled ? '—' : `×${+entry.rawMultiplier.toFixed(4)}`}</span>
               {#if entry.condition || _procScaledConditions.has(entry.sourceName)}<span class="da-bc-cond">{_procScaledConditions.get(entry.sourceName) ?? entry.condition}</span>{/if}
               <span class="da-bc-toggle">{disabled ? 'OFF' : 'ON'}</span>
             </button>
