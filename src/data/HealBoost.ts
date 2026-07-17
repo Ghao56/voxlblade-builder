@@ -65,13 +65,8 @@ const HEAL_SCALING_DEFS: HealBoostDef[] = [
       const stacks = ctx.perks['Oceans Rage'] ?? 0
       if (stacks > 0) {
         return {
-<<<<<<< Updated upstream
-          multiplier: roundMultiplier(1 + stacks * 0.1),
-          condition: `while you have Rage`,
-=======
           multiplier: roundMultiplier(1 + stacks * OCEANS_RAGE_MULT_PER_STACK),
           condition: `${stacks} stack × 10% outgoing heal`,
->>>>>>> Stashed changes
         }
       }
       return null
@@ -83,11 +78,7 @@ const HEAL_SCALING_DEFS: HealBoostDef[] = [
     calcFn: (ctx) => {
       const stacks = ctx.perks['Vampire'] ?? 0
       if (stacks > 0 && !ctx.inDarkness) {
-<<<<<<< Updated upstream
-        return { multiplier: 0.5, condition: 'while in Sunlight' }
-=======
         return { multiplier: VAMPIRE_SUNLIGHT_HEAL_MULT, condition: 'Healing received halved in sunlight' }
->>>>>>> Stashed changes
       }
       return null
     },

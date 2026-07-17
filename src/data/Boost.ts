@@ -286,21 +286,6 @@ export const BOOST_DEFS: BoostDef[] = [
     },
   },
   {
-<<<<<<< Updated upstream
-    sourceName: 'Vampire (Sunlight)',
-    type: 'heal',
-    calcFn: (ctx) => {
-      const stacks = ctx.perks['Vampire'] ?? 0
-      if (stacks > 0 && !ctx.inDarkness) {
-        return { multiplier: VAMPIRE_SUNLIGHT_HEAL_MULT, condition: 'in Sunlight' }
-      }
-      return null
-    },
-  },
-
-  {
-=======
->>>>>>> Stashed changes
     sourceName: 'Smoldering',
     type: 'dmg',
     calcFn: (ctx) => {
@@ -365,29 +350,6 @@ export const BOOST_DEFS: BoostDef[] = [
 
   // Level damage (handled specially in calcBoosts)
   { sourceName: 'Level Damage', multiplierPerPerk: 0, type: 'dmg', isLevel: true },
-<<<<<<< Updated upstream
-
-  // Simple heal boosts
-  { sourceName: 'Emotional', multiplierPerPerk: EMOTIONAL_MULT_PER_STACK, type: 'heal', condition: 'while you have both Buffs and Debuffs' },
-  { sourceName: 'Heal Boost', multiplierPerPerk: HEAL_BOOST_MULT_PER_STACK, type: 'heal', condition: 'increase healing by 10% per perk' },
-  
-  // Complex heal boosts
-  {
-    sourceName: 'Oceans Rage',
-    type: 'heal',
-    calcFn: (ctx) => {
-      const stacks = ctx.perks['Oceans Rage'] ?? 0
-      if (stacks > 0) {
-        return {
-          multiplier: roundMultiplier(1 + stacks * OCEANS_RAGE_MULT_PER_STACK),
-          condition: `while you have Rage`,
-        }
-      }
-      return null
-    },
-  },
-=======
->>>>>>> Stashed changes
 ]
 
 export const BOOST_DEF_MAP = new Map(BOOST_DEFS.map(d => [d.sourceName, d]))
