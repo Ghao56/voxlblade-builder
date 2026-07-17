@@ -38,7 +38,7 @@
 
 <style>
   .modal-overlay {
-    position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:1000;
+    position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:var(--z-modal-backdrop);
     display:flex; align-items:center; justify-content:center;
     padding:16px; backdrop-filter:blur(4px);
     animation: fadeIn .15s ease;

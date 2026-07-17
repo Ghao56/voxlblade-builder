@@ -10,6 +10,12 @@
   --radius: 14px; --radius-sm: 8px;
   --font-display: 'Georgia','Times New Roman',serif;
   --font-body: 'Trebuchet MS','Segoe UI',system-ui,sans-serif;
+
+  --z-base: 0;
+  --z-dropdown: 100;
+  --z-modal-backdrop: 1000;
+  --z-modal: 1001;
+  --z-toast: 9999;
 }
 *, *::before, *::after { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }

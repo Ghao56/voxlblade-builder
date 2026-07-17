@@ -1,8 +1,7 @@
 import { writable, derived } from 'svelte/store'
 import type { BuildState, EnchantSlot } from './types'
 import { calcBuild, races, enforceEnchantSlot } from './engine'
-
-const STORAGE_KEY = 'voxlbuilder_build_v1'
+import { STORAGE_KEY_BUILD, DEFAULT_LEVEL, DEFAULT_HP_FILL, SAVE_DEBOUNCE_MS } from './constants'
 
 const DEFAULT_BUILD: BuildState = {
   race: races[0]?.name ?? "",
@@ -39,8 +38,8 @@ const DEFAULT_BUILD: BuildState = {
   draconicColor: "",
   draconicRuneInfusion: "",
   emotionalState: 'buffs',
-  level: 80,
-  hpFill: 100,
+  level: DEFAULT_LEVEL,
+  hpFill: DEFAULT_HP_FILL,
   summonCount: 0,
   buffsConsumed: 0,
   sporelingsSummoned: 0,
@@ -50,7 +49,7 @@ const DEFAULT_BUILD: BuildState = {
 
 function loadBuild(): BuildState {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
+    const raw = localStorage.getItem(STORAGE_KEY_BUILD)
     if (!raw) return { ...DEFAULT_BUILD }
     const parsed = JSON.parse(raw) as Partial<BuildState>
     return { ...DEFAULT_BUILD, ...parsed }
@@ -66,9 +65,9 @@ build.subscribe(state => {
   clearTimeout(_saveTimer)
   _saveTimer = setTimeout(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+      localStorage.setItem(STORAGE_KEY_BUILD, JSON.stringify(state))
     } catch {  }
-  }, 300)
+  }, SAVE_DEBOUNCE_MS)
 })
 
 export const result = derived(build, $b => calcBuild($b))

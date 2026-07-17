@@ -2288,7 +2288,7 @@ export let cauterizeScalingMult: number = 1
   position: absolute;
   top: calc(100% + 4px);
   left: 0;
-  z-index: 100;
+  z-index: var(--z-dropdown);
 
   opacity: 0;
   pointer-events: none;
@@ -2426,11 +2426,11 @@ export let cauterizeScalingMult: number = 1
 }
 .bdc-tt-fixed {
   position: fixed;
-  z-index: 100;
+  z-index: var(--z-dropdown);
 }
 .bdc-tt-formula-fixed {
   position: fixed;
-  z-index: 100;
+  z-index: var(--z-dropdown);
   display: flex;
   flex-direction: column;
   gap: 4px;

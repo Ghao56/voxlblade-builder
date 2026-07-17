@@ -1,17 +1,11 @@
 <script lang="ts">
   import { tick } from 'svelte'
   import { build } from './lib/store'
+  import { MAX_LEVEL, calcBaseMaxHP, STORAGE_KEY_LEVEL, STORAGE_KEY_HP_FILL } from './lib/constants'
 
   // ── Props ─────────────────────────────────────────────────────────────────
   export let protection: number = 0
   export let hpThreshold: number | undefined = undefined
-
-  const BASE_HP      = 120
-  const HP_PER_LEVEL = 0.0125
-
-  // ── Storage keys ─────────────────────────────────────────────────────────
-  const STORAGE_KEY = 'voxlbuilder_level'
-  const HP_FILL_KEY = 'voxlbuilder_hpfill'
 
   $: level = $build.level ?? 80
   $: fillPct = $build.hpFill ?? 100
@@ -22,7 +16,7 @@
 
   function saveLevel(v: number) {
     build.update(s => ({ ...s, level: v }))
-    try { localStorage.setItem(STORAGE_KEY, String(v)) } catch {}
+    try { localStorage.setItem(STORAGE_KEY_LEVEL, String(v)) } catch {}
   }
 
   async function startEdit() {
@@ -34,18 +28,18 @@
 
   function confirmEdit() {
     const n = parseInt(inputVal)
-    if (!isNaN(n) && n >= 0 && n <= 80) saveLevel(n)
+    if (!isNaN(n) && n >= 0 && n <= MAX_LEVEL) saveLevel(n)
     editing = false
   }
 
   function onKeydown(e: KeyboardEvent) {
     if (e.key === 'Enter')     confirmEdit()
     if (e.key === 'Escape')    editing = false
-    if (e.key === 'ArrowUp')   inputVal = String(Math.min(80, (parseInt(inputVal) || level) + 1))
+    if (e.key === 'ArrowUp')   inputVal = String(Math.min(MAX_LEVEL, (parseInt(inputVal) || level) + 1))
     if (e.key === 'ArrowDown') inputVal = String(Math.max(0,   (parseInt(inputVal) || level) - 1))
   }
 
-  $: baseMaxHP = Math.round(BASE_HP * (1 + level * HP_PER_LEVEL))
+  $: baseMaxHP = calcBaseMaxHP(level)
   $: protRounded = Math.round(protection * 100) / 100
   $: HP_FLOOR = Math.round(baseMaxHP * 0.1)
 
@@ -66,7 +60,7 @@
 
   function saveFill(v: number) {
     build.update(s => ({ ...s, hpFill: v }))
-    try { localStorage.setItem(HP_FILL_KEY, String(v)) } catch {}
+    try { localStorage.setItem(STORAGE_KEY_HP_FILL, String(v)) } catch {}
   }
 
   function calcFillFromMouse(e: MouseEvent): number {
@@ -108,7 +102,7 @@
     {#if editing}
       <input
         class="lb-lv-input"
-        type="number" min="0" max="80"
+        type="number" min="0" max={MAX_LEVEL}
         bind:value={inputVal}
         bind:this={inputEl}
         on:blur={confirmEdit}

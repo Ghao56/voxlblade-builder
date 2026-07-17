@@ -1,4 +1,13 @@
 import { readFileSync } from 'fs';
+
+// ──────────────────────────────────────────────────────────────────────────────
+// DEBUG TOOL: Standalone build decoder for testing/debugging
+// 
+// Magic numbers in this file must match the shared constants in:
+//   src/lib/constants/game.ts (MAX_LEVEL=80, HP_PER_LEVEL=0.0125, BASE_HP=120)
+//   src/lib/constants/stat-conversions.ts (upgrade multiplier=0.1, infusion=0.5, etc.)
+// ──────────────────────────────────────────────────────────────────────────────
+
 const STAT_KEYS = ['dexterityBoost','physicalBoost','airBoost','earthBoost','fireBoost','waterBoost','hexBoost','holyBoost','magicBoost','summonBoost','speedBoost','attackSpeed','warding','physicalDefense','magicDefense','airDefense','earthDefense','waterDefense','fireDefense','hexDefense','holyDefense','protection','tenacity','armorPenetration','jumpBoost','heatResistance','coldResistance'];
 const PERCENT_STATS = new Set(['dexterityBoost','physicalBoost','airBoost','earthBoost','fireBoost','waterBoost','hexBoost','holyBoost','magicBoost','summonBoost','speedBoost','attackSpeed','warding','physicalDefense','magicDefense','airDefense','earthDefense','waterDefense','fireDefense','hexDefense','holyDefense','heatResistance','coldResistance']);
 const armors = JSON.parse(readFileSync('./src/data/armors.json', 'utf-8'));

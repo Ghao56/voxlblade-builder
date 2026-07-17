@@ -1,4 +1,10 @@
+import { DEFAULT_LEVEL, DEFAULT_HP_FILL } from './game'
+
+export const STORAGE_KEY_BUILD = 'voxlbuilder_build_v1'
 export const STORAGE_KEY_DEFENSES = 'voxlbuilder_defenses_v1'
+export const STORAGE_KEY_LEVEL = 'voxlbuilder_level'
+export const STORAGE_KEY_HP_FILL = 'voxlbuilder_hpfill'
+export const STORAGE_KEY_SAVES = 'voxlbuilder_saves'
 
 export const BUILD_STATE_DEFAULTS: Record<string, any> = {
   race: '', guild: '', guildRank: 1, helmet: '', chestplate: '', leggings: '',
@@ -7,7 +13,7 @@ export const BUILD_STATE_DEFAULTS: Record<string, any> = {
   shrineActive: false, upgradeHelmet: 0, upgradeChestplate: 0, upgradeLeggings: 0,
   upgradeRing: 0, upgradeRune: 0, selectedWeaponArt: 'Lunge', draconicColor: '',
   draconicRuneInfusion: '', emotionalState: 'buffs',
-  level: 80, hpFill: 100, summonCount: 0, buffsConsumed: 0, sporelingsSummoned: 0,
+  level: DEFAULT_LEVEL, hpFill: DEFAULT_HP_FILL, summonCount: 0, buffsConsumed: 0, sporelingsSummoned: 0,
   inDarkness: true, cdrToggles: {},
 }
 

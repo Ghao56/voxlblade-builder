@@ -1,7 +1,29 @@
 import { type StatMap, type StatKey, PERCENT_STATS } from '../lib/types'
-
-const WEIGHT_DISTRIBUTION_SPLIT_RATIO = 0.5
-const WEIGHT_DISTRIBUTION_MULTIPLIER = 0.1
+import {
+  WEIGHT_DISTRIBUTION_SPLIT_RATIO,
+  WEIGHT_DISTRIBUTION_MULTIPLIER,
+  QUICK_WITTED_CONVERSION,
+  WHIRL_FOOT_CONVERSION,
+  CARAPACE_CONVERSION,
+  EXTRA_LAYERS_MULT,
+  FROZEN_HEART_CONVERSION,
+  IMMOVABLE_MULT,
+  RIGHTED_WRONGS_BASE_COEFF,
+  RIGHTED_WRONGS_TENACITY_WEIGHT,
+  RIGHTED_WRONGS_OFFENSE_WEIGHT,
+  RIGHTED_WRONGS_SPEED_FRACTION,
+  ROCKY_BODY_CONVERSION,
+  SPELLSHIELD_CONVERSION,
+  STRONG_TIDES_CONVERSION,
+  SWIFT_GUARD_CONVERSION,
+  TRUE_BALANCE_STAT_MULT,
+  RAWNY_CONVERSION,
+  RAWNY_MAX_CAP,
+  ROARING_HEADINGS_WARDING_SUB,
+  LUCKY_WARDING_SUB,
+  LUCKY_PROTECTION_SUB,
+  LUCKY_TENACITY_SUB,
+} from '../lib/constants/stat-conversions'
 
 export const OFFENSIVE_BOOSTS: StatKey[] = [
   'physicalBoost', 'magicBoost', 'fireBoost', 'waterBoost',
@@ -46,38 +68,38 @@ type PerkHandler = (s: StatMap, Amount: number) => void;
 
 const PERK_REGISTRY: Record<string, PerkHandler> = {
   'Roaring Heads': (s, Amount) => {
-    sub(s, 'warding', 50 * Amount)
+    sub(s, 'warding', ROARING_HEADINGS_WARDING_SUB * Amount)
   },
 
   'Lucky': (s, Amount) => {
-    sub(s, 'warding', 25 * Amount)
-    sub(s, 'protection', 6 * Amount)
-    sub(s, 'tenacity', 0.1 * Amount)
+    sub(s, 'warding', LUCKY_WARDING_SUB * Amount)
+    sub(s, 'protection', LUCKY_PROTECTION_SUB * Amount)
+    sub(s, 'tenacity', LUCKY_TENACITY_SUB * Amount)
   },
 
   'Quick Witted': (s, Amount) => {
     const speed = get(s, 'speedBoost')
     if (speed > 0) {
-      add(s, 'dexterityBoost', speed * Amount * 0.25)
+      add(s, 'dexterityBoost', speed * Amount * QUICK_WITTED_CONVERSION)
     }
   },
 
   'Whirl Foot': (s, Amount) => {
     const airBoost = get(s, 'airBoost')
     if (airBoost > 0) {
-      add(s, 'speedBoost', 0.05 * airBoost * Amount)
+      add(s, 'speedBoost', WHIRL_FOOT_CONVERSION * airBoost * Amount)
     }
   },
 
   'Carapace': (s, Amount) => {
     const earth = get(s, 'earthBoost')
     if (earth > 0) {
-      add(s, 'protection', 0.075 * earth * Amount)
+      add(s, 'protection', CARAPACE_CONVERSION * earth * Amount)
     }
   },
 
   'Extra Layers': (s, Amount) => {
-    const multiplier = 1 + 0.2 * Amount
+    const multiplier = 1 + EXTRA_LAYERS_MULT * Amount
     s['protection'] = get(s, 'protection') * multiplier
     s['warding'] = get(s, 'warding') * multiplier
   },
@@ -85,7 +107,7 @@ const PERK_REGISTRY: Record<string, PerkHandler> = {
   'Frozen Heart': (s, Amount) => {
     const cold = get(s, 'coldResistance')
     if (cold > 0) {
-      const bonus = ((1 / 45) + (1 / 45) * Amount) * cold
+      const bonus = (FROZEN_HEART_CONVERSION + FROZEN_HEART_CONVERSION * Amount) * cold
       add(s, 'warding', bonus)
       add(s, 'physicalDefense', bonus)
       add(s, 'magicDefense', bonus)
@@ -95,7 +117,7 @@ const PERK_REGISTRY: Record<string, PerkHandler> = {
   'Immovable': (s, Amount) => {
     const tenacity = get(s, 'tenacity')
     if (tenacity > 0) {
-      add(s, 'physicalDefense', 30 * tenacity * Amount)
+      add(s, 'physicalDefense', IMMOVABLE_MULT * tenacity * Amount)
     }
   },
 
@@ -104,48 +126,48 @@ const PERK_REGISTRY: Record<string, PerkHandler> = {
     const t = negMagnitude(get(s, 'tenacity'))
     const o = negSum(s, OTHER_OFFENSIVE_STATS) + negMagnitude(get(s, 'physicalDefense')) + negMagnitude(get(s, 'magicDefense'))
 
-    const dexterityGained = Amount * (2 / 21) * (d + t * 0.4 + o * 2)
+    const dexterityGained = Amount * RIGHTED_WRONGS_BASE_COEFF * (d + t * RIGHTED_WRONGS_TENACITY_WEIGHT + o * RIGHTED_WRONGS_OFFENSE_WEIGHT)
     add(s, 'dexterityBoost', dexterityGained)
 
-    const speedGained = dexterityGained * 0.1
+    const speedGained = dexterityGained * RIGHTED_WRONGS_SPEED_FRACTION
     add(s, 'speedBoost', speedGained)
   },
 
   'Rocky Body': (s, Amount) => {
     const earth = get(s, 'earthBoost')
     if (earth > 0) {
-      add(s, 'physicalDefense', earth * 0.5 * Amount)
+      add(s, 'physicalDefense', earth * ROCKY_BODY_CONVERSION * Amount)
     }
   },
 
   'Spellshield': (s, Amount) => {
     const magicBoost = get(s, 'magicBoost')
     const magicDefense = get(s, 'magicDefense')
-    add(s, 'protection', 0.15 * (magicBoost + magicDefense) * Amount)
+    add(s, 'protection', SPELLSHIELD_CONVERSION * (magicBoost + magicDefense) * Amount)
   },
 
   'Strong Tides': (s, Amount) => {
     const physicalBoost = get(s, 'physicalBoost')
     if (physicalBoost > 0) {
-      add(s, 'waterBoost', physicalBoost * 0.1 * Amount)
+      add(s, 'waterBoost', physicalBoost * STRONG_TIDES_CONVERSION * Amount)
     }
   },
 
   'Swift Guard': (s, Amount) => {
     const dexterityBoost = get(s, 'dexterityBoost')
     if (dexterityBoost > 0) {
-      add(s, 'physicalDefense', dexterityBoost * 0.1 * Amount)
+      add(s, 'physicalDefense', dexterityBoost * SWIFT_GUARD_CONVERSION * Amount)
     }
   },
 
   'True Balance': (s, Amount) => {
-    const resultBoost = (get(s, 'hexBoost') + get(s, 'holyBoost')) * 0.75
+    const resultBoost = (get(s, 'hexBoost') + get(s, 'holyBoost')) * TRUE_BALANCE_STAT_MULT
     s['hexBoost'] = resultBoost
     s['holyBoost'] = resultBoost
   },
 
   'Brawny': (s, Amount) => {
-    const convRate = Math.min(Amount * 0.20, 1.0)
+    const convRate = Math.min(Amount * RAWNY_CONVERSION, RAWNY_MAX_CAP)
     let gained = 0
 
     for (const key of OFFENSIVE_BOOSTS) {

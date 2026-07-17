@@ -1,5 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher, onMount, onDestroy } from 'svelte'
+  import { FOCUS_DELAY_MS } from './constants'
 
   export let value: string = ''
   export let options: Array<{ name: string }> = []
@@ -108,7 +109,7 @@
       searchQuery = ''
       highlightIndex = -1
       updateDropdownPos()
-      setTimeout(() => inputEl?.focus(), 20)
+      setTimeout(() => inputEl?.focus(), FOCUS_DELAY_MS)
     }
   }
 
@@ -343,7 +344,7 @@
   }
 
   .ecs-dropdown {
-    z-index: 9999;
+    z-index: var(--z-dropdown);
     background: #141715;
     border: 1px solid rgba(167,139,250,0.3);
     border-radius: 10px;

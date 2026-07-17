@@ -1,5 +1,7 @@
+import { MAX_LEVEL } from '../lib/constants'
+
 export function calcSummonStat(base: number, summonBoostPct: number, level: number): number {
-  return Math.round(base * (1 + (summonBoostPct / 100) * (1 + level / 80)) * 100) / 100
+  return Math.round(base * (1 + (summonBoostPct / 100) * (1 + level / MAX_LEVEL)) * 100) / 100
 }
 
 const BASE_SUMMON_CAP = 15

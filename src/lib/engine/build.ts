@@ -9,6 +9,7 @@ import type { BoostEntry, BoostResult } from '../types'
 import { calcCrit } from '../crit'
 import type { CritResult } from '../crit'
 import { roundMultiplier, calcWardingDebuffMultiplier } from '../utils'
+import { MAX_LEVEL, calcBaseMaxHP } from '../constants'
 import {
   getRace, getGuild, getGuildRank, getArmorPart, getRing, getRune,
   getBlade, getHandle, getGlove, getEssence, isMonkGuild, getPerk,
@@ -100,7 +101,7 @@ function calcCDR(
 function calcBoosts(
   perks:             Record<string, number>,
   emotionalState?:   string,
-  level:             number = 80,
+  level:             number = MAX_LEVEL,
   naturalCritChance: number = 0,
   jumpBoost:         number = 0,
   summonCount:       number = 0,
@@ -123,7 +124,7 @@ function calcBoosts(
 ): BoostResult {
   const dmgMap = new Map<string, BoostEntry>()
 
-  const lvlMult = roundMultiplier(1 + Math.max(0, Math.min(80, level)) / 80)
+  const lvlMult = roundMultiplier(1 + Math.max(0, Math.min(MAX_LEVEL, level)) / MAX_LEVEL)
   dmgMap.set('Level Damage', {
     sourceName:    'Level Damage',
     rawMultiplier: lvlMult,
@@ -493,14 +494,14 @@ function deriveResults(
   const _protection = boostedStats.protection ?? 0
   let _actualHpFill = _rawFill
   if (_protection < 0) {
-    const _baseMaxHP = Math.round(120 * (1 + (state.level ?? 80) * 0.0125))
+    const _baseMaxHP = calcBaseMaxHP(state.level ?? MAX_LEVEL)
     const _effMaxHP  = Math.max(Math.round(_baseMaxHP * 0.1), _baseMaxHP + Math.round(_protection))
     _actualHpFill = Math.min(100, Math.round(_rawFill * _effMaxHP / _baseMaxHP * 100) / 100)
   }
 
   const isMountRune = state.rune.endsWith('Mount Rune')
   const boosts = calcBoosts(
-    finalPerks, state.emotionalState, state.level ?? 80,
+    finalPerks, state.emotionalState, state.level ?? MAX_LEVEL,
     crit.naturalCritChance, boostedStats.jumpBoost ?? 0,
     state.summonCount ?? 0, ragePotency, bouncePotency,
     tailwindPotency, boostedStats.speedBoost ?? 0, boostedStats.attackSpeed ?? 0, (finalStats.tenacity ?? 0) + orkBuffTenacity,

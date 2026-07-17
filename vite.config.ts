@@ -2,9 +2,11 @@ import { defineConfig } from 'vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
 import { VitePWA } from 'vite-plugin-pwa'
 
+const basePath = process.env.VITE_BASE_PATH || '/voxlblade-builder/'
+
 export default defineConfig({
 
-  base:'/voxlblade-builder/',
+  base: basePath,
 
   plugins: [
     svelte(),
@@ -16,12 +18,12 @@ export default defineConfig({
         name:'voxlblade builder',
         short_name:'voxlbuilder',
 
-        start_url:'/voxlblade-builder/',
+        start_url: basePath,
 
         display:'standalone',
 
-        background_color:'#ffffff',
-        theme_color:'#ffffff',
+        background_color: process.env.VITE_THEME_COLOR || '#ffffff',
+        theme_color: process.env.VITE_THEME_COLOR || '#ffffff',
       },
 
       workbox: {

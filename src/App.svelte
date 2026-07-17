@@ -25,6 +25,7 @@
     DRAGON_BUBBLE_BASE_DAMAGE, DRAGON_BUBBLE_DAMAGE_PER_STACK,
     DRAGON_BUBBLE_HOLY_HEAL_BASE, DRAGON_BUBBLE_HOLY_HEAL_PER_STACK,
     DRAGON_BUBBLE_WATER_HEAL_BASE, DRAGON_BUBBLE_WATER_HEAL_PER_STACK,
+    UNDO_WINDOW_MS, SEARCH_BLUR_DELAY_MS,
   } from './lib/constants'
   import {
     DRAGON_STATE_HP_GATE,
@@ -152,7 +153,7 @@ function weaponMatchesFilter(item: any): boolean {
     clearBuild()
     _undoVisible = true
     if (_undoTimer) clearTimeout(_undoTimer)
-    _undoTimer = setTimeout(() => { _undoVisible = false; _previousBuild = null }, 8000)
+    _undoTimer = setTimeout(() => { _undoVisible = false; _previousBuild = null }, UNDO_WINDOW_MS)
     addToast('Build cleared', 'info')
   }
 
@@ -1095,7 +1096,7 @@ $: highestDamageType = (() => {
   }
 
   function onSearchFocus() { showSuggestions = true }
-  function onSearchBlur() { setTimeout(() => { showSuggestions = false }, 150) }
+  function onSearchBlur() { setTimeout(() => { showSuggestions = false }, SEARCH_BLUR_DELAY_MS) }
 
   function modalItems(type: string): any[] {
     switch (type) {
@@ -2639,7 +2640,7 @@ $: _appWaAvgTotal = (() => {
 
   /* ── Tooltip ── */
   :global(.enchant-tooltip) {
-    position:fixed; z-index:9999; background:var(--surface); border:1px solid rgba(167,139,250,.3);
+    position:fixed; z-index:var(--z-toast); background:var(--surface); border:1px solid rgba(167,139,250,.3);
     border-radius:8px; padding:10px 12px; max-width:260px; pointer-events:none;
     box-shadow:0 8px 24px rgba(0,0,0,.5);
   }

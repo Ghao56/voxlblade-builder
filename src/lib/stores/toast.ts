@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store'
+import { DEFAULT_TOAST_DURATION_MS } from '../constants'
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning'
 
@@ -13,7 +14,7 @@ export const toasts = writable<Toast[]>([])
 
 let counter = 0
 
-export function addToast(message: string, type: ToastType = 'info', duration = 3000) {
+export function addToast(message: string, type: ToastType = 'info', duration = DEFAULT_TOAST_DURATION_MS) {
   const id = `toast-${++counter}`
   toasts.update(t => [...t, { id, message, type, duration }])
   if (duration > 0) {

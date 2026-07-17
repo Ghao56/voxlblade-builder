@@ -1,4 +1,5 @@
 export * from './damage-types'
+export * from './game'
 export * from './storage'
 export * from './thresholds'
 export * from './perks'

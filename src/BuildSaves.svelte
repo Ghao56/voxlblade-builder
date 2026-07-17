@@ -8,11 +8,11 @@
     BUILD_STATE_DEFAULTS as DEFAULTS,
     SAVE_KEY_MAP as KEY_MAP, SAVE_KEY_UNMAP as KEY_UNMAP,
     ENCH_MAP, ENCH_UNMAP,
-    MAX_BUILD_SLOTS, CONFIRM_TIMEOUT_MS
+    MAX_BUILD_SLOTS, CONFIRM_TIMEOUT_MS, STORAGE_KEY_SAVES, IMPORT_SUCCESS_DISPLAY_MS
   } from './lib/constants'
 
   const MAX_SLOTS = MAX_BUILD_SLOTS
-  const STORAGE_KEY = 'voxlbuilder_saves'
+  const STORAGE_KEY = STORAGE_KEY_SAVES
 
   interface SaveSlot {
     name: string
@@ -330,7 +330,7 @@
       build.set(state)
       importError = ''
       importSuccess = true
-      setTimeout(() => importSuccess = false, 2000)
+      setTimeout(() => importSuccess = false, IMPORT_SUCCESS_DISPLAY_MS)
       addToast('Build imported', 'success')
     } catch {
       importError = 'Invalid code!'
@@ -482,7 +482,7 @@
   .arr{font-size:.6rem;opacity:.5;}
   .saves-wrapper{position:relative;}
   .saves-panel{
-    position:absolute;top:calc(100% + 4px);left:0;z-index:50;
+    position:absolute;top:calc(100% + 4px);left:0;z-index:var(--z-dropdown);
     background:var(--surface);border:1px solid rgba(74,222,128,.18);
     border-radius:10px;padding:14px;min-width:340px;
     display:flex;flex-direction:column;gap:10px;animation:spOpen .15s ease;
@@ -580,14 +580,14 @@
 
   @media (max-width:640px) {
     .saves-backdrop {
-      display: block; position: fixed; inset: 0; z-index: 99;
+      display: block; position: fixed; inset: 0; z-index: var(--z-modal-backdrop);
       background: rgba(0,0,0,.45);
       animation: bdFadeIn .25s ease;
     }
     @keyframes bdFadeIn { from { opacity: 0; } to { opacity: 1; } }
 
     .saves-panel {
-      position: fixed; left: 0; right: 0; bottom: 0; top: auto; z-index: 100;
+      position: fixed; left: 0; right: 0; bottom: 0; top: auto; z-index: var(--z-modal);
       border-radius: 14px 14px 0 0; min-width: unset; padding: 8px 16px 20px;
       max-height: min(85vh, 560px); display: flex; flex-direction: column;
       animation: bdSlideUp .3s cubic-bezier(.32,.72,0,1);

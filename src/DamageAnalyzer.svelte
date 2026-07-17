@@ -5405,7 +5405,7 @@ $: _groupedSelfDamageSources = (() => {
   position: absolute;
   top: 100%;
   right: 0;
-  z-index: 100;
+  z-index: var(--z-dropdown);
   width: auto;
   min-width: 360px;
   max-height: 60vh;

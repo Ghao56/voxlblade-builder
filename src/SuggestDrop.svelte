@@ -33,7 +33,7 @@
 {/if}
 <style>
 .suggest-drop {
-  position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 100;
+  position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: var(--z-dropdown);
   background: var(--surface); border: 1px solid rgba(167,139,250,.4);
   border-radius: var(--radius-sm);
   box-shadow: 0 8px 24px rgba(0,0,0,.5);
