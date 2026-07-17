@@ -128,7 +128,7 @@ function calcBoosts(
   dmgMap.set('Level Damage', {
     sourceName:    'Level Damage',
     rawMultiplier: lvlMult,
-    condition:     `LV0 → ×1.0 · LV80 → ×2.0`,
+    condition:     `1.25% per level`,
     type:          'dmg',
   })
 

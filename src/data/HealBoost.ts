@@ -140,7 +140,7 @@ export function calculateHealBoost(
   const lvlMult = roundMultiplier(1 + Math.max(0, Math.min(80, level)) / 80)
   entriesMap.set('Level Healing', {
     rawMultiplier: lvlMult,
-    condition: `LV0 → ×1.0 · LV80 → ×2.0`,
+    condition: `1.25% per level`,
     sourceType: 'passive'
   })
   
