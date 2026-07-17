@@ -88,25 +88,25 @@ export interface BoostDef {
 
 export const BOOST_DEFS: BoostDef[] = [
   // Simple dmg boosts
-  {sourceName: 'Blood Thirsty', multiplierPerPerk: BLOOD_THIRSTY_MULT_PER_STACK, type: 'dmg', condition: 'Hitting an opponent with your Bleed', needsProcCoeff: true},
-  {sourceName: 'Venom Spitter', multiplierPerPerk: VENOM_SPITTER_MULT_PER_STACK, type: 'dmg', condition: 'vs Poisoned opponents'},
+  {sourceName: 'Blood Thirsty', multiplierPerPerk: BLOOD_THIRSTY_MULT_PER_STACK, type: 'dmg', condition: 'against Bleeding opponents', needsProcCoeff: true},
+  {sourceName: 'Venom Spitter', multiplierPerPerk: VENOM_SPITTER_MULT_PER_STACK, type: 'dmg', condition: 'against Poisoned opponents'},
   {sourceName:'Perfection',multiplierPerPerk: PERFECTION_MULT_PER_STACK, type: 'dmg', condition: 'at max potency',},
-  {sourceName:'Stealth',multiplierPerPerk: STEALTH_MULT_PER_STACK, type: 'dmg', condition: "gain a Damage Boost against enemies that aren't targeting you",},
+  {sourceName:'Stealth',multiplierPerPerk: STEALTH_MULT_PER_STACK, type: 'dmg', condition: "against opponents not targeting you",},
   { sourceName: 'Golden Crits', multiplierPerPerk: GOLDEN_CRITS_MULT_PER_STACK, type: 'dmg', condition: '40% chance on crit', procScaling: 'positiveOnly', hasToggle: true, baseProcChance: GOLDEN_CRITS_BASE_PROC_CHANCE },
-  { sourceName: 'Royal Parry', multiplierPerPerk: ROYAL_PARRY_MULT_PER_STACK, type: 'dmg', condition: 'on the hit that activated the Critical Boost status per 1 of this perk.' },
-  { sourceName: 'Spell Piercer', multiplierPerPerk: SPELL_PIERCER_MULT_PER_STACK, type: 'dmg', condition: 'Increase damage dealt by weapon arts and runes on crit by 20% per 1 of this perk' },
-  { sourceName: 'Scourge', multiplierPerPerk: SCOURGE_MULT_PER_STACK, condition: 'Gain a chance for any hit to count as a Guardbreak', type: 'dmg', needsProcCoeff: true },
-  { sourceName: 'Sharpshooter', multiplierPerPerk: SHARPSHOOTER_MULT_PER_STACK, type: 'dmg', condition: 'Hitting from range (hits with proc coefficient)', needsProcCoeff: true },
-  { sourceName: 'Venom Eater', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Venom Eater'] ?? 0; if (a <= 0) return null; return { multiplier: 1 + VENOM_EATER_DMG_MULT_PER_STACK * a, condition: `+10% dmg/stack on Crit hit vs Poisoned target` } }, needsProcCoeff: true },
-  { sourceName: 'Ferocity', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Ferocity'] ?? 0; if (a <= 0 || ctx.tenacity <= 0) return null; const pct = ctx.tenacity * FEROCITY_TENACITY_MULT * a; return { multiplier: 1 + pct / 100, condition: `${Math.round(ctx.tenacity * 100) / 100} tenacity × ${a} Ferocity = +${pct.toFixed(2)}%` } } },
-  { sourceName: 'Spirit Winds', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Spirit Winds'] ?? 0; if (a <= 0 || ctx.tailwindPotency <= 0) return null; const pct = (SPIRIT_WINDS_TAILWIND_MULT * ctx.tailwindPotency + SPIRIT_WINDS_PER_STACK * a) * 100; return { multiplier: 1 + pct / 100, condition: `${Math.round(ctx.tailwindPotency * 1000) / 1000} tw potency × ${a} SW = +${pct.toFixed(2)}%` } } },
-  { sourceName: 'Valor', multiplierPerPerk: VALOR_MULT_PER_STACK, type: 'dmg', condition: 'Damage Boost vs Taunted enemies, per 1 of this perk' },
-  { sourceName: 'Gorecast', multiplierPerPerk: GORECAST_MULT_PER_STACK, type: 'dmg', condition: 'Weapon Art damage vs bleeding opponents', appliesTo: ['wa'] },
-  { sourceName: 'Guardian Spin', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Guardian Spin'] ?? 0; if (a <= 0 || ctx.selectedWeaponArt !== 'Spin') return null; return { multiplier: 1 + GUARDIAN_SPIN_BASE + GUARDIAN_SPIN_MULT_PER_STACK * a, condition: 'for Spin weapon art' } }, appliesTo: ['wa'] },
-  { sourceName: 'Wild Bolt', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Wild Bolt'] ?? 0; if (a <= 0 || ctx.selectedWeaponArt !== 'Laser') return null; return { multiplier: 1 + WILD_BOLT_MULT_PER_STACK * a, condition: 'for Laser weapon art' } }, appliesTo: ['wa'] },
-  { sourceName: 'Weighty Slam', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Weighty Slam'] ?? 0; if (a <= 0 || ctx.selectedWeaponArt !== 'Slam') return null; return { multiplier: 1 + WEIGHTY_SLAM_MULT_PER_STACK * a, condition: 'for Slam weapon art' } }, appliesTo: ['wa'] },
-  { sourceName: 'Undead Might', multiplierPerPerk: UNDEAD_MIGHT_MULT_PER_STACK, type: 'dmg', condition: 'Weapon Art & Rune Damage Boost', appliesTo: ['wa', 'rune'] },
-  { sourceName: 'Highlander', multiplierPerPerk: HIGHLANDER_MULT_PER_STACK, type: 'dmg', condition: 'Weapon Art & Rune Damage Boost', appliesTo: ['wa', 'rune'] },
+  { sourceName: 'Royal Parry', multiplierPerPerk: ROYAL_PARRY_MULT_PER_STACK, type: 'dmg', condition: 'on hits that activated Critical Boost' },
+  { sourceName: 'Spell Piercer', multiplierPerPerk: SPELL_PIERCER_MULT_PER_STACK, type: 'dmg', condition: 'on Weapon Arts and Runes that crit' },
+  { sourceName: 'Scourge', multiplierPerPerk: SCOURGE_MULT_PER_STACK, condition: 'chance for any hit to Guardbreak', type: 'dmg', needsProcCoeff: true },
+  { sourceName: 'Sharpshooter', multiplierPerPerk: SHARPSHOOTER_MULT_PER_STACK, type: 'dmg', condition: 'Hitting from afar', needsProcCoeff: true },
+  { sourceName: 'Venom Eater', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Venom Eater'] ?? 0; if (a <= 0) return null; return { multiplier: 1 + VENOM_EATER_DMG_MULT_PER_STACK * a, condition: `on Crit against Poisoned opponents` } }, needsProcCoeff: true },
+  { sourceName: 'Ferocity', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Ferocity'] ?? 0; if (a <= 0 || ctx.tenacity <= 0) return null; const pct = ctx.tenacity * FEROCITY_TENACITY_MULT * a; return { multiplier: 1 + pct / 100, condition: `based on your Tenacity` } } },
+  { sourceName: 'Spirit Winds', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Spirit Winds'] ?? 0; if (a <= 0 || ctx.tailwindPotency <= 0) return null; const pct = (SPIRIT_WINDS_TAILWIND_MULT * ctx.tailwindPotency + SPIRIT_WINDS_PER_STACK * a) * 100; return { multiplier: 1 + pct / 100, condition: `while you have Tailwind` } } },
+  { sourceName: 'Valor', multiplierPerPerk: VALOR_MULT_PER_STACK, type: 'dmg', condition: 'against Taunted opponents' },
+  { sourceName: 'Gorecast', multiplierPerPerk: GORECAST_MULT_PER_STACK, type: 'dmg', condition: 'on Weapon Art against Bleeding opponents', appliesTo: ['wa'] },
+  { sourceName: 'Guardian Spin', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Guardian Spin'] ?? 0; if (a <= 0 || ctx.selectedWeaponArt !== 'Spin') return null; return { multiplier: 1 + GUARDIAN_SPIN_BASE + GUARDIAN_SPIN_MULT_PER_STACK * a, condition: 'for Spin Weapon Art' } }, appliesTo: ['wa'] },
+  { sourceName: 'Wild Bolt', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Wild Bolt'] ?? 0; if (a <= 0 || ctx.selectedWeaponArt !== 'Laser') return null; return { multiplier: 1 + WILD_BOLT_MULT_PER_STACK * a, condition: 'for Laser Weapon Art' } }, appliesTo: ['wa'] },
+  { sourceName: 'Weighty Slam', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Weighty Slam'] ?? 0; if (a <= 0 || ctx.selectedWeaponArt !== 'Slam') return null; return { multiplier: 1 + WEIGHTY_SLAM_MULT_PER_STACK * a, condition: 'for Slam Weapon Art' } }, appliesTo: ['wa'] },
+  { sourceName: 'Undead Might', multiplierPerPerk: UNDEAD_MIGHT_MULT_PER_STACK, type: 'dmg', condition: 'on Weapon Arts and Runes', appliesTo: ['wa', 'rune'] },
+  { sourceName: 'Highlander', multiplierPerPerk: HIGHLANDER_MULT_PER_STACK, type: 'dmg', condition: 'on Weapon Arts and Runes', appliesTo: ['wa', 'rune'] },
   {
     sourceName: 'Juggernaut',
     type: 'dmg',
@@ -123,7 +123,7 @@ export const BOOST_DEFS: BoostDef[] = [
       }
     },
   },
-  { sourceName: 'Rider', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Rider'] ?? 0; if (a <= 0 || !ctx.mountActive) return null; return { multiplier: 1 + RIDER_MULT_PER_STACK * a, condition: 'While mounted · +0.1s stun resist/stack' } } },
+  { sourceName: 'Rider', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Rider'] ?? 0; if (a <= 0 || !ctx.mountActive) return null; return { multiplier: 1 + RIDER_MULT_PER_STACK * a, condition: 'while Mounted · +0.1s stun resist/stack' } } },
   {
     sourceName: 'Quickdraw',
     type: 'dmg',
@@ -131,7 +131,7 @@ export const BOOST_DEFS: BoostDef[] = [
       if (ctx.quickdrawPotency > 0) {
         return {
           multiplier: roundMultiplier(1 + ctx.quickdrawPotency * QUICKDRAW_MULT),
-          condition: `Quickdraw active`,
+          condition: `while you have Quickdraw`,
         }
       }
       return null
@@ -228,7 +228,7 @@ export const BOOST_DEFS: BoostDef[] = [
         const bouncePct = RAGING_BOUNCE_MULT * ctx.bouncePotency * stacks
         return {
           multiplier: roundMultiplier(1 + bouncePct),
-          condition: `Bounce active · potency ${Math.round(ctx.bouncePotency * 1000) / 1000}`,
+          condition: `while you have Bounce`,
         }
       }
       return null
@@ -264,7 +264,7 @@ export const BOOST_DEFS: BoostDef[] = [
     calcFn: (ctx) => {
       const stacks = ctx.perks['Civilian'] ?? 0
       if (stacks > 0) {
-        return { multiplier: 1 + CIVILIAN_MULT_PER_STACK * stacks, condition: 'Weapon unequipped 3s+' }
+        return { multiplier: 1 + CIVILIAN_MULT_PER_STACK * stacks, condition: 'on Runes while weapon is unequipped for 3+ seconds' }
       }
       return null
     },
@@ -280,7 +280,7 @@ export const BOOST_DEFS: BoostDef[] = [
         const dmgPct = ctx.inDarkness ? fullPct : fullPct / 2
         return {
           multiplier: roundMultiplier(1 + dmgPct),
-          condition: ctx.inDarkness ? 'In darkness' : 'In sunlight (dmg boost halved)',
+          condition: ctx.inDarkness ? 'in Darkness' : 'in Sunlight',
         }
       }
       return null
@@ -292,7 +292,7 @@ export const BOOST_DEFS: BoostDef[] = [
     calcFn: (ctx) => {
       const stacks = ctx.perks['Vampire'] ?? 0
       if (stacks > 0 && !ctx.inDarkness) {
-        return { multiplier: VAMPIRE_SUNLIGHT_HEAL_MULT, condition: 'Healing received halved in sunlight' }
+        return { multiplier: VAMPIRE_SUNLIGHT_HEAL_MULT, condition: 'in Sunlight' }
       }
       return null
     },
@@ -306,7 +306,7 @@ export const BOOST_DEFS: BoostDef[] = [
       if (stacks > 0 && ctx.hasBurn) {
         return {
           multiplier: 1 + 0.20 * stacks,
-          condition: `Burning self · +${20 * stacks}% dmg`,
+          condition: `while Burning`,
         }
       }
       return null
@@ -365,8 +365,8 @@ export const BOOST_DEFS: BoostDef[] = [
   { sourceName: 'Level Damage', multiplierPerPerk: 0, type: 'dmg', isLevel: true },
 
   // Simple heal boosts
-  { sourceName: 'Emotional', multiplierPerPerk: EMOTIONAL_MULT_PER_STACK, type: 'heal', condition: 'when you have both buffs and debuffs' },
-  { sourceName: 'Heal Boost', multiplierPerPerk: HEAL_BOOST_MULT_PER_STACK, type: 'heal', condition: 'Increase healing by 10% per 1 of this perk' },
+  { sourceName: 'Emotional', multiplierPerPerk: EMOTIONAL_MULT_PER_STACK, type: 'heal', condition: 'while you have both Buffs and Debuffs' },
+  { sourceName: 'Heal Boost', multiplierPerPerk: HEAL_BOOST_MULT_PER_STACK, type: 'heal', condition: 'increase healing by 10% per perk' },
   
   // Complex heal boosts
   {
@@ -377,7 +377,7 @@ export const BOOST_DEFS: BoostDef[] = [
       if (stacks > 0) {
         return {
           multiplier: roundMultiplier(1 + stacks * OCEANS_RAGE_MULT_PER_STACK),
-          condition: `${stacks} stack × 10% outgoing heal`,
+          condition: `while you have Rage`,
         }
       }
       return null

@@ -37,20 +37,20 @@ const HEAL_SCALING_DEFS: HealBoostDef[] = [
     multiplierPerPerk: 0, 
     sourceType: 'passive',
     isLevel: true,
-    condition: 'LV0 → ×1.0 · LV80 → ×2.0'
+    condition: '1.25% per level'
   },
   { 
     sourceName: 'Emotional', 
     multiplierPerPerk: 0.20, 
     sourceType: 'perk',
-    condition: 'when you have both buffs and debuffs',
+    condition: 'while you have both Buffs and Debuffs',
     activeIf: (ctx) => ctx.emotionalState === 'both'
   },
   { 
     sourceName: 'Heal Boost', 
     multiplierPerPerk: 0.10, 
     sourceType: 'perk',
-    condition: 'Increase healing by 10% per 1 of this perk'
+    condition: '10% per perk'
   },
   {
     sourceName: 'Oceans Rage',
@@ -60,7 +60,7 @@ const HEAL_SCALING_DEFS: HealBoostDef[] = [
       if (stacks > 0) {
         return {
           multiplier: roundMultiplier(1 + stacks * 0.1),
-          condition: `${stacks} stack × 10% outgoing heal`,
+          condition: `while you have Rage`,
         }
       }
       return null
@@ -72,7 +72,7 @@ const HEAL_SCALING_DEFS: HealBoostDef[] = [
     calcFn: (ctx) => {
       const stacks = ctx.perks['Vampire'] ?? 0
       if (stacks > 0 && !ctx.inDarkness) {
-        return { multiplier: 0.5, condition: 'Healing received halved in sunlight' }
+        return { multiplier: 0.5, condition: 'while in Sunlight' }
       }
       return null
     },
@@ -83,7 +83,7 @@ const HEAL_SCALING_DEFS: HealBoostDef[] = [
     calcFn: (ctx) => {
       const stacks = ctx.perks['Frenzy'] ?? 0
       if (stacks > 0 && (ctx.ragePotency ?? 0) > 0) {
-        return { multiplier: 0.5, condition: 'Healing received halved while Rage is active' }
+        return { multiplier: 0.5, condition: 'while you have Rage' }
       }
       return null
     },
