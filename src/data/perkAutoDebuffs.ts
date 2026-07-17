@@ -125,5 +125,21 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
     })
   }
 
+  const gelidLanceAmt = perks['Gelid Lance'] ?? 0
+  if (gelidLanceAmt > 0) {
+    const hasSlow = existingBuffNames.includes('Slowness') || debuffs.some(d => d.buffName === 'Slowness')
+    const hasBleed = existingBuffNames.includes('Bleed') || debuffs.some(d => d.buffName === 'Bleed')
+    if (hasSlow && !hasBleed) {
+      debuffs.push({
+        buffName: 'Bleed',
+        potency: 0,
+        duration: 5,
+        condition: 'Applies Bleed when Slowness is applied',
+        sourceName: 'Gelid Lance',
+        sourceType: 'perk',
+      })
+    }
+  }
+
   return debuffs
 }

@@ -385,7 +385,7 @@ export let cauterizeScalingMult: number = 1
 
   $: _activeDotTicks = dotTicks.filter(d => {
     const debuffToCheck = d.debuffName ?? d.type
-    const isOnDummy = resolvedDebuffs.some(r => r.name === debuffToCheck)
+    const isOnDummy = resolvedDebuffs.some(r => r.name === debuffToCheck) && !disabledDebuffs.has(debuffToCheck)
     return isOnDummy && d.tickDamage > 0
   }).map(d => {
     const dmgType = DOT_DMG_TYPE_MAP[d.type] ?? 'hex'

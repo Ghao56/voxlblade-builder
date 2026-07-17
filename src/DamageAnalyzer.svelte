@@ -532,8 +532,16 @@ import {
   $: _slowActive = _allActiveBuffsRaw.filter(b => b.buffName === 'Slowness' && !b.isSelfDebuff)
   $: _slowPotency = Math.max(0, ..._slowActive.map(b => b.potency ?? 0))
   $: _slowDuration = Math.max(0, ..._slowActive.map(b => b.duration ?? 0))
+  function getEffectiveDotScalings(type: string): Record<string, number> {
+    const base = { ...(DOT_SCALINGS[type] ?? {}) }
+    if (type === 'Bleed') {
+      const glAmt = perks['Gelid Lance'] ?? 0
+      if (glAmt > 0) base['water'] = (base['water'] ?? 0) + 0.5 * glAmt
+    }
+    return base
+  }
   function dotScalingMult(type: string): number {
-    const scalings = DOT_SCALINGS[type] ?? {}
+    const scalings = getEffectiveDotScalings(type)
     let totalPct = 0
     for (const [key, val] of Object.entries(scalings)) {
       const boostKey = SCALING_TO_BOOST[key]
@@ -576,7 +584,7 @@ import {
       const base = getDotBase(inflictionPot)
       const mult = getDotPotencyMult(gamePot)
       const tick = base * mult
-      const rows = buildScalingRows(DOT_SCALINGS[type])
+      const rows = buildScalingRows(getEffectiveDotScalings(type))
       const totalPct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 1000) / 1000
       return {
         type, tickDamage: tick, dotPotency: dotPot, inflictionPotency: inflictionPot,
@@ -1251,13 +1259,13 @@ import {
 
     return entries
   })()
-  $: activeEntries = [...boosts.dmgEntries.filter(e => !disabledBoosts.has(e.sourceName) && !(e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) && !(e.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)) && !(e.sourceName === 'Golden Crits' && !showCritValues) && !(e.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive) && !(e.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive) && !(e.sourceName === 'Frostbite' && !_dummyHasSlowActive && !_dummyHasFrostbiteActive) && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance' && e.sourceName !== 'Frenzy' && e.sourceName !== 'Dark One'), ..._syntheticDmgBoostEntries.filter(e => {
+  $: activeEntries = [...boosts.dmgEntries.filter(e => !disabledBoosts.has(e.sourceName) && !(e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) && !(e.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)) && !(e.sourceName === 'Golden Crits' && !showCritValues) && !(e.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive) && !(e.sourceName === 'Gelid Lance' && !_dummyHasBleedActive) && !(e.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive) && !(e.sourceName === 'Frostbite' && !_dummyHasSlowActive && !_dummyHasFrostbiteActive) && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance' && e.sourceName !== 'Frenzy' && e.sourceName !== 'Dark One'), ..._syntheticDmgBoostEntries.filter(e => {
     if (e.sourceName === 'Curse Rip' && disableCurseRip) return false
     if (e.sourceName === 'Reaper' && disableReaper) return false
     if (disabledBoosts.has(e.sourceName)) return false
     return true
   })]
-  $: hasDisabledVisible = boosts.dmgEntries.some(e => disabledBoosts.has(e.sourceName) || (e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (e.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive) || (e.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)) || (e.sourceName === 'Golden Crits' && !showCritValues) || (e.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive) || (e.sourceName === 'Frostbite' && !_dummyHasSlowActive && !_dummyHasFrostbiteActive)) || (_curseRipPerkAmount > 0 && disableCurseRip) || (_reaperPerkAmount > 0 && disableReaper) || ((perks['True Balance'] ?? 0) > 0 && disabledBoosts.has('True Balance')) || ((perks['Frenzy'] ?? 0) > 0 && disabledBoosts.has('Frenzy'))
+  $: hasDisabledVisible = boosts.dmgEntries.some(e => disabledBoosts.has(e.sourceName) || (e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (e.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive) || (e.sourceName === 'Gelid Lance' && !_dummyHasBleedActive) || (e.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)) || (e.sourceName === 'Golden Crits' && !showCritValues) || (e.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive) || (e.sourceName === 'Frostbite' && !_dummyHasSlowActive && !_dummyHasFrostbiteActive)) || (_curseRipPerkAmount > 0 && disableCurseRip) || (_reaperPerkAmount > 0 && disableReaper) || ((perks['True Balance'] ?? 0) > 0 && disabledBoosts.has('True Balance')) || ((perks['Frenzy'] ?? 0) > 0 && disabledBoosts.has('Frenzy'))
 
   $: _levelMult = (() => {
     const levelEntry = boosts.dmgEntries.find(e => e.sourceName === 'Level Damage')
@@ -1823,7 +1831,7 @@ import {
     }
   }
   $: _visibleDmgEntries = boosts.dmgEntries.filter(e =>
-    (e.sourceName !== 'Rider' || mountActive) && e.sourceName !== 'Frenzy' && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance' && e.sourceName !== 'Dark One' && !(e.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive) && !(e.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)) && !(e.sourceName === 'Golden Crits' && !showCritValues) && !(e.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive) && !(e.sourceName === 'Frostbite' && !_dummyHasSlowActive && !_dummyHasFrostbiteActive)
+    (e.sourceName !== 'Rider' || mountActive) && e.sourceName !== 'Frenzy' && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance' && e.sourceName !== 'Dark One' && !(e.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive) && !(e.sourceName === 'Gelid Lance' && !_dummyHasBleedActive) && !(e.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)) && !(e.sourceName === 'Golden Crits' && !showCritValues) && !(e.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive) && !(e.sourceName === 'Frostbite' && !_dummyHasSlowActive && !_dummyHasFrostbiteActive)
   )
 
   $: _goldenCritsBaseChance = BOOST_DEF_MAP.get('Golden Crits')?.baseProcChance ?? 0.40
@@ -2762,10 +2770,11 @@ $: _groupedSelfDamageSources = (() => {
         {#each [..._visibleDmgEntries, ..._syntheticDmgBoostEntries] as entry}
           {@const _venomEaterDisabled = entry.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)}
           {@const _bloodThirstyDisabled = entry.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive}
+          {@const _gelidLanceDisabled = entry.sourceName === 'Gelid Lance' && !_dummyHasBleedActive}
           {@const _venomSpitterDisabled = entry.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive}
           {@const _frostbiteDisabled = entry.sourceName === 'Frostbite' && !_dummyHasSlowActive && !_dummyHasFrostbiteActive}
           {@const _goldenCritsDisabled = entry.sourceName === 'Golden Crits' && !showCritValues}
-          {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (entry.sourceName === 'Curse Rip' && disableCurseRip) || (entry.sourceName === 'Reaper' && disableReaper) || _venomEaterDisabled || _bloodThirstyDisabled || _venomSpitterDisabled || _frostbiteDisabled || _goldenCritsDisabled}
+          {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (entry.sourceName === 'Curse Rip' && disableCurseRip) || (entry.sourceName === 'Reaper' && disableReaper) || _venomEaterDisabled || _bloodThirstyDisabled || _gelidLanceDisabled || _venomSpitterDisabled || _frostbiteDisabled || _goldenCritsDisabled}
           {@const effectiveMultiplier = disabled ? 1 : entry.rawMultiplier}
           <button
             class="da-boost-chip"
@@ -2776,6 +2785,7 @@ $: _groupedSelfDamageSources = (() => {
               if (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) return
               if (_venomEaterDisabled) return
               if (_bloodThirstyDisabled) return
+              if (_gelidLanceDisabled) return
               if (_venomSpitterDisabled) return
               if (_frostbiteDisabled) return
               if (_goldenCritsDisabled) return
@@ -2806,10 +2816,11 @@ $: _groupedSelfDamageSources = (() => {
           {#each _allUniversalChips as entry}
             {@const _venomEaterDisabled = entry.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)}
             {@const _bloodThirstyDisabled = entry.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive}
+            {@const _gelidLanceDisabled = entry.sourceName === 'Gelid Lance' && !_dummyHasBleedActive}
             {@const _venomSpitterDisabled = entry.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive}
             {@const _frostbiteDisabled = entry.sourceName === 'Frostbite' && !_dummyHasSlowActive && !_dummyHasFrostbiteActive}
             {@const _goldenCritsDisabled = entry.sourceName === 'Golden Crits' && !showCritValues}
-            {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (entry.sourceName === 'Curse Rip' && disableCurseRip) || (entry.sourceName === 'Reaper' && disableReaper) || _venomEaterDisabled || _bloodThirstyDisabled || _venomSpitterDisabled || _frostbiteDisabled || _goldenCritsDisabled}
+            {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (entry.sourceName === 'Curse Rip' && disableCurseRip) || (entry.sourceName === 'Reaper' && disableReaper) || _venomEaterDisabled || _bloodThirstyDisabled || _gelidLanceDisabled || _venomSpitterDisabled || _frostbiteDisabled || _goldenCritsDisabled}
             <button
               class="da-boost-chip"
               class:da-boost-chip--lvl={entry.sourceName === 'Level Damage'}
@@ -2819,6 +2830,7 @@ $: _groupedSelfDamageSources = (() => {
                 if (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) return
                 if (_venomEaterDisabled) return
                 if (_bloodThirstyDisabled) return
+                if (_gelidLanceDisabled) return
                 if (_venomSpitterDisabled) return
                 if (_frostbiteDisabled) return
                 if (_goldenCritsDisabled) return
@@ -2851,15 +2863,16 @@ $: _groupedSelfDamageSources = (() => {
                 {#each grp.allChips as entry}
                   {@const _venomEaterDisabled = entry.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)}
                   {@const _bloodThirstyDisabled = entry.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive}
+                  {@const _gelidLanceDisabled = entry.sourceName === 'Gelid Lance' && !_dummyHasBleedActive}
                   {@const _venomSpitterDisabled = entry.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive}
                   {@const _frostbiteDisabled = entry.sourceName === 'Frostbite' && !_dummyHasSlowActive && !_dummyHasFrostbiteActive}
                   {@const _goldenCritsDisabled = entry.sourceName === 'Golden Crits' && !showCritValues}
-                  {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || _venomEaterDisabled || _bloodThirstyDisabled || _venomSpitterDisabled || _frostbiteDisabled || _goldenCritsDisabled}
+                  {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || _venomEaterDisabled || _bloodThirstyDisabled || _gelidLanceDisabled || _venomSpitterDisabled || _frostbiteDisabled || _goldenCritsDisabled}
                   <button
                     class="da-boost-chip da-boost-chip--sm"
                     class:da-boost-chip--off={disabled}
                     title={entry.condition ?? ''}
-                    on:click={() => { if (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) return; if (_venomEaterDisabled) return; if (_bloodThirstyDisabled) return; if (_venomSpitterDisabled) return; if (_frostbiteDisabled) return; if (_goldenCritsDisabled) return; toggleBoost(entry.sourceName) }}
+                    on:click={() => { if (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) return; if (_venomEaterDisabled) return; if (_bloodThirstyDisabled) return; if (_gelidLanceDisabled) return; if (_venomSpitterDisabled) return; if (_frostbiteDisabled) return; if (_goldenCritsDisabled) return; toggleBoost(entry.sourceName) }}
                   >
                     <span class="da-bc-name">{entry.sourceName}</span>
                     <span class="da-bc-val">{disabled ? '—' : `×${+entry.rawMultiplier.toFixed(4)}`}</span>
