@@ -1,0 +1,17 @@
+{
+  "nodes": [
+    {
+      "id": "file:.github/workflows/static.yml",
+      "type": "file",
+      "name": "static.yml",
+      "filePath": ".github/workflows/static.yml",
+      "summary": "yaml file with 53 lines",
+      "tags": [
+        "yaml",
+        "infra"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": []
+}

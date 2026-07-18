@@ -1,0 +1,1278 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/lib/engine/data/equipment.ts",
+      "type": "file",
+      "name": "equipment.ts",
+      "filePath": "src/lib/engine/data/equipment.ts",
+      "summary": "typescript file with 48 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lib/engine/data/equipment.ts:getEnchant",
+      "type": "function",
+      "name": "getEnchant",
+      "filePath": "src/lib/engine/data/equipment.ts",
+      "summary": "Function getEnchant (lines 37-37)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/data/equipment.ts:getRing",
+      "type": "function",
+      "name": "getRing",
+      "filePath": "src/lib/engine/data/equipment.ts",
+      "summary": "Function getRing (lines 38-38)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/data/equipment.ts:getRune",
+      "type": "function",
+      "name": "getRune",
+      "filePath": "src/lib/engine/data/equipment.ts",
+      "summary": "Function getRune (lines 39-39)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/data/equipment.ts:getArmorPart",
+      "type": "function",
+      "name": "getArmorPart",
+      "filePath": "src/lib/engine/data/equipment.ts",
+      "summary": "Function getArmorPart (lines 41-48)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lib/engine/data/weapons.ts",
+      "type": "file",
+      "name": "weapons.ts",
+      "filePath": "src/lib/engine/data/weapons.ts",
+      "summary": "typescript file with 21 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lib/engine/data/weapons.ts:getBlade",
+      "type": "function",
+      "name": "getBlade",
+      "filePath": "src/lib/engine/data/weapons.ts",
+      "summary": "Function getBlade (lines 18-18)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/data/weapons.ts:getHandle",
+      "type": "function",
+      "name": "getHandle",
+      "filePath": "src/lib/engine/data/weapons.ts",
+      "summary": "Function getHandle (lines 19-19)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/data/weapons.ts:getGlove",
+      "type": "function",
+      "name": "getGlove",
+      "filePath": "src/lib/engine/data/weapons.ts",
+      "summary": "Function getGlove (lines 20-20)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/data/weapons.ts:getEssence",
+      "type": "function",
+      "name": "getEssence",
+      "filePath": "src/lib/engine/data/weapons.ts",
+      "summary": "Function getEssence (lines 21-21)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lib/engine/enchant.ts",
+      "type": "file",
+      "name": "enchant.ts",
+      "filePath": "src/lib/engine/enchant.ts",
+      "summary": "typescript file with 221 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/enchant.ts:applyMod",
+      "type": "function",
+      "name": "applyMod",
+      "filePath": "src/lib/engine/enchant.ts",
+      "summary": "Function applyMod (lines 8-10)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/enchant.ts:normalizeModifiers",
+      "type": "function",
+      "name": "normalizeModifiers",
+      "filePath": "src/lib/engine/enchant.ts",
+      "summary": "Function normalizeModifiers (lines 12-14)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/enchant.ts:applyModsToKey",
+      "type": "function",
+      "name": "applyModsToKey",
+      "filePath": "src/lib/engine/enchant.ts",
+      "summary": "Function applyModsToKey (lines 16-26)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/enchant.ts:applyModsWhere",
+      "type": "function",
+      "name": "applyModsWhere",
+      "filePath": "src/lib/engine/enchant.ts",
+      "summary": "Function applyModsWhere (lines 28-40)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/enchant.ts:applyEnchantmentsToSlot",
+      "type": "function",
+      "name": "applyEnchantmentsToSlot",
+      "filePath": "src/lib/engine/enchant.ts",
+      "summary": "Function applyEnchantmentsToSlot (lines 57-148)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/lib/engine/enchant.ts:applyPerkEffectiveness",
+      "type": "function",
+      "name": "applyPerkEffectiveness",
+      "filePath": "src/lib/engine/enchant.ts",
+      "summary": "Function applyPerkEffectiveness (lines 163-177)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/enchant.ts:applyInfusion",
+      "type": "function",
+      "name": "applyInfusion",
+      "filePath": "src/lib/engine/enchant.ts",
+      "summary": "Function applyInfusion (lines 181-192)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/enchant.ts:isExclusiveEnchant",
+      "type": "function",
+      "name": "isExclusiveEnchant",
+      "filePath": "src/lib/engine/enchant.ts",
+      "summary": "Function isExclusiveEnchant (lines 196-198)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/enchant.ts:enforceEnchantSlot",
+      "type": "function",
+      "name": "enforceEnchantSlot",
+      "filePath": "src/lib/engine/enchant.ts",
+      "summary": "Function enforceEnchantSlot (lines 200-221)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lib/engine/engine.ts",
+      "type": "file",
+      "name": "engine.ts",
+      "filePath": "src/lib/engine/engine.ts",
+      "summary": "typescript file with 6 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/engine/format.ts",
+      "type": "file",
+      "name": "format.ts",
+      "filePath": "src/lib/engine/format.ts",
+      "summary": "typescript file with 14 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lib/engine/format.ts:formatStat",
+      "type": "function",
+      "name": "formatStat",
+      "filePath": "src/lib/engine/format.ts",
+      "summary": "Function formatStat (lines 4-10)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/format.ts:formatLabel",
+      "type": "function",
+      "name": "formatLabel",
+      "filePath": "src/lib/engine/format.ts",
+      "summary": "Function formatLabel (lines 12-14)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lib/engine/shrine.ts",
+      "type": "file",
+      "name": "shrine.ts",
+      "filePath": "src/lib/engine/shrine.ts",
+      "summary": "typescript file with 33 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lib/engine/shrine.ts:applyShrineToScalings",
+      "type": "function",
+      "name": "applyShrineToScalings",
+      "filePath": "src/lib/engine/shrine.ts",
+      "summary": "Function applyShrineToScalings (lines 9-20)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/shrine.ts:applyShrineToStats",
+      "type": "function",
+      "name": "applyShrineToStats",
+      "filePath": "src/lib/engine/shrine.ts",
+      "summary": "Function applyShrineToStats (lines 22-33)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lib/engine/weapon.ts",
+      "type": "file",
+      "name": "weapon.ts",
+      "filePath": "src/lib/engine/weapon.ts",
+      "summary": "typescript file with 443 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/weapon.ts:checkHybrid",
+      "type": "function",
+      "name": "checkHybrid",
+      "filePath": "src/lib/engine/weapon.ts",
+      "summary": "Function checkHybrid (lines 20-43)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/weapon.ts:getWeaponType",
+      "type": "function",
+      "name": "getWeaponType",
+      "filePath": "src/lib/engine/weapon.ts",
+      "summary": "Function getWeaponType (lines 53-55)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/weapon.ts:resolveWeaponType",
+      "type": "function",
+      "name": "resolveWeaponType",
+      "filePath": "src/lib/engine/weapon.ts",
+      "summary": "Function resolveWeaponType (lines 81-99)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/weapon.ts:getMonkWeaponType",
+      "type": "function",
+      "name": "getMonkWeaponType",
+      "filePath": "src/lib/engine/weapon.ts",
+      "summary": "Function getMonkWeaponType (lines 108-110)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/weapon.ts:resolveMonkWeaponType",
+      "type": "function",
+      "name": "resolveMonkWeaponType",
+      "filePath": "src/lib/engine/weapon.ts",
+      "summary": "Function resolveMonkWeaponType (lines 112-121)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/weapon.ts:extractDamageAndScalings",
+      "type": "function",
+      "name": "extractDamageAndScalings",
+      "filePath": "src/lib/engine/weapon.ts",
+      "summary": "Function extractDamageAndScalings (lines 171-192)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/weapon.ts:mergePartPerks",
+      "type": "function",
+      "name": "mergePartPerks",
+      "filePath": "src/lib/engine/weapon.ts",
+      "summary": "Function mergePartPerks (lines 194-222)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/weapon.ts:applyShrineToPart",
+      "type": "function",
+      "name": "applyShrineToPart",
+      "filePath": "src/lib/engine/weapon.ts",
+      "summary": "Function applyShrineToPart (lines 224-226)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/weapon.ts:mergeRecords",
+      "type": "function",
+      "name": "mergeRecords",
+      "filePath": "src/lib/engine/weapon.ts",
+      "summary": "Function mergeRecords (lines 228-234)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/weapon.ts:mergeScalingsAndStats",
+      "type": "function",
+      "name": "mergeScalingsAndStats",
+      "filePath": "src/lib/engine/weapon.ts",
+      "summary": "Function mergeScalingsAndStats (lines 236-280)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/weapon.ts:buildWeaponResult",
+      "type": "function",
+      "name": "buildWeaponResult",
+      "filePath": "src/lib/engine/weapon.ts",
+      "summary": "Function buildWeaponResult (lines 282-362)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/lib/engine/weapon.ts:calcWeaponGeneric",
+      "type": "function",
+      "name": "calcWeaponGeneric",
+      "filePath": "src/lib/engine/weapon.ts",
+      "summary": "Function calcWeaponGeneric (lines 364-385)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/weapon.ts:applyMonkStatBonus",
+      "type": "function",
+      "name": "applyMonkStatBonus",
+      "filePath": "src/lib/engine/weapon.ts",
+      "summary": "Function applyMonkStatBonus (lines 393-412)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/weapon.ts:calcWeapon",
+      "type": "function",
+      "name": "calcWeapon",
+      "filePath": "src/lib/engine/weapon.ts",
+      "summary": "Function calcWeapon (lines 416-418)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/weapon.ts:calcMonkWeapon",
+      "type": "function",
+      "name": "calcMonkWeapon",
+      "filePath": "src/lib/engine/weapon.ts",
+      "summary": "Function calcMonkWeapon (lines 420-443)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lib/Modal.svelte",
+      "type": "file",
+      "name": "Modal.svelte",
+      "filePath": "src/lib/Modal.svelte",
+      "summary": "svelte file with 121 lines",
+      "tags": [
+        "svelte",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lib/modals/AccessorySelectModal.svelte",
+      "type": "file",
+      "name": "AccessorySelectModal.svelte",
+      "filePath": "src/lib/modals/AccessorySelectModal.svelte",
+      "summary": "svelte file with 214 lines",
+      "tags": [
+        "svelte",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lib/modals/GuildModal.svelte",
+      "type": "file",
+      "name": "GuildModal.svelte",
+      "filePath": "src/lib/modals/GuildModal.svelte",
+      "summary": "svelte file with 98 lines",
+      "tags": [
+        "svelte",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/modals/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "src/lib/modals/index.ts",
+      "summary": "typescript file with 4 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/modals/RaceModal.svelte",
+      "type": "file",
+      "name": "RaceModal.svelte",
+      "filePath": "src/lib/modals/RaceModal.svelte",
+      "summary": "svelte file with 60 lines",
+      "tags": [
+        "svelte",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/modals/WeaponPartModal.svelte",
+      "type": "file",
+      "name": "WeaponPartModal.svelte",
+      "filePath": "src/lib/modals/WeaponPartModal.svelte",
+      "summary": "svelte file with 136 lines",
+      "tags": [
+        "svelte",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lib/StatFilterShared.svelte",
+      "type": "file",
+      "name": "StatFilterShared.svelte",
+      "filePath": "src/lib/StatFilterShared.svelte",
+      "summary": "svelte file with 97 lines",
+      "tags": [
+        "svelte",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/stats/elementalBoosts.ts",
+      "type": "file",
+      "name": "elementalBoosts.ts",
+      "filePath": "src/lib/stats/elementalBoosts.ts",
+      "summary": "typescript file with 22 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/stats/filterActions.ts",
+      "type": "file",
+      "name": "filterActions.ts",
+      "filePath": "src/lib/stats/filterActions.ts",
+      "summary": "typescript file with 41 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lib/stats/filterActions.ts:createFilterActions",
+      "type": "function",
+      "name": "createFilterActions",
+      "filePath": "src/lib/stats/filterActions.ts",
+      "summary": "Function createFilterActions (lines 4-41)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lib/store.ts",
+      "type": "file",
+      "name": "store.ts",
+      "filePath": "src/lib/store.ts",
+      "summary": "typescript file with 105 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/store.ts:loadBuild",
+      "type": "function",
+      "name": "loadBuild",
+      "filePath": "src/lib/store.ts",
+      "summary": "Function loadBuild (lines 50-59)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/store.ts:setEnchantment",
+      "type": "function",
+      "name": "setEnchantment",
+      "filePath": "src/lib/store.ts",
+      "summary": "Function setEnchantment (lines 75-87)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/store.ts:clearBuild",
+      "type": "function",
+      "name": "clearBuild",
+      "filePath": "src/lib/store.ts",
+      "summary": "Function clearBuild (lines 89-91)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/store.ts:setGuild",
+      "type": "function",
+      "name": "setGuild",
+      "filePath": "src/lib/store.ts",
+      "summary": "Function setGuild (lines 93-105)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lib/stores/toast.ts",
+      "type": "file",
+      "name": "toast.ts",
+      "filePath": "src/lib/stores/toast.ts",
+      "summary": "typescript file with 28 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lib/stores/toast.ts:addToast",
+      "type": "function",
+      "name": "addToast",
+      "filePath": "src/lib/stores/toast.ts",
+      "summary": "Function addToast (lines 17-24)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/stores/toast.ts:removeToast",
+      "type": "function",
+      "name": "removeToast",
+      "filePath": "src/lib/stores/toast.ts",
+      "summary": "Function removeToast (lines 26-28)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lib/Toast.svelte",
+      "type": "file",
+      "name": "Toast.svelte",
+      "filePath": "src/lib/Toast.svelte",
+      "summary": "svelte file with 76 lines",
+      "tags": [
+        "svelte",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/types.ts",
+      "type": "file",
+      "name": "types.ts",
+      "filePath": "src/lib/types.ts",
+      "summary": "typescript file with 284 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/types.ts:applyUpgrade",
+      "type": "function",
+      "name": "applyUpgrade",
+      "filePath": "src/lib/types.ts",
+      "summary": "Function applyUpgrade (lines 75-89)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/types.ts:getProcCoeffValue",
+      "type": "function",
+      "name": "getProcCoeffValue",
+      "filePath": "src/lib/types.ts",
+      "summary": "Function getProcCoeffValue (lines 219-223)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/types.ts:canProc",
+      "type": "function",
+      "name": "canProc",
+      "filePath": "src/lib/types.ts",
+      "summary": "Function canProc (lines 225-227)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lib/uiConstants.ts",
+      "type": "file",
+      "name": "uiConstants.ts",
+      "filePath": "src/lib/uiConstants.ts",
+      "summary": "typescript file with 78 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/utils.ts",
+      "type": "file",
+      "name": "utils.ts",
+      "filePath": "src/lib/utils.ts",
+      "summary": "typescript file with 113 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/utils.ts:calculateMultiplierFromPct",
+      "type": "function",
+      "name": "calculateMultiplierFromPct",
+      "filePath": "src/lib/utils.ts",
+      "summary": "Function calculateMultiplierFromPct (lines 1-3)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/utils.ts:multiplyMultipliers",
+      "type": "function",
+      "name": "multiplyMultipliers",
+      "filePath": "src/lib/utils.ts",
+      "summary": "Function multiplyMultipliers (lines 5-7)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/utils.ts:roundMultiplier",
+      "type": "function",
+      "name": "roundMultiplier",
+      "filePath": "src/lib/utils.ts",
+      "summary": "Function roundMultiplier (lines 9-11)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/utils.ts:calcWardingDebuffMultiplier",
+      "type": "function",
+      "name": "calcWardingDebuffMultiplier",
+      "filePath": "src/lib/utils.ts",
+      "summary": "Function calcWardingDebuffMultiplier (lines 13-19)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/utils.ts:escapeHtml",
+      "type": "function",
+      "name": "escapeHtml",
+      "filePath": "src/lib/utils.ts",
+      "summary": "Function escapeHtml (lines 29-31)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/utils.ts:highlightText",
+      "type": "function",
+      "name": "highlightText",
+      "filePath": "src/lib/utils.ts",
+      "summary": "Function highlightText (lines 33-58)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/utils.ts:highlightTextParts",
+      "type": "function",
+      "name": "highlightTextParts",
+      "filePath": "src/lib/utils.ts",
+      "summary": "Function highlightTextParts (lines 60-85)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/utils.ts:calcProcChance",
+      "type": "function",
+      "name": "calcProcChance",
+      "filePath": "src/lib/utils.ts",
+      "summary": "Function calcProcChance (lines 98-113)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/main.ts",
+      "type": "file",
+      "name": "main.ts",
+      "filePath": "src/main.ts",
+      "summary": "typescript file with 8 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/ModalSearchHeader.svelte",
+      "type": "file",
+      "name": "ModalSearchHeader.svelte",
+      "filePath": "src/ModalSearchHeader.svelte",
+      "summary": "svelte file with 197 lines",
+      "tags": [
+        "svelte",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/MountIcon.svelte",
+      "type": "file",
+      "name": "MountIcon.svelte",
+      "filePath": "src/MountIcon.svelte",
+      "summary": "svelte file with 14 lines",
+      "tags": [
+        "svelte",
+        "code"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/lib/engine/data/equipment.ts",
+      "target": "function:src/lib/engine/data/equipment.ts:getEnchant",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/data/equipment.ts",
+      "target": "function:src/lib/engine/data/equipment.ts:getRing",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/data/equipment.ts",
+      "target": "function:src/lib/engine/data/equipment.ts:getRune",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/data/equipment.ts",
+      "target": "function:src/lib/engine/data/equipment.ts:getArmorPart",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/data/weapons.ts",
+      "target": "function:src/lib/engine/data/weapons.ts:getBlade",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/data/weapons.ts",
+      "target": "function:src/lib/engine/data/weapons.ts:getHandle",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/data/weapons.ts",
+      "target": "function:src/lib/engine/data/weapons.ts:getGlove",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/data/weapons.ts",
+      "target": "function:src/lib/engine/data/weapons.ts:getEssence",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/enchant.ts",
+      "target": "function:src/lib/engine/enchant.ts:applyMod",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/enchant.ts",
+      "target": "function:src/lib/engine/enchant.ts:normalizeModifiers",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/enchant.ts",
+      "target": "function:src/lib/engine/enchant.ts:applyModsToKey",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/enchant.ts",
+      "target": "function:src/lib/engine/enchant.ts:applyModsWhere",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/enchant.ts",
+      "target": "function:src/lib/engine/enchant.ts:applyEnchantmentsToSlot",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/enchant.ts",
+      "target": "function:src/lib/engine/enchant.ts:applyPerkEffectiveness",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/enchant.ts",
+      "target": "function:src/lib/engine/enchant.ts:applyInfusion",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/enchant.ts",
+      "target": "function:src/lib/engine/enchant.ts:isExclusiveEnchant",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/enchant.ts",
+      "target": "function:src/lib/engine/enchant.ts:enforceEnchantSlot",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/format.ts",
+      "target": "function:src/lib/engine/format.ts:formatStat",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/format.ts",
+      "target": "function:src/lib/engine/format.ts:formatLabel",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/shrine.ts",
+      "target": "function:src/lib/engine/shrine.ts:applyShrineToScalings",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/shrine.ts",
+      "target": "function:src/lib/engine/shrine.ts:applyShrineToStats",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/weapon.ts",
+      "target": "function:src/lib/engine/weapon.ts:checkHybrid",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/weapon.ts",
+      "target": "function:src/lib/engine/weapon.ts:getWeaponType",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/weapon.ts",
+      "target": "function:src/lib/engine/weapon.ts:resolveWeaponType",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/weapon.ts",
+      "target": "function:src/lib/engine/weapon.ts:getMonkWeaponType",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/weapon.ts",
+      "target": "function:src/lib/engine/weapon.ts:resolveMonkWeaponType",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/weapon.ts",
+      "target": "function:src/lib/engine/weapon.ts:extractDamageAndScalings",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/weapon.ts",
+      "target": "function:src/lib/engine/weapon.ts:mergePartPerks",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/weapon.ts",
+      "target": "function:src/lib/engine/weapon.ts:applyShrineToPart",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/weapon.ts",
+      "target": "function:src/lib/engine/weapon.ts:mergeRecords",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/weapon.ts",
+      "target": "function:src/lib/engine/weapon.ts:mergeScalingsAndStats",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/weapon.ts",
+      "target": "function:src/lib/engine/weapon.ts:buildWeaponResult",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/weapon.ts",
+      "target": "function:src/lib/engine/weapon.ts:calcWeaponGeneric",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/weapon.ts",
+      "target": "function:src/lib/engine/weapon.ts:applyMonkStatBonus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/weapon.ts",
+      "target": "function:src/lib/engine/weapon.ts:calcWeapon",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/weapon.ts",
+      "target": "function:src/lib/engine/weapon.ts:calcMonkWeapon",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/stats/filterActions.ts",
+      "target": "function:src/lib/stats/filterActions.ts:createFilterActions",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "function:src/lib/store.ts:loadBuild",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "function:src/lib/store.ts:setEnchantment",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "function:src/lib/store.ts:clearBuild",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "function:src/lib/store.ts:setGuild",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/stores/toast.ts",
+      "target": "function:src/lib/stores/toast.ts:addToast",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/stores/toast.ts",
+      "target": "function:src/lib/stores/toast.ts:removeToast",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/types.ts",
+      "target": "function:src/lib/types.ts:applyUpgrade",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/types.ts",
+      "target": "function:src/lib/types.ts:getProcCoeffValue",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/types.ts",
+      "target": "function:src/lib/types.ts:canProc",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/utils.ts",
+      "target": "function:src/lib/utils.ts:calculateMultiplierFromPct",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/utils.ts",
+      "target": "function:src/lib/utils.ts:multiplyMultipliers",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/utils.ts",
+      "target": "function:src/lib/utils.ts:roundMultiplier",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/utils.ts",
+      "target": "function:src/lib/utils.ts:calcWardingDebuffMultiplier",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/utils.ts",
+      "target": "function:src/lib/utils.ts:escapeHtml",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/utils.ts",
+      "target": "function:src/lib/utils.ts:highlightText",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/utils.ts",
+      "target": "function:src/lib/utils.ts:highlightTextParts",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/utils.ts",
+      "target": "function:src/lib/utils.ts:calcProcChance",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    }
+  ]
+}

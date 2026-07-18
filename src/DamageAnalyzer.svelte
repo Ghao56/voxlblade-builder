@@ -60,6 +60,12 @@ import {
   BELLOWING_EMBER_FIRE_MULT,
   BELLOWING_EMBER_HP_GATE_THRESHOLD,
   BELLOWING_EMBER_HP_GATE_PER_STACK,
+  MORTAL_WILL_HOLY_TYPE_PER_STACK,
+  MORTAL_WILL_DMG_PER_HOLY_BOOST_PCT,
+  SUNBURN_UNIVERSAL_DMG_PER_STACK,
+  SUNBURN_HOLY_EXTRA_DMG_PER_STACK,
+  SUNBURN_BURN_BASE_CHANCE,
+  SUNBURN_BURN_CHANCE_PER_STACK,
 } from './lib/constants'
 
 
@@ -701,6 +707,26 @@ import {
   $: _cauterizeScalings = _cauterizeDef?.scalings ?? {}
   $: _cauterizeScalingMult = _cauterizeAmt > 0 ? _computePerkScalingMult(_cauterizeScalings) : 1
 
+  $: _mortalWillAmt = perks['Mortal Will'] ?? 0
+  $: _mortalWillActive = _mortalWillAmt > 0 && !disabledEffects.has('mortalWill')
+  $: _mortalWillHolyTypeBonus = _mortalWillActive ? MORTAL_WILL_HOLY_TYPE_PER_STACK * _mortalWillAmt : 0
+  $: _mortalWillFinisherDmgMult = _mortalWillActive
+    ? roundMultiplier(1 + MORTAL_WILL_DMG_PER_HOLY_BOOST_PCT * (stats.holyBoost ?? 0) * _mortalWillAmt)
+    : 1
+
+  $: _sunburnAmt = perks['Sunburn'] ?? 0
+  $: _sunburnActive = _sunburnAmt > 0 && !disabledEffects.has('sunburn')
+  $: _sunburnEnemyBurning = _sunburnActive && _dummyDebuffs.some(d => d.name === 'Burn' && !disabledDebuffs.has(d.name))
+  $: _sunburnUniversalDmgMult = _sunburnEnemyBurning
+    ? roundMultiplier(1 + SUNBURN_UNIVERSAL_DMG_PER_STACK * _sunburnAmt)
+    : 1
+  $: _sunburnHolyDmgMult = _sunburnEnemyBurning
+    ? roundMultiplier(1 + SUNBURN_HOLY_EXTRA_DMG_PER_STACK * _sunburnAmt)
+    : 1
+  $: _sunburnBurnChance = _sunburnActive
+    ? Math.round((SUNBURN_BURN_BASE_CHANCE + SUNBURN_BURN_CHANCE_PER_STACK * _sunburnAmt) * 100)
+    : 0
+
   $: _procChips = (() => {
     const chips: Array<{
       key: string; name: string; title: string
@@ -730,6 +756,24 @@ import {
         val: disabledEffects.has('cauterize') ? '—'
           : `+${(_cauterizeDef?.getBaseDamage({ perkAmount: _cauterizeAmt, statuses: { burnPotency: perks['Burn Potency'] ?? 0 } }) ?? 0).toFixed(2)}`,
         cond: 'On any hit that can proc',
+      })
+    }
+    if (_sunburnAmt > 0) {
+      chips.push({
+        key: 'sunburn', name: 'Sunburn',
+        title: `Sunburn (${_sunburnAmt}): +${_sunburnAmt * 10}% dmg vs Burning · +${_sunburnAmt * 15}% if attack has Holy · ${_sunburnBurnChance}% apply Burn on Holy`,
+        val: disabledEffects.has('sunburn') ? '—' : `+${_sunburnAmt * 10}%/+${_sunburnAmt * 15}%`,
+        cond: disabledEffects.has('sunburn') ? 'disabled' : `vs Burning · ${_sunburnBurnChance}% Burn`,
+      })
+    }
+    if (_mortalWillAmt > 0) {
+      const holyBonus = Math.round(_mortalWillHolyTypeBonus * 100) / 100
+      const dmgPct = Math.round(MORTAL_WILL_DMG_PER_HOLY_BOOST_PCT * (stats.holyBoost ?? 0) * _mortalWillAmt * 10000) / 100
+      chips.push({
+        key: 'mortalWill', name: 'Mortal Will',
+        title: `Mortal Will (${_mortalWillAmt}): +${holyBonus} Holy Type on finishers · +${dmgPct}% finisher dmg · Holy Type can proc Sunburn`,
+        val: disabledEffects.has('mortalWill') ? '—' : `+${holyBonus} Holy`,
+        cond: disabledEffects.has('mortalWill') ? 'disabled' : `finishers · +${dmgPct}%`,
       })
     }
     return chips
@@ -1318,7 +1362,7 @@ import {
     if (disabledBoosts.has(e.sourceName)) return false
     return true
   })]
-  $: hasDisabledVisible = boosts.dmgEntries.some(e => disabledBoosts.has(e.sourceName) || (e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (e.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive) || (e.sourceName === 'Gelid Lance' && !_dummyHasBleedActive) || (e.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)) || (e.sourceName === 'Golden Crits' && !showCritValues) || (e.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive) || (e.sourceName === 'Frostbite' && !_dummyHasSlowActive && !_dummyHasFrostbiteActive)) || (_curseRipPerkAmount > 0 && disableCurseRip) || (_reaperPerkAmount > 0 && disableReaper) || ((perks['True Balance'] ?? 0) > 0 && disabledBoosts.has('True Balance')) || ((perks['Frenzy'] ?? 0) > 0 && disabledBoosts.has('Frenzy'))
+  $: hasDisabledVisible = boosts.dmgEntries.some(e => disabledBoosts.has(e.sourceName) || (e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (e.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive) || (e.sourceName === 'Gelid Lance' && !_dummyHasBleedActive) || (e.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)) || (e.sourceName === 'Golden Crits' && !showCritValues) || (e.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive) || (e.sourceName === 'Frostbite' && !_dummyHasSlowActive && !_dummyHasFrostbiteActive)) || (_curseRipPerkAmount > 0 && disableCurseRip) || (_reaperPerkAmount > 0 && disableReaper) || ((perks['True Balance'] ?? 0) > 0 && disabledBoosts.has('True Balance')) || ((perks['Frenzy'] ?? 0) > 0 && disabledBoosts.has('Frenzy')) || (_sunburnAmt > 0 && disabledEffects.has('sunburn')) || (_mortalWillAmt > 0 && disabledEffects.has('mortalWill'))
 
   $: _levelMult = (() => {
     const levelEntry = boosts.dmgEntries.find(e => e.sourceName === 'Level Damage')
@@ -2176,11 +2220,23 @@ import {
           const count = typeof h === 'number' ? 1 : h.count
           const finisherHit = isFinisher(row, 'm1', i)
           const wb = finisherHit ? _m1FinisherWeaponBoost : null
+          const mwMult = finisherHit && _mortalWillFinisherDmgMult !== 1 ? _mortalWillFinisherDmgMult : 1
+          const hitDmgTypes = finisherHit && _mortalWillHolyTypeBonus > 0
+            ? { ...m1Types, holy: Math.round(((m1Types.holy ?? 0) + _mortalWillHolyTypeBonus) * 10000) / 10000 }
+            : m1Types
+          const sunburnMult = _sunburnActive && _sunburnEnemyBurning
+            ? ((hitDmgTypes.holy ?? 0) > 0 ? _sunburnHolyDmgMult : _sunburnUniversalDmgMult) : 1
+          const combinedWbMult = roundMultiplier((wb?.mult ?? 1) * mwMult * sunburnMult)
+          const wbLabel = [
+            wb && wb.mult !== 1 ? wb.labels.join(', ') : '',
+            _mortalWillFinisherDmgMult !== 1 ? 'Mortal Will' : '',
+            sunburnMult !== 1 ? 'Sunburn' : '',
+          ].filter(Boolean).join(', ')
           result.push({
             group: 'M1', index: i, count, base, scalingMult: _scalingMult, combatMult: _m1CombatMult,
-            isFinisher: finisherHit, dmgTypes: m1Types,
+            isFinisher: finisherHit, dmgTypes: hitDmgTypes,
             baseDmgTypes: _weaponDmgTypesBase,
-            ...(wb && wb.mult !== 1 ? { weaponBoostMult: wb.mult, weaponBoostLabel: wb.labels.join(', ') } : {}),
+            ...(combinedWbMult !== 1 ? { weaponBoostMult: combinedWbMult, weaponBoostLabel: wbLabel } : {}),
             canApplyBurn: _hasSingedBurn,
           })
         })
@@ -2190,11 +2246,23 @@ import {
           const rawBase = typeof h === 'number' ? h : h.n
           const count = typeof h === 'number' ? 1 : h.count
           const base = applyWeaponCharge(rawBase)
+          const hitDmgTypes = _mortalWillHolyTypeBonus > 0
+            ? { ...m2Types, holy: Math.round(((m2Types.holy ?? 0) + _mortalWillHolyTypeBonus) * 10000) / 10000 }
+            : m2Types
+          const mwMult = _mortalWillFinisherDmgMult !== 1 ? _mortalWillFinisherDmgMult : 1
+          const sunburnMult = _sunburnActive && _sunburnEnemyBurning
+            ? ((hitDmgTypes.holy ?? 0) > 0 ? _sunburnHolyDmgMult : _sunburnUniversalDmgMult) : 1
+          const combinedWbMult = roundMultiplier((_m2WeaponBoost.mult ?? 1) * mwMult * sunburnMult)
+          const wbLabel = [
+            _m2WeaponBoost.mult !== 1 ? _m2WeaponBoost.labels.join(', ') : '',
+            _mortalWillFinisherDmgMult !== 1 ? 'Mortal Will' : '',
+            sunburnMult !== 1 ? 'Sunburn' : '',
+          ].filter(Boolean).join(', ')
           result.push({
             group: 'M2', index: i, count, base, scalingMult: _scalingMult, combatMult: _m2CombatMult,
-            isFinisher: true, dmgTypes: m2Types,
+            isFinisher: true, dmgTypes: hitDmgTypes,
             baseDmgTypes: _weaponDmgTypesBase,
-            ...(_m2WeaponBoost.mult !== 1 ? { weaponBoostMult: _m2WeaponBoost.mult, weaponBoostLabel: _m2WeaponBoost.labels.join(', ') } : {}),
+            ...(combinedWbMult !== 1 ? { weaponBoostMult: combinedWbMult, weaponBoostLabel: wbLabel } : {}),
             canApplyBurn: _hasSingedBurn,
           })
         })
@@ -2277,11 +2345,14 @@ import {
          ? _resolveHitDmgTypesBase(selectedWA.hitDamageTypes[Math.min(i, selectedWA.hitDamageTypes.length - 1)], _weaponDmgTypesBase)
          : _waDmgTypesBase
         
+        const waSunburnMult = _sunburnActive && _sunburnEnemyBurning
+          ? ((hitDt.holy ?? 0) > 0 ? _sunburnHolyDmgMult : _sunburnUniversalDmgMult) : 1
         result.push({
           group: 'WA', index: i, count: h.count, base: h.n, scalingMult: sc, combatMult: _waCombatMult,
           isFinisher: selectedWA.hits?.[i]?.isFinisher ?? false, dmgTypes: hitDt,
           baseDmgTypes: hitDtBase, label: selectedWA.name,
           ...(selectedWA.hits?.[i]?.isCrit ? { forceCrit: true } : {}),
+          ...(waSunburnMult !== 1 ? { weaponBoostMult: waSunburnMult, weaponBoostLabel: 'Sunburn' } : {}),
           canApplyBurn: _hasSingedBurn,
         })
       })
@@ -2399,10 +2470,16 @@ import {
         procCoefficient: entry.procCoefficient,
         ...(entry.isM2 && entry.isFinisher && entry.procCoefficient?.type !== 'noProc' ? { procCount: 1 } : {}),
         canApplyBurn: _hasSingedBurn,
-        ...(_colorMult !== 1 ? {
-          weaponBoostMult: _colorMult,
-          weaponBoostLabel: `${$build.draconicColor.charAt(0).toUpperCase()}${$build.draconicColor.slice(1)} Color Bonus`,
-        } : {}),
+        ...((() => {
+          const perkSunburnMult = _sunburnActive && _sunburnEnemyBurning
+            ? ((entry.resolvedDmgTypes.holy ?? 0) > 0 ? _sunburnHolyDmgMult : _sunburnUniversalDmgMult) : 1
+          const combined = roundMultiplier(_colorMult * perkSunburnMult)
+          const label = [
+            _colorMult !== 1 ? `${$build.draconicColor.charAt(0).toUpperCase()}${$build.draconicColor.slice(1)} Color Bonus` : '',
+            perkSunburnMult !== 1 ? 'Sunburn' : '',
+          ].filter(Boolean).join(', ')
+          return combined !== 1 ? { weaponBoostMult: combined, weaponBoostLabel: label } : {}
+        })()),
       })
     }
 
@@ -2426,6 +2503,8 @@ import {
             _darkMagicHexBonus,
             _echoIncinerationAmt
           )
+      const runeSunburnMult = _sunburnActive && _sunburnEnemyBurning && !_runeIsHeal
+        ? ((_runeDmgTypesWithBonus.holy ?? 0) > 0 ? _sunburnHolyDmgMult : _sunburnUniversalDmgMult) : 1
       result.push({
         group: 'Rune',
         index: result.length,
@@ -2439,6 +2518,7 @@ import {
         isFinisher: false,
         label: _activeRuneDmgDef.runeName,
         isHeal: _runeIsHeal,
+        ...(runeSunburnMult !== 1 ? { weaponBoostMult: runeSunburnMult, weaponBoostLabel: 'Sunburn' } : {}),
         canApplyBurn: _hasSingedBurn,
       })
     }

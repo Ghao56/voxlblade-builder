@@ -1,0 +1,137 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/data/armors.json",
+      "type": "file",
+      "name": "armors.json",
+      "filePath": "src/data/armors.json",
+      "summary": "json file with 174 lines",
+      "tags": [
+        "json",
+        "config"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/data/blades.json",
+      "type": "file",
+      "name": "blades.json",
+      "filePath": "src/data/blades.json",
+      "summary": "json file with 108 lines",
+      "tags": [
+        "json",
+        "config"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/data/enchantments.json",
+      "type": "file",
+      "name": "enchantments.json",
+      "filePath": "src/data/enchantments.json",
+      "summary": "json file with 53 lines",
+      "tags": [
+        "json",
+        "config"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/data/essences.json",
+      "type": "file",
+      "name": "essences.json",
+      "filePath": "src/data/essences.json",
+      "summary": "json file with 107 lines",
+      "tags": [
+        "json",
+        "config"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/data/gloves.json",
+      "type": "file",
+      "name": "gloves.json",
+      "filePath": "src/data/gloves.json",
+      "summary": "json file with 24 lines",
+      "tags": [
+        "json",
+        "config"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/data/guilds.json",
+      "type": "file",
+      "name": "guilds.json",
+      "filePath": "src/data/guilds.json",
+      "summary": "json file with 56 lines",
+      "tags": [
+        "json",
+        "config"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/data/handles.json",
+      "type": "file",
+      "name": "handles.json",
+      "filePath": "src/data/handles.json",
+      "summary": "json file with 105 lines",
+      "tags": [
+        "json",
+        "config"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/data/perks.json",
+      "type": "file",
+      "name": "perks.json",
+      "filePath": "src/data/perks.json",
+      "summary": "json file with 3689 lines",
+      "tags": [
+        "json",
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:src/data/races.json",
+      "type": "file",
+      "name": "races.json",
+      "filePath": "src/data/races.json",
+      "summary": "json file with 12 lines",
+      "tags": [
+        "json",
+        "config"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/data/rings.json",
+      "type": "file",
+      "name": "rings.json",
+      "filePath": "src/data/rings.json",
+      "summary": "json file with 37 lines",
+      "tags": [
+        "json",
+        "config"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/data/runes.json",
+      "type": "file",
+      "name": "runes.json",
+      "filePath": "src/data/runes.json",
+      "summary": "json file with 43 lines",
+      "tags": [
+        "json",
+        "config"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": []
+}

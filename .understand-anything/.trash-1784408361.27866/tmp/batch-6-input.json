@@ -1,0 +1,182 @@
+{
+  "projectRoot": "C:\\Users\\Administrator\\Downloads\\voxlblade-builder",
+  "batchFiles": [
+    {
+      "path": "src/data/Perkbasedmg.ts",
+      "language": "typescript",
+      "sizeLines": 707,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/procCoefficients.ts",
+      "language": "typescript",
+      "sizeLines": 67,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/raceEffects.ts",
+      "language": "typescript",
+      "sizeLines": 44,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/Runebasedmg.ts",
+      "language": "typescript",
+      "sizeLines": 200,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/selfDamagePerks.ts",
+      "language": "typescript",
+      "sizeLines": 82,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/stanceOverlays.ts",
+      "language": "typescript",
+      "sizeLines": 59,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/statboost.ts",
+      "language": "typescript",
+      "sizeLines": 242,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/SummonData.ts",
+      "language": "typescript",
+      "sizeLines": 83,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/TypedDmgBoost.ts",
+      "language": "typescript",
+      "sizeLines": 137,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/weapon base dmg.ts",
+      "language": "typescript",
+      "sizeLines": 41,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/Weaponartcheck.ts",
+      "language": "typescript",
+      "sizeLines": 143,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/weaponArts.ts",
+      "language": "typescript",
+      "sizeLines": 508,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/weaponConditionalBoosts.ts",
+      "language": "typescript",
+      "sizeLines": 45,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/DidYouMean.svelte",
+      "language": "svelte",
+      "sizeLines": 110,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/DmgTotalTooltip.svelte",
+      "language": "svelte",
+      "sizeLines": 175,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/DraconicAbilityStats.svelte",
+      "language": "svelte",
+      "sizeLines": 42,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/EmotionalTracker.svelte",
+      "language": "svelte",
+      "sizeLines": 235,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/Highlight.svelte",
+      "language": "svelte",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/LevelBar.svelte",
+      "language": "svelte",
+      "sizeLines": 411,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/AppHeader.svelte",
+      "language": "svelte",
+      "sizeLines": 134,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants.ts",
+      "language": "typescript",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/boosts.ts",
+      "language": "typescript",
+      "sizeLines": 52,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/buffs.ts",
+      "language": "typescript",
+      "sizeLines": 147,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/cdr.ts",
+      "language": "typescript",
+      "sizeLines": 25,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/damage-types.ts",
+      "language": "typescript",
+      "sizeLines": 41,
+      "fileCategory": "code"
+    }
+  ],
+  "batchImportData": {
+    "src/data/Perkbasedmg.ts": [],
+    "src/data/procCoefficients.ts": [],
+    "src/data/raceEffects.ts": [],
+    "src/data/Runebasedmg.ts": [],
+    "src/data/selfDamagePerks.ts": [],
+    "src/data/stanceOverlays.ts": [],
+    "src/data/statboost.ts": [],
+    "src/data/SummonData.ts": [],
+    "src/data/TypedDmgBoost.ts": [],
+    "src/data/weapon base dmg.ts": [],
+    "src/data/Weaponartcheck.ts": [],
+    "src/data/weaponArts.ts": [],
+    "src/data/weaponConditionalBoosts.ts": [],
+    "src/DidYouMean.svelte": [],
+    "src/DmgTotalTooltip.svelte": [],
+    "src/DraconicAbilityStats.svelte": [],
+    "src/EmotionalTracker.svelte": [],
+    "src/Highlight.svelte": [],
+    "src/LevelBar.svelte": [],
+    "src/lib/AppHeader.svelte": [],
+    "src/lib/constants.ts": [],
+    "src/lib/constants/boosts.ts": [],
+    "src/lib/constants/buffs.ts": [],
+    "src/lib/constants/cdr.ts": [],
+    "src/lib/constants/damage-types.ts": []
+  }
+}

@@ -1,0 +1,182 @@
+{
+  "projectRoot": "C:\\Users\\Administrator\\Downloads\\voxlblade-builder",
+  "batchFiles": [
+    {
+      "path": "src/lib/constants/debuff-effects.ts",
+      "language": "typescript",
+      "sizeLines": 14,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/defensive.ts",
+      "language": "typescript",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/dot-damage.ts",
+      "language": "typescript",
+      "sizeLines": 20,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/draconic-colors.ts",
+      "language": "typescript",
+      "sizeLines": 20,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/draconic.ts",
+      "language": "typescript",
+      "sizeLines": 10,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/game.ts",
+      "language": "typescript",
+      "sizeLines": 25,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/heals.ts",
+      "language": "typescript",
+      "sizeLines": 5,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/index.ts",
+      "language": "typescript",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/perk-base-damage.ts",
+      "language": "typescript",
+      "sizeLines": 133,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/perks.ts",
+      "language": "typescript",
+      "sizeLines": 59,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/rune-base-damage.ts",
+      "language": "typescript",
+      "sizeLines": 54,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/stat-conversions.ts",
+      "language": "typescript",
+      "sizeLines": 30,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/storage.ts",
+      "language": "typescript",
+      "sizeLines": 37,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/thresholds.ts",
+      "language": "typescript",
+      "sizeLines": 5,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/crit.ts",
+      "language": "typescript",
+      "sizeLines": 340,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/damageTypeResolve.ts",
+      "language": "typescript",
+      "sizeLines": 54,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/defense.ts",
+      "language": "typescript",
+      "sizeLines": 81,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/dmgTypes.ts",
+      "language": "typescript",
+      "sizeLines": 64,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/EnchantSelect.svelte",
+      "language": "svelte",
+      "sizeLines": 467,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/enchantTooltip.ts",
+      "language": "typescript",
+      "sizeLines": 26,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/engine.ts",
+      "language": "typescript",
+      "sizeLines": 5,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/engine/_utils.ts",
+      "language": "typescript",
+      "sizeLines": 2,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/engine/build.ts",
+      "language": "typescript",
+      "sizeLines": 529,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/engine/data.ts",
+      "language": "typescript",
+      "sizeLines": 2,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/engine/data/character.ts",
+      "language": "typescript",
+      "sizeLines": 28,
+      "fileCategory": "code"
+    }
+  ],
+  "batchImportData": {
+    "src/lib/constants/debuff-effects.ts": [],
+    "src/lib/constants/defensive.ts": [],
+    "src/lib/constants/dot-damage.ts": [],
+    "src/lib/constants/draconic-colors.ts": [],
+    "src/lib/constants/draconic.ts": [],
+    "src/lib/constants/game.ts": [],
+    "src/lib/constants/heals.ts": [],
+    "src/lib/constants/index.ts": [],
+    "src/lib/constants/perk-base-damage.ts": [],
+    "src/lib/constants/perks.ts": [],
+    "src/lib/constants/rune-base-damage.ts": [],
+    "src/lib/constants/stat-conversions.ts": [],
+    "src/lib/constants/storage.ts": [],
+    "src/lib/constants/thresholds.ts": [],
+    "src/lib/crit.ts": [],
+    "src/lib/damageTypeResolve.ts": [],
+    "src/lib/defense.ts": [],
+    "src/lib/dmgTypes.ts": [],
+    "src/lib/EnchantSelect.svelte": [],
+    "src/lib/enchantTooltip.ts": [],
+    "src/lib/engine.ts": [],
+    "src/lib/engine/_utils.ts": [],
+    "src/lib/engine/build.ts": [],
+    "src/lib/engine/data.ts": [],
+    "src/lib/engine/data/character.ts": []
+  }
+}

@@ -1,11 +1,51 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "b3e01115f698ca09d7c814c52f76da2f26ac63f0",
-  "generatedAt": "2026-07-18T06:13:47.810Z",
+  "gitCommitHash": "40f53148309297d33bcc13b64ee346d0084755d1",
+  "generatedAt": "2026-07-18T14:01:20.642Z",
   "files": {
+    ".fallowrc.json": {
+      "filePath": ".fallowrc.json",
+      "contentHash": "4feb921c9e532377b46d28959f2f61ce61e1c4e4f2140e1fbc9bd4db149d3ca2",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 57,
+      "hasStructuralAnalysis": true
+    },
+    ".github/workflows/static.yml": {
+      "filePath": ".github/workflows/static.yml",
+      "contentHash": "b2885dcaf88293064330f138bb99982625f33442195a525b52dd5c7f7565ba1b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 54,
+      "hasStructuralAnalysis": true
+    },
+    ".slim/deepwork/ui-upgrade.md": {
+      "filePath": ".slim/deepwork/ui-upgrade.md",
+      "contentHash": "687bd6aa651be75af40512bf91fe76892378a43002aee97524c7ffc664efbc2a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 100,
+      "hasStructuralAnalysis": true
+    },
+    ".understand-anything/.trash-1784380458.94689": {
+      "filePath": ".understand-anything/.trash-1784380458.94689",
+      "contentHash": "58e30519e728181646d04236644918604d4fc66ce6d4002b225456cc97960a4f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 79,
+      "hasStructuralAnalysis": false
+    },
     ".understand-anything/.understandignore": {
       "filePath": ".understand-anything/.understandignore",
-      "contentHash": "d4357e5e43bb3bbbec03f61d8366f23545c00cbcd9d8b0c6f1d82999a45d3944",
+      "contentHash": "184525be80919e39509a769e19c706875b11dd7058f2594237304d50d559fc62",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -13,9 +53,69 @@
       "totalLines": 58,
       "hasStructuralAnalysis": false
     },
+    ".understand-anything/config.json": {
+      "filePath": ".understand-anything/config.json",
+      "contentHash": "f6e8837640355e200ed4b900a112b65433dd2248a99cd17493dd066f640d4348",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 2,
+      "hasStructuralAnalysis": true
+    },
+    ".understand-anything/fingerprints.json": {
+      "filePath": ".understand-anything/fingerprints.json",
+      "contentHash": "df7c6390c6907511b567c65952ce0e65a1007f7f93d928bad76a3e1632e0db30",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 4261,
+      "hasStructuralAnalysis": true
+    },
+    ".understand-anything/intermediate/scan-result.json": {
+      "filePath": ".understand-anything/intermediate/scan-result.json",
+      "contentHash": "9b22713ea4f4c236fc438d641ede416440edd34ebcc50a37c7d645a3aab140ad",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 841,
+      "hasStructuralAnalysis": true
+    },
+    ".understand-anything/knowledge-graph.json": {
+      "filePath": ".understand-anything/knowledge-graph.json",
+      "contentHash": "d33f521b1fb0c34002c1315aba46b8aa02bf8a62e2de25796c174829d9213827",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 5086,
+      "hasStructuralAnalysis": true
+    },
+    ".understand-anything/meta.json": {
+      "filePath": ".understand-anything/meta.json",
+      "contentHash": "930582091b60c6c6dc72d196725b803017495f106623c4372a290aaca440eef1",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 7,
+      "hasStructuralAnalysis": true
+    },
+    "AGENTS.md": {
+      "filePath": "AGENTS.md",
+      "contentHash": "b4409d2b7d47a7a7499c77f68f0b3869ed744d4471305c52cc5819fd82a7ae2a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 9,
+      "hasStructuralAnalysis": true
+    },
     "decode_full.mjs": {
       "filePath": "decode_full.mjs",
-      "contentHash": "c2d4981ecfd908589bb49a70965d990029273b7baef04c081576f35715b04f18",
+      "contentHash": "292dd333e2cd77f5da49d18febe45af43ef5c82aebae9862e5635e00d6aff7e0",
       "functions": [
         {
           "name": "getPerk",
@@ -107,22 +207,82 @@
         }
       ],
       "exports": [],
-      "totalLines": 255,
+      "totalLines": 264,
       "hasStructuralAnalysis": true
     },
-    "src/App.svelte": {
-      "filePath": "src/App.svelte",
-      "contentHash": "232d03e82b48b6e12ddb2562db5bbac4161c78b735bd0212ec9f2951b20bc02a",
+    "fallow-output.json": {
+      "filePath": "fallow-output.json",
+      "contentHash": "cc5c40e84358dc5223b9ce34a133786608a2fa046a2add2bcfdf8315fee93ee8",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3700,
+      "totalLines": 783,
+      "hasStructuralAnalysis": true
+    },
+    "fallow-security.json": {
+      "filePath": "fallow-security.json",
+      "contentHash": "0af21361e34ad970477f64e66b08fc6decebec78e39615d2962f4a1d28b77ebe",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1392,
+      "hasStructuralAnalysis": true
+    },
+    "index.html": {
+      "filePath": "index.html",
+      "contentHash": "176ae25b5dcf587015d51ad6bef2da7465b1a5d5f57fffd0ae2178ba153c2008",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 13,
+      "hasStructuralAnalysis": false
+    },
+    "package.json": {
+      "filePath": "package.json",
+      "contentHash": "8e95308ab460a0218db23c5f079359b96a6c1dac147f8c1e216bf0aba909fff8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 29,
+      "hasStructuralAnalysis": true
+    },
+    "README.md": {
+      "filePath": "README.md",
+      "contentHash": "21ebe097ccd0515537e2b9f6cc8ee679dcfeeb8439e5a6cac996131976fef972",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 48,
+      "hasStructuralAnalysis": true
+    },
+    "src/app.css": {
+      "filePath": "src/app.css",
+      "contentHash": "f259fb0a0855bb6d9ad46db6f4fb2f2211ebc8274b63943aa07248206fb80e35",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 108,
+      "hasStructuralAnalysis": false
+    },
+    "src/App.svelte": {
+      "filePath": "src/App.svelte",
+      "contentHash": "d74c42df5d35fdcba1cd139fc66da9ef4441c746465fecc80c9b5ac52fb1afea",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3702,
       "hasStructuralAnalysis": false
     },
     "src/BaseDamageCalc.svelte": {
       "filePath": "src/BaseDamageCalc.svelte",
-      "contentHash": "9a5919ce3836e368e902dcd7a1c5b1eb650344cd120ae5f3bd9bd3c4b5354066",
+      "contentHash": "33ba8afe52df602951fed67e214f8043816c0f2191fd62edae355a1ebddc20ff",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -142,7 +302,7 @@
     },
     "src/BuildSaves.svelte": {
       "filePath": "src/BuildSaves.svelte",
-      "contentHash": "c2bf922367932ca4c6ebdb97aa9e057f04e2bb1e3f1c2f274552fdee6355748b",
+      "contentHash": "5c9fdf2690ae7e64ba217ccc0ff79995d98a4305c456171c6d50bfd5207e39e9",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -152,7 +312,7 @@
     },
     "src/CdrStepsCalc.svelte": {
       "filePath": "src/CdrStepsCalc.svelte",
-      "contentHash": "a38f19495a2d53caae3ca647153702e33ff74c192b8778555afa89a00c1d12bc",
+      "contentHash": "ed6e233a4e172ba829a8a9c706404c65ad3cf680bd893f46b4ece3a72c14e621",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -172,17 +332,37 @@
     },
     "src/DamageAnalyzer.svelte": {
       "filePath": "src/DamageAnalyzer.svelte",
-      "contentHash": "a9aa0ff4c00926c888652dc4c31a6af126d8e21044db5620a54b170decec083a",
+      "contentHash": "e68806eb2dcc066842580ed4701bb04d6819f185f4440aab04eef41def4dcce1",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 6566,
+      "totalLines": 6652,
       "hasStructuralAnalysis": false
+    },
+    "src/data/armors.json": {
+      "filePath": "src/data/armors.json",
+      "contentHash": "4f6bb4ac2a9003794e2999fd908335c98b3f7520de5338e4d16caa1b3333d235",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 174,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/blades.json": {
+      "filePath": "src/data/blades.json",
+      "contentHash": "e3ceeafa96de923a4d4764476f338f7c4a24648eca2ae6fd067801d18697044a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 108,
+      "hasStructuralAnalysis": true
     },
     "src/data/Boost.ts": {
       "filePath": "src/data/Boost.ts",
-      "contentHash": "0a7d49a82a70df8f75a66d407db6dc4f124c67c0be5ec606893e7a9069e20b4a",
+      "contentHash": "b20e37efabc518d767ae8e4839ef03f80d881be21663b6a80817f19d9db72c3a",
       "functions": [
         {
           "name": "calcMinionAbsorptionPotency",
@@ -271,12 +451,12 @@
         "BOOST_DEFS",
         "BOOST_DEF_MAP"
       ],
-      "totalLines": 355,
+      "totalLines": 357,
       "hasStructuralAnalysis": true
     },
     "src/data/BuffData.ts": {
       "filePath": "src/data/BuffData.ts",
-      "contentHash": "7efd8cb0e2c97f646c11dc26b2073163efcfef39ea8a06dbcf00514566b6a28f",
+      "contentHash": "e5fd80bca8a7c3fee7f9f8ba653714969c51dfc98e7f8af25c23fe5822259dd9",
       "functions": [
         {
           "name": "formatDamageTypes",
@@ -500,6 +680,131 @@
           "specifiers": [
             "BASTION_BLESS_MULT"
           ]
+        },
+        {
+          "source": "../lib/constants/buffs",
+          "specifiers": [
+            "BUFF_EFFECT_PER_TENTH",
+            "WHIRLWIND_EFFECT_PER_TENTH",
+            "GLYPH_CONDUIT_EFFECT_PER_TENTH",
+            "DESPAIR_EFFECT_PER_TENTH",
+            "LUMINESCENT_PCT_PER_POTENCY",
+            "RAGE_RUNE_BUFF_POTENCY",
+            "RAGE_RUNE_BUFF_DURATION",
+            "TOAD_SLAM_RAGE_POTENCY",
+            "TOAD_SLAM_RAGE_DURATION",
+            "BOUNCE_RUNE_POTENCY",
+            "BOUNCE_RUNE_DURATION",
+            "BEENADE_RUNE_POTENCY",
+            "ANCIENT_CLERIC_SHIELD_POTENCY",
+            "ANCIENT_CLERIC_SHIELD_DURATION",
+            "BOOSTSHROOM_POISON_DURATION",
+            "SPORELING_POISON_DURATION",
+            "THUNDEROUS_CLOAK_POTENCY",
+            "THUNDEROUS_CLOAK_DURATION",
+            "WINTER_WOOF_SHATTER_POTENCY",
+            "WINTER_WOOF_SHATTER_DURATION",
+            "GLACIAL_SNAPPER_SLOWNESS_POTENCY",
+            "GLACIAL_SNAPPER_SLOWNESS_DURATION",
+            "GLACIAL_SNAPPER_BLEED_DURATION",
+            "CACITROPS_BLEED_DURATION",
+            "BRAINBLAST_BURN_DURATION",
+            "BRAINBLAST_STICKY_POTENCY",
+            "BRAINBLAST_STICKY_DURATION",
+            "HEX_WEB_STICKY_POTENCY",
+            "HEX_WEB_STICKY_DURATION",
+            "BASIC_DEBUFF_POTENCY",
+            "BASIC_DEBUFF_DURATION",
+            "BASIC_SHATTER_POTENCY",
+            "BASIC_SLOWNESS_POTENCY",
+            "BASIC_WEAKNESS_POTENCY",
+            "WARRIOR_STOMP_RAGE_POTENCY",
+            "WARRIOR_STOMP_RAGE_DURATION",
+            "WARRIOR_STOMP_TAUNT_POTENCY",
+            "WARRIOR_STOMP_TAUNT_DURATION",
+            "JAVELIN_SLOWNESS_DURATION",
+            "LIGHTNING_CLOAK_DURATION_WA",
+            "CURSED_GROUND_WEAKNESS_POTENCY",
+            "CURSED_GROUND_WEAKNESS_DURATION",
+            "TRUE_BALANCE_POTENCY_COEFF",
+            "TRUE_BALANCE_REGEN_DURATION_BASE",
+            "TRUE_BALANCE_TAILWIND_DURATION_BASE",
+            "TRUE_BALANCE_REINFORCE_POTENCY_BASE",
+            "TRUE_BALANCE_RAGE_DURATION_BASE",
+            "TRUE_BALANCE_INSPIRED_DURATION_BASE",
+            "PERFECTION_POTENCY_PER_AMOUNT",
+            "BOUNCE_MOMENTUM_BUFF_POTENCY",
+            "BOUNCE_MOMENTUM_DURATION_PER_AMOUNT",
+            "TOADZERKER_BUFF_POTENCY",
+            "TOADZERKER_BUFF_DURATION",
+            "IRON_BOUNCE_DURATION_BASE",
+            "IRON_BOUNCE_DURATION_PER_AMOUNT",
+            "SPRINGBLAST_BUFF_POTENCY_PER_AMOUNT",
+            "SPRINGBLAST_BUFF_DURATION_BASE",
+            "SPRINGBLAST_BUFF_DURATION_PER_AMOUNT",
+            "WRATHFUL_CRITS_POTENCY_PER_AMOUNT",
+            "WRATHFUL_CRITS_DURATION_BASE",
+            "WRATHFUL_CRITS_DURATION_PER_AMOUNT",
+            "BLOOD_LUST_POTENCY_PER_AMOUNT",
+            "BLOOD_LUST_DURATION_PER_AMOUNT",
+            "LUMINESCENT_BUFF_POTENCY_PER_AMOUNT",
+            "LUMINESCENT_BUFF_DURATION",
+            "BEASTIAL_RAGE_POTENCY_PER_AMOUNT",
+            "BEASTIAL_RAGE_DURATION",
+            "VASSALS_CROAK_MAX_SUMMONS_BASE",
+            "VASSALS_CROAK_RAGE_DURATION",
+            "IRON_SLAYER_POTENCY_PER_AMOUNT",
+            "IRON_SLAYER_DURATION",
+            "BASTION_REGEN_POTENCY",
+            "BASTION_REINFORCE_POTENCY",
+            "BASTION_RATE_PER_AMOUNT",
+            "BASTION_BUFF_DURATION",
+            "AIR_PRESSURE_BUFF_POTENCY_PER_AMOUNT",
+            "AIR_PRESSURE_BUFF_DURATION",
+            "APOLLO_TAUNT_POTENCY",
+            "APOLLO_TAUNT_DURATION",
+            "VALOR_TAUNT_POTENCY",
+            "VALOR_TAUNT_DURATION",
+            "CHANNELED_REINFORCE_POTENCY",
+            "CHANNELED_REINFORCE_DURATION",
+            "GLADIATORIAL_RAGE_POTENCY",
+            "GLADIATORIAL_RAGE_DURATION",
+            "GLYPH_CONDUIT_POTENCY_PER_AMOUNT",
+            "GLYPH_CONDUIT_DURATION_MULT",
+            "ROARING_WEAKNESS_POTENCY",
+            "ROARING_SHATTER_POTENCY",
+            "ROARING_ANTI_HEAL_POTENCY",
+            "ROARING_DEBUFF_DURATION",
+            "STORM_REND_POTENCY_PER_AMOUNT",
+            "STORM_REND_DURATION",
+            "EROSION_POTENCY_BASE",
+            "EROSION_POTENCY_PER_AMOUNT",
+            "EROSION_DURATION",
+            "QUICKDRAW_POTENCY_PER_AMOUNT",
+            "QUICKDRAW_DURATION",
+            "TAILWIND_BUFF_POTENCY",
+            "TAILWIND_BUFF_DURATION",
+            "TOXIN_TRANSFER_DURATION_EXTRA",
+            "GROUNDED_DESPAIR_POTENCY_PER_AMOUNT",
+            "GROUNDED_DESPAIR_DURATION_PER_AMOUNT",
+            "BOUNCE_DURATION_BASE",
+            "BOUNCE_DURATION_PER_STACK",
+            "MOD_GLADIATORIAL_POTENCY",
+            "MOD_MAGE_RAGE_POTENCY",
+            "MOD_OCEANS_RAGE_POTENCY",
+            "MOD_SLAYER_RAGE_POTENCY",
+            "MOD_SLAYER_WEAKNESS_POTENCY",
+            "MOD_IRON_SLAYER_POTENCY",
+            "MOD_IRON_SLAYER_DURATION",
+            "MOD_FURY_DURATION",
+            "MOD_TAILWIND_POTENCY",
+            "MOD_WIND_WALKER_DURATION_DIVISOR",
+            "MOD_SLOW_LEAK_DURATION",
+            "ENDLESS_DESPAIR_POTENCY_PER_STACK",
+            "ENDLESS_DESPAIR_FLAT_BONUS",
+            "ENDLESS_DESPAIR_DURATION_PER_STACK",
+            "STORED_CORRUPTION_DURATION_PER_STACK"
+          ]
         }
       ],
       "exports": [
@@ -519,7 +824,7 @@
         "calcBuffEffect",
         "formatPerkDescription"
       ],
-      "totalLines": 1793,
+      "totalLines": 1848,
       "hasStructuralAnalysis": true
     },
     "src/data/cdr.ts": {
@@ -555,14 +860,24 @@
     },
     "src/data/debuffCombatEffects.ts": {
       "filePath": "src/data/debuffCombatEffects.ts",
-      "contentHash": "2915db821cf9e4aa9bb12c8c1cddd0dc4badf4e23b3af8df521cacf0527733f9",
+      "contentHash": "dd779fc32e5b3d30662b12c20f400b8cf3e9d15fecaae1c180ea286141eed597",
       "functions": [],
       "classes": [],
-      "imports": [],
+      "imports": [
+        {
+          "source": "../lib/constants/debuff-effects",
+          "specifiers": [
+            "DEBUFF_STICKY_DMG_MULT",
+            "DEBUFF_DESPAIR_DISPLAY_DIVISOR",
+            "DEBUFF_DESPAIR_DISPLAY_MULT",
+            "DEBUFF_DESPAIR_DMG_COEFF"
+          ]
+        }
+      ],
       "exports": [
         "DEBUFF_COMBAT_EFFECTS"
       ],
-      "totalLines": 86,
+      "totalLines": 92,
       "hasStructuralAnalysis": true
     },
     "src/data/defensivePerks.ts": {
@@ -639,7 +954,7 @@
     },
     "src/data/DoTDamage.ts": {
       "filePath": "src/data/DoTDamage.ts",
-      "contentHash": "4c6a428bc734777a69c6052f9de0df6a8d1f445ad870768482fa32bc6aa337c1",
+      "contentHash": "51db9be99ddcb3a1468b1da446ad3e1522e2f69e6142b972188afadb9f825736",
       "functions": [
         {
           "name": "getDotBase",
@@ -690,7 +1005,19 @@
         }
       ],
       "classes": [],
-      "imports": [],
+      "imports": [
+        {
+          "source": "../lib/constants/dot-damage",
+          "specifiers": [
+            "DOT_BASE_DAMAGE",
+            "DOT_INFLICTION_DIVISOR",
+            "DOT_POTENCY_POWER_CAP",
+            "DOT_ROUND_FACTOR",
+            "DOT_BUILDER_TO_GAME",
+            "DOT_SLOW_MULT_PER_SECOND"
+          ]
+        }
+      ],
       "exports": [
         "DOT_TYPE_LIST",
         "DOT_SCALINGS",
@@ -701,7 +1028,7 @@
         "calcCausticSlow",
         "toGamePotency"
       ],
-      "totalLines": 89,
+      "totalLines": 91,
       "hasStructuralAnalysis": true
     },
     "src/data/draconicBuffs.ts": {
@@ -916,9 +1243,59 @@
       "totalLines": 105,
       "hasStructuralAnalysis": true
     },
+    "src/data/enchantments.json": {
+      "filePath": "src/data/enchantments.json",
+      "contentHash": "d165d40401611b0d8a4fcddcbdd2a02dc5efdcf85a27c21938054086d66a3e2c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 53,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/essences.json": {
+      "filePath": "src/data/essences.json",
+      "contentHash": "a2a34cf64d4fd0f988a902334c587d2a8ad4781dbeeb560d8141c6cb817df6f9",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 107,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/gloves.json": {
+      "filePath": "src/data/gloves.json",
+      "contentHash": "36eb67d26dc2ab2523595f4e59bf15920bf049aa7ad1be5cfbf6e678ace2f56b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 24,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/guilds.json": {
+      "filePath": "src/data/guilds.json",
+      "contentHash": "e072a14ed58c0824aee98fe98a55543d1569a87ca26aae827d10d67e19980190",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 57,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/handles.json": {
+      "filePath": "src/data/handles.json",
+      "contentHash": "fc0d9cfc687ba6e3daf23fc236d56e940a2bcb8b180df9a15fc56d62716b43c2",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 105,
+      "hasStructuralAnalysis": true
+    },
     "src/data/HealBoost.ts": {
       "filePath": "src/data/HealBoost.ts",
-      "contentHash": "5a5568e63a9dc18af726ec16dc65af8b7dd63c4970b4b47bd8e09789d1bb67df",
+      "contentHash": "8ae4f5cbefb27aa0776fc1a7aedaa5427c5c7bfc1755121bc7e5176ef4710011",
       "functions": [
         {
           "name": "calculateHealBoost",
@@ -1002,7 +1379,7 @@
     },
     "src/data/perkAutoDebuffs.ts": {
       "filePath": "src/data/perkAutoDebuffs.ts",
-      "contentHash": "3ab5e8493ec6c48ddbce9f5646fb38223a60b92dabe1eea1da52ad86dae3e140",
+      "contentHash": "81a1105865e8d8582bfc187e74207e8964ca1e3999e57d006bfff9eb8a704452",
       "functions": [
         {
           "name": "calcActualHpFillPct",
@@ -1022,7 +1399,7 @@
           ],
           "returnType": "GrantedBuff[]",
           "exported": true,
-          "lineCount": 92
+          "lineCount": 132
         }
       ],
       "classes": [],
@@ -1047,18 +1424,24 @@
             "canProc",
             "ProcCoefficient"
           ]
+        },
+        {
+          "source": "../lib/constants/game",
+          "specifiers": [
+            "calcBaseMaxHP"
+          ]
         }
       ],
       "exports": [
         "calcActualHpFillPct",
         "getAutoDebuffs"
       ],
-      "totalLines": 118,
+      "totalLines": 159,
       "hasStructuralAnalysis": true
     },
     "src/data/Perkbasedmg.ts": {
       "filePath": "src/data/Perkbasedmg.ts",
-      "contentHash": "c3b59becb7558fa3b3ac33702713f1ed2318f30ab33fc2e237fafca248e4a9d5",
+      "contentHash": "2cd27a6935c94d670b56a914ff39a53b2736fdffa4fbbcb104f9a153947b162f",
       "functions": [
         {
           "name": "gateThreshold",
@@ -1124,16 +1507,75 @@
             "DRAGON_CLAW_HOLY_HEAL_PER_STACK",
             "DRAGON_CLAW_WATER_HEAL_BASE",
             "DRAGON_CLAW_WATER_HEAL_PER_STACK",
+            "DRAGON_CLAW_POISE_DAMAGE",
             "DRAGON_BUBBLE_BASE_DAMAGE",
             "DRAGON_BUBBLE_DAMAGE_PER_STACK",
             "DRAGON_BUBBLE_HOLY_HEAL_BASE",
             "DRAGON_BUBBLE_HOLY_HEAL_PER_STACK",
             "DRAGON_BUBBLE_WATER_HEAL_BASE",
             "DRAGON_BUBBLE_WATER_HEAL_PER_STACK",
+            "DRAGON_BUBBLE_POISE_DAMAGE",
             "BELLOWING_EMBER_HP_GATE_THRESHOLD",
             "BELLOWING_EMBER_HP_GATE_PER_STACK",
             "SPORE_BURST_BASE",
-            "SPORE_BURST_POTENCY_MULT"
+            "SPORE_BURST_POTENCY_MULT",
+            "SPORE_BURST_ROUND",
+            "SPRINGBLAST_BASE_HIT",
+            "SPRINGBLAST_PER_STACK_HIT",
+            "SPRINGBLAST_MULT_PER_STACK",
+            "SPRINGBLAST_DENOM_HALF",
+            "SPRINGBLAST_ROUND",
+            "BASIC_SPIRIT_BASE_DMG",
+            "BASIC_SPIRIT_HITS",
+            "BUNI_SPIRIT_BASE_DMG",
+            "BUNI_SPIRIT_HITS",
+            "MAGELING_SPIRIT_BASE_DMG",
+            "TOADZERKER_SPIRIT_BASE_DMG",
+            "DIRE_BUNI_SPIRIT_BASE_DMG",
+            "VOID_ROOT_SPIRIT_BASE_DMG",
+            "VOID_ROOT_SPIRIT_HITS",
+            "BOUNCE_MOMENTUM_BASE_DMG",
+            "BOUNCE_MOMENTUM_DMG_PER_STACK",
+            "PROTECTOR_SPIRIT_BASE_DMG",
+            "PROTECTOR_SPIRIT_DMG_PER_STACK",
+            "PROTECTOR_SPIRIT_HP_GATE",
+            "PROTECTOR_SPIRIT_ALWAYS_ACTIVE_AT",
+            "AIR_PRESSURE_DMG_PER_STACK",
+            "AIR_BARRIER_DMG_PER_STACK",
+            "APOLLO_BOOST_BASE",
+            "APOLLO_BOOST_SUB_BASE",
+            "APOLLO_BOOST_PER_STACK",
+            "APOLLO_BOOST_HITS_BASE",
+            "APOLLO_BOOST_HITS_PER_STACK",
+            "APOLLO_BOOST_TAUNT_DURATION",
+            "ROARING_HEADS_BASE_DMG",
+            "ROARING_HEADS_DMG_PER_STACK",
+            "BARBED_FLURRY_BASE_DMG",
+            "BARBED_FLURRY_DMG_PER_STACK",
+            "HONEY_ARTS_BASE_DMG",
+            "HONEY_ARTS_DMG_PER_STACK",
+            "HONEY_ARTS_STICKY_DURATION",
+            "SICKNESS_BASE_DMG",
+            "SICKNESS_DMG_PER_STACK",
+            "MELTING_SLIME_BASE_DMG",
+            "MELTING_SLIME_FIRE_SCALE_BASE",
+            "MELTING_SLIME_FIRE_SCALE_PER_STACK",
+            "MELTING_SLIME_EARTH_SCALE_BASE",
+            "MELTING_SLIME_EARTH_SCALE_PER_STACK",
+            "WHIRLWIND_BASE_DMG",
+            "WHIRLWIND_DMG_PER_STACK",
+            "VOLATILE_SHELL_BASE_DMG",
+            "VOLATILE_SHELL_DMG_PER_STACK",
+            "VOLATILE_SHELL_POISON_DURATION",
+            "ROYAL_FINISHER_BASE_DMG",
+            "ROYAL_FINISHER_DMG_PER_STACK",
+            "GROUNDED_DESPAIR_BASE_DMG",
+            "GROUNDED_DESPAIR_DMG_PER_STACK",
+            "ECHO_INCINERATION_BASE_DMG",
+            "ECHO_INCINERATION_DMG_PER_STACK",
+            "VENOM_SPITTER_BASE_DMG",
+            "VENOM_SPITTER_DMG_PER_STACK",
+            "VENOM_SPITTER_HIT_DIVISOR"
           ]
         }
       ],
@@ -1146,12 +1588,22 @@
         "calcSpringblastBaseDamage",
         "PERK_DMG_DEFS"
       ],
-      "totalLines": 645,
+      "totalLines": 708,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/perks.json": {
+      "filePath": "src/data/perks.json",
+      "contentHash": "2d1b486e50f1fafa76bee1537769db9affd9d4be64248ad2dc20ec64e9a84ed7",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3689,
       "hasStructuralAnalysis": true
     },
     "src/data/procCoefficients.ts": {
       "filePath": "src/data/procCoefficients.ts",
-      "contentHash": "7b3a881c201a07a36c5506ebc22d26fb9490362c8c1efdc9e2e69009bd1b015a",
+      "contentHash": "86449947aa44b8f3a63f498d2d1cb1614de8f2d46f5d87620cbafe376b57a1f3",
       "functions": [],
       "classes": [],
       "imports": [
@@ -1231,9 +1683,29 @@
       "totalLines": 45,
       "hasStructuralAnalysis": true
     },
+    "src/data/races.json": {
+      "filePath": "src/data/races.json",
+      "contentHash": "c521d5b06b63e12359fe996496690dc6bfe8ea821996403877f81cffe0be7375",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 13,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/rings.json": {
+      "filePath": "src/data/rings.json",
+      "contentHash": "b670f99db7239663cf364be89cde1bfa6ef615d083e06fb50debe2be081970d5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 37,
+      "hasStructuralAnalysis": true
+    },
     "src/data/Runebasedmg.ts": {
       "filePath": "src/data/Runebasedmg.ts",
-      "contentHash": "acc9c5d33d9e32001c191e72495d8a41967f1c9e9595d6515aa46c67b0806e8a",
+      "contentHash": "e64d0b5c776d1426ca62d5e2b27d30c6a4fe23bcecfde88e9205df82c8a3dcf2",
       "functions": [
         {
           "name": "calculateRuneHealScaling",
@@ -1266,12 +1738,56 @@
           "specifiers": [
             "calcMaxSummonCount"
           ]
+        },
+        {
+          "source": "../lib/constants/rune-base-damage",
+          "specifiers": [
+            "ANCIENT_CLERIC_BASE_DMG",
+            "ANCIENT_CLERIC_SLIDER_MAX",
+            "ANCIENT_CLERIC_SHIELD_BASE",
+            "ANCIENT_CLERIC_SHIELD_PER_VAL",
+            "BEENADE_BASE_DMG",
+            "BEENADE_MAX_POTENCY",
+            "BOOSTSHROOM_BASE_DMG",
+            "THUNDEROUS_CHARGE_BASE_DMG",
+            "SPORELING_TOSS_BASE_DMG",
+            "SPORELING_TOSS_HITS_BASE",
+            "SPORELING_TOSS_SLIDER_MAX",
+            "FOOT_DIVE_BASE_DMG",
+            "CACI_BASE_DMG",
+            "CACI_HITS",
+            "CACITROPS_BASE_DMG",
+            "CACITROPS_HITS",
+            "HEX_WEB_BASE_DMG",
+            "HEX_WEB_HITS",
+            "BRAINBLAST_BASE_DMG",
+            "BRAINBLAST_HITS",
+            "ROCKY_TAIL_BASE_DMG",
+            "ROCKY_TAIL_PROT_SCALE",
+            "ROCKY_TAIL_VS_BASE_RES",
+            "ROCKY_TAIL_VS_PER_LEVEL",
+            "ROCKY_TAIL_VS_DEFAULT_RES",
+            "ROCKY_TAIL_DIVISOR_COEFF",
+            "ROCKY_TAIL_DIVISOR_BASE",
+            "ROCKY_TAIL_HITS_MULT",
+            "ROCKY_TAIL_MIN_HITS"
+          ]
         }
       ],
       "exports": [
         "RUNE_DMG_DEFS"
       ],
-      "totalLines": 200,
+      "totalLines": 201,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/runes.json": {
+      "filePath": "src/data/runes.json",
+      "contentHash": "0b8132f0a933c4fbf6c459f96fb4a1d2470e0b7f51a5a98add3061f1ebd69098",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 43,
       "hasStructuralAnalysis": true
     },
     "src/data/selfDamagePerks.ts": {
@@ -1305,7 +1821,7 @@
     },
     "src/data/stanceOverlays.ts": {
       "filePath": "src/data/stanceOverlays.ts",
-      "contentHash": "1b1cd566aaceadcca378b837f380595a1ee8b2275e421be4d6e32434dc017e58",
+      "contentHash": "d5244f05c8380fec9e747c86eb8b75a04a0f034d5fa4bc88a821f6252e469bb3",
       "functions": [
         {
           "name": "resolveStanceOverlay",
@@ -1327,7 +1843,7 @@
     },
     "src/data/statboost.ts": {
       "filePath": "src/data/statboost.ts",
-      "contentHash": "b26e57d5201107e4a046c39ff0e0acdc0a4e56dd1913e048a4ef375b98c6af81",
+      "contentHash": "49e6fb6604de1863f3d074b591311db049e2b5f16c3ea24a6198cf70114505d1",
       "functions": [
         {
           "name": "r",
@@ -1417,18 +1933,46 @@
             "StatKey",
             "PERCENT_STATS"
           ]
+        },
+        {
+          "source": "../lib/constants/stat-conversions",
+          "specifiers": [
+            "WEIGHT_DISTRIBUTION_SPLIT_RATIO",
+            "WEIGHT_DISTRIBUTION_MULTIPLIER",
+            "QUICK_WITTED_CONVERSION",
+            "WHIRL_FOOT_CONVERSION",
+            "CARAPACE_CONVERSION",
+            "EXTRA_LAYERS_MULT",
+            "FROZEN_HEART_CONVERSION",
+            "IMMOVABLE_MULT",
+            "RIGHTED_WRONGS_BASE_COEFF",
+            "RIGHTED_WRONGS_TENACITY_WEIGHT",
+            "RIGHTED_WRONGS_OFFENSE_WEIGHT",
+            "RIGHTED_WRONGS_SPEED_FRACTION",
+            "ROCKY_BODY_CONVERSION",
+            "SPELLSHIELD_CONVERSION",
+            "STRONG_TIDES_CONVERSION",
+            "SWIFT_GUARD_CONVERSION",
+            "TRUE_BALANCE_STAT_MULT",
+            "RAWNY_CONVERSION",
+            "RAWNY_MAX_CAP",
+            "ROARING_HEADINGS_WARDING_SUB",
+            "LUCKY_WARDING_SUB",
+            "LUCKY_PROTECTION_SUB",
+            "LUCKY_TENACITY_SUB"
+          ]
         }
       ],
       "exports": [
         "OFFENSIVE_BOOSTS",
         "applyStatBoostPerks"
       ],
-      "totalLines": 221,
+      "totalLines": 243,
       "hasStructuralAnalysis": true
     },
     "src/data/SummonData.ts": {
       "filePath": "src/data/SummonData.ts",
-      "contentHash": "4921cf5d68ad5824882c3a74cf1b2abcaf9014d1bc0ac9b227f3f3ba6e54571f",
+      "contentHash": "e6af074a1da11d964a9726f375ddf77cbbdb91c09bc1cda4a4f50058227e9141",
       "functions": [
         {
           "name": "calcSummonStat",
@@ -1452,19 +1996,26 @@
         }
       ],
       "classes": [],
-      "imports": [],
+      "imports": [
+        {
+          "source": "../lib/constants",
+          "specifiers": [
+            "MAX_LEVEL"
+          ]
+        }
+      ],
       "exports": [
         "calcSummonStat",
         "calcMaxSummonCount",
         "SUMMON_MAP",
         "WA_SUMMON_MAP"
       ],
-      "totalLines": 82,
+      "totalLines": 84,
       "hasStructuralAnalysis": true
     },
     "src/data/TypedDmgBoost.ts": {
       "filePath": "src/data/TypedDmgBoost.ts",
-      "contentHash": "66545a09ca3b788bf8cbf23d01b6dd39fd89d3711b2f28610d3721eb3520c01d",
+      "contentHash": "83d16fc856e46f66a604a18d6c0dcbe5db64cced5d0b09eec7c8852b94a64b07",
       "functions": [
         {
           "name": "getMaxBuffPotency",
@@ -1494,12 +2045,18 @@
           "specifiers": [
             "GrantedBuff"
           ]
+        },
+        {
+          "source": "../lib/constants/damage-types",
+          "specifiers": [
+            "ALL_DMG_TYPES"
+          ]
         }
       ],
       "exports": [
         "calcTypedDmgBoosts"
       ],
-      "totalLines": 137,
+      "totalLines": 138,
       "hasStructuralAnalysis": true
     },
     "src/data/weapon base dmg.ts": {
@@ -1678,7 +2235,7 @@
     },
     "src/DmgTotalTooltip.svelte": {
       "filePath": "src/DmgTotalTooltip.svelte",
-      "contentHash": "db9dfa40381e63c60018df6a675dca0279dd878570bed04be8c3fbc945f2f317",
+      "contentHash": "af49f64150e1654efb90657827d752dc7f152768c613218de06238b9b7341404",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -1718,17 +2275,17 @@
     },
     "src/LevelBar.svelte": {
       "filePath": "src/LevelBar.svelte",
-      "contentHash": "d0bab89f5a2598a5c2929f64a71f75ad48d075128af22a5acf7f298cd0c5cf4f",
+      "contentHash": "9bfdfb1ad6e10bc17a1669db66e7eaa5ba4b9778f7650cb56ece4795051437e1",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 418,
+      "totalLines": 412,
       "hasStructuralAnalysis": false
     },
     "src/lib/AppHeader.svelte": {
       "filePath": "src/lib/AppHeader.svelte",
-      "contentHash": "9785f13ed9c09ebab988a2b31b25967cabf040b0a10bf80d9053d52a737ac74e",
+      "contentHash": "e4ec3f30664b123e7870a32f5da8886b44737530f36be768c815f33c5ace84c0",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -1748,7 +2305,7 @@
     },
     "src/lib/constants/boosts.ts": {
       "filePath": "src/lib/constants/boosts.ts",
-      "contentHash": "1a43f7e6bbc8d7f50f7244c4adc149620fcc6ca262cb11e2b06b280a379a6c35",
+      "contentHash": "673a64347cf492bce02e939a22ab03346fa57441d1a61c1f21760c1d64ff566b",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -1803,7 +2360,7 @@
     },
     "src/lib/constants/buffs.ts": {
       "filePath": "src/lib/constants/buffs.ts",
-      "contentHash": "b477a79818979157679b15faec8eba36a98a35abd77748910903c2d43ee2483b",
+      "contentHash": "954a3944bc007fc89685a8898df737bafb1cab66c6b0626c8429db26cfdeb509",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -1934,7 +2491,7 @@
     },
     "src/lib/constants/cdr.ts": {
       "filePath": "src/lib/constants/cdr.ts",
-      "contentHash": "fce4da83b20c52d5f05adfe277a6a2603b2af861f799d2ec97fb77501a30e128",
+      "contentHash": "a2f904d953024a9ce3f5ec8f59ec4eba5a6f5a5feff39492f9cb13339550f77c",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -1958,7 +2515,7 @@
     },
     "src/lib/constants/damage-types.ts": {
       "filePath": "src/lib/constants/damage-types.ts",
-      "contentHash": "1e1ca321e5d614969e9485b150c632153a7d8aff418da6479e433c4db9b6ba82",
+      "contentHash": "f81f97c0b3b58dc49320c439c2d9f86403fc2cb9fd1ac975989be0cb1ec8e76e",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -1968,14 +2525,19 @@
         "DEF_INHERITANCE",
         "PHYSICAL_INHERITED_TYPES",
         "MAGIC_INHERITED_TYPES",
-        "FALLBACK_DMG_COLOR"
+        "DMG_TYPE_COLORS",
+        "DMG_TYPE_PRIORITY",
+        "DEFAULT_DMG_TYPE",
+        "FALLBACK_DMG_COLOR",
+        "ALL_DMG_TYPES",
+        "TRACKED_TYPES_WITH_TRUE"
       ],
-      "totalLines": 31,
+      "totalLines": 42,
       "hasStructuralAnalysis": true
     },
     "src/lib/constants/debuff-effects.ts": {
       "filePath": "src/lib/constants/debuff-effects.ts",
-      "contentHash": "4ea418273fb512f7ad0d181d3226c5b98f41c73fb517502b75e79a0f11fdc7a7",
+      "contentHash": "d307a2fecab2134302c07edc5bf5e1a480441b9d3ac625eccf4e2a4f49457c11",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -1993,7 +2555,7 @@
     },
     "src/lib/constants/defensive.ts": {
       "filePath": "src/lib/constants/defensive.ts",
-      "contentHash": "aaa6d57a349240b5c816a42cc922521c124e1be9096e28b1ad9542df84e76dbe",
+      "contentHash": "976518b1ee699d062f3d7f9bba2a52cb08f4f2d26ae21a35820be3f1d471e8c4",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2022,7 +2584,7 @@
     },
     "src/lib/constants/dot-damage.ts": {
       "filePath": "src/lib/constants/dot-damage.ts",
-      "contentHash": "4ed853209427b9643e67562950d4c29415034bc79b41aabcc7dfa80161a0cd71",
+      "contentHash": "5323da4d58b80ca8b16e7604e7b4a3d462c0e26cb4af758c7e42c89da7132f11",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2047,7 +2609,7 @@
     },
     "src/lib/constants/draconic-colors.ts": {
       "filePath": "src/lib/constants/draconic-colors.ts",
-      "contentHash": "1b2e6b83623a0d71a9576f2156cdf999e5b0d22bfd52211d48e47a8259f663dc",
+      "contentHash": "d6efde4ce487f1e23a89fcedf646dcb62bcf1fddf851799fc2c1347cba19f8a5",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2070,7 +2632,7 @@
     },
     "src/lib/constants/draconic.ts": {
       "filePath": "src/lib/constants/draconic.ts",
-      "contentHash": "25dfd044b5f011636e617d83b5bc86fb1a1cdc06c374dcfd7b93f93cd6d3b061",
+      "contentHash": "af91f85f60c05f3cf5edca6406b9bce2db897d7ff73c6a3ffd5773e097745557",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2086,9 +2648,42 @@
       "totalLines": 11,
       "hasStructuralAnalysis": true
     },
+    "src/lib/constants/game.ts": {
+      "filePath": "src/lib/constants/game.ts",
+      "contentHash": "8fbf18a73e6e59c445499149e1e2fab39fcddae0317bfe2f14d3dea8d39b068c",
+      "functions": [
+        {
+          "name": "calcBaseMaxHP",
+          "params": [
+            "level"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "MAX_LEVEL",
+        "DEFAULT_LEVEL",
+        "DEFAULT_HP_FILL",
+        "BASE_HP",
+        "HP_PER_LEVEL",
+        "calcBaseMaxHP",
+        "SAVE_DEBOUNCE_MS",
+        "UNDO_WINDOW_MS",
+        "SEARCH_BLUR_DELAY_MS",
+        "IMPORT_SUCCESS_DISPLAY_MS",
+        "FOCUS_DELAY_MS",
+        "DEFAULT_TOAST_DURATION_MS"
+      ],
+      "totalLines": 26,
+      "hasStructuralAnalysis": true
+    },
     "src/lib/constants/heals.ts": {
       "filePath": "src/lib/constants/heals.ts",
-      "contentHash": "cdd8e3c3d722035dae5c870a5904aec5a507519afa7e2c5747b59cb85e0e6c62",
+      "contentHash": "438ba180cd14c53eb64cdcd105a3af299a154725919484b2d10bbd43f39db25c",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2103,17 +2698,17 @@
     },
     "src/lib/constants/index.ts": {
       "filePath": "src/lib/constants/index.ts",
-      "contentHash": "7106951647297000126b9096fb91dfd6525844b179e5e2a2080ffe78dbd78327",
+      "contentHash": "a458ecfaeaa59fe984f6053de94b01cb90cc82c9a00599a9373cc62b4e4723c8",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 17,
+      "totalLines": 18,
       "hasStructuralAnalysis": true
     },
     "src/lib/constants/perk-base-damage.ts": {
       "filePath": "src/lib/constants/perk-base-damage.ts",
-      "contentHash": "649e23899510bd0231930bf2c19f8d0051c0c9656d95a65b331cc56fd0c9cac4",
+      "contentHash": "3f99faecceaeb9adc8b4ba454f091bc61351d6df28a463ee8115ef89fa6e6977",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2200,7 +2795,7 @@
     },
     "src/lib/constants/perks.ts": {
       "filePath": "src/lib/constants/perks.ts",
-      "contentHash": "d0467ab383561fd5bc2813995e19a53dc34c1e92526e4b015fce73af34906a60",
+      "contentHash": "bec0f444fecdbc1c43bd2a45394d95cb45cbeb6ef601a831f4d80622e4a8089f",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2248,7 +2843,7 @@
     },
     "src/lib/constants/rune-base-damage.ts": {
       "filePath": "src/lib/constants/rune-base-damage.ts",
-      "contentHash": "5ead5902ed310529fd8fe7f1a22fd3a2de0a7ac3c9a4d2f240296d1715cad465",
+      "contentHash": "abf13ef3c3be6cecc9dc5394e308df5147ec7aa329afaa54b8cb9a82e5c4ba7c",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2288,7 +2883,7 @@
     },
     "src/lib/constants/stat-conversions.ts": {
       "filePath": "src/lib/constants/stat-conversions.ts",
-      "contentHash": "ceecb58878ca31c7a95ec50bbd6048cf809572386cde94f7a6fff41a56bc9e7b",
+      "contentHash": "a9405994837536618b5f1188a06f726cae49fcf669d2d150452d1bee91ea188e",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2322,12 +2917,24 @@
     },
     "src/lib/constants/storage.ts": {
       "filePath": "src/lib/constants/storage.ts",
-      "contentHash": "c780ff9db62e462cb52abb6040092371e33a4680580663496ae742548e98113d",
+      "contentHash": "532d6dd2c6bc1b62848ef25627ef3fffba89d02db6f40e47923dbdeb249c3bef",
       "functions": [],
       "classes": [],
-      "imports": [],
+      "imports": [
+        {
+          "source": "./game",
+          "specifiers": [
+            "DEFAULT_LEVEL",
+            "DEFAULT_HP_FILL"
+          ]
+        }
+      ],
       "exports": [
+        "STORAGE_KEY_BUILD",
         "STORAGE_KEY_DEFENSES",
+        "STORAGE_KEY_LEVEL",
+        "STORAGE_KEY_HP_FILL",
+        "STORAGE_KEY_SAVES",
         "BUILD_STATE_DEFAULTS",
         "SAVE_KEY_MAP",
         "SAVE_KEY_UNMAP",
@@ -2336,12 +2943,12 @@
         "MAX_BUILD_SLOTS",
         "CONFIRM_TIMEOUT_MS"
       ],
-      "totalLines": 32,
+      "totalLines": 38,
       "hasStructuralAnalysis": true
     },
     "src/lib/constants/thresholds.ts": {
       "filePath": "src/lib/constants/thresholds.ts",
-      "contentHash": "e6808bd6dacda684fafa64aff0c0eeaf38b910bc79171fe951908d92a3f0abba",
+      "contentHash": "641964b510bf927bc2c52b62d44bb3be504d6090f78fc18409bf8ae56dcf9800",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2355,7 +2962,7 @@
     },
     "src/lib/crit.ts": {
       "filePath": "src/lib/crit.ts",
-      "contentHash": "acb397b7a7473e9c1f6706cddca7ba3e2201efb5062c52d1d9ae539e1f1ae7ed",
+      "contentHash": "3c89b101cf94d3a5449e1e5ed2d2a1427b04e0f07134315c43361aa7e3802fb8",
       "functions": [
         {
           "name": "calcDexterity",
@@ -2592,12 +3199,12 @@
     },
     "src/lib/EnchantSelect.svelte": {
       "filePath": "src/lib/EnchantSelect.svelte",
-      "contentHash": "62e5d33dc1150e50da147bace191da7f20a87acc6f9e6d97963e23f03eefc90f",
+      "contentHash": "b98174ceac2f3f0c2f394622f9b7413b8e092fdb5dfd99dd3c2865a225c7209a",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 467,
+      "totalLines": 468,
       "hasStructuralAnalysis": false
     },
     "src/lib/enchantTooltip.ts": {
@@ -2672,7 +3279,7 @@
     },
     "src/lib/engine/build.ts": {
       "filePath": "src/lib/engine/build.ts",
-      "contentHash": "cb1477226eb0a951243c0cd85b23db1f21c2b4100bdc8f515642bdd64500c6c5",
+      "contentHash": "816f6c91095f859190df793fbe08647b77760d3861317ddec223fece24dca679",
       "functions": [
         {
           "name": "calcCDR",
@@ -2825,7 +3432,7 @@
           ],
           "returnType": "BuildResult",
           "exported": false,
-          "lineCount": 66
+          "lineCount": 73
         },
         {
           "name": "calcBuild",
@@ -2922,6 +3529,13 @@
           ]
         },
         {
+          "source": "../constants",
+          "specifiers": [
+            "MAX_LEVEL",
+            "calcBaseMaxHP"
+          ]
+        },
+        {
           "source": "./data",
           "specifiers": [
             "getRace",
@@ -2963,7 +3577,7 @@
       "exports": [
         "calcBuild"
       ],
-      "totalLines": 522,
+      "totalLines": 530,
       "hasStructuralAnalysis": true
     },
     "src/lib/engine/data.ts": {
@@ -3245,7 +3859,7 @@
     },
     "src/lib/engine/enchant.ts": {
       "filePath": "src/lib/engine/enchant.ts",
-      "contentHash": "b079b5bcf8692d930247b78e7f8f51eed20c57e3efc442755a43c4b0db5d84d8",
+      "contentHash": "5888b7cf95872ee3cf121d74623699fcd8c42310c96371f7c8f4a32ec46ec4be",
       "functions": [
         {
           "name": "applyMod",
@@ -3384,7 +3998,7 @@
         "isExclusiveEnchant",
         "enforceEnchantSlot"
       ],
-      "totalLines": 220,
+      "totalLines": 222,
       "hasStructuralAnalysis": true
     },
     "src/lib/engine/engine.ts": {
@@ -3722,7 +4336,7 @@
     },
     "src/lib/Modal.svelte": {
       "filePath": "src/lib/Modal.svelte",
-      "contentHash": "1385245684437daa0d22a268845442c99fbea2397808866e21ebd2a149cde10e",
+      "contentHash": "76fdd68b8d12fb9cdce4749ee19552165db07345d6f75da3bd57a5c36d41a709",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3732,7 +4346,7 @@
     },
     "src/lib/modals/AccessorySelectModal.svelte": {
       "filePath": "src/lib/modals/AccessorySelectModal.svelte",
-      "contentHash": "b43b29025635c130865175618a3910c8594186d1b43a9ebf45c5bdca208e6638",
+      "contentHash": "55653e8e87c949c0da16b2ebc1cddfd2d2f29046a2e244a423aafbfa01e3b263",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3742,7 +4356,7 @@
     },
     "src/lib/modals/GuildModal.svelte": {
       "filePath": "src/lib/modals/GuildModal.svelte",
-      "contentHash": "eb594dfd7a93ad66309b1080b43f275065739423da06256d2754c8fb7e19d98f",
+      "contentHash": "1eceeb66abdbbbaf1c31964917989fcb43f412de2bee2b27c03a241fd4bbd9a8",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3752,7 +4366,7 @@
     },
     "src/lib/modals/index.ts": {
       "filePath": "src/lib/modals/index.ts",
-      "contentHash": "faef13c11c80c23affea85fa974d851e2808743897a1d4b31bd71b243841280b",
+      "contentHash": "3d990b2111d2f43f7475b10b510e8b58d58cf19b5d08b3eb2b5c96bf40e1cc7b",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3767,7 +4381,7 @@
     },
     "src/lib/modals/RaceModal.svelte": {
       "filePath": "src/lib/modals/RaceModal.svelte",
-      "contentHash": "e0d54bcf902fc132a5b36deba4439bd8c389a565993ca3789cea1d73f7cb25b5",
+      "contentHash": "86343a935ddc41bc1954ab1b4ebd7cbd710ea0b09db5bdf642cf415c4a8f21d0",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3777,7 +4391,7 @@
     },
     "src/lib/modals/WeaponPartModal.svelte": {
       "filePath": "src/lib/modals/WeaponPartModal.svelte",
-      "contentHash": "8209b72654e14e9754a1317daf27c4ff8471f8931872646cc86134c2dbe0da4c",
+      "contentHash": "5275a3b9e567cf706a64edcd7b5d5b5759175508af41c781f4656469a3dc81d6",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3787,7 +4401,7 @@
     },
     "src/lib/StatFilterShared.svelte": {
       "filePath": "src/lib/StatFilterShared.svelte",
-      "contentHash": "59e8363f82cac109a191e80ece7a27697974a477a8d82abb375bca19e647216f",
+      "contentHash": "701db34f08217c9ed852d493db5e9552b9b3b533f9ebb8377b3f583329dc61cf",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3833,7 +4447,7 @@
     },
     "src/lib/store.ts": {
       "filePath": "src/lib/store.ts",
-      "contentHash": "0312585c4cd88485e12d1303f935ff121fc48d7141dd1520464c4728061f45a5",
+      "contentHash": "eba82a5b938862c350d94010f3843f0d352e9f9f2e042ff09825f3c23da72faf",
       "functions": [
         {
           "name": "loadBuild",
@@ -3891,6 +4505,15 @@
             "races",
             "enforceEnchantSlot"
           ]
+        },
+        {
+          "source": "./constants",
+          "specifiers": [
+            "STORAGE_KEY_BUILD",
+            "DEFAULT_LEVEL",
+            "DEFAULT_HP_FILL",
+            "SAVE_DEBOUNCE_MS"
+          ]
         }
       ],
       "exports": [
@@ -3900,12 +4523,12 @@
         "clearBuild",
         "setGuild"
       ],
-      "totalLines": 106,
+      "totalLines": 105,
       "hasStructuralAnalysis": true
     },
     "src/lib/stores/toast.ts": {
       "filePath": "src/lib/stores/toast.ts",
-      "contentHash": "5e78f99670316e75bdb2b58ff00c90ea8fb9eded7d16b97157cd4e6e8665e102",
+      "contentHash": "d75bb3e406aa7ec5aade9bc5cd87f2511611dfecc7ec93b7c47be6dd031e7f70",
       "functions": [
         {
           "name": "addToast",
@@ -3933,6 +4556,12 @@
           "specifiers": [
             "writable"
           ]
+        },
+        {
+          "source": "../constants",
+          "specifiers": [
+            "DEFAULT_TOAST_DURATION_MS"
+          ]
         }
       ],
       "exports": [
@@ -3940,12 +4569,12 @@
         "addToast",
         "removeToast"
       ],
-      "totalLines": 28,
+      "totalLines": 29,
       "hasStructuralAnalysis": true
     },
     "src/lib/Toast.svelte": {
       "filePath": "src/lib/Toast.svelte",
-      "contentHash": "43cf8dbf781677289590f89bead1e63c501eadf088d0f4bc3d9b487320b05f19",
+      "contentHash": "8b84f2778ce5409999dee1173e84a7705c976978be0953abec95dac5d17ba382",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3955,7 +4584,7 @@
     },
     "src/lib/types.ts": {
       "filePath": "src/lib/types.ts",
-      "contentHash": "fca1e86c38310a05af4fd5c2d8e5bbf8ef742b977fe9a703e4bd38624c8a2b29",
+      "contentHash": "63f5b38d7322ad374754499c8149447dd52dd8c3575cedc470d12486cdfaf69c",
       "functions": [
         {
           "name": "applyUpgrade",
@@ -3999,12 +4628,12 @@
         "DMG_TYPE_PRIORITY",
         "SCALING_TO_BOOST"
       ],
-      "totalLines": 288,
+      "totalLines": 284,
       "hasStructuralAnalysis": true
     },
     "src/lib/uiConstants.ts": {
       "filePath": "src/lib/uiConstants.ts",
-      "contentHash": "95350f3fb496e1b2d3339dd8ba1497c9fdbf31fbcd03fef5387e8ddb20bea5e6",
+      "contentHash": "0bb751d7b0f888fb661462423d07038cfbbfba9abb7ba28031a45af732b00971",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -4160,7 +4789,7 @@
     },
     "src/MountIcon.svelte": {
       "filePath": "src/MountIcon.svelte",
-      "contentHash": "8a4b841b6cfb1ebf371f9b7abefce852b5abf90a899c5d5d54d7333a53fadbc5",
+      "contentHash": "dbf5b5efbefcbd008b51086b9195a662148b0c8109f0954250756e13daf9963c",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -4190,7 +4819,7 @@
     },
     "src/SuggestDrop.svelte": {
       "filePath": "src/SuggestDrop.svelte",
-      "contentHash": "944e5c19d320e6361ae81facaa1d214618e02ebb0bb5f970475287bfa2515d63",
+      "contentHash": "7cddedd8ea87d9089aa1fbec7832a2a09b7b7e51fcebe8f9296545ba59fe9bef",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -4228,9 +4857,59 @@
       "totalLines": 119,
       "hasStructuralAnalysis": false
     },
+    "ts-errors.txt": {
+      "filePath": "ts-errors.txt",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    "tsconfig.app.json": {
+      "filePath": "tsconfig.app.json",
+      "contentHash": "06967167f399f17ca8f8c63d00f1f892b342edf8f6a4b8902a5ae0cefd99fa19",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 21,
+      "hasStructuralAnalysis": true
+    },
+    "tsconfig.json": {
+      "filePath": "tsconfig.json",
+      "contentHash": "b607a51c8c90040fd6c3dd9b12a0a72c089c9d19375b1c35c61b8f6f0927b9f0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3,
+      "hasStructuralAnalysis": true
+    },
+    "tsconfig.node.json": {
+      "filePath": "tsconfig.node.json",
+      "contentHash": "e0f1936992f77a707102795e8ea311ae74cb54de87b221bb32b44055af66ff7e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 25,
+      "hasStructuralAnalysis": true
+    },
+    "vercel.json": {
+      "filePath": "vercel.json",
+      "contentHash": "0c020311d5fcb278016e2035e6dc7b7913debf897c54bb4fe617ef6f877d9295",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 34,
+      "hasStructuralAnalysis": true
+    },
     "vite.config.ts": {
       "filePath": "vite.config.ts",
-      "contentHash": "20410f0d06a0bd29bda15cc9940fa3c7e4ec9263fc47946a90ed64a69578366c",
+      "contentHash": "1e409a97c4debcb06e723ad3dca5583d27b3b2ae6c1290837769eb4b5f0df281",
       "functions": [],
       "classes": [],
       "imports": [
@@ -4254,7 +4933,7 @@
         }
       ],
       "exports": [],
-      "totalLines": 55,
+      "totalLines": 57,
       "hasStructuralAnalysis": true
     }
   }

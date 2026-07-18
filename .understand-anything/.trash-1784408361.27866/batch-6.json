@@ -1,0 +1,828 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/data/Perkbasedmg.ts",
+      "type": "file",
+      "name": "Perkbasedmg.ts",
+      "filePath": "src/data/Perkbasedmg.ts",
+      "summary": "typescript file with 708 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/data/Perkbasedmg.ts:gateThreshold",
+      "type": "function",
+      "name": "gateThreshold",
+      "filePath": "src/data/Perkbasedmg.ts",
+      "summary": "Function gateThreshold (lines 103-107)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/Perkbasedmg.ts:isHpGateActive",
+      "type": "function",
+      "name": "isHpGateActive",
+      "filePath": "src/data/Perkbasedmg.ts",
+      "summary": "Function isHpGateActive (lines 109-114)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/Perkbasedmg.ts:calcSpringblastBaseDamage",
+      "type": "function",
+      "name": "calcSpringblastBaseDamage",
+      "filePath": "src/data/Perkbasedmg.ts",
+      "summary": "Function calcSpringblastBaseDamage (lines 175-177)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/data/procCoefficients.ts",
+      "type": "file",
+      "name": "procCoefficients.ts",
+      "filePath": "src/data/procCoefficients.ts",
+      "summary": "typescript file with 67 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/data/raceEffects.ts",
+      "type": "file",
+      "name": "raceEffects.ts",
+      "filePath": "src/data/raceEffects.ts",
+      "summary": "typescript file with 45 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/data/raceEffects.ts:getActiveRaceEffect",
+      "type": "function",
+      "name": "getActiveRaceEffect",
+      "filePath": "src/data/raceEffects.ts",
+      "summary": "Function getActiveRaceEffect (lines 24-26)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/raceEffects.ts:getOrkTenacityBuffs",
+      "type": "function",
+      "name": "getOrkTenacityBuffs",
+      "filePath": "src/data/raceEffects.ts",
+      "summary": "Function getOrkTenacityBuffs (lines 30-38)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/raceEffects.ts:calcOrkTenacityBonus",
+      "type": "function",
+      "name": "calcOrkTenacityBonus",
+      "filePath": "src/data/raceEffects.ts",
+      "summary": "Function calcOrkTenacityBonus (lines 40-45)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/data/Runebasedmg.ts",
+      "type": "file",
+      "name": "Runebasedmg.ts",
+      "filePath": "src/data/Runebasedmg.ts",
+      "summary": "typescript file with 200 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/Runebasedmg.ts:calculateRuneHealScaling",
+      "type": "function",
+      "name": "calculateRuneHealScaling",
+      "filePath": "src/data/Runebasedmg.ts",
+      "summary": "Function calculateRuneHealScaling (lines 44-66)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/data/selfDamagePerks.ts",
+      "type": "file",
+      "name": "selfDamagePerks.ts",
+      "filePath": "src/data/selfDamagePerks.ts",
+      "summary": "typescript file with 83 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/data/selfDamagePerks.ts:calcSelfDamage",
+      "type": "function",
+      "name": "calcSelfDamage",
+      "filePath": "src/data/selfDamagePerks.ts",
+      "summary": "Function calcSelfDamage (lines 53-83)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/data/stanceOverlays.ts",
+      "type": "file",
+      "name": "stanceOverlays.ts",
+      "filePath": "src/data/stanceOverlays.ts",
+      "summary": "typescript file with 59 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/data/stanceOverlays.ts:resolveStanceOverlay",
+      "type": "function",
+      "name": "resolveStanceOverlay",
+      "filePath": "src/data/stanceOverlays.ts",
+      "summary": "Function resolveStanceOverlay (lines 54-59)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/data/statboost.ts",
+      "type": "file",
+      "name": "statboost.ts",
+      "filePath": "src/data/statboost.ts",
+      "summary": "typescript file with 243 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/statboost.ts:r",
+      "type": "function",
+      "name": "r",
+      "filePath": "src/data/statboost.ts",
+      "summary": "Function r (lines 43-45)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/statboost.ts:get",
+      "type": "function",
+      "name": "get",
+      "filePath": "src/data/statboost.ts",
+      "summary": "Function get (lines 47-49)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/statboost.ts:add",
+      "type": "function",
+      "name": "add",
+      "filePath": "src/data/statboost.ts",
+      "summary": "Function add (lines 51-53)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/statboost.ts:sub",
+      "type": "function",
+      "name": "sub",
+      "filePath": "src/data/statboost.ts",
+      "summary": "Function sub (lines 55-57)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/statboost.ts:negMagnitude",
+      "type": "function",
+      "name": "negMagnitude",
+      "filePath": "src/data/statboost.ts",
+      "summary": "Function negMagnitude (lines 59-61)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/statboost.ts:negSum",
+      "type": "function",
+      "name": "negSum",
+      "filePath": "src/data/statboost.ts",
+      "summary": "Function negSum (lines 63-65)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/statboost.ts:finalizeRounding",
+      "type": "function",
+      "name": "finalizeRounding",
+      "filePath": "src/data/statboost.ts",
+      "summary": "Function finalizeRounding (lines 214-223)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/statboost.ts:applyStatBoostPerks",
+      "type": "function",
+      "name": "applyStatBoostPerks",
+      "filePath": "src/data/statboost.ts",
+      "summary": "Function applyStatBoostPerks (lines 225-243)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/data/SummonData.ts",
+      "type": "file",
+      "name": "SummonData.ts",
+      "filePath": "src/data/SummonData.ts",
+      "summary": "typescript file with 84 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/data/SummonData.ts:calcSummonStat",
+      "type": "function",
+      "name": "calcSummonStat",
+      "filePath": "src/data/SummonData.ts",
+      "summary": "Function calcSummonStat (lines 3-5)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/SummonData.ts:calcMaxSummonCount",
+      "type": "function",
+      "name": "calcMaxSummonCount",
+      "filePath": "src/data/SummonData.ts",
+      "summary": "Function calcMaxSummonCount (lines 9-11)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/data/TypedDmgBoost.ts",
+      "type": "file",
+      "name": "TypedDmgBoost.ts",
+      "filePath": "src/data/TypedDmgBoost.ts",
+      "summary": "typescript file with 138 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/TypedDmgBoost.ts:getMaxBuffPotency",
+      "type": "function",
+      "name": "getMaxBuffPotency",
+      "filePath": "src/data/TypedDmgBoost.ts",
+      "summary": "Function getMaxBuffPotency (lines 73-78)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/TypedDmgBoost.ts:calcTypedDmgBoosts",
+      "type": "function",
+      "name": "calcTypedDmgBoosts",
+      "filePath": "src/data/TypedDmgBoost.ts",
+      "summary": "Function calcTypedDmgBoosts (lines 97-138)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/data/weapon base dmg.ts",
+      "type": "file",
+      "name": "weapon base dmg.ts",
+      "filePath": "src/data/weapon base dmg.ts",
+      "summary": "typescript file with 42 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/data/Weaponartcheck.ts",
+      "type": "file",
+      "name": "Weaponartcheck.ts",
+      "filePath": "src/data/Weaponartcheck.ts",
+      "summary": "typescript file with 144 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/Weaponartcheck.ts:passesAtLeastOneScaling",
+      "type": "function",
+      "name": "passesAtLeastOneScaling",
+      "filePath": "src/data/Weaponartcheck.ts",
+      "summary": "Function passesAtLeastOneScaling (lines 32-41)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/Weaponartcheck.ts:meetsScalingReqs",
+      "type": "function",
+      "name": "meetsScalingReqs",
+      "filePath": "src/data/Weaponartcheck.ts",
+      "summary": "Function meetsScalingReqs (lines 43-49)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/Weaponartcheck.ts:meetsStatReqs",
+      "type": "function",
+      "name": "meetsStatReqs",
+      "filePath": "src/data/Weaponartcheck.ts",
+      "summary": "Function meetsStatReqs (lines 51-57)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/Weaponartcheck.ts:buildUnmetStatReqs",
+      "type": "function",
+      "name": "buildUnmetStatReqs",
+      "filePath": "src/data/Weaponartcheck.ts",
+      "summary": "Function buildUnmetStatReqs (lines 59-66)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/Weaponartcheck.ts:buildUnmetScalingReqs",
+      "type": "function",
+      "name": "buildUnmetScalingReqs",
+      "filePath": "src/data/Weaponartcheck.ts",
+      "summary": "Function buildUnmetScalingReqs (lines 68-89)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/Weaponartcheck.ts:checkWA",
+      "type": "function",
+      "name": "checkWA",
+      "filePath": "src/data/Weaponartcheck.ts",
+      "summary": "Function checkWA (lines 91-114)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/Weaponartcheck.ts:getUnmetReqs",
+      "type": "function",
+      "name": "getUnmetReqs",
+      "filePath": "src/data/Weaponartcheck.ts",
+      "summary": "Function getUnmetReqs (lines 116-144)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/data/weaponArts.ts",
+      "type": "file",
+      "name": "weaponArts.ts",
+      "filePath": "src/data/weaponArts.ts",
+      "summary": "typescript file with 509 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:src/data/weaponConditionalBoosts.ts",
+      "type": "file",
+      "name": "weaponConditionalBoosts.ts",
+      "filePath": "src/data/weaponConditionalBoosts.ts",
+      "summary": "typescript file with 46 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/data/weaponConditionalBoosts.ts:getWeaponConditionalBoost",
+      "type": "function",
+      "name": "getWeaponConditionalBoost",
+      "filePath": "src/data/weaponConditionalBoosts.ts",
+      "summary": "Function getWeaponConditionalBoost (lines 30-46)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/DidYouMean.svelte",
+      "type": "file",
+      "name": "DidYouMean.svelte",
+      "filePath": "src/DidYouMean.svelte",
+      "summary": "svelte file with 111 lines",
+      "tags": [
+        "svelte",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/DmgTotalTooltip.svelte",
+      "type": "file",
+      "name": "DmgTotalTooltip.svelte",
+      "filePath": "src/DmgTotalTooltip.svelte",
+      "summary": "svelte file with 175 lines",
+      "tags": [
+        "svelte",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/DraconicAbilityStats.svelte",
+      "type": "file",
+      "name": "DraconicAbilityStats.svelte",
+      "filePath": "src/DraconicAbilityStats.svelte",
+      "summary": "svelte file with 42 lines",
+      "tags": [
+        "svelte",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/EmotionalTracker.svelte",
+      "type": "file",
+      "name": "EmotionalTracker.svelte",
+      "filePath": "src/EmotionalTracker.svelte",
+      "summary": "svelte file with 236 lines",
+      "tags": [
+        "svelte",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/Highlight.svelte",
+      "type": "file",
+      "name": "Highlight.svelte",
+      "filePath": "src/Highlight.svelte",
+      "summary": "svelte file with 16 lines",
+      "tags": [
+        "svelte",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/LevelBar.svelte",
+      "type": "file",
+      "name": "LevelBar.svelte",
+      "filePath": "src/LevelBar.svelte",
+      "summary": "svelte file with 412 lines",
+      "tags": [
+        "svelte",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lib/AppHeader.svelte",
+      "type": "file",
+      "name": "AppHeader.svelte",
+      "filePath": "src/lib/AppHeader.svelte",
+      "summary": "svelte file with 134 lines",
+      "tags": [
+        "svelte",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lib/constants.ts",
+      "type": "file",
+      "name": "constants.ts",
+      "filePath": "src/lib/constants.ts",
+      "summary": "typescript file with 1 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/constants/boosts.ts",
+      "type": "file",
+      "name": "boosts.ts",
+      "filePath": "src/lib/constants/boosts.ts",
+      "summary": "typescript file with 52 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/constants/buffs.ts",
+      "type": "file",
+      "name": "buffs.ts",
+      "filePath": "src/lib/constants/buffs.ts",
+      "summary": "typescript file with 147 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lib/constants/cdr.ts",
+      "type": "file",
+      "name": "cdr.ts",
+      "filePath": "src/lib/constants/cdr.ts",
+      "summary": "typescript file with 25 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/constants/damage-types.ts",
+      "type": "file",
+      "name": "damage-types.ts",
+      "filePath": "src/lib/constants/damage-types.ts",
+      "summary": "typescript file with 41 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "function:src/data/Perkbasedmg.ts:gateThreshold",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "function:src/data/Perkbasedmg.ts:isHpGateActive",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "function:src/data/Perkbasedmg.ts:calcSpringblastBaseDamage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/raceEffects.ts",
+      "target": "function:src/data/raceEffects.ts:getActiveRaceEffect",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/raceEffects.ts",
+      "target": "function:src/data/raceEffects.ts:getOrkTenacityBuffs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/raceEffects.ts",
+      "target": "function:src/data/raceEffects.ts:calcOrkTenacityBonus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/Runebasedmg.ts",
+      "target": "function:src/data/Runebasedmg.ts:calculateRuneHealScaling",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/selfDamagePerks.ts",
+      "target": "function:src/data/selfDamagePerks.ts:calcSelfDamage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/stanceOverlays.ts",
+      "target": "function:src/data/stanceOverlays.ts:resolveStanceOverlay",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/statboost.ts",
+      "target": "function:src/data/statboost.ts:r",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/statboost.ts",
+      "target": "function:src/data/statboost.ts:get",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/statboost.ts",
+      "target": "function:src/data/statboost.ts:add",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/statboost.ts",
+      "target": "function:src/data/statboost.ts:sub",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/statboost.ts",
+      "target": "function:src/data/statboost.ts:negMagnitude",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/statboost.ts",
+      "target": "function:src/data/statboost.ts:negSum",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/statboost.ts",
+      "target": "function:src/data/statboost.ts:finalizeRounding",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/statboost.ts",
+      "target": "function:src/data/statboost.ts:applyStatBoostPerks",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/SummonData.ts",
+      "target": "function:src/data/SummonData.ts:calcSummonStat",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/SummonData.ts",
+      "target": "function:src/data/SummonData.ts:calcMaxSummonCount",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/TypedDmgBoost.ts",
+      "target": "function:src/data/TypedDmgBoost.ts:getMaxBuffPotency",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/TypedDmgBoost.ts",
+      "target": "function:src/data/TypedDmgBoost.ts:calcTypedDmgBoosts",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/Weaponartcheck.ts",
+      "target": "function:src/data/Weaponartcheck.ts:passesAtLeastOneScaling",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/Weaponartcheck.ts",
+      "target": "function:src/data/Weaponartcheck.ts:meetsScalingReqs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/Weaponartcheck.ts",
+      "target": "function:src/data/Weaponartcheck.ts:meetsStatReqs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/Weaponartcheck.ts",
+      "target": "function:src/data/Weaponartcheck.ts:buildUnmetStatReqs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/Weaponartcheck.ts",
+      "target": "function:src/data/Weaponartcheck.ts:buildUnmetScalingReqs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/Weaponartcheck.ts",
+      "target": "function:src/data/Weaponartcheck.ts:checkWA",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/Weaponartcheck.ts",
+      "target": "function:src/data/Weaponartcheck.ts:getUnmetReqs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/weaponConditionalBoosts.ts",
+      "target": "function:src/data/weaponConditionalBoosts.ts:getWeaponConditionalBoost",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    }
+  ]
+}

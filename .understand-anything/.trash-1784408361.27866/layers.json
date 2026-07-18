@@ -1,0 +1,191 @@
+[
+  {
+    "id": "layer:root",
+    "name": "Root Configuration",
+    "description": "Project root files including configuration, documentation, and entry points",
+    "nodeIds": [
+      "file:.github/workflows/static.yml",
+      "file:.fallowrc.json",
+      "file:AGENTS.md",
+      "file:README.md",
+      "file:fallow-output.json",
+      "file:fallow-security.json",
+      "file:index.html",
+      "file:package.json",
+      "file:ts-errors.txt",
+      "file:tsconfig.app.json",
+      "file:tsconfig.json",
+      "file:tsconfig.node.json",
+      "file:vercel.json",
+      "file:vite.config.ts"
+    ]
+  },
+  {
+    "id": "layer:src",
+    "name": "Source Root",
+    "description": "Main source directory with entry points and top-level components",
+    "nodeIds": [
+      "file:src/app.css",
+      "file:src/main.ts",
+      "file:src/App.svelte",
+      "file:src/BaseDamageCalc.svelte",
+      "file:src/BuffList.svelte",
+      "file:src/BuildSaves.svelte",
+      "file:src/CdrStepsCalc.svelte",
+      "file:src/CritIcon.svelte",
+      "file:src/DamageAnalyzer.svelte",
+      "file:src/DidYouMean.svelte",
+      "file:src/DmgTotalTooltip.svelte",
+      "file:src/DraconicAbilityStats.svelte",
+      "file:src/EmotionalTracker.svelte",
+      "file:src/Highlight.svelte",
+      "file:src/LevelBar.svelte",
+      "file:src/ModalSearchHeader.svelte",
+      "file:src/MountIcon.svelte",
+      "file:src/ScalingBreakdownRow.svelte",
+      "file:src/StatFilter.svelte",
+      "file:src/SuggestDrop.svelte",
+      "file:src/TagFilter.svelte",
+      "file:src/WeaponStatFilter.svelte",
+      "file:src/WeaponStatsDisplay.svelte"
+    ]
+  },
+  {
+    "id": "layer:data",
+    "name": "Data Layer",
+    "description": "Game data files, definitions, and calculations",
+    "nodeIds": [
+      "file:src/data/armors.json",
+      "file:src/data/blades.json",
+      "file:src/data/enchantments.json",
+      "file:src/data/essences.json",
+      "file:src/data/gloves.json",
+      "file:src/data/guilds.json",
+      "file:src/data/handles.json",
+      "file:src/data/perks.json",
+      "file:src/data/races.json",
+      "file:src/data/rings.json",
+      "file:src/data/runes.json",
+      "file:src/data/Boost.ts",
+      "file:src/data/BuffData.ts",
+      "file:src/data/cdr.ts",
+      "file:src/data/debuffCombatEffects.ts",
+      "file:src/data/defensivePerks.ts",
+      "file:src/data/DoTDamage.ts",
+      "file:src/data/draconicBuffs.ts",
+      "file:src/data/draconicColorEffects.ts",
+      "file:src/data/draconicRunes.ts",
+      "file:src/data/HealBoost.ts",
+      "file:src/data/mountRunes.ts",
+      "file:src/data/perkAutoDebuffs.ts",
+      "file:src/data/Perkbasedmg.ts",
+      "file:src/data/procCoefficients.ts",
+      "file:src/data/raceEffects.ts",
+      "file:src/data/Runebasedmg.ts",
+      "file:src/data/selfDamagePerks.ts",
+      "file:src/data/stanceOverlays.ts",
+      "file:src/data/statboost.ts",
+      "file:src/data/SummonData.ts",
+      "file:src/data/TypedDmgBoost.ts",
+      "file:src/data/weapon base dmg.ts",
+      "file:src/data/Weaponartcheck.ts",
+      "file:src/data/weaponArts.ts",
+      "file:src/data/weaponConditionalBoosts.ts"
+    ]
+  },
+  {
+    "id": "layer:lib",
+    "name": "Library Layer",
+    "description": "Shared utilities, types, and constants",
+    "nodeIds": [
+      "file:src/lib/AppHeader.svelte",
+      "file:src/lib/EnchantSelect.svelte",
+      "file:src/lib/Modal.svelte",
+      "file:src/lib/StatFilterShared.svelte",
+      "file:src/lib/Toast.svelte",
+      "file:src/lib/constants.ts",
+      "file:src/lib/crit.ts",
+      "file:src/lib/damageTypeResolve.ts",
+      "file:src/lib/defense.ts",
+      "file:src/lib/dmgTypes.ts",
+      "file:src/lib/enchantTooltip.ts",
+      "file:src/lib/engine.ts",
+      "file:src/lib/store.ts",
+      "file:src/lib/types.ts",
+      "file:src/lib/uiConstants.ts",
+      "file:src/lib/utils.ts"
+    ]
+  },
+  {
+    "id": "layer:constants",
+    "name": "Constants Layer",
+    "description": "Game constants, configurations, and static data",
+    "nodeIds": [
+      "file:src/lib/constants/boosts.ts",
+      "file:src/lib/constants/buffs.ts",
+      "file:src/lib/constants/cdr.ts",
+      "file:src/lib/constants/damage-types.ts",
+      "file:src/lib/constants/debuff-effects.ts",
+      "file:src/lib/constants/defensive.ts",
+      "file:src/lib/constants/dot-damage.ts",
+      "file:src/lib/constants/draconic-colors.ts",
+      "file:src/lib/constants/draconic.ts",
+      "file:src/lib/constants/game.ts",
+      "file:src/lib/constants/heals.ts",
+      "file:src/lib/constants/index.ts",
+      "file:src/lib/constants/perk-base-damage.ts",
+      "file:src/lib/constants/perks.ts",
+      "file:src/lib/constants/rune-base-damage.ts",
+      "file:src/lib/constants/stat-conversions.ts",
+      "file:src/lib/constants/storage.ts",
+      "file:src/lib/constants/thresholds.ts"
+    ]
+  },
+  {
+    "id": "layer:engine",
+    "name": "Engine Layer",
+    "description": "Core game engine logic and calculations",
+    "nodeIds": [
+      "file:src/lib/engine/_utils.ts",
+      "file:src/lib/engine/build.ts",
+      "file:src/lib/engine/data.ts",
+      "file:src/lib/engine/data/character.ts",
+      "file:src/lib/engine/data/equipment.ts",
+      "file:src/lib/engine/data/weapons.ts",
+      "file:src/lib/engine/enchant.ts",
+      "file:src/lib/engine/engine.ts",
+      "file:src/lib/engine/format.ts",
+      "file:src/lib/engine/shrine.ts",
+      "file:src/lib/engine/weapon.ts"
+    ]
+  },
+  {
+    "id": "layer:modals",
+    "name": "Modals Layer",
+    "description": "Modal dialogs and selection interfaces",
+    "nodeIds": [
+      "file:src/lib/modals/AccessorySelectModal.svelte",
+      "file:src/lib/modals/GuildModal.svelte",
+      "file:src/lib/modals/index.ts",
+      "file:src/lib/modals/RaceModal.svelte",
+      "file:src/lib/modals/WeaponPartModal.svelte"
+    ]
+  },
+  {
+    "id": "layer:stats",
+    "name": "Statistics Layer",
+    "description": "Stat filtering and display utilities",
+    "nodeIds": [
+      "file:src/lib/stats/elementalBoosts.ts",
+      "file:src/lib/stats/filterActions.ts"
+    ]
+  },
+  {
+    "id": "layer:stores",
+    "name": "Stores Layer",
+    "description": "State management and stores",
+    "nodeIds": [
+      "file:src/lib/stores/toast.ts"
+    ]
+  }
+]

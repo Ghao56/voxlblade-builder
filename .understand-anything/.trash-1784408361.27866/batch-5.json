@@ -1,0 +1,1332 @@
+{
+  "nodes": [
+    {
+      "id": "file:.slim/deepwork/ui-upgrade.md",
+      "type": "file",
+      "name": "ui-upgrade.md",
+      "filePath": ".slim/deepwork/ui-upgrade.md",
+      "summary": "markdown file with 99 lines",
+      "tags": [
+        "markdown",
+        "docs"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.understand-anything/.trash-1784380458.94689",
+      "type": "file",
+      "name": ".trash-1784380458.94689",
+      "filePath": ".understand-anything/.trash-1784380458.94689",
+      "summary": "94689 file with 79 lines",
+      "tags": [
+        "94689",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.understand-anything/.understandignore",
+      "type": "file",
+      "name": ".understandignore",
+      "filePath": ".understand-anything/.understandignore",
+      "summary": "unknown file with 57 lines",
+      "tags": [
+        "unknown",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.understand-anything/intermediate/scan-result.json",
+      "type": "file",
+      "name": "scan-result.json",
+      "filePath": ".understand-anything/intermediate/scan-result.json",
+      "summary": "json file with 841 lines",
+      "tags": [
+        "json",
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:decode_full.mjs",
+      "type": "file",
+      "name": "decode_full.mjs",
+      "filePath": "decode_full.mjs",
+      "summary": "javascript file with 263 lines",
+      "tags": [
+        "javascript",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:decode_full.mjs:getPerk",
+      "type": "function",
+      "name": "getPerk",
+      "filePath": "decode_full.mjs",
+      "summary": "Function getPerk (lines 24-24)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:decode_full.mjs:getArmorPart",
+      "type": "function",
+      "name": "getArmorPart",
+      "filePath": "decode_full.mjs",
+      "summary": "Function getArmorPart (lines 35-35)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:decode_full.mjs:applyUpgrade",
+      "type": "function",
+      "name": "applyUpgrade",
+      "filePath": "decode_full.mjs",
+      "summary": "Function applyUpgrade (lines 40-52)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:decode_full.mjs:applyEnchantmentsToSlot",
+      "type": "function",
+      "name": "applyEnchantmentsToSlot",
+      "filePath": "decode_full.mjs",
+      "summary": "Function applyEnchantmentsToSlot (lines 61-111)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:decode_full.mjs:applyShrine",
+      "type": "function",
+      "name": "applyShrine",
+      "filePath": "decode_full.mjs",
+      "summary": "Function applyShrine (lines 114-121)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:decode_full.mjs:applyInfusion",
+      "type": "function",
+      "name": "applyInfusion",
+      "filePath": "decode_full.mjs",
+      "summary": "Function applyInfusion (lines 123-127)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:decode_full.mjs:addStats",
+      "type": "function",
+      "name": "addStats",
+      "filePath": "decode_full.mjs",
+      "summary": "Function addStats (lines 141-141)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:decode_full.mjs:addPerkMap",
+      "type": "function",
+      "name": "addPerkMap",
+      "filePath": "decode_full.mjs",
+      "summary": "Function addPerkMap (lines 142-142)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:decode_full.mjs:finalizePerks",
+      "type": "function",
+      "name": "finalizePerks",
+      "filePath": "decode_full.mjs",
+      "summary": "Function finalizePerks (lines 207-227)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/app.css",
+      "type": "file",
+      "name": "app.css",
+      "filePath": "src/app.css",
+      "summary": "css file with 107 lines",
+      "tags": [
+        "css",
+        "markup"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/App.svelte",
+      "type": "file",
+      "name": "App.svelte",
+      "filePath": "src/App.svelte",
+      "summary": "svelte file with 3702 lines",
+      "tags": [
+        "svelte",
+        "code"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:src/BaseDamageCalc.svelte",
+      "type": "file",
+      "name": "BaseDamageCalc.svelte",
+      "filePath": "src/BaseDamageCalc.svelte",
+      "summary": "svelte file with 2473 lines",
+      "tags": [
+        "svelte",
+        "code"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:src/BuffList.svelte",
+      "type": "file",
+      "name": "BuffList.svelte",
+      "filePath": "src/BuffList.svelte",
+      "summary": "svelte file with 766 lines",
+      "tags": [
+        "svelte",
+        "code"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:src/BuildSaves.svelte",
+      "type": "file",
+      "name": "BuildSaves.svelte",
+      "filePath": "src/BuildSaves.svelte",
+      "summary": "svelte file with 609 lines",
+      "tags": [
+        "svelte",
+        "code"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:src/CdrStepsCalc.svelte",
+      "type": "file",
+      "name": "CdrStepsCalc.svelte",
+      "filePath": "src/CdrStepsCalc.svelte",
+      "summary": "svelte file with 93 lines",
+      "tags": [
+        "svelte",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/CritIcon.svelte",
+      "type": "file",
+      "name": "CritIcon.svelte",
+      "filePath": "src/CritIcon.svelte",
+      "summary": "svelte file with 14 lines",
+      "tags": [
+        "svelte",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/DamageAnalyzer.svelte",
+      "type": "file",
+      "name": "DamageAnalyzer.svelte",
+      "filePath": "src/DamageAnalyzer.svelte",
+      "summary": "svelte file with 6652 lines",
+      "tags": [
+        "svelte",
+        "code"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:src/data/Boost.ts",
+      "type": "file",
+      "name": "Boost.ts",
+      "filePath": "src/data/Boost.ts",
+      "summary": "typescript file with 357 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/Boost.ts:calcMinionAbsorptionPotency",
+      "type": "function",
+      "name": "calcMinionAbsorptionPotency",
+      "filePath": "src/data/Boost.ts",
+      "summary": "Function calcMinionAbsorptionPotency (lines 25-27)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/Boost.ts:calcFrenzyPct",
+      "type": "function",
+      "name": "calcFrenzyPct",
+      "filePath": "src/data/Boost.ts",
+      "summary": "Function calcFrenzyPct (lines 29-31)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/data/BuffData.ts",
+      "type": "file",
+      "name": "BuffData.ts",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "typescript file with 1848 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:formatDamageTypes",
+      "type": "function",
+      "name": "formatDamageTypes",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Function formatDamageTypes (lines 73-77)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:getWeaponArtBuffs",
+      "type": "function",
+      "name": "getWeaponArtBuffs",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Function getWeaponArtBuffs (lines 1258-1260)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:getTrueBalanceBuffs",
+      "type": "function",
+      "name": "getTrueBalanceBuffs",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Function getTrueBalanceBuffs (lines 1284-1333)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:durationMultFromStack",
+      "type": "function",
+      "name": "durationMultFromStack",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Function durationMultFromStack (lines 1344-1346)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:getSpecificBuffModifiers",
+      "type": "function",
+      "name": "getSpecificBuffModifiers",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Function getSpecificBuffModifiers (lines 1399-1434)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:getBastionBlessBonus",
+      "type": "function",
+      "name": "getBastionBlessBonus",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Function getBastionBlessBonus (lines 1436-1455)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:getGenericDebuffModifiers",
+      "type": "function",
+      "name": "getGenericDebuffModifiers",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Function getGenericDebuffModifiers (lines 1457-1499)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:getTricksterReflection",
+      "type": "function",
+      "name": "getTricksterReflection",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Function getTricksterReflection (lines 1501-1524)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:applyBuffPerkModifiers",
+      "type": "function",
+      "name": "applyBuffPerkModifiers",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Function applyBuffPerkModifiers (lines 1526-1602)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:applyToxinTransferDuration",
+      "type": "function",
+      "name": "applyToxinTransferDuration",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Function applyToxinTransferDuration (lines 1604-1622)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:convertTailwindToWhirlwind",
+      "type": "function",
+      "name": "convertTailwindToWhirlwind",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Function convertTailwindToWhirlwind (lines 1624-1648)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:getBuffDescription",
+      "type": "function",
+      "name": "getBuffDescription",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Function getBuffDescription (lines 1650-1679)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:getPerkBuffs",
+      "type": "function",
+      "name": "getPerkBuffs",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Function getPerkBuffs (lines 1681-1694)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:getActiveBuildBuffs",
+      "type": "function",
+      "name": "getActiveBuildBuffs",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Function getActiveBuildBuffs (lines 1696-1715)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:getRaceBuffs",
+      "type": "function",
+      "name": "getRaceBuffs",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Function getRaceBuffs (lines 1739-1741)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:applyCauterizeConversion",
+      "type": "function",
+      "name": "applyCauterizeConversion",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Function applyCauterizeConversion (lines 1762-1775)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:getBurnApplicationCount",
+      "type": "function",
+      "name": "getBurnApplicationCount",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Function getBurnApplicationCount (lines 1783-1785)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:assembleActiveBuffs",
+      "type": "function",
+      "name": "assembleActiveBuffs",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Function assembleActiveBuffs (lines 1794-1812)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:calcBuffEffect",
+      "type": "function",
+      "name": "calcBuffEffect",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Function calcBuffEffect (lines 1814-1835)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:calcPotencyPercent",
+      "type": "function",
+      "name": "calcPotencyPercent",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Function calcPotencyPercent (lines 1837-1844)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:formatPerkDescription",
+      "type": "function",
+      "name": "formatPerkDescription",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Function formatPerkDescription (lines 1846-1848)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/data/cdr.ts",
+      "type": "file",
+      "name": "cdr.ts",
+      "filePath": "src/data/cdr.ts",
+      "summary": "typescript file with 64 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/data/debuffCombatEffects.ts",
+      "type": "file",
+      "name": "debuffCombatEffects.ts",
+      "filePath": "src/data/debuffCombatEffects.ts",
+      "summary": "typescript file with 91 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/data/defensivePerks.ts",
+      "type": "file",
+      "name": "defensivePerks.ts",
+      "filePath": "src/data/defensivePerks.ts",
+      "summary": "typescript file with 207 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/defensivePerks.ts:getActiveDefensivePerkSources",
+      "type": "function",
+      "name": "getActiveDefensivePerkSources",
+      "filePath": "src/data/defensivePerks.ts",
+      "summary": "Function getActiveDefensivePerkSources (lines 147-187)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/defensivePerks.ts:calcDefensivePotencyMult",
+      "type": "function",
+      "name": "calcDefensivePotencyMult",
+      "filePath": "src/data/defensivePerks.ts",
+      "summary": "Function calcDefensivePotencyMult (lines 189-207)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/data/DoTDamage.ts",
+      "type": "file",
+      "name": "DoTDamage.ts",
+      "filePath": "src/data/DoTDamage.ts",
+      "summary": "typescript file with 90 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/data/DoTDamage.ts:getDotBase",
+      "type": "function",
+      "name": "getDotBase",
+      "filePath": "src/data/DoTDamage.ts",
+      "summary": "Function getDotBase (lines 37-39)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/DoTDamage.ts:getDotPotencyMult",
+      "type": "function",
+      "name": "getDotPotencyMult",
+      "filePath": "src/data/DoTDamage.ts",
+      "summary": "Function getDotPotencyMult (lines 46-48)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/DoTDamage.ts:calcDotTick",
+      "type": "function",
+      "name": "calcDotTick",
+      "filePath": "src/data/DoTDamage.ts",
+      "summary": "Function calcDotTick (lines 56-63)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/DoTDamage.ts:calcCausticSlow",
+      "type": "function",
+      "name": "calcCausticSlow",
+      "filePath": "src/data/DoTDamage.ts",
+      "summary": "Function calcCausticSlow (lines 73-82)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/DoTDamage.ts:toGamePotency",
+      "type": "function",
+      "name": "toGamePotency",
+      "filePath": "src/data/DoTDamage.ts",
+      "summary": "Function toGamePotency (lines 88-90)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/data/draconicBuffs.ts",
+      "type": "file",
+      "name": "draconicBuffs.ts",
+      "filePath": "src/data/draconicBuffs.ts",
+      "summary": "typescript file with 112 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/draconicBuffs.ts:getDraconicInfusionPotMult",
+      "type": "function",
+      "name": "getDraconicInfusionPotMult",
+      "filePath": "src/data/draconicBuffs.ts",
+      "summary": "Function getDraconicInfusionPotMult (lines 4-6)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/draconicBuffs.ts:getDraconicInfusionDurMult",
+      "type": "function",
+      "name": "getDraconicInfusionDurMult",
+      "filePath": "src/data/draconicBuffs.ts",
+      "summary": "Function getDraconicInfusionDurMult (lines 7-9)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/draconicBuffs.ts:getEffectiveDraconicInfusionPotency",
+      "type": "function",
+      "name": "getEffectiveDraconicInfusionPotency",
+      "filePath": "src/data/draconicBuffs.ts",
+      "summary": "Function getEffectiveDraconicInfusionPotency (lines 19-30)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/draconicBuffs.ts:getDraconicInfusionBuff",
+      "type": "function",
+      "name": "getDraconicInfusionBuff",
+      "filePath": "src/data/draconicBuffs.ts",
+      "summary": "Function getDraconicInfusionBuff (lines 32-72)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/draconicBuffs.ts:getDraconicAbilityDebuffs",
+      "type": "function",
+      "name": "getDraconicAbilityDebuffs",
+      "filePath": "src/data/draconicBuffs.ts",
+      "summary": "Function getDraconicAbilityDebuffs (lines 74-112)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/data/draconicColorEffects.ts",
+      "type": "file",
+      "name": "draconicColorEffects.ts",
+      "filePath": "src/data/draconicColorEffects.ts",
+      "summary": "typescript file with 50 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/data/draconicColorEffects.ts:getDraconicColorDmgMultiplier",
+      "type": "function",
+      "name": "getDraconicColorDmgMultiplier",
+      "filePath": "src/data/draconicColorEffects.ts",
+      "summary": "Function getDraconicColorDmgMultiplier (lines 44-46)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/draconicColorEffects.ts:getDraconicColorAttackStats",
+      "type": "function",
+      "name": "getDraconicColorAttackStats",
+      "filePath": "src/data/draconicColorEffects.ts",
+      "summary": "Function getDraconicColorAttackStats (lines 48-50)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/data/draconicRunes.ts",
+      "type": "file",
+      "name": "draconicRunes.ts",
+      "filePath": "src/data/draconicRunes.ts",
+      "summary": "typescript file with 104 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/draconicRunes.ts:applyDraconicRunesBonus",
+      "type": "function",
+      "name": "applyDraconicRunesBonus",
+      "filePath": "src/data/draconicRunes.ts",
+      "summary": "Function applyDraconicRunesBonus (lines 12-29)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/draconicRunes.ts:getDraconicRunesBonus",
+      "type": "function",
+      "name": "getDraconicRunesBonus",
+      "filePath": "src/data/draconicRunes.ts",
+      "summary": "Function getDraconicRunesBonus (lines 32-45)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/draconicRunes.ts:applyDragonInfusionBonus",
+      "type": "function",
+      "name": "applyDragonInfusionBonus",
+      "filePath": "src/data/draconicRunes.ts",
+      "summary": "Function applyDragonInfusionBonus (lines 47-64)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/draconicRunes.ts:getDragonInfusionBonus",
+      "type": "function",
+      "name": "getDragonInfusionBonus",
+      "filePath": "src/data/draconicRunes.ts",
+      "summary": "Function getDragonInfusionBonus (lines 66-79)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/draconicRunes.ts:applyDraconicBonuses",
+      "type": "function",
+      "name": "applyDraconicBonuses",
+      "filePath": "src/data/draconicRunes.ts",
+      "summary": "Function applyDraconicBonuses (lines 81-90)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/draconicRunes.ts:getDraconicBonuses",
+      "type": "function",
+      "name": "getDraconicBonuses",
+      "filePath": "src/data/draconicRunes.ts",
+      "summary": "Function getDraconicBonuses (lines 92-104)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/data/HealBoost.ts",
+      "type": "file",
+      "name": "HealBoost.ts",
+      "filePath": "src/data/HealBoost.ts",
+      "summary": "typescript file with 215 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/HealBoost.ts:calculateHealBoost",
+      "type": "function",
+      "name": "calculateHealBoost",
+      "filePath": "src/data/HealBoost.ts",
+      "summary": "Function calculateHealBoost (lines 132-207)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/data/HealBoost.ts:getHealScalingMultiplier",
+      "type": "function",
+      "name": "getHealScalingMultiplier",
+      "filePath": "src/data/HealBoost.ts",
+      "summary": "Function getHealScalingMultiplier (lines 209-215)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/data/mountRunes.ts",
+      "type": "file",
+      "name": "mountRunes.ts",
+      "filePath": "src/data/mountRunes.ts",
+      "summary": "typescript file with 89 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/data/mountRunes.ts:getMountRuneDef",
+      "type": "function",
+      "name": "getMountRuneDef",
+      "filePath": "src/data/mountRunes.ts",
+      "summary": "Function getMountRuneDef (lines 87-89)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/data/perkAutoDebuffs.ts",
+      "type": "file",
+      "name": "perkAutoDebuffs.ts",
+      "filePath": "src/data/perkAutoDebuffs.ts",
+      "summary": "typescript file with 158 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/perkAutoDebuffs.ts:calcActualHpFillPct",
+      "type": "function",
+      "name": "calcActualHpFillPct",
+      "filePath": "src/data/perkAutoDebuffs.ts",
+      "summary": "Function calcActualHpFillPct (lines 16-25)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/perkAutoDebuffs.ts:getAutoDebuffs",
+      "type": "function",
+      "name": "getAutoDebuffs",
+      "filePath": "src/data/perkAutoDebuffs.ts",
+      "summary": "Function getAutoDebuffs (lines 27-158)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:decode_full.mjs",
+      "target": "function:decode_full.mjs:getPerk",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:decode_full.mjs",
+      "target": "function:decode_full.mjs:getArmorPart",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:decode_full.mjs",
+      "target": "function:decode_full.mjs:applyUpgrade",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:decode_full.mjs",
+      "target": "function:decode_full.mjs:applyEnchantmentsToSlot",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:decode_full.mjs",
+      "target": "function:decode_full.mjs:applyShrine",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:decode_full.mjs",
+      "target": "function:decode_full.mjs:applyInfusion",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:decode_full.mjs",
+      "target": "function:decode_full.mjs:addStats",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:decode_full.mjs",
+      "target": "function:decode_full.mjs:addPerkMap",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:decode_full.mjs",
+      "target": "function:decode_full.mjs:finalizePerks",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/Boost.ts",
+      "target": "function:src/data/Boost.ts:calcMinionAbsorptionPotency",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/Boost.ts",
+      "target": "function:src/data/Boost.ts:calcFrenzyPct",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:formatDamageTypes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:getWeaponArtBuffs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:getTrueBalanceBuffs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:durationMultFromStack",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:getSpecificBuffModifiers",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:getBastionBlessBonus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:getGenericDebuffModifiers",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:getTricksterReflection",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:applyBuffPerkModifiers",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:applyToxinTransferDuration",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:convertTailwindToWhirlwind",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:getBuffDescription",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:getPerkBuffs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:getActiveBuildBuffs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:getRaceBuffs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:applyCauterizeConversion",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:getBurnApplicationCount",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:assembleActiveBuffs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:calcBuffEffect",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:calcPotencyPercent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:formatPerkDescription",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/defensivePerks.ts",
+      "target": "function:src/data/defensivePerks.ts:getActiveDefensivePerkSources",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/defensivePerks.ts",
+      "target": "function:src/data/defensivePerks.ts:calcDefensivePotencyMult",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/DoTDamage.ts",
+      "target": "function:src/data/DoTDamage.ts:getDotBase",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/DoTDamage.ts",
+      "target": "function:src/data/DoTDamage.ts:getDotPotencyMult",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/DoTDamage.ts",
+      "target": "function:src/data/DoTDamage.ts:calcDotTick",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/DoTDamage.ts",
+      "target": "function:src/data/DoTDamage.ts:calcCausticSlow",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/DoTDamage.ts",
+      "target": "function:src/data/DoTDamage.ts:toGamePotency",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/draconicBuffs.ts",
+      "target": "function:src/data/draconicBuffs.ts:getDraconicInfusionPotMult",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/draconicBuffs.ts",
+      "target": "function:src/data/draconicBuffs.ts:getDraconicInfusionDurMult",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/draconicBuffs.ts",
+      "target": "function:src/data/draconicBuffs.ts:getEffectiveDraconicInfusionPotency",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/draconicBuffs.ts",
+      "target": "function:src/data/draconicBuffs.ts:getDraconicInfusionBuff",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/draconicBuffs.ts",
+      "target": "function:src/data/draconicBuffs.ts:getDraconicAbilityDebuffs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/draconicColorEffects.ts",
+      "target": "function:src/data/draconicColorEffects.ts:getDraconicColorDmgMultiplier",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/draconicColorEffects.ts",
+      "target": "function:src/data/draconicColorEffects.ts:getDraconicColorAttackStats",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/draconicRunes.ts",
+      "target": "function:src/data/draconicRunes.ts:applyDraconicRunesBonus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/draconicRunes.ts",
+      "target": "function:src/data/draconicRunes.ts:getDraconicRunesBonus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/draconicRunes.ts",
+      "target": "function:src/data/draconicRunes.ts:applyDragonInfusionBonus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/draconicRunes.ts",
+      "target": "function:src/data/draconicRunes.ts:getDragonInfusionBonus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/draconicRunes.ts",
+      "target": "function:src/data/draconicRunes.ts:applyDraconicBonuses",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/draconicRunes.ts",
+      "target": "function:src/data/draconicRunes.ts:getDraconicBonuses",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/HealBoost.ts",
+      "target": "function:src/data/HealBoost.ts:calculateHealBoost",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/HealBoost.ts",
+      "target": "function:src/data/HealBoost.ts:getHealScalingMultiplier",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/mountRunes.ts",
+      "target": "function:src/data/mountRunes.ts:getMountRuneDef",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/perkAutoDebuffs.ts",
+      "target": "function:src/data/perkAutoDebuffs.ts:calcActualHpFillPct",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/perkAutoDebuffs.ts",
+      "target": "function:src/data/perkAutoDebuffs.ts:getAutoDebuffs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    }
+  ]
+}

@@ -57,3 +57,13 @@ export const VITAL_STRIKES_CRIT_DMG_PER_STACK = 25
 export const SPARK_CRIT_DMG_PER_STACK = 50
 export const CRITICAL_MASTER_CRIT_DMG_PER_STACK = 5
 export const SPLINTER_CRIT_DMG_PER_STACK = 10
+
+// ── Mortal Will ──────────────────────────────────
+export const MORTAL_WILL_HOLY_TYPE_PER_STACK = 0.1
+export const MORTAL_WILL_DMG_PER_HOLY_BOOST_PCT = 0.0015
+
+// ── Sunburn ──────────────────────────────────────
+export const SUNBURN_UNIVERSAL_DMG_PER_STACK = 0.10
+export const SUNBURN_HOLY_EXTRA_DMG_PER_STACK = 0.15
+export const SUNBURN_BURN_BASE_CHANCE = 0.24
+export const SUNBURN_BURN_CHANCE_PER_STACK = 0.06

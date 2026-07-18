@@ -154,5 +154,18 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
     })
   }
 
+  const sunburnAmt = perks['Sunburn'] ?? 0
+  if (sunburnAmt > 0 && !existingBuffNames.includes('Burn')) {
+    const burnChance = 24 + 6 * sunburnAmt
+    debuffs.push({
+      buffName: 'Burn',
+      potency: 0,
+      duration: 5,
+      condition: `${burnChance}% chance on Holy attacks`,
+      sourceName: 'Sunburn',
+      sourceType: 'perk',
+    })
+  }
+
   return debuffs
 }

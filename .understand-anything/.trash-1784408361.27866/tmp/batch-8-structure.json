@@ -1,0 +1,1817 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 25,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "src/lib/engine/data/equipment.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 48,
+      "nonEmptyLines": 40,
+      "functions": [
+        {
+          "name": "getEnchant",
+          "startLine": 37,
+          "endLine": 37,
+          "params": [
+            "name"
+          ]
+        },
+        {
+          "name": "getRing",
+          "startLine": 38,
+          "endLine": 38,
+          "params": [
+            "name"
+          ]
+        },
+        {
+          "name": "getRune",
+          "startLine": 39,
+          "endLine": 39,
+          "params": [
+            "name"
+          ]
+        },
+        {
+          "name": "getArmorPart",
+          "startLine": 41,
+          "endLine": 48,
+          "params": [
+            "name",
+            "type"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "rings",
+          "line": 8,
+          "isDefault": false
+        },
+        {
+          "name": "runes",
+          "line": 9,
+          "isDefault": false
+        },
+        {
+          "name": "enchantments",
+          "line": 10,
+          "isDefault": false
+        },
+        {
+          "name": "enchantmentsRaw",
+          "line": 13,
+          "isDefault": false
+        },
+        {
+          "name": "armors",
+          "line": 35,
+          "isDefault": false
+        },
+        {
+          "name": "getEnchant",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "getRing",
+          "line": 38,
+          "isDefault": false
+        },
+        {
+          "name": "getRune",
+          "line": 39,
+          "isDefault": false
+        },
+        {
+          "name": "getArmorPart",
+          "line": 41,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 5,
+        "exportCount": 9,
+        "functionCount": 4,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/engine/data/weapons.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 21,
+      "nonEmptyLines": 17,
+      "functions": [
+        {
+          "name": "getBlade",
+          "startLine": 18,
+          "endLine": 18,
+          "params": [
+            "name"
+          ]
+        },
+        {
+          "name": "getHandle",
+          "startLine": 19,
+          "endLine": 19,
+          "params": [
+            "name"
+          ]
+        },
+        {
+          "name": "getGlove",
+          "startLine": 20,
+          "endLine": 20,
+          "params": [
+            "name"
+          ]
+        },
+        {
+          "name": "getEssence",
+          "startLine": 21,
+          "endLine": 21,
+          "params": [
+            "name"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "blades",
+          "line": 8,
+          "isDefault": false
+        },
+        {
+          "name": "handles",
+          "line": 9,
+          "isDefault": false
+        },
+        {
+          "name": "gloves",
+          "line": 10,
+          "isDefault": false
+        },
+        {
+          "name": "essences",
+          "line": 11,
+          "isDefault": false
+        },
+        {
+          "name": "getBlade",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "getHandle",
+          "line": 19,
+          "isDefault": false
+        },
+        {
+          "name": "getGlove",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "getEssence",
+          "line": 21,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 5,
+        "exportCount": 8,
+        "functionCount": 4,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/engine/enchant.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 221,
+      "nonEmptyLines": 189,
+      "functions": [
+        {
+          "name": "applyMod",
+          "startLine": 8,
+          "endLine": 10,
+          "params": [
+            "value",
+            "mod"
+          ]
+        },
+        {
+          "name": "normalizeModifiers",
+          "startLine": 12,
+          "endLine": 14,
+          "params": [
+            "m"
+          ]
+        },
+        {
+          "name": "applyModsToKey",
+          "startLine": 16,
+          "endLine": 26,
+          "params": [
+            "key",
+            "mods",
+            "mult",
+            "add"
+          ]
+        },
+        {
+          "name": "applyModsWhere",
+          "startLine": 28,
+          "endLine": 40,
+          "params": [
+            "mods",
+            "baseStats",
+            "mult",
+            "add",
+            "predicate"
+          ]
+        },
+        {
+          "name": "applyEnchantmentsToSlot",
+          "startLine": 57,
+          "endLine": 148,
+          "params": [
+            "baseStats",
+            "basePerks",
+            "enchantNames",
+            "upgradeLevel"
+          ]
+        },
+        {
+          "name": "applyPerkEffectiveness",
+          "startLine": 163,
+          "endLine": 177,
+          "params": [
+            "perks",
+            "perkEffectivenessStacks",
+            "cursedStacks"
+          ]
+        },
+        {
+          "name": "applyInfusion",
+          "startLine": 181,
+          "endLine": 192,
+          "params": [
+            "baseStats",
+            "basePerks"
+          ]
+        },
+        {
+          "name": "isExclusiveEnchant",
+          "startLine": 196,
+          "endLine": 198,
+          "params": [
+            "e"
+          ]
+        },
+        {
+          "name": "enforceEnchantSlot",
+          "startLine": 200,
+          "endLine": 221,
+          "params": [
+            "selections",
+            "changedIndex"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "applyEnchantmentsToSlot",
+          "line": 57,
+          "isDefault": false
+        },
+        {
+          "name": "applyPerkEffectiveness",
+          "line": 163,
+          "isDefault": false
+        },
+        {
+          "name": "applyInfusion",
+          "line": 181,
+          "isDefault": false
+        },
+        {
+          "name": "isExclusiveEnchant",
+          "line": 196,
+          "isDefault": false
+        },
+        {
+          "name": "enforceEnchantSlot",
+          "line": 200,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "normalizeModifiers",
+          "callee": "Array.isArray",
+          "lineNumber": 13
+        },
+        {
+          "caller": "applyModsWhere",
+          "callee": "predicate",
+          "lineNumber": 38
+        },
+        {
+          "caller": "applyModsWhere",
+          "callee": "applyModsToKey",
+          "lineNumber": 38
+        },
+        {
+          "caller": "applyEnchantmentsToSlot",
+          "callee": "[...enchantNames].reverse",
+          "lineNumber": 63
+        },
+        {
+          "caller": "applyEnchantmentsToSlot",
+          "callee": "getEnchant",
+          "lineNumber": 73
+        },
+        {
+          "caller": "applyEnchantmentsToSlot",
+          "callee": "applyModsWhere",
+          "lineNumber": 80
+        },
+        {
+          "caller": "applyEnchantmentsToSlot",
+          "callee": "normalizeModifiers",
+          "lineNumber": 80
+        },
+        {
+          "caller": "applyEnchantmentsToSlot",
+          "callee": "applyUpgrade",
+          "lineNumber": 95
+        },
+        {
+          "caller": "applyEnchantmentsToSlot",
+          "callee": "getEnchant",
+          "lineNumber": 108
+        },
+        {
+          "caller": "applyEnchantmentsToSlot",
+          "callee": "applyModsToKey",
+          "lineNumber": 117
+        },
+        {
+          "caller": "applyEnchantmentsToSlot",
+          "callee": "normalizeModifiers",
+          "lineNumber": 117
+        },
+        {
+          "caller": "applyEnchantmentsToSlot",
+          "callee": "normalizeModifiers",
+          "lineNumber": 121
+        },
+        {
+          "caller": "applyEnchantmentsToSlot",
+          "callee": "Object.prototype.hasOwnProperty.call",
+          "lineNumber": 123
+        },
+        {
+          "caller": "applyEnchantmentsToSlot",
+          "callee": "applyMod",
+          "lineNumber": 125
+        },
+        {
+          "caller": "applyPerkEffectiveness",
+          "callee": "Object.prototype.hasOwnProperty.call",
+          "lineNumber": 172
+        },
+        {
+          "caller": "applyPerkEffectiveness",
+          "callee": "PERK_EFFECTIVENESS_EXEMPT.has",
+          "lineNumber": 173
+        },
+        {
+          "caller": "enforceEnchantSlot",
+          "callee": "isExclusiveEnchant",
+          "lineNumber": 214
+        },
+        {
+          "caller": "enforceEnchantSlot",
+          "callee": "getEnchant",
+          "lineNumber": 214
+        },
+        {
+          "caller": "enforceEnchantSlot",
+          "callee": "filled.push",
+          "lineNumber": 219
+        }
+      ],
+      "metrics": {
+        "importCount": 4,
+        "exportCount": 5,
+        "functionCount": 9,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/engine/engine.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 6,
+      "nonEmptyLines": 6,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/engine/format.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 14,
+      "nonEmptyLines": 12,
+      "functions": [
+        {
+          "name": "formatStat",
+          "startLine": 4,
+          "endLine": 10,
+          "params": [
+            "key",
+            "value"
+          ]
+        },
+        {
+          "name": "formatLabel",
+          "startLine": 12,
+          "endLine": 14,
+          "params": [
+            "key"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "formatStat",
+          "line": 4,
+          "isDefault": false
+        },
+        {
+          "name": "formatLabel",
+          "line": 12,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "formatStat",
+          "callee": "round2",
+          "lineNumber": 5
+        },
+        {
+          "caller": "formatStat",
+          "callee": "Math.abs",
+          "lineNumber": 6
+        },
+        {
+          "caller": "formatStat",
+          "callee": "Number.isInteger",
+          "lineNumber": 7
+        },
+        {
+          "caller": "formatStat",
+          "callee": "String",
+          "lineNumber": 7
+        },
+        {
+          "caller": "formatStat",
+          "callee": "abs.toFixed(2).replace",
+          "lineNumber": 7
+        },
+        {
+          "caller": "formatStat",
+          "callee": "abs.toFixed",
+          "lineNumber": 7
+        },
+        {
+          "caller": "formatStat",
+          "callee": "PERCENT_STATS.has",
+          "lineNumber": 9
+        },
+        {
+          "caller": "formatLabel",
+          "callee": "key.replace(/([a-z])([A-Z])/g, \"$1 $2\").replace",
+          "lineNumber": 13
+        },
+        {
+          "caller": "formatLabel",
+          "callee": "key.replace",
+          "lineNumber": 13
+        },
+        {
+          "caller": "formatLabel",
+          "callee": "c.toUpperCase",
+          "lineNumber": 13
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 2,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/engine/shrine.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 33,
+      "nonEmptyLines": 30,
+      "functions": [
+        {
+          "name": "applyShrineToScalings",
+          "startLine": 9,
+          "endLine": 20,
+          "params": [
+            "scalings",
+            "tier"
+          ]
+        },
+        {
+          "name": "applyShrineToStats",
+          "startLine": 22,
+          "endLine": 33,
+          "params": [
+            "stats",
+            "tier"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "SHRINE_MULTIPLIERS",
+          "line": 5,
+          "isDefault": false
+        },
+        {
+          "name": "applyShrineToScalings",
+          "line": 9,
+          "isDefault": false
+        },
+        {
+          "name": "applyShrineToStats",
+          "line": 22,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "applyShrineToScalings",
+          "callee": "Object.prototype.hasOwnProperty.call",
+          "lineNumber": 17
+        },
+        {
+          "caller": "applyShrineToStats",
+          "callee": "round2",
+          "lineNumber": 30
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 3,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/engine/weapon.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 443,
+      "nonEmptyLines": 388,
+      "functions": [
+        {
+          "name": "checkHybrid",
+          "startLine": 20,
+          "endLine": 43,
+          "params": [
+            "part1",
+            "part2"
+          ]
+        },
+        {
+          "name": "getWeaponType",
+          "startLine": 53,
+          "endLine": 55,
+          "params": [
+            "handleType",
+            "bladeType"
+          ]
+        },
+        {
+          "name": "resolveWeaponType",
+          "startLine": 81,
+          "endLine": 99,
+          "params": [
+            "handleType",
+            "bladeType",
+            "perks"
+          ]
+        },
+        {
+          "name": "getMonkWeaponType",
+          "startLine": 108,
+          "endLine": 110,
+          "params": [
+            "essenceType",
+            "gloveType"
+          ]
+        },
+        {
+          "name": "resolveMonkWeaponType",
+          "startLine": 112,
+          "endLine": 121,
+          "params": [
+            "essenceType",
+            "gloveType",
+            "perks"
+          ]
+        },
+        {
+          "name": "extractDamageAndScalings",
+          "startLine": 171,
+          "endLine": 192,
+          "params": [
+            "part"
+          ]
+        },
+        {
+          "name": "mergePartPerks",
+          "startLine": 194,
+          "endLine": 222,
+          "params": [
+            "part1",
+            "part2"
+          ]
+        },
+        {
+          "name": "applyShrineToPart",
+          "startLine": 224,
+          "endLine": 226,
+          "params": [
+            "data",
+            "part",
+            "shrineActive",
+            "fn"
+          ]
+        },
+        {
+          "name": "mergeRecords",
+          "startLine": 228,
+          "endLine": 234,
+          "params": [
+            "a",
+            "b"
+          ]
+        },
+        {
+          "name": "mergeScalingsAndStats",
+          "startLine": 236,
+          "endLine": 280,
+          "params": [
+            "p1Data",
+            "p2Data",
+            "part1",
+            "part2",
+            "shrineActive"
+          ]
+        },
+        {
+          "name": "buildWeaponResult",
+          "startLine": 282,
+          "endLine": 362,
+          "params": [
+            "opts"
+          ]
+        },
+        {
+          "name": "calcWeaponGeneric",
+          "startLine": 364,
+          "endLine": 385,
+          "params": [
+            "part1",
+            "part2",
+            "part1TypeLabel",
+            "part2TypeLabel",
+            "part1TypeKey",
+            "part2TypeKey",
+            "isMonk",
+            "shrineActive"
+          ]
+        },
+        {
+          "name": "applyMonkStatBonus",
+          "startLine": 393,
+          "endLine": 412,
+          "params": [
+            "baseStats",
+            "shrineMult",
+            "monkPct",
+            "result",
+            "finalKey",
+            "rawKey"
+          ]
+        },
+        {
+          "name": "calcWeapon",
+          "startLine": 416,
+          "endLine": 418,
+          "params": [
+            "bladeName",
+            "handleName",
+            "shrineActive"
+          ]
+        },
+        {
+          "name": "calcMonkWeapon",
+          "startLine": 420,
+          "endLine": 443,
+          "params": [
+            "gloveName",
+            "essenceName",
+            "shrineActive",
+            "monkRank"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "MONK_RANK_MULTIPLIER",
+          "line": 7,
+          "isDefault": false
+        },
+        {
+          "name": "calcWeapon",
+          "line": 416,
+          "isDefault": false
+        },
+        {
+          "name": "calcMonkWeapon",
+          "line": 420,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "checkHybrid",
+          "callee": "scalings1.add",
+          "lineNumber": 33
+        },
+        {
+          "caller": "checkHybrid",
+          "callee": "scalings1.has",
+          "lineNumber": 40
+        },
+        {
+          "caller": "resolveWeaponType",
+          "callee": "getWeaponType",
+          "lineNumber": 86
+        },
+        {
+          "caller": "resolveWeaponType",
+          "callee": "o.bladeTypes.includes",
+          "lineNumber": 92
+        },
+        {
+          "caller": "resolveWeaponType",
+          "callee": "o.bladeTypes.includes",
+          "lineNumber": 93
+        },
+        {
+          "caller": "resolveWeaponType",
+          "callee": "o.handleTypes.includes",
+          "lineNumber": 94
+        },
+        {
+          "caller": "resolveMonkWeaponType",
+          "callee": "getMonkWeaponType",
+          "lineNumber": 117
+        },
+        {
+          "caller": "extractDamageAndScalings",
+          "callee": "key.replace",
+          "lineNumber": 181
+        },
+        {
+          "caller": "extractDamageAndScalings",
+          "callee": "key.replace",
+          "lineNumber": 185
+        },
+        {
+          "caller": "processPart",
+          "callee": "speedParts.push",
+          "lineNumber": 203
+        },
+        {
+          "caller": "mergePartPerks",
+          "callee": "processPart",
+          "lineNumber": 211
+        },
+        {
+          "caller": "mergePartPerks",
+          "callee": "processPart",
+          "lineNumber": 212
+        },
+        {
+          "caller": "applyShrineToPart",
+          "callee": "fn",
+          "lineNumber": 225
+        },
+        {
+          "caller": "mergeRecords",
+          "callee": "Object.prototype.hasOwnProperty.call",
+          "lineNumber": 231
+        },
+        {
+          "caller": "mergeScalingsAndStats",
+          "callee": "applyShrineToPart",
+          "lineNumber": 252
+        },
+        {
+          "caller": "mergeScalingsAndStats",
+          "callee": "applyShrineToPart",
+          "lineNumber": 253
+        },
+        {
+          "caller": "mergeScalingsAndStats",
+          "callee": "applyShrineToPart",
+          "lineNumber": 254
+        },
+        {
+          "caller": "mergeScalingsAndStats",
+          "callee": "applyShrineToPart",
+          "lineNumber": 255
+        },
+        {
+          "caller": "mergeScalingsAndStats",
+          "callee": "checkHybrid",
+          "lineNumber": 257
+        },
+        {
+          "caller": "mergeScalingsAndStats",
+          "callee": "mergeRecords",
+          "lineNumber": 259
+        },
+        {
+          "caller": "mergeScalingsAndStats",
+          "callee": "Object.prototype.hasOwnProperty.call",
+          "lineNumber": 264
+        },
+        {
+          "caller": "mergeScalingsAndStats",
+          "callee": "mergeRecords",
+          "lineNumber": 268
+        },
+        {
+          "caller": "mergeScalingsAndStats",
+          "callee": "round2",
+          "lineNumber": 274
+        },
+        {
+          "caller": "buildWeaponResult",
+          "callee": "Object.prototype.hasOwnProperty.call",
+          "lineNumber": 304
+        },
+        {
+          "caller": "buildWeaponResult",
+          "callee": "round4",
+          "lineNumber": 305
+        },
+        {
+          "caller": "buildWeaponResult",
+          "callee": "resolveMonkWeaponType",
+          "lineNumber": 313
+        },
+        {
+          "caller": "buildWeaponResult",
+          "callee": "resolveWeaponType",
+          "lineNumber": 313
+        },
+        {
+          "caller": "buildWeaponResult",
+          "callee": "Math.max",
+          "lineNumber": 332
+        },
+        {
+          "caller": "buildWeaponResult",
+          "callee": "round2",
+          "lineNumber": 335
+        },
+        {
+          "caller": "calcWeaponGeneric",
+          "callee": "extractDamageAndScalings",
+          "lineNumber": 376
+        },
+        {
+          "caller": "calcWeaponGeneric",
+          "callee": "extractDamageAndScalings",
+          "lineNumber": 377
+        },
+        {
+          "caller": "calcWeaponGeneric",
+          "callee": "mergePartPerks",
+          "lineNumber": 378
+        },
+        {
+          "caller": "calcWeaponGeneric",
+          "callee": "mergeScalingsAndStats",
+          "lineNumber": 379
+        },
+        {
+          "caller": "calcWeaponGeneric",
+          "callee": "buildWeaponResult",
+          "lineNumber": 381
+        },
+        {
+          "caller": "applyMonkStatBonus",
+          "callee": "round2",
+          "lineNumber": 405
+        },
+        {
+          "caller": "applyMonkStatBonus",
+          "callee": "round2",
+          "lineNumber": 406
+        },
+        {
+          "caller": "applyMonkStatBonus",
+          "callee": "round2",
+          "lineNumber": 407
+        },
+        {
+          "caller": "applyMonkStatBonus",
+          "callee": "round2",
+          "lineNumber": 408
+        },
+        {
+          "caller": "calcWeapon",
+          "callee": "calcWeaponGeneric",
+          "lineNumber": 417
+        },
+        {
+          "caller": "calcWeapon",
+          "callee": "getBlade",
+          "lineNumber": 417
+        },
+        {
+          "caller": "calcWeapon",
+          "callee": "getHandle",
+          "lineNumber": 417
+        },
+        {
+          "caller": "calcMonkWeapon",
+          "callee": "getGlove",
+          "lineNumber": 421
+        },
+        {
+          "caller": "calcMonkWeapon",
+          "callee": "calcWeaponGeneric",
+          "lineNumber": 422
+        },
+        {
+          "caller": "calcMonkWeapon",
+          "callee": "getEssence",
+          "lineNumber": 422
+        },
+        {
+          "caller": "calcMonkWeapon",
+          "callee": "Math.max",
+          "lineNumber": 425
+        },
+        {
+          "caller": "calcMonkWeapon",
+          "callee": "applyMonkStatBonus",
+          "lineNumber": 429
+        },
+        {
+          "caller": "calcMonkWeapon",
+          "callee": "getEssence",
+          "lineNumber": 435
+        },
+        {
+          "caller": "calcMonkWeapon",
+          "callee": "applyMonkStatBonus",
+          "lineNumber": 439
+        }
+      ],
+      "metrics": {
+        "importCount": 5,
+        "exportCount": 3,
+        "functionCount": 15,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/Modal.svelte",
+      "language": "svelte",
+      "fileCategory": "code",
+      "totalLines": 121,
+      "nonEmptyLines": 115,
+      "metrics": {}
+    },
+    {
+      "path": "src/lib/modals/AccessorySelectModal.svelte",
+      "language": "svelte",
+      "fileCategory": "code",
+      "totalLines": 214,
+      "nonEmptyLines": 200,
+      "metrics": {}
+    },
+    {
+      "path": "src/lib/modals/GuildModal.svelte",
+      "language": "svelte",
+      "fileCategory": "code",
+      "totalLines": 98,
+      "nonEmptyLines": 95,
+      "metrics": {}
+    },
+    {
+      "path": "src/lib/modals/index.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 4,
+      "nonEmptyLines": 4,
+      "exports": [
+        {
+          "name": "RaceModal",
+          "line": 1,
+          "isDefault": false
+        },
+        {
+          "name": "GuildModal",
+          "line": 2,
+          "isDefault": false
+        },
+        {
+          "name": "AccessorySelectModal",
+          "line": 3,
+          "isDefault": false
+        },
+        {
+          "name": "WeaponPartModal",
+          "line": 4,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 4,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/modals/RaceModal.svelte",
+      "language": "svelte",
+      "fileCategory": "code",
+      "totalLines": 60,
+      "nonEmptyLines": 57,
+      "metrics": {}
+    },
+    {
+      "path": "src/lib/modals/WeaponPartModal.svelte",
+      "language": "svelte",
+      "fileCategory": "code",
+      "totalLines": 136,
+      "nonEmptyLines": 128,
+      "metrics": {}
+    },
+    {
+      "path": "src/lib/StatFilterShared.svelte",
+      "language": "svelte",
+      "fileCategory": "code",
+      "totalLines": 97,
+      "nonEmptyLines": 91,
+      "metrics": {}
+    },
+    {
+      "path": "src/lib/stats/elementalBoosts.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 22,
+      "nonEmptyLines": 20,
+      "exports": [
+        {
+          "name": "ELEMENTAL_BOOST_STATS",
+          "line": 6,
+          "isDefault": false
+        },
+        {
+          "name": "NEGATIVE_ELEMENTAL_BOOST_STATS",
+          "line": 19,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/stats/filterActions.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 41,
+      "nonEmptyLines": 36,
+      "functions": [
+        {
+          "name": "createFilterActions",
+          "startLine": 4,
+          "endLine": 41,
+          "params": [
+            "getActive",
+            "setActive",
+            "notify"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "createFilterActions",
+          "line": 4,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "toggle",
+          "callee": "getActive",
+          "lineNumber": 10
+        },
+        {
+          "caller": "toggle",
+          "callee": "active.get",
+          "lineNumber": 11
+        },
+        {
+          "caller": "toggle",
+          "callee": "active.set",
+          "lineNumber": 12
+        },
+        {
+          "caller": "toggle",
+          "callee": "active.set",
+          "lineNumber": 13
+        },
+        {
+          "caller": "toggle",
+          "callee": "active.delete",
+          "lineNumber": 14
+        },
+        {
+          "caller": "toggle",
+          "callee": "setActive",
+          "lineNumber": 16
+        },
+        {
+          "caller": "toggle",
+          "callee": "notify",
+          "lineNumber": 17
+        },
+        {
+          "caller": "remove",
+          "callee": "getActive",
+          "lineNumber": 21
+        },
+        {
+          "caller": "remove",
+          "callee": "next.delete",
+          "lineNumber": 22
+        },
+        {
+          "caller": "remove",
+          "callee": "setActive",
+          "lineNumber": 23
+        },
+        {
+          "caller": "remove",
+          "callee": "notify",
+          "lineNumber": 24
+        },
+        {
+          "caller": "clear",
+          "callee": "setActive",
+          "lineNumber": 29
+        },
+        {
+          "caller": "clear",
+          "callee": "notify",
+          "lineNumber": 30
+        },
+        {
+          "caller": "handleChipKeyDown",
+          "callee": "e.preventDefault",
+          "lineNumber": 35
+        },
+        {
+          "caller": "handleChipKeyDown",
+          "callee": "remove",
+          "lineNumber": 36
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/store.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 105,
+      "nonEmptyLines": 97,
+      "functions": [
+        {
+          "name": "loadBuild",
+          "startLine": 50,
+          "endLine": 59,
+          "params": []
+        },
+        {
+          "name": "setEnchantment",
+          "startLine": 75,
+          "endLine": 87,
+          "params": [
+            "slot",
+            "index",
+            "value"
+          ]
+        },
+        {
+          "name": "clearBuild",
+          "startLine": 89,
+          "endLine": 91,
+          "params": []
+        },
+        {
+          "name": "setGuild",
+          "startLine": 93,
+          "endLine": 105,
+          "params": [
+            "guildName",
+            "guildRank"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "build",
+          "line": 61,
+          "isDefault": false
+        },
+        {
+          "name": "result",
+          "line": 73,
+          "isDefault": false
+        },
+        {
+          "name": "setEnchantment",
+          "line": 75,
+          "isDefault": false
+        },
+        {
+          "name": "clearBuild",
+          "line": 89,
+          "isDefault": false
+        },
+        {
+          "name": "setGuild",
+          "line": 93,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "loadBuild",
+          "callee": "localStorage.getItem",
+          "lineNumber": 52
+        },
+        {
+          "caller": "loadBuild",
+          "callee": "JSON.parse",
+          "lineNumber": 54
+        },
+        {
+          "caller": "setEnchantment",
+          "callee": "build.update",
+          "lineNumber": 76
+        },
+        {
+          "caller": "setEnchantment",
+          "callee": "enforceEnchantSlot",
+          "lineNumber": 83
+        },
+        {
+          "caller": "clearBuild",
+          "callee": "build.set",
+          "lineNumber": 90
+        },
+        {
+          "caller": "setGuild",
+          "callee": "build.update",
+          "lineNumber": 94
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 5,
+        "functionCount": 4,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/stores/toast.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 28,
+      "nonEmptyLines": 22,
+      "functions": [
+        {
+          "name": "addToast",
+          "startLine": 17,
+          "endLine": 24,
+          "params": [
+            "message",
+            "type",
+            "duration"
+          ]
+        },
+        {
+          "name": "removeToast",
+          "startLine": 26,
+          "endLine": 28,
+          "params": [
+            "id"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "toasts",
+          "line": 13,
+          "isDefault": false
+        },
+        {
+          "name": "addToast",
+          "line": 17,
+          "isDefault": false
+        },
+        {
+          "name": "removeToast",
+          "line": 26,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "addToast",
+          "callee": "toasts.update",
+          "lineNumber": 19
+        },
+        {
+          "caller": "addToast",
+          "callee": "setTimeout",
+          "lineNumber": 21
+        },
+        {
+          "caller": "addToast",
+          "callee": "removeToast",
+          "lineNumber": 21
+        },
+        {
+          "caller": "removeToast",
+          "callee": "toasts.update",
+          "lineNumber": 27
+        },
+        {
+          "caller": "removeToast",
+          "callee": "t.filter",
+          "lineNumber": 27
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 3,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/Toast.svelte",
+      "language": "svelte",
+      "fileCategory": "code",
+      "totalLines": 76,
+      "nonEmptyLines": 69,
+      "metrics": {}
+    },
+    {
+      "path": "src/lib/types.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 284,
+      "nonEmptyLines": 246,
+      "functions": [
+        {
+          "name": "applyUpgrade",
+          "startLine": 75,
+          "endLine": 89,
+          "params": [
+            "stats",
+            "level"
+          ]
+        },
+        {
+          "name": "getProcCoeffValue",
+          "startLine": 219,
+          "endLine": 223,
+          "params": [
+            "pc"
+          ]
+        },
+        {
+          "name": "canProc",
+          "startLine": 225,
+          "endLine": 227,
+          "params": [
+            "pc"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "PERCENT_STATS",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "STAT_KEYS",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "UPGRADE_MAX",
+          "line": 72,
+          "isDefault": false
+        },
+        {
+          "name": "applyUpgrade",
+          "line": 75,
+          "isDefault": false
+        },
+        {
+          "name": "getProcCoeffValue",
+          "line": 219,
+          "isDefault": false
+        },
+        {
+          "name": "canProc",
+          "line": 225,
+          "isDefault": false
+        },
+        {
+          "name": "DMG_TYPE_COLORS",
+          "line": 249,
+          "isDefault": false
+        },
+        {
+          "name": "DMG_TYPE_PRIORITY",
+          "line": 257,
+          "isDefault": false
+        },
+        {
+          "name": "SCALING_TO_BOOST",
+          "line": 259,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "canProc",
+          "callee": "getProcCoeffValue",
+          "lineNumber": 226
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 9,
+        "functionCount": 3,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/uiConstants.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 78,
+      "nonEmptyLines": 71,
+      "exports": [
+        {
+          "name": "UI_COLORS",
+          "line": 1,
+          "isDefault": false
+        },
+        {
+          "name": "SOURCE_LABELS",
+          "line": 41,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/utils.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 113,
+      "nonEmptyLines": 92,
+      "functions": [
+        {
+          "name": "calculateMultiplierFromPct",
+          "startLine": 1,
+          "endLine": 3,
+          "params": [
+            "pct"
+          ]
+        },
+        {
+          "name": "multiplyMultipliers",
+          "startLine": 5,
+          "endLine": 7,
+          "params": [
+            "multipliers"
+          ]
+        },
+        {
+          "name": "roundMultiplier",
+          "startLine": 9,
+          "endLine": 11,
+          "params": [
+            "multiplier"
+          ]
+        },
+        {
+          "name": "calcWardingDebuffMultiplier",
+          "startLine": 13,
+          "endLine": 19,
+          "params": [
+            "warding"
+          ]
+        },
+        {
+          "name": "escapeHtml",
+          "startLine": 29,
+          "endLine": 31,
+          "params": [
+            "text"
+          ]
+        },
+        {
+          "name": "highlightText",
+          "startLine": 33,
+          "endLine": 58,
+          "params": [
+            "text",
+            "query"
+          ]
+        },
+        {
+          "name": "highlightTextParts",
+          "startLine": 60,
+          "endLine": 85,
+          "params": [
+            "text",
+            "query"
+          ]
+        },
+        {
+          "name": "calcProcChance",
+          "startLine": 98,
+          "endLine": 113,
+          "params": [
+            "baseChance",
+            "procCoeff",
+            "scaling"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "roundMultiplier",
+          "line": 9,
+          "isDefault": false
+        },
+        {
+          "name": "calcWardingDebuffMultiplier",
+          "line": 13,
+          "isDefault": false
+        },
+        {
+          "name": "highlightTextParts",
+          "line": 60,
+          "isDefault": false
+        },
+        {
+          "name": "calcProcChance",
+          "line": 98,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "calculateMultiplierFromPct",
+          "callee": "Math.round",
+          "lineNumber": 2
+        },
+        {
+          "caller": "multiplyMultipliers",
+          "callee": "multipliers.reduce",
+          "lineNumber": 6
+        },
+        {
+          "caller": "roundMultiplier",
+          "callee": "Math.round",
+          "lineNumber": 10
+        },
+        {
+          "caller": "calcWardingDebuffMultiplier",
+          "callee": "roundMultiplier",
+          "lineNumber": 16
+        },
+        {
+          "caller": "calcWardingDebuffMultiplier",
+          "callee": "roundMultiplier",
+          "lineNumber": 18
+        },
+        {
+          "caller": "escapeHtml",
+          "callee": "text.replace",
+          "lineNumber": 30
+        },
+        {
+          "caller": "highlightText",
+          "callee": "query.trim",
+          "lineNumber": 34
+        },
+        {
+          "caller": "highlightText",
+          "callee": "escapeHtml",
+          "lineNumber": 35
+        },
+        {
+          "caller": "highlightText",
+          "callee": "text.toLowerCase",
+          "lineNumber": 37
+        },
+        {
+          "caller": "highlightText",
+          "callee": "q.toLowerCase",
+          "lineNumber": 38
+        },
+        {
+          "caller": "highlightText",
+          "callee": "lowerText.indexOf",
+          "lineNumber": 44
+        },
+        {
+          "caller": "highlightText",
+          "callee": "escapeHtml",
+          "lineNumber": 47
+        },
+        {
+          "caller": "highlightText",
+          "callee": "text.slice",
+          "lineNumber": 47
+        },
+        {
+          "caller": "highlightText",
+          "callee": "escapeHtml",
+          "lineNumber": 51
+        },
+        {
+          "caller": "highlightText",
+          "callee": "text.slice",
+          "lineNumber": 51
+        },
+        {
+          "caller": "highlightText",
+          "callee": "escapeHtml",
+          "lineNumber": 52
+        },
+        {
+          "caller": "highlightText",
+          "callee": "text.slice",
+          "lineNumber": 52
+        },
+        {
+          "caller": "highlightTextParts",
+          "callee": "query.trim",
+          "lineNumber": 61
+        },
+        {
+          "caller": "highlightTextParts",
+          "callee": "text.toLowerCase",
+          "lineNumber": 64
+        },
+        {
+          "caller": "highlightTextParts",
+          "callee": "q.toLowerCase",
+          "lineNumber": 65
+        },
+        {
+          "caller": "highlightTextParts",
+          "callee": "lowerText.indexOf",
+          "lineNumber": 70
+        },
+        {
+          "caller": "highlightTextParts",
+          "callee": "parts.push",
+          "lineNumber": 72
+        },
+        {
+          "caller": "highlightTextParts",
+          "callee": "text.slice",
+          "lineNumber": 72
+        },
+        {
+          "caller": "highlightTextParts",
+          "callee": "parts.push",
+          "lineNumber": 77
+        },
+        {
+          "caller": "highlightTextParts",
+          "callee": "text.slice",
+          "lineNumber": 77
+        },
+        {
+          "caller": "highlightTextParts",
+          "callee": "parts.push",
+          "lineNumber": 80
+        },
+        {
+          "caller": "highlightTextParts",
+          "callee": "text.slice",
+          "lineNumber": 80
+        },
+        {
+          "caller": "calcProcChance",
+          "callee": "Math.max",
+          "lineNumber": 111
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 4,
+        "functionCount": 8,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/main.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 8,
+      "nonEmptyLines": 6,
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/ModalSearchHeader.svelte",
+      "language": "svelte",
+      "fileCategory": "code",
+      "totalLines": 197,
+      "nonEmptyLines": 183,
+      "metrics": {}
+    },
+    {
+      "path": "src/MountIcon.svelte",
+      "language": "svelte",
+      "fileCategory": "code",
+      "totalLines": 14,
+      "nonEmptyLines": 13,
+      "metrics": {}
+    }
+  ]
+}

@@ -1,0 +1,936 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/lib/constants/debuff-effects.ts",
+      "type": "file",
+      "name": "debuff-effects.ts",
+      "filePath": "src/lib/constants/debuff-effects.ts",
+      "summary": "typescript file with 14 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/constants/defensive.ts",
+      "type": "file",
+      "name": "defensive.ts",
+      "filePath": "src/lib/constants/defensive.ts",
+      "summary": "typescript file with 22 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/constants/dot-damage.ts",
+      "type": "file",
+      "name": "dot-damage.ts",
+      "filePath": "src/lib/constants/dot-damage.ts",
+      "summary": "typescript file with 20 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/constants/draconic-colors.ts",
+      "type": "file",
+      "name": "draconic-colors.ts",
+      "filePath": "src/lib/constants/draconic-colors.ts",
+      "summary": "typescript file with 20 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/constants/draconic.ts",
+      "type": "file",
+      "name": "draconic.ts",
+      "filePath": "src/lib/constants/draconic.ts",
+      "summary": "typescript file with 10 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/constants/game.ts",
+      "type": "file",
+      "name": "game.ts",
+      "filePath": "src/lib/constants/game.ts",
+      "summary": "typescript file with 25 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lib/constants/game.ts:calcBaseMaxHP",
+      "type": "function",
+      "name": "calcBaseMaxHP",
+      "filePath": "src/lib/constants/game.ts",
+      "summary": "Function calcBaseMaxHP (lines 12-14)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lib/constants/heals.ts",
+      "type": "file",
+      "name": "heals.ts",
+      "filePath": "src/lib/constants/heals.ts",
+      "summary": "typescript file with 5 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/constants/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "src/lib/constants/index.ts",
+      "summary": "typescript file with 17 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/constants/perk-base-damage.ts",
+      "type": "file",
+      "name": "perk-base-damage.ts",
+      "filePath": "src/lib/constants/perk-base-damage.ts",
+      "summary": "typescript file with 133 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lib/constants/perks.ts",
+      "type": "file",
+      "name": "perks.ts",
+      "filePath": "src/lib/constants/perks.ts",
+      "summary": "typescript file with 59 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/constants/rune-base-damage.ts",
+      "type": "file",
+      "name": "rune-base-damage.ts",
+      "filePath": "src/lib/constants/rune-base-damage.ts",
+      "summary": "typescript file with 54 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/constants/stat-conversions.ts",
+      "type": "file",
+      "name": "stat-conversions.ts",
+      "filePath": "src/lib/constants/stat-conversions.ts",
+      "summary": "typescript file with 30 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/constants/storage.ts",
+      "type": "file",
+      "name": "storage.ts",
+      "filePath": "src/lib/constants/storage.ts",
+      "summary": "typescript file with 37 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/constants/thresholds.ts",
+      "type": "file",
+      "name": "thresholds.ts",
+      "filePath": "src/lib/constants/thresholds.ts",
+      "summary": "typescript file with 5 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/crit.ts",
+      "type": "file",
+      "name": "crit.ts",
+      "filePath": "src/lib/crit.ts",
+      "summary": "typescript file with 341 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/crit.ts:calcDexterity",
+      "type": "function",
+      "name": "calcDexterity",
+      "filePath": "src/lib/crit.ts",
+      "summary": "Function calcDexterity (lines 32-35)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/crit.ts:calcElementalBoost",
+      "type": "function",
+      "name": "calcElementalBoost",
+      "filePath": "src/lib/crit.ts",
+      "summary": "Function calcElementalBoost (lines 37-47)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/crit.ts:calcPerfection",
+      "type": "function",
+      "name": "calcPerfection",
+      "filePath": "src/lib/crit.ts",
+      "summary": "Function calcPerfection (lines 49-52)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/crit.ts:hasActiveGatingPerks",
+      "type": "function",
+      "name": "hasActiveGatingPerks",
+      "filePath": "src/lib/crit.ts",
+      "summary": "Function hasActiveGatingPerks (lines 189-191)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/crit.ts:round",
+      "type": "function",
+      "name": "round",
+      "filePath": "src/lib/crit.ts",
+      "summary": "Function round (lines 221-223)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/crit.ts:calcCrit",
+      "type": "function",
+      "name": "calcCrit",
+      "filePath": "src/lib/crit.ts",
+      "summary": "Function calcCrit (lines 225-341)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:src/lib/damageTypeResolve.ts",
+      "type": "file",
+      "name": "damageTypeResolve.ts",
+      "filePath": "src/lib/damageTypeResolve.ts",
+      "summary": "typescript file with 55 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lib/damageTypeResolve.ts:resolveDamageTypes",
+      "type": "function",
+      "name": "resolveDamageTypes",
+      "filePath": "src/lib/damageTypeResolve.ts",
+      "summary": "Function resolveDamageTypes (lines 3-13)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/damageTypeResolve.ts:applyFireAirConversion",
+      "type": "function",
+      "name": "applyFireAirConversion",
+      "filePath": "src/lib/damageTypeResolve.ts",
+      "summary": "Function applyFireAirConversion (lines 16-26)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/damageTypeResolve.ts:applyAirToMagicConversion",
+      "type": "function",
+      "name": "applyAirToMagicConversion",
+      "filePath": "src/lib/damageTypeResolve.ts",
+      "summary": "Function applyAirToMagicConversion (lines 29-55)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lib/defense.ts",
+      "type": "file",
+      "name": "defense.ts",
+      "filePath": "src/lib/defense.ts",
+      "summary": "typescript file with 82 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lib/defense.ts:calcDefMultiplier",
+      "type": "function",
+      "name": "calcDefMultiplier",
+      "filePath": "src/lib/defense.ts",
+      "summary": "Function calcDefMultiplier (lines 3-7)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/defense.ts:calcTrueDrPercent",
+      "type": "function",
+      "name": "calcTrueDrPercent",
+      "filePath": "src/lib/defense.ts",
+      "summary": "Function calcTrueDrPercent (lines 9-12)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/defense.ts:resolveDefenseSources",
+      "type": "function",
+      "name": "resolveDefenseSources",
+      "filePath": "src/lib/defense.ts",
+      "summary": "Function resolveDefenseSources (lines 34-62)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/defense.ts:calcBaseArmorDefPct",
+      "type": "function",
+      "name": "calcBaseArmorDefPct",
+      "filePath": "src/lib/defense.ts",
+      "summary": "Function calcBaseArmorDefPct (lines 77-82)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lib/dmgTypes.ts",
+      "type": "file",
+      "name": "dmgTypes.ts",
+      "filePath": "src/lib/dmgTypes.ts",
+      "summary": "typescript file with 64 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/EnchantSelect.svelte",
+      "type": "file",
+      "name": "EnchantSelect.svelte",
+      "filePath": "src/lib/EnchantSelect.svelte",
+      "summary": "svelte file with 468 lines",
+      "tags": [
+        "svelte",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lib/enchantTooltip.ts",
+      "type": "file",
+      "name": "enchantTooltip.ts",
+      "filePath": "src/lib/enchantTooltip.ts",
+      "summary": "typescript file with 27 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lib/enchantTooltip.ts:getEnchantTooltipText",
+      "type": "function",
+      "name": "getEnchantTooltipText",
+      "filePath": "src/lib/enchantTooltip.ts",
+      "summary": "Function getEnchantTooltipText (lines 3-27)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lib/engine.ts",
+      "type": "file",
+      "name": "engine.ts",
+      "filePath": "src/lib/engine.ts",
+      "summary": "typescript file with 6 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/engine/_utils.ts",
+      "type": "file",
+      "name": "_utils.ts",
+      "filePath": "src/lib/engine/_utils.ts",
+      "summary": "typescript file with 2 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lib/engine/_utils.ts:round2",
+      "type": "function",
+      "name": "round2",
+      "filePath": "src/lib/engine/_utils.ts",
+      "summary": "Function round2 (lines 1-1)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/_utils.ts:round4",
+      "type": "function",
+      "name": "round4",
+      "filePath": "src/lib/engine/_utils.ts",
+      "summary": "Function round4 (lines 2-2)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lib/engine/build.ts",
+      "type": "file",
+      "name": "build.ts",
+      "filePath": "src/lib/engine/build.ts",
+      "summary": "typescript file with 530 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/lib/engine/build.ts:calcCDR",
+      "type": "function",
+      "name": "calcCDR",
+      "filePath": "src/lib/engine/build.ts",
+      "summary": "Function calcCDR (lines 26-97)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/lib/engine/build.ts:calcBoosts",
+      "type": "function",
+      "name": "calcBoosts",
+      "filePath": "src/lib/engine/build.ts",
+      "summary": "Function calcBoosts (lines 101-202)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/lib/engine/build.ts:accumulateMonkWeapon",
+      "type": "function",
+      "name": "accumulateMonkWeapon",
+      "filePath": "src/lib/engine/build.ts",
+      "summary": "Function accumulateMonkWeapon (lines 210-261)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/lib/engine/build.ts:accumulateStandardWeapon",
+      "type": "function",
+      "name": "accumulateStandardWeapon",
+      "filePath": "src/lib/engine/build.ts",
+      "summary": "Function accumulateStandardWeapon (lines 263-281)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/build.ts:processEnchantedSlot",
+      "type": "function",
+      "name": "processEnchantedSlot",
+      "filePath": "src/lib/engine/build.ts",
+      "summary": "Function processEnchantedSlot (lines 283-302)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/build.ts:accumulateEquipment",
+      "type": "function",
+      "name": "accumulateEquipment",
+      "filePath": "src/lib/engine/build.ts",
+      "summary": "Function accumulateEquipment (lines 304-387)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/lib/engine/build.ts:finalizePerks",
+      "type": "function",
+      "name": "finalizePerks",
+      "filePath": "src/lib/engine/build.ts",
+      "summary": "Function finalizePerks (lines 389-419)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/build.ts:applyEmotionalAttackSpeed",
+      "type": "function",
+      "name": "applyEmotionalAttackSpeed",
+      "filePath": "src/lib/engine/build.ts",
+      "summary": "Function applyEmotionalAttackSpeed (lines 421-426)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/build.ts:applyGladiatorialRage",
+      "type": "function",
+      "name": "applyGladiatorialRage",
+      "filePath": "src/lib/engine/build.ts",
+      "summary": "Function applyGladiatorialRage (lines 428-437)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/build.ts:computeBuffs",
+      "type": "function",
+      "name": "computeBuffs",
+      "filePath": "src/lib/engine/build.ts",
+      "summary": "Function computeBuffs (lines 439-444)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/build.ts:maxBuffPotency",
+      "type": "function",
+      "name": "maxBuffPotency",
+      "filePath": "src/lib/engine/build.ts",
+      "summary": "Function maxBuffPotency (lines 446-450)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/build.ts:deriveResults",
+      "type": "function",
+      "name": "deriveResults",
+      "filePath": "src/lib/engine/build.ts",
+      "summary": "Function deriveResults (lines 452-524)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/lib/engine/build.ts:calcBuild",
+      "type": "function",
+      "name": "calcBuild",
+      "filePath": "src/lib/engine/build.ts",
+      "summary": "Function calcBuild (lines 526-530)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/lib/engine/data.ts",
+      "type": "file",
+      "name": "data.ts",
+      "filePath": "src/lib/engine/data.ts",
+      "summary": "typescript file with 3 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/engine/data/character.ts",
+      "type": "file",
+      "name": "character.ts",
+      "filePath": "src/lib/engine/data/character.ts",
+      "summary": "typescript file with 29 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lib/engine/data/character.ts:getRace",
+      "type": "function",
+      "name": "getRace",
+      "filePath": "src/lib/engine/data/character.ts",
+      "summary": "Function getRace (lines 16-16)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/data/character.ts:getGuild",
+      "type": "function",
+      "name": "getGuild",
+      "filePath": "src/lib/engine/data/character.ts",
+      "summary": "Function getGuild (lines 17-17)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/data/character.ts:getPerk",
+      "type": "function",
+      "name": "getPerk",
+      "filePath": "src/lib/engine/data/character.ts",
+      "summary": "Function getPerk (lines 18-18)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/data/character.ts:getGuildRank",
+      "type": "function",
+      "name": "getGuildRank",
+      "filePath": "src/lib/engine/data/character.ts",
+      "summary": "Function getGuildRank (lines 20-25)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/lib/engine/data/character.ts:isMonkGuild",
+      "type": "function",
+      "name": "isMonkGuild",
+      "filePath": "src/lib/engine/data/character.ts",
+      "summary": "Function isMonkGuild (lines 27-29)",
+      "tags": [
+        "function"
+      ],
+      "complexity": "moderate"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/lib/constants/game.ts",
+      "target": "function:src/lib/constants/game.ts:calcBaseMaxHP",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/crit.ts",
+      "target": "function:src/lib/crit.ts:calcDexterity",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/crit.ts",
+      "target": "function:src/lib/crit.ts:calcElementalBoost",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/crit.ts",
+      "target": "function:src/lib/crit.ts:calcPerfection",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/crit.ts",
+      "target": "function:src/lib/crit.ts:hasActiveGatingPerks",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/crit.ts",
+      "target": "function:src/lib/crit.ts:round",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/crit.ts",
+      "target": "function:src/lib/crit.ts:calcCrit",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/damageTypeResolve.ts",
+      "target": "function:src/lib/damageTypeResolve.ts:resolveDamageTypes",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/damageTypeResolve.ts",
+      "target": "function:src/lib/damageTypeResolve.ts:applyFireAirConversion",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/damageTypeResolve.ts",
+      "target": "function:src/lib/damageTypeResolve.ts:applyAirToMagicConversion",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/defense.ts",
+      "target": "function:src/lib/defense.ts:calcDefMultiplier",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/defense.ts",
+      "target": "function:src/lib/defense.ts:calcTrueDrPercent",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/defense.ts",
+      "target": "function:src/lib/defense.ts:resolveDefenseSources",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/defense.ts",
+      "target": "function:src/lib/defense.ts:calcBaseArmorDefPct",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/enchantTooltip.ts",
+      "target": "function:src/lib/enchantTooltip.ts:getEnchantTooltipText",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/_utils.ts",
+      "target": "function:src/lib/engine/_utils.ts:round2",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/_utils.ts",
+      "target": "function:src/lib/engine/_utils.ts:round4",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "function:src/lib/engine/build.ts:calcCDR",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "function:src/lib/engine/build.ts:calcBoosts",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "function:src/lib/engine/build.ts:accumulateMonkWeapon",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "function:src/lib/engine/build.ts:accumulateStandardWeapon",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "function:src/lib/engine/build.ts:processEnchantedSlot",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "function:src/lib/engine/build.ts:accumulateEquipment",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "function:src/lib/engine/build.ts:finalizePerks",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "function:src/lib/engine/build.ts:applyEmotionalAttackSpeed",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "function:src/lib/engine/build.ts:applyGladiatorialRage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "function:src/lib/engine/build.ts:computeBuffs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "function:src/lib/engine/build.ts:maxBuffPotency",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "function:src/lib/engine/build.ts:deriveResults",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "function:src/lib/engine/build.ts:calcBuild",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/data/character.ts",
+      "target": "function:src/lib/engine/data/character.ts:getRace",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/data/character.ts",
+      "target": "function:src/lib/engine/data/character.ts:getGuild",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/data/character.ts",
+      "target": "function:src/lib/engine/data/character.ts:getPerk",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/data/character.ts",
+      "target": "function:src/lib/engine/data/character.ts:getGuildRank",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/lib/engine/data/character.ts",
+      "target": "function:src/lib/engine/data/character.ts:isMonkGuild",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    }
+  ]
+}

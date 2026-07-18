@@ -1,0 +1,149 @@
+{
+  "nodes": [
+    {
+      "id": "file:.fallowrc.json",
+      "type": "file",
+      "name": ".fallowrc.json",
+      "filePath": ".fallowrc.json",
+      "summary": "json file with 56 lines",
+      "tags": [
+        "json",
+        "config"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:AGENTS.md",
+      "type": "file",
+      "name": "AGENTS.md",
+      "filePath": "AGENTS.md",
+      "summary": "markdown file with 9 lines",
+      "tags": [
+        "markdown",
+        "docs"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:README.md",
+      "type": "file",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "markdown file with 47 lines",
+      "tags": [
+        "markdown",
+        "docs"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:fallow-output.json",
+      "type": "file",
+      "name": "fallow-output.json",
+      "filePath": "fallow-output.json",
+      "summary": "json file with 783 lines",
+      "tags": [
+        "json",
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:fallow-security.json",
+      "type": "file",
+      "name": "fallow-security.json",
+      "filePath": "fallow-security.json",
+      "summary": "json file with 1392 lines",
+      "tags": [
+        "json",
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:index.html",
+      "type": "file",
+      "name": "index.html",
+      "filePath": "index.html",
+      "summary": "html file with 12 lines",
+      "tags": [
+        "html",
+        "markup"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:package.json",
+      "type": "file",
+      "name": "package.json",
+      "filePath": "package.json",
+      "summary": "json file with 28 lines",
+      "tags": [
+        "json",
+        "config"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:ts-errors.txt",
+      "type": "file",
+      "name": "ts-errors.txt",
+      "filePath": "ts-errors.txt",
+      "summary": "txt file with 1 lines",
+      "tags": [
+        "txt",
+        "docs"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tsconfig.app.json",
+      "type": "file",
+      "name": "tsconfig.app.json",
+      "filePath": "tsconfig.app.json",
+      "summary": "json file with 20 lines",
+      "tags": [
+        "json",
+        "config"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tsconfig.json",
+      "type": "file",
+      "name": "tsconfig.json",
+      "filePath": "tsconfig.json",
+      "summary": "json file with 3 lines",
+      "tags": [
+        "json",
+        "config"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tsconfig.node.json",
+      "type": "file",
+      "name": "tsconfig.node.json",
+      "filePath": "tsconfig.node.json",
+      "summary": "json file with 24 lines",
+      "tags": [
+        "json",
+        "config"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:vercel.json",
+      "type": "file",
+      "name": "vercel.json",
+      "filePath": "vercel.json",
+      "summary": "json file with 34 lines",
+      "tags": [
+        "json",
+        "config"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": []
+}

@@ -1,0 +1,53 @@
+{
+  "nodes": [
+    {
+      "id": "file:.understand-anything/config.json",
+      "type": "file",
+      "name": "config.json",
+      "filePath": ".understand-anything/config.json",
+      "summary": "json file with 1 lines",
+      "tags": [
+        "json",
+        "config"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:.understand-anything/fingerprints.json",
+      "type": "file",
+      "name": "fingerprints.json",
+      "filePath": ".understand-anything/fingerprints.json",
+      "summary": "json file with 4261 lines",
+      "tags": [
+        "json",
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:.understand-anything/knowledge-graph.json",
+      "type": "file",
+      "name": "knowledge-graph.json",
+      "filePath": ".understand-anything/knowledge-graph.json",
+      "summary": "json file with 6876 lines",
+      "tags": [
+        "json",
+        "config"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "file:.understand-anything/meta.json",
+      "type": "file",
+      "name": "meta.json",
+      "filePath": ".understand-anything/meta.json",
+      "summary": "json file with 6 lines",
+      "tags": [
+        "json",
+        "config"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": []
+}

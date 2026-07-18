@@ -1,0 +1,89 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/ScalingBreakdownRow.svelte",
+      "type": "file",
+      "name": "ScalingBreakdownRow.svelte",
+      "filePath": "src/ScalingBreakdownRow.svelte",
+      "summary": "svelte file with 102 lines",
+      "tags": [
+        "svelte",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/StatFilter.svelte",
+      "type": "file",
+      "name": "StatFilter.svelte",
+      "filePath": "src/StatFilter.svelte",
+      "summary": "svelte file with 343 lines",
+      "tags": [
+        "svelte",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/SuggestDrop.svelte",
+      "type": "file",
+      "name": "SuggestDrop.svelte",
+      "filePath": "src/SuggestDrop.svelte",
+      "summary": "svelte file with 68 lines",
+      "tags": [
+        "svelte",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/TagFilter.svelte",
+      "type": "file",
+      "name": "TagFilter.svelte",
+      "filePath": "src/TagFilter.svelte",
+      "summary": "svelte file with 342 lines",
+      "tags": [
+        "svelte",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/WeaponStatFilter.svelte",
+      "type": "file",
+      "name": "WeaponStatFilter.svelte",
+      "filePath": "src/WeaponStatFilter.svelte",
+      "summary": "svelte file with 255 lines",
+      "tags": [
+        "svelte",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/WeaponStatsDisplay.svelte",
+      "type": "file",
+      "name": "WeaponStatsDisplay.svelte",
+      "filePath": "src/WeaponStatsDisplay.svelte",
+      "summary": "svelte file with 118 lines",
+      "tags": [
+        "svelte",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:vite.config.ts",
+      "type": "file",
+      "name": "vite.config.ts",
+      "filePath": "vite.config.ts",
+      "summary": "typescript file with 57 lines",
+      "tags": [
+        "typescript",
+        "code"
+      ],
+      "complexity": "simple"
+    }
+  ],
+  "edges": []
+}
