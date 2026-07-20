@@ -705,4 +705,29 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     requiredBuff: 'Steam Buildup',
     note: 'Replaces RMB with a 10-hit Steam Blast at max Steam Buildup. Guardsbreak. Reduced chance to proc other effects.',
   },
+  // ── Quarry ─────────────────────────────────────────────────────────
+  {
+    perkName: 'Quarry',
+    condition: 'After building 4 Hidden Treasure stacks on an opponent',
+    getBaseDamage: ({ perkAmount }) => 20 * perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { physical: 0.5, holy: 0.5 },
+    scalingMode: 'fixed',
+    scalings: { physical: 1.0, holy: 1.0 },
+    procCoefficient: { type: 'noProc' },
+    note: '2.5 second cooldown, cooldown is per enemy',
+  },
+  // ── Wind Drill ─────────────────────────────────────────────────────────
+  {
+    perkName: 'Wind Drill',
+    condition: 'Replaces your roll',
+    getBaseDamage: ({ perkAmount }) => 3 + 1.5 * perkAmount,
+    hits: 10,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { air: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { air: 1.0 },
+    procCoefficient: { type: 'hasCoeff', value: 1.0 },
+    note: 'Can be held for up to 2 seconds, dealing damage every 0.2 seconds',
+  }
 ]
