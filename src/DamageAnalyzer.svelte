@@ -1707,11 +1707,10 @@ import {
 
   $: _waAllHits = parseWAHitsAll(selectedWA.baseDamage)
   $: _waHitsSeq = (() => {
-    if (selectedWA.name === 'Jinx') {
-      const basePerDebuff = 10
+    if (selectedWA.baseDamagePerDebuff) {
       const count = _generalActiveDebuffCount
       if (count <= 0) return null
-      return [{ n: basePerDebuff * count, count: 1 }]
+      return [{ n: selectedWA.baseDamagePerDebuff * count, count: 1 }]
     }
     return _waAllHits.dmg.length > 0 ? _waAllHits.dmg.map(h => 
       _wildBoltAmt > 0 && selectedWA.name === 'Laser' 

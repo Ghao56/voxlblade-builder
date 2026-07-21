@@ -46,6 +46,7 @@ export interface WeaponArt {
   avgTotalHits?: number
   replaces?: string;
   category?: string;
+  baseDamagePerDebuff?: number;
 }
 
 export const WEAPON_ARTS: WeaponArt[] = [
@@ -331,6 +332,7 @@ export const WEAPON_ARTS: WeaponArt[] = [
     description: "Detonate all debuffs around yourself dealing bonus damage based on how many debuffs they have!",
     cooldown: 15,
     baseDamage: "10 × Debuff Amount",
+    baseDamagePerDebuff: 10,
     damageType: "1 Hex",
     scaling: "Same as weapon",
     requirements: { hexScaling: 0.6 },
