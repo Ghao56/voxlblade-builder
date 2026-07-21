@@ -31,7 +31,7 @@ import { resolveStanceOverlay } from './data/stanceOverlays'
 import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
 import Badge from './lib/ui/Badge.svelte'
 import { getEnemyHpDotMultiplier } from './data/enemyHpEffects'
-import { calcDotTick, getDotBase, getDotPotencyMult, toGamePotency, DOT_TYPE_LIST, DOT_SCALINGS } from './data/DoTDamage'
+import { calcDotTick, getDotBase, getDotPotencyMult, toGamePotency, calcDotDisplayPotency, DOT_TYPE_LIST, DOT_SCALINGS } from './data/DoTDamage'
 import { WEAPON_PROC_COEFFS, DEFAULT_PROC_COEFF, WA_PROC_COEFFS } from './data/procCoefficients'
 import { BOOST_DEF_MAP, calcFrenzyPct, calcMinionAbsorptionPotency } from './data/Boost'
 import {
@@ -533,13 +533,14 @@ import {
           }
         }
         if (potPerk > 0) {
-          const gamePot = roundMultiplier(potPerk * 0.1)
-          const effect = calcBuffEffect(debuff.name, gamePot)
-          debuff.potency = gamePot
+          const edAmt = perks['Endless Despair'] ?? 0
+          const dispPot = calcDotDisplayPotency(potPerk, edAmt)
+          const effect = calcBuffEffect(debuff.name, dispPot)
+          debuff.potency = dispPot
           debuff.effectLabel = effect ? `${effect.value}${effect.unit === '%' ? '%' : ''}` : null
           debuff.variants = debuff.variants.map(v => ({
             ...v,
-            potency: gamePot,
+            potency: dispPot,
             effectLabel: debuff.effectLabel,
           }))
         }

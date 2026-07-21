@@ -1,6 +1,7 @@
 <script lang="ts">
   import { build, result } from './lib/store'
   import { calcWardingDebuffMultiplier, roundMultiplier } from './lib/utils'
+  import { calcDotDisplayPotency } from './data/DoTDamage'
   import Badge from './lib/ui/Badge.svelte'
   import {
     BUFF_DEFS,
@@ -183,15 +184,11 @@ import { WA_PROC_COEFFS, DEFAULT_PROC_COEFF } from './data/procCoefficients'
       if (buff.buffName === 'Burn' && _infActive && _isDragonBlooded && $build.draconicColor === 'fire') {
         potPerk = roundMultiplier(potPerk * getDraconicInfusionDurMult(_infPerkAmt))
       }
-      let perkBase = roundMultiplier(potPerk * 0.1)
       if (_infActive && _isDragonBlooded && $build.draconicColor === 'hex') {
-        perkBase = roundMultiplier(perkBase * getDraconicInfusionPotMult(_infPerkAmt))
+        potPerk = roundMultiplier(potPerk * getDraconicInfusionPotMult(_infPerkAmt))
       }
-      const totalPot = roundMultiplier(currentPot + perkBase)
       const edAmt = $result.perks['Endless Despair'] ?? 0
-      const potency = edAmt > 0
-        ? roundMultiplier(totalPot * (1 + 0.35 * edAmt) + 0.1)
-        : totalPot
+      const potency = calcDotDisplayPotency(potPerk, edAmt)
       const extra = roundMultiplier(potency - currentPot)
       return {
         ...buff,

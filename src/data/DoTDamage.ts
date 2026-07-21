@@ -88,3 +88,16 @@ export function calcCausticSlow(
 export function toGamePotency(builderValue: number): number {
   return builderValue * DOT_BUILDER_TO_GAME
 }
+
+/**
+ * Compute the effective DoT display potency for a Bleed/Burn/Poison debuff.
+ * Applies Endless Despair (ED) modifier when present.
+ *
+ * @param potPerk - The final potency perk value (after draconic modifiers etc.)
+ * @param edAmt - The player's Endless Despair perk amount (0 if none)
+ */
+export function calcDotDisplayPotency(potPerk: number, edAmt: number): number {
+  const gamePot = Math.round(potPerk * DOT_BUILDER_TO_GAME * DOT_ROUND_FACTOR) / DOT_ROUND_FACTOR
+  if (edAmt <= 0) return gamePot
+  return Math.round((gamePot * (1 + 0.35 * edAmt) + 0.1) * DOT_ROUND_FACTOR) / DOT_ROUND_FACTOR
+}
