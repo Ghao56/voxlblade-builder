@@ -273,6 +273,7 @@ export let cauterizeScalingMult: number = 1
 
   let activePresets: Set<string> = new Set()
   export let disabledDebuffs: Set<string> = new Set()
+  export let waDebuffWarning: boolean = false
 
   function applyPreset(p: Preset) {
     if (activePresets.has(p.id)) {
@@ -1300,6 +1301,17 @@ export let cauterizeScalingMult: number = 1
               </div>
             {/if}
           {/each}
+          {#if waDebuffWarning && waHits.length === 0}
+            <div class="bdc-hit-list-grp">
+              <div class="bdc-grp-head">
+                <span class="bdc-hit-grp-label">WA</span>
+              </div>
+              <div class="bdc-wa-debuff-warn">
+                <span class="bdc-wa-debuff-warn-icon">⚠</span>
+                <span>No active debuffs — this WA requires debuffs to deal damage.</span>
+              </div>
+            </div>
+          {/if}
         </div>
         {#if _activeDotTicks.length > 0}
           <div class="bdc-hit-list-grp">
@@ -2210,6 +2222,22 @@ export let cauterizeScalingMult: number = 1
 }
 
 /* ── Full hit list (no selection needed) ── */
+.bdc-wa-debuff-warn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: rgba(251, 191, 36, 0.08);
+  border: 1px solid rgba(251, 191, 36, 0.25);
+  color: #fbbf24;
+  font-size: .75rem;
+  font-weight: 500;
+}
+.bdc-wa-debuff-warn-icon {
+  font-size: .9rem;
+  flex-shrink: 0;
+}
 .bdc-empty {
   font-size: .78rem;
   color: var(--ink-muted, #8a8d85);

@@ -1,0 +1,730 @@
+﻿[
+    {
+        "target":  "config:fallow-output.json",
+        "description":  "Fallow configuration file that controls the behavior of the Fallow dead-code analysis which produces fallow-output.json",
+        "source":  "config:.fallowrc.json",
+        "type":  "configures",
+        "weight":  0.6
+    },
+    {
+        "target":  "config:fallow-security.json",
+        "description":  "Fallow configuration file that controls the behavior of the Fallow security analysis which produces fallow-security.json",
+        "source":  "config:.fallowrc.json",
+        "type":  "configures",
+        "weight":  0.6
+    },
+    {
+        "target":  "config:package.json",
+        "description":  "AGENTS.md documents the project structure, tech stack, and workflow which are defined in package.json",
+        "source":  "document:AGENTS.md",
+        "type":  "documents",
+        "weight":  0.5
+    },
+    {
+        "target":  "config:package.json",
+        "description":  "index.html is the entry point for the Vite build system configured in package.json",
+        "source":  "file:index.html",
+        "type":  "depends_on",
+        "weight":  0.6
+    },
+    {
+        "target":  "config:tsconfig.app.json",
+        "description":  "tsconfig.json extends tsconfig.app.json as its base configuration",
+        "source":  "config:tsconfig.json",
+        "type":  "inherits",
+        "weight":  0.9
+    },
+    {
+        "target":  "config:package.json",
+        "description":  "Vercel deployment config references build scripts and output directory defined in package.json",
+        "source":  "config:vercel.json",
+        "type":  "configures",
+        "weight":  0.6
+    },
+    {
+        "target":  "file:index.html",
+        "description":  "Vercel config defines caching headers for /index.html served by the deployment",
+        "source":  "config:vercel.json",
+        "type":  "routes",
+        "weight":  0.5
+    },
+    {
+        "target":  "config:tsconfig.app.json",
+        "description":  "package.json check script references tsconfig.app.json for type-checking",
+        "source":  "config:package.json",
+        "type":  "configures",
+        "weight":  0.6
+    },
+    {
+        "target":  "config:tsconfig.node.json",
+        "description":  "package.json check script references tsconfig.node.json for node-side type-checking",
+        "source":  "config:package.json",
+        "type":  "configures",
+        "weight":  0.6
+    },
+    {
+        "target":  "document:AGENTS.md",
+        "description":  "Both documents describe the project; README covers template setup while AGENTS.md covers project-specific conventions",
+        "source":  "document:README.md",
+        "type":  "related",
+        "weight":  0.5
+    },
+    {
+        "target":  "file:src/App.svelte",
+        "description":  "Onboarding doc references App.svelte as the root component",
+        "source":  "file:docs/ONBOARDING.md",
+        "type":  "documents",
+        "weight":  0.8
+    },
+    {
+        "target":  "file:src/DamageAnalyzer.svelte",
+        "description":  "Onboarding doc references DamageAnalyzer.svelte as main damage analysis interface",
+        "source":  "file:docs/ONBOARDING.md",
+        "type":  "documents",
+        "weight":  0.8
+    },
+    {
+        "target":  "file:src/BaseDamageCalc.svelte",
+        "description":  "Onboarding doc references BaseDamageCalc.svelte as base damage calculator",
+        "source":  "file:docs/ONBOARDING.md",
+        "type":  "documents",
+        "weight":  0.8
+    },
+    {
+        "target":  "file:src/BuffList.svelte",
+        "description":  "Onboarding doc references BuffList.svelte",
+        "source":  "file:docs/ONBOARDING.md",
+        "type":  "documents",
+        "weight":  0.6
+    },
+    {
+        "target":  "file:src/BuildSaves.svelte",
+        "description":  "Onboarding doc references BuildSaves.svelte",
+        "source":  "file:docs/ONBOARDING.md",
+        "type":  "documents",
+        "weight":  0.6
+    },
+    {
+        "target":  "file:src/data/Perkbasedmg.ts",
+        "description":  "Onboarding doc references Perkbasedmg.ts for damage formulas",
+        "source":  "file:docs/ONBOARDING.md",
+        "type":  "documents",
+        "weight":  0.7
+    },
+    {
+        "target":  "file:src/data/DoTDamage.ts",
+        "description":  "Onboarding doc references DoTDamage.ts",
+        "source":  "file:docs/ONBOARDING.md",
+        "type":  "documents",
+        "weight":  0.5
+    },
+    {
+        "target":  "file:src/data/Weaponartcheck.ts",
+        "description":  "Onboarding doc references Weaponartcheck.ts",
+        "source":  "file:docs/ONBOARDING.md",
+        "type":  "documents",
+        "weight":  0.5
+    },
+    {
+        "target":  "file:src/data/draconicColorEffects.ts",
+        "description":  "Onboarding doc references draconic color effects",
+        "source":  "file:docs/ONBOARDING.md",
+        "type":  "documents",
+        "weight":  0.4
+    },
+    {
+        "target":  "file:src/data/draconicRunes.ts",
+        "description":  "Onboarding doc references draconic runes",
+        "source":  "file:docs/ONBOARDING.md",
+        "type":  "documents",
+        "weight":  0.4
+    },
+    {
+        "target":  "file:src/DamageAnalyzer.svelte",
+        "description":  "App.svelte contains DamageAnalyzer as a child component in the analyze tab",
+        "source":  "file:src/App.svelte",
+        "type":  "contains",
+        "weight":  0.9
+    },
+    {
+        "target":  "file:src/BuffList.svelte",
+        "description":  "App.svelte contains BuffList as a child component",
+        "source":  "file:src/App.svelte",
+        "type":  "contains",
+        "weight":  0.8
+    },
+    {
+        "target":  "file:src/CdrStepsCalc.svelte",
+        "description":  "App.svelte contains CdrStepsCalc for rune CDR breakdown display",
+        "source":  "file:src/App.svelte",
+        "type":  "contains",
+        "weight":  0.5
+    },
+    {
+        "target":  "file:src/data/Perkbasedmg.ts",
+        "description":  "App.svelte imports DRAGON_STATE_HP_GATE, gateThreshold from Perkbasedmg",
+        "source":  "file:src/App.svelte",
+        "type":  "imports",
+        "weight":  0.8
+    },
+    {
+        "target":  "file:src/data/draconicColorEffects.ts",
+        "description":  "App.svelte imports DRACONIC_COLOR_ATTACK_STATS",
+        "source":  "file:src/App.svelte",
+        "type":  "imports",
+        "weight":  0.7
+    },
+    {
+        "target":  "file:src/data/cdr.ts",
+        "description":  "App.svelte imports CDR_PERK_DATA for CDR toggle logic",
+        "source":  "file:src/App.svelte",
+        "type":  "imports",
+        "weight":  0.7
+    },
+    {
+        "target":  "file:src/data/Weaponartcheck.ts",
+        "description":  "App.svelte imports checkWA and getUnmetReqs for weapon art validation",
+        "source":  "file:src/App.svelte",
+        "type":  "imports",
+        "weight":  0.8
+    },
+    {
+        "target":  "file:src/data/procCoefficients.ts",
+        "description":  "App.svelte uses proc coefficients indirectly through engine calculations",
+        "source":  "file:src/App.svelte",
+        "type":  "related",
+        "weight":  0.5
+    },
+    {
+        "target":  "file:src/data/raceEffects.ts",
+        "description":  "App.svelte imports calcOrkTenacityBonus from raceEffects",
+        "source":  "file:src/App.svelte",
+        "type":  "imports",
+        "weight":  0.7
+    },
+    {
+        "target":  "file:src/data/cdr.ts",
+        "description":  "App.svelte uses CDR_PERK_DATA for toggleable CDR perk management",
+        "source":  "file:src/App.svelte",
+        "type":  "calls",
+        "weight":  0.6
+    },
+    {
+        "target":  "file:src/BaseDamageCalc.svelte",
+        "description":  "DamageAnalyzer contains BaseDamageCalc as child component for hit-by-hit display",
+        "source":  "file:src/DamageAnalyzer.svelte",
+        "type":  "contains",
+        "weight":  0.9
+    },
+    {
+        "target":  "file:src/CritIcon.svelte",
+        "description":  "DamageAnalyzer uses CritIcon for critical hit display",
+        "source":  "file:src/DamageAnalyzer.svelte",
+        "type":  "contains",
+        "weight":  0.4
+    },
+    {
+        "target":  "file:src/data/Perkbasedmg.ts",
+        "description":  "DamageAnalyzer imports PERK_DMG_DEFS, DRAGON_STATE_HP_GATE, calcSpringblastBaseDamage from Perkbasedmg",
+        "source":  "file:src/DamageAnalyzer.svelte",
+        "type":  "imports",
+        "weight":  0.9
+    },
+    {
+        "target":  "file:src/data/debuffCombatEffects.ts",
+        "description":  "DamageAnalyzer imports DEBUFF_COMBAT_EFFECTS for debuff damage/defense calculations",
+        "source":  "file:src/DamageAnalyzer.svelte",
+        "type":  "imports",
+        "weight":  0.8
+    },
+    {
+        "target":  "file:src/data/defensivePerks.ts",
+        "description":  "DamageAnalyzer imports getActiveDefensivePerkSources, calcDefensivePotencyMult",
+        "source":  "file:src/DamageAnalyzer.svelte",
+        "type":  "imports",
+        "weight":  0.8
+    },
+    {
+        "target":  "file:src/data/raceEffects.ts",
+        "description":  "DamageAnalyzer imports getActiveRaceEffect, getOrkTenacityBuffs, calcOrkTenacityBonus",
+        "source":  "file:src/DamageAnalyzer.svelte",
+        "type":  "imports",
+        "weight":  0.7
+    },
+    {
+        "target":  "file:src/data/draconicRunes.ts",
+        "description":  "DamageAnalyzer imports applyDraconicBonuses, getDraconicBonuses",
+        "source":  "file:src/DamageAnalyzer.svelte",
+        "type":  "imports",
+        "weight":  0.7
+    },
+    {
+        "target":  "file:src/data/draconicColorEffects.ts",
+        "description":  "DamageAnalyzer imports getDraconicColorDmgMultiplier",
+        "source":  "file:src/DamageAnalyzer.svelte",
+        "type":  "imports",
+        "weight":  0.7
+    },
+    {
+        "target":  "file:src/data/selfDamagePerks.ts",
+        "description":  "DamageAnalyzer imports SELF_DAMAGE_PERK_DEFS, calcSelfDamage",
+        "source":  "file:src/DamageAnalyzer.svelte",
+        "type":  "imports",
+        "weight":  0.7
+    },
+    {
+        "target":  "file:src/data/procCoefficients.ts",
+        "description":  "DamageAnalyzer imports WEAPON_PROC_COEFFS, WA_PROC_COEFFS, DEFAULT_PROC_COEFF",
+        "source":  "file:src/DamageAnalyzer.svelte",
+        "type":  "imports",
+        "weight":  0.8
+    },
+    {
+        "target":  "file:src/data/weapon base dmg.ts",
+        "description":  "DamageAnalyzer imports WEAPON_BASE_DMG for weapon hit calculations",
+        "source":  "file:src/DamageAnalyzer.svelte",
+        "type":  "imports",
+        "weight":  0.8
+    },
+    {
+        "target":  "file:src/data/stanceOverlays.ts",
+        "description":  "DamageAnalyzer imports resolveStanceOverlay for weapon type overrides",
+        "source":  "file:src/DamageAnalyzer.svelte",
+        "type":  "imports",
+        "weight":  0.6
+    },
+    {
+        "target":  "file:src/data/enemyHpEffects.ts",
+        "description":  "DamageAnalyzer imports getEnemyHpDotMultiplier",
+        "source":  "file:src/DamageAnalyzer.svelte",
+        "type":  "imports",
+        "weight":  0.6
+    },
+    {
+        "target":  "file:src/data/mountRunes.ts",
+        "description":  "DamageAnalyzer imports MOUNT_RUNE_DEFS for mount weapon calculations",
+        "source":  "file:src/DamageAnalyzer.svelte",
+        "type":  "imports",
+        "weight":  0.6
+    },
+    {
+        "target":  "file:src/data/DoTDamage.ts",
+        "description":  "DamageAnalyzer imports calcDotTick, getDotBase, getDotPotencyMult, toGamePotency, calcDotDisplayPotency, DOT_SCALINGS, DOT_TYPE_LIST",
+        "source":  "file:src/DamageAnalyzer.svelte",
+        "type":  "imports",
+        "weight":  0.7
+    },
+    {
+        "target":  "file:src/CritIcon.svelte",
+        "description":  "BaseDamageCalc uses CritIcon for crit display in hit rows",
+        "source":  "file:src/BaseDamageCalc.svelte",
+        "type":  "contains",
+        "weight":  0.5
+    },
+    {
+        "target":  "file:src/data/DoTDamage.ts",
+        "description":  "BaseDamageCalc imports DOT_DMG_TYPE_MAP from DoTDamage",
+        "source":  "file:src/BaseDamageCalc.svelte",
+        "type":  "imports",
+        "weight":  0.7
+    },
+    {
+        "target":  "file:src/data/debuffCombatEffects.ts",
+        "description":  "BaseDamageCalc uses debuff combat effects indirectly via debuff data passed as props",
+        "source":  "file:src/BaseDamageCalc.svelte",
+        "type":  "related",
+        "weight":  0.5
+    },
+    {
+        "target":  "file:src/data/DoTDamage.ts",
+        "description":  "BuffList imports calcDotDisplayPotency for DoT potency display",
+        "source":  "file:src/BuffList.svelte",
+        "type":  "imports",
+        "weight":  0.6
+    },
+    {
+        "target":  "file:src/data/procCoefficients.ts",
+        "description":  "BuffList imports WA_PROC_COEFFS, DEFAULT_PROC_COEFF for auto-debuff context",
+        "source":  "file:src/BuffList.svelte",
+        "type":  "imports",
+        "weight":  0.5
+    },
+    {
+        "target":  "file:src/data/DoTDamage.ts",
+        "description":  "Perkbasedmg imports getDotPotencyMult for DoT damage calculations",
+        "source":  "file:src/data/Perkbasedmg.ts",
+        "type":  "imports",
+        "weight":  0.7
+    },
+    {
+        "target":  "file:src/data/draconicColorEffects.ts",
+        "description":  "Perkbasedmg imports getDraconicColorDmgMultiplier for color-specific damage",
+        "source":  "file:src/data/Perkbasedmg.ts",
+        "type":  "imports",
+        "weight":  0.6
+    },
+    {
+        "target":  "file:src/data/draconicColorEffects.ts",
+        "description":  "defensivePerks uses draconic infusion potency multiplier via draconicBuffs",
+        "source":  "file:src/data/defensivePerks.ts",
+        "type":  "related",
+        "weight":  0.5
+    },
+    {
+        "target":  "file:src/data/Perkbasedmg.ts",
+        "description":  "raceEffects imports HpGate type and isHpGateActive from Perkbasedmg",
+        "source":  "file:src/data/raceEffects.ts",
+        "type":  "imports",
+        "weight":  0.6
+    },
+    {
+        "target":  "file:src/App.svelte",
+        "description":  "BuildSaves is rendered within App.svelte for build persistence",
+        "source":  "file:src/BuildSaves.svelte",
+        "type":  "related",
+        "weight":  0.6
+    },
+    {
+        "target":  "file:src/data/Perkbasedmg.ts",
+        "description":  "decode_full.mjs duplicates some engine logic from Perkbasedmg and engine modules for standalone debugging",
+        "source":  "file:decode_full.mjs",
+        "type":  "similar_to",
+        "weight":  0.7
+    },
+    {
+        "target":  "file:src/App.svelte",
+        "description":  "decode_full.mjs mirrors the stat aggregation logic used in App.svelte\u0027s build pipeline",
+        "source":  "file:decode_full.mjs",
+        "type":  "similar_to",
+        "weight":  0.5
+    },
+    {
+        "target":  "function:src/data/weaponConditionalBoosts.ts:getWeaponConditionalBoost",
+        "description":  null,
+        "source":  "file:src/data/weaponConditionalBoosts.ts",
+        "type":  "contains",
+        "weight":  null
+    },
+    {
+        "target":  "function:src/data/weaponArts.ts:WAIndividualHit",
+        "description":  null,
+        "source":  "file:src/data/weaponArts.ts",
+        "type":  "contains",
+        "weight":  null
+    },
+    {
+        "target":  "function:src/data/weaponArts.ts:WeaponArtRequirement",
+        "description":  null,
+        "source":  "file:src/data/weaponArts.ts",
+        "type":  "contains",
+        "weight":  null
+    },
+    {
+        "target":  "function:src/data/weaponArts.ts:WeaponArt",
+        "description":  null,
+        "source":  "file:src/data/weaponArts.ts",
+        "type":  "contains",
+        "weight":  null
+    },
+    {
+        "target":  "function:src/data/weaponArts.ts:WEAPON_ARTS",
+        "description":  null,
+        "source":  "file:src/data/weaponArts.ts",
+        "type":  "contains",
+        "weight":  null
+    },
+    {
+        "target":  "function:src/lib/constants/game.ts:calcBaseMaxHP",
+        "description":  null,
+        "source":  "file:src/lib/constants/game.ts",
+        "type":  "contains",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/lib/constants/index.ts",
+        "description":  null,
+        "source":  "file:src/lib/constants.ts",
+        "type":  "imports",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/lib/constants/damage-types.ts",
+        "description":  null,
+        "source":  "file:src/lib/constants/index.ts",
+        "type":  "imports",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/lib/constants/game.ts",
+        "description":  null,
+        "source":  "file:src/lib/constants/index.ts",
+        "type":  "imports",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/lib/constants/perks.ts",
+        "description":  null,
+        "source":  "file:src/lib/constants/index.ts",
+        "type":  "imports",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/lib/constants/boosts.ts",
+        "description":  null,
+        "source":  "file:src/lib/constants/index.ts",
+        "type":  "imports",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/lib/constants/heals.ts",
+        "description":  null,
+        "source":  "file:src/lib/constants/index.ts",
+        "type":  "imports",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/lib/constants/draconic.ts",
+        "description":  null,
+        "source":  "file:src/lib/constants/index.ts",
+        "type":  "imports",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/lib/constants/perk-base-damage.ts",
+        "description":  null,
+        "source":  "file:src/lib/constants/index.ts",
+        "type":  "imports",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/lib/constants/rune-base-damage.ts",
+        "description":  null,
+        "source":  "file:src/lib/constants/index.ts",
+        "type":  "imports",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/lib/constants/stat-conversions.ts",
+        "description":  null,
+        "source":  "file:src/lib/constants/index.ts",
+        "type":  "imports",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/lib/constants/defensive.ts",
+        "description":  null,
+        "source":  "file:src/lib/constants/index.ts",
+        "type":  "imports",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/lib/constants/dot-damage.ts",
+        "description":  null,
+        "source":  "file:src/lib/constants/index.ts",
+        "type":  "imports",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/lib/constants/draconic-colors.ts",
+        "description":  null,
+        "source":  "file:src/lib/constants/index.ts",
+        "type":  "imports",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/lib/constants/cdr.ts",
+        "description":  null,
+        "source":  "file:src/lib/constants/index.ts",
+        "type":  "imports",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/lib/constants/debuff-effects.ts",
+        "description":  null,
+        "source":  "file:src/lib/constants/index.ts",
+        "type":  "imports",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/lib/ui/Badge.svelte",
+        "description":  null,
+        "source":  "file:src/DmgTotalTooltip.svelte",
+        "type":  "imports",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/lib/ui/Badge.svelte",
+        "description":  null,
+        "source":  "file:src/EmotionalTracker.svelte",
+        "type":  "imports",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/lib/constants.ts",
+        "description":  null,
+        "source":  "file:src/LevelBar.svelte",
+        "type":  "imports",
+        "weight":  null
+    },
+    {
+        "target":  "function:src/lib/constants/game.ts:calcBaseMaxHP",
+        "description":  null,
+        "source":  "file:src/LevelBar.svelte",
+        "type":  "calls",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/lib/ui/Badge.svelte",
+        "description":  null,
+        "source":  "file:src/LevelBar.svelte",
+        "type":  "imports",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/BuildSaves.svelte",
+        "description":  null,
+        "source":  "file:src/lib/AppHeader.svelte",
+        "type":  "imports",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/lib/constants/game.ts",
+        "description":  null,
+        "source":  "file:src/LevelBar.svelte",
+        "type":  "depends_on",
+        "weight":  null
+    },
+    {
+        "target":  "function:src/lib/constants/game.ts:calcBaseMaxHP",
+        "description":  null,
+        "source":  "file:src/LevelBar.svelte",
+        "type":  "depends_on",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/BuildSaves.svelte",
+        "description":  null,
+        "source":  "file:src/lib/AppHeader.svelte",
+        "type":  "contains",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/lib/ui/Stat.svelte",
+        "description":  null,
+        "source":  "file:src/main.ts",
+        "type":  "contains",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/SuggestDrop.svelte",
+        "description":  null,
+        "source":  "file:src/ModalSearchHeader.svelte",
+        "type":  "imports",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/TagFilter.svelte",
+        "description":  null,
+        "source":  "file:src/ModalSearchHeader.svelte",
+        "type":  "imports",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/StatFilter.svelte",
+        "description":  null,
+        "source":  "file:src/ModalSearchHeader.svelte",
+        "type":  "imports",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/WeaponStatFilter.svelte",
+        "description":  null,
+        "source":  "file:src/ModalSearchHeader.svelte",
+        "type":  "imports",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/lib/uiConstants.ts",
+        "description":  null,
+        "source":  "file:src/StatFilter.svelte",
+        "type":  "imports",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/lib/uiConstants.ts",
+        "description":  null,
+        "source":  "file:src/TagFilter.svelte",
+        "type":  "imports",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/lib/uiConstants.ts",
+        "description":  null,
+        "source":  "file:src/WeaponStatFilter.svelte",
+        "type":  "imports",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/StatFilter.svelte",
+        "description":  null,
+        "source":  "file:src/StatFilter.svelte",
+        "type":  "related",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/StatFilter.svelte",
+        "description":  null,
+        "source":  "file:src/WeaponStatFilter.svelte",
+        "type":  "similar_to",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/lib/uiConstants.ts",
+        "description":  null,
+        "source":  "file:src/ScalingBreakdownRow.svelte",
+        "type":  "depends_on",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/SuggestDrop.svelte",
+        "description":  null,
+        "source":  "file:src/StatFilter.svelte",
+        "type":  "similar_to",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/StatFilter.svelte",
+        "description":  null,
+        "source":  "file:src/TagFilter.svelte",
+        "type":  "similar_to",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/WeaponStatsDisplay.svelte",
+        "description":  null,
+        "source":  "file:src/ModalSearchHeader.svelte",
+        "type":  "related",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/main.ts",
+        "description":  null,
+        "source":  "file:vite.config.ts",
+        "type":  "configures",
+        "weight":  null
+    },
+    {
+        "target":  "file:src/app.css",
+        "description":  null,
+        "source":  "file:src/main.ts",
+        "type":  "imports",
+        "weight":  0.7
+    },
+    {
+        "target":  "file:src/App.svelte",
+        "description":  null,
+        "source":  "file:src/main.ts",
+        "type":  "imports",
+        "weight":  0.7
+    }
+]

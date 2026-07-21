@@ -1,0 +1,62 @@
+{
+  "issues": [
+    "103 orphan nodes have no edges (all function-level nodes except 6 are disconnected from parent files; many lib-level files like modals/, ui/, stores/, engine/ have no cross-file edges)",
+    "Self-referential edge: file:src/StatFilter.svelte -> file:src/StatFilter.svelte (type: related) — a node pointing to itself is semantically meaningless",
+    "Misleading edge: file:src/main.ts -> file:src/lib/ui/Stat.svelte (type: contains, label: 'indirect via App.svelte') — main.ts does not contain Stat.svelte; this is an indirect transitive relationship misrepresented as direct containment",
+    "Missing 'contains' edges for ~62 of 68 function nodes — parent file nodes exist but lack 'contains' edges to their child functions (only 6 function nodes have parent contains edges: getWeaponConditionalBoost, WAIndividualHit, WeaponArtRequirement, WeaponArt, WEAPON_ARTS, calcBaseMaxHP)",
+    "Duplicate edge: file:src/lib/AppHeader.svelte -> file:src/BuildSaves.svelte appears twice with different types (imports at line 2981-2985, contains at line 2999-3003) — redundant information",
+    "Duplicate edge pattern: file:src/App.svelte -> file:src/data/cdr.ts appears twice (imports at line 2569-2575, calls at line 2601-2607) — similar semantic overlap",
+    "Duplicate target edges: file:src/LevelBar.svelte -> function:src/lib/constants/game.ts:calcBaseMaxHP appears twice (calls at line 2969-2973, depends_on at line 2993-2997) — redundant",
+    "Two edges missing 'weight' field: file:src/DmgTotalTooltip.svelte -> file:src/lib/ui/Badge.svelte (line 2951-2955) and file:src/EmotionalTracker.svelte -> file:src/lib/ui/Badge.svelte (line 2957-2961) — inconsistent with rest of graph",
+    "Three schema-typed nodes have 'function:' ID prefix (function:src/data/weaponArts.ts:WAIndividualHit, WeaponArtRequirement, WeaponArt) — ID prefix contradicts actual node type 'schema'",
+    "One resource-typed node has 'function:' ID prefix (function:src/data/weaponArts.ts:WEAPON_ARTS) — ID prefix contradicts actual node type 'resource'",
+    "Two pairs of nodes represent the same file with different types: file:src/lib/constants/storage.ts (type: file) AND config:src/lib/constants/storage.ts (type: config); file:src/lib/constants/thresholds.ts (type: file) AND config:src/lib/constants/thresholds.ts (type: config) — duplicate representations of the same file",
+    "All 178 nodes have 'complexity': 'moderate' — the merge script reported defaulting 180 complexity values to 'moderate' because they were null, so no real complexity differentiation exists in the graph",
+    "Missing import edges for 3 files referenced by other nodes but absent from graph: src/lib/utils.ts (imported by DidYouMean.svelte, Highlight.svelte, weaponConditionalBoosts.ts), src/lib/dmgTypes.ts (imported by DmgTotalTooltip.svelte), src/lib/store.ts (imported by EmotionalTracker.svelte, LevelBar.svelte) — target nodes don't exist in graph"
+  ],
+  "warnings": [
+    "103 of 178 nodes (58%) are orphaned — high orphan ratio reduces graph utility for dependency and call-chain traversal",
+    "Function-level granularity without containment edges creates a disconnected subgraph — functions are documented but unlinked to their parent files",
+    "Engine barrel modules (file:src/lib/engine.ts, module:src/lib/engine.ts, file:src/lib/engine/data.ts, module:src/lib/engine/data.ts) are all orphaned with no edges despite being central re-export hubs",
+    "Modal components (AccessorySelectModal, GuildModal, RaceModal, WeaponPartModal) and their functions have no edges to/from App.svelte or any parent — the modal subsystem is completely disconnected",
+    "UI component library files (Button.svelte, Card.svelte, Divider.svelte, Panel.svelte, Section.svelte, ui/index.ts) are orphaned — no edges connecting them to consumers",
+    "Store files (toast.ts, toast functions) are orphaned — no edges to components that use them",
+    "StatFilterShared.svelte and its buildStatMaps function are orphaned despite being imported by StatFilter.svelte and WeaponStatFilter.svelte",
+    "defense.ts and all 4 of its functions are orphaned despite being a core engine module",
+    "Edge weights are inconsistent: some edges have weights (0.4-0.9), others have no weight at all (edges from batch-11)",
+    "file:src/StatFilter.svelte self-referential edge has no weight field"
+  ],
+  "fixes": [
+    "2 duplicate node IDs removed during merge (kept last occurrence) — handled by merge script",
+    "2 import edges recovered from importMap: file:src/main.ts -> file:src/app.css and file:src/main.ts -> file:src/App.svelte — handled by merge script",
+    "180 complexity values defaulted from None to 'moderate' — handled by merge script (should be re-assessed)"
+  ],
+  "stats": {
+    "totalNodes": 178,
+    "totalEdges": 102,
+    "orphanNodes": 103,
+    "danglingEdges": 0,
+    "nodeTypes": {
+      "config": 10,
+      "document": 2,
+      "file": 89,
+      "function": 62,
+      "module": 4,
+      "schema": 3,
+      "resource": 1
+    },
+    "edgeTypes": {
+      "configures": 8,
+      "documents": 11,
+      "depends_on": 2,
+      "inherits": 1,
+      "routes": 1,
+      "contains": 14,
+      "imports": 59,
+      "calls": 3,
+      "related": 6,
+      "similar_to": 5,
+      "unknown_or_missing_weight": 2
+    }
+  }
+}

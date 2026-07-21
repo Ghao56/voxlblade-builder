@@ -1,0 +1,155 @@
+[
+  {
+    "id": "layer:entry-and-build-config",
+    "name": "Entry & Build Config",
+    "description": "Root configuration files, build tooling, HTML entry point, application bootstrap, global styles, and dead-code analysis outputs. These files define how the project is built, deployed, and initialized.",
+    "nodeIds": [
+      "config:.fallowrc.json",
+      "config:fallow-output.json",
+      "config:fallow-security.json",
+      "file:index.html",
+      "config:package.json",
+      "config:tsconfig.app.json",
+      "config:tsconfig.json",
+      "config:tsconfig.node.json",
+      "config:vercel.json",
+      "file:vite.config.ts",
+      "file:src/main.ts",
+      "file:src/app.css",
+      "file:src/App.svelte"
+    ]
+  },
+  {
+    "id": "layer:ui-components",
+    "name": "UI Components",
+    "description": "Svelte components for rendering the application interface. Includes the large application-level views (DamageAnalyzer, BaseDamageCalc, BuffList), modal dialogs (Race, Guild, Weapon Part, Accessory), reusable primitive components (Badge, Button, Card, Panel, Section, Stat, Divider), and filter/search UI (StatFilter, TagFilter, SuggestDrop, ModalSearchHeader).",
+    "nodeIds": [
+      "file:src/BaseDamageCalc.svelte",
+      "file:src/BuffList.svelte",
+      "file:src/BuildSaves.svelte",
+      "file:src/CdrStepsCalc.svelte",
+      "file:src/CritIcon.svelte",
+      "file:src/DamageAnalyzer.svelte",
+      "file:src/DidYouMean.svelte",
+      "file:src/DmgTotalTooltip.svelte",
+      "file:src/DraconicAbilityStats.svelte",
+      "file:src/EmotionalTracker.svelte",
+      "file:src/Highlight.svelte",
+      "file:src/LevelBar.svelte",
+      "file:src/ModalSearchHeader.svelte",
+      "file:src/MountIcon.svelte",
+      "file:src/ScalingBreakdownRow.svelte",
+      "file:src/StatFilter.svelte",
+      "file:src/SuggestDrop.svelte",
+      "file:src/TagFilter.svelte",
+      "file:src/WeaponStatFilter.svelte",
+      "file:src/WeaponStatsDisplay.svelte",
+      "file:src/lib/AppHeader.svelte",
+      "file:src/lib/EnchantSelect.svelte",
+      "file:src/lib/Modal.svelte",
+      "file:src/lib/modals/AccessorySelectModal.svelte",
+      "file:src/lib/modals/GuildModal.svelte",
+      "file:src/lib/modals/index.ts",
+      "file:src/lib/modals/RaceModal.svelte",
+      "file:src/lib/modals/WeaponPartModal.svelte",
+      "file:src/lib/StatFilterShared.svelte",
+      "file:src/lib/Toast.svelte",
+      "file:src/lib/ui/Badge.svelte",
+      "file:src/lib/ui/Button.svelte",
+      "file:src/lib/ui/Card.svelte",
+      "file:src/lib/ui/Divider.svelte",
+      "file:src/lib/ui/index.ts",
+      "file:src/lib/ui/Panel.svelte",
+      "file:src/lib/ui/Section.svelte",
+      "file:src/lib/ui/Stat.svelte"
+    ]
+  },
+  {
+    "id": "layer:game-data",
+    "name": "Game Data",
+    "description": "Game mechanic data definitions: weapon base damage, weapon arts, perk damage formulas, defensive perks, debuff combat effects, DoT damage calculations, proc coefficients, draconic color effects and runes, race effects, CDR perks, enemy HP effects, mount runes, stance overlays, and weapon conditional boosts. Each module defines data structures and computation functions for a specific game subsystem.",
+    "nodeIds": [
+      "file:src/data/cdr.ts",
+      "file:src/data/debuffCombatEffects.ts",
+      "file:src/data/defensivePerks.ts",
+      "file:src/data/DoTDamage.ts",
+      "file:src/data/draconicColorEffects.ts",
+      "file:src/data/draconicRunes.ts",
+      "file:src/data/enemyHpEffects.ts",
+      "file:src/data/mountRunes.ts",
+      "file:src/data/Perkbasedmg.ts",
+      "file:src/data/procCoefficients.ts",
+      "file:src/data/raceEffects.ts",
+      "file:src/data/selfDamagePerks.ts",
+      "file:src/data/stanceOverlays.ts",
+      "file:src/data/weapon base dmg.ts",
+      "file:src/data/Weaponartcheck.ts",
+      "file:src/data/weaponArts.ts",
+      "function:src/data/weaponArts.ts:WAIndividualHit",
+      "function:src/data/weaponArts.ts:WeaponArtRequirement",
+      "function:src/data/weaponArts.ts:WeaponArt",
+      "function:src/data/weaponArts.ts:WEAPON_ARTS",
+      "file:src/data/weaponConditionalBoosts.ts"
+    ]
+  },
+  {
+    "id": "layer:calculation-engine",
+    "name": "Calculation Engine",
+    "description": "Core damage calculation pipeline: barrel export hub (engine.ts), character/equipment/weapon data assembly (engine/data.ts), and defense computation (defense.ts). This layer orchestrates the aggregation of game data, constants, and build state into final damage numbers.",
+    "nodeIds": [
+      "file:src/lib/engine.ts",
+      "file:src/lib/engine/data.ts",
+      "file:src/lib/defense.ts"
+    ]
+  },
+  {
+    "id": "layer:constants-and-config",
+    "name": "Constants & Configuration",
+    "description": "Numerical constants and configuration values used throughout the calculation engine and UI: damage types and inheritance, game core values (HP, level caps), perk crit/boost/defensive constants, DoT scaling, draconic multipliers, CDR values, stat conversions, storage keys, thresholds, and UI color/label mappings.",
+    "nodeIds": [
+      "file:src/lib/constants.ts",
+      "file:src/lib/constants/boosts.ts",
+      "file:src/lib/constants/cdr.ts",
+      "file:src/lib/constants/damage-types.ts",
+      "file:src/lib/constants/debuff-effects.ts",
+      "file:src/lib/constants/defensive.ts",
+      "file:src/lib/constants/dot-damage.ts",
+      "file:src/lib/constants/draconic-colors.ts",
+      "file:src/lib/constants/draconic.ts",
+      "file:src/lib/constants/game.ts",
+      "file:src/lib/constants/heals.ts",
+      "file:src/lib/constants/index.ts",
+      "file:src/lib/constants/perk-base-damage.ts",
+      "file:src/lib/constants/perks.ts",
+      "file:src/lib/constants/rune-base-damage.ts",
+      "file:src/lib/constants/stat-conversions.ts",
+      "file:src/lib/constants/storage.ts",
+      "file:src/lib/constants/thresholds.ts",
+      "config:src/lib/constants/storage.ts",
+      "config:src/lib/constants/thresholds.ts",
+      "file:src/lib/uiConstants.ts"
+    ]
+  },
+  {
+    "id": "layer:utilities-and-stores",
+    "name": "Utilities & Stores",
+    "description": "Shared utility functions, state management stores, and standalone tools. Includes the toast notification store, enchantment tooltip generation, elemental boost type definitions, filter action factories, and the standalone offline build decoder debug tool.",
+    "nodeIds": [
+      "file:decode_full.mjs",
+      "file:src/lib/enchantTooltip.ts",
+      "file:src/lib/stats/elementalBoosts.ts",
+      "file:src/lib/stats/filterActions.ts",
+      "file:src/lib/stores/toast.ts"
+    ]
+  },
+  {
+    "id": "layer:documentation",
+    "name": "Documentation",
+    "description": "Project documentation: agent context file (AGENTS.md), README with setup instructions, and comprehensive onboarding guide covering architecture, concepts, and guided tour of the codebase.",
+    "nodeIds": [
+      "document:AGENTS.md",
+      "document:README.md",
+      "file:docs/ONBOARDING.md"
+    ]
+  }
+]

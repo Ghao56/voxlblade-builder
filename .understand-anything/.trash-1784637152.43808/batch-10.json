@@ -1,0 +1,585 @@
+{
+  "batchIndex": 10,
+  "nodes": [
+    {
+      "id": "file:src/lib/constants/storage.ts",
+      "type": "file",
+      "name": "storage.ts",
+      "filePath": "src/lib/constants/storage.ts",
+      "summary": "Defines localStorage key constants, default build state shape, save key mapping for compression, enchantment slot key mapping, and maximum build slots.",
+      "tags": ["constants", "storage", "build-state"]
+    },
+    {
+      "id": "config:src/lib/constants/storage.ts",
+      "type": "config",
+      "name": "Storage Config",
+      "filePath": "src/lib/constants/storage.ts",
+      "summary": "Aggregate storage configuration constants: keys, maps, and limits for build persistence.",
+      "tags": ["storage-keys", "defaults"]
+    },
+    {
+      "id": "file:src/lib/constants/thresholds.ts",
+      "type": "file",
+      "name": "thresholds.ts",
+      "filePath": "src/lib/constants/thresholds.ts",
+      "summary": "Defines game mechanic threshold constants: armor pen branch threshold, CD minimum, and base crit damage percent.",
+      "tags": ["constants", "thresholds", "game-mechanics"]
+    },
+    {
+      "id": "config:src/lib/constants/thresholds.ts",
+      "type": "config",
+      "name": "Thresholds Config",
+      "filePath": "src/lib/constants/thresholds.ts",
+      "summary": "Game mechanic numerical thresholds used by the engine.",
+      "tags": ["thresholds", "game-config"]
+    },
+    {
+      "id": "file:src/lib/defense.ts",
+      "type": "file",
+      "name": "defense.ts",
+      "filePath": "src/lib/defense.ts",
+      "summary": "Defense calculation module: resolves percent and flat defense sources into multipliers, computes damage type defense groupings, and calculates base armor defense percentage from stats.",
+      "tags": ["defense", "damage-calculation", "engine"]
+    },
+    {
+      "id": "function:src/lib/defense.ts:calcDefMultiplier",
+      "type": "function",
+      "name": "calcDefMultiplier",
+      "filePath": "src/lib/defense.ts",
+      "summary": "Calculates damage multiplier from a defense percentage using 1/(1+def) for positive and 1+|def| for negative.",
+      "tags": ["internal", "defense"]
+    },
+    {
+      "id": "function:src/lib/defense.ts:calcTrueDrPercent",
+      "type": "function",
+      "name": "calcTrueDrPercent",
+      "filePath": "src/lib/defense.ts",
+      "summary": "Computes the true damage reduction percentage from a defense value.",
+      "tags": ["internal", "defense"]
+    },
+    {
+      "id": "function:src/lib/defense.ts:resolveDefenseSources",
+      "type": "function",
+      "name": "resolveDefenseSources",
+      "filePath": "src/lib/defense.ts",
+      "summary": "Resolves an array of DefenseSource objects into a DefenseBreakdown with percent/flat multipliers and final multiplier.",
+      "tags": ["exported", "defense", "calculation"]
+    },
+    {
+      "id": "function:src/lib/defense.ts:calcBaseArmorDefPct",
+      "type": "function",
+      "name": "calcBaseArmorDefPct",
+      "filePath": "src/lib/defense.ts",
+      "summary": "Sums relevant defense stats for a damage type based on the DEF_GROUP mapping.",
+      "tags": ["exported", "defense", "armor"]
+    },
+    {
+      "id": "file:src/lib/EnchantSelect.svelte",
+      "type": "file",
+      "name": "EnchantSelect.svelte",
+      "filePath": "src/lib/EnchantSelect.svelte",
+      "summary": "A searchable dropdown component for selecting enchantments, with color-coded options, keyboard navigation, scroll-aware positioning, and outside-click dismissal.",
+      "tags": ["component", "ui", "enchantment", "dropdown"]
+    },
+    {
+      "id": "file:src/lib/enchantTooltip.ts",
+      "type": "file",
+      "name": "enchantTooltip.ts",
+      "filePath": "src/lib/enchantTooltip.ts",
+      "summary": "Generates formatted tooltip text for enchantments, pulling description, stat modifiers, effects, and additional notes from the engine data.",
+      "tags": ["enchantment", "tooltip", "ui-helper"]
+    },
+    {
+      "id": "function:src/lib/enchantTooltip.ts:getEnchantTooltipText",
+      "type": "function",
+      "name": "getEnchantTooltipText",
+      "filePath": "src/lib/enchantTooltip.ts",
+      "summary": "Returns a multi-line tooltip string for a given enchantment name, including description, stats, effects, and notes.",
+      "tags": ["exported", "enchantment", "tooltip"]
+    },
+    {
+      "id": "file:src/lib/engine.ts",
+      "type": "file",
+      "name": "engine.ts",
+      "filePath": "src/lib/engine.ts",
+      "summary": "Barrel export file re-exporting all modules from engine/data, shrine, enchant, weapon, build, and format submodules.",
+      "tags": ["barrel", "engine", "exports"]
+    },
+    {
+      "id": "module:src/lib/engine.ts",
+      "type": "module",
+      "name": "engine",
+      "filePath": "src/lib/engine.ts",
+      "summary": "Central engine barrel module aggregating data, shrine, enchant, weapon, build, and format functionality.",
+      "tags": ["module", "barrel", "engine"]
+    },
+    {
+      "id": "file:src/lib/engine/data.ts",
+      "type": "file",
+      "name": "data.ts",
+      "filePath": "src/lib/engine/data.ts",
+      "summary": "Barrel export file re-exporting character, equipment, and weapons data modules.",
+      "tags": ["barrel", "data", "game-data"]
+    },
+    {
+      "id": "module:src/lib/engine/data.ts",
+      "type": "module",
+      "name": "engine/data",
+      "filePath": "src/lib/engine/data.ts",
+      "summary": "Barrel module for game data: character stats, equipment definitions, and weapon definitions.",
+      "tags": ["module", "barrel", "game-data"]
+    },
+    {
+      "id": "file:src/lib/Modal.svelte",
+      "type": "file",
+      "name": "Modal.svelte",
+      "filePath": "src/lib/Modal.svelte",
+      "summary": "Reusable modal dialog component with overlay backdrop, focus trapping, auto-focus on first focusable element, close button, and global modal-item CSS classes for list items.",
+      "tags": ["component", "modal", "dialog", "ui"]
+    },
+    {
+      "id": "function:src/lib/Modal.svelte:trapFocus",
+      "type": "function",
+      "name": "trapFocus",
+      "filePath": "src/lib/Modal.svelte",
+      "summary": "Keyboard event handler that traps Tab/Shift+Tab focus within the modal dialog.",
+      "tags": ["internal", "accessibility"]
+    },
+    {
+      "id": "function:src/lib/Modal.svelte:focusOnOpen",
+      "type": "function",
+      "name": "focusOnOpen",
+      "filePath": "src/lib/Modal.svelte",
+      "summary": "Module-level Svelte action that auto-focuses the first focusable element inside the modal on open.",
+      "tags": ["module-scope", "action", "accessibility"]
+    },
+    {
+      "id": "file:src/lib/modals/AccessorySelectModal.svelte",
+      "type": "file",
+      "name": "AccessorySelectModal.svelte",
+      "filePath": "src/lib/modals/AccessorySelectModal.svelte",
+      "summary": "Modal for selecting armor accessories (helmet, chestplate, leggings), rings, runes, and infusions, with search, filtering, effective boost calculation, and Brawny conversion display.",
+      "tags": ["component", "modal", "accessory", "equipment"]
+    },
+    {
+      "id": "function:src/lib/modals/AccessorySelectModal.svelte:select",
+      "type": "function",
+      "name": "select",
+      "filePath": "src/lib/modals/AccessorySelectModal.svelte",
+      "summary": "Updates the build store with the selected item name and closes the modal.",
+      "tags": ["internal", "selection"]
+    },
+    {
+      "id": "function:src/lib/modals/AccessorySelectModal.svelte:getItemStats",
+      "type": "function",
+      "name": "getItemStats",
+      "filePath": "src/lib/modals/AccessorySelectModal.svelte",
+      "summary": "Retrieves stats for an armor part, ring, or rune item.",
+      "tags": ["internal", "stats"]
+    },
+    {
+      "id": "function:src/lib/modals/AccessorySelectModal.svelte:getItemPerk",
+      "type": "function",
+      "name": "getItemPerk",
+      "filePath": "src/lib/modals/AccessorySelectModal.svelte",
+      "summary": "Retrieves the perk name and amount from an armor part or item.",
+      "tags": ["internal", "perks"]
+    },
+    {
+      "id": "function:src/lib/modals/AccessorySelectModal.svelte:computeItemEffectiveBoost",
+      "type": "function",
+      "name": "computeItemEffectiveBoost",
+      "filePath": "src/lib/modals/AccessorySelectModal.svelte",
+      "summary": "Computes the effective boost percentage for an item based on weapon scalings.",
+      "tags": ["internal", "calculation"]
+    },
+    {
+      "id": "function:src/lib/modals/AccessorySelectModal.svelte:computeItemBrawnyBoost",
+      "type": "function",
+      "name": "computeItemBrawnyBoost",
+      "filePath": "src/lib/modals/AccessorySelectModal.svelte",
+      "summary": "Computes effective boost assuming Brawny perk converts non-physical boosts to physical.",
+      "tags": ["internal", "calculation", "brawny"]
+    },
+    {
+      "id": "function:src/lib/modals/AccessorySelectModal.svelte:getItemDesc",
+      "type": "function",
+      "name": "getItemDesc",
+      "filePath": "src/lib/modals/AccessorySelectModal.svelte",
+      "summary": "Retrieves description text for an armor part or item.",
+      "tags": ["internal", "description"]
+    },
+    {
+      "id": "file:src/lib/modals/GuildModal.svelte",
+      "type": "file",
+      "name": "GuildModal.svelte",
+      "filePath": "src/lib/modals/GuildModal.svelte",
+      "summary": "Modal for selecting a guild and rank, with search filtering by guild name or perk name, rank selection buttons, and stat/perk display.",
+      "tags": ["component", "modal", "guild", "selection"]
+    },
+    {
+      "id": "file:src/lib/modals/index.ts",
+      "type": "file",
+      "name": "modals/index.ts",
+      "filePath": "src/lib/modals/index.ts",
+      "summary": "Barrel file re-exporting RaceModal, GuildModal, AccessorySelectModal, and WeaponPartModal Svelte components.",
+      "tags": ["barrel", "modals", "exports"]
+    },
+    {
+      "id": "module:src/lib/modals/index.ts",
+      "type": "module",
+      "name": "modals",
+      "filePath": "src/lib/modals/index.ts",
+      "summary": "Barrel module exporting all modal components.",
+      "tags": ["module", "barrel", "modals"]
+    },
+    {
+      "id": "file:src/lib/modals/RaceModal.svelte",
+      "type": "file",
+      "name": "RaceModal.svelte",
+      "filePath": "src/lib/modals/RaceModal.svelte",
+      "summary": "Modal for selecting a race, with search filtering, stat modifier display, and passive description.",
+      "tags": ["component", "modal", "race", "selection"]
+    },
+    {
+      "id": "file:src/lib/modals/WeaponPartModal.svelte",
+      "type": "file",
+      "name": "WeaponPartModal.svelte",
+      "filePath": "src/lib/modals/WeaponPartModal.svelte",
+      "summary": "Modal for selecting weapon parts (blade, handle, glove, essence) with search, tag filtering, tier/type filters, stat display, and perk listing.",
+      "tags": ["component", "modal", "weapon", "selection"]
+    },
+    {
+      "id": "function:src/lib/modals/WeaponPartModal.svelte:select",
+      "type": "function",
+      "name": "select",
+      "filePath": "src/lib/modals/WeaponPartModal.svelte",
+      "summary": "Updates the build store with the selected weapon part name and closes the modal.",
+      "tags": ["internal", "selection"]
+    },
+    {
+      "id": "file:src/lib/StatFilterShared.svelte",
+      "type": "file",
+      "name": "StatFilterShared.svelte",
+      "filePath": "src/lib/StatFilterShared.svelte",
+      "summary": "Shared stat filter chip component with include/exclude/dimmed states, plus a module-level buildStatMaps helper for creating label/color maps from stat groups.",
+      "tags": ["component", "filter", "stat", "chip"]
+    },
+    {
+      "id": "function:src/lib/StatFilterShared.svelte:buildStatMaps",
+      "type": "function",
+      "name": "buildStatMaps",
+      "filePath": "src/lib/StatFilterShared.svelte",
+      "summary": "Builds label and color lookup maps from an array of stat group definitions.",
+      "tags": ["module-scope", "exported", "helper"]
+    },
+    {
+      "id": "file:src/lib/stats/elementalBoosts.ts",
+      "type": "file",
+      "name": "elementalBoosts.ts",
+      "filePath": "src/lib/stats/elementalBoosts.ts",
+      "summary": "Defines the StatDef interface and constant arrays for elemental boost stats (dexterity, physical, magic, fire, water, earth, air, hex, holy, summon) and their negative variants.",
+      "tags": ["stats", "elemental", "boosts", "type-defs"]
+    },
+    {
+      "id": "file:src/lib/stats/filterActions.ts",
+      "type": "file",
+      "name": "filterActions.ts",
+      "filePath": "src/lib/stats/filterActions.ts",
+      "summary": "Provides a createFilterActions factory for managing include/exclude filter maps with toggle, remove, clear, and keyboard handler functions.",
+      "tags": ["filter", "actions", "state-management"]
+    },
+    {
+      "id": "function:src/lib/stats/filterActions.ts:createFilterActions",
+      "type": "function",
+      "name": "createFilterActions",
+      "filePath": "src/lib/stats/filterActions.ts",
+      "summary": "Factory that creates toggle, remove, clear, and handleChipKeyDown functions for a FilterMap state.",
+      "tags": ["exported", "filter", "factory"]
+    },
+    {
+      "id": "file:src/lib/stores/toast.ts",
+      "type": "file",
+      "name": "toast.ts",
+      "filePath": "src/lib/stores/toast.ts",
+      "summary": "Svelte writable store for toast notifications with addToast and removeToast functions, supporting success/error/info/warning types and auto-dismiss.",
+      "tags": ["store", "toast", "notifications"]
+    },
+    {
+      "id": "function:src/lib/stores/toast.ts:addToast",
+      "type": "function",
+      "name": "addToast",
+      "filePath": "src/lib/stores/toast.ts",
+      "summary": "Adds a toast notification to the store with auto-dismiss timeout.",
+      "tags": ["exported", "toast", "notification"]
+    },
+    {
+      "id": "function:src/lib/stores/toast.ts:removeToast",
+      "type": "function",
+      "name": "removeToast",
+      "filePath": "src/lib/stores/toast.ts",
+      "summary": "Removes a toast notification by ID from the store.",
+      "tags": ["exported", "toast", "notification"]
+    },
+    {
+      "id": "file:src/lib/Toast.svelte",
+      "type": "file",
+      "name": "Toast.svelte",
+      "filePath": "src/lib/Toast.svelte",
+      "summary": "Toast notification container component that subscribes to the toast store, renders animated toast items with type-specific icons/colors, and allows manual dismissal.",
+      "tags": ["component", "toast", "notification", "ui"]
+    },
+    {
+      "id": "file:src/lib/ui/Badge.svelte",
+      "type": "file",
+      "name": "Badge.svelte",
+      "filePath": "src/lib/ui/Badge.svelte",
+      "summary": "Versatile badge/tag component with variant colors (green, amber, red, purple, blue, teal, muted, draco), sizes (xs/sm/md), square shape, solid fill, and monospace options.",
+      "tags": ["component", "ui", "badge", "tag"]
+    },
+    {
+      "id": "file:src/lib/ui/Button.svelte",
+      "type": "file",
+      "name": "Button.svelte",
+      "filePath": "src/lib/ui/Button.svelte",
+      "summary": "Styled button component with variant colors (default, positive, negative, warning, info, neutral), sizes (sm/md/lg), active state, and disabled support.",
+      "tags": ["component", "ui", "button"]
+    },
+    {
+      "id": "file:src/lib/ui/Card.svelte",
+      "type": "file",
+      "name": "Card.svelte",
+      "filePath": "src/lib/ui/Card.svelte",
+      "summary": "Flexible card container component with variants (default, surface, ghost), hoverable behavior, accent color borders, configurable padding and gap, and click/keyboard handler.",
+      "tags": ["component", "ui", "card", "container"]
+    },
+    {
+      "id": "file:src/lib/ui/Divider.svelte",
+      "type": "file",
+      "name": "Divider.svelte",
+      "filePath": "src/lib/ui/Divider.svelte",
+      "summary": "Horizontal rule divider component with color variants (green, amber, red, purple, blue, teal, draco) and spacing options.",
+      "tags": ["component", "ui", "divider"]
+    },
+    {
+      "id": "file:src/lib/ui/index.ts",
+      "type": "file",
+      "name": "ui/index.ts",
+      "filePath": "src/lib/ui/index.ts",
+      "summary": "Barrel file re-exporting Card, Badge, Button, Stat, Section, Divider, and Panel UI components.",
+      "tags": ["barrel", "ui", "exports"]
+    },
+    {
+      "id": "module:src/lib/ui/index.ts",
+      "type": "module",
+      "name": "ui",
+      "filePath": "src/lib/ui/index.ts",
+      "summary": "Barrel module for all UI components.",
+      "tags": ["module", "barrel", "ui"]
+    },
+    {
+      "id": "file:src/lib/ui/Panel.svelte",
+      "type": "file",
+      "name": "Panel.svelte",
+      "filePath": "src/lib/ui/Panel.svelte",
+      "summary": "Panel container component with gradient background, optional header snippet, color variants, and configurable padding.",
+      "tags": ["component", "ui", "panel", "container"]
+    },
+    {
+      "id": "file:src/lib/ui/Section.svelte",
+      "type": "file",
+      "name": "Section.svelte",
+      "filePath": "src/lib/ui/Section.svelte",
+      "summary": "Section container component with uppercase title header, color variants (green, amber, red, purple, blue, teal, draco), and configurable gap.",
+      "tags": ["component", "ui", "section", "container"]
+    }
+  ],
+  "edges": [
+    {
+      "sourceId": "file:src/lib/constants/storage.ts",
+      "targetId": "file:src/lib/constants/game.ts",
+      "type": "imports",
+      "label": "imports DEFAULT_LEVEL, DEFAULT_HP_FILL"
+    },
+    {
+      "sourceId": "file:src/lib/defense.ts",
+      "targetId": "file:src/lib/utils.ts",
+      "type": "imports",
+      "label": "imports roundMultiplier"
+    },
+    {
+      "sourceId": "function:src/lib/defense.ts:resolveDefenseSources",
+      "targetId": "function:src/lib/defense.ts:calcDefMultiplier",
+      "type": "calls",
+      "label": "calls calcDefMultiplier"
+    },
+    {
+      "sourceId": "function:src/lib/defense.ts:resolveDefenseSources",
+      "targetId": "function:src/lib/defense.ts:calcTrueDrPercent",
+      "type": "calls",
+      "label": "calls calcTrueDrPercent"
+    },
+    {
+      "sourceId": "file:src/lib/EnchantSelect.svelte",
+      "targetId": "file:src/lib/constants/index.ts",
+      "type": "imports",
+      "label": "imports FOCUS_DELAY_MS"
+    },
+    {
+      "sourceId": "file:src/lib/enchantTooltip.ts",
+      "targetId": "file:src/lib/engine.ts",
+      "type": "imports",
+      "label": "imports getEnchant"
+    },
+    {
+      "sourceId": "file:src/lib/enchantTooltip.ts",
+      "targetId": "module:src/lib/engine.ts",
+      "type": "imports",
+      "label": "imports getEnchant from engine"
+    },
+    {
+      "sourceId": "file:src/lib/Modal.svelte",
+      "targetId": "function:src/lib/Modal.svelte:trapFocus",
+      "type": "contains",
+      "label": "contains trapFocus handler"
+    },
+    {
+      "sourceId": "file:src/lib/Modal.svelte",
+      "targetId": "function:src/lib/Modal.svelte:focusOnOpen",
+      "type": "contains",
+      "label": "contains focusOnOpen action"
+    },
+    {
+      "sourceId": "file:src/lib/modals/AccessorySelectModal.svelte",
+      "targetId": "file:src/lib/Modal.svelte",
+      "type": "imports",
+      "label": "imports Modal"
+    },
+    {
+      "sourceId": "file:src/lib/modals/AccessorySelectModal.svelte",
+      "targetId": "file:src/lib/ui/Badge.svelte",
+      "type": "imports",
+      "label": "imports Badge"
+    },
+    {
+      "sourceId": "file:src/lib/modals/GuildModal.svelte",
+      "targetId": "file:src/lib/Modal.svelte",
+      "type": "imports",
+      "label": "imports Modal"
+    },
+    {
+      "sourceId": "file:src/lib/modals/RaceModal.svelte",
+      "targetId": "file:src/lib/Modal.svelte",
+      "type": "imports",
+      "label": "imports Modal"
+    },
+    {
+      "sourceId": "file:src/lib/modals/WeaponPartModal.svelte",
+      "targetId": "file:src/lib/Modal.svelte",
+      "type": "imports",
+      "label": "imports Modal"
+    },
+    {
+      "sourceId": "file:src/lib/modals/WeaponPartModal.svelte",
+      "targetId": "file:src/lib/ui/Badge.svelte",
+      "type": "imports",
+      "label": "imports Badge"
+    },
+    {
+      "sourceId": "file:src/lib/modals/index.ts",
+      "targetId": "file:src/lib/modals/RaceModal.svelte",
+      "type": "exports",
+      "label": "exports RaceModal"
+    },
+    {
+      "sourceId": "file:src/lib/modals/index.ts",
+      "targetId": "file:src/lib/modals/GuildModal.svelte",
+      "type": "exports",
+      "label": "exports GuildModal"
+    },
+    {
+      "sourceId": "file:src/lib/modals/index.ts",
+      "targetId": "file:src/lib/modals/AccessorySelectModal.svelte",
+      "type": "exports",
+      "label": "exports AccessorySelectModal"
+    },
+    {
+      "sourceId": "file:src/lib/modals/index.ts",
+      "targetId": "file:src/lib/modals/WeaponPartModal.svelte",
+      "type": "exports",
+      "label": "exports WeaponPartModal"
+    },
+    {
+      "sourceId": "file:src/lib/Toast.svelte",
+      "targetId": "file:src/lib/stores/toast.ts",
+      "type": "imports",
+      "label": "imports toasts, removeToast"
+    },
+    {
+      "sourceId": "file:src/lib/Toast.svelte",
+      "targetId": "function:src/lib/stores/toast.ts:removeToast",
+      "type": "imports",
+      "label": "imports removeToast"
+    },
+    {
+      "sourceId": "file:src/lib/ui/index.ts",
+      "targetId": "file:src/lib/ui/Card.svelte",
+      "type": "exports",
+      "label": "exports Card"
+    },
+    {
+      "sourceId": "file:src/lib/ui/index.ts",
+      "targetId": "file:src/lib/ui/Badge.svelte",
+      "type": "exports",
+      "label": "exports Badge"
+    },
+    {
+      "sourceId": "file:src/lib/ui/index.ts",
+      "targetId": "file:src/lib/ui/Button.svelte",
+      "type": "exports",
+      "label": "exports Button"
+    },
+    {
+      "sourceId": "file:src/lib/ui/index.ts",
+      "targetId": "file:src/lib/ui/Section.svelte",
+      "type": "exports",
+      "label": "exports Section"
+    },
+    {
+      "sourceId": "file:src/lib/ui/index.ts",
+      "targetId": "file:src/lib/ui/Divider.svelte",
+      "type": "exports",
+      "label": "exports Divider"
+    },
+    {
+      "sourceId": "file:src/lib/ui/index.ts",
+      "targetId": "file:src/lib/ui/Panel.svelte",
+      "type": "exports",
+      "label": "exports Panel"
+    },
+    {
+      "sourceId": "file:src/lib/engine.ts",
+      "targetId": "file:src/lib/engine/data.ts",
+      "type": "imports",
+      "label": "re-exports from engine/data"
+    },
+    {
+      "sourceId": "file:src/lib/engine/data.ts",
+      "targetId": "file:src/lib/engine/data/character.ts",
+      "type": "imports",
+      "label": "re-exports character data"
+    },
+    {
+      "sourceId": "file:src/lib/engine/data.ts",
+      "targetId": "file:src/lib/engine/data/equipment.ts",
+      "type": "imports",
+      "label": "re-exports equipment data"
+    },
+    {
+      "sourceId": "file:src/lib/engine/data.ts",
+      "targetId": "file:src/lib/engine/data/weapons.ts",
+      "type": "imports",
+      "label": "re-exports weapons data"
+    }
+  ]
+}

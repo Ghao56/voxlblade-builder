@@ -1,4 +1,5 @@
 import { DEBUFF_STICKY_DMG_MULT, DEBUFF_DESPAIR_DISPLAY_DIVISOR, DEBUFF_DESPAIR_DISPLAY_MULT, DEBUFF_DESPAIR_DMG_COEFF } from '../lib/constants/debuff-effects'
+import { HYPNOTIST_MAGIC_ARMOR_PER_POTENCY } from '../lib/constants/perks'
 
 const ALL_DEF_STAT_KEYS = ['physicalDefense', 'magicDefense', 'fireDefense', 'waterDefense','earthDefense', 'airDefense', 'hexDefense', 'holyDefense',] as const
 
@@ -87,5 +88,11 @@ export const DEBUFF_COMBAT_EFFECTS: Record<string, DebuffCombatEffect> = {
   Frostbite: {
     descFn: () => `+10% Water & Air Dmg Taken`,
     typeDamageMult: () => ({ water: 1.1, air: 1.1 }),
+  },
+  Hypnotized: {
+    descFn: (p: number) => `Lose ${(p * HYPNOTIST_MAGIC_ARMOR_PER_POTENCY).toFixed(1)} Magic Armor`,
+    defReduction: (p: number) => ({
+      magicDefense: p * HYPNOTIST_MAGIC_ARMOR_PER_POTENCY,
+    }),
   },
 }

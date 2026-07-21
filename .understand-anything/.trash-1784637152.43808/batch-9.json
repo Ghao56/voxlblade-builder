@@ -1,0 +1,469 @@
+{
+  "batchIndex": 9,
+  "nodes": [
+    {
+      "id": "file:src/data/weaponArts.ts",
+      "type": "file",
+      "name": "weaponArts.ts",
+      "filePath": "src/data/weaponArts.ts",
+      "summary": "Defines weapon art data for Voxel Blade including interfaces (WAIndividualHit, WeaponArtRequirement, WeaponArt) and the WEAPON_ARTS array containing 40+ weapon abilities with damage formulas, cooldowns, scaling requirements, and hit configurations.",
+      "tags": ["data", "weapon-arts", "combat", "damage-formulas"]
+    },
+    {
+      "id": "function:src/data/weaponArts.ts:WAIndividualHit",
+      "type": "schema",
+      "name": "WAIndividualHit",
+      "filePath": "src/data/weaponArts.ts",
+      "summary": "Interface defining a single hit within a weapon art: damageType, optional scaling, isFinisher and isCrit flags.",
+      "tags": ["interface", "weapon-art", "hit"]
+    },
+    {
+      "id": "function:src/data/weaponArts.ts:WeaponArtRequirement",
+      "type": "schema",
+      "name": "WeaponArtRequirement",
+      "filePath": "src/data/weaponArts.ts",
+      "summary": "Interface defining stat/scaling requirements for equipping a weapon art: physical/magic/fire/water/earth/air/hex/holy/dexterity/summon scaling thresholds, defense/boost requirements, weapon type and guild restrictions.",
+      "tags": ["interface", "weapon-art", "requirements"]
+    },
+    {
+      "id": "function:src/data/weaponArts.ts:WeaponArt",
+      "type": "schema",
+      "name": "WeaponArt",
+      "filePath": "src/data/weaponArts.ts",
+      "summary": "Interface for a complete weapon art definition: name, description, cooldown, baseDamage, damageType, hit array, scaling, extras, requirements, category, and optional hit-specific damage types/scalings.",
+      "tags": ["interface", "weapon-art", "definition"]
+    },
+    {
+      "id": "function:src/data/weaponArts.ts:WEAPON_ARTS",
+      "type": "resource",
+      "name": "WEAPON_ARTS",
+      "filePath": "src/data/weaponArts.ts",
+      "summary": "Array of 40+ weapon art objects covering physical (Lunge, Spin, Slam), magic (Laser, Mines, Mage Bomb), elemental (Flame Slash, Waterfall, Earthquake), holy (Holy Phalanx, Holy Shrine), hex (Cursed Ground, Jinx, Dark Tentacle), summon (Mage Bomber, Blessedlings), and monk (Barrage, Shatter, Focus) abilities.",
+      "tags": ["data", "weapon-arts", "combat", "constants"]
+    },
+    {
+      "id": "file:src/data/weaponConditionalBoosts.ts",
+      "type": "file",
+      "name": "weaponConditionalBoosts.ts",
+      "filePath": "src/data/weaponConditionalBoosts.ts",
+      "summary": "Defines weapon-conditional perk boosts that apply multiplier bonuses only for specific weapon types on specific hit scopes (M1 finisher, M2). Contains the Aggressive Personality perk logic for War Hammer/Dual Mallets/Mallet.",
+      "tags": ["data", "perks", "weapon-boosts"]
+    },
+    {
+      "id": "function:src/data/weaponConditionalBoosts.ts:getWeaponConditionalBoost",
+      "type": "function",
+      "name": "getWeaponConditionalBoost",
+      "filePath": "src/data/weaponConditionalBoosts.ts",
+      "summary": "Calculates conditional perk multipliers based on active perks, weapon type, and hit scope. Returns combined multiplier and labels of matching perks.",
+      "tags": ["function", "damage-calculation", "perks"]
+    },
+    {
+      "id": "file:src/DidYouMean.svelte",
+      "type": "file",
+      "name": "DidYouMean.svelte",
+      "filePath": "src/DidYouMean.svelte",
+      "summary": "Svelte component displaying 'Did you mean?' suggestion chips when search has no exact results. Shows highlighted text matches and differentiates perk vs name suggestions with distinct styling.",
+      "tags": ["svelte", "ui", "search", "suggestions"]
+    },
+    {
+      "id": "file:src/DmgTotalTooltip.svelte",
+      "type": "file",
+      "name": "DmgTotalTooltip.svelte",
+      "filePath": "src/DmgTotalTooltip.svelte",
+      "summary": "Svelte 5 component rendering a damage breakdown tooltip with an animated SVG pie chart showing damage type distribution. Groups ComputedHit types by damage key, calculates totals with crit/non-crit values, and displays percentage breakdowns with badge indicators.",
+      "tags": ["svelte", "ui", "damage-tooltip", "visualization", "pie-chart"]
+    },
+    {
+      "id": "file:src/DraconicAbilityStats.svelte",
+      "type": "file",
+      "name": "DraconicAbilityStats.svelte",
+      "filePath": "src/DraconicAbilityStats.svelte",
+      "summary": "Svelte component displaying draconic ability stat rows: damage type with color, scaling, poise damage, and optional holy/water healing values with cleanses note.",
+      "tags": ["svelte", "ui", "draconic", "stats"]
+    },
+    {
+      "id": "file:src/EmotionalTracker.svelte",
+      "type": "file",
+      "name": "EmotionalTracker.svelte",
+      "filePath": "src/EmotionalTracker.svelte",
+      "summary": "Svelte component for the Emotional State selector allowing users to toggle between buff-only, debuff-only, or both modes. Features button selectors, a slider with segmented track, and dot indicators with color-coded styling (green=buff, red=debuff, purple=both). Persists state to the build store.",
+      "tags": ["svelte", "ui", "emotional-state", "buffs", "debuffs"]
+    },
+    {
+      "id": "file:src/Highlight.svelte",
+      "type": "file",
+      "name": "Highlight.svelte",
+      "filePath": "src/Highlight.svelte",
+      "summary": "Simple Svelte component that renders text with search query matches highlighted using <mark> tags via highlightTextParts utility.",
+      "tags": ["svelte", "ui", "search", "text-highlight"]
+    },
+    {
+      "id": "file:src/LevelBar.svelte",
+      "type": "file",
+      "name": "LevelBar.svelte",
+      "filePath": "src/LevelBar.svelte",
+      "summary": "Svelte component rendering an interactive level/HP bar with: editable level input, draggable HP fill slider, protection-based shield overlay and lost-HP zone, color-coded health states, threshold line marker, and localStorage persistence for level and HP fill values.",
+      "tags": ["svelte", "ui", "hp-bar", "level", "interactive"]
+    },
+    {
+      "id": "file:src/lib/AppHeader.svelte",
+      "type": "file",
+      "name": "AppHeader.svelte",
+      "filePath": "src/lib/AppHeader.svelte",
+      "summary": "Svelte component for the application header with animated tab switcher (Overview/Analyze), app title 'VoxlBuilder', usage hint text, and integrated BuildSaves component. Features CSS-animated sliding bubble indicator for active tab.",
+      "tags": ["svelte", "ui", "header", "navigation", "tabs"]
+    },
+    {
+      "id": "file:src/lib/constants.ts",
+      "type": "file",
+      "name": "constants.ts",
+      "filePath": "src/lib/constants.ts",
+      "summary": "Barrel re-export module that re-exports everything from the constants/index sub-directory.",
+      "tags": ["typescript", "barrel", "re-export"]
+    },
+    {
+      "id": "file:src/lib/constants/boosts.ts",
+      "type": "file",
+      "name": "boosts.ts",
+      "filePath": "src/lib/constants/boosts.ts",
+      "summary": "Defines multiplier-per-stack constants for combat boost perks including Blood Thirsty, Venom Spitter, Perfection, Stealth, Golden Crits, Royal Parry, Spell Piercer, Scourge, Sharpshooter, Valor, Gorecast, Undead Might, Highlander, Emotional, Heal Boost, Ocean's Rage, and complex boosts like Spirit Winds, Guardian Spin, Quickdraw, Vampire, and Toxin Caster.",
+      "tags": ["constants", "perks", "boosts", "multipliers"]
+    },
+    {
+      "id": "file:src/lib/constants/cdr.ts",
+      "type": "file",
+      "name": "cdr.ts",
+      "filePath": "src/lib/constants/cdr.ts",
+      "summary": "Cooldown reduction (CDR) constants for various perks: Caster Rune/WA, Channeled Weapon, Mage Rage, Poison Acceleration, Runic Winds, Wave Rider, Whirlwind, Gladiatorial set, and Voltaic Body multiplier.",
+      "tags": ["constants", "cooldown-reduction", "perks"]
+    },
+    {
+      "id": "file:src/lib/constants/damage-types.ts",
+      "type": "file",
+      "name": "damage-types.ts",
+      "filePath": "src/lib/constants/damage-types.ts",
+      "summary": "Core damage type definitions: DMG_TYPE_META with labels and hex colors for 11 types (physical, magic, fire, water, earth, air, hex, holy, true, summon, heal), defense inheritance mapping, physical/magic inherited type sets, damage type priority ordering, and type collection arrays.",
+      "tags": ["constants", "damage-types", "core", "defense-inheritance"]
+    },
+    {
+      "id": "file:src/lib/constants/debuff-effects.ts",
+      "type": "file",
+      "name": "debuff-effects.ts",
+      "filePath": "src/lib/constants/debuff-effects.ts",
+      "summary": "Debuff combat effect constants: weakness formula base, defense conversion rate, Sticky damage multiplier, and Despair display/damage coefficients.",
+      "tags": ["constants", "debuffs", "combat-effects"]
+    },
+    {
+      "id": "file:src/lib/constants/defensive.ts",
+      "type": "file",
+      "name": "defensive.ts",
+      "filePath": "src/lib/constants/defensive.ts",
+      "summary": "Defensive perk damage reduction values: BarbSkin, StoneSkin (with max DR cap), Adaptive Plate, Protector Spirit (with HP threshold and always-on stack), Air Pressure, Valor Shield, Vampire, Frenzy (negative DR), Stored Corruption, Mounted Defense, Carapace, and Cursed Bark DR per debuff.",
+      "tags": ["constants", "defensive", "damage-reduction", "perks"]
+    },
+    {
+      "id": "file:src/lib/constants/dot-damage.ts",
+      "type": "file",
+      "name": "dot-damage.ts",
+      "filePath": "src/lib/constants/dot-damage.ts",
+      "summary": "Damage-over-time constants: base DoT damage (1.75), infliction divisor, scaling rates for Bleed (Dex/Phys), Burn (Fire), Poison (Hex/Earth), Caustic (Hex/Earth), potency power, rounding, builder-to-game conversion, and slow multiplier per second.",
+      "tags": ["constants", "dot", "damage-over-time", "scaling"]
+    },
+    {
+      "id": "file:src/lib/constants/draconic-colors.ts",
+      "type": "file",
+      "name": "draconic-colors.ts",
+      "filePath": "src/lib/constants/draconic-colors.ts",
+      "summary": "Draconic color variant multipliers: Fire (speed), Air (speed, knockback, cooldown), Earth (damage, speed, stun), Water (damage, speed, stun), and Hex (stun, random debuff chances).",
+      "tags": ["constants", "draconic", "color-variants", "multipliers"]
+    },
+    {
+      "id": "file:src/lib/constants/draconic.ts",
+      "type": "file",
+      "name": "draconic.ts",
+      "filePath": "src/lib/constants/draconic.ts",
+      "summary": "Draconic system constants: infusion potency/duration multipliers, Dragon State HP base and per-stack values, Dragon State multiplier, and Bastion Bless multiplier.",
+      "tags": ["constants", "draconic", "infusion", "dragon-state"]
+    },
+    {
+      "id": "function:src/lib/constants/game.ts:calcBaseMaxHP",
+      "type": "function",
+      "name": "calcBaseMaxHP",
+      "filePath": "src/lib/constants/game.ts",
+      "summary": "Calculates base max HP from level using formula: round(120 * (1 + level * 0.0125)).",
+      "tags": ["function", "hp-calculation", "game-mechanics"]
+    },
+    {
+      "id": "file:src/lib/constants/game.ts",
+      "type": "file",
+      "name": "game.ts",
+      "filePath": "src/lib/constants/game.ts",
+      "summary": "Core game constants: MAX_LEVEL (80), DEFAULT_LEVEL, HP configuration (BASE_HP=120, HP_PER_LEVEL=0.0125), calcBaseMaxHP function, and UI timing constants (save debounce, undo window, search blur, import success display, focus delay, toast duration).",
+      "tags": ["constants", "game-core", "hp", "timing", "configuration"]
+    },
+    {
+      "id": "file:src/lib/constants/heals.ts",
+      "type": "file",
+      "name": "heals.ts",
+      "filePath": "src/lib/constants/heals.ts",
+      "summary": "Healing constants: crit healing base (120), holy boost divisor, crit healing per stack, and Ocean's Song per-stack multiplier.",
+      "tags": ["constants", "healing", "crit-healing"]
+    },
+    {
+      "id": "file:src/lib/constants/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "src/lib/constants/index.ts",
+      "summary": "Barrel re-export module aggregating all constants sub-modules: damage-types, game, storage, thresholds, perks, boosts, heals, draconic, perk-base-damage, rune-base-damage, buffs, stat-conversions, defensive, dot-damage, draconic-colors, cdr, debuff-effects.",
+      "tags": ["typescript", "barrel", "re-export", "constants-index"]
+    },
+    {
+      "id": "file:src/lib/constants/perk-base-damage.ts",
+      "type": "file",
+      "name": "perk-base-damage.ts",
+      "filePath": "src/lib/constants/perk-base-damage.ts",
+      "summary": "Perk-triggered base damage constants for 20+ perks: Dragon Claw/Bubble (damage, heal, poise), Springblast, Basic/Buni/Mageling/Toadzerker/Dire Buni/Void Root Spirit, Bounce Momentum, Protector Spirit, Air Pressure/Barrier, Roaring Heads, Barbed Flurry, Honey Arts, Sickness, Melting Slime, Whirlwind, Volatile Shell, Royal Finisher, Grounded Despair, Echo Incineration, Venom Spitter, Spore Burst, Apollo Boost, and HP gate thresholds.",
+      "tags": ["constants", "perks", "base-damage", "spirits", "hp-gates"]
+    },
+    {
+      "id": "file:src/lib/constants/perks.ts",
+      "type": "file",
+      "name": "perks.ts",
+      "filePath": "src/lib/constants/perks.ts",
+      "summary": "Perk constants for various mechanics: Luminescent, Spirit Winds, Dark Magic, Wind Walker (penetration), Reaper, Extinguish, Explosive Charge, Wild Bolt, Lightning Cloak, Curse Rip, True Balance, Emotional, Toxin Transfer, Void Rage, Channeled Weapon, Draconic Blood, crit damage base values (BASE_CRIT_DAMAGE=150), crit-rate multipliers (Flowing Crits, Spell Slinger, Sharp Crits, etc.), crit-damage formula multipliers (Thief Training, Venom Eater, Vital Strikes, Spark, Critical Master, Splinter), Mortal Will, and Sunburn mechanics.",
+      "tags": ["constants", "perks", "crit", "damage-scaling", "combat-mechanics"]
+    },
+    {
+      "id": "file:src/lib/constants/rune-base-damage.ts",
+      "type": "file",
+      "name": "rune-base-damage.ts",
+      "filePath": "src/lib/constants/rune-base-damage.ts",
+      "summary": "Rune-triggered base damage constants: Ancient Cleric (with shield scaling), Beenade (with potency cap), Boostshroom, Thunderous Charge, Sporeling Toss (with slider max), Foot Dive, Caci, Cacitrops, Hex Web, Brainblast, and Rocky Tail (with protection scaling, variable hit count formula).",
+      "tags": ["constants", "runes", "base-damage", "abilities"]
+    },
+    {
+      "id": "file:src/lib/constants/stat-conversions.ts",
+      "type": "file",
+      "name": "stat-conversions.ts",
+      "filePath": "src/lib/constants/stat-conversions.ts",
+      "summary": "Stat boost conversion rate constants: Weight Distribution, Quick Witted, Whirl Foot, Carapace, Extra Layers, Frozen Heart, Immovable, Righted Wrongs (with tenacity/offense weights), Rocky Body, Spellshield, Strong Tides, Swift Guard, True Balance, Rawny (with cap), and subtraction constants for Roaring Headings Warding, Lucky Warding/Protection/Tenacity.",
+      "tags": ["constants", "stat-conversions", "stat-boosts", "defensive"]
+    },
+    {
+      "id": "file:src/lib/constants/buffs.ts",
+      "type": "module",
+      "name": "buffs.ts",
+      "filePath": "src/lib/constants/buffs.ts",
+      "summary": "Buff-related constants module (referenced by index.ts re-export but not in this batch).",
+      "tags": ["constants", "buffs", "referenced"]
+    },
+    {
+      "id": "file:src/lib/constants/storage.ts",
+      "type": "module",
+      "name": "storage.ts",
+      "filePath": "src/lib/constants/storage.ts",
+      "summary": "Storage-related constants module (referenced by index.ts re-export but not in this batch).",
+      "tags": ["constants", "storage", "referenced"]
+    },
+    {
+      "id": "file:src/lib/constants/thresholds.ts",
+      "type": "module",
+      "name": "thresholds.ts",
+      "filePath": "src/lib/constants/thresholds.ts",
+      "summary": "Threshold-related constants module (referenced by index.ts re-export but not in this batch).",
+      "tags": ["constants", "thresholds", "referenced"]
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/data/weaponConditionalBoosts.ts",
+      "target": "function:src/data/weaponConditionalBoosts.ts:getWeaponConditionalBoost",
+      "type": "contains"
+    },
+    {
+      "source": "file:src/data/weaponArts.ts",
+      "target": "function:src/data/weaponArts.ts:WAIndividualHit",
+      "type": "contains"
+    },
+    {
+      "source": "file:src/data/weaponArts.ts",
+      "target": "function:src/data/weaponArts.ts:WeaponArtRequirement",
+      "type": "contains"
+    },
+    {
+      "source": "file:src/data/weaponArts.ts",
+      "target": "function:src/data/weaponArts.ts:WeaponArt",
+      "type": "contains"
+    },
+    {
+      "source": "file:src/data/weaponArts.ts",
+      "target": "function:src/data/weaponArts.ts:WEAPON_ARTS",
+      "type": "contains"
+    },
+    {
+      "source": "file:src/lib/constants/game.ts",
+      "target": "function:src/lib/constants/game.ts:calcBaseMaxHP",
+      "type": "contains"
+    },
+    {
+      "source": "file:src/lib/constants.ts",
+      "target": "file:src/lib/constants/index.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/damage-types.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/game.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/perks.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/boosts.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/heals.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/draconic.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/perk-base-damage.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/rune-base-damage.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/stat-conversions.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/defensive.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/dot-damage.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/draconic-colors.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/cdr.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/debuff-effects.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:src/DidYouMean.svelte",
+      "target": "file:src/lib/utils",
+      "type": "imports"
+    },
+    {
+      "source": "file:src/DmgTotalTooltip.svelte",
+      "target": "file:src/lib/dmgTypes",
+      "type": "imports"
+    },
+    {
+      "source": "file:src/DmgTotalTooltip.svelte",
+      "target": "file:src/lib/ui/Badge.svelte",
+      "type": "imports"
+    },
+    {
+      "source": "file:src/EmotionalTracker.svelte",
+      "target": "file:src/lib/store",
+      "type": "imports"
+    },
+    {
+      "source": "file:src/EmotionalTracker.svelte",
+      "target": "file:src/lib/ui/Badge.svelte",
+      "type": "imports"
+    },
+    {
+      "source": "file:src/Highlight.svelte",
+      "target": "file:src/lib/utils",
+      "type": "imports"
+    },
+    {
+      "source": "file:src/LevelBar.svelte",
+      "target": "file:src/lib/store",
+      "type": "imports"
+    },
+    {
+      "source": "file:src/LevelBar.svelte",
+      "target": "file:src/lib/constants.ts",
+      "type": "imports"
+    },
+    {
+      "source": "file:src/LevelBar.svelte",
+      "target": "function:src/lib/constants/game.ts:calcBaseMaxHP",
+      "type": "calls"
+    },
+    {
+      "source": "file:src/LevelBar.svelte",
+      "target": "file:src/lib/ui/Badge.svelte",
+      "type": "imports"
+    },
+    {
+      "source": "file:src/lib/AppHeader.svelte",
+      "target": "file:src/BuildSaves.svelte",
+      "type": "imports"
+    },
+    {
+      "source": "file:src/EmotionalTracker.svelte",
+      "target": "file:src/lib/store",
+      "type": "subscribes"
+    },
+    {
+      "source": "file:src/LevelBar.svelte",
+      "target": "file:src/lib/store",
+      "type": "subscribes"
+    },
+    {
+      "source": "file:src/LevelBar.svelte",
+      "target": "file:src/lib/constants/game.ts",
+      "type": "depends_on"
+    },
+    {
+      "source": "file:src/LevelBar.svelte",
+      "target": "function:src/lib/constants/game.ts:calcBaseMaxHP",
+      "type": "depends_on"
+    },
+    {
+      "source": "file:src/data/weaponConditionalBoosts.ts",
+      "target": "file:src/lib/utils",
+      "type": "imports"
+    },
+    {
+      "source": "file:src/lib/AppHeader.svelte",
+      "target": "file:src/BuildSaves.svelte",
+      "type": "contains"
+    }
+  ]
+}

@@ -1065,16 +1065,6 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       sourceType: 'perk',
     },
   ],
-  'Gorecast': () => [
-    {
-      buffName: 'Bleed',
-      potency: 0,
-      duration: 5,
-      condition: 'On Weapon Art hit (deals Magic or Physical damage)',
-      sourceName: 'Gorecast',
-      sourceType: 'perk',
-    },
-  ],
   'Sharp Claws': (amount) => [
     {
       buffName: 'Bleed',

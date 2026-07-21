@@ -16,7 +16,10 @@ import {
 } from './data'
 import { applyEnchantmentsToSlot, applyPerkEffectiveness, applyInfusion } from './enchant'
 import { applyShrineToStats, SHRINE_MULTIPLIERS } from './shrine'
-import { MONK_RANK_MULTIPLIER } from './weapon'
+import { MONK_RANK_MULTIPLIER, calcWeapon } from './weapon'
+import { WEAPON_ARTS } from '../../data/weaponArts'
+import { getFinalWaDmgTypes } from '../damageTypeResolve'
+import { buildDmgTypeBonuses } from './dmgTypeBonuses'
 
 // ─── CDR ──────────────────────────────────────────────────────────────────────
 
@@ -121,6 +124,8 @@ function calcBoosts(
   burnPotency:       number = 0,
   hasBurn:           boolean = false,
   selfDebuffCount:   number = 0,
+  hasMagicDmg:       boolean = false,
+  hasMagicOrPhysicalDmg: boolean = false,
 ): BoostResult {
   const dmgMap = new Map<string, BoostEntry>()
 
@@ -137,6 +142,7 @@ function calcBoosts(
     ragePotency, bouncePotency, quickdrawPotency,
     tailwindPotency, speedBoost, attackSpeed, tenacity, inDarkness, emotionalState, level,
     mountActive, summonBoostPct, selectedWeaponArt, hpFillPct, burnPotency, hasBurn, selfDebuffCount,
+    hasMagicDmg, hasMagicOrPhysicalDmg,
   }
 
   for (const def of BOOST_DEFS) {
@@ -507,6 +513,20 @@ function deriveResults(
   }
 
   const isMountRune = state.rune.endsWith('Mount Rune')
+  const _weaponResult = (state.weaponBlade || state.weaponHandle) ? calcWeapon(state.weaponBlade, state.weaponHandle, state.shrineActive) : null
+  const _perkDmgTypeBonusesForBoost = buildDmgTypeBonuses(true, {
+    perks: finalPerks, ragePotency, draconicRuneInfusion: state.draconicRuneInfusion,
+    emotionalState: state.emotionalState, draconicColor: state.draconicColor,
+    guild: state.guild, draconicInfusionDisabled: false, toxinTransferHexBonus: 0,
+    rageDisabled: false,
+  })
+  const _waDmgTypesForBoost = (() => {
+    if (!_weaponResult) return {} as Record<string, number>
+    const wa = WEAPON_ARTS.find(a => a.name === state.selectedWeaponArt)
+    return getFinalWaDmgTypes(wa?.damageType, _weaponResult.damageTypes, _perkDmgTypeBonusesForBoost)
+  })()
+  const hasMagicDmg = Object.entries(_waDmgTypesForBoost).some(([dt, mult]) => dt === 'magic' && mult > 0)
+  const hasMagicOrPhysicalDmg = Object.entries(_waDmgTypesForBoost).some(([dt, mult]) => (dt === 'magic' || dt === 'physical') && mult > 0)
   const boosts = calcBoosts(
     finalPerks, state.emotionalState, state.level ?? MAX_LEVEL,
     crit.naturalCritChance, boostedStats.jumpBoost ?? 0,
@@ -519,6 +539,8 @@ function deriveResults(
     burnPotency,
     hasBurn,
     selfDebuffCount,
+    hasMagicDmg,
+    hasMagicOrPhysicalDmg,
   )
   return { stats: boostedStats, perks: finalPerks, cdr, boosts, crit }
 }

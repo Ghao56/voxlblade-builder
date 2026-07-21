@@ -1,4 +1,5 @@
 import { PENANCE_HP_THRESHOLD, PENANCE_BLEED_POTENCY, PENANCE_BLEED_DURATION } from './Boost'
+import { HYPNOTIST_POTENCY_PER_PERK, HYPNOTIST_DURATION_BASE, HYPNOTIST_DURATION_PER_PERK, FIERY_PURSUIT_BURN_DURATION } from '../lib/constants/perks'
 import type { GrantedBuff } from './BuffData'
 import { canProc, type ProcCoefficient } from '../lib/types'
 import { calcBaseMaxHP } from '../lib/constants/game'
@@ -13,6 +14,8 @@ export interface AutoDebuffInput {
   protection: number
   selectedWAProcCoefficient?: ProcCoefficient
   enemyHpFillPct: number
+  hasMagicDmg?: boolean
+  hasMagicOrPhysicalDmg?: boolean
 }
 
 export function calcActualHpFillPct(
@@ -100,6 +103,30 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
     })
   }
 
+  const toxinCasterAmt = perks['Toxin Caster'] ?? 0
+  if (toxinCasterAmt > 0 && input.hasMagicDmg && !existingBuffNames.includes('Poison')) {
+    debuffs.push({
+      buffName: 'Poison',
+      potency: 0,
+      duration: 0,
+      condition: 'Magic damage from WA or Rune applies Poison',
+      sourceName: 'Toxin Caster',
+      sourceType: 'perk',
+    })
+  }
+
+  const gorecastAmt = perks['Gorecast'] ?? 0
+  if (gorecastAmt > 0 && input.hasMagicOrPhysicalDmg && !existingBuffNames.includes('Bleed')) {
+    debuffs.push({
+      buffName: 'Bleed',
+      potency: 0,
+      duration: 5,
+      condition: 'On Weapon Art hit (deals Magic or Physical damage)',
+      sourceName: 'Gorecast',
+      sourceType: 'perk',
+    })
+  }
+
   const bellowingAmt = perks['Bellowing Ember'] ?? 0
   if (bellowingAmt > 0) {
     const actualHpPct = calcActualHpFillPct(hpFill, level, protection)
@@ -165,6 +192,30 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
       duration: 5,
       condition: `${burnChance}% chance on Holy attacks`,
       sourceName: 'Sunburn',
+      sourceType: 'perk',
+    })
+  }
+
+  const fieryPursuitAmt = perks['Fiery Pursuit'] ?? 0
+  if (fieryPursuitAmt > 0 && exhaustCanProc && !existingBuffNames.includes('Burn')) {
+    debuffs.push({
+      buffName: 'Burn',
+      potency: 0,
+      duration: FIERY_PURSUIT_BURN_DURATION,
+      condition: 'On dash before Weapon Art',
+      sourceName: 'Fiery Pursuit',
+      sourceType: 'perk',
+    })
+  }
+
+  const hypnotistAmt = perks['Hypnotist'] ?? 0
+  if (hypnotistAmt > 0 && exhaustCanProc && !existingBuffNames.includes('Hypnotized')) {
+    debuffs.push({
+      buffName: 'Hypnotized',
+      potency: HYPNOTIST_POTENCY_PER_PERK * hypnotistAmt,
+      duration: HYPNOTIST_DURATION_BASE + HYPNOTIST_DURATION_PER_PERK * hypnotistAmt,
+      condition: 'On WA or Rune hit · Potency = 0.1 × ' + hypnotistAmt,
+      sourceName: 'Hypnotist',
       sourceType: 'perk',
     })
   }

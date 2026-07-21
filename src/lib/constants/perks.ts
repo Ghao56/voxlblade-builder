@@ -67,3 +67,14 @@ export const SUNBURN_UNIVERSAL_DMG_PER_STACK = 0.10
 export const SUNBURN_HOLY_EXTRA_DMG_PER_STACK = 0.15
 export const SUNBURN_BURN_BASE_CHANCE = 0.24
 export const SUNBURN_BURN_CHANCE_PER_STACK = 0.06
+
+// ── Fiery Pursuit ──────────────────────────────────
+export const FIERY_PURSUIT_BASE_DMG = 15
+export const FIERY_PURSUIT_DMG_PER_STACK = 1.5
+export const FIERY_PURSUIT_BURN_DURATION = 5
+
+// ── Hypnotist ─────────────────────────────────────
+export const HYPNOTIST_POTENCY_PER_PERK = 0.1
+export const HYPNOTIST_DURATION_BASE = 10
+export const HYPNOTIST_DURATION_PER_PERK = 5
+export const HYPNOTIST_MAGIC_ARMOR_PER_POTENCY = 50

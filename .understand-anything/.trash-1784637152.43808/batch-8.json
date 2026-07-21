@@ -1,0 +1,928 @@
+{
+  "batchIndex": 8,
+  "nodes": [
+    {
+      "id": "file:decode_full.mjs",
+      "type": "file",
+      "name": "decode_full.mjs",
+      "filePath": "decode_full.mjs",
+      "summary": "Standalone debug/test tool that decodes and computes a full Voxel Blade character build offline. Loads JSON data files (armors, rings, runes, blades, handles, races, guilds, enchantments, perks), applies upgrades, enchantments, shrine multipliers, and infusions, then prints accumulated stats and final perks. Duplicates core engine logic for standalone debugging.",
+      "tags": ["debug", "tool", "standalone", "build-decoder", "offline"]
+    },
+    {
+      "id": "function:decode_full.mjs:getPerk",
+      "type": "function",
+      "name": "getPerk",
+      "filePath": "decode_full.mjs",
+      "summary": "Looks up a perk definition by name from the pre-built PERK_MAP.",
+      "tags": ["lookup", "perk"]
+    },
+    {
+      "id": "function:decode_full.mjs:getArmorPart",
+      "type": "function",
+      "name": "getArmorPart",
+      "filePath": "decode_full.mjs",
+      "summary": "Retrieves a specific armor part (Helmet/Chestplate/Leggings) by armor name and part type from the pre-built ARMOR_MAP.",
+      "tags": ["lookup", "armor"]
+    },
+    {
+      "id": "function:decode_full.mjs:applyUpgrade",
+      "type": "function",
+      "name": "applyUpgrade",
+      "filePath": "decode_full.mjs",
+      "summary": "Applies an upgrade level multiplier (1 + level * 0.1) to positive stats (multiplicative) and negative stats (divisive), with armor penetration excluded from upgrade scaling.",
+      "tags": ["stat-calculation", "upgrade"]
+    },
+    {
+      "id": "function:decode_full.mjs:applyEnchantmentsToSlot",
+      "type": "function",
+      "name": "applyEnchantmentsToSlot",
+      "filePath": "decode_full.mjs",
+      "summary": "Applies enchantment modifiers to a slot's base stats and perks in reverse order. Handles multiplier and additive modifiers, base stats scaling, upgrade application, bonus multipliers, and perk modifications from enchantments.",
+      "tags": ["enchantment", "stat-calculation", "core-engine"]
+    },
+    {
+      "id": "function:decode_full.mjs:applyShrine",
+      "type": "function",
+      "name": "applyShrine",
+      "filePath": "decode_full.mjs",
+      "summary": "Applies shrine tier multiplier (T1×3.0, T2×1.7, T3×1.4, T4×1.1, T5×1.0) to weapon stats.",
+      "tags": ["shrine", "stat-calculation"]
+    },
+    {
+      "id": "function:decode_full.mjs:applyInfusion",
+      "type": "function",
+      "name": "applyInfusion",
+      "filePath": "decode_full.mjs",
+      "summary": "Applies infusion by halving all base stats (×0.5 multiplier).",
+      "tags": ["infusion", "stat-calculation"]
+    },
+    {
+      "id": "function:decode_full.mjs:finalizePerks",
+      "type": "function",
+      "name": "finalizePerks",
+      "filePath": "decode_full.mjs",
+      "summary": "Post-processes raw perks: applies Perk Effectiveness and Cursed multipliers with exemptions, converts Buckler to Parry, and propagates potency tags (Bleed/Burn/Poison Potency).",
+      "tags": ["perk-processing", "finalization"]
+    },
+    {
+      "id": "file:docs/ONBOARDING.md",
+      "type": "document",
+      "name": "ONBOARDING.md",
+      "filePath": "docs/ONBOARDING.md",
+      "summary": "Comprehensive onboarding guide for the voxlblade project. Documents project overview, architecture layers (Root Config, Source Root, Data Layer, Library Layer, Constants Layer, Engine Layer, Modals Layer, Statistics Layer, Stores Layer), key concepts (damage calculation pipeline, buff/debuff system, engine architecture, state management, component hierarchy), guided tour steps, file map, and complexity hotspots.",
+      "tags": ["documentation", "onboarding", "architecture", "guide"]
+    },
+    {
+      "id": "file:src/app.css",
+      "type": "file",
+      "name": "app.css",
+      "filePath": "src/app.css",
+      "summary": "Global stylesheet defining CSS custom properties (design tokens) for the dark-themed UI. Includes color palette (bg, surface, accent, neg, weapon-specific colors), spacing scale (4px base), border radii, shadows, duration/easing, font sizes/weights, letter spacing, z-index layers, Draconic theme tokens, scrollbar styling, and component styles for weapon art and wild bolt UI boxes.",
+      "tags": ["css", "design-tokens", "theme", "styling"]
+    },
+    {
+      "id": "file:src/App.svelte",
+      "type": "file",
+      "name": "App.svelte",
+      "filePath": "src/App.svelte",
+      "summary": "Root Svelte component (~3732 lines) orchestrating the entire application UI. Manages build state, modal system (race/guild/armor/ring/rune/blade/handle/glove/essence selection), enchant management, weapon art selection and validation, draconic rune system, upgrade cycling, build clear/undo, stat filtering, perk tag filtering, detail card rendering, weapon stat display, and summary grid. Integrates with all major subsystems: engine, store, data modules, and child components.",
+      "tags": ["svelte", "root-component", "orchestrator", "ui", "3732-lines"]
+    },
+    {
+      "id": "function:src/App.svelte:toggleCdrPerk",
+      "type": "function",
+      "name": "toggleCdrPerk",
+      "filePath": "src/App.svelte",
+      "summary": "Toggles a CDR perk on/off in the build state's cdrToggles map.",
+      "tags": ["cdr", "toggle", "state-management"]
+    },
+    {
+      "id": "function:src/App.svelte:handleClearBuild",
+      "type": "function",
+      "name": "handleClearBuild",
+      "filePath": "src/App.svelte",
+      "summary": "Clears the entire build state with undo support. Stores the previous build state and sets a timeout to auto-dismiss the undo option.",
+      "tags": ["build-management", "undo", "clear"]
+    },
+    {
+      "id": "function:src/App.svelte:handleUndo",
+      "type": "function",
+      "name": "handleUndo",
+      "filePath": "src/App.svelte",
+      "summary": "Restores the previously cleared build state and cancels the auto-dismiss timer.",
+      "tags": ["build-management", "undo"]
+    },
+    {
+      "id": "function:src/App.svelte:toggleUpgrade",
+      "type": "function",
+      "name": "toggleUpgrade",
+      "filePath": "src/App.svelte",
+      "summary": "Cycles an equipment upgrade level (0-5) for a given upgrade key.",
+      "tags": ["upgrade", "equipment"]
+    },
+    {
+      "id": "function:src/App.svelte:computeArmorEffectiveBoost",
+      "type": "function",
+      "name": "computeArmorEffectiveBoost",
+      "filePath": "src/App.svelte",
+      "summary": "Computes the effective armor boost contribution by multiplying armor stats by weapon scaling values, used for 'most-effective' sort mode.",
+      "tags": ["armor", "sorting", "effective-boost"]
+    },
+    {
+      "id": "function:src/App.svelte:computeArmorBrawnyEffectiveBoost",
+      "type": "function",
+      "name": "computeArmorBrawnyEffectiveBoost",
+      "filePath": "src/App.svelte",
+      "summary": "Computes effective armor boost with Brawny perk conversion (converts non-physical offensive boosts to physicalBoost before calculating).",
+      "tags": ["armor", "sorting", "brawny"]
+    },
+    {
+      "id": "function:src/App.svelte:weaponMatchesFilter",
+      "type": "function",
+      "name": "weaponMatchesFilter",
+      "filePath": "src/App.svelte",
+      "summary": "Checks if a weapon item matches the current weapon stat filter criteria (include/exclude map).",
+      "tags": ["filter", "weapon"]
+    },
+    {
+      "id": "function:src/App.svelte:substringLevenshtein",
+      "type": "function",
+      "name": "substringLevenshtein",
+      "filePath": "src/App.svelte",
+      "summary": "Computes Levenshtein distance between a query and candidate string, returning 0 if the candidate contains the query substring.",
+      "tags": ["search", "fuzzy-match", "algorithm"]
+    },
+    {
+      "id": "function:src/App.svelte:filterAccessoryItems",
+      "type": "function",
+      "name": "filterAccessoryItems",
+      "filePath": "src/App.svelte",
+      "summary": "Filters accessory items (rings/runes) by search query, perk tags, stat filter, and sorts by effective boost or stat filter mode.",
+      "tags": ["filter", "accessory", "sorting"]
+    },
+    {
+      "id": "function:src/App.svelte:filterWeaponItems",
+      "type": "function",
+      "name": "filterWeaponItems",
+      "filePath": "src/App.svelte",
+      "summary": "Filters weapon items by search query, perk tags, weapon stat filter, and sorts by stat filter mode.",
+      "tags": ["filter", "weapon", "sorting"]
+    },
+    {
+      "id": "function:src/App.svelte:buildSlotCard",
+      "type": "function",
+      "name": "buildSlotCard",
+      "filePath": "src/App.svelte",
+      "summary": "Builds a DetailCard for an equipment slot by applying enchantments to base stats/perks.",
+      "tags": ["detail-card", "equipment", "enchantment"]
+    },
+    {
+      "id": "function:src/App.svelte:buildInfusionCard",
+      "type": "function",
+      "name": "buildInfusionCard",
+      "filePath": "src/App.svelte",
+      "summary": "Builds a DetailCard for an infusion slot by applying infusion modifier (50% stat scaling).",
+      "tags": ["detail-card", "infusion"]
+    },
+    {
+      "id": "function:src/App.svelte:applySuggestion",
+      "type": "function",
+      "name": "applySuggestion",
+      "filePath": "src/App.svelte",
+      "summary": "Applies a modal search suggestion by updating the appropriate build state field based on active modal type, or prefills the search box.",
+      "tags": ["modal", "search", "suggestion"]
+    },
+    {
+      "id": "function:src/App.svelte:splitWeaponStats",
+      "type": "function",
+      "name": "splitWeaponStats",
+      "filePath": "src/App.svelte",
+      "summary": "Splits weapon stats into damage types, scalings, and boosts categories.",
+      "tags": ["weapon", "stat-categorization"]
+    },
+    {
+      "id": "function:src/App.svelte:formatCD",
+      "type": "function",
+      "name": "formatCD",
+      "filePath": "src/App.svelte",
+      "summary": "Formats a cooldown value with CDR applied, showing the final seconds.",
+      "tags": ["cdr", "formatting"]
+    },
+    {
+      "id": "file:src/BaseDamageCalc.svelte",
+      "type": "file",
+      "name": "BaseDamageCalc.svelte",
+      "filePath": "src/BaseDamageCalc.svelte",
+      "summary": "Svelte component (~2502 lines) that computes and displays per-hit damage breakdowns. Handles weapon hit calculations, critical hit multipliers, debuff damage multipliers, defense/armor penetration, typed damage boosts, DoT ticks, healing calculations, daily challenge presets, and tooltip formulas. Accepts extensive props for boosts, crit, stats, debuffs, self-damage, draconic bonuses, and more.",
+      "tags": ["svelte", "damage-calculation", "per-hit", "2502-lines"]
+    },
+    {
+      "id": "function:src/BaseDamageCalc.svelte:calcArmorMult",
+      "type": "function",
+      "name": "calcArmorMult",
+      "filePath": "src/BaseDamageCalc.svelte",
+      "summary": "Calculates the armor mitigation multiplier using two branches: low (def ≤ pen + threshold) applies linear reduction, high (def > pen + threshold) applies diminishing-returns formula. Returns the multiplier and which branch was used.",
+      "tags": ["defense", "armor-penetration", "core-calculation"]
+    },
+    {
+      "id": "function:src/BaseDamageCalc.svelte:getApplicableBoosts",
+      "type": "function",
+      "name": "getApplicableBoosts",
+      "filePath": "src/BaseDamageCalc.svelte",
+      "summary": "Returns the list of typed damage boosts that apply to a given damage type, considering heal vs damage mode, weapon group, and proc coefficient requirements.",
+      "tags": ["boost", "damage-type", "filtering"]
+    },
+    {
+      "id": "function:src/BaseDamageCalc.svelte:defPctForType",
+      "type": "function",
+      "name": "defPctForType",
+      "filePath": "src/BaseDamageCalc.svelte",
+      "summary": "Resolves the effective defense percentage for a damage type, including inherited defenses from parent types. True and summon types have 0 defense.",
+      "tags": ["defense", "damage-type", "inheritance"]
+    },
+    {
+      "id": "function:src/BaseDamageCalc.svelte:computePreMitigationBase",
+      "type": "function",
+      "name": "computePreMitigationBase",
+      "filePath": "src/BaseDamageCalc.svelte",
+      "summary": "Computes pre-mitigation base damage by summing base damage × damage type multipliers, then applying scaling and combat multipliers.",
+      "tags": ["damage-calculation", "pre-mitigation"]
+    },
+    {
+      "id": "function:src/BaseDamageCalc.svelte:loadDefenses",
+      "type": "function",
+      "name": "loadDefenses",
+      "filePath": "src/BaseDamageCalc.svelte",
+      "summary": "Loads enemy defense values from localStorage, defaulting all tracked types to 0.",
+      "tags": ["defense", "persistence"]
+    },
+    {
+      "id": "function:src/BaseDamageCalc.svelte:resolveTypeInfo",
+      "type": "function",
+      "name": "resolveTypeInfo",
+      "filePath": "src/BaseDamageCalc.svelte",
+      "summary": "Resolves complete damage type information including applicable boosts, typed multiplier, debuff multiplier, defense percentage, and armor multiplier for a given type.",
+      "tags": ["damage-type", "resolution", "combat"]
+    },
+    {
+      "id": "file:src/BuffList.svelte",
+      "type": "file",
+      "name": "BuffList.svelte",
+      "filePath": "src/BuffList.svelte",
+      "summary": "Svelte component (~743 lines) displaying active buffs, debuffs, and neutral effects with source tracking. Computes buff sources from items, perks, weapon arts, draconic infusion, and auto-debuffs. Groups duplicate buffs showing strongest entry, displays potency values, duration, source breakdowns with bar charts, and handles Dragonic infusion color-specific potency/duration modifiers for hex and holy.",
+      "tags": ["svelte", "buff-display", "debuff-display", "743-lines"]
+    },
+    {
+      "id": "file:src/BuildSaves.svelte",
+      "type": "file",
+      "name": "BuildSaves.svelte",
+      "filePath": "src/BuildSaves.svelte",
+      "summary": "Svelte component (~608 lines) managing build save/load functionality with localStorage persistence. Supports multiple save slots with rename, confirm-to-load, confirm-to-delete, export/import via compressed base64 codes (deflate-raw), clipboard paste, and responsive mobile sheet UI. Implements prototype pollution protection on import.",
+      "tags": ["svelte", "save-system", "build-persistence", "608-lines"]
+    },
+    {
+      "id": "function:src/BuildSaves.svelte:encodeState",
+      "type": "function",
+      "name": "encodeState",
+      "filePath": "src/BuildSaves.svelte",
+      "summary": "Encodes a BuildState into a compressed base64 share code. Strips default values, shortens keys via KEY_MAP/ENCH_MAP, and compresses with deflate-raw.",
+      "tags": ["serialization", "compression", "share-code"]
+    },
+    {
+      "id": "function:src/BuildSaves.svelte:decodeState",
+      "type": "function",
+      "name": "decodeState",
+      "filePath": "src/BuildSaves.svelte",
+      "summary": "Decodes a compressed base64 share code back into a BuildState. Handles both compressed and legacy base64 formats, validates fields via sanitizeField, and protects against prototype pollution.",
+      "tags": ["deserialization", "decompression", "validation"]
+    },
+    {
+      "id": "function:src/BuildSaves.svelte:sanitizeField",
+      "type": "function",
+      "name": "sanitizeField",
+      "filePath": "src/BuildSaves.svelte",
+      "summary": "Validates and sanitizes a single field from imported data against expected types from DEFAULTS, filtering dangerous keys (__proto__, constructor, prototype).",
+      "tags": ["validation", "security", "sanitization"]
+    },
+    {
+      "id": "file:src/CdrStepsCalc.svelte",
+      "type": "file",
+      "name": "CdrStepsCalc.svelte",
+      "filePath": "src/CdrStepsCalc.svelte",
+      "summary": "Svelte component displaying step-by-step cooldown reduction (CDR) calculation. Shows each multiplier step with before/after values, floor operation, and minimum CD cap (1s). Supports optional set-bonus override display.",
+      "tags": ["svelte", "cdr", "display", "92-lines"]
+    },
+    {
+      "id": "file:src/CritIcon.svelte",
+      "type": "file",
+      "name": "CritIcon.svelte",
+      "filePath": "src/CritIcon.svelte",
+      "summary": "Simple SVG component rendering a critical hit icon (star/bolt shape) with a red-to-orange gradient. Accepts a size prop.",
+      "tags": ["svelte", "svg", "icon", "crit", "13-lines"]
+    },
+    {
+      "id": "file:src/DamageAnalyzer.svelte",
+      "type": "file",
+      "name": "DamageAnalyzer.svelte",
+      "filePath": "src/DamageAnalyzer.svelte",
+      "summary": "Primary damage analysis Svelte component (~6665 lines). Core of the application computing the full damage pipeline: assembles active buffs, calculates typed damage boosts, defense sources, heal scaling, debuff combat effects, DoT ticks, self-damage, weapon art damage, summon stats, draconic bonuses, enemy HP effects, and perk-on-hit damages. Renders detailed damage breakdowns with tooltips, critical hit toggles, defense presets, and mount rune support.",
+      "tags": ["svelte", "damage-analysis", "main-engine", "6665-lines"]
+    },
+    {
+      "id": "file:src/data/cdr.ts",
+      "type": "file",
+      "name": "cdr.ts",
+      "filePath": "src/data/cdr.ts",
+      "summary": "Defines cooldown reduction (CDR) perk data mapping. Each entry specifies rune/WA CDR percentages or multipliers, optional set-CD overrides, toggleability, and filter conditions. Includes: Caster, Channeled Weapon, Mage Rage, Poison Acceleration, Runic Winds, Wave Rider, Whirlwind, Gladiatorial Rage, and Voltaic Body.",
+      "tags": ["data", "cdr", "perk-definitions"]
+    },
+    {
+      "id": "file:src/data/debuffCombatEffects.ts",
+      "type": "file",
+      "name": "debuffCombatEffects.ts",
+      "filePath": "src/data/debuffCombatEffects.ts",
+      "summary": "Defines combat effects for debuffs: Weakness (damage reduction), Shatter/Despair/Electrical Rend (armor reduction), Sticky/Sticky variants (movement slow + type damage taken increase), Frostbite (water+air damage taken). Each entry has a description function, optional damage multiplier, defense reduction, and type-specific damage multipliers.",
+      "tags": ["data", "debuff", "combat-effects"]
+    },
+    {
+      "id": "file:src/data/defensivePerks.ts",
+      "type": "file",
+      "name": "defensivePerks.ts",
+      "filePath": "src/data/defensivePerks.ts",
+      "summary": "Defines defensive perk damage reduction sources. Each perk specifies DR per stack, max DR, flat vs diminishing, conditional activation (HP thresholds, mounted, rage, darkness, protection), and potency capping. Exports getActiveDefensivePerkSources() and calcDefensivePotencyMult() (with Bastion Bless and Draconic Holy infusion).",
+      "tags": ["data", "defensive", "damage-reduction", "perks"]
+    },
+    {
+      "id": "function:src/data/defensivePerks.ts:getActiveDefensivePerkSources",
+      "type": "function",
+      "name": "getActiveDefensivePerkSources",
+      "filePath": "src/data/defensivePerks.ts",
+      "summary": "Returns active defensive perk sources based on current build context (HP, triggered states, darkness, rage, mounted, protection, debuff count). Applies conditional checks and computes DR per source.",
+      "tags": ["defensive", "perk-evaluation"]
+    },
+    {
+      "id": "function:src/data/defensivePerks.ts:calcDefensivePotencyMult",
+      "type": "function",
+      "name": "calcDefensivePotencyMult",
+      "filePath": "src/data/defensivePerks.ts",
+      "summary": "Calculates the defensive potency multiplier from Bastion Bless stacks and Draconic Holy infusion bonus.",
+      "tags": ["defensive", "multiplier"]
+    },
+    {
+      "id": "file:src/data/DoTDamage.ts",
+      "type": "file",
+      "name": "DoTDamage.ts",
+      "filePath": "src/data/DoTDamage.ts",
+      "summary": "Damage-over-time calculation module. Defines DoT type list (Bleed, Burn, Poison), stat scalings per type, damage type mappings, and functions for computing tick damage: getDotBase (base damage formula), getDotPotencyMult (potency power scaling with cap), calcDotTick (full tick calculation), calcCausticSlow (Poison+Slow synergy), toGamePotency (builder-to-game value conversion), and calcDotDisplayPotency (with Endless Despair modifier).",
+      "tags": ["data", "dot", "damage-calculation", "bleed", "burn", "poison"]
+    },
+    {
+      "id": "function:src/data/DoTDamage.ts:calcDotTick",
+      "type": "function",
+      "name": "calcDotTick",
+      "filePath": "src/data/DoTDamage.ts",
+      "summary": "Computes a single DoT tick damage value using base damage formula and potency multiplier.",
+      "tags": ["dot", "damage-calculation"]
+    },
+    {
+      "id": "function:src/data/DoTDamage.ts:calcDotDisplayPotency",
+      "type": "function",
+      "name": "calcDotDisplayPotency",
+      "filePath": "src/data/DoTDamage.ts",
+      "summary": "Computes effective DoT display potency, applying Endless Despair modifier (×(1+0.35×ED) +0.1) when ED stacks > 0.",
+      "tags": ["dot", "potency", "display"]
+    },
+    {
+      "id": "function:src/data/DoTDamage.ts:calcCausticSlow",
+      "type": "function",
+      "name": "calcCausticSlow",
+      "filePath": "src/data/DoTDamage.ts",
+      "summary": "Calculates Caustic Slow damage using Poison Potency with a bonus multiplier from enemy Slow debuff duration.",
+      "tags": ["dot", "caustic-slow", "synergy"]
+    },
+    {
+      "id": "file:src/data/draconicColorEffects.ts",
+      "type": "file",
+      "name": "draconicColorEffects.ts",
+      "filePath": "src/data/draconicColorEffects.ts",
+      "summary": "Defines Draconic color-based attack stat modifiers for 6 colors (fire/red, air/white, earth/green, water/blue, holy/yellow, hex/purple). Each color specifies damage multiplier, speed multiplier, knockback, cooldown reduction, stun multiplier, and special effects (burn, weakness, heals). Exports DRACONIC_COLOR_ATTACK_STATS array and getDraconicColorDmgMultiplier().",
+      "tags": ["data", "draconic", "color-effects"]
+    },
+    {
+      "id": "function:src/data/draconicColorEffects.ts:getDraconicColorDmgMultiplier",
+      "type": "function",
+      "name": "getDraconicColorDmgMultiplier",
+      "filePath": "src/data/draconicColorEffects.ts",
+      "summary": "Returns the damage multiplier for a given draconic color, defaulting to 1 for unknown colors.",
+      "tags": ["draconic", "multiplier"]
+    },
+    {
+      "id": "file:src/data/draconicRunes.ts",
+      "type": "file",
+      "name": "draconicRunes.ts",
+      "filePath": "src/data/draconicRunes.ts",
+      "summary": "Implements Draconic rune bonus calculations. Applies flat 5% per stack bonus to a color-specific damage type, and Dragon Infusion buff potency bonus. Exports applyDraconicBonuses() and getDraconicBonuses() combining both rune and infusion bonuses.",
+      "tags": ["data", "draconic", "runes", "damage-bonus"]
+    },
+    {
+      "id": "function:src/data/draconicRunes.ts:applyDraconicBonuses",
+      "type": "function",
+      "name": "applyDraconicBonuses",
+      "filePath": "src/data/draconicRunes.ts",
+      "summary": "Applies both Draconic rune stacks bonus and Dragon Infusion bonus to damage type multipliers.",
+      "tags": ["draconic", "damage-bonus"]
+    },
+    {
+      "id": "function:src/data/draconicRunes.ts:getDraconicBonuses",
+      "type": "function",
+      "name": "getDraconicBonuses",
+      "filePath": "src/data/draconicRunes.ts",
+      "summary": "Returns combined Draconic rune and Dragon Infusion bonuses as a damage type → bonus map.",
+      "tags": ["draconic", "damage-bonus"]
+    },
+    {
+      "id": "file:src/data/enemyHpEffects.ts",
+      "type": "file",
+      "name": "enemyHpEffects.ts",
+      "filePath": "src/data/enemyHpEffects.ts",
+      "summary": "Defines enemy HP-gated effects. Contains EnemyHpGate interface for above/below threshold checks, EnemyHpEffectDef for perk-triggered effects (currently Mycotic Bloom: Slowness debuff above 50% HP, Poison damage boost below 50% HP). Exports isEnemyHpGateActive(), getActiveEnemyHpDebuffs(), and getEnemyHpDotMultiplier().",
+      "tags": ["data", "enemy-hp", "gated-effects"]
+    },
+    {
+      "id": "function:src/data/enemyHpEffects.ts:getEnemyHpDotMultiplier",
+      "type": "function",
+      "name": "getEnemyHpDotMultiplier",
+      "filePath": "src/data/enemyHpEffects.ts",
+      "summary": "Returns the multiplicative DoT boost for a given dot type based on active enemy HP-gated effects.",
+      "tags": ["enemy-hp", "dot", "multiplier"]
+    },
+    {
+      "id": "file:src/data/mountRunes.ts",
+      "type": "file",
+      "name": "mountRunes.ts",
+      "filePath": "src/data/mountRunes.ts",
+      "summary": "Defines mount rune attack data for 3 mounts: Winter Woof, Slizard, and Glacial Snapper. Each provides M1 (basic attack) and WA (weapon art) definitions with base damage, damage types, stat scalings, healing, guardbreak, cooldown, and secondary effects. Exports MOUNT_RUNE_DEFS array.",
+      "tags": ["data", "mount", "runes", "combat"]
+    },
+    {
+      "id": "file:src/data/Perkbasedmg.ts",
+      "type": "file",
+      "name": "Perkbasedmg.ts",
+      "filePath": "src/data/Perkbasedmg.ts",
+      "summary": "Central perk-based damage definitions module (~733 lines). Defines PerkDmgDef structures with base damage formulas, scaling multipliers, combat multipliers, damage types, secondary effects, and HP gates for 40+ perks. Exports PERK_DMG_DEFS array, gateThreshold(), isHpGateActive(), DRAGON_STATE_HP_GATE, BELLOWING_EMBER_HP_GATE, SECONDARY_TONE_COLORS, and calcSpringblastBaseDamage().",
+      "tags": ["data", "perk-damage", "core-formulas", "733-lines"]
+    },
+    {
+      "id": "function:src/data/Perkbasedmg.ts:gateThreshold",
+      "type": "function",
+      "name": "gateThreshold",
+      "filePath": "src/data/Perkbasedmg.ts",
+      "summary": "Computes the effective HP threshold for a perk gate, considering dynamic thresholds and always-active perk amounts.",
+      "tags": ["hp-gate", "perk-damage"]
+    },
+    {
+      "id": "function:src/data/Perkbasedmg.ts:isHpGateActive",
+      "type": "function",
+      "name": "isHpGateActive",
+      "filePath": "src/data/Perkbasedmg.ts",
+      "summary": "Checks if an HP gate condition is met given current HP fill percentage and perk amount.",
+      "tags": ["hp-gate", "condition"]
+    },
+    {
+      "id": "function:src/data/Perkbasedmg.ts:calcSpringblastBaseDamage",
+      "type": "function",
+      "name": "calcSpringblastBaseDamage",
+      "filePath": "src/data/Perkbasedmg.ts",
+      "summary": "Calculates Springblast perk base damage using a formula with per-stack scaling and half-denominator reduction.",
+      "tags": ["perk-damage", "springblast"]
+    },
+    {
+      "id": "file:src/data/procCoefficients.ts",
+      "type": "file",
+      "name": "procCoefficients.ts",
+      "filePath": "src/data/procCoefficients.ts",
+      "summary": "Defines proc coefficient data for all weapon types (M1/M2), weapon arts, runes, and perks. Each entry uses ProcCoefficient type with either 'hasCoeff' (value 0-1) or 'noProc'. Covers ~30 weapon types, 5 WAs, 1 rune, and 3 perks. Exports WEAPON_PROC_COEFFS, WA_PROC_COEFFS, RUNE_PROC_COEFFS, PERK_PROC_COEFFS, DEFAULT_PROC_COEFF, and DEFAULT_RUNE_PROC_COEFF.",
+      "tags": ["data", "proc-coefficients", "weapon-types"]
+    },
+    {
+      "id": "file:src/data/raceEffects.ts",
+      "type": "file",
+      "name": "raceEffects.ts",
+      "filePath": "src/data/raceEffects.ts",
+      "summary": "Defines race-conditional effects and Ork tenacity bonus. Currently implements Human race (below 50% HP: +20% damage boost, flat 20% DR) and Ork tenacity (+0.1 tenacity per non-debuff/non-neutral buff). Exports getActiveRaceEffect(), getOrkTenacityBuffs(), and calcOrkTenacityBonus().",
+      "tags": ["data", "race", "conditional-effects"]
+    },
+    {
+      "id": "function:src/data/raceEffects.ts:getActiveRaceEffect",
+      "type": "function",
+      "name": "getActiveRaceEffect",
+      "filePath": "src/data/raceEffects.ts",
+      "summary": "Returns the active race conditional effect for a given race and HP fill percentage.",
+      "tags": ["race", "condition"]
+    },
+    {
+      "id": "function:src/data/raceEffects.ts:calcOrkTenacityBonus",
+      "type": "function",
+      "name": "calcOrkTenacityBonus",
+      "filePath": "src/data/raceEffects.ts",
+      "summary": "Calculates the Ork tenacity bonus: +0.1 tenacity per active non-debuff/non-neutral buff.",
+      "tags": ["race", "ork", "tenacity"]
+    },
+    {
+      "id": "file:src/data/selfDamagePerks.ts",
+      "type": "file",
+      "name": "selfDamagePerks.ts",
+      "filePath": "src/data/selfDamagePerks.ts",
+      "summary": "Defines self-damage perk mechanics. Covers Undead Might (hex+earth self-damage with DR), Explosive Charge (fire+physical), Dark Magic (hex), and Bombardier (magic+holy). Implements multi-target harmonic series falloff and per-type defense mitigation. Exports SELF_DAMAGE_PERK_DEFS, calcSelfDamage(), and constants.",
+      "tags": ["data", "self-damage", "perks"]
+    },
+    {
+      "id": "function:src/data/selfDamagePerks.ts:calcSelfDamage",
+      "type": "function",
+      "name": "calcSelfDamage",
+      "filePath": "src/data/selfDamagePerks.ts",
+      "summary": "Calculates self-damage from a perk, applying DR multiplier, multi-target harmonic falloff, and per-type defense. Returns total and per-type breakdown.",
+      "tags": ["self-damage", "calculation"]
+    },
+    {
+      "id": "file:src/data/stanceOverlays.ts",
+      "type": "file",
+      "name": "stanceOverlays.ts",
+      "filePath": "src/data/stanceOverlays.ts",
+      "summary": "Resolves weapon stance overlays based on equipped perks and weapon type. Blaster Ring transforms fists→Rifle or weapon→Shotgun, Locked And Loaded transforms fists→Dual Guns or weapon→Side Gun, Cosmic Ray and Mine perks override M2 type. Exports resolveStanceOverlay().",
+      "tags": ["data", "stance", "weapon-overlay"]
+    },
+    {
+      "id": "function:src/data/stanceOverlays.ts:resolveStanceOverlay",
+      "type": "function",
+      "name": "resolveStanceOverlay",
+      "filePath": "src/data/stanceOverlays.ts",
+      "summary": "Resolves the active stance overlay by checking conditions in priority order, returning the first match or null.",
+      "tags": ["stance", "resolution"]
+    },
+    {
+      "id": "file:src/data/weapon base dmg.ts",
+      "type": "file",
+      "name": "weapon base dmg.ts",
+      "filePath": "src/data/weapon base dmg.ts",
+      "summary": "Defines base damage values for all ~30 weapon types. Each entry specifies M1 and M2 hit damage as arrays of numbers or {n, count} multi-hit objects. Includes special types: m1Finisher flag, m2Charge for Rifle with charge-based scaling formula. Exports WEAPON_BASE_DMG array.",
+      "tags": ["data", "weapon", "base-damage"]
+    },
+    {
+      "id": "file:src/data/Weaponartcheck.ts",
+      "type": "file",
+      "name": "Weaponartcheck.ts",
+      "filePath": "src/data/Weaponartcheck.ts",
+      "summary": "Weapon Art validation module. Checks if a weapon art's requirements are met given current weapon scalings, stats, weapon type, guild, and equipped parts. Handles scaling requirements, stat requirements, at-least-one-scaling conditions, scaling-exempt weapon types, and specific part requirements. Exports checkWA() and getUnmetReqs().",
+      "tags": ["data", "weapon-art", "validation", "requirements"]
+    },
+    {
+      "id": "function:src/data/Weaponartcheck.ts:checkWA",
+      "type": "function",
+      "name": "checkWA",
+      "filePath": "src/data/Weaponartcheck.ts",
+      "summary": "Validates whether a weapon art's requirements are met for the current build. Checks guild, weapon type, scaling thresholds, stat requirements, part requirements, and scaling-exempt weapon types.",
+      "tags": ["weapon-art", "validation"]
+    },
+    {
+      "id": "function:src/data/Weaponartcheck.ts:getUnmetReqs",
+      "type": "function",
+      "name": "getUnmetReqs",
+      "filePath": "src/data/Weaponartcheck.ts",
+      "summary": "Returns a list of unmet requirement descriptions for a weapon art, used to display why a WA is unavailable.",
+      "tags": ["weapon-art", "validation", "error-reporting"]
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:docs/ONBOARDING.md",
+      "target": "file:src/App.svelte",
+      "type": "documents",
+      "weight": 0.8,
+      "description": "Onboarding doc references App.svelte as the root component"
+    },
+    {
+      "source": "file:docs/ONBOARDING.md",
+      "target": "file:src/DamageAnalyzer.svelte",
+      "type": "documents",
+      "weight": 0.8,
+      "description": "Onboarding doc references DamageAnalyzer.svelte as main damage analysis interface"
+    },
+    {
+      "source": "file:docs/ONBOARDING.md",
+      "target": "file:src/BaseDamageCalc.svelte",
+      "type": "documents",
+      "weight": 0.8,
+      "description": "Onboarding doc references BaseDamageCalc.svelte as base damage calculator"
+    },
+    {
+      "source": "file:docs/ONBOARDING.md",
+      "target": "file:src/BuffList.svelte",
+      "type": "documents",
+      "weight": 0.6,
+      "description": "Onboarding doc references BuffList.svelte"
+    },
+    {
+      "source": "file:docs/ONBOARDING.md",
+      "target": "file:src/BuildSaves.svelte",
+      "type": "documents",
+      "weight": 0.6,
+      "description": "Onboarding doc references BuildSaves.svelte"
+    },
+    {
+      "source": "file:docs/ONBOARDING.md",
+      "target": "file:src/data/Perkbasedmg.ts",
+      "type": "documents",
+      "weight": 0.7,
+      "description": "Onboarding doc references Perkbasedmg.ts for damage formulas"
+    },
+    {
+      "source": "file:docs/ONBOARDING.md",
+      "target": "file:src/data/DoTDamage.ts",
+      "type": "documents",
+      "weight": 0.5,
+      "description": "Onboarding doc references DoTDamage.ts"
+    },
+    {
+      "source": "file:docs/ONBOARDING.md",
+      "target": "file:src/data/Weaponartcheck.ts",
+      "type": "documents",
+      "weight": 0.5,
+      "description": "Onboarding doc references Weaponartcheck.ts"
+    },
+    {
+      "source": "file:docs/ONBOARDING.md",
+      "target": "file:src/data/draconicColorEffects.ts",
+      "type": "documents",
+      "weight": 0.4,
+      "description": "Onboarding doc references draconic color effects"
+    },
+    {
+      "source": "file:docs/ONBOARDING.md",
+      "target": "file:src/data/draconicRunes.ts",
+      "type": "documents",
+      "weight": 0.4,
+      "description": "Onboarding doc references draconic runes"
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/DamageAnalyzer.svelte",
+      "type": "contains",
+      "weight": 0.9,
+      "description": "App.svelte contains DamageAnalyzer as a child component in the analyze tab"
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/BuffList.svelte",
+      "type": "contains",
+      "weight": 0.8,
+      "description": "App.svelte contains BuffList as a child component"
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/CdrStepsCalc.svelte",
+      "type": "contains",
+      "weight": 0.5,
+      "description": "App.svelte contains CdrStepsCalc for rune CDR breakdown display"
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/data/Perkbasedmg.ts",
+      "type": "imports",
+      "weight": 0.8,
+      "description": "App.svelte imports DRAGON_STATE_HP_GATE, gateThreshold from Perkbasedmg"
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/data/draconicColorEffects.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "description": "App.svelte imports DRACONIC_COLOR_ATTACK_STATS"
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/data/cdr.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "description": "App.svelte imports CDR_PERK_DATA for CDR toggle logic"
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/data/Weaponartcheck.ts",
+      "type": "imports",
+      "weight": 0.8,
+      "description": "App.svelte imports checkWA and getUnmetReqs for weapon art validation"
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/data/procCoefficients.ts",
+      "type": "related",
+      "weight": 0.5,
+      "description": "App.svelte uses proc coefficients indirectly through engine calculations"
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/data/raceEffects.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "description": "App.svelte imports calcOrkTenacityBonus from raceEffects"
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/data/cdr.ts",
+      "type": "calls",
+      "weight": 0.6,
+      "description": "App.svelte uses CDR_PERK_DATA for toggleable CDR perk management"
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/BaseDamageCalc.svelte",
+      "type": "contains",
+      "weight": 0.9,
+      "description": "DamageAnalyzer contains BaseDamageCalc as child component for hit-by-hit display"
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/CritIcon.svelte",
+      "type": "contains",
+      "weight": 0.4,
+      "description": "DamageAnalyzer uses CritIcon for critical hit display"
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/data/Perkbasedmg.ts",
+      "type": "imports",
+      "weight": 0.9,
+      "description": "DamageAnalyzer imports PERK_DMG_DEFS, DRAGON_STATE_HP_GATE, calcSpringblastBaseDamage from Perkbasedmg"
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/data/debuffCombatEffects.ts",
+      "type": "imports",
+      "weight": 0.8,
+      "description": "DamageAnalyzer imports DEBUFF_COMBAT_EFFECTS for debuff damage/defense calculations"
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/data/defensivePerks.ts",
+      "type": "imports",
+      "weight": 0.8,
+      "description": "DamageAnalyzer imports getActiveDefensivePerkSources, calcDefensivePotencyMult"
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/data/raceEffects.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "description": "DamageAnalyzer imports getActiveRaceEffect, getOrkTenacityBuffs, calcOrkTenacityBonus"
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/data/draconicRunes.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "description": "DamageAnalyzer imports applyDraconicBonuses, getDraconicBonuses"
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/data/draconicColorEffects.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "description": "DamageAnalyzer imports getDraconicColorDmgMultiplier"
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/data/selfDamagePerks.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "description": "DamageAnalyzer imports SELF_DAMAGE_PERK_DEFS, calcSelfDamage"
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/data/procCoefficients.ts",
+      "type": "imports",
+      "weight": 0.8,
+      "description": "DamageAnalyzer imports WEAPON_PROC_COEFFS, WA_PROC_COEFFS, DEFAULT_PROC_COEFF"
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/data/weapon base dmg.ts",
+      "type": "imports",
+      "weight": 0.8,
+      "description": "DamageAnalyzer imports WEAPON_BASE_DMG for weapon hit calculations"
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/data/stanceOverlays.ts",
+      "type": "imports",
+      "weight": 0.6,
+      "description": "DamageAnalyzer imports resolveStanceOverlay for weapon type overrides"
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/data/enemyHpEffects.ts",
+      "type": "imports",
+      "weight": 0.6,
+      "description": "DamageAnalyzer imports getEnemyHpDotMultiplier"
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/data/mountRunes.ts",
+      "type": "imports",
+      "weight": 0.6,
+      "description": "DamageAnalyzer imports MOUNT_RUNE_DEFS for mount weapon calculations"
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/data/DoTDamage.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "description": "DamageAnalyzer imports calcDotTick, getDotBase, getDotPotencyMult, toGamePotency, calcDotDisplayPotency, DOT_SCALINGS, DOT_TYPE_LIST"
+    },
+    {
+      "source": "file:src/BaseDamageCalc.svelte",
+      "target": "file:src/CritIcon.svelte",
+      "type": "contains",
+      "weight": 0.5,
+      "description": "BaseDamageCalc uses CritIcon for crit display in hit rows"
+    },
+    {
+      "source": "file:src/BaseDamageCalc.svelte",
+      "target": "file:src/data/DoTDamage.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "description": "BaseDamageCalc imports DOT_DMG_TYPE_MAP from DoTDamage"
+    },
+    {
+      "source": "file:src/BaseDamageCalc.svelte",
+      "target": "file:src/data/debuffCombatEffects.ts",
+      "type": "related",
+      "weight": 0.5,
+      "description": "BaseDamageCalc uses debuff combat effects indirectly via debuff data passed as props"
+    },
+    {
+      "source": "file:src/BuffList.svelte",
+      "target": "file:src/data/DoTDamage.ts",
+      "type": "imports",
+      "weight": 0.6,
+      "description": "BuffList imports calcDotDisplayPotency for DoT potency display"
+    },
+    {
+      "source": "file:src/BuffList.svelte",
+      "target": "file:src/data/procCoefficients.ts",
+      "type": "imports",
+      "weight": 0.5,
+      "description": "BuffList imports WA_PROC_COEFFS, DEFAULT_PROC_COEFF for auto-debuff context"
+    },
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "file:src/data/DoTDamage.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "description": "Perkbasedmg imports getDotPotencyMult for DoT damage calculations"
+    },
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "file:src/data/draconicColorEffects.ts",
+      "type": "imports",
+      "weight": 0.6,
+      "description": "Perkbasedmg imports getDraconicColorDmgMultiplier for color-specific damage"
+    },
+    {
+      "source": "file:src/data/defensivePerks.ts",
+      "target": "file:src/data/draconicColorEffects.ts",
+      "type": "related",
+      "weight": 0.5,
+      "description": "defensivePerks uses draconic infusion potency multiplier via draconicBuffs"
+    },
+    {
+      "source": "file:src/data/raceEffects.ts",
+      "target": "file:src/data/Perkbasedmg.ts",
+      "type": "imports",
+      "weight": 0.6,
+      "description": "raceEffects imports HpGate type and isHpGateActive from Perkbasedmg"
+    },
+    {
+      "source": "file:src/BuildSaves.svelte",
+      "target": "file:src/App.svelte",
+      "type": "related",
+      "weight": 0.6,
+      "description": "BuildSaves is rendered within App.svelte for build persistence"
+    },
+    {
+      "source": "file:decode_full.mjs",
+      "target": "file:src/data/Perkbasedmg.ts",
+      "type": "similar_to",
+      "weight": 0.7,
+      "description": "decode_full.mjs duplicates some engine logic from Perkbasedmg and engine modules for standalone debugging"
+    },
+    {
+      "source": "file:decode_full.mjs",
+      "target": "file:src/App.svelte",
+      "type": "similar_to",
+      "weight": 0.5,
+      "description": "decode_full.mjs mirrors the stat aggregation logic used in App.svelte's build pipeline"
+    }
+  ]
+}

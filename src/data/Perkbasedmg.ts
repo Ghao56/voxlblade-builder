@@ -81,6 +81,9 @@ import {
   VENOM_SPITTER_BASE_DMG,
   VENOM_SPITTER_DMG_PER_STACK,
   VENOM_SPITTER_HIT_DIVISOR,
+  FIERY_PURSUIT_BASE_DMG,
+  FIERY_PURSUIT_DMG_PER_STACK,
+  FIERY_PURSUIT_BURN_DURATION,
 } from '../lib/constants'
 
 export interface PerkDmgCtx {
@@ -729,5 +732,29 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     scalings: { air: 1.0 },
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
     note: 'Can be held for up to 2 seconds, dealing damage every 0.2 seconds',
-  }
+  },
+  // ── Fiery Pursuit ──────────────────────────────────────────────────────
+  {
+    perkName: 'Fiery Pursuit',
+    condition: 'On Weapon Art activation',
+    getBaseDamage: ({ perkAmount }) => FIERY_PURSUIT_BASE_DMG + FIERY_PURSUIT_DMG_PER_STACK * perkAmount,
+    getHits: ({ perkAmount }) => Math.floor(perkAmount),
+    dmgTypeMode: 'fixed',
+    dmgTypes: { fire: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { fire: 1.0 },
+    isWA: true,
+    guardbreak: true,
+    procCoefficient: { type: 'hasCoeff', value: 1.0 },
+    secondaryEffects: [
+      {
+        label: 'Burn',
+        getValue: () => FIERY_PURSUIT_BURN_DURATION,
+        format: v => `${v}s`,
+        condition: 'Applied on dash',
+        tone: 'offense',
+      },
+    ],
+    note: 'Dash forward. Counts as Weapon Art damage. Grants Iframes during dash. AoE scales on perk amount.',
+  },
 ]

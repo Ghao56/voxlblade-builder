@@ -1,0 +1,50 @@
+[
+  {
+    "order": 1,
+    "title": "Project Overview",
+    "description": "Start with the README and package.json to understand the project's purpose as a Voxel Blade damage calculator, its tech stack (Svelte 5 + Vite + TypeScript), and development workflow.",
+    "nodeIds": ["document:README.md", "config:package.json"]
+  },
+  {
+    "order": 2,
+    "title": "Application Entry Point",
+    "description": "See how the frontend boots: index.html loads main.ts, which imports global styles and mounts the root App.svelte component.",
+    "nodeIds": ["file:src/main.ts", "file:src/App.svelte"]
+  },
+  {
+    "order": 3,
+    "title": "UI Component Architecture",
+    "description": "Explore the reusable UI primitives (Badge, Button, Card, Panel) and layout components (AppHeader, Modal) that form the foundation of the interface.",
+    "nodeIds": ["file:src/lib/AppHeader.svelte", "file:src/lib/Modal.svelte", "file:src/lib/ui/index.ts"]
+  },
+  {
+    "order": 4,
+    "title": "Game Data Definitions",
+    "description": "Examine the game data modules that define weapon arts, perk damage formulas, base weapon damage, and other RPG mechanics used throughout the calculator.",
+    "nodeIds": ["file:src/data/weaponArts.ts", "file:src/data/Perkbasedmg.ts", "file:src/data/weapon base dmg.ts"]
+  },
+  {
+    "order": 5,
+    "title": "Calculation Engine",
+    "description": "Understand the core damage calculation pipeline: engine.ts re-exports all calculation modules, while defense.ts handles armor and damage reduction logic.",
+    "nodeIds": ["file:src/lib/engine.ts", "file:src/lib/defense.ts"]
+  },
+  {
+    "order": 6,
+    "title": "Constants & Configuration",
+    "description": "Review the centralized constants that drive the engine: damage types, game mechanics (HP, level caps), perk multipliers, and storage keys.",
+    "nodeIds": ["file:src/lib/constants/index.ts", "file:src/lib/constants/game.ts", "file:src/lib/constants/damage-types.ts"]
+  },
+  {
+    "order": 7,
+    "title": "State Management & Utilities",
+    "description": "Learn how application state is managed (toast notifications, build saves) and how utility functions like enchantment tooltips are generated.",
+    "nodeIds": ["file:src/lib/stores/toast.ts", "file:src/lib/enchantTooltip.ts", "file:src/BuildSaves.svelte"]
+  },
+  {
+    "order": 8,
+    "title": "Damage Analysis Pipeline",
+    "description": "Follow the main damage calculation flow: DamageAnalyzer assembles buffs and computes full damage, BaseDamageCalc displays per-hit breakdowns, and BuffList shows active effects.",
+    "nodeIds": ["file:src/DamageAnalyzer.svelte", "file:src/BaseDamageCalc.svelte", "file:src/BuffList.svelte"]
+  }
+]

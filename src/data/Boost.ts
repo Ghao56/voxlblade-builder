@@ -18,7 +18,7 @@ import {
   THIEF_TRAINING_WOULD_CRIT_MULT, VASSALS_CROAK_MULT_PER_STACK,
   RAGING_BOUNCE_MULT, GUIDING_WINDS_MULT_PER_STACK,
   GUIDING_WINDS_WA_MULT_PER_STACK, CIVILIAN_MULT_PER_STACK,
-  VAMPIRE_DIVISOR,
+  VAMPIRE_DIVISOR, TOXIN_CASTER_MULT_PER_STACK,
 } from '../lib/constants'
 import type { BoostAttackType, ProcScalingType } from '../lib/types'
 
@@ -59,6 +59,8 @@ export interface BoostContext {
   burnPotency: number
   hasBurn: boolean
   selfDebuffCount: number
+  hasMagicDmg?: boolean
+  hasMagicOrPhysicalDmg?: boolean
 }
 
 export interface BoostDef {
@@ -108,6 +110,22 @@ export const BOOST_DEFS: BoostDef[] = [
   { sourceName: 'Weighty Slam', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Weighty Slam'] ?? 0; if (a <= 0 || ctx.selectedWeaponArt !== 'Slam') return null; return { multiplier: 1 + WEIGHTY_SLAM_MULT_PER_STACK * a, condition: 'for Slam Weapon Art' } }, appliesTo: ['wa'] },
   { sourceName: 'Undead Might', multiplierPerPerk: UNDEAD_MIGHT_MULT_PER_STACK, type: 'dmg', condition: 'on Weapon Arts and Runes', appliesTo: ['wa', 'rune'] },
   { sourceName: 'Highlander', multiplierPerPerk: HIGHLANDER_MULT_PER_STACK, type: 'dmg', condition: 'on Weapon Arts and Runes', appliesTo: ['wa', 'rune'] },
+  {
+    sourceName: 'Toxin Caster',
+    type: 'dmg',
+    calcFn: (ctx) => {
+      const a = ctx.perks['Toxin Caster'] ?? 0
+      if (a <= 0 || !ctx.hasMagicDmg) return null
+      const poisonPotency = ctx.perks['Poison Potency'] ?? 0
+      if (poisonPotency <= 0) return null
+      const pct = TOXIN_CASTER_MULT_PER_STACK * poisonPotency * a * 100
+      return {
+        multiplier: 1 + TOXIN_CASTER_MULT_PER_STACK * poisonPotency * a,
+        condition: `${poisonPotency} Poison Potency × ${a} stack × 5%`,
+      }
+    },
+    appliesTo: ['wa', 'rune'],
+  },
   {
     sourceName: 'Juggernaut',
     type: 'dmg',

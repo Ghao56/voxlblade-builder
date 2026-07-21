@@ -25,6 +25,7 @@
   import { roundMultiplier, calcWardingDebuffMultiplier, calcProcChance } from './lib/utils'
   import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage, UNDEAD_MIGHT_SELF_DMG_FRACTION, UNDEAD_MIGHT_DR_PCT_PER_STACK, type SelfDamagePerkDef } from './data/selfDamagePerks'
   import { resolveDamageTypes, applyAirToMagicConversion } from './lib/damageTypeResolve'
+  import { buildDmgTypeBonuses, type PerkDmgTypeBonusDef } from './lib/engine/dmgTypeBonuses'
 import { calcTypedDmgBoosts } from './data/TypedDmgBoost'
 import { TRACKED_TYPES_WITH_TRUE } from './lib/constants/damage-types'
 import { resolveStanceOverlay } from './data/stanceOverlays'
@@ -55,9 +56,6 @@ import {
   OCEAN_SONG_PER_STACK,
   EMOTIONAL_PCT_PER_STACK,
   TOXIN_TRANSFER_PCT_PER_STACK,
-  VOID_RAGE_PCT_PER_STACK,
-  CHANNELED_WEAPON_PCT_PER_STACK,
-  DRACONIC_BLOOD_PCT_PER_STACK,
   BELLOWING_EMBER_BASE_MULT,
   BELLOWING_EMBER_FIRE_MULT,
   BELLOWING_EMBER_HP_GATE_THRESHOLD,
@@ -466,6 +464,8 @@ import {
       protection: __daResultVal.stats.protection ?? 0,
       selectedWAProcCoefficient: WA_PROC_COEFFS[selectedWA.name] ?? DEFAULT_PROC_COEFF,
       enemyHpFillPct: _enemyHpFillPct,
+      hasMagicDmg: Object.entries(_waDmgTypes).some(([dt, mult]) => dt === 'magic' && mult > 0),
+      hasMagicOrPhysicalDmg: Object.entries(_waDmgTypes).some(([dt, mult]) => (dt === 'magic' || dt === 'physical') && mult > 0),
     })
     for (const d of autoDebuffs) {
       if (!groups.has(d.buffName)) groups.set(d.buffName, new Map())
@@ -596,7 +596,7 @@ import {
       scalingMult: number; combatMult: number
       meltingShredFactor?: number
       scalingRows: ScalingRow[]; totalEffectivePct: number
-    }> = (_hasSingedBurn ? DOT_TYPE_LIST.filter(t => t !== 'Burn') : DOT_TYPE_LIST).filter(type => (perks[`${type} Potency`] ?? 0) > 0).map(type => {
+    }> = (_hasSingedBurn ? DOT_TYPE_LIST.filter(t => t !== 'Burn') : DOT_TYPE_LIST).filter(type => (perks[`${type} Potency`] ?? 0) > 0 || _dummyDebuffs.some(d => d.name === type && !disabledDebuffs.has(type))).map(type => {
       let dotPot = perks[`${type} Potency`] ?? 0
       if (__daBuildVal.draconicRuneInfusion === 'infusion') {
         const draconicBloodAmt = perks['Draconic Blood'] ?? 0
@@ -1028,66 +1028,6 @@ import {
     ? `${_baseWeaponType} + ${_gunOverlay.type}`
     : _gunOverlay?.type ?? _baseWeaponType
 
-  interface WaDmgTypeBonusDef {
-    perkName: string
-    type: string
-    amountPerStack: number
-  }
-
-  interface PerkDmgTypeBonusDef {
-    perkName: string
-    type?: string
-    getType?: (ctx: { draconicColor: string }) => string
-    amountPerStack: number
-    getAmountPerStack?: (ctx: { draconicColor: string; perkAmount: number; guild: string; draconicRuneInfusion: string; perks: Record<string, number> }) => number
-    condition?: (ctx: { ragePotency: number; draconicRuneInfusion: string; emotionalState: string; rageDisabled: boolean }) => boolean
-    appliesWithoutProc?: boolean
-  }
-
-  const PERK_DMG_TYPE_BONUS_DEFS: PerkDmgTypeBonusDef[] = [
-    { perkName: 'Void Rage', type: 'hex', amountPerStack: VOID_RAGE_PCT_PER_STACK, condition: ctx => !ctx.rageDisabled && ctx.ragePotency > 0 },
-    { perkName: 'Channeled Weapon', type: 'magic', amountPerStack: CHANNELED_WEAPON_PCT_PER_STACK },
-    { perkName: 'Emotional', type: 'fire', amountPerStack: EMOTIONAL_PCT_PER_STACK, condition: ctx => ctx.emotionalState === 'debuffs' },
-    {
-      perkName: 'Draconic Blood',
-      getType: ctx => ctx.draconicColor || 'physical',
-      amountPerStack: DRACONIC_BLOOD_PCT_PER_STACK,
-      getAmountPerStack: ctx => {
-        if (ctx.perkAmount <= 0) return 0
-        const effective = getEffectiveDraconicInfusionPotency(ctx.guild, ctx.draconicRuneInfusion, ctx.draconicColor || 'physical', ctx.perkAmount, ctx.perks)
-        return effective / ctx.perkAmount
-      },
-      condition: ctx => ctx.draconicRuneInfusion === 'infusion',
-      appliesWithoutProc: false,
-    },
-  ]
-
-  function buildDmgTypeBonuses(includeNoProcExempt: boolean, ctx: {
-    perks: Record<string, number>; ragePotency: number; draconicRuneInfusion: string;
-    emotionalState: string; draconicColor: string; guild: string;
-    draconicInfusionDisabled: boolean; toxinTransferHexBonus: number; rageDisabled: boolean;
-  }, excludePerks?: Set<string>): Record<string, number> {
-    const bonus: Record<string, number> = {}
-    for (const def of PERK_DMG_TYPE_BONUS_DEFS) {
-      if (excludePerks?.has(def.perkName)) continue
-      if (!includeNoProcExempt && def.appliesWithoutProc === false) continue
-      const amt = ctx.perks[def.perkName] ?? 0
-      if (amt <= 0) continue
-      if (def.condition && !def.condition({ ragePotency: ctx.ragePotency, draconicRuneInfusion: ctx.draconicRuneInfusion, emotionalState: ctx.emotionalState, rageDisabled: ctx.rageDisabled })) continue
-      if (def.perkName === 'Draconic Blood' && ctx.draconicInfusionDisabled) continue
-      const type = def.getType ? def.getType({ draconicColor: ctx.draconicColor }) : def.type
-      if (!type) continue
-      const amountPerStack = def.getAmountPerStack
-        ? def.getAmountPerStack({ draconicColor: ctx.draconicColor, perkAmount: amt, guild: ctx.guild, draconicRuneInfusion: ctx.draconicRuneInfusion, perks: ctx.perks })
-        : def.amountPerStack
-      bonus[type] = Math.round(((bonus[type] ?? 0) + amt * amountPerStack) * 10000) / 10000
-    }
-    if (ctx.toxinTransferHexBonus > 0) {
-      bonus.hex = Math.round(((bonus.hex ?? 0) + ctx.toxinTransferHexBonus) * 10000) / 10000
-    }
-    return bonus
-  }
-
   $: _perkDmgTypeBonuses = buildDmgTypeBonuses(true, {
     perks, ragePotency: _ragePotency, draconicRuneInfusion: $build.draconicRuneInfusion,
     emotionalState: $build.emotionalState, draconicColor: _effDraconicColor,
@@ -1393,13 +1333,13 @@ import {
 
     return entries
   })()
-  $: activeEntries = [...boosts.dmgEntries.filter(e => !disabledBoosts.has(e.sourceName) && !(e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) && !(e.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)) && !(e.sourceName === 'Golden Crits' && !showCritValues) && !(e.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive) && !(e.sourceName === 'Gelid Lance' && !_dummyHasBleedActive) && !(e.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive) && !(e.sourceName === 'Frostbite' && !_dummyHasSlowActive && !_dummyHasFrostbiteActive) && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance' && e.sourceName !== 'Frenzy' && e.sourceName !== 'Dark One'), ..._syntheticDmgBoostEntries.filter(e => {
+  $: activeEntries = [...boosts.dmgEntries.filter(e => !disabledBoosts.has(e.sourceName) && !(e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) && !(e.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)) && !(e.sourceName === 'Golden Crits' && !showCritValues) && !(e.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive) && !(e.sourceName === 'Gelid Lance' && !_dummyHasBleedActive) && !(e.sourceName === 'Gorecast' && !_dummyHasBleedActive) && !(e.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive) && !(e.sourceName === 'Frostbite' && !_dummyHasSlowActive && !_dummyHasFrostbiteActive) && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance' && e.sourceName !== 'Frenzy' && e.sourceName !== 'Dark One'), ..._syntheticDmgBoostEntries.filter(e => {
     if (e.sourceName === 'Curse Rip' && disableCurseRip) return false
     if (e.sourceName === 'Reaper' && disableReaper) return false
     if (disabledBoosts.has(e.sourceName)) return false
     return true
   })]
-  $: hasDisabledVisible = boosts.dmgEntries.some(e => disabledBoosts.has(e.sourceName) || (e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (e.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive) || (e.sourceName === 'Gelid Lance' && !_dummyHasBleedActive) || (e.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)) || (e.sourceName === 'Golden Crits' && !showCritValues) || (e.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive) || (e.sourceName === 'Frostbite' && !_dummyHasSlowActive && !_dummyHasFrostbiteActive)) || (_curseRipPerkAmount > 0 && disableCurseRip) || (_reaperPerkAmount > 0 && disableReaper) || ((perks['True Balance'] ?? 0) > 0 && disabledBoosts.has('True Balance')) || ((perks['Frenzy'] ?? 0) > 0 && disabledBoosts.has('Frenzy')) || (_sunburnAmt > 0 && disabledEffects.has('sunburn')) || (_mortalWillAmt > 0 && disabledEffects.has('mortalWill'))
+  $: hasDisabledVisible = boosts.dmgEntries.some(e => disabledBoosts.has(e.sourceName) || (e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (e.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive) || (e.sourceName === 'Gelid Lance' && !_dummyHasBleedActive) || (e.sourceName === 'Gorecast' && !_dummyHasBleedActive) || (e.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)) || (e.sourceName === 'Golden Crits' && !showCritValues) || (e.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive) || (e.sourceName === 'Frostbite' && !_dummyHasSlowActive && !_dummyHasFrostbiteActive)) || (_curseRipPerkAmount > 0 && disableCurseRip) || (_reaperPerkAmount > 0 && disableReaper) || ((perks['True Balance'] ?? 0) > 0 && disabledBoosts.has('True Balance')) || ((perks['Frenzy'] ?? 0) > 0 && disabledBoosts.has('Frenzy')) || (_sunburnAmt > 0 && disabledEffects.has('sunburn')) || (_mortalWillAmt > 0 && disabledEffects.has('mortalWill'))
 
   $: _levelMult = (() => {
     const levelEntry = boosts.dmgEntries.find(e => e.sourceName === 'Level Damage')
@@ -1719,6 +1659,7 @@ import {
     ) : null
   })()
   $: _waHealSeq = _waAllHits.heal.length > 0 ? _waAllHits.heal : null
+  $: _waDebuffWarning = !!selectedWA.baseDamagePerDebuff && _generalActiveDebuffCount <= 0
 
   let _wildBoltElemIdx = 0
   function cycleWildBoltElem() {
@@ -2915,6 +2856,7 @@ $: _groupedSelfDamageSources = (() => {
     on:enemyHpChange={e => build.update(s => ({ ...s, enemyHpFill: e.detail }))}
     bind:disabledDebuffs
     bind:showCritValues
+    waDebuffWarning={_waDebuffWarning}
   />
 
   <!-- ══════════════════ TOP ROW: CRIT + APEN ══════════════════ -->
@@ -2986,10 +2928,11 @@ $: _groupedSelfDamageSources = (() => {
           {@const _venomEaterDisabled = entry.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)}
           {@const _bloodThirstyDisabled = entry.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive}
           {@const _gelidLanceDisabled = entry.sourceName === 'Gelid Lance' && !_dummyHasBleedActive}
+          {@const _gorecastDisabled = entry.sourceName === 'Gorecast' && !_dummyHasBleedActive}
           {@const _venomSpitterDisabled = entry.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive}
           {@const _frostbiteDisabled = entry.sourceName === 'Frostbite' && !_dummyHasSlowActive && !_dummyHasFrostbiteActive}
           {@const _goldenCritsDisabled = entry.sourceName === 'Golden Crits' && !showCritValues}
-          {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (entry.sourceName === 'Curse Rip' && disableCurseRip) || (entry.sourceName === 'Reaper' && disableReaper) || _venomEaterDisabled || _bloodThirstyDisabled || _gelidLanceDisabled || _venomSpitterDisabled || _frostbiteDisabled || _goldenCritsDisabled}
+          {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (entry.sourceName === 'Curse Rip' && disableCurseRip) || (entry.sourceName === 'Reaper' && disableReaper) || _venomEaterDisabled || _bloodThirstyDisabled || _gelidLanceDisabled || _gorecastDisabled || _venomSpitterDisabled || _frostbiteDisabled || _goldenCritsDisabled}
           {@const effectiveMultiplier = disabled ? 1 : entry.rawMultiplier}
           <button
             class="da-boost-chip"
@@ -3001,6 +2944,7 @@ $: _groupedSelfDamageSources = (() => {
               if (_venomEaterDisabled) return
               if (_bloodThirstyDisabled) return
               if (_gelidLanceDisabled) return
+              if (_gorecastDisabled) return
               if (_venomSpitterDisabled) return
               if (_frostbiteDisabled) return
               if (_goldenCritsDisabled) return
@@ -3033,10 +2977,11 @@ $: _groupedSelfDamageSources = (() => {
             {@const _venomEaterDisabled = entry.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)}
             {@const _bloodThirstyDisabled = entry.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive}
             {@const _gelidLanceDisabled = entry.sourceName === 'Gelid Lance' && !_dummyHasBleedActive}
+            {@const _gorecastDisabled = entry.sourceName === 'Gorecast' && !_dummyHasBleedActive}
             {@const _venomSpitterDisabled = entry.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive}
             {@const _frostbiteDisabled = entry.sourceName === 'Frostbite' && !_dummyHasSlowActive && !_dummyHasFrostbiteActive}
             {@const _goldenCritsDisabled = entry.sourceName === 'Golden Crits' && !showCritValues}
-            {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (entry.sourceName === 'Curse Rip' && disableCurseRip) || (entry.sourceName === 'Reaper' && disableReaper) || _venomEaterDisabled || _bloodThirstyDisabled || _gelidLanceDisabled || _venomSpitterDisabled || _frostbiteDisabled || _goldenCritsDisabled}
+            {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (entry.sourceName === 'Curse Rip' && disableCurseRip) || (entry.sourceName === 'Reaper' && disableReaper) || _venomEaterDisabled || _bloodThirstyDisabled || _gelidLanceDisabled || _gorecastDisabled || _venomSpitterDisabled || _frostbiteDisabled || _goldenCritsDisabled}
             <button
               class="da-boost-chip"
               class:da-boost-chip--lvl={entry.sourceName === 'Level Damage'}
@@ -3047,6 +2992,7 @@ $: _groupedSelfDamageSources = (() => {
                 if (_venomEaterDisabled) return
                 if (_bloodThirstyDisabled) return
                 if (_gelidLanceDisabled) return
+                if (_gorecastDisabled) return
                 if (_venomSpitterDisabled) return
                 if (_frostbiteDisabled) return
                 if (_goldenCritsDisabled) return
@@ -3081,15 +3027,16 @@ $: _groupedSelfDamageSources = (() => {
                   {@const _venomEaterDisabled = entry.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)}
                   {@const _bloodThirstyDisabled = entry.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive}
                   {@const _gelidLanceDisabled = entry.sourceName === 'Gelid Lance' && !_dummyHasBleedActive}
+                  {@const _gorecastDisabled = entry.sourceName === 'Gorecast' && !_dummyHasBleedActive}
                   {@const _venomSpitterDisabled = entry.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive}
                   {@const _frostbiteDisabled = entry.sourceName === 'Frostbite' && !_dummyHasSlowActive && !_dummyHasFrostbiteActive}
                   {@const _goldenCritsDisabled = entry.sourceName === 'Golden Crits' && !showCritValues}
-                  {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || _venomEaterDisabled || _bloodThirstyDisabled || _gelidLanceDisabled || _venomSpitterDisabled || _frostbiteDisabled || _goldenCritsDisabled}
+                  {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || _venomEaterDisabled || _bloodThirstyDisabled || _gelidLanceDisabled || _gorecastDisabled || _venomSpitterDisabled || _frostbiteDisabled || _goldenCritsDisabled}
                   <button
                     class="da-boost-chip da-boost-chip--sm"
                     class:da-boost-chip--off={disabled}
                     title={entry.condition ?? ''}
-                    on:click={() => { if (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) return; if (_venomEaterDisabled) return; if (_bloodThirstyDisabled) return; if (_gelidLanceDisabled) return; if (_venomSpitterDisabled) return; if (_frostbiteDisabled) return; if (_goldenCritsDisabled) return; if (_critDisabledPerkNames.has(entry.sourceName)) return; toggleBoost(entry.sourceName) }}
+                    on:click={() => { if (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) return; if (_venomEaterDisabled) return; if (_bloodThirstyDisabled) return; if (_gelidLanceDisabled) return; if (_gorecastDisabled) return; if (_venomSpitterDisabled) return; if (_frostbiteDisabled) return; if (_goldenCritsDisabled) return; if (_critDisabledPerkNames.has(entry.sourceName)) return; toggleBoost(entry.sourceName) }}
                   >
                     <span class="da-bc-name">{entry.sourceName}</span>
                     <span class="da-bc-val">{disabled ? '—' : `×${+entry.rawMultiplier.toFixed(4)}`}</span>
@@ -3586,7 +3533,11 @@ $: _groupedSelfDamageSources = (() => {
           <span class="da-wbd-lbl-text da-wbd-lbl-text--wa">{selectedWA.name}</span>
         </div>
         <div class="da-hits-row">
-          <span class="da-wbd-na">N/A</span>
+          {#if _waDebuffWarning}
+            <span class="da-wbd-warn">⚠ No debuffs active — WA needs debuffs to deal damage</span>
+          {:else}
+            <span class="da-wbd-na">N/A</span>
+          {/if}
         </div>
       </div>
        {/if}
@@ -3858,7 +3809,12 @@ $: _groupedSelfDamageSources = (() => {
               {/if}
             </div>
 
-          {:else if selectedWA.baseDamage && _waAllHits.dmg.length > 0}
+          {:else if _waDebuffWarning}
+            <div class="da-range-row">
+              <span class="da-wbd-warn">⚠ No debuffs active — this WA requires debuffs to deal damage</span>
+            </div>
+
+          {:else if selectedWA.baseDamage && _waAllHits.dmg.length > 0 && !_waDebuffWarning}
             <div class="da-range-row">
               <span class="da-wbd-range">{selectedWA.baseDamage}</span>
               {#if Object.keys(_waDmgTypes).length > 0}
@@ -5285,6 +5241,15 @@ $: _groupedSelfDamageSources = (() => {
   font-style: italic;
   font-family: var(--font-body, 'Trebuchet MS', sans-serif);
   font-size: .65rem;
+}
+.da-wbd-warn {
+  color: #fbbf24;
+  font-size: .7rem;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: rgba(251, 191, 36, 0.08);
+  border: 1px solid rgba(251, 191, 36, 0.25);
 }
 .da-wbd-dot {
   width: 6px;

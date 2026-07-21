@@ -1,0 +1,176 @@
+{
+  "batchIndex": 6,
+  "nodes": [
+    {
+      "id": "config:.fallowrc.json",
+      "type": "config",
+      "name": ".fallowrc.json",
+      "filePath": ".fallowrc.json",
+      "summary": "Configuration for the Fallow dead-code analysis tool. Defines entry points (src/index.*, src/main.*), duplicate detection with minOccurrences=3, rules for unused-dependencies as warnings, and ignoreExports entries for Svelte modal components and constant files that are intentionally exported but statically unreachable.",
+      "tags": ["fallow", "dead-code", "linting", "static-analysis", "config"],
+      "complexity": null
+    },
+    {
+      "id": "document:AGENTS.md",
+      "type": "document",
+      "name": "AGENTS.md",
+      "filePath": "AGENTS.md",
+      "summary": "Agent context file for the voxlblade-builder project. Documents the project as a web-based damage calculator for the Roblox game Voxel Blade, built with Svelte 5, Vite, TypeScript, Tailwind CSS v4, Vitest, ESLint, Prettier, and pnpm. Describes the project structure, development workflow, and AI agent interaction guidelines.",
+      "tags": ["docs", "agent-context", "project-overview", "conventions"],
+      "complexity": null
+    },
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "Standard Svelte + TypeScript + Vite template README. Covers recommended IDE setup (VS Code + Svelte extension), explains why this template is used over SvelteKit, discusses technical decisions around global.d.ts, allowJs, HMR state preservation, and VS Code extension recommendations.",
+      "tags": ["docs", "readme", "svelte", "vite", "template"],
+      "complexity": null
+    },
+    {
+      "id": "config:fallow-output.json",
+      "type": "config",
+      "name": "fallow-output.json",
+      "filePath": "fallow-output.json",
+      "summary": "Fallow dead-code analysis output for the voxlblade-builder project. Reports 28 total issues: 1 unused file (svelte.config.js), 23 unused exports across src/data/*, src/lib/engine.ts, src/lib/defense.ts, src/lib/types.ts, and src/lib/utils.ts, 2 unused types (SummonDef, SummonPerkMode in SummonData.ts), and 2 duplicate exports (modalSearch, value). Includes next_steps recommendations for trace, audit, and schema setup.",
+      "tags": ["fallow", "dead-code", "analysis-output", "unused-exports", "linting"],
+      "complexity": null
+    },
+    {
+      "id": "config:fallow-security.json",
+      "type": "config",
+      "name": "fallow-security.json",
+      "filePath": "fallow-security.json",
+      "summary": "Fallow security analysis output for the voxlblade-builder project. Reports 25 security findings, all low severity tainted-sink issues: dangerous-html (CWE-79) via template.innerHTML assignments in App.svelte (22 findings), DidYouMean.svelte (1 finding), and SuggestDrop.svelte (1 finding), plus 1 dynamic-regex (CWE-1333) via new RegExp() in App.svelte. Also reports 250 unresolved callee sites, primarily from dynamic dispatch (233) and computed member access (17), with top files being DamageAnalyzer.svelte and App.svelte.",
+      "tags": ["fallow", "security", "analysis-output", "xss", "taint-analysis"],
+      "complexity": null
+    },
+    {
+      "id": "file:index.html",
+      "type": "file",
+      "name": "index.html",
+      "filePath": "index.html",
+      "summary": "Root HTML entry point for the Vite-based Svelte application. Minimal HTML5 document with charset, viewport meta tags, a title 'VoxlBlade Builder', a single div#app mount point, and a module script tag loading /src/main.ts.",
+      "tags": ["html", "entry-point", "vite", "spa"],
+      "complexity": null
+    },
+    {
+      "id": "config:package.json",
+      "type": "config",
+      "name": "package.json",
+      "filePath": "package.json",
+      "summary": "Project package manifest for the 'voxlblade' package. Defines scripts for dev (vite), build (vite build), preview (vite preview), and check (svelte-check + tsc). Dev dependencies include @sveltejs/vite-plugin-svelte ^7, svelte ^5.55, vite ^8, typescript ~6, eslint ^10.5, fallow ^2.104, playwright ^1.61, svelte-check ^4.4, and vite-plugin-pwa ^1.3. Runtime dependency: @vercel/analytics ^2.",
+      "tags": ["package-manifest", "dependencies", "scripts", "vite", "svelte"],
+      "complexity": null
+    },
+    {
+      "id": "config:tsconfig.app.json",
+      "type": "config",
+      "name": "tsconfig.app.json",
+      "filePath": "tsconfig.app.json",
+      "summary": "TypeScript configuration for the application source code. Extends @tsconfig/svelte, targets ES2023 with ESNext modules, includes svelte and vite/client types, enables allowJs and checkJs for .svelte and .js file type-checking, and includes all .ts, .js, and .svelte files under src/.",
+      "tags": ["typescript", "config", "svelte", "compiler-options"],
+      "complexity": null
+    },
+    {
+      "id": "config:tsconfig.json",
+      "type": "config",
+      "name": "tsconfig.json",
+      "filePath": "tsconfig.json",
+      "summary": "Root TypeScript configuration. Simply extends tsconfig.app.json to serve as the default project config for editors and tools.",
+      "tags": ["typescript", "config", "extends"],
+      "complexity": null
+    },
+    {
+      "id": "config:tsconfig.node.json",
+      "type": "config",
+      "name": "tsconfig.node.json",
+      "filePath": "tsconfig.node.json",
+      "summary": "TypeScript configuration for Node.js tooling files (vite.config.ts). Targets ES2023, uses bundler module resolution, enables verbatimModuleSyntax, noUnusedLocals, noUnusedParameters, erasableSyntaxOnly, and noFallthroughCasesInSwitch. Scoped to vite.config.ts only.",
+      "tags": ["typescript", "config", "node", "vite-config"],
+      "complexity": null
+    },
+    {
+      "id": "config:vercel.json",
+      "type": "config",
+      "name": "vercel.json",
+      "filePath": "vercel.json",
+      "summary": "Vercel deployment configuration for the voxlblade-builder project. Sets build command to 'npm run build', output directory to 'dist', framework to 'vite'. Configures Cache-Control headers: immutable long-cache for /assets/*, must-revalidate for /sw.js (service worker) and /index.html.",
+      "tags": ["vercel", "deployment", "caching", "headers", "config"],
+      "complexity": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "config:.fallowrc.json",
+      "target": "config:fallow-output.json",
+      "type": "configures",
+      "weight": 0.6,
+      "description": "Fallow configuration file that controls the behavior of the Fallow dead-code analysis which produces fallow-output.json"
+    },
+    {
+      "source": "config:.fallowrc.json",
+      "target": "config:fallow-security.json",
+      "type": "configures",
+      "weight": 0.6,
+      "description": "Fallow configuration file that controls the behavior of the Fallow security analysis which produces fallow-security.json"
+    },
+    {
+      "source": "document:AGENTS.md",
+      "target": "config:package.json",
+      "type": "documents",
+      "weight": 0.5,
+      "description": "AGENTS.md documents the project structure, tech stack, and workflow which are defined in package.json"
+    },
+    {
+      "source": "file:index.html",
+      "target": "config:package.json",
+      "type": "depends_on",
+      "weight": 0.6,
+      "description": "index.html is the entry point for the Vite build system configured in package.json"
+    },
+    {
+      "source": "config:tsconfig.json",
+      "target": "config:tsconfig.app.json",
+      "type": "inherits",
+      "weight": 0.9,
+      "description": "tsconfig.json extends tsconfig.app.json as its base configuration"
+    },
+    {
+      "source": "config:vercel.json",
+      "target": "config:package.json",
+      "type": "configures",
+      "weight": 0.6,
+      "description": "Vercel deployment config references build scripts and output directory defined in package.json"
+    },
+    {
+      "source": "config:vercel.json",
+      "target": "file:index.html",
+      "type": "routes",
+      "weight": 0.5,
+      "description": "Vercel config defines caching headers for /index.html served by the deployment"
+    },
+    {
+      "source": "config:package.json",
+      "target": "config:tsconfig.app.json",
+      "type": "configures",
+      "weight": 0.6,
+      "description": "package.json check script references tsconfig.app.json for type-checking"
+    },
+    {
+      "source": "config:package.json",
+      "target": "config:tsconfig.node.json",
+      "type": "configures",
+      "weight": 0.6,
+      "description": "package.json check script references tsconfig.node.json for node-side type-checking"
+    },
+    {
+      "source": "document:README.md",
+      "target": "document:AGENTS.md",
+      "type": "related",
+      "weight": 0.5,
+      "description": "Both documents describe the project; README covers template setup while AGENTS.md covers project-specific conventions"
+    }
+  ]
+}

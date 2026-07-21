@@ -2,6 +2,7 @@
   import { build, result } from './lib/store'
   import { calcWardingDebuffMultiplier, roundMultiplier } from './lib/utils'
   import { calcDotDisplayPotency } from './data/DoTDamage'
+  import { calcWeapon } from './lib/engine/weapon'
   import Badge from './lib/ui/Badge.svelte'
   import {
     BUFF_DEFS,
@@ -23,6 +24,7 @@
   import { UI_COLORS, SOURCE_LABELS } from './lib/uiConstants'
 import { getAutoDebuffs } from './data/perkAutoDebuffs'
 import { WA_PROC_COEFFS, DEFAULT_PROC_COEFF } from './data/procCoefficients'
+import { resolveWaDamageTypeKeys } from './lib/damageTypeResolve'
 
 
   $: wardingDebuffMult = calcWardingDebuffMultiplier($result.stats.warding ?? 0)
@@ -84,6 +86,20 @@ import { WA_PROC_COEFFS, DEFAULT_PROC_COEFF } from './data/procCoefficients'
       protection: ($result.stats as Record<string, number>).protection ?? 0,
       selectedWAProcCoefficient: WA_PROC_COEFFS[$build.selectedWeaponArt] ?? DEFAULT_PROC_COEFF,
       enemyHpFillPct: $build.enemyHpFill ?? 100,
+      hasMagicDmg: (() => {
+        const w = ($build.weaponBlade || $build.weaponHandle) ? calcWeapon($build.weaponBlade, $build.weaponHandle, $build.shrineActive) : null
+        if (!w) return false
+        const wa = WEAPON_ARTS.find(a => a.name === $build.selectedWeaponArt)
+        const waDmgTypes = resolveWaDamageTypeKeys(wa?.damageType, w.damageTypes)
+        return Object.entries(waDmgTypes).some(([dt, mult]) => dt === 'magic' && mult > 0)
+      })(),
+      hasMagicOrPhysicalDmg: (() => {
+        const w = ($build.weaponBlade || $build.weaponHandle) ? calcWeapon($build.weaponBlade, $build.weaponHandle, $build.shrineActive) : null
+        if (!w) return false
+        const wa = WEAPON_ARTS.find(a => a.name === $build.selectedWeaponArt)
+        const waDmgTypes = resolveWaDamageTypeKeys(wa?.damageType, w.damageTypes)
+        return Object.entries(waDmgTypes).some(([dt, mult]) => (dt === 'magic' || dt === 'physical') && mult > 0)
+      })(),
     })
     modified.push(...autoDebuffs)
 
