@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { fly, fade } from 'svelte/transition'
   import { onMount, onDestroy } from 'svelte';
   import EmotionalTracker from './EmotionalTracker.svelte';
   import { build } from './lib/store'
@@ -364,8 +365,8 @@
 
 {#if open}
   <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-  <div class="saves-backdrop" on:click={() => open = false}></div>
-  <div class="saves-panel">
+  <div class="saves-backdrop" transition:fade={{ duration: 150 }} on:click={() => open = false}></div>
+  <div class="saves-panel" transition:fly={{ y: -8, duration: 200 }}>
     <div class="saves-header">
       <div class="drag-handle" aria-hidden="true"></div>
       <span class="saves-title">Saved Builds</span>
@@ -484,9 +485,8 @@
     position:absolute;top:calc(100% + 4px);left:0;z-index:var(--z-dropdown);
     background:var(--surface);border:1px solid rgba(74,222,128,.18);
     border-radius:10px;padding:14px;min-width:340px;
-    display:flex;flex-direction:column;gap:10px;animation:spOpen .15s ease;
+    display:flex;flex-direction:column;gap:10px;
   }
-  @keyframes spOpen{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
   .saves-header{display:flex;align-items:baseline;justify-content:space-between;}
   .saves-title{font-size:.7rem;text-transform:uppercase;letter-spacing:.16em;font-weight:700;color:var(--accent);}
   .saves-hint{font-size:.62rem;color:var(--ink-muted);opacity:.5;font-style:italic;}
@@ -494,7 +494,10 @@
   .save-slot{
     display:flex;align-items:center;justify-content:space-between;gap:10px;
     padding:9px 12px;border-radius:8px;
-    background:var(--surface2);border:1px solid var(--border);transition:border-color .15s;
+    background:var(--surface2);border:1px solid var(--border);
+    transition: border-color var(--duration-fast) var(--ease-out),
+                background var(--duration-fast) var(--ease-out),
+                box-shadow var(--duration-normal) var(--ease-out);
   }
   .save-slot.filled{border-color:rgba(74,222,128,.12);}
   .save-slot.filled:hover{border-color:rgba(74,222,128,.25);}

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { fade } from 'svelte/transition'
   import { build, result } from './lib/store'
   import { calcWeapon, calcMonkWeapon, isMonkGuild } from './lib/engine'
   import BaseDamageCalc from './BaseDamageCalc.svelte'
@@ -3196,7 +3197,7 @@ $: _groupedSelfDamageSources = (() => {
             {@const def = BUFF_DEFS[buff.buffName]}
             {@const isOff = buff._isOff}
             {#if def}
-              <span class="da-buff">
+              <span class="da-buff" transition:fade={{ duration: 200 }}>
                 <button class="da-boost-chip" class:da-boost-chip--off={isOff}
                   style="background:color-mix(in srgb,{def.color} 10%,transparent);border-color:color-mix(in srgb,{def.color} 35%,transparent)"
                   on:click={() => toggleBuffByName(buff.buffName)}>
@@ -3219,7 +3220,7 @@ $: _groupedSelfDamageSources = (() => {
                   ? Math.round(buff.potency * wardingDebuffMult * 1000) / 1000
                   : roundMultiplier(buff.potency)}
                 {#if def}
-                  <span class="da-buff">
+                  <span class="da-buff" transition:fade={{ duration: 200 }}>
                     <button class="da-boost-chip da-boost-chip--debuff" class:da-boost-chip--off={isOff}
                       style="background:color-mix(in srgb,{def.color} 10%,transparent);border-color:color-mix(in srgb,{def.color} 35%,transparent)"
                       on:click={() => toggleBuffKey(key)}>
@@ -3240,7 +3241,7 @@ $: _groupedSelfDamageSources = (() => {
               {@const key = `${buff.buffName}:${buff.sourceName}`}
               {@const isOff = buff.buffName === 'Quickdraw' ? disabledBoosts.has(buff.buffName) : disabledBuffKeys.has(key)}
               {#if def}
-                <span class="da-buff">
+                <span class="da-buff" transition:fade={{ duration: 200 }}>
                   <button class="da-boost-chip da-boost-chip--neutral" class:da-boost-chip--off={isOff}
                     style="background:color-mix(in srgb,{def.color} 10%,transparent);border-color:color-mix(in srgb,{def.color} 35%,transparent)"
                     on:click={() => buff.buffName === 'Quickdraw' ? toggleBoost(buff.buffName) : toggleBuffKey(key)}>
@@ -5085,6 +5086,20 @@ $: _groupedSelfDamageSources = (() => {
     background: rgba(251,146,60,.08);
     border: 1px solid rgba(251,146,60,.2);
     cursor: pointer;
+    transition: background var(--duration-fast) var(--ease-out),
+                border-color var(--duration-fast) var(--ease-out),
+                box-shadow var(--duration-fast) var(--ease-out),
+                opacity var(--duration-fast) var(--ease-out),
+                filter var(--duration-fast) var(--ease-out),
+                transform var(--duration-fast) var(--ease-out);
+  }
+  .da-boost-chip:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  .da-boost-chip:active {
+    transform: translateY(0);
+    box-shadow: none;
   }
   .da-boost-chip--lvl {
     background: rgba(251,191,36,.08);
@@ -5098,8 +5113,8 @@ $: _groupedSelfDamageSources = (() => {
   .da-bc-val  { font-size: .82rem; font-weight: 800; color: #fb923c; }
   .da-boost-chip--lvl .da-bc-val { color: #fbbf24; }
   .da-bc-cond { font-size: .55rem; color: var(--ink-muted, #8a8d85); opacity: .6; font-style: italic; text-align: center; max-width: 80px; }
-  .da-chain-op { font-size: .8rem; color: var(--ink-muted, #8a8d85); opacity: .5; font-weight: 700; }
-  .da-chain-result { font-size: 1rem; font-weight: 900; color: #fb923c; background: rgba(251,146,60,.1); padding: 4px 10px; border-radius: 8px; }
+  .da-chain-op { font-size: .8rem; color: var(--ink-muted, #8a8d85); opacity: .5; font-weight: 700; transition: opacity var(--duration-fast) var(--ease-out); }
+  .da-chain-result { font-size: 1rem; font-weight: 900; color: #fb923c; background: rgba(251,146,60,.1); padding: 4px 10px; border-radius: 8px; transition: color var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out); }
   .da-heal-label { font-size: .62rem; font-weight: 700; color: #4ade80; text-transform: uppercase; letter-spacing: .1em; padding: 4px 8px; background: rgba(74,222,128,.08); border-radius: 6px; border: 1px solid rgba(74,222,128,.2); flex-shrink: 0; }
 .da-boost-chip--off {
   opacity: 0.4;
@@ -5120,6 +5135,8 @@ $: _groupedSelfDamageSources = (() => {
   margin-top: 2px;
   background: rgba(74,222,128,.15);
   color: #4ade80;
+  transition: background var(--duration-fast) var(--ease-out),
+              color var(--duration-fast) var(--ease-out);
 }
 .da-boost-chip--off .da-bc-toggle {
   background: rgba(248,113,113,.12);
@@ -5380,6 +5397,8 @@ $: _groupedSelfDamageSources = (() => {
   font-family: 'Courier New', monospace;
   letter-spacing: -.01em;
   text-shadow: 0 0 10px color-mix(in srgb, var(--tc, #e8e4da) 50%, transparent);
+  transition: color var(--duration-fast) var(--ease-out),
+              text-shadow var(--duration-normal) var(--ease-out);
 }
 
 .da-hit-type {

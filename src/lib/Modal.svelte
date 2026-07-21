@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { fade, fly } from 'svelte/transition'
+
   export let onclose: () => void
 
   function trapFocus(e: KeyboardEvent) {
@@ -19,9 +21,9 @@
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
-<div class="modal-overlay" on:click|self={onclose}>
+<div class="modal-overlay" transition:fade={{ duration: 200 }} on:click|self={onclose}>
   <!-- svelte-ignore a11y-autofocus -->
-  <div class="modal-box" role="dialog" aria-modal="true" tabindex="-1" on:keydown={trapFocus} use:focusOnOpen>
+  <div class="modal-box" transition:fly={{ y: 16, duration: 250, easing: t => 1 - Math.pow(1 - t, 3) }} role="dialog" aria-modal="true" tabindex="-1" on:keydown={trapFocus} use:focusOnOpen>
     <button class="modal-close" on:click={onclose} aria-label="Close modal">✕</button>
     <slot />
   </div>
@@ -45,11 +47,6 @@
     z-index:var(--z-modal-backdrop);
     display:flex; align-items:center; justify-content:center;
     padding:16px;
-    animation: modalFadeIn .2s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  @keyframes modalFadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
   }
   .modal-box {
     background: linear-gradient(180deg, var(--surface2) 0%, var(--surface) 100%);
@@ -58,7 +55,6 @@
     padding: 24px;
     width: min(680px, 100%);
     position: relative;
-    animation: modalSlideUp .25s cubic-bezier(0.4, 0, 0.2, 1);
     max-height: 90vh;
     overflow-y: auto;
     box-shadow:
@@ -67,10 +63,6 @@
       0 0 80px rgba(74,222,128,0.03);
     scrollbar-width: thin;
     scrollbar-color: rgba(255,255,255,0.08) transparent;
-  }
-  @keyframes modalSlideUp {
-    from { transform: translateY(16px) scale(0.98); opacity: 0; }
-    to { transform: translateY(0) scale(1); opacity: 1; }
   }
   .modal-box::-webkit-scrollbar { width: 5px; }
   .modal-box::-webkit-scrollbar-track { background: transparent; }

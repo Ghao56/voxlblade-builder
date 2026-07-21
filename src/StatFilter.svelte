@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { slide } from 'svelte/transition'
   import { createEventDispatcher } from 'svelte'
   import { ELEMENTAL_BOOST_STATS, NEGATIVE_ELEMENTAL_BOOST_STATS } from './lib/stats/elementalBoosts'
   import { createFilterActions } from './lib/stats/filterActions'
@@ -141,7 +142,7 @@
   </div>
 
   {#if expanded}
-  <div class="sf-panel">
+  <div class="sf-panel" transition:slide={{ duration: 200 }}>
 
     <div class="sf-tab-row" role="tablist" aria-label="Stat Types">
       <button
@@ -250,9 +251,8 @@
   .sf-active-row { display:flex;flex-wrap:wrap;gap:3px;align-items:center;flex:1; }
   .sf-panel {
     display:flex;flex-direction:column;gap:4px;padding:6px 10px 10px;
-    border-top:1px solid rgba(255,255,255,.06);animation:sfOpen .12s ease;
+    border-top:1px solid rgba(255,255,255,.06);
   }
-  @keyframes sfOpen { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
   .sf-legend { display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:2px; }
   .sf-leg { font-size:.58rem;font-weight:700;padding:1px 6px;border-radius:4px; }
   .sf-leg--off  { color:var(--ink-muted,#8a8d85);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08); }

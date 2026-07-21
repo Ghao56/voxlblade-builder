@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { slide } from 'svelte/transition'
   import { createEventDispatcher } from 'svelte'
   import { ELEMENTAL_BOOST_STATS } from './lib/stats/elementalBoosts'
   import { createFilterActions } from './lib/stats/filterActions'
@@ -131,7 +132,7 @@
   </div>
 
   {#if expanded}
-    <div class="wsf-panel">
+    <div class="wsf-panel" transition:slide={{ duration: 200 }}>
       <p class="wsf-legend">
         <span class="wsf-leg wsf-leg--off">○ Off</span>
         <span class="wsf-leg wsf-leg--inc">+ Must have</span>
@@ -214,11 +215,6 @@
     gap: 8px;
     padding: 8px 10px 10px;
     border-top: 1px solid rgba(255,255,255,.06);
-    animation: wsfOpen .12s ease;
-  }
-  @keyframes wsfOpen {
-    from { opacity: 0; transform: translateY(-4px); }
-    to   { opacity: 1; transform: translateY(0); }
   }
 
   /* Legend */

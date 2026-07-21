@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { fade } from 'svelte/transition'
   import { build, result, clearBuild } from './lib/store'
   import DraconicAbilityStats from './DraconicAbilityStats.svelte'
   import {
@@ -1320,7 +1321,7 @@ $: _appWaAvgTotal = (() => {
 <div class="app">
   <AppHeader bind:activeAppTab on:switchTab={e => switchTab(e.detail)} />
   {#if activeAppTab === 'overview'}
-    <div class="workspace">
+    <div class="workspace" in:fade={{ duration: 200 }}>
 
       <!-- BUILD SUMMARY + INLINE ENCHANTS -->
       <div class="panel summary-panel">
@@ -2574,7 +2575,7 @@ $: _appWaAvgTotal = (() => {
 
     </div>
     {:else}
-      <div class="analyze-wrap">
+      <div class="analyze-wrap" in:fade={{ duration: 200 }}>
         <div class="analyze-hp-bar">
           <LevelBar protection={$result.stats.protection ?? 0} hpThreshold={_dragonStateThreshold} />
         </div>
@@ -2758,7 +2759,7 @@ $: _appWaAvgTotal = (() => {
     align-self:stretch;
     transition: all var(--transition-fast);
   }
-  .sg-clickable { cursor:pointer; }
+  .sg-clickable { cursor:pointer; transition: transform var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out), filter var(--duration-fast) var(--ease-out); }
   .sg-clickable:hover { filter:brightness(1.1); transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,0.35); }
   .sg-empty { opacity:.35; }
 
@@ -3104,10 +3105,10 @@ $: _appWaAvgTotal = (() => {
   .weapon-meta-val { font-weight:700; color:var(--accent2); }
   .weapon-section-label { font-size:.62rem; text-transform:uppercase; letter-spacing:.14em; color:var(--ink-muted); font-weight:700; margin-top:2px; }
   .damage-type-grid,.scaling-grid { display:flex; flex-wrap:wrap; gap:4px; }
-  .damage-type-pill { display:flex; align-items:center; gap:4px; padding:3px 7px; border-radius:999px; background:rgba(251,146,60,.1); border:1px solid rgba(251,146,60,.2); font-size:.7rem; }
+  .damage-type-pill { display:flex; align-items:center; gap:4px; padding:3px 7px; border-radius:999px; background:rgba(251,146,60,.1); border:1px solid rgba(251,146,60,.2); font-size:.7rem; transition: background var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out); }
   .dt-name { color:var(--ink-muted); }
   .dt-val { font-weight:700; color:var(--weapon-blade); }
-  .scaling-pill { display:flex; align-items:center; gap:4px; padding:3px 7px; border-radius:999px; background:rgba(167,139,250,.1); border:1px solid rgba(167,139,250,.2); font-size:.7rem; }
+  .scaling-pill { display:flex; align-items:center; gap:4px; padding:3px 7px; border-radius:999px; background:rgba(167,139,250,.1); border:1px solid rgba(167,139,250,.2); font-size:.7rem; transition: background var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out); }
   .sc-name { color:var(--ink-muted); }
   .sc-val { font-weight:700; color:var(--accent3); }
   .sc-val-old { font-size:.65rem; opacity:.35; text-decoration:line-through; color:var(--ink-muted); margin-right:2px; }

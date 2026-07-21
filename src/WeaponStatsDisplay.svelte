@@ -101,6 +101,9 @@
     background: rgba(74,222,128,.1);
     border: 1px solid rgba(74,222,128,.2);
     color: var(--accent);
+    transition: background var(--duration-fast) var(--ease-out),
+                border-color var(--duration-fast) var(--ease-out),
+                color var(--duration-fast) var(--ease-out);
   }
   .modal-stat-pill--dmgtype {
     background: rgba(251,146,60,.1);

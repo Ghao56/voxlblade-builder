@@ -301,6 +301,7 @@
     border-left: 1.5px solid rgb(248 113 113);
     z-index: 0;
     overflow: hidden;
+    transition: width var(--duration-smooth) var(--ease-out);
   }
 
   .lb-bar-fill {
@@ -313,6 +314,8 @@
     filter: saturate(1.15) brightness(1.05);
     background: var(--bar-color);
     box-shadow: 0 0 8px var(--bar-glow), inset 0 1px 0 rgba(255,255,255,0.22);
+    transition: width var(--duration-smooth) var(--ease-out),
+                background var(--duration-normal) var(--ease-out);
   }
 
   /* ③ Shield overlay */
@@ -324,6 +327,7 @@
     z-index: 3;
     overflow: hidden;
     pointer-events: none;
+    transition: width var(--duration-smooth) var(--ease-out);
   }
 
   .lb-bar-shine {
@@ -387,6 +391,8 @@
     box-shadow: 0 0 6px var(--bar-glow);
     z-index: 5;
     pointer-events: none;
-    transition: box-shadow .2s;
+    transition: box-shadow .2s,
+                left var(--duration-smooth) var(--ease-out),
+                border-color var(--duration-normal) var(--ease-out);
   }
 </style>

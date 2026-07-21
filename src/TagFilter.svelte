@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { slide } from 'svelte/transition'
   import { createEventDispatcher, tick } from 'svelte'
   import { UI_COLORS } from './lib/uiConstants'
   import Badge from './lib/ui/Badge.svelte'
@@ -126,7 +127,7 @@
   </div>
 
   {#if expanded}
-    <div class="tf-panel">
+    <div class="tf-panel" transition:slide={{ duration: 200 }}>
       {#each filteredGroups as group}
         <div class="tf-group">
           <span class="tf-group-label" style="color:{group.color}">{group.label}</span>
@@ -268,11 +269,6 @@
     gap: 5px;
     padding: 8px 12px 10px;
     border-top: 1px solid var(--border);
-    animation: tfOpen .15s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  @keyframes tfOpen {
-    from { opacity: 0; transform: translateY(-4px); }
-    to   { opacity: 1; transform: translateY(0); }
   }
 
   .tf-group {

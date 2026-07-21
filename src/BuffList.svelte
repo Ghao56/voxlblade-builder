@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { fade } from 'svelte/transition'
   import { build, result } from './lib/store'
   import { calcWardingDebuffMultiplier, roundMultiplier } from './lib/utils'
   import { calcDotDisplayPotency } from './data/DoTDamage'
@@ -349,7 +350,7 @@ $: groupedBuffs = (() => {
           {@const topPotency = group.strongest.potency}
           
           {#if def}
-            <div class="bl-card" class:bl-card--debuff={def.isDebuff} style="--c:{def.color}">
+            <div class="bl-card" class:bl-card--debuff={def.isDebuff} style="--c:{def.color}" transition:fade={{ duration: 200 }}>
               <div class="bl-accent-bar"></div>
 
               <div class="bl-body">

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { slide } from 'svelte/transition'
   import { createEventDispatcher, onMount, onDestroy } from 'svelte'
   import { FOCUS_DELAY_MS } from './constants'
 
@@ -199,6 +200,7 @@
   {#if open}
     <div 
       class="ecs-dropdown" 
+      transition:slide={{ duration: 150 }}
       id={dropdownId} 
       role="listbox" 
       aria-label="Enchantment options"
@@ -350,14 +352,9 @@
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 12px 32px rgba(0,0,0,0.6), 0 0 0 1px rgba(167,139,250,0.08);
-    animation: ecsOpen 0.12s ease;
     min-width: 180px;
     display: flex;
     flex-direction: column;
-  }
-  @keyframes ecsOpen {
-    from { opacity: 0; transform: translateY(-4px); }
-    to   { opacity: 1; transform: translateY(0); }
   }
 
   .ecs-search-wrap {
