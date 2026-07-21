@@ -21,6 +21,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     STORAGE_KEY_DEFENSES as DEF_STORAGE_KEY,
     ARMOR_PEN_BRANCH_THRESHOLD,
     VENOM_EATER_HEAL_PER_STACK,
+    SIPHONING_ROT_HEAL_PER_STACK,
     CURSE_RIP_DIVISOR,
     BASE_CRIT_DMG_PCT,
   } from './lib/constants'
@@ -136,6 +137,7 @@ export let cauterizeScalingMult: number = 1
   export let venomEaterStacks: number = 0
   export let bloodThirstyStacks: number = 0
   export let lifeDrinkerAmt: number = 0
+  export let siphoningRotAmt: number = 0
   export let sunburnUniversalDmgMult: number = 1
   export let enemyHpFill: number = 100
   export let dotTicks: Array<{
@@ -443,7 +445,11 @@ export let cauterizeScalingMult: number = 1
       ? 0.01 * preMitBase  * lifeDrinkerAmt + 0.1
       : 0
 
-    return { ...d, dmgType, scalingMult, combatMult, preMitBase, applicableBoosts, typedMult, defPct, defMult, typeDebuffMult, debuffMult, finalDmg, finalDmgPrimary, bonusTypes, trueDmg, woundTrueDmg, woundPotency, woundAmt, lifeDrinkerHeal, weaponBoostMult: sunburnMult, weaponBoostLabel: sunburnMult !== 1 ? 'Sunburn' : undefined }
+    const siphoningRotHeal = (siphoningRotAmt > 0 && d.type === 'Poison')
+      ? SIPHONING_ROT_HEAL_PER_STACK * siphoningRotAmt
+      : 0
+
+    return { ...d, dmgType, scalingMult, combatMult, preMitBase, applicableBoosts, typedMult, defPct, defMult, typeDebuffMult, debuffMult, finalDmg, finalDmgPrimary, bonusTypes, trueDmg, woundTrueDmg, woundPotency, woundAmt, lifeDrinkerHeal, siphoningRotHeal, weaponBoostMult: sunburnMult, weaponBoostLabel: sunburnMult !== 1 ? 'Sunburn' : undefined }
   })
 
   function defPctForType(k: string): number {
@@ -1428,12 +1434,41 @@ export let cauterizeScalingMult: number = 1
                         </div>
                       </div>
                     {/if}
+                    {#if dot.siphoningRotHeal}
+                      <span class="bdc-hit-plus">+</span>
+                      <!-- svelte-ignore a11y_no_static_element_interactions -->
+                      <div class="bdc-hit-type-chunk bdc-hit-type-chunk--heal" style="--tc:#4ade80">
+                        <div class="bdc-hit-type-top">
+                          <div class="bdc-hit-type-val-row">
+                            <span class="bdc-hit-type-val">{fmt(dot.siphoningRotHeal)}</span>
+                          </div>
+                          <div class="bdc-hit-type-label-row">
+                            <span class="bdc-hit-type-label">Heal</span>
+                            <Badge color="#4ade80" size="xs" square mono title="Siphoning Rot: Heals for 1 HP per Poison tick per perk stack">✦ Siphoning Rot</Badge>
+                          </div>
+                        </div>
+                        <div class="bdc-hit-type-formula">
+                          <div class="bdc-fr">
+                            <span class="bdc-fr-label">Base Heal</span>
+                            <span class="bdc-fr-val">{fmt(dot.siphoningRotHeal)}</span>
+                          </div>
+                          <div class="bdc-fr-divider"></div>
+                          <div class="bdc-fr bdc-fr--result">
+                            <span class="bdc-fr-label">Final Heal</span>
+                            <span class="bdc-fr-val bdc-fr-val--result" style="--tc:#4ade80;">{fmt(dot.siphoningRotHeal)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    {/if}
                   </div>
                   <div class="bdc-hit-row-end">
                     <span class="bdc-hit-type-sum-sep">=</span>
-                    <span class="bdc-hit-type-sum">{fmt((dot.finalDmg ?? dot.tickDamage) + (dot.trueDmg ?? 0) + (dot.woundTrueDmg ?? 0))}</span>
+                    <span class="bdc-hit-type-sum-holder"><span class="bdc-hit-type-sum">{fmt((dot.finalDmg ?? dot.tickDamage) + (dot.trueDmg ?? 0) + (dot.woundTrueDmg ?? 0))}</span></span>
                     {#if dot.lifeDrinkerHeal}
                       <span class="bdc-hit-type-heal-sum">{fmt(dot.lifeDrinkerHeal)}</span>
+                    {/if}
+                    {#if dot.siphoningRotHeal}
+                      <span class="bdc-hit-type-heal-sum">{fmt(dot.siphoningRotHeal)}</span>
                     {/if}
                   </div>
                 </div>

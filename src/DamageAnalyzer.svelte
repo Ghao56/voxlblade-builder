@@ -2896,6 +2896,7 @@ $: _groupedSelfDamageSources = (() => {
     venomEaterStacks={perks['Venom Eater'] ?? 0}
     bloodThirstyStacks={perks['Blood Thirsty'] ?? 0}
     lifeDrinkerAmt={perks['Life Drinker'] ?? 0}
+    siphoningRotAmt={perks['Siphoning Rot'] ?? 0}
     sunburnUniversalDmgMult={_sunburnEnemyBurning ? _sunburnUniversalDmgMult : 1}
     dotTicks={_dotTicks}
     enemyHpFill={_enemyHpFillPct}

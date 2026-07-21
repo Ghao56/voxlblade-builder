@@ -4,6 +4,7 @@ export const FRENZY_RAGE_MULT = 1 / 6
 export const MINION_ABSORPTION_MULT = 0.2
 
 export const VENOM_EATER_HEAL_PER_STACK = 0.1
+export const SIPHONING_ROT_HEAL_PER_STACK = 1
 
 export const HOLY_INFUSION_POTENCY_MULT = 0.115
 
