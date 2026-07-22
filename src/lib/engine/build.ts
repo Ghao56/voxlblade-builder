@@ -16,7 +16,7 @@ import {
 } from './data'
 import { applyEnchantmentsToSlot, applyPerkEffectiveness, applyInfusion } from './enchant'
 import { applyShrineToStats, SHRINE_MULTIPLIERS } from './shrine'
-import { MONK_RANK_MULTIPLIER, calcWeapon } from './weapon'
+import { MONK_RANK_MULTIPLIER, calcWeapon, calcMonkWeapon } from './weapon'
 import { WEAPON_ARTS } from '../../data/weaponArts'
 import { getFinalWaDmgTypes } from '../damageTypeResolve'
 import { buildDmgTypeBonuses } from './dmgTypeBonuses'
@@ -513,7 +513,9 @@ function deriveResults(
   }
 
   const isMountRune = state.rune.endsWith('Mount Rune')
-  const _weaponResult = (state.weaponBlade || state.weaponHandle) ? calcWeapon(state.weaponBlade, state.weaponHandle, state.shrineActive) : null
+  const _weaponResult = isMonkGuild(state.guild)
+    ? ((state.monkGlove || state.monkEssence) ? calcMonkWeapon(state.monkGlove, state.monkEssence, state.shrineActive, state.guildRank) : null)
+    : ((state.weaponBlade || state.weaponHandle) ? calcWeapon(state.weaponBlade, state.weaponHandle, state.shrineActive) : null)
   const _perkDmgTypeBonusesForBoost = buildDmgTypeBonuses(true, {
     perks: finalPerks, ragePotency, draconicRuneInfusion: state.draconicRuneInfusion,
     emotionalState: state.emotionalState, draconicColor: state.draconicColor,

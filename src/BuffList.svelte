@@ -102,7 +102,7 @@ import { resolveWaDamageTypeKeys } from './lib/damageTypeResolve'
         return Object.entries(waDmgTypes).some(([dt, mult]) => (dt === 'magic' || dt === 'physical') && mult > 0)
       })(),
     })
-    modified.push(...autoDebuffs)
+    modified.push(...applyBuffPerkModifiers(autoDebuffs, $result.perks, $build.rune || undefined, wardingDebuffMult))
 
     return applyCauterizeConversion(modified, $result.perks)
   })()

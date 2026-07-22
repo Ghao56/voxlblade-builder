@@ -177,7 +177,7 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
       buffName: 'Weakness',
       potency: 0.2 * weakeningAmt,
       duration: 5,
-      condition: `${5 * weakeningAmt}% chance per hit · Potency = 0.2 × ${weakeningAmt}`,
+      condition: `${Math.round(5 * weakeningAmt)}% chance per hit · Potency = 0.2 × ${+weakeningAmt.toFixed(2)}`,
       sourceName: 'Weakening',
       sourceType: 'perk',
     })
@@ -214,7 +214,7 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
       buffName: 'Hypnotized',
       potency: HYPNOTIST_POTENCY_PER_PERK * hypnotistAmt,
       duration: HYPNOTIST_DURATION_BASE + HYPNOTIST_DURATION_PER_PERK * hypnotistAmt,
-      condition: 'On WA or Rune hit · Potency = 0.1 × ' + hypnotistAmt,
+      condition: 'On WA or Rune hit · Potency = 0.1 × ' + +hypnotistAmt.toFixed(2),
       sourceName: 'Hypnotist',
       sourceType: 'perk',
     })

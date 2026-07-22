@@ -456,7 +456,7 @@ import {
         inner.set(b.buffName, b.potency)
       }
     }
-    const autoDebuffs = getAutoDebuffs({
+    const autoDebuffs = applyBuffPerkModifiers(getAutoDebuffs({
       existingBuffNames: [...groups.keys()],
       playerBuffNames: _allActiveBuffs.map(b => b.buffName),
       perks,
@@ -467,7 +467,7 @@ import {
       enemyHpFillPct: _enemyHpFillPct,
       hasMagicDmg: Object.entries(_waDmgTypes).some(([dt, mult]) => dt === 'magic' && mult > 0),
       hasMagicOrPhysicalDmg: Object.entries(_waDmgTypes).some(([dt, mult]) => (dt === 'magic' || dt === 'physical') && mult > 0),
-    })
+    }), perks, $build.rune || undefined, wardingDebuffMult)
     for (const d of autoDebuffs) {
       if (!groups.has(d.buffName)) groups.set(d.buffName, new Map())
       const inner = groups.get(d.buffName)!
