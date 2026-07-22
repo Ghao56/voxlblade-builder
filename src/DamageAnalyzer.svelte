@@ -12,7 +12,7 @@
   import { getDraconicInfusionBuff, getDraconicAbilityDebuffs, getEffectiveDraconicInfusionPotency, getDraconicInfusionPotMult, getDraconicInfusionDurMult } from './data/draconicBuffs'  
   import { WA_SUMMON_MAP, SUMMON_MAP, calcSummonStat, calcMaxSummonCount } from './data/SummonData'
   import CritIcon from './CritIcon.svelte'
-  import { PERK_DMG_DEFS, SECONDARY_TONE_COLORS, isHpGateActive, DRAGON_STATE_HP_GATE, calcSpringblastBaseDamage, type TriggerChainEntry } from './data/Perkbasedmg'
+  import { PERK_DMG_DEFS, SECONDARY_TONE_COLORS, isHpGateActive, DRAGON_STATE_HP_GATE, calcSpringblastBaseDamage, calcBomberChargeBaseDamage, type TriggerChainEntry } from './data/Perkbasedmg'
   import { resolveDefenseSources, calcBaseArmorDefPct, DEF_GROUP, type DefenseSource } from './lib/defense'
   import { getActiveRaceEffect, getOrkTenacityBuffs, calcOrkTenacityBonus } from './data/raceEffects'
   import { getActiveDefensivePerkSources, calcDefensivePotencyMult } from './data/defensivePerks'
@@ -2338,8 +2338,7 @@ import {
     }
     // Bomber Charge: override Retaliate WA hits
     if ((perks['Bomber Charge'] ?? 0) > 0 && selectedWA.name === 'Retaliate') {
-      const missingPct = Math.min(0.5, Math.max(0, 100 - (_hpFillPct ?? 100)) / 100)
-      const base = Math.round(12.5 * (1 + 0.15 * perks['Bomber Charge']) * (1 + 12.8 * missingPct) * 1000) / 1000
+      const base = calcBomberChargeBaseDamage(perks['Bomber Charge'], Math.max(0, 100 - (_hpFillPct ?? 100)))
       const sc = _computePerkScalingMult({ holy: 0.4, magic: 0.4 })
       result.push({
         group: 'WA', index: 0, count: 1, base, scalingMult: sc, combatMult: _waCombatMult,
@@ -3758,8 +3757,7 @@ $: _groupedSelfDamageSources = (() => {
           <div class="da-hits-row">
           {#if (perks['Bomber Charge'] ?? 0) > 0 && selectedWA.name === 'Retaliate'}
             {@const _bcAmt = perks['Bomber Charge'] ?? 0}
-            {@const _bcMissingPct = Math.min(0.5, Math.max(0, 100 - (_hpFillPct ?? 100)) / 100)}
-            {@const _bcBase = Math.round(12.5 * (1 + 0.15 * _bcAmt) * (1 + 12.8 * _bcMissingPct) * 1000) / 1000}
+            {@const _bcBase = calcBomberChargeBaseDamage(_bcAmt, Math.max(0, 100 - (_hpFillPct ?? 100)))}
             <div class="da-hit-card">
               <div class="da-hit-chunk" style="--tc:{DMG_TYPE_COLORS['holy']}">
                 <span class="da-hit-num">{fmtNum(Math.round(_bcBase * 0.5 * 10000) / 10000)}</span>

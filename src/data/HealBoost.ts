@@ -2,6 +2,7 @@ import { roundMultiplier } from '../lib/utils'
 import {
   EMOTIONAL_MULT_PER_STACK,
   HEAL_BOOST_MULT_PER_STACK,
+  MAX_LEVEL,
   OCEANS_RAGE_MULT_PER_STACK,
   VAMPIRE_SUNLIGHT_HEAL_MULT,
 } from '../lib/constants'
@@ -137,7 +138,7 @@ export function calculateHealBoost(
   
   // Calculate level healing
   const level = ctx.level ?? 0
-  const lvlMult = roundMultiplier(1 + Math.max(0, Math.min(80, level)) / 80)
+  const lvlMult = roundMultiplier(1 + Math.max(0, Math.min(MAX_LEVEL, level)) / MAX_LEVEL)
   entriesMap.set('Level Healing', {
     rawMultiplier: lvlMult,
     condition: `1.25% per level`,

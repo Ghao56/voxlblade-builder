@@ -84,6 +84,10 @@ import {
   FIERY_PURSUIT_BASE_DMG,
   FIERY_PURSUIT_DMG_PER_STACK,
   FIERY_PURSUIT_BURN_DURATION,
+  BOMBER_CHARGE_BASE,
+  BOMBER_CHARGE_PCT_PER_STACK,
+  BOMBER_CHARGE_MISSING_HP_MULT,
+  BOMBER_CHARGE_MISSING_HP_CAP,
 } from '../lib/constants'
 
 export interface PerkDmgCtx {
@@ -183,6 +187,12 @@ export interface PerkDmgDef {
 
 export function calcSpringblastBaseDamage(perkAmount: number): number {
   return (SPRINGBLAST_BASE_HIT + SPRINGBLAST_PER_STACK_HIT * perkAmount) * (1 + SPRINGBLAST_MULT_PER_STACK * perkAmount)
+}
+
+export function calcBomberChargeBaseDamage(perkAmount: number, missingHpPct: number): number {
+  const missingPct = Math.min(BOMBER_CHARGE_MISSING_HP_CAP, missingHpPct / 100)
+  const base = BOMBER_CHARGE_BASE * (1 + BOMBER_CHARGE_PCT_PER_STACK * perkAmount) * (1 + BOMBER_CHARGE_MISSING_HP_MULT * missingPct)
+  return Math.round(base * 1000) / 1000
 }
 
 export const PERK_DMG_DEFS: PerkDmgDef[] = [
@@ -307,9 +317,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     perkName: 'Bomber Charge',
     condition: 'Retaliate Weapon Art selected',
     getBaseDamage: ({ perkAmount, statuses }) => {
-      const missingPct = Math.min(0.5, (statuses?.missingHpPct ?? 0) / 100)
-      const base = 12.5 * (1 + 0.15 * perkAmount) * (1 + 12.8 * missingPct)
-      return Math.round(base * 1000) / 1000
+      return calcBomberChargeBaseDamage(perkAmount, statuses?.missingHpPct ?? 0)
     },
     dmgTypeMode: 'fixed',
     dmgTypes: { holy: 0.5, true: 0.5 },

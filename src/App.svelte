@@ -27,6 +27,7 @@
     DRAGON_BUBBLE_HOLY_HEAL_BASE, DRAGON_BUBBLE_HOLY_HEAL_PER_STACK,
     DRAGON_BUBBLE_WATER_HEAL_BASE, DRAGON_BUBBLE_WATER_HEAL_PER_STACK,
     UNDO_WINDOW_MS, SEARCH_BLUR_DELAY_MS,
+    BOMBER_CHARGE_BASE, BOMBER_CHARGE_PCT_PER_STACK, BOMBER_CHARGE_MISSING_HP_MULT,
   } from './lib/constants'
   import { DEFAULT_DMG_TYPE } from './lib/constants/damage-types'
   import {
@@ -2460,7 +2461,7 @@ $: _appWaAvgTotal = (() => {
 
           {:else if _bomberChargeAmt > 0 && selectedWA.name === 'Retaliate'}
             <div style="display: flex; align-items: center; gap: 10px; padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.04); background: rgba(255,255,255,0.02);">
-              <span class="wa-stat-val" style="flex-shrink:0;">12.5 × (1 + 0.15×{_bomberChargeAmt}) × (1 + 12.8×missingHP%)</span>
+              <span class="wa-stat-val" style="flex-shrink:0;">{BOMBER_CHARGE_BASE} × (1 + {BOMBER_CHARGE_PCT_PER_STACK}×{_bomberChargeAmt}) × (1 + {BOMBER_CHARGE_MISSING_HP_MULT}×missingHP%)</span>
               <div class="damage-type-grid">
                 <div class="damage-type-pill"><span class="dt-name">Holy</span><span class="dt-val">0.5x</span></div>
                 <div class="damage-type-pill"><span class="dt-name">True</span><span class="dt-val">0.5x</span></div>

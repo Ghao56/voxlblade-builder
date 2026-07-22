@@ -1,8 +1,9 @@
 import { PENANCE_HP_THRESHOLD, PENANCE_BLEED_POTENCY, PENANCE_BLEED_DURATION } from './Boost'
-import { HYPNOTIST_POTENCY_PER_PERK, HYPNOTIST_DURATION_BASE, HYPNOTIST_DURATION_PER_PERK, FIERY_PURSUIT_BURN_DURATION } from '../lib/constants/perks'
+import { HYPNOTIST_POTENCY_PER_PERK, HYPNOTIST_DURATION_BASE, HYPNOTIST_DURATION_PER_PERK, FIERY_PURSUIT_BURN_DURATION, SUNBURN_BURN_BASE_CHANCE, SUNBURN_BURN_CHANCE_PER_STACK, FROSTBITE_SLOW_POTENCY_PER_STACK, FROSTBITE_CHANCE_PER_STACK } from '../lib/constants/perks'
 import type { GrantedBuff } from './BuffData'
 import { canProc, type ProcCoefficient } from '../lib/types'
 import { calcBaseMaxHP } from '../lib/constants/game'
+import { BELLOWING_EMBER_HP_GATE_THRESHOLD, BELLOWING_EMBER_HP_GATE_PER_STACK } from '../lib/constants/perk-base-damage'
 import { getActiveEnemyHpDebuffs } from './enemyHpEffects'
 
 export interface AutoDebuffInput {
@@ -130,7 +131,7 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
   const bellowingAmt = perks['Bellowing Ember'] ?? 0
   if (bellowingAmt > 0) {
     const actualHpPct = calcActualHpFillPct(hpFill, level, protection)
-    const threshold = 40 + 5 * (bellowingAmt - 1)
+    const threshold = BELLOWING_EMBER_HP_GATE_THRESHOLD + BELLOWING_EMBER_HP_GATE_PER_STACK * (bellowingAmt - 1)
     if (actualHpPct <= threshold && !existingBuffNames.includes('Burn')) {
       debuffs.push({
         buffName: 'Burn',
@@ -147,9 +148,9 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
   if (frostbiteAmt > 0 && !existingBuffNames.includes('Slowness')) {
     debuffs.push({
       buffName: 'Slowness',
-      potency: 0.5 * frostbiteAmt,
+      potency: FROSTBITE_SLOW_POTENCY_PER_STACK * frostbiteAmt,
       duration: 0,
-      condition: `${10 * frostbiteAmt}% chance per hit · Potency = 0.5 × ${frostbiteAmt}`,
+      condition: `${FROSTBITE_CHANCE_PER_STACK * 100 * frostbiteAmt}% chance per hit · Potency = ${FROSTBITE_SLOW_POTENCY_PER_STACK} × ${frostbiteAmt}`,
       sourceName: 'Frostbite',
       sourceType: 'perk',
     })
@@ -185,7 +186,7 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
 
   const sunburnAmt = perks['Sunburn'] ?? 0
   if (sunburnAmt > 0 && !existingBuffNames.includes('Burn')) {
-    const burnChance = 24 + 6 * sunburnAmt
+    const burnChance = (SUNBURN_BURN_BASE_CHANCE + SUNBURN_BURN_CHANCE_PER_STACK * sunburnAmt) * 100
     debuffs.push({
       buffName: 'Burn',
       potency: 0,

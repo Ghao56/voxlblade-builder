@@ -68,6 +68,10 @@ export const SUNBURN_HOLY_EXTRA_DMG_PER_STACK = 0.15
 export const SUNBURN_BURN_BASE_CHANCE = 0.24
 export const SUNBURN_BURN_CHANCE_PER_STACK = 0.06
 
+// ── Frostbite ────────────────────────────────────
+export const FROSTBITE_SLOW_POTENCY_PER_STACK = 0.5
+export const FROSTBITE_CHANCE_PER_STACK = 0.10
+
 // ── Fiery Pursuit ──────────────────────────────────
 export const FIERY_PURSUIT_BASE_DMG = 15
 export const FIERY_PURSUIT_DMG_PER_STACK = 1.5
