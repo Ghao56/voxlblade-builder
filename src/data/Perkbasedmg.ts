@@ -775,4 +775,43 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     ],
     note: 'Dash forward. Counts as Weapon Art damage. Grants Iframes during dash. AoE scales on perk amount.',
   },
+  // ── Bulfrogg Spirit ──────────────────────────────────────────────────────
+  {
+    perkName: 'Bulfrogg Spirit',
+    condition: 'on RMB (Monk)',
+    getBaseDamage: () => 23,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { water: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { water: 1.0 },
+    procCoefficient: { type: 'hasCoeff', value: 1.0 },
+    guardbreak: true,
+    note: 'Stuns targets for 4.5 seconds'
+  },
+  // ── Gremlin Spirit ──────────────────────────────────────────────────────
+  {
+    perkName: 'Gremlin Spirit',
+    condition: 'on Bleed (Monk)',
+    getBaseDamage: () => 2.5,
+    hits: 10,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { physical: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { physical: 1.0, dexterity: 1.0 },
+    procCoefficient: { type: 'hasCoeff', value: 1.0 },
+    guardbreak: true,
+  },
+  // ── Queen Bumblz Spirit ──────────────────────────────────────────────────────
+  {
+    perkName: 'Queen Bumblz Spirit',
+    condition: 'on summon (Monk)',
+    getBaseDamage: () => 8,
+    hits: 9,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { magic: 0.5, holy: 0.5 },
+    scalingMode: 'fixed',
+    scalings: { magic: 1.0, holy: 1.0, summon: 1.0 },
+    procCoefficient: { type: 'hasCoeff', value: 1.0 },
+    note: 'Targets the closest enemy. Fires 9 times over 15 second. Cannot gain spiritual energy while this spirit is active. Does not count as a summon'
+  },
 ]

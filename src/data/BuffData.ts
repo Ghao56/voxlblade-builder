@@ -1212,6 +1212,16 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       sourceType: 'perk',
     },
   ],
+  'Queen Bumblz Spirit': () => [
+    {
+      buffName: 'Sticky',
+      potency: 0.1,
+      duration: 5,
+      condition: 'on Spirit Hit',
+      sourceName: 'Queen Bumblz Spirit',
+      sourceType: 'perk',
+    },
+  ],
 }
 
 const WEAPON_ART_BUFF_MAP: Record<string, GrantedBuff[]> = {
