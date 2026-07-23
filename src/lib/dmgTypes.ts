@@ -16,6 +16,7 @@ export const BADGE_CONFIG: Record<string, { color: string; label: string; title:
   'Venom Spitter': { color: '#a855f7', label: '✦ Venom Spitter', title: 'Venom Spitter: Finisher hits deal Hex damage + Damage Boost vs Poisoned' },
   'Cauterize': { color: '#fd5d00', label: '✦ Cauterize', title: 'Cauterize: Burn bursts as instant Fire (Singed) on any hit that can proc' },
   'Bombardier': { color: '#f97316', label: '✦ Bombardier', title: 'Bombardier: explosion on any hit · RNG chance · Cannot proc other effects' },
+  'Lifesteal': { color: '#4ade80', label: '✦ Lifesteal', title: 'Lifesteal: heal 0.5% of damage dealt per stack + 0.1 flat HP per stack' },
 }
 
 export interface ComputedType {

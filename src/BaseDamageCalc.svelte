@@ -22,9 +22,13 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     ARMOR_PEN_BRANCH_THRESHOLD,
     VENOM_EATER_HEAL_PER_STACK,
     SIPHONING_ROT_HEAL_PER_STACK,
+    LIFESTEAL_HEAL_PCT_PER_STACK,
+    LIFESTEAL_FLAT_HEAL_PER_STACK,
     CURSE_RIP_DIVISOR,
     BASE_CRIT_DMG_PCT,
   } from './lib/constants'
+
+  const _LIFESTEAL_EXCLUDED = new Set(['Barbed Flurry', 'Hex Ray', 'Ice Burst', 'Cauterize', 'Lightning Cloak'])
 
   export let perkDmgTypeBonuses: Record<string, number> = {}
   export let perkDmgTypeBonusesDoT: Record<string, number> = {}
@@ -138,6 +142,7 @@ export let cauterizeScalingMult: number = 1
   export let bloodThirstyStacks: number = 0
   export let lifeDrinkerAmt: number = 0
   export let siphoningRotAmt: number = 0
+  export let lifestealStacks: number = 0
   export let sunburnUniversalDmgMult: number = 1
   export let enemyHpFill: number = 100
   export let dotTicks: Array<{
@@ -833,6 +838,24 @@ export let cauterizeScalingMult: number = 1
           isHeal: true, isCritExempt: true, forceCrit: false,
           tag: 'Blood Thirsty',
         })
+      }
+    }
+
+    if (!isHeal && lifestealStacks > 0 && !_LIFESTEAL_EXCLUDED.has(hit.label ?? '')) {
+      const damageDealt = types.filter(t => !t.isHeal).reduce((s, t) => s + t.raw, 0)
+      if (damageDealt > 0) {
+        const healAmount = LIFESTEAL_HEAL_PCT_PER_STACK * lifestealStacks * damageDealt + LIFESTEAL_FLAT_HEAL_PER_STACK * lifestealStacks
+        if (healAmount > 0) {
+          types.push({
+            key: 'heal', label: 'Heal', color: '#4ade80',
+            typeBase: healAmount, scalingMult: 1, combatMult: 1,
+            applicableBoosts: [], weaponBoostMult: 1, typeDebuffMult: 1,
+            defMult: 1, enemyDefPct: 0,
+            raw: healAmount, critVal: healAmount,
+            isHeal: true, isCritExempt: true, forceCrit: false,
+            tag: 'Lifesteal',
+          })
+        }
       }
     }
 
