@@ -848,11 +848,17 @@ export let cauterizeScalingMult: number = 1
   $: _groupedPerks = (() => {
     const map = new Map<string, typeof perkHits>()
     for (const h of perkHits) {
-      const key = h.label ?? 'Perk'
+      const key = (h.label ?? 'Perk').replace(/ Heal$/, '')
       if (!map.has(key)) map.set(key, [])
       map.get(key)!.push(h)
     }
-    return [...map.entries()].map(([label, list]) => ({ label, list }))
+    return [...map.entries()].map(([label, list]) => {
+      if (list.length <= 1) return { label, list }
+      const base = list.find(h => !h.isHeal) ?? list[0]
+      const healTypes = list.filter(h => h.isHeal).flatMap(h => h.types)
+      const dmgTypes = list.filter(h => !h.isHeal).flatMap(h => h.types)
+      return { label, list: [{ ...base, types: [...dmgTypes, ...healTypes], isHeal: false }] }
+    })
   })()
   $: hitGroups = [
     { label: m1Label, list: m1Hits },
