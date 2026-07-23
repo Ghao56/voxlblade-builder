@@ -90,6 +90,11 @@ import {
   BOMBER_CHARGE_MISSING_HP_CAP,
   ROGUENT_SPIRIT_BASE_DMG,
   ROGUENT_SPIRIT_HITS,
+  DARK_HARVEST_BASE_DAMAGE,
+  DARK_HARVEST_DAMAGE_PER_STACK,
+  DARK_HARVEST_HP_GATE_THRESHOLD,
+  DARK_HARVEST_HEAL_PER_STACK,
+  DARK_HARVEST_COOLDOWN,
 } from '../lib/constants'
 
 export interface PerkDmgCtx {
@@ -182,6 +187,7 @@ export interface PerkDmgDef {
   procCoefficient?: ProcCoefficient
   note?: string
   hpGate?: HpGate
+  enemyHpGate?: HpGate
   secondaryEffects?: SecondaryEffect[]
   triggerChain?: TriggerChainEntry[]
   activeIf?: (ctx: { draconicRuneInfusion: string; draconicColor: string; selectedWeaponArt?: string }) => boolean
@@ -831,5 +837,26 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     scalings: { magic: 1.0, holy: 1.0, summon: 1.0 },
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
     note: 'Targets the closest enemy. Fires 9 times over 15 second. Cannot gain spiritual energy while this spirit is active. Does not count as a summon'
+  },
+  // ── Dark Harvest ──────────────────────────────────────────────────────
+  {
+    perkName: 'Dark Harvest',
+    condition: 'On hit vs enemy ≤50% HP',
+    getBaseDamage: ({ perkAmount }) => DARK_HARVEST_BASE_DAMAGE + DARK_HARVEST_DAMAGE_PER_STACK * perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { hex: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { hex: 1.0 },
+    guardbreak: true,
+    enemyHpGate: { hpThreshold: DARK_HARVEST_HP_GATE_THRESHOLD, aboveThreshold: false },
+    secondaryEffects: [
+      {
+        label: 'Heal',
+        getValue: ({ perkAmount }) => DARK_HARVEST_HEAL_PER_STACK * perkAmount,
+        format: v => `${v} HP`,
+        tone: 'utility',
+      },
+    ],
+    note: `Activates on the hit that brings the enemy below 50% HP. ${DARK_HARVEST_COOLDOWN}s cooldown per enemy. Cannot be procced by attacks without a proc coefficient. Healing counts as lifesteal.`,
   },
 ]

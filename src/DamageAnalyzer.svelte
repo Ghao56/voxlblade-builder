@@ -2113,7 +2113,7 @@ import {
       const halfActivations = hasHalfActivations || undefined
       const oncePerFinisher = isSpringblast ? false : (def.finisherOnly ? true : undefined)
 
-      const isActive = isHpGateActive(def.hpGate, _hpFillPct, perkAmount) && (!isSpringblast || _allActiveBuffs.some(b => b.buffName === 'Bounce')) && (!def.requiredBuff || _allActiveBuffs.some(b => b.buffName === def.requiredBuff))
+      const isActive = isHpGateActive(def.hpGate, _hpFillPct, perkAmount) && isHpGateActive(def.enemyHpGate, _enemyHpFillPct, perkAmount) && (!isSpringblast || _allActiveBuffs.some(b => b.buffName === 'Bounce')) && (!def.requiredBuff || _allActiveBuffs.some(b => b.buffName === def.requiredBuff))
 
       const secondaryEffects = (def.secondaryEffects ?? []).filter(se => !se.showIf || se.showIf({ draconicColor: _effDraconicColor })).map(se => {
         let raw = Math.round(se.getValue({ perkAmount, draconicColor: _effDraconicColor }) * 1000) / 1000
@@ -2459,33 +2459,56 @@ import {
       if (entry.isProcHit) continue 
       if (entry.perkName === 'Cauterize') continue 
 
-      // Check for heal effects from Draconic Blood abilities
-      if (entry.perkName === 'Draconic Blood') {
-         const _color = _effDraconicColor
-         const healSe = (PERK_DMG_DEFS.find(d => d.perkName === 'Draconic Blood' && d.label === entry.displayName)
-           ?.secondaryEffects ?? []).find(se =>
-             (_color === 'holy'  && se.label === 'Base Heal (Holy)') ||
-             (_color === 'water' && se.label === 'Base Heal (Water)')
-           )
-         
-         if (healSe) {
-           const baseHeal = healSe.getValue({ perkAmount: entry.perkAmount, draconicColor: _color })
-           const colorScaling = _computePerkScalingMult({ [_color]: 1.0 })
-           
-           result.push({
-             group: 'Rune',
-             index: result.length,
-             count: 1,
-             base: baseHeal,
-             scalingMult: colorScaling,
-             combatMult: _healFinalMultiplier,
-             isFinisher: false,
-             dmgTypes: { heal: 1.0 },
-             label: `${entry.displayName} Heal`,
-             isHeal: true,
-           })
-         }
-      }
+       // Check for heal effects from Draconic Blood abilities
+       if (entry.perkName === 'Draconic Blood') {
+          const _color = _effDraconicColor
+          const healSe = (PERK_DMG_DEFS.find(d => d.perkName === 'Draconic Blood' && d.label === entry.displayName)
+            ?.secondaryEffects ?? []).find(se =>
+              (_color === 'holy'  && se.label === 'Base Heal (Holy)') ||
+              (_color === 'water' && se.label === 'Base Heal (Water)')
+            )
+          
+          if (healSe) {
+            const baseHeal = healSe.getValue({ perkAmount: entry.perkAmount, draconicColor: _color })
+            const colorScaling = _computePerkScalingMult({ [_color]: 1.0 })
+            
+            result.push({
+              group: 'Rune',
+              index: result.length,
+              count: 1,
+              base: baseHeal,
+              scalingMult: colorScaling,
+              combatMult: _healFinalMultiplier,
+              isFinisher: false,
+              dmgTypes: { heal: 1.0 },
+              label: `${entry.displayName} Heal`,
+              isHeal: true,
+            })
+          }
+       }
+
+       // Check for heal secondary effects (e.g. Dark Harvest)
+       if (entry.perkName === 'Dark Harvest') {
+          const healSe = (PERK_DMG_DEFS.find(d => d.perkName === 'Dark Harvest')
+            ?.secondaryEffects ?? []).find(se => se.label === 'Heal')
+          
+          if (healSe) {
+            const baseHeal = healSe.getValue({ perkAmount: entry.perkAmount })
+            
+            result.push({
+              group: 'Perk',
+              index: result.length,
+              count: 1,
+              base: baseHeal,
+              scalingMult: 1,
+              combatMult: _healFinalMultiplier,
+              isFinisher: false,
+              dmgTypes: { heal: 1.0 },
+              label: 'Dark Harvest Heal',
+              isHeal: true,
+            })
+          }
+       }
 
       // Add damage if available
       if (entry.typedHits_m2.length === 0) continue

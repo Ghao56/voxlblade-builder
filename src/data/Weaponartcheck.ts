@@ -140,7 +140,7 @@ export function getUnmetReqs(
   if (req.weaponType?.length && !req.weaponType.some(t => weaponTypeMatches(t, finalWeaponType)))
     unmet.push(`Weapon: ${req.weaponType.join(' / ')}`)
   if (req.bothParts && !req.bothParts.every(p => p === bladeName || p === handleName))
-    unmet.push(`Cần cả: ${req.bothParts.join(' + ')}`)
+    unmet.push(`Requires both: ${req.bothParts.join(' + ')}`)
 
   const isScalingExempt = req.scalingExemptWeaponTypes?.some(t => weaponTypeMatches(t, finalWeaponType)) ?? false
   if (!isScalingExempt) {
