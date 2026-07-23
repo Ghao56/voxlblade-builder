@@ -1,5 +1,14 @@
 import type { WeaponArt, WeaponArtRequirement } from '../data/weaponArts'
 
+const WEAPON_TYPE_EQUIVALENTS: Record<string, string[]> = {
+  'Dual Kamas': ['Dagger'],
+}
+
+function weaponTypeMatches(required: string, actual: string): boolean {
+  if (required === actual) return true
+  return (WEAPON_TYPE_EQUIVALENTS[actual] ?? []).includes(required)
+}
+
 const SCALE_MAP: Record<string, string> = {
   physicalScaling: 'physical', magicScaling: 'magic',
   fireScaling: 'fire', waterScaling: 'water', earthScaling: 'earth',
@@ -105,10 +114,10 @@ export function checkWA(
   if (req.bothParts && !req.bothParts.every(p => p === bladeName || p === handleName)) return false
   if (!passesAtLeastOneScaling(req, scalings)) return false
 
-  const isScalingExempt = req.scalingExemptWeaponTypes?.includes(finalWeaponType) ?? false
+  const isScalingExempt = req.scalingExemptWeaponTypes?.some(t => weaponTypeMatches(t, finalWeaponType)) ?? false
   if (!isScalingExempt && !meetsScalingReqs(req, scalings)) return false
   if (!meetsStatReqs(req, stats)) return false
-  if (req.weaponType?.length && !req.weaponType.some(t => t === finalWeaponType)) return false
+  if (req.weaponType?.length && !req.weaponType.some(t => weaponTypeMatches(t, finalWeaponType))) return false
 
   return true
 }
@@ -128,12 +137,12 @@ export function getUnmetReqs(
   const unmet: string[] = []
 
   if (req.guild && !isMonk) unmet.push(`Guild: ${req.guild}`)
-  if (req.weaponType?.length && !req.weaponType.some(t => t === finalWeaponType))
+  if (req.weaponType?.length && !req.weaponType.some(t => weaponTypeMatches(t, finalWeaponType)))
     unmet.push(`Weapon: ${req.weaponType.join(' / ')}`)
   if (req.bothParts && !req.bothParts.every(p => p === bladeName || p === handleName))
     unmet.push(`Cần cả: ${req.bothParts.join(' + ')}`)
 
-  const isScalingExempt = req.scalingExemptWeaponTypes?.includes(finalWeaponType) ?? false
+  const isScalingExempt = req.scalingExemptWeaponTypes?.some(t => weaponTypeMatches(t, finalWeaponType)) ?? false
   if (!isScalingExempt) {
     unmet.push(...buildUnmetScalingReqs(req, scalings))
   }
