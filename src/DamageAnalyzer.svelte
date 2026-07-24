@@ -1718,18 +1718,15 @@ import {
       return apply(_applyDmgBonuses({ physical: 1 }, _waDmgTypeBonuses))
     }
     const dt = selectedWA.damageType
-    const addHex = (r: Record<string, number>) => _emotionalHexBonus > 0
-      ? { ...r, hex: Math.round(((r.hex ?? 0) + _emotionalHexBonus) * 10000) / 10000 }
-      : r
     
     if (!dt || dt === 'Same as weapon') {
-      return apply(_applyDmgBonuses(addHex(_weaponDmgTypes), _waOnlyBonuses))
+      return apply(_applyDmgBonuses(_weaponDmgTypes, _waOnlyBonuses))
     }
     
     if (dt.includes('Highest damage type')) {
       const entries = Object.entries(_weaponDmgTypesBase)
       if (entries.length === 0) {
-        return apply(_applyDmgBonuses(addHex(_weaponDmgTypes), _waOnlyBonuses))
+        return apply(_applyDmgBonuses(_weaponDmgTypes, _waOnlyBonuses))
       }
       const [highestKey] = entries.reduce((a, b) => {
         if (b[1] > a[1]) return b
@@ -1756,7 +1753,7 @@ import {
     if (Object.keys(types).length > 0) {
       return apply(_applyDmgBonuses(types, _waDmgTypeBonuses))
     } else {
-      return apply(_applyDmgBonuses(addHex({ ..._weaponDmgTypes }), _waOnlyBonuses))
+      return apply(_applyDmgBonuses(_weaponDmgTypes, _waOnlyBonuses))
     }
   })()
   
@@ -2963,11 +2960,11 @@ $: _groupedSelfDamageSources = (() => {
     waDebuffWarning={_waDebuffWarning}
   />
 
-  <!-- ══════════════════ TOP ROW: CRIT + APEN ══════════════════ -->
+  <!-- ══════════════════ TOP ROW: CRIT + ENV + APEN ══════════════════ -->
   <div class="da-top-row">
 
     <!-- Crit column -->
-    <div class="da-section da-section--crit">
+    <div class="da-section da-section--top da-section--crit">
       <div class="da-section-title"><CritIcon size={13}/> Crit Statistics</div>
       <div class="da-crit-grid">
 
@@ -2995,7 +2992,13 @@ $: _groupedSelfDamageSources = (() => {
 
         <div class="da-stat-card da-stat-card--critdmg">
           <div class="da-stat-label">Crit Damage Multiplier</div>
-          <div class="da-stat-val" style="color:#a78bfa">{fmtCritMult(_filteredCritDmgMult)}</div>
+          <div class="da-stat-val" style="color:#b58cff">{fmtCritMult(_filteredCritDmgMult)}</div>
+          <div class="da-critdmg-bar">
+            <div class="da-critdmg-track">
+              <div class="da-critdmg-fill" style="width:{Math.min(100, Math.max(0, ((_filteredCritDmgMult - 100) / 300) * 100))}%"></div>
+            </div>
+            <span class="da-critdmg-pct">{Math.round(_filteredCritDmgMult)}%</span>
+          </div>
           <div class="da-sources">
             {#each critDmgSources as s}
               <div class="da-source-row">
@@ -3011,47 +3014,64 @@ $: _groupedSelfDamageSources = (() => {
       </div>
     </div>
 
+    <!-- Environment column -->
+    <div class="da-section da-section--top da-section--env">
+      <div class="da-section-title"><i class="fa fa-globe"></i> Environment</div>
+      <div class="da-env-rows">
+        <div class="da-env-row">
+          <span class="da-env-label"><i class="fa fa-globe"></i> World</span>
+          <button
+            class="da-env-btn"
+            class:da-env-btn--dark={$build.inDarkness}
+            class:da-env-btn--sun={!$build.inDarkness}
+            on:click={() => {
+              environmentTouched = true
+              build.update(s => ({ ...s, inDarkness: !s.inDarkness }))
+            }}
+          >
+            {@html $build.inDarkness ? '<i class="fa fa-moon-o"></i> Darkness' : '<i class="fa fa-sun-o"></i> Sunlight'}
+          </button>
+        </div>
+        {#if _sunBlessedStacks > 0}
+          <div class="da-env-row">
+            <span class="da-env-label"><i class="fa fa-star"></i> Sun Blessed</span>
+            <button
+              class="da-env-btn da-env-btn--sun da-env-btn--locked"
+              disabled
+            >
+              <i class="fa fa-lock"></i> <i class="fa fa-sun-o"></i> Sunlight
+            </button>
+          </div>
+        {/if}
+      </div>
+    </div>
+
     <!-- Armor Pen column -->
     {#if ((stats as Record<string, number>).armorPenetration ?? 0) + _raceGlobalArmorPen > 0}
-      <div class="da-section da-section--apen">
+      {@const _apenVal = Math.round((((stats as Record<string, number>).armorPenetration ?? 0) + _raceGlobalArmorPen) * 100) / 100}
+      <div class="da-section da-section--top da-section--apen">
         <div class="da-section-title"><i class="fa fa-shield"></i> Armor Penetration</div>
         <div class="da-apen-inner">
-          <span class="da-apen-val">{Math.round((((stats as Record<string, number>).armorPenetration ?? 0) + _raceGlobalArmorPen) * 100) / 100}</span>
+          <span class="da-apen-val">{_apenVal}</span>
+          <span class="da-apen-sub">Flat Penetration</span>
+          <div class="da-sources">
+            {#if ((stats as Record<string, number>).armorPenetration ?? 0) > 0}
+              <div class="da-source-row">
+                <span class="da-source-name">Equipment</span>
+                <span class="da-source-val" style="color:#e5e5e5">{(stats as Record<string, number>).armorPenetration}</span>
+              </div>
+            {/if}
+            {#if _raceGlobalArmorPen > 0}
+              <div class="da-source-row">
+                <span class="da-source-name">Race Bonus</span>
+                <span class="da-source-val" style="color:#e5e5e5">{_raceGlobalArmorPen}</span>
+              </div>
+            {/if}
+          </div>
         </div>
       </div>
     {/if}
 
-  </div>
-
-  <div class="da-section da-env-section">
-    <div class="da-section-title"><i class="fa fa-globe"></i> Environment</div>
-    <div class="da-env-rows">
-      <div class="da-env-row">
-        <span class="da-env-label"><i class="fa fa-globe"></i> World</span>
-        <button
-          class="da-env-btn"
-          class:da-env-btn--dark={$build.inDarkness}
-          class:da-env-btn--sun={!$build.inDarkness}
-          on:click={() => {
-            environmentTouched = true
-            build.update(s => ({ ...s, inDarkness: !s.inDarkness }))
-          }}
-        >
-          {@html $build.inDarkness ? '<i class="fa fa-moon-o"></i> Darkness' : '<i class="fa fa-sun-o"></i> Sunlight'}
-        </button>
-      </div>
-      {#if _sunBlessedStacks > 0}
-        <div class="da-env-row">
-          <span class="da-env-label"><i class="fa fa-star"></i> Sun Blessed</span>
-          <button
-            class="da-env-btn da-env-btn--sun da-env-btn--locked"
-            disabled
-          >
-            <i class="fa fa-lock"></i> <i class="fa fa-sun-o"></i> Sunlight
-          </button>
-        </div>
-      {/if}
-    </div>
   </div>
 
 <!-- ══════════════════ COMBAT MULTIPLIERS ══════════════════ -->
@@ -5188,6 +5208,7 @@ $: _groupedSelfDamageSources = (() => {
     font-weight: 900;
     line-height: 1;
     font-family: 'Courier New', monospace;
+    font-variant-numeric: tabular-nums;
   }
   .da-sources {
     display: flex;
@@ -5308,36 +5329,103 @@ $: _groupedSelfDamageSources = (() => {
   text-decoration: line-through;
 }
 
-/* ── Top row: 2 columns ── */
+/* ── Top row: 3 columns ── */
 .da-top-row {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: stretch;
 }
-@media (max-width: 560px) {
+@media (max-width: 768px) {
   .da-top-row {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+  .da-top-row > .da-section--top {
+    flex: 1 1 100% !important;
+    min-width: 0;
   }
 }
 
-.da-section--apen {
-  border-color: rgba(229,229,229,.18);
-  background: linear-gradient(160deg, var(--surface, #141715) 60%, rgba(229,229,229,.03) 100%);
-  min-width: 130px;
-  height: 100%;
-  text-align: center;
+/* ── Top-row panel base ── */
+.da-section--top {
+  background: var(--surface, #141715);
+  border: 1px solid rgba(212,175,55,.1);
+  border-radius: 10px;
+  padding: 14px 16px;
+  box-shadow: none;
+  min-height: 0;
 }
+.da-section--top .da-section-title {
+  color: var(--ink-muted, #8a8d85);
+  letter-spacing: .18em;
+  border-bottom: 1px solid var(--border, rgba(255,255,255,.06));
+}
+
+.da-section--crit { flex: 2 1 300px; }
+.da-section--env  { flex: 1 1 200px; }
+.da-section--apen { flex: 0 1 160px; text-align: center; }
+
+/* ── Crit stat cards ── */
+.da-section--top .da-stat-card {
+  background: var(--surface2, #1a1d1b);
+  border-radius: 8px;
+  border: 1px solid var(--border, rgba(255,255,255,.06));
+  padding: 12px;
+}
+.da-section--top .da-stat-val {
+  font-size: 2rem;
+}
+
+/* ── Crit damage progress bar ── */
+.da-critdmg-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+.da-critdmg-track {
+  flex: 1;
+  height: 6px;
+  background: #1b2328;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.da-critdmg-fill {
+  height: 100%;
+  background: #6b4eff;
+  border-radius: 6px;
+  transition: width .3s ease;
+}
+.da-critdmg-pct {
+  font-size: .65rem;
+  font-weight: 700;
+  color: #b58cff;
+  white-space: nowrap;
+  font-family: 'Courier New', monospace;
+}
+
+/* ── Armor Penetration ── */
 .da-apen-inner {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
 }
 .da-apen-val {
-  font-size: 2rem;
-  font-weight: 900;
-  color: #e5e5e5;
+  font-size: 2.75rem;
+  font-weight: 700;
+  color: var(--ink, #e8e4da);
   font-family: 'Courier New', monospace;
   line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.da-apen-sub {
+  font-size: .62rem;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--ink-muted, #8a8d85);
 }
 
 /* ── Weapon Base Damage ── */
@@ -6735,8 +6823,11 @@ $: _groupedSelfDamageSources = (() => {
 .da-env-toggle--dark:hover {
   box-shadow: 0 0 14px rgba(67,56,202,.5) inset, 0 0 12px rgba(129,140,248,.35);
 }
-.da-env-section {
-  margin-bottom: 12px;
+.da-section--env .da-env-rows {
+  gap: 4px;
+}
+.da-section--env .da-env-row {
+  padding: 4px 0;
 }
 .da-env-rows {
   display: flex;

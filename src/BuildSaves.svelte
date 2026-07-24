@@ -13,6 +13,7 @@
     ENCH_MAP, ENCH_UNMAP,
     MAX_BUILD_SLOTS, CONFIRM_TIMEOUT_MS, STORAGE_KEY_SAVES, IMPORT_SUCCESS_DISPLAY_MS
   } from './lib/constants'
+  import { isMonkGuild } from './lib/engine/data/character'
 
   const STORAGE_KEY = STORAGE_KEY_SAVES
 
@@ -53,6 +54,135 @@
   let searchQuery = ''
   let sortBy: 'slot' | 'name' | 'date' = 'slot'
   let filteredSlots: { slot: SaveSlot; origIndex: number }[] = []
+  let draggingFrom: number | null = null
+  let dragOverIdx: number | null = null
+
+  // Touch drag state
+  let touchDragging = false
+  let touchStartIdx: number | null = null
+  let touchGhostEl: HTMLDivElement | null = null
+  let touchGhostSlotEl: HTMLDivElement | null = null
+  let touchStartY = 0
+  let touchMoved = false
+  const TOUCH_DRAG_THRESHOLD = 8
+
+  $: canDrag = sortBy === 'slot' && !searchQuery.trim()
+
+  function moveSlot(fromIdx: number, toIdx: number) {
+    if (fromIdx === toIdx) return
+    const [moved] = slots.splice(fromIdx, 1)
+    slots.splice(toIdx, 0, moved)
+    slots = [...slots]
+    persistSlots(slots)
+  }
+
+  function handleDragStart(e: DragEvent, idx: number) {
+    if (!canDrag) return
+    draggingFrom = idx
+    if (e.dataTransfer) {
+      e.dataTransfer.effectAllowed = 'move'
+      e.dataTransfer.setData('text/plain', String(idx))
+    }
+  }
+
+  function handleDragOver(e: DragEvent, idx: number) {
+    if (draggingFrom === null || draggingFrom === idx) return
+    e.preventDefault()
+    if (e.dataTransfer) e.dataTransfer.dropEffect = 'move'
+    dragOverIdx = idx
+  }
+
+  function handleDragLeave(idx: number) {
+    if (dragOverIdx === idx) dragOverIdx = null
+  }
+
+  function handleDrop(e: DragEvent, idx: number) {
+    e.preventDefault()
+    if (draggingFrom !== null && draggingFrom !== idx) {
+      moveSlot(draggingFrom, idx)
+    }
+    draggingFrom = null
+    dragOverIdx = null
+  }
+
+  function handleDragEnd() {
+    draggingFrom = null
+    dragOverIdx = null
+  }
+
+  function touchHitTest(y: number): number | null {
+    const listEl = document.querySelector('.saves-list')
+    if (!listEl) return null
+    const slotEls = listEl.querySelectorAll('.save-slot')
+    for (const el of slotEls) {
+      const r = el.getBoundingClientRect()
+      if (y >= r.top && y <= r.bottom) {
+        return Number(el.getAttribute('data-slot-idx'))
+      }
+    }
+    return null
+  }
+
+  function handleTouchStart(e: TouchEvent, idx: number) {
+    if (!canDrag) return
+    const touch = e.touches[0]
+    touchStartIdx = idx
+    touchStartY = touch.clientY
+    touchMoved = false
+  }
+
+  function handleTouchMove(e: TouchEvent) {
+    if (touchStartIdx === null) return
+    const touch = e.touches[0]
+    const dy = Math.abs(touch.clientY - touchStartY)
+    if (!touchMoved && dy < TOUCH_DRAG_THRESHOLD) return
+
+    if (!touchMoved) {
+      touchMoved = true
+      touchDragging = true
+      draggingFrom = touchStartIdx
+
+      const slotEl = (e.currentTarget as HTMLElement).closest('.save-slot') as HTMLDivElement | null
+      if (slotEl) {
+        touchGhostSlotEl = slotEl
+        slotEl.classList.add('dragging-source')
+
+        touchGhostEl = document.createElement('div')
+        touchGhostEl.className = 'touch-drag-ghost'
+        touchGhostEl.textContent = slots[touchStartIdx]?.name ?? `Build ${touchStartIdx + 1}`
+        document.body.appendChild(touchGhostEl)
+      }
+    }
+
+    if (touchGhostEl) {
+      touchGhostEl.style.left = '16px'
+      touchGhostEl.style.top = `${touch.clientY - 20}px`
+    }
+
+    const hitIdx = touchHitTest(touch.clientY)
+    dragOverIdx = hitIdx !== null && hitIdx !== touchStartIdx ? hitIdx : null
+
+    e.preventDefault()
+  }
+
+  function handleTouchEnd() {
+    if (touchDragging && touchStartIdx !== null && dragOverIdx !== null && dragOverIdx !== touchStartIdx) {
+      moveSlot(touchStartIdx, dragOverIdx)
+    }
+    if (touchGhostSlotEl) {
+      touchGhostSlotEl.classList.remove('dragging-source')
+      touchGhostSlotEl = null
+    }
+    if (touchGhostEl) {
+      touchGhostEl.remove()
+      touchGhostEl = null
+    }
+    touchDragging = false
+    touchStartIdx = null
+    draggingFrom = null
+    dragOverIdx = null
+    touchMoved = false
+  }
 
   $: {
     let indexed = slots.map((s, i) => ({ slot: s, origIndex: i }))
@@ -182,8 +312,11 @@
     const parts: string[] = []
     if (state.race) parts.push(state.race)
     if (state.guild) parts.push(`${state.guild} R${state.guildRank}`)
-    if (state.monkGlove || state.monkEssence) parts.push(`Monk: ${state.monkGlove} + ${state.monkEssence}`)
-    else if (state.weaponBlade && state.weaponHandle) parts.push(`${state.weaponBlade} + ${state.weaponHandle}`)
+    if (isMonkGuild(state.guild)) {
+      if (state.monkGlove || state.monkEssence) parts.push(`Monk: ${state.monkGlove || 'No glove'} + ${state.monkEssence || 'No essence'}`)
+    } else if (state.weaponBlade || state.weaponHandle) {
+      parts.push(`${state.weaponBlade || 'No blade'} + ${state.weaponHandle || 'No handle'}`)
+    }
     if (state.selectedWeaponArt) parts.push(`WA: ${state.selectedWeaponArt}`)
     
     return parts.join(' · ') || 'Empty build'
@@ -404,7 +537,7 @@
   }
 </script>
 
-<div class="saves-wrapper"><button class="saves-toggle" on:click={() => open = !open}>
+<div class="saves-wrapper"><button class="saves-toggle" onclick={() => open = !open}>
   <svg class="saves-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
     <rect x="5" y="2" width="6" height="5" rx="1" fill="currentColor" opacity="0.5"/>
@@ -417,13 +550,13 @@
 
 {#if open}
   <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-  <div class="saves-backdrop" transition:fade={{ duration: 150 }} on:click={() => open = false}></div>
+  <div class="saves-backdrop" transition:fade={{ duration: 150 }} onclick={() => open = false}></div>
   <div class="saves-panel" transition:fly={{ y: -8, duration: 200 }}>
     <div class="saves-header">
       <div class="drag-handle" aria-hidden="true"></div>
       <span class="saves-title">Saved Builds</span>
       <span class="saves-hint">Click load/delete twice to confirm</span>
-      <button class="saves-close" on:click={() => open = false} aria-label="Close saves panel"><i class="fa fa-times"></i></button>
+      <button class="saves-close" onclick={() => open = false} aria-label="Close saves panel"><i class="fa fa-times"></i></button>
     </div>
     <div class="saves-toolbar">
       <div class="search-wrap">
@@ -435,15 +568,18 @@
           bind:value={searchQuery}
         />
         {#if searchQuery}
-          <button class="search-clear" on:click={() => searchQuery = ''} aria-label="Clear search"><i class="fa fa-times"></i></button>
+          <button class="search-clear" onclick={() => searchQuery = ''} aria-label="Clear search"><i class="fa fa-times"></i></button>
         {/if}
       </div>
       <div class="sort-group">
-        <button class="sort-btn" class:active={sortBy === 'slot'} on:click={() => sortBy = 'slot'} title="Sort by slot"><i class="fa fa-list-ol"></i></button>
-        <button class="sort-btn" class:active={sortBy === 'name'} on:click={() => sortBy = 'name'} title="Sort by name"><i class="fa fa-font"></i></button>
-        <button class="sort-btn" class:active={sortBy === 'date'} on:click={() => sortBy = 'date'} title="Sort by date"><i class="fa fa-calendar"></i></button>
+        <button class="sort-btn" class:active={sortBy === 'slot'} onclick={() => sortBy = 'slot'} title="Sort by slot"><i class="fa fa-list-ol"></i></button>
+        <button class="sort-btn" class:active={sortBy === 'name'} onclick={() => sortBy = 'name'} title="Sort by name"><i class="fa fa-font"></i></button>
+        <button class="sort-btn" class:active={sortBy === 'date'} onclick={() => sortBy = 'date'} title="Sort by date"><i class="fa fa-calendar"></i></button>
       </div>
     </div>
+    {#if !canDrag}
+      <div class="drag-disabled-hint">Reorder disabled while sorted or filtered</div>
+    {/if}
     <div class="saves-list">
       {#if filteredSlots.length === 0}
         <div class="saves-empty">
@@ -457,8 +593,29 @@
         </div>
       {/if}
       {#each filteredSlots as { slot, origIndex: i } (i)}
-        <div class="save-slot filled">
+        <!-- svelte-ignore a11y_no_static_element_interactions -->
+        <div
+          class="save-slot filled"
+          class:drag-over={dragOverIdx === i}
+          class:dragging-source={draggingFrom === i}
+          draggable={canDrag}
+          data-slot-idx={i}
+          ondragstart={(e) => handleDragStart(e, i)}
+          ondragover={(e) => handleDragOver(e, i)}
+          ondragleave={() => handleDragLeave(i)}
+          ondrop={(e) => handleDrop(e, i)}
+          ondragend={handleDragEnd}
+        >
           <div class="slot-left">
+            {#if canDrag}
+              <div class="slot-drag-handle" aria-hidden="true"
+                ontouchstart={(e) => handleTouchStart(e, i)}
+                ontouchmove={(e) => handleTouchMove(e)}
+                ontouchend={handleTouchEnd}
+                ontouchcancel={handleTouchEnd}>
+                <i class="fa fa-grip-vertical"></i>
+              </div>
+            {/if}
             <div class="slot-num">{i + 1}</div>
             <div class="slot-info">
               {#if editingIndex === i}
@@ -468,16 +625,17 @@
                   class="name-input" 
                   bind:value={editingName} 
                   use:focusOnMount
-                  on:blur={() => confirmEdit(i)}
-                  on:keydown={e => { 
+                  onblur={() => confirmEdit(i)}
+                  onkeydown={e => { 
                     if (e.key === 'Enter') confirmEdit(i);
                     if (e.key === 'Escape') editingIndex = null 
                   }} 
                 />
               {:else}
-                <button class="slot-name" on:click={() => startEdit(i)} aria-label="Rename build {slot.name}">
+                <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+                <span class="slot-name" role="button" tabindex="0" onclick={() => startEdit(i)} onkeydown={e => { if (e.key === 'Enter' || e.key === ' ') startEdit(i) }} aria-label="Rename build {slot.name}">
                   {slot.name}<span class="edit-icon" aria-hidden="true"><i class="fa fa-pencil"></i></span>
-                </button>
+                </span>
               {/if}
               <div class="slot-meta">
                 <span class="slot-time">{formatDate(slot.timestamp)}</span>
@@ -493,7 +651,7 @@
               {@html confirmLoad === i ? '<i class="fa fa-check"></i> Sure?' : '<i class="fa fa-arrow-down"></i> Load'}
             </Button>
             <button class="btn btn-share" class:btn-share--active={exportingSlot === i}
-              on:click={() => exportSlot(i)} title="Export this build as code" aria-label="Export Slot {i+1}">
+              onclick={() => exportSlot(i)} title="Export this build as code" aria-label="Export Slot {i+1}">
               <i class="fa fa-upload"></i>
             </button>
             <Button variant={confirmDelete === i ? 'warning' : 'negative'} size="sm" onclick={() => deleteSlot(i)} disabled={false}>
@@ -502,7 +660,7 @@
           </div>
         </div>
       {/each}
-      <button class="add-slot-btn" on:click={() => saveBuild(slots.length)}>
+      <button class="add-slot-btn" onclick={() => saveBuild(slots.length)}>
         <i class="fa fa-plus"></i> Save Current Build
       </button>
     </div>
@@ -510,12 +668,12 @@
     <div class="share-section">
       <div class="share-row">
         <span class="export-label">Current build:</span>
-        <button class="btn btn-share" class:btn-share--active={currentExportCode === '...'} on:click={exportCurrent}><i class="fa fa-upload"></i> Export</button>
+        <button class="btn btn-share" class:btn-share--active={currentExportCode === '...'} onclick={exportCurrent}><i class="fa fa-upload"></i> Export</button>
         {#if currentExportCode && currentExportCode !== '...'}
           <label for="current-build-code" class="sr-only">Current Build Code</label>
           <input id="current-build-code" class="share-code" value={currentExportCode} readonly
-            on:click={e => (e.target as HTMLInputElement).select()} />
-          <button class="btn btn-copy" on:click={() => navigator.clipboard.writeText(currentExportCode)}>Copy</button>
+            onclick={e => (e.target as HTMLInputElement).select()} />
+          <button class="btn btn-copy" onclick={() => navigator.clipboard.writeText(currentExportCode)}>Copy</button>
         {/if}
       </div>
 
@@ -524,15 +682,15 @@
           <span class="export-label">Slot {exportingSlot + 1} code:</span>
           <label for="slot-build-code" class="sr-only">Slot {exportingSlot + 1} Code</label>
           <input id="slot-build-code" class="share-code" value={shareCode} readonly
-            on:click={e => (e.target as HTMLInputElement).select()} />
-          <button class="btn btn-copy" on:click={copyCode}>Copy</button>
+            onclick={e => (e.target as HTMLInputElement).select()} />
+          <button class="btn btn-copy" onclick={copyCode}>Copy</button>
         </div>
       {/if}
 
       <div class="import-row">
         <label for="import-build-code" class="sr-only">Paste Build Code</label>
         <input id="import-build-code" class="share-code" bind:value={importCode} placeholder="Paste build code here…" />
-        <button class="btn btn-paste" on:click={async () => { try { importCode = await navigator.clipboard.readText() } catch {} }} title="Paste from clipboard"><i class="fa fa-clipboard"></i> Paste</button>
+        <button class="btn btn-paste" onclick={async () => { try { importCode = await navigator.clipboard.readText() } catch {} }} title="Paste from clipboard"><i class="fa fa-clipboard"></i> Paste</button>
         <Button variant="info" size="sm" onclick={importBuild}><i class="fa fa-download"></i> Import</Button>
       </div>
   {#if importError}<span class="import-err">{importError}</span>{/if}
@@ -622,6 +780,10 @@
   .saves-header{display:flex;align-items:baseline;justify-content:space-between;}
   .saves-title{font-size:.7rem;text-transform:uppercase;letter-spacing:.16em;font-weight:700;color:var(--accent);}
   .saves-hint{font-size:.62rem;color:var(--ink-muted);opacity:.5;font-style:italic;}
+  .drag-disabled-hint{
+    font-size:.6rem;color:var(--accent2);opacity:.6;font-style:italic;
+    padding:0 2px;line-height:1;
+  }
   .saves-toolbar{display:flex;gap:6px;align-items:center;}
   .search-wrap{flex:1;position:relative;display:flex;align-items:center;}
   .search-icon{position:absolute;left:8px;font-size:.7rem;pointer-events:none;opacity:.4;color:var(--ink-muted);}
@@ -670,10 +832,31 @@
     background:var(--surface2);border:1px solid var(--border);
     transition: border-color var(--duration-fast) var(--ease-out),
                 background var(--duration-fast) var(--ease-out),
-                box-shadow var(--duration-normal) var(--ease-out);
+                box-shadow var(--duration-normal) var(--ease-out),
+                transform .15s var(--ease-out),
+                opacity .15s var(--ease-out);
   }
   .save-slot.filled{border-color:rgba(74,222,128,.12);}
   .save-slot.filled:hover{border-color:rgba(74,222,128,.25);}
+  .save-slot[draggable="true"]{cursor:grab;}
+  .save-slot[draggable="true"]:active{cursor:grabbing;}
+  .save-slot.drag-over{
+    border-color:rgba(74,222,128,.6)!important;
+    box-shadow:0 0 0 2px rgba(74,222,128,.15);
+    background:rgba(74,222,128,.06);
+    transform:scale(1.01);
+  }
+  .save-slot.dragging-source{opacity:.35;pointer-events:none;transform:scale(.98);}
+  .slot-drag-handle{
+    display:flex;align-items:center;justify-content:center;
+    width:18px;flex-shrink:0;color:var(--ink-muted);opacity:.45;
+    cursor:grab;font-size:.72rem;transition:opacity .15s,background .15s;
+    user-select:none;-webkit-user-select:none;
+    border-radius:4px;padding:2px;
+    touch-action:none;-webkit-touch-callout:none;
+  }
+  .slot-drag-handle:hover{opacity:.85;background:rgba(255,255,255,.06);}
+  .slot-drag-handle:active{cursor:grabbing;}
   .slot-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0;}
   .slot-num{
     width:22px;height:22px;border-radius:5px;flex-shrink:0;
@@ -684,9 +867,10 @@
   .slot-info{display:flex;flex-direction:column;gap:2px;min-width:0;}
   .slot-name{
     background:none;border:none;padding:0;font-size:.82rem;font-weight:700;
-    color:var(--ink);cursor:pointer;display:flex;align-items:center;gap:5px;
-    font-family:var(--font-body);text-align:left;
+    color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:5px;
+    font-family:var(--font-body);text-align:left;outline:none;width:fit-content;
   }
+  .slot-name:focus-visible{box-shadow:0 0 0 2px rgba(74,222,128,.4);border-radius:4px;}
   .slot-name:hover .edit-icon{opacity:.7;}
   .edit-icon{font-size:.6rem;color:var(--ink-muted);opacity:0;transition:opacity .15s;}
   .name-input{
@@ -802,4 +986,13 @@
     text-overflow: ellipsis; white-space: nowrap;
   }
   .dup-modal-actions { display: flex; justify-content: center; gap: 12px; }
+
+  :global(.touch-drag-ghost) {
+    position: fixed; z-index: 9999; pointer-events: none;
+    padding: 6px 14px; border-radius: 8px;
+    background: var(--surface); border: 1px solid rgba(74,222,128,.4);
+    box-shadow: 0 4px 16px rgba(0,0,0,.4);
+    font-size: .75rem; font-weight: 700; color: var(--ink);
+    white-space: nowrap; max-width: 260px; overflow: hidden; text-overflow: ellipsis;
+  }
 </style>
