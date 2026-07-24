@@ -57,6 +57,7 @@
     position: relative;
     max-height: 90vh;
     overflow-y: auto;
+    overflow-x: hidden;
     box-shadow:
       0 0 0 1px rgba(255,255,255,0.03),
       0 8px 40px rgba(0,0,0,0.5),

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { fly, fade } from 'svelte/transition'
+  import { fly } from 'svelte/transition'
   import { onMount, onDestroy } from 'svelte';
   import EmotionalTracker from './EmotionalTracker.svelte';
   import Modal from './lib/Modal.svelte'
@@ -28,7 +28,11 @@
     timeouts.forEach(clearTimeout);
     timeouts = [];
   }
-  onDestroy(clearAllTimeouts);
+  onDestroy(() => {
+    clearAllTimeouts();
+    document.removeEventListener('mousemove', handleMouseMove)
+    document.removeEventListener('mouseup', handleMouseUp)
+  });
 
   function loadSlots(): SaveSlot[] {
     try {
@@ -57,14 +61,72 @@
   let draggingFrom: number | null = null
   let dragOverIdx: number | null = null
 
+  // Mouse drag state
+  let mouseDragging = false
+  let mouseStartIdx: number | null = null
+  let mouseGhostEl: HTMLDivElement | null = null
+  let mouseStartY = 0
+  let mouseStartX = 0
+  let mouseMoved = false
+  let mouseGrabOffsetX = 0
+  let mouseGrabOffsetY = 0
+  const MOUSE_DRAG_THRESHOLD = 5
+
   // Touch drag state
   let touchDragging = false
   let touchStartIdx: number | null = null
   let touchGhostEl: HTMLDivElement | null = null
   let touchGhostSlotEl: HTMLDivElement | null = null
   let touchStartY = 0
+  let touchStartX = 0
   let touchMoved = false
   const TOUCH_DRAG_THRESHOLD = 8
+
+  // Auto-scroll during drag
+  let autoScrollRaf: number | null = null
+  let autoScrollY = 0
+
+  function startAutoScroll(clientY: number) {
+    stopAutoScroll()
+    const found = document.querySelector('.saves-list')
+    if (!found) return
+    const listEl = found
+    const EDGE_ZONE = 40
+    const MAX_SPEED = 8
+    autoScrollY = clientY
+
+    function tick() {
+      const rect = listEl.getBoundingClientRect()
+      const distFromTop = autoScrollY - rect.top
+      const distFromBottom = rect.bottom - autoScrollY
+      let speed = 0
+      if (distFromTop < 0) {
+        speed = -MAX_SPEED
+      } else if (distFromTop < EDGE_ZONE) {
+        speed = -MAX_SPEED * (1 - distFromTop / EDGE_ZONE)
+      } else if (distFromBottom < 0) {
+        speed = MAX_SPEED
+      } else if (distFromBottom < EDGE_ZONE) {
+        speed = MAX_SPEED * (1 - distFromBottom / EDGE_ZONE)
+      }
+      if (speed !== 0) {
+        listEl.scrollTop += speed
+      }
+      autoScrollRaf = requestAnimationFrame(tick)
+    }
+    autoScrollRaf = requestAnimationFrame(tick)
+  }
+
+  function updateAutoScrollY(clientY: number) {
+    autoScrollY = clientY
+  }
+
+  function stopAutoScroll() {
+    if (autoScrollRaf !== null) {
+      cancelAnimationFrame(autoScrollRaf)
+      autoScrollRaf = null
+    }
+  }
 
   $: canDrag = sortBy === 'slot' && !searchQuery.trim()
 
@@ -76,40 +138,89 @@
     persistSlots(slots)
   }
 
-  function handleDragStart(e: DragEvent, idx: number) {
+  function createGhostEl(name: string, sourceEl: HTMLElement): HTMLDivElement {
+    const ghost = sourceEl.cloneNode(true) as HTMLDivElement
+    ghost.className = 'save-slot filled drag-ghost'
+    ghost.style.position = 'fixed'
+    ghost.style.zIndex = '9999'
+    ghost.style.pointerEvents = 'none'
+    ghost.style.width = `${sourceEl.offsetWidth}px`
+    ghost.style.opacity = '1'
+    ghost.style.boxShadow = '0 12px 40px rgba(0,0,0,.6), 0 0 0 2px rgba(74,222,128,.5), 0 0 20px rgba(74,222,128,.15)'
+    ghost.style.border = '1px solid rgba(74,222,128,.5)'
+    ghost.style.background = 'var(--surface2)'
+    ghost.style.transition = 'transform 0.1s ease-out'
+    ghost.style.willChange = 'transform, left, top'
+    document.body.appendChild(ghost)
+    return ghost
+  }
+
+  function handleMouseDown(e: MouseEvent, idx: number) {
     if (!canDrag) return
-    draggingFrom = idx
-    if (e.dataTransfer) {
-      e.dataTransfer.effectAllowed = 'move'
-      e.dataTransfer.setData('text/plain', String(idx))
+    if (e.button !== 0) return
+    mouseStartIdx = idx
+    mouseStartY = e.clientY
+    mouseStartX = e.clientX
+    mouseMoved = false
+    const slotEl = document.querySelector(`.save-slot[data-slot-idx="${idx}"]`) as HTMLElement
+    if (slotEl) {
+      const rect = slotEl.getBoundingClientRect()
+      mouseGrabOffsetX = e.clientX - rect.left
+      mouseGrabOffsetY = e.clientY - rect.top
+    } else {
+      mouseGrabOffsetX = 0
+      mouseGrabOffsetY = 0
     }
+    document.addEventListener('mousemove', handleMouseMove)
+    document.addEventListener('mouseup', handleMouseUp)
   }
 
-  function handleDragOver(e: DragEvent, idx: number) {
-    if (draggingFrom === null || draggingFrom === idx) return
-    e.preventDefault()
-    if (e.dataTransfer) e.dataTransfer.dropEffect = 'move'
-    dragOverIdx = idx
-  }
+  function handleMouseMove(e: MouseEvent) {
+    if (mouseStartIdx === null) return
+    const dy = Math.abs(e.clientY - mouseStartY)
+    const dx = Math.abs(e.clientX - mouseStartX)
+    if (!mouseMoved && dy < MOUSE_DRAG_THRESHOLD && dx < MOUSE_DRAG_THRESHOLD) return
 
-  function handleDragLeave(idx: number, e: DragEvent) {
-    const related = e.relatedTarget as HTMLElement | null
-    if (related && (e.currentTarget as HTMLElement).contains(related)) return
-    if (dragOverIdx === idx) dragOverIdx = null
-  }
+    if (!mouseMoved) {
+      mouseMoved = true
+      mouseDragging = true
+      draggingFrom = mouseStartIdx
 
-  function handleDrop(e: DragEvent, idx: number) {
-    e.preventDefault()
-    if (draggingFrom !== null && draggingFrom !== idx) {
-      moveSlot(draggingFrom, idx)
+      const slotEl = document.querySelector(`.save-slot[data-slot-idx="${mouseStartIdx}"]`) as HTMLElement
+      if (slotEl) {
+        mouseGhostEl = createGhostEl(slots[mouseStartIdx]?.name ?? `Build ${mouseStartIdx + 1}`, slotEl)
+      }
+      startAutoScroll(e.clientY)
     }
+
+    if (mouseMoved && mouseGhostEl) {
+      mouseGhostEl.style.left = `${e.clientX - mouseGrabOffsetX}px`
+      mouseGhostEl.style.top = `${e.clientY - mouseGrabOffsetY}px`
+    }
+    updateAutoScrollY(e.clientY)
+
+    const hitIdx = touchHitTest(e.clientY)
+    dragOverIdx = hitIdx !== null && hitIdx !== mouseStartIdx ? hitIdx : null
+
+    e.preventDefault()
+  }
+
+  function handleMouseUp() {
+    document.removeEventListener('mousemove', handleMouseMove)
+    document.removeEventListener('mouseup', handleMouseUp)
+    stopAutoScroll()
+    if (mouseDragging && mouseStartIdx !== null && dragOverIdx !== null && dragOverIdx !== mouseStartIdx) {
+      moveSlot(mouseStartIdx, dragOverIdx)
+    }
+    if (mouseGhostEl) {
+      mouseGhostEl.remove()
+      mouseGhostEl = null
+    }
+    mouseDragging = false
+    mouseStartIdx = null
     draggingFrom = null
     dragOverIdx = null
-  }
-
-  function handleDragEnd() {
-    draggingFrom = null
-    dragOverIdx = null
+    mouseMoved = false
   }
 
   function touchHitTest(y: number): number | null {
@@ -130,36 +241,54 @@
     const touch = e.touches[0]
     touchStartIdx = idx
     touchStartY = touch.clientY
+    touchStartX = touch.clientX
     touchMoved = false
+    document.addEventListener('touchmove', handleTouchMove, { passive: false })
+    document.addEventListener('touchend', handleTouchEnd)
+    document.addEventListener('touchcancel', handleTouchEnd)
   }
 
   function handleTouchMove(e: TouchEvent) {
     if (touchStartIdx === null) return
     const touch = e.touches[0]
     const dy = Math.abs(touch.clientY - touchStartY)
-    if (!touchMoved && dy < TOUCH_DRAG_THRESHOLD) return
+    const dx = Math.abs(touch.clientX - touchStartX)
+    if (!touchMoved && dy < TOUCH_DRAG_THRESHOLD && dx < TOUCH_DRAG_THRESHOLD) return
 
     if (!touchMoved) {
       touchMoved = true
       touchDragging = true
       draggingFrom = touchStartIdx
 
-      const slotEl = (e.currentTarget as HTMLElement).closest('.save-slot') as HTMLDivElement | null
+      const slotEl = document.querySelector(`.save-slot[data-slot-idx="${touchStartIdx}"]`) as HTMLElement
       if (slotEl) {
-        touchGhostSlotEl = slotEl
+        touchGhostSlotEl = slotEl as HTMLDivElement
         slotEl.classList.add('dragging-source')
 
-        touchGhostEl = document.createElement('div')
-        touchGhostEl.className = 'touch-drag-ghost'
-        touchGhostEl.textContent = slots[touchStartIdx]?.name ?? `Build ${touchStartIdx + 1}`
-        document.body.appendChild(touchGhostEl)
+        const ghost = slotEl.cloneNode(true) as HTMLDivElement
+        ghost.className = 'save-slot filled drag-ghost'
+        ghost.style.position = 'fixed'
+        ghost.style.zIndex = '9999'
+        ghost.style.pointerEvents = 'none'
+        ghost.style.width = `${slotEl.offsetWidth}px`
+        ghost.style.opacity = '1'
+        ghost.style.boxShadow = '0 12px 40px rgba(0,0,0,.6), 0 0 0 2px rgba(74,222,128,.5), 0 0 20px rgba(74,222,128,.15)'
+        ghost.style.border = '1px solid rgba(74,222,128,.5)'
+        ghost.style.background = 'var(--surface2)'
+        touchGhostEl = ghost
+        document.body.appendChild(ghost)
+        startAutoScroll(touch.clientY)
       }
     }
 
     if (touchGhostEl) {
-      touchGhostEl.style.left = '16px'
-      touchGhostEl.style.top = `${touch.clientY - 20}px`
+      const rect = touchGhostSlotEl?.getBoundingClientRect()
+      const grabY = rect ? (touch.clientY - rect.top) : 20
+      const grabX = rect ? (touch.clientX - rect.left) : 0
+      touchGhostEl.style.left = `${touch.clientX - grabX}px`
+      touchGhostEl.style.top = `${touch.clientY - grabY}px`
     }
+    updateAutoScrollY(touch.clientY)
 
     const hitIdx = touchHitTest(touch.clientY)
     dragOverIdx = hitIdx !== null && hitIdx !== touchStartIdx ? hitIdx : null
@@ -168,6 +297,10 @@
   }
 
   function handleTouchEnd() {
+    document.removeEventListener('touchmove', handleTouchMove)
+    document.removeEventListener('touchend', handleTouchEnd)
+    document.removeEventListener('touchcancel', handleTouchEnd)
+    stopAutoScroll()
     if (touchDragging && touchStartIdx !== null && dragOverIdx !== null && dragOverIdx !== touchStartIdx) {
       moveSlot(touchStartIdx, dragOverIdx)
     }
@@ -539,20 +672,19 @@
   }
 </script>
 
-<div class="saves-wrapper"><button class="saves-toggle" onclick={() => open = !open}>
-  <svg class="saves-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
-    <rect x="5" y="2" width="6" height="5" rx="1" fill="currentColor" opacity="0.5"/>
-    <rect x="4" y="9" width="8" height="4" rx="1" fill="currentColor" opacity="0.6"/>
-  </svg>
-  <span class="lbl">Builds</span>
-  <span class="cnt">{slots.length} saved</span>
-  <span class="arr">{open ? '▲' : '▼'}</span>
-</button>
+<div class="saves-wrapper">
+  <button class="saves-toggle" onclick={() => open = !open}>
+    <svg class="saves-icon" width="13" height="13" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
+      <rect x="5" y="2" width="6" height="5" rx="1" fill="currentColor" opacity="0.5"/>
+      <rect x="4" y="9" width="8" height="4" rx="1" fill="currentColor" opacity="0.6"/>
+    </svg>
+    <span class="lbl">Builds</span>
+    <span class="cnt">{slots.length}</span>
+    <span class="arr"><i class="fa" class:fa-caret-down={open} class:fa-caret-right={!open}></i></span>
+  </button>
 
 {#if open}
-  <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-  <div class="saves-backdrop" transition:fade={{ duration: 150 }} onclick={() => open = false}></div>
   <div class="saves-panel" transition:fly={{ y: -8, duration: 200 }}>
     <div class="saves-header">
       <div class="drag-handle" aria-hidden="true"></div>
@@ -595,29 +727,17 @@
         </div>
       {/if}
       {#each filteredSlots as { slot, origIndex: i } (i)}
-        <!-- svelte-ignore a11y_no_static_element_interactions -->
         <div
           class="save-slot filled"
+          class:can-drag={canDrag}
           class:drag-over={dragOverIdx === i}
           class:dragging-source={draggingFrom === i}
-          draggable={canDrag}
           data-slot-idx={i}
-          ondragstart={(e) => handleDragStart(e, i)}
-          ondragover={(e) => handleDragOver(e, i)}
-          ondragleave={(e) => handleDragLeave(i, e)}
-          ondrop={(e) => handleDrop(e, i)}
-          ondragend={handleDragEnd}
+          onmousedown={(e) => handleMouseDown(e, i)}
         >
-          <div class="slot-left">
-            {#if canDrag}
-              <div class="slot-drag-handle" aria-hidden="true"
-                ontouchstart={(e) => handleTouchStart(e, i)}
-                ontouchmove={(e) => handleTouchMove(e)}
-                ontouchend={handleTouchEnd}
-                ontouchcancel={handleTouchEnd}>
-                <i class="fa fa-grip-vertical"></i>
-              </div>
-            {/if}
+          <div class="slot-left"
+            ontouchstart={canDrag ? (e) => handleTouchStart(e, i) : undefined}
+          >
             <div class="slot-num">{i + 1}</div>
             <div class="slot-info">
               {#if editingIndex === i}
@@ -770,15 +890,16 @@
     font-size:.78rem;font-weight:700;cursor:pointer;transition:all .15s;
   }
   .saves-toggle:hover{background:rgba(74,222,128,.14);border-color:rgba(74,222,128,.4);}
+  .arr{font-size:.6rem;opacity:.5;transition:transform .2s;}
   .lbl{letter-spacing:.08em;text-transform:uppercase;font-size:.72rem;}
   .cnt{font-size:.62rem;background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.25);border-radius:999px;padding:1px 6px;}
-  .arr{font-size:.6rem;opacity:.5;}
   .saves-wrapper{position:relative;}
   .saves-panel{
     position:absolute;top:calc(100% + 4px);left:0;z-index:var(--z-dropdown);
     background:var(--surface);border:1px solid rgba(74,222,128,.18);
-    border-radius:10px;padding:14px;min-width:420px;
+    border-radius:10px;padding:14px;min-width:420px;max-height:70vh;
     display:flex;flex-direction:column;gap:10px;
+    overflow:hidden;
   }
   .saves-header{display:flex;align-items:baseline;justify-content:space-between;}
   .saves-title{font-size:.7rem;text-transform:uppercase;letter-spacing:.16em;font-weight:700;color:var(--accent);}
@@ -816,7 +937,8 @@
   }
   .empty-icon{font-size:1.2rem;}
   .saves-list{display:flex;flex-direction:column;gap:6px;max-height:420px;overflow-y:auto;
-    scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.08) transparent;}
+    scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.08) transparent;
+    user-select:none;-webkit-user-select:none;}
   .saves-list::-webkit-scrollbar{width:5px;}
   .saves-list::-webkit-scrollbar-track{background:transparent;}
   .saves-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:3px;}
@@ -836,36 +958,25 @@
     transition: border-color var(--duration-fast) var(--ease-out),
                 background var(--duration-fast) var(--ease-out),
                 box-shadow var(--duration-normal) var(--ease-out),
-                transform .15s var(--ease-out),
                 opacity .15s var(--ease-out);
   }
   .save-slot.filled{border-color:rgba(74,222,128,.12);}
   .save-slot.filled:hover{border-color:rgba(74,222,128,.25);}
-  .save-slot[draggable="true"]{cursor:grab;}
-  .save-slot[draggable="true"]:active{cursor:grabbing;}
-  .save-slot.drag-over{
+  .save-slot.can-drag{cursor:grab;}
+  .save-slot.can-drag:active{cursor:grabbing;}
+  .save-slot.drag-over {
     border-color:rgba(74,222,128,.6)!important;
     box-shadow:0 0 0 2px rgba(74,222,128,.15);
     background:rgba(74,222,128,.06);
-    transform:scale(1.01);
+    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
   }
-  .save-slot.dragging-source{opacity:.35;pointer-events:none;transform:scale(.98);}
-  .slot-drag-handle{
-    display:flex;align-items:center;justify-content:center;
-    width:18px;flex-shrink:0;color:var(--ink-muted);opacity:.45;
-    cursor:grab;font-size:.72rem;transition:opacity .15s,background .15s;
-    user-select:none;-webkit-user-select:none;
-    border-radius:4px;padding:2px;
-    touch-action:none;-webkit-touch-callout:none;
-  }
-  .slot-drag-handle:hover{opacity:.85;background:rgba(255,255,255,.06);}
-  .slot-drag-handle:active{cursor:grabbing;}
-  .slot-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0;}
+  .save-slot.dragging-source{opacity:.35;pointer-events:none;transform:scale(.98);transition:transform .2s ease,opacity .2s ease;}
+  .slot-left{display:flex;align-items:center;gap:6px;flex:1;min-width:0;}
   .slot-num{
-    width:22px;height:22px;border-radius:5px;flex-shrink:0;
+    width:30px;height:30px;border-radius:6px;flex-shrink:0;
     background:var(--surface3);border:1px solid var(--border);
     display:flex;align-items:center;justify-content:center;
-    font-size:.62rem;font-weight:800;color:var(--ink-muted);
+    font-size:.8rem;font-weight:800;color:var(--ink-muted);
   }
   .slot-info{display:flex;flex-direction:column;gap:2px;min-width:0;}
   .slot-name{
@@ -915,7 +1026,6 @@
   }
   .btn-paste:hover { background: rgba(251,191,36,.18); }
 
-  .saves-backdrop { display: none; }
   .drag-handle { display: none; }
   .saves-close {
     display:none; background:none; border:none; color:var(--ink-muted);
@@ -925,13 +1035,6 @@
   .saves-close:hover{background:var(--surface3);color:var(--ink);}
 
   @media (max-width:640px) {
-    .saves-backdrop {
-      display: block; position: fixed; inset: 0; z-index: var(--z-modal-backdrop);
-      background: rgba(0,0,0,.45);
-      animation: bdFadeIn .25s ease;
-    }
-    @keyframes bdFadeIn { from { opacity: 0; } to { opacity: 1; } }
-
     .saves-panel {
       position: fixed; left: 0; right: 0; bottom: 0; top: auto; z-index: var(--z-modal);
       border-radius: 14px 14px 0 0; min-width: unset; padding: 8px 16px 20px;
@@ -988,14 +1091,9 @@
     font-size: .82rem; color: var(--ink); overflow: hidden;
     text-overflow: ellipsis; white-space: nowrap;
   }
-  .dup-modal-actions { display: flex; justify-content: center; gap: 12px; }
+  .dup-modal-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
 
-  :global(.touch-drag-ghost) {
+  :global(.drag-ghost) {
     position: fixed; z-index: 9999; pointer-events: none;
-    padding: 6px 14px; border-radius: 8px;
-    background: var(--surface); border: 1px solid rgba(74,222,128,.4);
-    box-shadow: 0 4px 16px rgba(0,0,0,.4);
-    font-size: .75rem; font-weight: 700; color: var(--ink);
-    white-space: nowrap; max-width: 260px; overflow: hidden; text-overflow: ellipsis;
   }
 </style>
