@@ -890,15 +890,17 @@ export let cauterizeScalingMult: number = 1
 
     if (!isHeal && lifestealStacks > 0 && !_LIFESTEAL_EXCLUDED.has(hit.label ?? '')) {
       const damageDealt = types.filter(t => !t.isHeal).reduce((s, t) => s + t.raw, 0)
+      const critDamageDealt = types.filter(t => !t.isHeal).reduce((s, t) => s + t.critVal, 0)
       if (damageDealt > 0) {
         const healAmount = LIFESTEAL_HEAL_PCT_PER_STACK * lifestealStacks * damageDealt + LIFESTEAL_FLAT_HEAL_PER_STACK * lifestealStacks
+        const critHealAmount = LIFESTEAL_HEAL_PCT_PER_STACK * lifestealStacks * critDamageDealt + LIFESTEAL_FLAT_HEAL_PER_STACK * lifestealStacks
         if (healAmount > 0) {
           types.push({
             key: 'heal', label: 'Heal', color: '#4ade80',
             typeBase: healAmount, scalingMult: 1, combatMult: 1,
             applicableBoosts: [], weaponBoostMult: 1, typeDebuffMult: 1,
             defMult: 1, enemyDefPct: 0,
-            raw: healAmount, critVal: healAmount,
+            raw: healAmount, critVal: critHealAmount,
             isHeal: true, isCritExempt: true, forceCrit: false,
             tag: 'Lifesteal',
           })
@@ -1227,7 +1229,7 @@ export let cauterizeScalingMult: number = 1
                                 {#if (showCritValues && !t.isCritExempt) || t.forceCrit}
                                   <span class="bdc-crit-inline-icon"><CritIcon size={12} /></span>
                                 {/if}
-                                <span class="bdc-hit-type-val">{fmt(((showCritValues && !t.isCritExempt) || t.forceCrit) ? (t.hitCount ? t.critVal / t.hitCount : t.critVal) : (t.hitCount ? t.raw / t.hitCount : t.raw))}</span>
+                                <span class="bdc-hit-type-val">{fmt((showCritValues || t.forceCrit) ? (t.hitCount ? t.critVal / t.hitCount : t.critVal) : (t.hitCount ? t.raw / t.hitCount : t.raw))}</span>
                                 {#if t.hitCount && t.tag !== 'Blub'}
                                   <span class="bdc-hit-cnt">×{t.hitCount}</span>
                                 {/if}
@@ -1330,9 +1332,9 @@ export let cauterizeScalingMult: number = 1
                                 </div>
                               {/if}
                               <div class="bdc-fr-divider"></div>
-                              <div class="bdc-fr bdc-fr--result">
+                               <div class="bdc-fr bdc-fr--result">
                                 <span class="bdc-fr-label">{t.isHeal ? 'Final Heal' : 'Final Damage'}</span>
-                                <span class="bdc-fr-val bdc-fr-val--result" style="--tc:{t.color}">{fmt(t.raw)}</span>
+                                <span class="bdc-fr-val bdc-fr-val--result" style="--tc:{t.color}">{fmt((showCritValues || t.forceCrit) ? t.critVal : t.raw)}</span>
                               </div>
                               {#if (showCritValues && !t.isCritExempt) || t.forceCrit}
                                 <div class="bdc-fr">
@@ -1787,7 +1789,7 @@ export let cauterizeScalingMult: number = 1
     <div class="bdc-fr-divider"></div>
     <div class="bdc-fr bdc-fr--result">
       <span class="bdc-fr-label">{t.isHeal ? 'Final Heal' : 'Final Damage'}</span>
-      <span class="bdc-fr-val bdc-fr-val--result" style="--tc:{t.color}">{fmt(t.raw)}</span>
+      <span class="bdc-fr-val bdc-fr-val--result" style="--tc:{t.color}">{fmt((showCritValues || t.forceCrit) ? t.critVal : t.raw)}</span>
     </div>
     {#if (showCritValues && !t.isCritExempt) || t.forceCrit}
       <div class="bdc-fr">
