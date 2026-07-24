@@ -1,0 +1,28 @@
+{
+  "projectRoot": "C:\\Users\\Administrator\\Downloads\\voxlblade-builder",
+  "batchFiles": [
+    {
+      "path": "src/data/raceEffects.ts",
+      "language": "typescript",
+      "sizeLines": 49,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/Runebasedmg.ts",
+      "language": "typescript",
+      "sizeLines": 209,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/LevelBar.svelte",
+      "language": "svelte",
+      "sizeLines": 398,
+      "fileCategory": "code"
+    }
+  ],
+  "batchImportData": {
+    "src/data/raceEffects.ts": ["./Perkbasedmg", "./Perkbasedmg"],
+    "src/data/Runebasedmg.ts": ["../lib/types", "./HealBoost", "./SummonData", "../lib/constants/rune-base-damage"],
+    "src/LevelBar.svelte": ["./lib/store", "./lib/constants", "./lib/ui/Badge.svelte"]
+  }
+}

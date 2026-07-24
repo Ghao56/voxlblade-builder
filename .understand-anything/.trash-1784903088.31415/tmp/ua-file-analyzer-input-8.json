@@ -1,0 +1,14 @@
+{
+  "projectRoot": "C:\\Users\\Administrator\\Downloads\\voxlblade-builder",
+  "batchFiles": [
+    {
+      "path": "src/lib/store.ts",
+      "language": "typescript",
+      "sizeLines": 168,
+      "fileCategory": "code"
+    }
+  ],
+  "batchImportData": {
+    "src/lib/store.ts": ["./types", "./engine", "./constants"]
+  }
+}

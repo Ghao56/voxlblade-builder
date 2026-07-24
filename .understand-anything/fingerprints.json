@@ -1,155 +1,8 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "9433e2166ec482830369eb5f00b6c003152cc665",
-  "generatedAt": "2026-07-24T01:49:21.390Z",
+  "gitCommitHash": "38c34cbcb1d16f9aed558d0b08e533c1c9e8a3cb",
+  "generatedAt": "2026-07-24T07:24:33.193Z",
   "files": {
-    ".fallowrc.json": {
-      "filePath": ".fallowrc.json",
-      "contentHash": "d8a996b2c6b9386f790d1836bdc09ae6ae4031f1f312f6422c6fba5bff1afb24",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 57,
-      "hasStructuralAnalysis": true
-    },
-    ".gitignore": {
-      "filePath": ".gitignore",
-      "contentHash": "d50ab07e11fa4bf3b1c7c3312e1d7baeab56cca756832ccf40476823ad2a38b7",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 25,
-      "hasStructuralAnalysis": false
-    },
-    "AGENTS.md": {
-      "filePath": "AGENTS.md",
-      "contentHash": "3a4398aae2e08643414080f42bf870da0b3ce8ac50ffa1b3c120cf7d77067676",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 60,
-      "hasStructuralAnalysis": true
-    },
-    "decode_full.mjs": {
-      "filePath": "decode_full.mjs",
-      "contentHash": "a15fbee50ad9b9e23801d631b45532bae57fb6d8e5e797ecc45cb0d083fbf7a8",
-      "functions": [
-        {
-          "name": "getPerk",
-          "params": [
-            "name"
-          ],
-          "exported": false,
-          "lineCount": 1
-        },
-        {
-          "name": "getArmorPart",
-          "params": [
-            "name",
-            "type"
-          ],
-          "exported": false,
-          "lineCount": 1
-        },
-        {
-          "name": "applyUpgrade",
-          "params": [
-            "stats",
-            "level"
-          ],
-          "exported": false,
-          "lineCount": 13
-        },
-        {
-          "name": "applyEnchantmentsToSlot",
-          "params": [
-            "baseStats",
-            "basePerks",
-            "enchantNames",
-            "upgradeLevel"
-          ],
-          "exported": false,
-          "lineCount": 51
-        },
-        {
-          "name": "applyShrine",
-          "params": [
-            "stats",
-            "tier"
-          ],
-          "exported": false,
-          "lineCount": 8
-        },
-        {
-          "name": "applyInfusion",
-          "params": [
-            "baseStats",
-            "basePerks"
-          ],
-          "exported": false,
-          "lineCount": 5
-        },
-        {
-          "name": "addStats",
-          "params": [
-            "s"
-          ],
-          "exported": false,
-          "lineCount": 1
-        },
-        {
-          "name": "addPerkMap",
-          "params": [
-            "m"
-          ],
-          "exported": false,
-          "lineCount": 1
-        },
-        {
-          "name": "finalizePerks",
-          "params": [
-            "raw"
-          ],
-          "exported": false,
-          "lineCount": 21
-        }
-      ],
-      "classes": [],
-      "imports": [
-        {
-          "source": "fs",
-          "specifiers": [
-            "readFileSync"
-          ]
-        }
-      ],
-      "exports": [],
-      "totalLines": 264,
-      "hasStructuralAnalysis": true
-    },
-    "fallow-output.json": {
-      "filePath": "fallow-output.json",
-      "contentHash": "9f987a8d30786376a7e6862c91558b8fac7c6de68dae6e5d88589ebfaeafd28d",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 783,
-      "hasStructuralAnalysis": true
-    },
-    "fallow-security.json": {
-      "filePath": "fallow-security.json",
-      "contentHash": "6f562afbb7568ebae612ec3e88a4dcf5307a6882f0a04e6811e42707a1d0d45a",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 1392,
-      "hasStructuralAnalysis": true
-    },
     "index.html": {
       "filePath": "index.html",
       "contentHash": "d97cdaa1842e13e63fe9e64955eed9f686efb76cde49ce8f1ad75188c11c8d72",
@@ -158,225 +11,6 @@
       "imports": [],
       "exports": [],
       "totalLines": 15,
-      "hasStructuralAnalysis": false
-    },
-    "package-lock.json": {
-      "filePath": "package-lock.json",
-      "contentHash": "1cf389bdf1de54b3baec66a694d78ed9c70828c94ceb72d5a0fb095e1337c5cc",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 7353,
-      "hasStructuralAnalysis": true
-    },
-    "package.json": {
-      "filePath": "package.json",
-      "contentHash": "8e95308ab460a0218db23c5f079359b96a6c1dac147f8c1e216bf0aba909fff8",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 29,
-      "hasStructuralAnalysis": true
-    },
-    "pnpm-lock.yaml": {
-      "filePath": "pnpm-lock.yaml",
-      "contentHash": "5c651c5b442ec4a1c4ad5d40d161f467f365724800724375af32d02149049824",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 4797,
-      "hasStructuralAnalysis": true
-    },
-    "README.md": {
-      "filePath": "README.md",
-      "contentHash": "21ebe097ccd0515537e2b9f6cc8ee679dcfeeb8439e5a6cac996131976fef972",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 48,
-      "hasStructuralAnalysis": true
-    },
-    "ts-errors.txt": {
-      "filePath": "ts-errors.txt",
-      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 1,
-      "hasStructuralAnalysis": false
-    },
-    "tsconfig.app.json": {
-      "filePath": "tsconfig.app.json",
-      "contentHash": "06967167f399f17ca8f8c63d00f1f892b342edf8f6a4b8902a5ae0cefd99fa19",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 21,
-      "hasStructuralAnalysis": true
-    },
-    "tsconfig.json": {
-      "filePath": "tsconfig.json",
-      "contentHash": "b607a51c8c90040fd6c3dd9b12a0a72c089c9d19375b1c35c61b8f6f0927b9f0",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 3,
-      "hasStructuralAnalysis": true
-    },
-    "tsconfig.node.json": {
-      "filePath": "tsconfig.node.json",
-      "contentHash": "e0f1936992f77a707102795e8ea311ae74cb54de87b221bb32b44055af66ff7e",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 25,
-      "hasStructuralAnalysis": true
-    },
-    "vercel.json": {
-      "filePath": "vercel.json",
-      "contentHash": "0c020311d5fcb278016e2035e6dc7b7913debf897c54bb4fe617ef6f877d9295",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 34,
-      "hasStructuralAnalysis": true
-    },
-    "vite.config.ts": {
-      "filePath": "vite.config.ts",
-      "contentHash": "1e409a97c4debcb06e723ad3dca5583d27b3b2ae6c1290837769eb4b5f0df281",
-      "functions": [],
-      "classes": [],
-      "imports": [
-        {
-          "source": "vite",
-          "specifiers": [
-            "defineConfig"
-          ]
-        },
-        {
-          "source": "@sveltejs/vite-plugin-svelte",
-          "specifiers": [
-            "svelte"
-          ]
-        },
-        {
-          "source": "vite-plugin-pwa",
-          "specifiers": [
-            "VitePWA"
-          ]
-        }
-      ],
-      "exports": [],
-      "totalLines": 57,
-      "hasStructuralAnalysis": true
-    },
-    ".fallow/.gitignore": {
-      "filePath": ".fallow/.gitignore",
-      "contentHash": "cdbcae15105d6b781e620813c79c7e868740d4e9cc53ce6f5fcbbc12387adf4b",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 2,
-      "hasStructuralAnalysis": false
-    },
-    ".fallow/cache.bin": {
-      "filePath": ".fallow/cache.bin",
-      "contentHash": "a3d0fe9c3882147c8039d0be3cd12aa8fff5d885c84818af2f2eeec2343fa4d4",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 3151,
-      "hasStructuralAnalysis": false
-    },
-    ".fallow/churn.bin": {
-      "filePath": ".fallow/churn.bin",
-      "contentHash": "f135b75d94e2a3d43f58d6611ab6c68d45387915f256b74c7cb334d4f04a6403",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 52,
-      "hasStructuralAnalysis": false
-    },
-    ".fallow/graph-cache.bin": {
-      "filePath": ".fallow/graph-cache.bin",
-      "contentHash": "9765cfbc910db9bd42279b64b475cc00c206c2a83ec0f47de12e6d6a35107b88",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 282,
-      "hasStructuralAnalysis": false
-    },
-    ".github/workflows/static.yml": {
-      "filePath": ".github/workflows/static.yml",
-      "contentHash": "b2885dcaf88293064330f138bb99982625f33442195a525b52dd5c7f7565ba1b",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 54,
-      "hasStructuralAnalysis": true
-    },
-    ".slim/deepwork/ui-upgrade.md": {
-      "filePath": ".slim/deepwork/ui-upgrade.md",
-      "contentHash": "7c24a4c157fc97a84cf11ff2194c75d9994c49f728072f7241bc438eaf100df7",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 100,
-      "hasStructuralAnalysis": true
-    },
-    ".vscode/extensions.json": {
-      "filePath": ".vscode/extensions.json",
-      "contentHash": "6eb28f68b30b20686435f69fa4863acecc10e221661ce344e0a6052f51a91f0e",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 4,
-      "hasStructuralAnalysis": true
-    },
-    ".vscode/settings.json": {
-      "filePath": ".vscode/settings.json",
-      "contentHash": "cb96c2db6fa780737e7f7d92a78546731adb0dd49aa4a857bd03769a82ab02a8",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 3,
-      "hasStructuralAnalysis": true
-    },
-    "docs/ONBOARDING.md": {
-      "filePath": "docs/ONBOARDING.md",
-      "contentHash": "45cc139a5cb333d5603d04121d2d2e8606aea0ee00179ae48e107731ec0d32ed",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 406,
-      "hasStructuralAnalysis": true
-    },
-    "src/app.css": {
-      "filePath": "src/app.css",
-      "contentHash": "65735e5548e8e464dd8ea2748b27f2c6ba963a2f16aca506d22c94264bd85113",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 327,
       "hasStructuralAnalysis": false
     },
     "src/App.svelte": {
@@ -389,9 +23,42 @@
       "totalLines": 3979,
       "hasStructuralAnalysis": false
     },
+    "src/main.ts": {
+      "filePath": "src/main.ts",
+      "contentHash": "e890babfd165b423abc544730a8ce62a9f4ad0eeb0a02fb6d991413706d8aa12",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "svelte",
+          "specifiers": [
+            "mount"
+          ]
+        },
+        {
+          "source": "./App.svelte",
+          "specifiers": [
+            "App"
+          ]
+        },
+        {
+          "source": "./app.css",
+          "specifiers": []
+        },
+        {
+          "source": "@vercel/analytics",
+          "specifiers": [
+            "inject"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 8,
+      "hasStructuralAnalysis": true
+    },
     "src/BaseDamageCalc.svelte": {
       "filePath": "src/BaseDamageCalc.svelte",
-      "contentHash": "111cb725fa60fc8f436b54e17dc438f0df51cdbffdab75d5881c64d4bf891d14",
+      "contentHash": "e7c414a60c21743cbf799fcc7cb5e395c3e9fdd5768cd9324b1f9a59bc8eba4a",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -411,17 +78,17 @@
     },
     "src/BuildSaves.svelte": {
       "filePath": "src/BuildSaves.svelte",
-      "contentHash": "3fb61a5ed481eab65d7b2671c027ea8077e12efe99743910eaa61f9f576e0670",
+      "contentHash": "50f3ae797a882fb4bc63c704c6260238b9730aee4897422c7a27c3ef5e63bee3",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 757,
+      "totalLines": 998,
       "hasStructuralAnalysis": false
     },
     "src/CdrStepsCalc.svelte": {
       "filePath": "src/CdrStepsCalc.svelte",
-      "contentHash": "a38f19495a2d53caae3ca647153702e33ff74c192b8778555afa89a00c1d12bc",
+      "contentHash": "ed6e233a4e172ba829a8a9c706404c65ad3cf680bd893f46b4ece3a72c14e621",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -441,12 +108,12 @@
     },
     "src/DamageAnalyzer.svelte": {
       "filePath": "src/DamageAnalyzer.svelte",
-      "contentHash": "73b1a1a2c9153bf6c9d2add6f41f83ba50e84f7b54cc1dd99d95283d9a217bf5",
+      "contentHash": "7765406cea78baf04ebc9762cc9bd939344e2d183ce6bdf0aa2f9505749066ac",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 6856,
+      "totalLines": 7015,
       "hasStructuralAnalysis": false
     },
     "src/DidYouMean.svelte": {
@@ -509,39 +176,6 @@
       "totalLines": 398,
       "hasStructuralAnalysis": false
     },
-    "src/main.ts": {
-      "filePath": "src/main.ts",
-      "contentHash": "e890babfd165b423abc544730a8ce62a9f4ad0eeb0a02fb6d991413706d8aa12",
-      "functions": [],
-      "classes": [],
-      "imports": [
-        {
-          "source": "svelte",
-          "specifiers": [
-            "mount"
-          ]
-        },
-        {
-          "source": "./App.svelte",
-          "specifiers": [
-            "App"
-          ]
-        },
-        {
-          "source": "./app.css",
-          "specifiers": []
-        },
-        {
-          "source": "@vercel/analytics",
-          "specifiers": [
-            "inject"
-          ]
-        }
-      ],
-      "exports": [],
-      "totalLines": 8,
-      "hasStructuralAnalysis": true
-    },
     "src/ModalSearchHeader.svelte": {
       "filePath": "src/ModalSearchHeader.svelte",
       "contentHash": "aa29e907acdc7ac1182c9f9ba92c1ff62a7efe4cae2124667e3661972e4c61fb",
@@ -554,7 +188,7 @@
     },
     "src/MountIcon.svelte": {
       "filePath": "src/MountIcon.svelte",
-      "contentHash": "85a10099111796584c5d4bd5f6d1755c91102695bd632f2a6d5324c21e172ecf",
+      "contentHash": "79067fcdfee2692d37d7c90d0254b9de8c341a216949d15b8d83ee752111658a",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -743,7 +377,7 @@
     },
     "src/data/BuffData.ts": {
       "filePath": "src/data/BuffData.ts",
-      "contentHash": "4b476657ef7747b8b717c62821b194dd6f005c3f32746bd78990a0ea586ea77b",
+      "contentHash": "747c44cb3d6503e2fe39783f1c92bcb77e5fb6c410c4f52a7a83c0dc4a181ab5",
       "functions": [
         {
           "name": "formatDamageTypes",
@@ -1116,7 +750,7 @@
         "calcBuffEffect",
         "formatPerkDescription"
       ],
-      "totalLines": 1874,
+      "totalLines": 1889,
       "hasStructuralAnalysis": true
     },
     "src/data/cdr.ts": {
@@ -1252,7 +886,7 @@
     },
     "src/data/DoTDamage.ts": {
       "filePath": "src/data/DoTDamage.ts",
-      "contentHash": "55a6756c5ec215502a273759a063dae1f8c3358bf69a1ebce4938fc9504e7eb2",
+      "contentHash": "0ca32440788891452a948d73f4450ce460673e779c17a3242ec0e13dd1e938b2",
       "functions": [
         {
           "name": "getDotBase",
@@ -1564,7 +1198,7 @@
     },
     "src/data/enemyHpEffects.ts": {
       "filePath": "src/data/enemyHpEffects.ts",
-      "contentHash": "927b090e82b46f53b015dcb0d026459acd49be7df4e41b4069f3ecb01ac06130",
+      "contentHash": "0728d31d8f70a4b159639f894c27e91c12d5885616801136068a30f17822b663",
       "functions": [
         {
           "name": "isEnemyHpGateActive",
@@ -2014,7 +1648,7 @@
     },
     "src/data/procCoefficients.ts": {
       "filePath": "src/data/procCoefficients.ts",
-      "contentHash": "7b3a881c201a07a36c5506ebc22d26fb9490362c8c1efdc9e2e69009bd1b015a",
+      "contentHash": "86449947aa44b8f3a63f498d2d1cb1614de8f2d46f5d87620cbafe376b57a1f3",
       "functions": [],
       "classes": [],
       "imports": [
@@ -2038,7 +1672,7 @@
     },
     "src/data/raceEffects.ts": {
       "filePath": "src/data/raceEffects.ts",
-      "contentHash": "0cd7d3388764a6ba078a25bfd0ffd4e4a31fba85214c7ad885a34d934d8b6101",
+      "contentHash": "87e338a85df42fab3e33932269a6a15afb273faef102106807aafc500cb5975f",
       "functions": [
         {
           "name": "getActiveRaceEffect",
@@ -2058,7 +1692,7 @@
           ],
           "returnType": "T[]",
           "exported": true,
-          "lineCount": 9
+          "lineCount": 13
         },
         {
           "name": "calcOrkTenacityBonus",
@@ -2091,7 +1725,7 @@
         "getOrkTenacityBuffs",
         "calcOrkTenacityBonus"
       ],
-      "totalLines": 45,
+      "totalLines": 49,
       "hasStructuralAnalysis": true
     },
     "src/data/races.json": {
@@ -2116,7 +1750,7 @@
     },
     "src/data/Runebasedmg.ts": {
       "filePath": "src/data/Runebasedmg.ts",
-      "contentHash": "e64d0b5c776d1426ca62d5e2b27d30c6a4fe23bcecfde88e9205df82c8a3dcf2",
+      "contentHash": "a253568c3ec17594729ac3c26c07afd1d4a91af265895ad7ab3635fa27827301",
       "functions": [
         {
           "name": "calculateRuneHealScaling",
@@ -2188,7 +1822,7 @@
       "exports": [
         "RUNE_DMG_DEFS"
       ],
-      "totalLines": 201,
+      "totalLines": 210,
       "hasStructuralAnalysis": true
     },
     "src/data/runes.json": {
@@ -2232,7 +1866,7 @@
     },
     "src/data/stanceOverlays.ts": {
       "filePath": "src/data/stanceOverlays.ts",
-      "contentHash": "1b1cd566aaceadcca378b837f380595a1ee8b2275e421be4d6e32434dc017e58",
+      "contentHash": "d5244f05c8380fec9e747c86eb8b75a04a0f034d5fa4bc88a821f6252e469bb3",
       "functions": [
         {
           "name": "resolveStanceOverlay",
@@ -2646,7 +2280,7 @@
     },
     "src/lib/AppHeader.svelte": {
       "filePath": "src/lib/AppHeader.svelte",
-      "contentHash": "8c5cef8477d83940cb6e73604c2fd34bbde607bfe9e2f5673d76d5c798562d57",
+      "contentHash": "55c7a1ac54230bff22f6622438265c98e424a9c044e3fc2927ed4d39f6cec257",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2772,7 +2406,7 @@
     },
     "src/lib/damageTypeResolve.ts": {
       "filePath": "src/lib/damageTypeResolve.ts",
-      "contentHash": "763b7232612088e3f2cf1f1d00189d91dc37c55e508d889e9c58866a3b145f6e",
+      "contentHash": "b3c4ead4bb8edd239ee2ad5c4e1e33ed5bff53b5f111c8710d399cbe86bb2e82",
       "functions": [
         {
           "name": "resolveDamageTypes",
@@ -2992,7 +2626,7 @@
     },
     "src/lib/StatFilterShared.svelte": {
       "filePath": "src/lib/StatFilterShared.svelte",
-      "contentHash": "59e8363f82cac109a191e80ece7a27697974a477a8d82abb375bca19e647216f",
+      "contentHash": "701db34f08217c9ed852d493db5e9552b9b3b533f9ebb8377b3f583329dc61cf",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3002,7 +2636,7 @@
     },
     "src/lib/store.ts": {
       "filePath": "src/lib/store.ts",
-      "contentHash": "980919fbda029af5a5e6d8082b6eae4585bacad60ad1e9e32f7ed2bdeba7eea0",
+      "contentHash": "7a04c006743be49a522c85f63e9e789646eee92b933fd216ff74d4c8d3b67976",
       "functions": [
         {
           "name": "loadBuild",
@@ -3078,7 +2712,8 @@
           "source": "svelte/store",
           "specifiers": [
             "writable",
-            "derived"
+            "derived",
+            "get"
           ]
         },
         {
@@ -3110,6 +2745,7 @@
       ],
       "exports": [
         "build",
+        "effectiveDarknessOverride",
         "result",
         "setEnchantment",
         "swapEnchantments",
@@ -3119,12 +2755,12 @@
         "canArmorMoveToSlot",
         "swapRingWithInfusion"
       ],
-      "totalLines": 168,
+      "totalLines": 173,
       "hasStructuralAnalysis": true
     },
     "src/lib/Toast.svelte": {
       "filePath": "src/lib/Toast.svelte",
-      "contentHash": "48024628407aa8adeba1b86803a39ae6560840d4e45187434be2fa6b89988109",
+      "contentHash": "fdc9f974dfa32ccd4c8d775368bb2cef1518075d55ca28c3e337e1628079d366",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3183,7 +2819,7 @@
     },
     "src/lib/uiConstants.ts": {
       "filePath": "src/lib/uiConstants.ts",
-      "contentHash": "95350f3fb496e1b2d3339dd8ba1497c9fdbf31fbcd03fef5387e8ddb20bea5e6",
+      "contentHash": "0bb751d7b0f888fb661462423d07038cfbbfba9abb7ba28031a45af732b00971",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3357,7 +2993,7 @@
     },
     "src/lib/constants/buffs.ts": {
       "filePath": "src/lib/constants/buffs.ts",
-      "contentHash": "7ada4b74a890eaa26b46f42376523d6237493e1d3324a92517a5728ea9b61a7b",
+      "contentHash": "b49b46feb205a8302da514fd6f1141abe6220f1383605433353e2f1b756763a5",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3493,7 +3129,7 @@
     },
     "src/lib/constants/cdr.ts": {
       "filePath": "src/lib/constants/cdr.ts",
-      "contentHash": "fce4da83b20c52d5f05adfe277a6a2603b2af861f799d2ec97fb77501a30e128",
+      "contentHash": "a2f904d953024a9ce3f5ec8f59ec4eba5a6f5a5feff39492f9cb13339550f77c",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3517,7 +3153,7 @@
     },
     "src/lib/constants/damage-types.ts": {
       "filePath": "src/lib/constants/damage-types.ts",
-      "contentHash": "71f31712974cec7405fe2bb69e115943a13eaefcf04ae03cd1e4baa13f3d6be7",
+      "contentHash": "f81f97c0b3b58dc49320c439c2d9f86403fc2cb9fd1ac975989be0cb1ec8e76e",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3539,7 +3175,7 @@
     },
     "src/lib/constants/debuff-effects.ts": {
       "filePath": "src/lib/constants/debuff-effects.ts",
-      "contentHash": "4ea418273fb512f7ad0d181d3226c5b98f41c73fb517502b75e79a0f11fdc7a7",
+      "contentHash": "d307a2fecab2134302c07edc5bf5e1a480441b9d3ac625eccf4e2a4f49457c11",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3557,7 +3193,7 @@
     },
     "src/lib/constants/defensive.ts": {
       "filePath": "src/lib/constants/defensive.ts",
-      "contentHash": "aaa6d57a349240b5c816a42cc922521c124e1be9096e28b1ad9542df84e76dbe",
+      "contentHash": "976518b1ee699d062f3d7f9bba2a52cb08f4f2d26ae21a35820be3f1d471e8c4",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3586,7 +3222,7 @@
     },
     "src/lib/constants/dot-damage.ts": {
       "filePath": "src/lib/constants/dot-damage.ts",
-      "contentHash": "4ed853209427b9643e67562950d4c29415034bc79b41aabcc7dfa80161a0cd71",
+      "contentHash": "5323da4d58b80ca8b16e7604e7b4a3d462c0e26cb4af758c7e42c89da7132f11",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3611,7 +3247,7 @@
     },
     "src/lib/constants/draconic-colors.ts": {
       "filePath": "src/lib/constants/draconic-colors.ts",
-      "contentHash": "1b2e6b83623a0d71a9576f2156cdf999e5b0d22bfd52211d48e47a8259f663dc",
+      "contentHash": "d6efde4ce487f1e23a89fcedf646dcb62bcf1fddf851799fc2c1347cba19f8a5",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3634,7 +3270,7 @@
     },
     "src/lib/constants/draconic.ts": {
       "filePath": "src/lib/constants/draconic.ts",
-      "contentHash": "25dfd044b5f011636e617d83b5bc86fb1a1cdc06c374dcfd7b93f93cd6d3b061",
+      "contentHash": "af91f85f60c05f3cf5edca6406b9bce2db897d7ff73c6a3ffd5773e097745557",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3652,7 +3288,7 @@
     },
     "src/lib/constants/game.ts": {
       "filePath": "src/lib/constants/game.ts",
-      "contentHash": "5dcec7a84b53846572891fd1d1284547b92cdef30f7cb117c66b6b848b0c6a2a",
+      "contentHash": "21a721cf93c57c8519bf6c9c0be504ca526219d4a5fc70dd04d8ddc534501ede",
       "functions": [
         {
           "name": "calcBaseMaxHP",
@@ -3686,7 +3322,7 @@
     },
     "src/lib/constants/heals.ts": {
       "filePath": "src/lib/constants/heals.ts",
-      "contentHash": "cdd8e3c3d722035dae5c870a5904aec5a507519afa7e2c5747b59cb85e0e6c62",
+      "contentHash": "438ba180cd14c53eb64cdcd105a3af299a154725919484b2d10bbd43f39db25c",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3874,7 +3510,7 @@
     },
     "src/lib/constants/rune-base-damage.ts": {
       "filePath": "src/lib/constants/rune-base-damage.ts",
-      "contentHash": "5ead5902ed310529fd8fe7f1a22fd3a2de0a7ac3c9a4d2f240296d1715cad465",
+      "contentHash": "abf13ef3c3be6cecc9dc5394e308df5147ec7aa329afaa54b8cb9a82e5c4ba7c",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3914,7 +3550,7 @@
     },
     "src/lib/constants/stat-conversions.ts": {
       "filePath": "src/lib/constants/stat-conversions.ts",
-      "contentHash": "ceecb58878ca31c7a95ec50bbd6048cf809572386cde94f7a6fff41a56bc9e7b",
+      "contentHash": "a9405994837536618b5f1188a06f726cae49fcf669d2d150452d1bee91ea188e",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3979,7 +3615,7 @@
     },
     "src/lib/constants/thresholds.ts": {
       "filePath": "src/lib/constants/thresholds.ts",
-      "contentHash": "e6808bd6dacda684fafa64aff0c0eeaf38b910bc79171fe951908d92a3f0abba",
+      "contentHash": "641964b510bf927bc2c52b62d44bb3be504d6090f78fc18409bf8ae56dcf9800",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -4337,7 +3973,7 @@
     },
     "src/lib/engine/dmgTypeBonuses.ts": {
       "filePath": "src/lib/engine/dmgTypeBonuses.ts",
-      "contentHash": "b42f7ee451e577f520be2ef192b228a1dab82b50e18a31dc0a73fcc5f1a54369",
+      "contentHash": "e7a65f62d384ae0be0d861a98a56cc2b7300928c7b7d7edbc1fe5dd4a0dfd11d",
       "functions": [
         {
           "name": "buildDmgTypeBonuses",
@@ -5183,7 +4819,7 @@
     },
     "src/lib/modals/GuildModal.svelte": {
       "filePath": "src/lib/modals/GuildModal.svelte",
-      "contentHash": "eb594dfd7a93ad66309b1080b43f275065739423da06256d2754c8fb7e19d98f",
+      "contentHash": "1eceeb66abdbbbaf1c31964917989fcb43f412de2bee2b27c03a241fd4bbd9a8",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5193,7 +4829,7 @@
     },
     "src/lib/modals/index.ts": {
       "filePath": "src/lib/modals/index.ts",
-      "contentHash": "faef13c11c80c23affea85fa974d851e2808743897a1d4b31bd71b243841280b",
+      "contentHash": "3d990b2111d2f43f7475b10b510e8b58d58cf19b5d08b3eb2b5c96bf40e1cc7b",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5208,7 +4844,7 @@
     },
     "src/lib/modals/RaceModal.svelte": {
       "filePath": "src/lib/modals/RaceModal.svelte",
-      "contentHash": "e0d54bcf902fc132a5b36deba4439bd8c389a565993ca3789cea1d73f7cb25b5",
+      "contentHash": "86343a935ddc41bc1954ab1b4ebd7cbd710ea0b09db5bdf642cf415c4a8f21d0",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5310,7 +4946,7 @@
     },
     "src/lib/ui/Badge.svelte": {
       "filePath": "src/lib/ui/Badge.svelte",
-      "contentHash": "bc778df9d3fb6405fd8a3d0eba70d6d64e8172e56cd776d0c3feb5bf8d1e00ed",
+      "contentHash": "7694dee4588f4f5fb30513ac05b62595cd04e3594639fb390c4341f3651e9dcf",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5320,7 +4956,7 @@
     },
     "src/lib/ui/Button.svelte": {
       "filePath": "src/lib/ui/Button.svelte",
-      "contentHash": "426bfba88965430dc71b533da743ddbd16fb09df8106e008ccf596c54a4acf3c",
+      "contentHash": "8198470171f8719081f37c75008bb11a9c4dfd123aeec862d2a53346272a9f12",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5330,7 +4966,7 @@
     },
     "src/lib/ui/Card.svelte": {
       "filePath": "src/lib/ui/Card.svelte",
-      "contentHash": "88bf87adc8a0e06a0333a59e6d030a37f03a2fb2fb1f5ab789eeb42c59af4668",
+      "contentHash": "432794580332c77fa7aa15b51739a9a08fcdd3f465a97adf582c5f4fc5952a31",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5340,7 +4976,7 @@
     },
     "src/lib/ui/Divider.svelte": {
       "filePath": "src/lib/ui/Divider.svelte",
-      "contentHash": "ca7063c28fb28b4081b1890879501fbd5653d6a423d97d0bae00311d9f8db38b",
+      "contentHash": "8f34baf1c60f1e653cafd43cdfd9357dd6833a0f4ce8a1b8eb9180b545cddf10",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5350,7 +4986,7 @@
     },
     "src/lib/ui/index.ts": {
       "filePath": "src/lib/ui/index.ts",
-      "contentHash": "bee57675517b7561ab4d8f37a371f6b8ed1356b7de8ee15aa0b3039d126b412e",
+      "contentHash": "09b135f454842b4d57ecdbcc4abe514123267737f07c37c74cde4fec3af643ff",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5368,7 +5004,7 @@
     },
     "src/lib/ui/Panel.svelte": {
       "filePath": "src/lib/ui/Panel.svelte",
-      "contentHash": "94bcd36c78c3c15288add2890d003b1492aec24265260fe27a41580416bbe6dd",
+      "contentHash": "8da5b772aaafa5682d0bae981b36fb8ca05f037d2428ec92a2bbe4f8cb65413c",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5378,7 +5014,7 @@
     },
     "src/lib/ui/Section.svelte": {
       "filePath": "src/lib/ui/Section.svelte",
-      "contentHash": "e5b498c251d8d349d5d62728889345854836d801830c53870ca7c8438fe1f5bd",
+      "contentHash": "f8eac59a894ec30b788ab023ca13bbe184f2d56c7980a6fac41395667c65306c",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5388,7 +5024,7 @@
     },
     "src/lib/ui/Stat.svelte": {
       "filePath": "src/lib/ui/Stat.svelte",
-      "contentHash": "ecf7fa1cb4ee383ebf46db8a88ba15293d5a3f80eb0fc05ab0c930ad76000e34",
+      "contentHash": "3899437f48babd3ca1da0466434f26b44daef0918fd98439ad2b667261e734c8",
       "functions": [],
       "classes": [],
       "imports": [],

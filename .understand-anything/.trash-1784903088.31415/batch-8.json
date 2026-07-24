@@ -1,0 +1,206 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/lib/store.ts",
+      "type": "file",
+      "name": "store.ts",
+      "filePath": "src/lib/store.ts",
+      "summary": "Central Svelte store module for the build state: manages a writable BuildState with localStorage persistence (debounced save), a derived result store that computes damage via calcBuild, and exported mutation functions for enchantments, guild, armor slots, ring/infusion swaps, and build reset",
+      "tags": ["typescript", "svelte-store", "state-management", "persistence", "central-module"],
+      "complexity": "medium"
+    },
+    {
+      "id": "export:src/lib/store.ts:build",
+      "type": "export",
+      "name": "build",
+      "filePath": "src/lib/store.ts",
+      "summary": "Writable Svelte store holding the current BuildState, initialized from localStorage with fallback to DEFAULT_BUILD; auto-saves on every change with debounced localStorage writes",
+      "tags": ["svelte-store", "writable", "persistence"],
+      "complexity": "low"
+    },
+    {
+      "id": "export:src/lib/store.ts:effectiveDarknessOverride",
+      "type": "export",
+      "name": "effectiveDarknessOverride",
+      "filePath": "src/lib/store.ts",
+      "summary": "Writable store (boolean|null) that allows UI to override the build's inDarkness flag for the derived damage calculation",
+      "tags": ["svelte-store", "writable", "override"],
+      "complexity": "low"
+    },
+    {
+      "id": "export:src/lib/store.ts:result",
+      "type": "export",
+      "name": "result",
+      "filePath": "src/lib/store.ts",
+      "summary": "Derived Svelte store that combines build and effectiveDarknessOverride to compute full damage output via calcBuild, serving as the primary computed damage output for the entire app",
+      "tags": ["svelte-store", "derived", "damage-calculation"],
+      "complexity": "low"
+    },
+    {
+      "id": "export:src/lib/store.ts:setEnchantment",
+      "type": "export",
+      "name": "setEnchantment",
+      "filePath": "src/lib/store.ts",
+      "summary": "Updates a single enchantment value at a given slot and index within the build state, enforcing enchant slot rules via enforceEnchantSlot",
+      "tags": ["mutation", "enchantments"],
+      "complexity": "low"
+    },
+    {
+      "id": "export:src/lib/store.ts:swapEnchantments",
+      "type": "export",
+      "name": "swapEnchantments",
+      "filePath": "src/lib/store.ts",
+      "summary": "Swaps the full enchantment arrays between two armor slots (slotA and slotB) in the build state",
+      "tags": ["mutation", "enchantments", "swap"],
+      "complexity": "low"
+    },
+    {
+      "id": "export:src/lib/store.ts:clearBuild",
+      "type": "export",
+      "name": "clearBuild",
+      "filePath": "src/lib/store.ts",
+      "summary": "Resets the build store to the DEFAULT_BUILD constant, effectively clearing all user selections",
+      "tags": ["mutation", "reset"],
+      "complexity": "low"
+    },
+    {
+      "id": "export:src/lib/store.ts:setGuild",
+      "type": "export",
+      "name": "setGuild",
+      "filePath": "src/lib/store.ts",
+      "summary": "Sets the guild name and rank on the build; when guild is Draconic, forces race to DRAGON BLOODED and initializes draconic color defaults",
+      "tags": ["mutation", "guild", "draconic"],
+      "complexity": "low"
+    },
+    {
+      "id": "export:src/lib/store.ts:moveArmorSlot",
+      "type": "export",
+      "name": "moveArmorSlot",
+      "filePath": "src/lib/store.ts",
+      "summary": "Swaps an armor piece and its upgrade level between two armor slot keys (regular or infusion), validating armor compatibility with the target slot type before performing the swap",
+      "tags": ["mutation", "armor", "swap", "validation"],
+      "complexity": "medium"
+    },
+    {
+      "id": "export:src/lib/store.ts:canArmorMoveToSlot",
+      "type": "export",
+      "name": "canArmorMoveToSlot",
+      "filePath": "src/lib/store.ts",
+      "summary": "Predicate that checks whether a given armor name can be placed in a target armor slot by delegating to armorSupportsSlot with the slot type mapping",
+      "tags": ["validation", "armor", "predicate"],
+      "complexity": "low"
+    },
+    {
+      "id": "export:src/lib/store.ts:swapRingWithInfusion",
+      "type": "export",
+      "name": "swapRingWithInfusion",
+      "filePath": "src/lib/store.ts",
+      "summary": "Swaps the ring armor piece and infusion ring along with their respective upgrade levels in the build state",
+      "tags": ["mutation", "ring", "infusion", "swap"],
+      "complexity": "low"
+    },
+    {
+      "id": "function:src/lib/store.ts:loadBuild",
+      "type": "function",
+      "name": "loadBuild",
+      "filePath": "src/lib/store.ts",
+      "summary": "Internal function that reads the build state from localStorage (keyed by STORAGE_KEY_BUILD), parses it as Partial<BuildState>, and merges with DEFAULT_BUILD; returns DEFAULT_BUILD on any error or missing data",
+      "tags": ["persistence", "deserialization", "internal"],
+      "complexity": "low"
+    },
+    {
+      "id": "type:src/lib/store.ts:ArmorSlotKey",
+      "type": "type",
+      "name": "ArmorSlotKey",
+      "filePath": "src/lib/store.ts",
+      "summary": "Type alias: union of 'helmet' | 'chestplate' | 'leggings' representing the three standard armor slot keys",
+      "tags": ["type", "armor", "slot"],
+      "complexity": "low"
+    },
+    {
+      "id": "type:src/lib/store.ts:InfusionArmorSlotKey",
+      "type": "type",
+      "name": "InfusionArmorSlotKey",
+      "filePath": "src/lib/store.ts",
+      "summary": "Type alias: union of 'infusionHelmet' | 'infusionChestplate' | 'infusionLeggings' representing the three infusion armor slot keys",
+      "tags": ["type", "armor", "infusion", "slot"],
+      "complexity": "low"
+    },
+    {
+      "id": "type:src/lib/store.ts:AnyArmorSlotKey",
+      "type": "type",
+      "name": "AnyArmorSlotKey",
+      "filePath": "src/lib/store.ts",
+      "summary": "Union type of ArmorSlotKey | InfusionArmorSlotKey, representing any of the six armor-related slot keys in the build state",
+      "tags": ["type", "armor", "union"],
+      "complexity": "low"
+    },
+    {
+      "id": "constant:src/lib/store.ts:DEFAULT_BUILD",
+      "type": "constant",
+      "name": "DEFAULT_BUILD",
+      "filePath": "src/lib/store.ts",
+      "summary": "Internal constant defining the complete default BuildState with all fields initialized: default race from races[0], empty guild/enchantments/infusions, basic weapon parts, upgrade level 5, default constants, and empty cdrToggles",
+      "tags": ["constant", "defaults", "initialization"],
+      "complexity": "medium"
+    },
+    {
+      "id": "constant:src/lib/store.ts:ARMOR_SLOT_TYPE_MAP",
+      "type": "constant",
+      "name": "ARMOR_SLOT_TYPE_MAP",
+      "filePath": "src/lib/store.ts",
+      "summary": "Internal Record mapping each AnyArmorSlotKey to its corresponding armor type string ('Helmet', 'Chestplate', 'Leggings'), used for armor compatibility checks in moveArmorSlot and canArmorMoveToSlot",
+      "tags": ["constant", "mapping", "armor"],
+      "complexity": "low"
+    },
+    {
+      "id": "constant:src/lib/store.ts:UPGRADE_KEY_MAP",
+      "type": "constant",
+      "name": "UPGRADE_KEY_MAP",
+      "filePath": "src/lib/store.ts",
+      "summary": "Internal Record mapping each AnyArmorSlotKey to its corresponding upgrade level field name in BuildState, used to swap upgrade levels when moving armor between slots",
+      "tags": ["constant", "mapping", "upgrades"],
+      "complexity": "low"
+    }
+  ],
+  "edges": [
+    {"source": "file:src/lib/store.ts", "target": "file:src/lib/types", "type": "imports"},
+    {"source": "file:src/lib/store.ts", "target": "file:src/lib/engine", "type": "imports"},
+    {"source": "file:src/lib/store.ts", "target": "file:src/lib/constants", "type": "imports"},
+
+    {"source": "file:src/lib/store.ts", "target": "export:src/lib/store.ts:build", "type": "exports"},
+    {"source": "file:src/lib/store.ts", "target": "export:src/lib/store.ts:effectiveDarknessOverride", "type": "exports"},
+    {"source": "file:src/lib/store.ts", "target": "export:src/lib/store.ts:result", "type": "exports"},
+    {"source": "file:src/lib/store.ts", "target": "export:src/lib/store.ts:setEnchantment", "type": "exports"},
+    {"source": "file:src/lib/store.ts", "target": "export:src/lib/store.ts:swapEnchantments", "type": "exports"},
+    {"source": "file:src/lib/store.ts", "target": "export:src/lib/store.ts:clearBuild", "type": "exports"},
+    {"source": "file:src/lib/store.ts", "target": "export:src/lib/store.ts:setGuild", "type": "exports"},
+    {"source": "file:src/lib/store.ts", "target": "export:src/lib/store.ts:moveArmorSlot", "type": "exports"},
+    {"source": "file:src/lib/store.ts", "target": "export:src/lib/store.ts:canArmorMoveToSlot", "type": "exports"},
+    {"source": "file:src/lib/store.ts", "target": "export:src/lib/store.ts:swapRingWithInfusion", "type": "exports"},
+
+    {"source": "file:src/lib/store.ts", "target": "function:src/lib/store.ts:loadBuild", "type": "contains"},
+    {"source": "file:src/lib/store.ts", "target": "type:src/lib/store.ts:ArmorSlotKey", "type": "contains"},
+    {"source": "file:src/lib/store.ts", "target": "type:src/lib/store.ts:InfusionArmorSlotKey", "type": "contains"},
+    {"source": "file:src/lib/store.ts", "target": "type:src/lib/store.ts:AnyArmorSlotKey", "type": "contains"},
+    {"source": "file:src/lib/store.ts", "target": "constant:src/lib/store.ts:DEFAULT_BUILD", "type": "contains"},
+    {"source": "file:src/lib/store.ts", "target": "constant:src/lib/store.ts:ARMOR_SLOT_TYPE_MAP", "type": "contains"},
+    {"source": "file:src/lib/store.ts", "target": "constant:src/lib/store.ts:UPGRADE_KEY_MAP", "type": "contains"},
+
+    {"source": "function:src/lib/store.ts:loadBuild", "target": "constant:src/lib/store.ts:DEFAULT_BUILD", "type": "calls"},
+    {"source": "export:src/lib/store.ts:build", "target": "function:src/lib/store.ts:loadBuild", "type": "calls"},
+    {"source": "export:src/lib/store.ts:result", "target": "file:src/lib/engine", "type": "calls"},
+    {"source": "export:src/lib/store.ts:setEnchantment", "target": "file:src/lib/engine", "type": "calls"},
+    {"source": "export:src/lib/store.ts:moveArmorSlot", "target": "file:src/lib/engine", "type": "calls"},
+    {"source": "export:src/lib/store.ts:canArmorMoveToSlot", "target": "file:src/lib/engine", "type": "calls"},
+    {"source": "export:src/lib/store.ts:setGuild", "target": "constant:src/lib/store.ts:DEFAULT_BUILD", "type": "reads"},
+    {"source": "export:src/lib/store.ts:moveArmorSlot", "target": "constant:src/lib/store.ts:ARMOR_SLOT_TYPE_MAP", "type": "reads"},
+    {"source": "export:src/lib/store.ts:moveArmorSlot", "target": "constant:src/lib/store.ts:UPGRADE_KEY_MAP", "type": "reads"},
+    {"source": "export:src/lib/store.ts:canArmorMoveToSlot", "target": "constant:src/lib/store.ts:ARMOR_SLOT_TYPE_MAP", "type": "reads"},
+    {"source": "export:src/lib/store.ts:moveArmorSlot", "target": "type:src/lib/store.ts:AnyArmorSlotKey", "type": "reads"},
+    {"source": "export:src/lib/store.ts:canArmorMoveToSlot", "target": "type:src/lib/store.ts:AnyArmorSlotKey", "type": "reads"},
+
+    {"source": "type:src/lib/store.ts:AnyArmorSlotKey", "target": "type:src/lib/store.ts:ArmorSlotKey", "type": "extends"},
+    {"source": "type:src/lib/store.ts:AnyArmorSlotKey", "target": "type:src/lib/store.ts:InfusionArmorSlotKey", "type": "extends"}
+  ]
+}

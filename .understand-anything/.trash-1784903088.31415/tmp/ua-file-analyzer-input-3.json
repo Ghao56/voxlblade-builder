@@ -1,0 +1,7 @@
+{
+  "projectRoot": "C:\\Users\\Administrator\\Downloads\\voxlblade-builder",
+  "batchFiles": [
+    {"path": "index.html", "language": "html", "sizeLines": 13, "fileCategory": "markup"}
+  ],
+  "batchImportData": {"index.html": []}
+}

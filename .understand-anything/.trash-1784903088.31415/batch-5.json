@@ -1,0 +1,403 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/BuildSaves.svelte",
+      "type": "file",
+      "name": "BuildSaves.svelte",
+      "filePath": "src/BuildSaves.svelte",
+      "summary": "Svelte component for managing saved builds: CRUD operations on localStorage slots, drag-and-drop reordering (desktop & touch), search/sort, duplicate detection, and build import/export via compressed base64 codes",
+      "tags": ["svelte", "ui", "persistence", "build-management"],
+      "complexity": "high"
+    },
+    {
+      "id": "file:src/DamageAnalyzer.svelte",
+      "type": "file",
+      "name": "DamageAnalyzer.svelte",
+      "filePath": "src/DamageAnalyzer.svelte",
+      "summary": "Massive 7000+ line Svelte component that performs full damage calculations: assembles active buffs, computes typed damage boosts, defense reductions, heal scaling, crit damage, DoT ticks, summon stats, proc coefficients, and renders comprehensive damage/heal breakdowns",
+      "tags": ["svelte", "ui", "damage-calculation", "analysis"],
+      "complexity": "very-high"
+    },
+    {
+      "id": "file:src/data/BuffData.ts",
+      "type": "file",
+      "name": "BuffData.ts",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Core buff/debuff data module defining BUFF_DEFS (all game buff definitions with colors, effects, descriptions), BASIC_DEBUFF_POOL, and exported functions for assembling active buffs, applying perk modifiers, converting buff types, generating descriptions, and computing buff effects from potency",
+      "tags": ["typescript", "game-data", "buffs", "debuffs"],
+      "complexity": "high"
+    },
+    {
+      "id": "function:src/BuildSaves.svelte:touchHitTest",
+      "type": "function",
+      "name": "touchHitTest",
+      "filePath": "src/BuildSaves.svelte",
+      "summary": "Finds which save-slot element is at a given Y coordinate by iterating over .save-slot elements",
+      "tags": ["touch", "hit-testing"],
+      "complexity": "low"
+    },
+    {
+      "id": "function:src/BuildSaves.svelte:handleTouchMove",
+      "type": "function",
+      "name": "handleTouchMove",
+      "filePath": "src/BuildSaves.svelte",
+      "summary": "Handles touch-move events for mobile drag-and-drop reordering of save slots, including ghost element creation and hit-testing",
+      "tags": ["touch", "drag-and-drop"],
+      "complexity": "medium"
+    },
+    {
+      "id": "function:src/BuildSaves.svelte:handleTouchEnd",
+      "type": "function",
+      "name": "handleTouchEnd",
+      "filePath": "src/BuildSaves.svelte",
+      "summary": "Finalizes touch drag-and-drop by moving the slot if dropped on a valid target, then cleans up ghost and touch state",
+      "tags": ["touch", "drag-and-drop"],
+      "complexity": "low"
+    },
+    {
+      "id": "function:src/BuildSaves.svelte:findAllDuplicates",
+      "type": "function",
+      "name": "findAllDuplicates",
+      "filePath": "src/BuildSaves.svelte",
+      "summary": "Finds all save slots that have identical build state (via JSON.stringify comparison), excluding a given index",
+      "tags": ["duplicate-detection", "validation"],
+      "complexity": "low"
+    },
+    {
+      "id": "function:src/BuildSaves.svelte:doSave",
+      "type": "function",
+      "name": "doSave",
+      "filePath": "src/BuildSaves.svelte",
+      "summary": "Performs the actual save operation: clones build state, writes to slot, persists to localStorage, shows toast, and enters edit mode for naming",
+      "tags": ["persistence", "save"],
+      "complexity": "low"
+    },
+    {
+      "id": "function:src/BuildSaves.svelte:loadBuild",
+      "type": "function",
+      "name": "loadBuild",
+      "filePath": "src/BuildSaves.svelte",
+      "summary": "Two-click load: first click arms confirmation, second click loads the slot into the global build store with a timeout-based reset",
+      "tags": ["persistence", "load", "confirmation"],
+      "complexity": "low"
+    },
+    {
+      "id": "function:src/BuildSaves.svelte:deleteSlot",
+      "type": "function",
+      "name": "deleteSlot",
+      "filePath": "src/BuildSaves.svelte",
+      "summary": "Two-click delete: first click arms confirmation, second click removes slot from array and localStorage with timeout reset",
+      "tags": ["persistence", "delete", "confirmation"],
+      "complexity": "low"
+    },
+    {
+      "id": "function:src/BuildSaves.svelte:getBuildSummary",
+      "type": "function",
+      "name": "getBuildSummary",
+      "filePath": "src/BuildSaves.svelte",
+      "summary": "Generates a human-readable one-line summary of a BuildState including race, guild, weapon combo, and weapon art",
+      "tags": ["display", "serialization"],
+      "complexity": "low"
+    },
+    {
+      "id": "function:src/BuildSaves.svelte:readStream",
+      "type": "function",
+      "name": "readStream",
+      "filePath": "src/BuildSaves.svelte",
+      "summary": "Reads all chunks from a ReadableStream<Uint8Array> and merges them into a single Uint8Array",
+      "tags": ["stream", "compression", "utility"],
+      "complexity": "low"
+    },
+    {
+      "id": "function:src/BuildSaves.svelte:compressToBase64",
+      "type": "function",
+      "name": "compressToBase64",
+      "filePath": "src/BuildSaves.svelte",
+      "summary": "Compresses a string using deflate-raw via CompressionStream API and encodes the result as URL-safe base64",
+      "tags": ["compression", "encoding", "export"],
+      "complexity": "low"
+    },
+    {
+      "id": "function:src/BuildSaves.svelte:decompressFromBase64",
+      "type": "function",
+      "name": "decompressFromBase64",
+      "filePath": "src/BuildSaves.svelte",
+      "summary": "Decodes URL-safe base64 and decompresses via DecompressionStream deflate-raw back to a string",
+      "tags": ["compression", "decoding", "import"],
+      "complexity": "low"
+    },
+    {
+      "id": "function:src/BuildSaves.svelte:encodeState",
+      "type": "function",
+      "name": "encodeState",
+      "filePath": "src/BuildSaves.svelte",
+      "summary": "Encodes a BuildState into a slim key-mapped object (stripping defaults), handling enchantments separately, then compresses to base64",
+      "tags": ["serialization", "encoding", "export"],
+      "complexity": "medium"
+    },
+    {
+      "id": "function:src/BuildSaves.svelte:sanitizeField",
+      "type": "function",
+      "name": "sanitizeField",
+      "filePath": "src/BuildSaves.svelte",
+      "summary": "Validates and sanitizes a single field from imported JSON against expected types from DEFAULTS, filtering dangerous prototype-pollution keys",
+      "tags": ["validation", "security", "import"],
+      "complexity": "medium"
+    },
+    {
+      "id": "function:src/BuildSaves.svelte:decodeState",
+      "type": "function",
+      "name": "decodeState",
+      "filePath": "src/BuildSaves.svelte",
+      "summary": "Decodes a build code (try compressed deflate first, fall back to plain base64), sanitizes all fields against defaults, and reconstructs the full BuildState including enchantments",
+      "tags": ["deserialization", "decoding", "import", "security"],
+      "complexity": "high"
+    },
+    {
+      "id": "function:src/BuildSaves.svelte:exportSlot",
+      "type": "function",
+      "name": "exportSlot",
+      "filePath": "src/BuildSaves.svelte",
+      "summary": "Encodes a specific save slot's build state and displays the share code for copying",
+      "tags": ["export", "sharing"],
+      "complexity": "low"
+    },
+    {
+      "id": "function:src/BuildSaves.svelte:importBuild",
+      "type": "function",
+      "name": "importBuild",
+      "filePath": "src/BuildSaves.svelte",
+      "summary": "Decodes an import code string into a BuildState, validates it has at least one key field, and loads it into the global build store",
+      "tags": ["import", "validation"],
+      "complexity": "low"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:getTrueBalanceBuffs",
+      "type": "function",
+      "name": "getTrueBalanceBuffs",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Converts active enemy debuffs into True Balance buffs by grouping debuffs by buffName, computing max potency and duration per group, and producing GrantedBuff entries with combined source names",
+      "tags": ["buffs", "true-balance", "debuffs"],
+      "complexity": "high"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:getSpecificBuffModifiers",
+      "type": "function",
+      "name": "getSpecificBuffModifiers",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Returns potency and duration multipliers for a specific buff based on its definition's modifier logic, evaluating formula functions",
+      "tags": ["buffs", "modifiers", "potency"],
+      "complexity": "medium"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:getBastionBlessBonus",
+      "type": "function",
+      "name": "getBastionBlessBonus",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Calculates Bastion Bless bonus potency and duration multipliers for Reinforce and Regen buffs based on active bastion count",
+      "tags": ["buffs", "bastion", "reinforce"],
+      "complexity": "low"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:getGenericDebuffModifiers",
+      "type": "function",
+      "name": "getGenericDebuffModifiers",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Computes potency and duration multipliers for generic debuffs by checking related buffs (e.g., Tailwind boosts Shatter debuff potency)",
+      "tags": ["buffs", "debuffs", "modifiers"],
+      "complexity": "medium"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:getTricksterReflection",
+      "type": "function",
+      "name": "getTricksterReflection",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Computes Trickster reflection damage multiplier by summing debuff potencies and applying warding debuff multiplier",
+      "tags": ["buffs", "trickster", "reflection"],
+      "complexity": "low"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:applyBuffPerkModifiers",
+      "type": "function",
+      "name": "applyBuffPerkModifiers",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Core modifier pipeline: iterates all buffs applying specific modifiers, bastion bonuses, trickster reflection, generic debuff modifiers, perk-based duration extensions, and rounding",
+      "tags": ["buffs", "modifiers", "core-pipeline"],
+      "complexity": "very-high"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:applyToxinTransferDuration",
+      "type": "function",
+      "name": "applyToxinTransferDuration",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Adds toxin transfer duration bonus to enemy poison debuffs based on the Toxin Transfer perk amount",
+      "tags": ["buffs", "toxin", "duration"],
+      "complexity": "low"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:convertTailwindToWhirlwind",
+      "type": "function",
+      "name": "convertTailwindToWhirlwind",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "When Whirlwind rune is active, converts Tailwind buffs into Whirlwind buffs with enhanced potency and bounce duration multiplier",
+      "tags": ["buffs", "whirlwind", "conversion"],
+      "complexity": "medium"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:getBuffDescription",
+      "type": "function",
+      "name": "getBuffDescription",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Generates a dynamic description string for a buff, replacing potency/duration placeholders with computed values from the buff definition",
+      "tags": ["buffs", "display", "description"],
+      "complexity": "medium"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:getPerkBuffs",
+      "type": "function",
+      "name": "getPerkBuffs",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Collects all buff entries produced by perk factory functions (BUFF_DEFS with factory field), executing each with its perk amount",
+      "tags": ["buffs", "perks", "factory"],
+      "complexity": "low"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:getActiveBuildBuffs",
+      "type": "function",
+      "name": "getActiveBuildBuffs",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Generates GrantedBuff entries from build weapon arts, selected buffs, and race-specific buffs based on the current build state",
+      "tags": ["buffs", "build", "weapon-arts", "race"],
+      "complexity": "medium"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:applyCauterizeConversion",
+      "type": "function",
+      "name": "applyCauterizeConversion",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Converts Burn debuffs into Regen buffs when the Cauterize perk is active, preserving potency and duration",
+      "tags": ["buffs", "cauterize", "conversion"],
+      "complexity": "low"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:assembleActiveBuffs",
+      "type": "function",
+      "name": "assembleActiveBuffs",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Master assembly function: combines build buffs, perk buffs, weapon art buffs, applies tailwind-to-whirlwind conversion, perk modifiers, toxin transfer duration, and cauterize conversion into a final buff list",
+      "tags": ["buffs", "assembly", "core-pipeline"],
+      "complexity": "high"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:calcBuffEffect",
+      "type": "function",
+      "name": "calcBuffEffect",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Computes the numeric effect value for a buff at a given potency using its definition's effectPerTenthPotency and effectUnit",
+      "tags": ["buffs", "calculation"],
+      "complexity": "low"
+    }
+  ],
+  "edges": [
+    {"source": "file:src/BuildSaves.svelte", "target": "file:src/EmotionalTracker.svelte", "type": "imports"},
+    {"source": "file:src/BuildSaves.svelte", "target": "file:src/lib/store", "type": "imports"},
+    {"source": "file:src/BuildSaves.svelte", "target": "file:src/lib/stores/toast", "type": "imports"},
+    {"source": "file:src/BuildSaves.svelte", "target": "file:src/lib/ui/Button.svelte", "type": "imports"},
+    {"source": "file:src/BuildSaves.svelte", "target": "file:src/lib/types", "type": "imports"},
+
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/lib/store", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/lib/engine", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/BaseDamageCalc.svelte", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/ScalingBreakdownRow.svelte", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/data/weaponArts", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/data/weapon base dmg", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/lib/types", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/data/BuffData", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/data/debuffCombatEffects", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/data/draconicBuffs", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/data/SummonData", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/CritIcon.svelte", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/data/Perkbasedmg", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/lib/defense", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/data/raceEffects", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/data/defensivePerks", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/data/weaponConditionalBoosts", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/lib/engine/data/character", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/data/Runebasedmg", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/data/mountRunes", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/data/draconicColorEffects", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/data/draconicRunes", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/data/HealBoost", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/lib/utils", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/data/selfDamagePerks", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/lib/damageTypeResolve", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/lib/engine/dmgTypeBonuses", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/data/TypedDmgBoost", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/lib/constants/damage-types", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/data/stanceOverlays", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/data/perkAutoDebuffs", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/lib/ui/Badge.svelte", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/data/enemyHpEffects", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/data/DoTDamage", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/data/procCoefficients", "type": "imports"},
+    {"source": "file:src/DamageAnalyzer.svelte", "target": "file:src/data/Boost", "type": "imports"},
+
+    {"source": "file:src/data/BuffData.ts", "target": "file:src/lib/utils", "type": "imports"},
+    {"source": "file:src/data/BuffData.ts", "target": "file:src/lib/constants", "type": "imports"},
+
+    {"source": "file:src/BuildSaves.svelte", "target": "function:src/BuildSaves.svelte:touchHitTest", "type": "contains"},
+    {"source": "file:src/BuildSaves.svelte", "target": "function:src/BuildSaves.svelte:handleTouchMove", "type": "contains"},
+    {"source": "file:src/BuildSaves.svelte", "target": "function:src/BuildSaves.svelte:handleTouchEnd", "type": "contains"},
+    {"source": "file:src/BuildSaves.svelte", "target": "function:src/BuildSaves.svelte:findAllDuplicates", "type": "contains"},
+    {"source": "file:src/BuildSaves.svelte", "target": "function:src/BuildSaves.svelte:doSave", "type": "contains"},
+    {"source": "file:src/BuildSaves.svelte", "target": "function:src/BuildSaves.svelte:loadBuild", "type": "contains"},
+    {"source": "file:src/BuildSaves.svelte", "target": "function:src/BuildSaves.svelte:deleteSlot", "type": "contains"},
+    {"source": "file:src/BuildSaves.svelte", "target": "function:src/BuildSaves.svelte:getBuildSummary", "type": "contains"},
+    {"source": "file:src/BuildSaves.svelte", "target": "function:src/BuildSaves.svelte:readStream", "type": "contains"},
+    {"source": "file:src/BuildSaves.svelte", "target": "function:src/BuildSaves.svelte:compressToBase64", "type": "contains"},
+    {"source": "file:src/BuildSaves.svelte", "target": "function:src/BuildSaves.svelte:decompressFromBase64", "type": "contains"},
+    {"source": "file:src/BuildSaves.svelte", "target": "function:src/BuildSaves.svelte:encodeState", "type": "contains"},
+    {"source": "file:src/BuildSaves.svelte", "target": "function:src/BuildSaves.svelte:sanitizeField", "type": "contains"},
+    {"source": "file:src/BuildSaves.svelte", "target": "function:src/BuildSaves.svelte:decodeState", "type": "contains"},
+    {"source": "file:src/BuildSaves.svelte", "target": "function:src/BuildSaves.svelte:exportSlot", "type": "contains"},
+    {"source": "file:src/BuildSaves.svelte", "target": "function:src/BuildSaves.svelte:importBuild", "type": "contains"},
+
+    {"source": "file:src/data/BuffData.ts", "target": "function:src/data/BuffData.ts:getTrueBalanceBuffs", "type": "contains"},
+    {"source": "file:src/data/BuffData.ts", "target": "function:src/data/BuffData.ts:getSpecificBuffModifiers", "type": "contains"},
+    {"source": "file:src/data/BuffData.ts", "target": "function:src/data/BuffData.ts:getBastionBlessBonus", "type": "contains"},
+    {"source": "file:src/data/BuffData.ts", "target": "function:src/data/BuffData.ts:getGenericDebuffModifiers", "type": "contains"},
+    {"source": "file:src/data/BuffData.ts", "target": "function:src/data/BuffData.ts:getTricksterReflection", "type": "contains"},
+    {"source": "file:src/data/BuffData.ts", "target": "function:src/data/BuffData.ts:applyBuffPerkModifiers", "type": "contains"},
+    {"source": "file:src/data/BuffData.ts", "target": "function:src/data/BuffData.ts:applyToxinTransferDuration", "type": "contains"},
+    {"source": "file:src/data/BuffData.ts", "target": "function:src/data/BuffData.ts:convertTailwindToWhirlwind", "type": "contains"},
+    {"source": "file:src/data/BuffData.ts", "target": "function:src/data/BuffData.ts:getBuffDescription", "type": "contains"},
+    {"source": "file:src/data/BuffData.ts", "target": "function:src/data/BuffData.ts:getPerkBuffs", "type": "contains"},
+    {"source": "file:src/data/BuffData.ts", "target": "function:src/data/BuffData.ts:getActiveBuildBuffs", "type": "contains"},
+    {"source": "file:src/data/BuffData.ts", "target": "function:src/data/BuffData.ts:applyCauterizeConversion", "type": "contains"},
+    {"source": "file:src/data/BuffData.ts", "target": "function:src/data/BuffData.ts:assembleActiveBuffs", "type": "contains"},
+    {"source": "file:src/data/BuffData.ts", "target": "function:src/data/BuffData.ts:calcBuffEffect", "type": "contains"},
+
+    {"source": "file:src/data/BuffData.ts", "target": "function:src/data/BuffData.ts:getTrueBalanceBuffs", "type": "exports"},
+    {"source": "file:src/data/BuffData.ts", "target": "function:src/data/BuffData.ts:applyBuffPerkModifiers", "type": "exports"},
+    {"source": "file:src/data/BuffData.ts", "target": "function:src/data/BuffData.ts:applyToxinTransferDuration", "type": "exports"},
+    {"source": "file:src/data/BuffData.ts", "target": "function:src/data/BuffData.ts:convertTailwindToWhirlwind", "type": "exports"},
+    {"source": "file:src/data/BuffData.ts", "target": "function:src/data/BuffData.ts:getBuffDescription", "type": "exports"},
+    {"source": "file:src/data/BuffData.ts", "target": "function:src/data/BuffData.ts:getPerkBuffs", "type": "exports"},
+    {"source": "file:src/data/BuffData.ts", "target": "function:src/data/BuffData.ts:getActiveBuildBuffs", "type": "exports"},
+    {"source": "file:src/data/BuffData.ts", "target": "function:src/data/BuffData.ts:applyCauterizeConversion", "type": "exports"},
+    {"source": "file:src/data/BuffData.ts", "target": "function:src/data/BuffData.ts:assembleActiveBuffs", "type": "exports"},
+    {"source": "file:src/data/BuffData.ts", "target": "function:src/data/BuffData.ts:calcBuffEffect", "type": "exports"},
+
+    {"source": "function:src/data/BuffData.ts:assembleActiveBuffs", "target": "function:src/data/BuffData.ts:getActiveBuildBuffs", "type": "calls"},
+    {"source": "function:src/data/BuffData.ts:assembleActiveBuffs", "target": "function:src/data/BuffData.ts:convertTailwindToWhirlwind", "type": "calls"},
+    {"source": "function:src/data/BuffData.ts:assembleActiveBuffs", "target": "function:src/data/BuffData.ts:applyBuffPerkModifiers", "type": "calls"},
+    {"source": "function:src/data/BuffData.ts:assembleActiveBuffs", "target": "function:src/data/BuffData.ts:getPerkBuffs", "type": "calls"},
+    {"source": "function:src/data/BuffData.ts:assembleActiveBuffs", "target": "function:src/data/BuffData.ts:applyCauterizeConversion", "type": "calls"},
+    {"source": "function:src/data/BuffData.ts:applyBuffPerkModifiers", "target": "function:src/data/BuffData.ts:getSpecificBuffModifiers", "type": "calls"},
+    {"source": "function:src/data/BuffData.ts:applyBuffPerkModifiers", "target": "function:src/data/BuffData.ts:getBastionBlessBonus", "type": "calls"},
+    {"source": "function:src/data/BuffData.ts:applyBuffPerkModifiers", "target": "function:src/data/BuffData.ts:getTricksterReflection", "type": "calls"},
+    {"source": "function:src/data/BuffData.ts:applyBuffPerkModifiers", "target": "function:src/data/BuffData.ts:getGenericDebuffModifiers", "type": "calls"},
+    {"source": "function:src/data/BuffData.ts:getBuffDescription", "target": "function:src/data/BuffData.ts:calcBuffEffect", "type": "calls"},
+    {"source": "function:src/data/BuffData.ts:getActiveBuildBuffs", "target": "function:src/data/BuffData.ts:getTrueBalanceBuffs", "type": "calls"}
+  ]
+}

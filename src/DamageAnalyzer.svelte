@@ -2993,12 +2993,6 @@ $: _groupedSelfDamageSources = (() => {
         <div class="da-stat-card da-stat-card--critdmg">
           <div class="da-stat-label">Crit Damage Multiplier</div>
           <div class="da-stat-val" style="color:#b58cff">{fmtCritMult(_filteredCritDmgMult)}</div>
-          <div class="da-critdmg-bar">
-            <div class="da-critdmg-track">
-              <div class="da-critdmg-fill" style="width:{Math.min(100, Math.max(0, ((_filteredCritDmgMult - 100) / 300) * 100))}%"></div>
-            </div>
-            <span class="da-critdmg-pct">{Math.round(_filteredCritDmgMult)}%</span>
-          </div>
           <div class="da-sources">
             {#each critDmgSources as s}
               <div class="da-source-row">
@@ -3047,24 +3041,33 @@ $: _groupedSelfDamageSources = (() => {
     </div>
 
     <!-- Armor Pen column -->
-    {#if ((stats as Record<string, number>).armorPenetration ?? 0) + _raceGlobalArmorPen > 0}
-      {@const _apenVal = Math.round((((stats as Record<string, number>).armorPenetration ?? 0) + _raceGlobalArmorPen) * 100) / 100}
+    {#if (((stats as Record<string, number>).armorPenetration ?? 0) + _raceGlobalArmorPen + _waArmorPenetration + _crushingPressureAmt * 10) > 0}
+      {@const _apenEquipPen = ((stats as Record<string, number>).armorPenetration ?? 0) + _raceGlobalArmorPen}
+      {@const _apenWaPen = _waArmorPenetration}
+      {@const _apenCrushingBase = _crushingPressureAmt * 10}
+      {@const _apenTotal = _apenEquipPen + _apenWaPen + _apenCrushingBase}
       <div class="da-section da-section--top da-section--apen">
         <div class="da-section-title"><i class="fa fa-shield"></i> Armor Penetration</div>
         <div class="da-apen-inner">
-          <span class="da-apen-val">{_apenVal}</span>
+          <span class="da-apen-val">{_apenTotal}</span>
           <span class="da-apen-sub">Flat Penetration</span>
           <div class="da-sources">
-            {#if ((stats as Record<string, number>).armorPenetration ?? 0) > 0}
+            {#if _apenEquipPen > 0}
               <div class="da-source-row">
-                <span class="da-source-name">Equipment</span>
-                <span class="da-source-val" style="color:#e5e5e5">{(stats as Record<string, number>).armorPenetration}</span>
+                <span class="da-source-name">Global Pen</span>
+                <span class="da-source-val" style="color:#e5e5e5">{_apenEquipPen}</span>
               </div>
             {/if}
-            {#if _raceGlobalArmorPen > 0}
+            {#if _apenWaPen > 0}
               <div class="da-source-row">
-                <span class="da-source-name">Race Bonus</span>
-                <span class="da-source-val" style="color:#e5e5e5">{_raceGlobalArmorPen}</span>
+                <span class="da-source-name">WA/Rune Pen</span>
+                <span class="da-source-val" style="color:#e5e5e5">{_apenWaPen}</span>
+              </div>
+            {/if}
+            {#if _apenCrushingBase > 0}
+              <div class="da-source-row">
+                <span class="da-source-name">Crushing Pressure</span>
+                <span class="da-source-val" style="color:#e5e5e5">{_apenCrushingBase}</span>
               </div>
             {/if}
           </div>
@@ -5374,34 +5377,6 @@ $: _groupedSelfDamageSources = (() => {
 }
 .da-section--top .da-stat-val {
   font-size: 2rem;
-}
-
-/* ── Crit damage progress bar ── */
-.da-critdmg-bar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 4px;
-}
-.da-critdmg-track {
-  flex: 1;
-  height: 6px;
-  background: #1b2328;
-  border-radius: 6px;
-  overflow: hidden;
-}
-.da-critdmg-fill {
-  height: 100%;
-  background: #6b4eff;
-  border-radius: 6px;
-  transition: width .3s ease;
-}
-.da-critdmg-pct {
-  font-size: .65rem;
-  font-weight: 700;
-  color: #b58cff;
-  white-space: nowrap;
-  font-family: 'Courier New', monospace;
 }
 
 /* ── Armor Penetration ── */

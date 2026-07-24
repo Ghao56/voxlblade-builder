@@ -1,0 +1,448 @@
+{
+  "nodes": [
+    {
+      "id": "file::src/data/raceEffects.ts",
+      "kind": "file",
+      "label": "raceEffects.ts",
+      "path": "src/data/raceEffects.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 49,
+      "nonEmptyLines": 43
+    },
+    {
+      "id": "interface::src/data/raceEffects.ts::RaceConditionalEffect",
+      "kind": "interface",
+      "label": "RaceConditionalEffect",
+      "path": "src/data/raceEffects.ts",
+      "line": 4,
+      "fields": ["raceName", "hpGate", "dmgBoostMultiplier", "flatDrPct", "label", "condition"]
+    },
+    {
+      "id": "const::src/data/raceEffects.ts::RACE_CONDITIONAL_EFFECTS",
+      "kind": "constant",
+      "label": "RACE_CONDITIONAL_EFFECTS",
+      "path": "src/data/raceEffects.ts",
+      "line": 13,
+      "description": "Array of race-conditional effect definitions (currently only HUMAN below 50% HP)"
+    },
+    {
+      "id": "const::src/data/raceEffects.ts::ORK_TENACITY_PER_BUFF",
+      "kind": "constant",
+      "label": "ORK_TENACITY_PER_BUFF",
+      "path": "src/data/raceEffects.ts",
+      "line": 28,
+      "description": "Tenacity bonus per non-debuff buff (0.1)"
+    },
+    {
+      "id": "function::src/data/raceEffects.ts::getActiveRaceEffect",
+      "kind": "function",
+      "label": "getActiveRaceEffect",
+      "path": "src/data/raceEffects.ts",
+      "line": 24,
+      "params": ["raceName", "hpFillPct"],
+      "description": "Returns the active race conditional effect for a given race and HP fill percentage, or undefined if not active"
+    },
+    {
+      "id": "function::src/data/raceEffects.ts::getOrkTenacityBuffs",
+      "kind": "function",
+      "label": "getOrkTenacityBuffs",
+      "path": "src/data/raceEffects.ts",
+      "line": 30,
+      "params": ["buffs", "buffDefs"],
+      "description": "Filters buffs to only unique non-debuff, non-neutral, non-self-debuff buffs for Ork tenacity calculation"
+    },
+    {
+      "id": "function::src/data/raceEffects.ts::calcOrkTenacityBonus",
+      "kind": "function",
+      "label": "calcOrkTenacityBonus",
+      "path": "src/data/raceEffects.ts",
+      "line": 44,
+      "params": ["buffs", "buffDefs"],
+      "description": "Calculates Ork tenacity damage bonus from qualifying buffs"
+    },
+    {
+      "id": "file::src/data/Runebasedmg.ts",
+      "kind": "file",
+      "label": "Runebasedmg.ts",
+      "path": "src/data/Runebasedmg.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 209,
+      "nonEmptyLines": 201
+    },
+    {
+      "id": "interface::src/data/Runebasedmg.ts::RuneDmgCtx",
+      "kind": "interface",
+      "label": "RuneDmgCtx",
+      "path": "src/data/Runebasedmg.ts",
+      "line": 6,
+      "fields": ["potency", "sliderVal", "stats", "perks", "selfDamage"]
+    },
+    {
+      "id": "interface::src/data/Runebasedmg.ts::RuneSliderDef",
+      "kind": "interface",
+      "label": "RuneSliderDef",
+      "path": "src/data/Runebasedmg.ts",
+      "line": 14,
+      "fields": ["buildKey", "label", "min", "max", "step", "getMax"]
+    },
+    {
+      "id": "interface::src/data/Runebasedmg.ts::RuneShieldDef",
+      "kind": "interface",
+      "label": "RuneShieldDef",
+      "path": "src/data/Runebasedmg.ts",
+      "line": 23,
+      "fields": ["getShieldHp", "label"]
+    },
+    {
+      "id": "interface::src/data/Runebasedmg.ts::RuneDmgDef",
+      "kind": "interface",
+      "label": "RuneDmgDef",
+      "path": "src/data/Runebasedmg.ts",
+      "line": 28,
+      "fields": ["runeName", "condition", "getBaseDamage", "dmgTypes", "scalings", "hits", "getHits", "maxPotency", "potencyLabel", "note", "isHealOnly", "slider", "shield"]
+    },
+    {
+      "id": "function::src/data/Runebasedmg.ts::calculateRuneHealScaling",
+      "kind": "function",
+      "label": "calculateRuneHealScaling",
+      "path": "src/data/Runebasedmg.ts",
+      "line": 44,
+      "params": ["runeDef", "ctx"],
+      "description": "Calculates heal scaling multiplier for heal-only runes using HealBoost context"
+    },
+    {
+      "id": "constant::src/data/Runebasedmg.ts::RUNE_DMG_DEFS",
+      "kind": "constant",
+      "label": "RUNE_DMG_DEFS",
+      "path": "src/data/Runebasedmg.ts",
+      "line": 68,
+      "description": "Array of 13 rune damage definitions covering Ancient Cleric, Beenade, Boostshroom, Thunderous Charge, Sporeling Toss, Foot Dive, Caci, Cacitrops, Hex Web, Brainblast, Fireball, Rocky Tail, and False Sun runes"
+    },
+    {
+      "id": "file::src/LevelBar.svelte",
+      "kind": "file",
+      "label": "LevelBar.svelte",
+      "path": "src/LevelBar.svelte",
+      "language": "svelte",
+      "fileCategory": "code",
+      "totalLines": 398,
+      "nonEmptyLines": 357
+    },
+    {
+      "id": "component::src/LevelBar.svelte::LevelBar",
+      "kind": "component",
+      "label": "LevelBar",
+      "path": "src/LevelBar.svelte",
+      "line": 1,
+      "description": "Interactive HP bar component with editable level display, drag-to-set HP fill, shield overlay, lost HP zone, threshold marker, and protection badge"
+    },
+    {
+      "id": "function::src/LevelBar.svelte::saveLevel",
+      "kind": "function",
+      "label": "saveLevel",
+      "path": "src/LevelBar.svelte",
+      "line": 18,
+      "params": ["v"],
+      "description": "Updates build store and persists level to localStorage"
+    },
+    {
+      "id": "function::src/LevelBar.svelte::startEdit",
+      "kind": "function",
+      "label": "startEdit",
+      "path": "src/LevelBar.svelte",
+      "line": 23,
+      "description": "Enters level-edit mode and selects the input element"
+    },
+    {
+      "id": "function::src/LevelBar.svelte::confirmEdit",
+      "kind": "function",
+      "label": "confirmEdit",
+      "path": "src/LevelBar.svelte",
+      "line": 30,
+      "description": "Validates and saves the edited level value"
+    },
+    {
+      "id": "function::src/LevelBar.svelte::onKeydown",
+      "kind": "function",
+      "label": "onKeydown",
+      "path": "src/LevelBar.svelte",
+      "line": 36,
+      "params": ["e"],
+      "description": "Keyboard handler for level input (Enter, Escape, ArrowUp/Down)"
+    },
+    {
+      "id": "function::src/LevelBar.svelte::saveFill",
+      "kind": "function",
+      "label": "saveFill",
+      "path": "src/LevelBar.svelte",
+      "line": 62,
+      "params": ["v"],
+      "description": "Updates build store and persists HP fill to localStorage"
+    },
+    {
+      "id": "function::src/LevelBar.svelte::calcFillFromMouse",
+      "kind": "function",
+      "label": "calcFillFromMouse",
+      "path": "src/LevelBar.svelte",
+      "line": 67,
+      "params": ["e"],
+      "description": "Converts mouse position to HP fill percentage"
+    },
+    {
+      "id": "function::src/LevelBar.svelte::onBarMouseDown",
+      "kind": "function",
+      "label": "onBarMouseDown",
+      "path": "src/LevelBar.svelte",
+      "line": 76,
+      "params": ["e"],
+      "description": "Starts drag-to-set HP fill on bar mousedown"
+    },
+    {
+      "id": "function::src/LevelBar.svelte::onMouseMove",
+      "kind": "function",
+      "label": "onMouseMove",
+      "path": "src/LevelBar.svelte",
+      "line": 80,
+      "params": ["e"],
+      "description": "Continues drag-to-set HP fill on window mousemove"
+    },
+    {
+      "id": "function::src/LevelBar.svelte::onMouseUp",
+      "kind": "function",
+      "label": "onMouseUp",
+      "path": "src/LevelBar.svelte",
+      "line": 83,
+      "description": "Ends drag on mouseup"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file::src/data/raceEffects.ts",
+      "target": "interface::src/data/raceEffects.ts::RaceConditionalEffect",
+      "kind": "defines"
+    },
+    {
+      "source": "file::src/data/raceEffects.ts",
+      "target": "const::src/data/raceEffects.ts::RACE_CONDITIONAL_EFFECTS",
+      "kind": "defines"
+    },
+    {
+      "source": "file::src/data/raceEffects.ts",
+      "target": "const::src/data/raceEffects.ts::ORK_TENACITY_PER_BUFF",
+      "kind": "defines"
+    },
+    {
+      "source": "file::src/data/raceEffects.ts",
+      "target": "function::src/data/raceEffects.ts::getActiveRaceEffect",
+      "kind": "defines"
+    },
+    {
+      "source": "file::src/data/raceEffects.ts",
+      "target": "function::src/data/raceEffects.ts::getOrkTenacityBuffs",
+      "kind": "defines"
+    },
+    {
+      "source": "file::src/data/raceEffects.ts",
+      "target": "function::src/data/raceEffects.ts::calcOrkTenacityBonus",
+      "kind": "defines"
+    },
+    {
+      "source": "file::src/data/raceEffects.ts",
+      "target": "file::src/data/Perkbasedmg.ts",
+      "kind": "imports",
+      "importNames": ["HpGate", "isHpGateActive"]
+    },
+    {
+      "source": "function::src/data/raceEffects.ts::getActiveRaceEffect",
+      "target": "file::src/data/Perkbasedmg.ts",
+      "kind": "calls",
+      "calleeName": "isHpGateActive",
+      "line": 25
+    },
+    {
+      "source": "function::src/data/raceEffects.ts::calcOrkTenacityBonus",
+      "target": "function::src/data/raceEffects.ts::getOrkTenacityBuffs",
+      "kind": "calls",
+      "line": 48
+    },
+    {
+      "source": "file::src/data/Runebasedmg.ts",
+      "target": "interface::src/data/Runebasedmg.ts::RuneDmgCtx",
+      "kind": "defines"
+    },
+    {
+      "source": "file::src/data/Runebasedmg.ts",
+      "target": "interface::src/data/Runebasedmg.ts::RuneSliderDef",
+      "kind": "defines"
+    },
+    {
+      "source": "file::src/data/Runebasedmg.ts",
+      "target": "interface::src/data/Runebasedmg.ts::RuneShieldDef",
+      "kind": "defines"
+    },
+    {
+      "source": "file::src/data/Runebasedmg.ts",
+      "target": "interface::src/data/Runebasedmg.ts::RuneDmgDef",
+      "kind": "defines"
+    },
+    {
+      "source": "file::src/data/Runebasedmg.ts",
+      "target": "function::src/data/Runebasedmg.ts::calculateRuneHealScaling",
+      "kind": "defines"
+    },
+    {
+      "source": "file::src/data/Runebasedmg.ts",
+      "target": "constant::src/data/Runebasedmg.ts::RUNE_DMG_DEFS",
+      "kind": "defines"
+    },
+    {
+      "source": "file::src/data/Runebasedmg.ts",
+      "target": "file::src/lib/types.ts",
+      "kind": "imports",
+      "importNames": ["BuildState"]
+    },
+    {
+      "source": "file::src/data/Runebasedmg.ts",
+      "target": "file::src/data/HealBoost.ts",
+      "kind": "imports",
+      "importNames": ["calculateHealBoost", "HealBoostContext"]
+    },
+    {
+      "source": "file::src/data/Runebasedmg.ts",
+      "target": "file::src/data/SummonData.ts",
+      "kind": "imports",
+      "importNames": ["calcMaxSummonCount"]
+    },
+    {
+      "source": "file::src/data/Runebasedmg.ts",
+      "target": "file::src/lib/constants/rune-base-damage.ts",
+      "kind": "imports",
+      "importNames": ["ANCIENT_CLERIC_BASE_DMG", "ANCIENT_CLERIC_SLIDER_MAX", "ANCIENT_CLERIC_SHIELD_BASE", "ANCIENT_CLERIC_SHIELD_PER_VAL", "BEENADE_BASE_DMG", "BEENADE_MAX_POTENCY", "BOOSTSHROOM_BASE_DMG", "THUNDEROUS_CHARGE_BASE_DMG", "SPORELING_TOSS_BASE_DMG", "SPORELING_TOSS_HITS_BASE", "SPORELING_TOSS_SLIDER_MAX", "FOOT_DIVE_BASE_DMG", "CACI_BASE_DMG", "CACI_HITS", "CACITROPS_BASE_DMG", "CACITROPS_HITS", "HEX_WEB_BASE_DMG", "HEX_WEB_HITS", "BRAINBLAST_BASE_DMG", "BRAINBLAST_HITS", "ROCKY_TAIL_BASE_DMG", "ROCKY_TAIL_PROT_SCALE", "ROCKY_TAIL_VS_BASE_RES", "ROCKY_TAIL_VS_PER_LEVEL", "ROCKY_TAIL_VS_DEFAULT_RES", "ROCKY_TAIL_DIVISOR_COEFF", "ROCKY_TAIL_DIVISOR_BASE", "ROCKY_TAIL_HITS_MULT", "ROCKY_TAIL_MIN_HITS"]
+    },
+    {
+      "source": "function::src/data/Runebasedmg.ts::calculateRuneHealScaling",
+      "target": "file::src/data/HealBoost.ts",
+      "kind": "calls",
+      "calleeName": "calculateHealBoost",
+      "line": 64
+    },
+    {
+      "source": "file::src/LevelBar.svelte",
+      "target": "component::src/LevelBar.svelte::LevelBar",
+      "kind": "defines"
+    },
+    {
+      "source": "file::src/LevelBar.svelte",
+      "target": "function::src/LevelBar.svelte::saveLevel",
+      "kind": "defines"
+    },
+    {
+      "source": "file::src/LevelBar.svelte",
+      "target": "function::src/LevelBar.svelte::startEdit",
+      "kind": "defines"
+    },
+    {
+      "source": "file::src/LevelBar.svelte",
+      "target": "function::src/LevelBar.svelte::confirmEdit",
+      "kind": "defines"
+    },
+    {
+      "source": "file::src/LevelBar.svelte",
+      "target": "function::src/LevelBar.svelte::onKeydown",
+      "kind": "defines"
+    },
+    {
+      "source": "file::src/LevelBar.svelte",
+      "target": "function::src/LevelBar.svelte::saveFill",
+      "kind": "defines"
+    },
+    {
+      "source": "file::src/LevelBar.svelte",
+      "target": "function::src/LevelBar.svelte::calcFillFromMouse",
+      "kind": "defines"
+    },
+    {
+      "source": "file::src/LevelBar.svelte",
+      "target": "function::src/LevelBar.svelte::onBarMouseDown",
+      "kind": "defines"
+    },
+    {
+      "source": "file::src/LevelBar.svelte",
+      "target": "function::src/LevelBar.svelte::onMouseMove",
+      "kind": "defines"
+    },
+    {
+      "source": "file::src/LevelBar.svelte",
+      "target": "function::src/LevelBar.svelte::onMouseUp",
+      "kind": "defines"
+    },
+    {
+      "source": "file::src/LevelBar.svelte",
+      "target": "file::src/lib/store.ts",
+      "kind": "imports",
+      "importNames": ["build"]
+    },
+    {
+      "source": "file::src/LevelBar.svelte",
+      "target": "file::src/lib/constants.ts",
+      "kind": "imports",
+      "importNames": ["MAX_LEVEL", "calcBaseMaxHP", "STORAGE_KEY_LEVEL", "STORAGE_KEY_HP_FILL"]
+    },
+    {
+      "source": "file::src/LevelBar.svelte",
+      "target": "file::src/lib/ui/Badge.svelte",
+      "kind": "imports",
+      "importNames": ["Badge"]
+    },
+    {
+      "source": "function::src/LevelBar.svelte::saveLevel",
+      "target": "file::src/lib/store.ts",
+      "kind": "calls",
+      "calleeName": "build.update"
+    },
+    {
+      "source": "function::src/LevelBar.svelte::saveFill",
+      "target": "file::src/lib/store.ts",
+      "kind": "calls",
+      "calleeName": "build.update"
+    },
+    {
+      "source": "function::src/LevelBar.svelte::confirmEdit",
+      "target": "function::src/LevelBar.svelte::saveLevel",
+      "kind": "calls",
+      "line": 33
+    },
+    {
+      "source": "function::src/LevelBar.svelte::onKeydown",
+      "target": "function::src/LevelBar.svelte::confirmEdit",
+      "kind": "calls",
+      "line": 37
+    },
+    {
+      "source": "function::src/LevelBar.svelte::onBarMouseDown",
+      "target": "function::src/LevelBar.svelte::calcFillFromMouse",
+      "kind": "calls",
+      "line": 78
+    },
+    {
+      "source": "function::src/LevelBar.svelte::onBarMouseDown",
+      "target": "function::src/LevelBar.svelte::saveFill",
+      "kind": "calls",
+      "line": 78
+    },
+    {
+      "source": "function::src/LevelBar.svelte::onMouseMove",
+      "target": "function::src/LevelBar.svelte::calcFillFromMouse",
+      "kind": "calls",
+      "line": 81
+    },
+    {
+      "source": "function::src/LevelBar.svelte::onMouseMove",
+      "target": "function::src/LevelBar.svelte::saveFill",
+      "kind": "calls",
+      "line": 81
+    }
+  ]
+}

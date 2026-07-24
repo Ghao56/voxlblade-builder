@@ -92,7 +92,9 @@
     dragOverIdx = idx
   }
 
-  function handleDragLeave(idx: number) {
+  function handleDragLeave(idx: number, e: DragEvent) {
+    const related = e.relatedTarget as HTMLElement | null
+    if (related && (e.currentTarget as HTMLElement).contains(related)) return
     if (dragOverIdx === idx) dragOverIdx = null
   }
 
@@ -602,7 +604,7 @@
           data-slot-idx={i}
           ondragstart={(e) => handleDragStart(e, i)}
           ondragover={(e) => handleDragOver(e, i)}
-          ondragleave={() => handleDragLeave(i)}
+          ondragleave={(e) => handleDragLeave(i, e)}
           ondrop={(e) => handleDrop(e, i)}
           ondragend={handleDragEnd}
         >
@@ -651,6 +653,7 @@
               {@html confirmLoad === i ? '<i class="fa fa-check"></i> Sure?' : '<i class="fa fa-arrow-down"></i> Load'}
             </Button>
             <button class="btn btn-share" class:btn-share--active={exportingSlot === i}
+              draggable="false"
               onclick={() => exportSlot(i)} title="Export this build as code" aria-label="Export Slot {i+1}">
               <i class="fa fa-upload"></i>
             </button>

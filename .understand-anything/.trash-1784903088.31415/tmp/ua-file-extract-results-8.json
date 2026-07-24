@@ -1,0 +1,200 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 1,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "src/lib/store.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 173,
+      "nonEmptyLines": 157,
+      "functions": [
+        {
+          "name": "loadBuild",
+          "startLine": 55,
+          "endLine": 64,
+          "params": []
+        },
+        {
+          "name": "setEnchantment",
+          "startLine": 85,
+          "endLine": 97,
+          "params": [
+            "slot",
+            "index",
+            "value"
+          ]
+        },
+        {
+          "name": "swapEnchantments",
+          "startLine": 99,
+          "endLine": 113,
+          "params": [
+            "slotA",
+            "slotB"
+          ]
+        },
+        {
+          "name": "clearBuild",
+          "startLine": 115,
+          "endLine": 117,
+          "params": []
+        },
+        {
+          "name": "setGuild",
+          "startLine": 119,
+          "endLine": 131,
+          "params": [
+            "guildName",
+            "guildRank"
+          ]
+        },
+        {
+          "name": "moveArmorSlot",
+          "startLine": 147,
+          "endLine": 165,
+          "params": [
+            "from",
+            "to"
+          ]
+        },
+        {
+          "name": "canArmorMoveToSlot",
+          "startLine": 167,
+          "endLine": 169,
+          "params": [
+            "armorName",
+            "to"
+          ]
+        },
+        {
+          "name": "swapRingWithInfusion",
+          "startLine": 171,
+          "endLine": 173,
+          "params": []
+        }
+      ],
+      "exports": [
+        {
+          "name": "build",
+          "line": 66,
+          "isDefault": false
+        },
+        {
+          "name": "effectiveDarknessOverride",
+          "line": 78,
+          "isDefault": false
+        },
+        {
+          "name": "result",
+          "line": 80,
+          "isDefault": false
+        },
+        {
+          "name": "setEnchantment",
+          "line": 85,
+          "isDefault": false
+        },
+        {
+          "name": "swapEnchantments",
+          "line": 99,
+          "isDefault": false
+        },
+        {
+          "name": "clearBuild",
+          "line": 115,
+          "isDefault": false
+        },
+        {
+          "name": "setGuild",
+          "line": 119,
+          "isDefault": false
+        },
+        {
+          "name": "moveArmorSlot",
+          "line": 147,
+          "isDefault": false
+        },
+        {
+          "name": "canArmorMoveToSlot",
+          "line": 167,
+          "isDefault": false
+        },
+        {
+          "name": "swapRingWithInfusion",
+          "line": 171,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "loadBuild",
+          "callee": "localStorage.getItem",
+          "lineNumber": 57
+        },
+        {
+          "caller": "loadBuild",
+          "callee": "JSON.parse",
+          "lineNumber": 59
+        },
+        {
+          "caller": "setEnchantment",
+          "callee": "build.update",
+          "lineNumber": 86
+        },
+        {
+          "caller": "setEnchantment",
+          "callee": "enforceEnchantSlot",
+          "lineNumber": 93
+        },
+        {
+          "caller": "swapEnchantments",
+          "callee": "build.update",
+          "lineNumber": 101
+        },
+        {
+          "caller": "clearBuild",
+          "callee": "build.set",
+          "lineNumber": 116
+        },
+        {
+          "caller": "setGuild",
+          "callee": "build.update",
+          "lineNumber": 120
+        },
+        {
+          "caller": "moveArmorSlot",
+          "callee": "build.update",
+          "lineNumber": 150
+        },
+        {
+          "caller": "moveArmorSlot",
+          "callee": "armorSupportsSlot",
+          "lineNumber": 154
+        },
+        {
+          "caller": "moveArmorSlot",
+          "callee": "armorSupportsSlot",
+          "lineNumber": 155
+        },
+        {
+          "caller": "canArmorMoveToSlot",
+          "callee": "armorSupportsSlot",
+          "lineNumber": 168
+        },
+        {
+          "caller": "swapRingWithInfusion",
+          "callee": "build.update",
+          "lineNumber": 172
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 10,
+        "functionCount": 8,
+        "classCount": 0
+      }
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "nodes": [
+    {
+      "id": "file:index.html",
+      "type": "file",
+      "name": "index.html",
+      "filePath": "index.html",
+      "summary": "HTML entry point for the VoxlBlade Builder Svelte application. Loads Font Awesome CSS and bootstraps the app via main.ts.",
+      "tags": ["html", "markup", "entry-point", "svelte"],
+      "complexity": "low"
+    }
+  ],
+  "edges": []
+}

@@ -1,0 +1,144 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 3,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "src/data/raceEffects.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 49,
+      "nonEmptyLines": 43,
+      "functions": [
+        {
+          "name": "getActiveRaceEffect",
+          "startLine": 24,
+          "endLine": 26,
+          "params": [
+            "raceName",
+            "hpFillPct"
+          ]
+        },
+        {
+          "name": "getOrkTenacityBuffs",
+          "startLine": 30,
+          "endLine": 42,
+          "params": [
+            "buffs",
+            "buffDefs"
+          ]
+        },
+        {
+          "name": "calcOrkTenacityBonus",
+          "startLine": 44,
+          "endLine": 49,
+          "params": [
+            "buffs",
+            "buffDefs"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "getActiveRaceEffect",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "getOrkTenacityBuffs",
+          "line": 30,
+          "isDefault": false
+        },
+        {
+          "name": "calcOrkTenacityBonus",
+          "line": 44,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getActiveRaceEffect",
+          "callee": "RACE_CONDITIONAL_EFFECTS.find",
+          "lineNumber": 25
+        },
+        {
+          "caller": "getActiveRaceEffect",
+          "callee": "isHpGateActive",
+          "lineNumber": 25
+        },
+        {
+          "caller": "getOrkTenacityBuffs",
+          "callee": "buffs.filter",
+          "lineNumber": 35
+        },
+        {
+          "caller": "getOrkTenacityBuffs",
+          "callee": "seen.has",
+          "lineNumber": 38
+        },
+        {
+          "caller": "getOrkTenacityBuffs",
+          "callee": "seen.add",
+          "lineNumber": 39
+        },
+        {
+          "caller": "calcOrkTenacityBonus",
+          "callee": "getOrkTenacityBuffs",
+          "lineNumber": 48
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 3,
+        "functionCount": 3,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/data/Runebasedmg.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 209,
+      "nonEmptyLines": 201,
+      "functions": [
+        {
+          "name": "calculateRuneHealScaling",
+          "startLine": 44,
+          "endLine": 66,
+          "params": [
+            "runeDef",
+            "ctx"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "RUNE_DMG_DEFS",
+          "line": 68,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "calculateRuneHealScaling",
+          "callee": "calculateHealBoost",
+          "lineNumber": 64
+        }
+      ],
+      "metrics": {
+        "importCount": 4,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/LevelBar.svelte",
+      "language": "svelte",
+      "fileCategory": "code",
+      "totalLines": 398,
+      "nonEmptyLines": 357,
+      "metrics": {}
+    }
+  ]
+}

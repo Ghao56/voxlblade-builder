@@ -1,0 +1,223 @@
+﻿[
+    {
+        "order":  1,
+        "title":  "Project Setup \u0026 Bootstrap",
+        "description":  "The application boots from a standard Svelte + Vite scaffold. package.json defines the build scripts (dev, build, preview) and lists Svelte 5, Vite 8, and TypeScript as core dependencies. Vite is configured in vite.config.ts with the Svelte plugin and a PWA plugin for offline support and service worker registration. The entry point main.ts is minimal: it imports global CSS, injects Vercel analytics, and mounts the root App component to the DOM.",
+        "nodeIds":  [
+                        "file:vite.config.ts",
+                        "file:src/main.ts"
+                    ],
+        "layers":  [
+                       "layer:configuration"
+                   ],
+        "tags":  [
+                     "svelte",
+                     "vite",
+                     "pwa",
+                     "entry-point",
+                     "build-tool"
+                 ]
+    },
+    {
+        "order":  2,
+        "title":  "Type System Foundation",
+        "description":  "All game entities are modeled through TypeScript interfaces in types.ts. This file defines StatKey (the union of all stat names like physicalBoost, fireDefense, etc.), StatMap (a partial record of stat values), and the core data shapes: Race, Guild, Armor, Ring, Rune, Enchantment, and Perk. It also defines WeaponBlade, WeaponHandle, MonkGlove, and MonkEssence types with their scaling and damage type properties. The BuildState interface captures every editable field in a build, from race and guild to individual equipment slots and enchantment configurations. This file is the single source of truth for the type contracts used across the entire engine and UI.",
+        "nodeIds":  [
+                        "file:src/lib/types.ts"
+                    ],
+        "layers":  [
+                       "layer:constants-and-types"
+                   ],
+        "tags":  [
+                     "typescript",
+                     "type-definitions",
+                     "stat-system",
+                     "build-state"
+                 ]
+    },
+    {
+        "order":  3,
+        "title":  "Constants \u0026 Game Data",
+        "description":  "The constants barrel file re-exports over a dozen focused constant modules covering damage types, game thresholds, CDR formulas, boost values, healing, draconic mechanics, and stat conversions. The game data layer lives in src/data/ and contains JSON datasets for every equipment category: blades.json and handles.json define weapon parts with stats and scaling values, armors.json holds armor sets with per-slot stats, enchantments.json catalogs all enchantment modifiers, and perks.json contains 365 perk definitions with tags and descriptions. TypeScript data modules like weaponArts.ts, BuffData.ts, Boost.ts, and Perkbasedmg.ts encode the game\u0027s calculation formulas and buff/debuff definitions.",
+        "nodeIds":  [
+                        "file:src/lib/constants/index.ts"
+                    ],
+        "layers":  [
+                       "layer:game-data",
+                       "layer:constants-and-types"
+                   ],
+        "tags":  [
+                     "constants",
+                     "game-data",
+                     "json",
+                     "perks",
+                     "enchantments",
+                     "equipment"
+                 ]
+    },
+    {
+        "order":  4,
+        "title":  "Centralized State Management",
+        "description":  "The store.ts file creates the application\u0027s reactive state using Svelte\u0027s writable and derived stores. A single writable\u003cBuildState\u003e store holds all build selections, loaded from localStorage on startup and debounced-saved on every change. A derived store automatically recomputes the full build result (stats, perks, CDR, boosts, crit) whenever the build state changes by calling calcBuild. Helper functions like setEnchantment, setGuild, moveArmorSlot, and swapRingWithInfusion provide typed mutations that update the store atomically. This is the bridge between user interactions and the calculation engine.",
+        "nodeIds":  [
+                        "file:src/lib/store.ts"
+                    ],
+        "layers":  [
+                       "layer:state-management"
+                   ],
+        "tags":  [
+                     "svelte-store",
+                     "reactivity",
+                     "local-storage",
+                     "derived-state"
+                 ]
+    },
+    {
+        "order":  5,
+        "title":  "Weapon Calculation Engine",
+        "description":  "weapon.ts resolves the final weapon from a blade + handle (or glove + essence for Monk guilds). It extracts damage types and scaling values from both parts, merges their perks and attack speeds, and detects hybrid weapons (where parts contribute different scaling types) to apply a 1.5x scaling multiplier. A lookup table maps handle type + blade type combinations to weapon types (e.g., Medium Blade + Long Handle = 2-Handed Sword), and perk-driven overrides transform the base type into special weapons like Dual Wielding Daggers or Rapier. The calcWeapon and calcMonkWeapon functions return a rich WeaponResult object containing merged stats, scalings, damage types, and per-part breakdowns.",
+        "nodeIds":  [
+                        "file:src/lib/engine/weapon.ts"
+                    ],
+        "layers":  [
+                       "layer:damage-engine"
+                   ],
+        "tags":  [
+                     "weapon-calculation",
+                     "scaling",
+                     "hybrid-weapon",
+                     "monk-system"
+                 ]
+    },
+    {
+        "order":  6,
+        "title":  "Enchantment Application",
+        "description":  "enchant.ts implements the two-phase enchantment system. Phase 1 applies selector-based modifiers (Restored, Flawless) that transform base stats using predicates like \u0027positive stats\u0027 or \u0027defense stats\u0027. Phase 2 applies direct stat modifiers (Quenched, Strengthened) as multipliers and flat additions, plus enchantment effects that add or scale perks. Upgrades are applied to the modified base between phases, with armor penetration kept exempt. The enforceEnchantSlot function ensures exclusive enchantments (like Ascended variants) occupy the slot alone, and applyPerkEffectiveness scales all perks by a multiplier derived from Perk Effectiveness and Cursed stacks.",
+        "nodeIds":  [
+                        "file:src/lib/engine/enchant.ts"
+                    ],
+        "layers":  [
+                       "layer:damage-engine"
+                   ],
+        "tags":  [
+                     "enchantments",
+                     "stat-modifiers",
+                     "two-phase-system",
+                     "exclusive-enchantments"
+                 ]
+    },
+    {
+        "order":  7,
+        "title":  "Full Build Calculation Pipeline",
+        "description":  "build.ts is the heart of the calculation engine. The calcBuild function orchestrates the entire pipeline: accumulateEquipment collects stats and perks from race, guild, armor (with enchantments and upgrades), ring, rune, and weapon. finalizePerks applies Perk Effectiveness scaling, merges Buckler into Parry, and grants potency perks to their parent tags. deriveResults then computes the final stat totals, applies stat boost perks, calculates CDR (cooldown reduction) from perks and race modifiers, runs the crit calculation, assembles active buffs, and evaluates all damage boosts. The result is a BuildResult containing final stats, perks, CDR breakdown, boost breakdown, and crit data.",
+        "nodeIds":  [
+                        "file:src/lib/engine/build.ts"
+                    ],
+        "layers":  [
+                       "layer:damage-engine"
+                   ],
+        "tags":  [
+                     "build-calculation",
+                     "pipeline",
+                     "stat-accumulation",
+                     "boost-calculation"
+                 ]
+    },
+    {
+        "order":  8,
+        "title":  "Buff, Boost \u0026 Crit Systems",
+        "description":  "BuffData.ts defines every buff and debuff in the game with their effects per tenth potency, colors, and conditions. It computes active buffs from equipment, perks, weapon arts, and draconic sources, applying perk-based modifiers and duration scaling. Boost.ts defines damage multipliers from perks like Frenzy, Perfection, and Valor, using either simple multiplier-per-perk formulas or complex context-dependent calculations. crit.ts computes critical hit chance from multiple independent sources (Dexterity, Flowing Crits, Sharp Crits, Perfection) using the formula 1 - product(1 - chance) for independent probabilities, and tracks crit damage multipliers from sources like Thief Training and Vital Strikes. defense.ts resolves defense sources into percent and flat multipliers, computing true damage reduction.",
+        "nodeIds":  [
+                        "file:src/data/BuffData.ts",
+                        "file:src/data/Boost.ts",
+                        "file:src/lib/crit.ts",
+                        "file:src/lib/defense.ts"
+                    ],
+        "layers":  [
+                       "layer:damage-engine",
+                       "layer:game-data"
+                   ],
+        "tags":  [
+                     "buffs",
+                     "boosts",
+                     "critical-hits",
+                     "defense",
+                     "damage-multipliers"
+                 ]
+    },
+    {
+        "order":  9,
+        "title":  "Reusable UI Component Library",
+        "description":  "The ui/ directory contains small, composable Svelte 5 components using runes ($props) for configuration. Badge.svelte renders inline labels with color variants (green, amber, red, purple, blue, teal, muted, draco), size options (xs, sm, md), and shape modifiers (square, solid, tag). Card.svelte provides a container with variant styles (default, surface, ghost), accent borders matching the badge colors, configurable padding/gap, and optional hover interaction. These components form the design system used throughout the application.",
+        "nodeIds":  [
+                        "file:src/lib/ui/Badge.svelte",
+                        "file:src/lib/ui/Card.svelte"
+                    ],
+        "layers":  [
+                       "layer:ui-components"
+                   ],
+        "tags":  [
+                     "svelte-5",
+                     "design-system",
+                     "reusable-components",
+                     "badges",
+                     "cards"
+                 ]
+    },
+    {
+        "order":  10,
+        "title":  "Damage Analysis \u0026 Breakdown UI",
+        "description":  "DamageAnalyzer.svelte (6,800+ lines) is the primary damage analysis interface. It reads the build store and result, then computes per-hit damage breakdowns by combining weapon base damage, scaling multipliers, buff effects, crit multipliers, defense reduction, and armor penetration. BaseDamageCalc.svelte renders the detailed hit-by-hit damage table with typed damage columns, crit overlays, and proc coefficient scaling. BuffList.svelte displays all active buffs and debuffs with their potency, duration, and effect descriptions, pulling from BuffData.ts to compute real-time buff interactions.",
+        "nodeIds":  [
+                        "file:src/DamageAnalyzer.svelte",
+                        "file:src/BaseDamageCalc.svelte",
+                        "file:src/BuffList.svelte"
+                    ],
+        "layers":  [
+                       "layer:ui-components"
+                   ],
+        "tags":  [
+                     "damage-analysis",
+                     "hit-breakdown",
+                     "buff-display",
+                     "complex-ui"
+                 ]
+    },
+    {
+        "order":  11,
+        "title":  "Root Application \u0026 Orchestration",
+        "description":  "App.svelte is the root component that wires everything together. It imports the build store and result, renders modal-based selection for race, guild, armor, weapons, and accessories, manages drag-and-drop for armor slot reordering, handles enchantment selection with inline editors, and provides search with fuzzy matching (Levenshtein distance). The component computes derived values like weapon result, stat rows, perk rows, and damage type breakdowns, then passes them to child components. Two main tabs switch between the overview (equipment, stats, perks) and the damage analyzer. An undo system preserves the previous build state for a brief window after clearing.",
+        "nodeIds":  [
+                        "file:src/App.svelte"
+                    ],
+        "layers":  [
+                       "layer:ui-components",
+                       "layer:state-management"
+                   ],
+        "tags":  [
+                     "root-component",
+                     "orchestration",
+                     "modals",
+                     "drag-and-drop",
+                     "search"
+                 ]
+    },
+    {
+        "order":  12,
+        "title":  "Deployment \u0026 CI/CD",
+        "description":  "The project deploys as a static site via GitHub Actions (static.yml) to Vercel. Vite\u0027s PWA plugin generates a service worker with cache-first strategies for static assets and stale-while-revalidate for navigation. The build output is a single-page application served from an index.html shell, with the base path configurable via VITE_BASE_PATH for hosting under subdirectories.",
+        "nodeIds":  [
+
+                    ],
+        "layers":  [
+                       "layer:configuration"
+                   ],
+        "tags":  [
+                     "deployment",
+                     "github-actions",
+                     "vercel",
+                     "pwa",
+                     "static-site"
+                 ]
+    }
+]

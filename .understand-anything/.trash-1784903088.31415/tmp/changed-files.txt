@@ -1,0 +1,8 @@
+﻿index.html
+src/BuildSaves.svelte
+src/DamageAnalyzer.svelte
+src/LevelBar.svelte
+src/data/BuffData.ts
+src/data/Runebasedmg.ts
+src/data/raceEffects.ts
+src/lib/store.ts

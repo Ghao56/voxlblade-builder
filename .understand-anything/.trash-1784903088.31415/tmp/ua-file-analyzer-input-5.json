@@ -1,0 +1,13 @@
+{
+  "projectRoot": "C:\\Users\\Administrator\\Downloads\\voxlblade-builder",
+  "batchFiles": [
+    {"path": "src/BuildSaves.svelte", "language": "svelte", "sizeLines": 596, "fileCategory": "code"},
+    {"path": "src/DamageAnalyzer.svelte", "language": "svelte", "sizeLines": 6864, "fileCategory": "code"},
+    {"path": "src/data/BuffData.ts", "language": "typescript", "sizeLines": 1874, "fileCategory": "code"}
+  ],
+  "batchImportData": {
+    "src/BuildSaves.svelte": ["./EmotionalTracker.svelte", "./lib/store", "./lib/stores/toast", "./lib/ui/Button.svelte", "./lib/types"],
+    "src/DamageAnalyzer.svelte": ["./lib/store", "./lib/engine", "./BaseDamageCalc.svelte", "./ScalingBreakdownRow.svelte", "./data/weaponArts", "./data/weapon base dmg", "./lib/types", "./data/BuffData", "./data/debuffCombatEffects", "./data/draconicBuffs", "./data/SummonData", "./CritIcon.svelte", "./data/Perkbasedmg", "./lib/defense", "./data/raceEffects", "./data/defensivePerks", "./data/weaponConditionalBoosts", "./lib/engine/data/character", "./data/Runebasedmg", "./data/mountRunes", "./data/draconicColorEffects", "./data/draconicRunes", "./data/HealBoost", "./lib/utils", "./data/selfDamagePerks", "./lib/damageTypeResolve", "./lib/engine/dmgTypeBonuses", "./data/TypedDmgBoost", "./lib/constants/damage-types", "./data/stanceOverlays", "./data/perkAutoDebuffs", "./lib/ui/Badge.svelte", "./data/enemyHpEffects", "./data/DoTDamage", "./data/procCoefficients", "./data/Boost"],
+    "src/data/BuffData.ts": ["../lib/utils", "../lib/constants"]
+  }
+}
