@@ -1059,8 +1059,8 @@ export let cauterizeScalingMult: number = 1
           <div class="bdc-enemy-hp-fill {enemyHpFill > 50 ? 'hp-high' : enemyHpFill > 25 ? 'hp-medium' : 'hp-low'}" style="width:{enemyHpFill}%"></div>
           <span class="bdc-enemy-hp-label">{enemyHpFill}% HP</span>
         </div>
-        {#if armorPen + globalArmorPenetration > 0}
-          <Badge color="#e5e5e5" size="xs">🗡 {fmt(armorPen + globalArmorPenetration)} Pen</Badge>
+        {#if armorPen + globalArmorPenetration + crushingPressureAmt * 10 > 0}
+          <Badge color="#e5e5e5" size="xs">🗡 {fmt(armorPen + globalArmorPenetration + crushingPressureAmt * 10)} Pen</Badge>
         {/if}
         {#if resolvedDebuffs.length > 0}
           <div class="bdc-debuff-row">
@@ -1636,7 +1636,7 @@ export let cauterizeScalingMult: number = 1
     {/if}
     {#if _dotTooltip.defMult !== 1}
       <div class="bdc-fr">
-        <span class="bdc-fr-label">{_dotTooltip.dmgType} Defense <span class="bdc-tt-muted">({fmt(_dotTooltip.defPct)}% / Pen {fmt(armorPen + globalArmorPenetration)})</span></span>
+        <span class="bdc-fr-label">{_dotTooltip.dmgType} Defense <span class="bdc-tt-muted">({fmt(_dotTooltip.defPct)}% / Pen {fmt(armorPen + globalArmorPenetration + crushingPenForType(_dotTooltip.dmgType ?? ''))})</span></span>
         <span class="bdc-fr-val bdc-fr-val--def" class:bdc-fr-val--amplify={_dotTooltip.defMult > 1}>× {fmtMult(_dotTooltip.defMult)}</span>
       </div>
     {/if}
