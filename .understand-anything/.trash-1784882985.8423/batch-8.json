@@ -1,0 +1,529 @@
+{
+  "batchIndex": 8,
+  "nodes": [
+    {
+      "id": "file:src/lib/engine/data/character.ts",
+      "type": "file",
+      "name": "character.ts",
+      "filePath": "src/lib/engine/data/character.ts",
+      "summary": "Loads and indexes race, guild, and perk data from JSON files into lookup maps. Provides getter functions for retrieving race, guild, guild-rank, and perk objects by name, plus a helper to detect the Monk guild.",
+      "tags": ["engine", "data", "character", "race", "guild", "perk", "lookup"],
+      "complexity": "low",
+      "languageNotes": "TypeScript; exports typed arrays and helper lookup functions from JSON data sources."
+    },
+    {
+      "id": "file:src/lib/engine/data/equipment.ts",
+      "type": "file",
+      "name": "equipment.ts",
+      "filePath": "src/lib/engine/data/equipment.ts",
+      "summary": "Loads and indexes armor, ring, rune, and enchantment data from JSON, building lookup maps for fast access. Provides getter functions and armor-slot inspection utilities (part lookup, slot-type detection).",
+      "tags": ["engine", "data", "equipment", "armor", "ring", "rune", "enchantment", "lookup"],
+      "complexity": "medium",
+      "languageNotes": "TypeScript; re-exports raw enchantment data alongside typed arrays; armor parts are merged from sharedPart defaults."
+    },
+    {
+      "id": "file:src/lib/engine/data/weapons.ts",
+      "type": "file",
+      "name": "weapons.ts",
+      "filePath": "src/lib/engine/data/weapons.ts",
+      "summary": "Loads and indexes weapon blade, handle, glove, and essence data from JSON files into lookup maps. Exports typed arrays and per-type getter functions.",
+      "tags": ["engine", "data", "weapon", "blade", "handle", "glove", "essence", "lookup"],
+      "complexity": "low",
+      "languageNotes": "TypeScript; straightforward JSON import and Object.fromEntries pattern for map construction."
+    },
+    {
+      "id": "file:src/lib/engine/dmgTypeBonuses.ts",
+      "type": "file",
+      "name": "dmgTypeBonuses.ts",
+      "filePath": "src/lib/engine/dmgTypeBonuses.ts",
+      "summary": "Defines perk-to-damage-type bonus mappings (Void Rage, Channeled Weapon, Emotional, Draconic Blood) with conditional logic. Exports buildDmgTypeBonuses which computes a cumulative damage-type bonus record from active perks and context.",
+      "tags": ["engine", "damage", "perk", "bonus", "draconic", "calculation"],
+      "complexity": "medium",
+      "languageNotes": "TypeScript; uses conditional objects with getType/getAmountPerStack callbacks; references external constants for perk values."
+    },
+    {
+      "id": "file:src/lib/engine/enchant.ts",
+      "type": "file",
+      "name": "enchant.ts",
+      "filePath": "src/lib/engine/enchant.ts",
+      "summary": "Core enchantment application engine. Implements a two-phase stat modifier system (selector transforms then direct modifiers), perk effectiveness scaling, infusion halves stats, and enchant-slot enforcement logic including exclusive enchant handling.",
+      "tags": ["engine", "enchantment", "stat", "modifier", "perk", "effectiveness", "infusion", "slot-enforcement"],
+      "complexity": "high",
+      "languageNotes": "TypeScript; complex multi-phase stat application with multiplier/addition modifiers; uses STAT_KEYS iteration; builds exempt perk sets from raw enchantment data."
+    },
+    {
+      "id": "file:src/lib/engine/engine.ts",
+      "type": "file",
+      "name": "engine.ts",
+      "filePath": "src/lib/engine/engine.ts",
+      "summary": "Barrel re-export module for the engine package. Aggregates and re-exports all public APIs from data, shrine, enchant, weapon, build, and format submodules.",
+      "tags": ["engine", "barrel", "re-export"],
+      "complexity": "low",
+      "languageNotes": "TypeScript; six re-export statements only."
+    },
+    {
+      "id": "file:src/lib/engine/format.ts",
+      "type": "file",
+      "name": "format.ts",
+      "filePath": "src/lib/engine/format.ts",
+      "summary": "Provides stat formatting utilities: formatStat rounds values and appends percent signs for percent-type stats; formatLabel converts camelCase keys to Title Case labels.",
+      "tags": ["engine", "format", "display", "utility"],
+      "complexity": "low",
+      "languageNotes": "TypeScript; simple string formatting functions."
+    },
+    {
+      "id": "file:src/lib/engine/shrine.ts",
+      "type": "file",
+      "name": "shrine.ts",
+      "filePath": "src/lib/engine/shrine.ts",
+      "summary": "Implements shrine tier multipliers (1–5 with decreasing multipliers from 3.0x to 1.0x) and applies them to weapon scalings and stat maps. Used to model the in-game shrine buff on gear.",
+      "tags": ["engine", "shrine", "multiplier", "scaling", "stat"],
+      "complexity": "low",
+      "languageNotes": "TypeScript; exports a constant multiplier map and two apply functions for scalings and stats."
+    },
+    {
+      "id": "file:src/lib/engine/weapon.ts",
+      "type": "file",
+      "name": "weapon.ts",
+      "filePath": "src/lib/engine/weapon.ts",
+      "summary": "Core weapon calculation engine. Merges blade/handle or glove/essence parts, applies shrine multipliers, detects hybrid weapons (1.5x scaling bonus), resolves weapon types with perk-based overrides (Dual Wielding, Kama Blades, etc.), and computes monk weapon bonuses per rank. Exports the complete WeaponResult interface.",
+      "tags": ["engine", "weapon", "calculation", "hybrid", "shrine", "monk", "blade", "handle", "scaling"],
+      "complexity": "high",
+      "languageNotes": "TypeScript; large module with many helper functions (extractDamageAndScalings, mergePartPerks, mergeScalingsAndStats, buildWeaponResult); complex weapon-type resolution via override table."
+    },
+    {
+      "id": "file:src/lib/Modal.svelte",
+      "type": "file",
+      "name": "Modal.svelte",
+      "filePath": "src/lib/Modal.svelte",
+      "summary": "Reusable modal dialog component with fade/fly transitions, focus trapping, and auto-focus on open. Provides extensive global CSS for modal list items, stat pills, perk tags, rank buttons, and filter selects used by all modal variants.",
+      "tags": ["ui", "modal", "dialog", "overlay", "component", "a11y"],
+      "complexity": "medium",
+      "languageNotes": "Svelte 4 syntax with export let props and slot; uses Svelte transitions (fade, fly); has both instance and module script blocks."
+    },
+    {
+      "id": "file:src/lib/modals/AccessorySelectModal.svelte",
+      "type": "file",
+      "name": "AccessorySelectModal.svelte",
+      "filePath": "src/lib/modals/AccessorySelectModal.svelte",
+      "summary": "Modal for selecting armor pieces (helmet/chestplate/leggings), rings, runes, and infusion items. Computes effective boost values using weapon scalings and supports Brawny conversion simulation. Integrates search, tag filtering, and stat sort modes.",
+      "tags": ["ui", "modal", "accessory", "armor", "ring", "rune", "infusion", "select"],
+      "complexity": "high",
+      "languageNotes": "Svelte 4 syntax; uses reactive declarations heavily; imports from store, engine, types, and multiple shared UI components."
+    },
+    {
+      "id": "file:src/lib/modals/GuildModal.svelte",
+      "type": "file",
+      "name": "GuildModal.svelte",
+      "filePath": "src/lib/modals/GuildModal.svelte",
+      "summary": "Modal for selecting a guild and its rank. Displays guild ranks with per-rank stats and perks, supports search and tag filtering. Uses setGuild helper from the store to update build state.",
+      "tags": ["ui", "modal", "guild", "rank", "select"],
+      "complexity": "medium",
+      "languageNotes": "Svelte 4 syntax; contains a dynamic import of engine for tag matching in the filter callback."
+    },
+    {
+      "id": "file:src/lib/modals/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "src/lib/modals/index.ts",
+      "summary": "Barrel module that re-exports all modal components: RaceModal, GuildModal, AccessorySelectModal, and WeaponPartModal.",
+      "tags": ["barrel", "re-export", "modal"],
+      "complexity": "low",
+      "languageNotes": "TypeScript; four default re-exports."
+    },
+    {
+      "id": "file:src/lib/modals/RaceModal.svelte",
+      "type": "file",
+      "name": "RaceModal.svelte",
+      "filePath": "src/lib/modals/RaceModal.svelte",
+      "summary": "Modal for selecting a character race. Lists all races with passive descriptions and stat modifier pills, supports search filtering, and updates the build store on selection.",
+      "tags": ["ui", "modal", "race", "select"],
+      "complexity": "low",
+      "languageNotes": "Svelte 4 syntax; simple filtered list with highlight and stat display."
+    },
+    {
+      "id": "file:src/lib/modals/WeaponPartModal.svelte",
+      "type": "file",
+      "name": "WeaponPartModal.svelte",
+      "filePath": "src/lib/modals/WeaponPartModal.svelte",
+      "summary": "Modal for selecting weapon parts (blade, handle, glove, or essence). Displays tier badges, type badges, attack speed, stats, and perks. Supports tier and type dropdown filters alongside stat-based filtering.",
+      "tags": ["ui", "modal", "weapon", "blade", "handle", "glove", "essence", "select"],
+      "complexity": "medium",
+      "languageNotes": "Svelte 4 syntax; conditionally adapts title/storeKey/labels based on modalType prop."
+    },
+    {
+      "id": "file:src/lib/StatFilterShared.svelte",
+      "type": "file",
+      "name": "StatFilterShared.svelte",
+      "filePath": "src/lib/StatFilterShared.svelte",
+      "summary": "Shared stat-filter chip component with include/exclude/dimmed states. Exports a buildStatMaps utility for creating label and color maps from stat group definitions. Handles click, contextmenu, and keyboard events via Svelte event dispatching.",
+      "tags": ["ui", "stat-filter", "chip", "toggle", "shared-component"],
+      "complexity": "medium",
+      "languageNotes": "Svelte 4 syntax; has both module-level script (for buildStatMaps) and instance script; uses createEventDispatcher."
+    },
+    {
+      "id": "file:src/lib/stats/elementalBoosts.ts",
+      "type": "file",
+      "name": "elementalBoosts.ts",
+      "filePath": "src/lib/stats/elementalBoosts.ts",
+      "summary": "Defines the canonical list of elemental boost stat definitions (dexterity through summon) with their display labels, plus a negative variant map prefixed with 'neg:' for stat filtering UI.",
+      "tags": ["stats", "elemental", "boost", "definition"],
+      "complexity": "low",
+      "languageNotes": "TypeScript; exports two arrays of StatDef objects."
+    },
+    {
+      "id": "file:src/lib/stats/filterActions.ts",
+      "type": "file",
+      "name": "filterActions.ts",
+      "filePath": "src/lib/stats/filterActions.ts",
+      "summary": "Provides a factory function createFilterActions that returns toggle, remove, clear, and keyboard handler methods for managing an include/exclude filter state map. Used by stat filter UIs.",
+      "tags": ["stats", "filter", "action", "utility"],
+      "complexity": "low",
+      "languageNotes": "TypeScript; pure functional factory pattern with getter/setter/notify callbacks."
+    },
+    {
+      "id": "file:src/lib/store.ts",
+      "type": "file",
+      "name": "store.ts",
+      "filePath": "src/lib/store.ts",
+      "summary": "Central Svelte store managing the entire build state. Provides the build writable store with localStorage persistence, a derived result store via calcBuild, and helper functions for enchantment management, guild selection, armor slot movement/swapping, and ring-infusion swapping.",
+      "tags": ["store", "state", "build", "persistence", "svelte-store"],
+      "complexity": "high",
+      "languageNotes": "TypeScript; uses Svelte writable/derived stores; debounced localStorage save; complex armor slot type mapping and move/swap logic."
+    },
+    {
+      "id": "file:src/lib/stores/toast.ts",
+      "type": "file",
+      "name": "toast.ts",
+      "filePath": "src/lib/stores/toast.ts",
+      "summary": "Toast notification store using Svelte writable. Provides addToast and removeToast functions with auto-expiry via setTimeout. Supports success, error, info, and warning toast types.",
+      "tags": ["store", "toast", "notification", "svelte-store"],
+      "complexity": "low",
+      "languageNotes": "TypeScript; simple writable store with auto-incrementing IDs and timed removal."
+    },
+    {
+      "id": "file:src/lib/Toast.svelte",
+      "type": "file",
+      "name": "Toast.svelte",
+      "filePath": "src/lib/Toast.svelte",
+      "summary": "Toast notification display component. Renders active toasts from the toast store with type-specific styling (success/error/info/warning) and icons, fly-in transition, and manual dismiss buttons.",
+      "tags": ["ui", "toast", "notification", "component"],
+      "complexity": "low",
+      "languageNotes": "Svelte 4 syntax; subscribes to toast store reactively; uses Svelte fly transition."
+    },
+    {
+      "id": "file:src/lib/types.ts",
+      "type": "file",
+      "name": "types.ts",
+      "filePath": "src/lib/types.ts",
+      "summary": "Core type definitions for the entire application. Defines StatKey/StatMap from a STAT_CONFIG object, interfaces for Race, Guild, Armor, Ring, Rune, Enchantment, Perk, BuildState, weapon types (Blade, Handle, MonkGlove, MonkEssence), ProcCoefficient, BoostEntry/Result, WeaponBaseDmg, and utility functions like applyUpgrade, getProcCoeffValue, and canProc.",
+      "tags": ["types", "interface", "stat", "build", "weapon", "enchantment", "guild", "race", "core"],
+      "complexity": "high",
+      "languageNotes": "TypeScript; extensive type-only exports; uses 'as const' for STAT_CONFIG; re-exports from constants/damage-types; defines complex intersection types for weapon parts with scaling keys."
+    },
+    {
+      "id": "file:src/lib/ui/Badge.svelte",
+      "type": "file",
+      "name": "Badge.svelte",
+      "filePath": "src/lib/ui/Badge.svelte",
+      "summary": "Reusable badge/chip UI component supporting multiple color variants (green, amber, red, purple, blue, teal, muted, draco), sizes (xs, sm, md), square/solid/mono/tag modes, and optional custom color via inline styles. Uses Svelte 5 snippet API for children.",
+      "tags": ["ui", "badge", "chip", "component", "svelte5"],
+      "complexity": "low",
+      "languageNotes": "Svelte 5 syntax using $props() and Snippet type for children."
+    },
+    {
+      "id": "file:src/lib/ui/Button.svelte",
+      "type": "file",
+      "name": "Button.svelte",
+      "filePath": "src/lib/ui/Button.svelte",
+      "summary": "Reusable button UI component with semantic color variants (positive, negative, warning, info, neutral), three sizes, active state toggle, and disabled support. Uses Svelte 5 snippet API.",
+      "tags": ["ui", "button", "component", "svelte5"],
+      "complexity": "low",
+      "languageNotes": "Svelte 5 syntax using $props() and Snippet type for children."
+    },
+    {
+      "id": "file:src/lib/ui/Card.svelte",
+      "type": "file",
+      "name": "Card.svelte",
+      "filePath": "src/lib/ui/Card.svelte",
+      "summary": "Reusable card container component with variant styles (default, surface, ghost), hoverable mode, colored accent borders, configurable padding/gap, and optional click handler with keyboard accessibility. Uses Svelte 5 snippet API.",
+      "tags": ["ui", "card", "container", "component", "svelte5"],
+      "complexity": "low",
+      "languageNotes": "Svelte 5 syntax using $props() and Snippet type for children."
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/lib/engine/data/character.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "label": "imports type { Race, Guild, GuildRank, Perk }",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/data/equipment.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "label": "imports type { Armor, ArmorPart, Ring, Rune, Enchantment }",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/data/weapons.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "label": "imports type { WeaponBlade, WeaponHandle, MonkGlove, MonkEssence }",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/enchant.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "label": "imports { StatKey, StatModifier, StatMap, Enchantment, STAT_KEYS, PERCENT_STATS, applyUpgrade }",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/engine.ts",
+      "target": "file:src/lib/engine/shrine.ts",
+      "type": "imports",
+      "label": "re-exports from ./shrine",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/engine.ts",
+      "target": "file:src/lib/engine/enchant.ts",
+      "type": "imports",
+      "label": "re-exports from ./enchant",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/engine.ts",
+      "target": "file:src/lib/engine/weapon.ts",
+      "type": "imports",
+      "label": "re-exports from ./weapon",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/engine.ts",
+      "target": "file:src/lib/engine/format.ts",
+      "type": "imports",
+      "label": "re-exports from ./format",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/format.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "label": "imports { PERCENT_STATS }",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/shrine.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "label": "imports type { StatMap } and { STAT_KEYS }",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/weapon.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "label": "imports type { StatMap, WeaponBlade, WeaponHandle, MonkGlove, MonkEssence } and { STAT_KEYS }",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/weapon.ts",
+      "target": "file:src/lib/engine/shrine.ts",
+      "type": "imports",
+      "label": "imports { applyShrineToScalings, applyShrineToStats, SHRINE_MULTIPLIERS }",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/modals/AccessorySelectModal.svelte",
+      "target": "file:src/lib/store.ts",
+      "type": "imports",
+      "label": "imports { build }",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/modals/AccessorySelectModal.svelte",
+      "target": "file:src/lib/engine/engine.ts",
+      "type": "imports",
+      "label": "imports { getArmorPart, formatStat, formatLabel }",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/modals/AccessorySelectModal.svelte",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "label": "imports { SCALING_TO_BOOST }",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/modals/AccessorySelectModal.svelte",
+      "target": "file:src/lib/Modal.svelte",
+      "type": "imports",
+      "label": "imports Modal component",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/modals/AccessorySelectModal.svelte",
+      "target": "file:src/lib/ui/Badge.svelte",
+      "type": "imports",
+      "label": "imports Badge component",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/modals/GuildModal.svelte",
+      "target": "file:src/lib/store.ts",
+      "type": "imports",
+      "label": "imports { build, setGuild }",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/modals/GuildModal.svelte",
+      "target": "file:src/lib/engine/engine.ts",
+      "type": "imports",
+      "label": "imports { guilds, formatStat, formatLabel }",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/modals/GuildModal.svelte",
+      "target": "file:src/lib/Modal.svelte",
+      "type": "imports",
+      "label": "imports Modal component",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/modals/index.ts",
+      "target": "file:src/lib/modals/RaceModal.svelte",
+      "type": "imports",
+      "label": "re-exports RaceModal",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/modals/index.ts",
+      "target": "file:src/lib/modals/GuildModal.svelte",
+      "type": "imports",
+      "label": "re-exports GuildModal",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/modals/index.ts",
+      "target": "file:src/lib/modals/AccessorySelectModal.svelte",
+      "type": "imports",
+      "label": "re-exports AccessorySelectModal",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/modals/index.ts",
+      "target": "file:src/lib/modals/WeaponPartModal.svelte",
+      "type": "imports",
+      "label": "re-exports WeaponPartModal",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/modals/RaceModal.svelte",
+      "target": "file:src/lib/store.ts",
+      "type": "imports",
+      "label": "imports { build }",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/modals/RaceModal.svelte",
+      "target": "file:src/lib/engine/engine.ts",
+      "type": "imports",
+      "label": "imports { races, formatStat, formatLabel }",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/modals/RaceModal.svelte",
+      "target": "file:src/lib/Modal.svelte",
+      "type": "imports",
+      "label": "imports Modal component",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/modals/WeaponPartModal.svelte",
+      "target": "file:src/lib/store.ts",
+      "type": "imports",
+      "label": "imports { build }",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/modals/WeaponPartModal.svelte",
+      "target": "file:src/lib/engine/engine.ts",
+      "type": "imports",
+      "label": "imports { formatStat }",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/modals/WeaponPartModal.svelte",
+      "target": "file:src/lib/Modal.svelte",
+      "type": "imports",
+      "label": "imports Modal component",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/modals/WeaponPartModal.svelte",
+      "target": "file:src/lib/ui/Badge.svelte",
+      "type": "imports",
+      "label": "imports Badge component",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "label": "imports type { BuildState, EnchantSlot }",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "file:src/lib/engine/engine.ts",
+      "type": "imports",
+      "label": "imports { calcBuild, races, enforceEnchantSlot, armorSupportsSlot }",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/Toast.svelte",
+      "target": "file:src/lib/stores/toast.ts",
+      "type": "imports",
+      "label": "imports { toasts, removeToast }",
+      "weight": 0.7,
+      "direction": "forward"
+    }
+  ]
+}

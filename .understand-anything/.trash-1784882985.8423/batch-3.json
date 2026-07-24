@@ -1,0 +1,301 @@
+{
+  "batchIndex": 3,
+  "nodes": [
+    {
+      "id": "config:.fallowrc.json",
+      "type": "config",
+      "name": ".fallowrc.json",
+      "filePath": ".fallowrc.json",
+      "summary": "Fallow dead-code linter configuration. Defines entry points (src/index.* and src/main.*), sets duplicate detection threshold to minOccurrences: 3, enables unused-dependencies warnings, and specifies ignoreExports for Svelte modal components and constants that are intentionally unused.",
+      "tags": ["linting", "config", "dead-code", "fallow", "static-analysis"],
+      "complexity": "low",
+      "languageNotes": "JSONC format with inline comments. Schema-validated against fallow's JSON Schema."
+    },
+    {
+      "id": "config:.gitignore",
+      "type": "config",
+      "name": ".gitignore",
+      "filePath": ".gitignore",
+      "summary": "Git ignore rules. Excludes logs, node_modules, dist, dist-ssr, local env files, and common IDE/editor directories (VSCode, JetBrains, macOS artifacts, Visual Studio).",
+      "tags": ["git", "config", "vcs"],
+      "complexity": "low",
+      "languageNotes": "Standard gitignore pattern syntax."
+    },
+    {
+      "id": "document:AGENTS.md",
+      "type": "document",
+      "name": "AGENTS.md",
+      "filePath": "AGENTS.md",
+      "summary": "Agent context file providing AI agents with project overview, structure, development workflow, testing instructions, and interaction guidelines for the voxlblade-builder codebase. Documents tech stack (Svelte 5, Vite, TypeScript, Tailwind CSS v4, Vitest, pnpm).",
+      "tags": ["documentation", "agent-context", "onboarding", "project-overview"],
+      "complexity": "low",
+      "languageNotes": "Markdown with embedded code blocks and directory tree diagram."
+    },
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "Project README from the Svelte + TypeScript + Vite template. Covers recommended IDE setup, explains why this template was chosen over SvelteKit, technical considerations for type configuration (global.d.ts vs compilerOptions.types), and HMR behavior.",
+      "tags": ["documentation", "readme", "svelte", "vite", "template"],
+      "complexity": "low",
+      "languageNotes": "Markdown with inline TypeScript code examples and external links."
+    },
+    {
+      "id": "config:fallow-output.json",
+      "type": "config",
+      "name": "fallow-output.json",
+      "filePath": "fallow-output.json",
+      "summary": "Fallow dead-code analysis output (schema v7, v2.102.0). Found 28 total issues: 1 unused file (svelte.config.js), 23 unused exports across src/lib/engine.ts (12), src/data/* (6), src/lib/defense.ts (2), src/lib/types.ts (1), src/lib/utils.ts (1), 2 unused types in src/data/SummonData.ts, and 2 duplicate exports (modalSearch, value). Includes auto-fix actions and next-step recommendations.",
+      "tags": ["static-analysis", "fallow", "dead-code", "linting-output"],
+      "complexity": "medium",
+      "languageNotes": "JSON output from fallow CLI. Contains structured issue reports with file paths, line numbers, span offsets, and actionable fix suggestions."
+    },
+    {
+      "id": "config:fallow-security.json",
+      "type": "config",
+      "name": "fallow-security.json",
+      "filePath": "fallow-security.json",
+      "summary": "Fallow security analysis output (schema v7, v2.102.0). Found 25 tainted-sink findings: dangerous-html (CWE-79) in src/DidYouMean.svelte, src/SuggestDrop.svelte, and src/App.svelte (22 instances of template.innerHTML assignments), plus 1 dynamic-regex (CWE-1333) in App.svelte. All low severity, none reachable from untrusted sources. 250 unresolved callee sites mostly from dynamic-dispatch.",
+      "tags": ["static-analysis", "fallow", "security", "xss", "dangerous-html"],
+      "complexity": "medium",
+      "languageNotes": "JSON security report with CWE identifiers, reachability analysis, blast radius metrics, and dynamic-dispatch call resolution diagnostics."
+    },
+    {
+      "id": "markup:index.html",
+      "type": "markup",
+      "name": "index.html",
+      "filePath": "index.html",
+      "summary": "Vite application entry HTML. Minimal boilerplate with meta charset/viewport, favicon reference (/favicon.svg), page title 'VoxlBlade Builder', a root #app div for Svelte mounting, and a module script loading /src/main.ts.",
+      "tags": ["html", "entry-point", "vite", "svelte"],
+      "complexity": "low",
+      "languageNotes": "Standard HTML5 doctype. Vite processes this as the dev server and build entry point, injecting scripts during bundling."
+    },
+    {
+      "id": "config:package-lock.json",
+      "type": "config",
+      "name": "package-lock.json",
+      "filePath": "package-lock.json",
+      "summary": "npm lock file. Pinned dependency tree for the project's npm dependencies. Auto-generated; should not be manually edited.",
+      "tags": ["npm", "lock-file", "dependencies"],
+      "complexity": "high",
+      "languageNotes": "Auto-generated JSON lock file. 7352 lines of resolved dependency versions and integrity hashes."
+    },
+    {
+      "id": "config:package.json",
+      "type": "config",
+      "name": "package.json",
+      "filePath": "package.json",
+      "summary": "Project manifest for 'voxlblade'. Defines npm scripts (dev, build, preview, check), devDependencies (Playwright, Svelte 5, TypeScript 6, Vite 8, ESLint, fallow, vite-plugin-pwa), and a single runtime dependency (@vercel/analytics). Package type is ESM.",
+      "tags": ["npm", "manifest", "dependencies", "scripts", "project-config"],
+      "complexity": "low",
+      "languageNotes": "JSON manifest. Key versions: svelte ^5.55.4, typescript ~6.0.2, vite ^8.0.10."
+    },
+    {
+      "id": "config:pnpm-lock.yaml",
+      "type": "config",
+      "name": "pnpm-lock.yaml",
+      "filePath": "pnpm-lock.yaml",
+      "summary": "pnpm lock file. Pinned dependency tree for the project's pnpm dependencies. Auto-generated; should not be manually edited.",
+      "tags": ["pnpm", "lock-file", "dependencies"],
+      "complexity": "high",
+      "languageNotes": "Auto-generated YAML lock file. 4796 lines of resolved dependency versions, integrity hashes, and peer dependency resolutions."
+    },
+    {
+      "id": "document:ts-errors.txt",
+      "type": "document",
+      "name": "ts-errors.txt",
+      "filePath": "ts-errors.txt",
+      "summary": "Empty TypeScript error log file. Contains no content; likely used as a placeholder or output target for TypeScript compiler error capture.",
+      "tags": ["typescript", "error-log", "empty"],
+      "complexity": "low",
+      "languageNotes": "Empty text file, 0 lines."
+    },
+    {
+      "id": "config:tsconfig.app.json",
+      "type": "config",
+      "name": "tsconfig.app.json",
+      "filePath": "tsconfig.app.json",
+      "summary": "TypeScript configuration for the application source code. Extends @tsconfig/svelte, targets ES2023, uses ESNext modules, enables allowJs/checkJs for mixed JS/TS in .svelte files, includes all .ts/.js/.svelte files under src/.",
+      "tags": ["typescript", "config", "svelte", "compiler-options"],
+      "complexity": "low",
+      "languageNotes": "JSON5-style config. Uses noEmit (bundler mode), moduleDetection: force, tsBuildInfoFile for incremental builds."
+    },
+    {
+      "id": "config:tsconfig.json",
+      "type": "config",
+      "name": "tsconfig.json",
+      "filePath": "tsconfig.json",
+      "summary": "Root TypeScript configuration. Simply extends tsconfig.app.json with no overrides, serving as the project-level default for IDE and editor integration.",
+      "tags": ["typescript", "config", "root-config"],
+      "complexity": "low",
+      "languageNotes": "Minimal 3-line JSON config. Acts as the root tsconfig that editors and tools resolve to by default."
+    },
+    {
+      "id": "config:tsconfig.node.json",
+      "type": "config",
+      "name": "tsconfig.node.json",
+      "filePath": "tsconfig.node.json",
+      "summary": "TypeScript configuration for Node.js/Vite tooling files. Targets ES2023, uses bundler module resolution, enables strict linting (noUnusedLocals/Parameters, noFallthroughCases), verbatimModuleSyntax, and only includes vite.config.ts.",
+      "tags": ["typescript", "config", "node", "vite", "tooling"],
+      "complexity": "low",
+      "languageNotes": "Separate tsconfig for build tooling. Uses erasableSyntaxOnly for strip-only transforms, allowImportingTsExtensions for bundler resolution."
+    },
+    {
+      "id": "config:vercel.json",
+      "type": "config",
+      "name": "vercel.json",
+      "filePath": "vercel.json",
+      "summary": "Vercel deployment configuration. Sets build command to 'npm run build', output directory to 'dist', framework to 'vite'. Configures cache headers: immutable 1-year cache for /assets/*, must-revalidate for /sw.js and /index.html.",
+      "tags": ["deployment", "vercel", "config", "caching", "headers"],
+      "complexity": "low",
+      "languageNotes": "JSON config for Vercel platform. Cache-Control headers optimize static asset delivery while ensuring HTML and service worker stay fresh."
+    }
+  ],
+  "edges": [
+    {
+      "source": "config:tsconfig.json",
+      "target": "config:tsconfig.app.json",
+      "type": "extends",
+      "label": "extends tsconfig.app.json",
+      "weight": 1.0,
+      "direction": "outgoing"
+    },
+    {
+      "source": "markup:index.html",
+      "target": "file:src/main.ts",
+      "type": "references",
+      "label": "loads src/main.ts as entry script",
+      "weight": 1.0,
+      "direction": "outgoing"
+    },
+    {
+      "source": "config:vercel.json",
+      "target": "config:package.json",
+      "type": "references",
+      "label": "buildCommand references npm run build from package.json scripts",
+      "weight": 0.8,
+      "direction": "outgoing"
+    },
+    {
+      "source": "config:package.json",
+      "target": "config:tsconfig.app.json",
+      "type": "references",
+      "label": "check script references tsconfig.app.json",
+      "weight": 0.7,
+      "direction": "outgoing"
+    },
+    {
+      "source": "config:package.json",
+      "target": "config:tsconfig.node.json",
+      "type": "references",
+      "label": "check script references tsconfig.node.json",
+      "weight": 0.7,
+      "direction": "outgoing"
+    },
+    {
+      "source": "config:tsconfig.node.json",
+      "target": "file:vite.config.ts",
+      "type": "includes",
+      "label": "include: vite.config.ts",
+      "weight": 1.0,
+      "direction": "outgoing"
+    },
+    {
+      "source": "config:.fallowrc.json",
+      "target": "file:src/lib/constants.ts",
+      "type": "references",
+      "label": "ignoreExports for PHYSICAL_INHERITED_TYPES, MAGIC_INHERITED_TYPES, FALLBACK_DMG_COLOR, CURSE_RIP_DIVISOR",
+      "weight": 0.5,
+      "direction": "outgoing"
+    },
+    {
+      "source": "config:.fallowrc.json",
+      "target": "file:src/lib/modals/AccessorySelectModal.svelte",
+      "type": "references",
+      "label": "ignoreExports: all exports suppressed",
+      "weight": 0.5,
+      "direction": "outgoing"
+    },
+    {
+      "source": "config:.fallowrc.json",
+      "target": "file:src/lib/modals/GuildModal.svelte",
+      "type": "references",
+      "label": "ignoreExports: all exports suppressed",
+      "weight": 0.5,
+      "direction": "outgoing"
+    },
+    {
+      "source": "config:.fallowrc.json",
+      "target": "file:src/lib/modals/WeaponPartModal.svelte",
+      "type": "references",
+      "label": "ignoreExports: all exports suppressed",
+      "weight": 0.5,
+      "direction": "outgoing"
+    },
+    {
+      "source": "config:.fallowrc.json",
+      "target": "file:src/lib/modals/RaceModal.svelte",
+      "type": "references",
+      "label": "ignoreExports: all exports suppressed",
+      "weight": 0.5,
+      "direction": "outgoing"
+    },
+    {
+      "source": "config:.fallowrc.json",
+      "target": "file:src/DidYouMean.svelte",
+      "type": "references",
+      "label": "ignoreExports: all exports suppressed",
+      "weight": 0.5,
+      "direction": "outgoing"
+    },
+    {
+      "source": "config:.fallowrc.json",
+      "target": "file:src/ModalSearchHeader.svelte",
+      "type": "references",
+      "label": "ignoreExports: all exports suppressed",
+      "weight": 0.5,
+      "direction": "outgoing"
+    },
+    {
+      "source": "config:.fallowrc.json",
+      "target": "file:src/TagFilter.svelte",
+      "type": "references",
+      "label": "ignoreExports: all exports suppressed",
+      "weight": 0.5,
+      "direction": "outgoing"
+    },
+    {
+      "source": "config:fallow-output.json",
+      "target": "config:.fallowrc.json",
+      "type": "generated-from",
+      "label": "output generated by fallow using .fallowrc.json configuration",
+      "weight": 0.9,
+      "direction": "incoming"
+    },
+    {
+      "source": "config:fallow-security.json",
+      "target": "config:.fallowrc.json",
+      "type": "generated-from",
+      "label": "security scan output generated by fallow using .fallowrc.json configuration",
+      "weight": 0.9,
+      "direction": "incoming"
+    },
+    {
+      "source": "config:tsconfig.json",
+      "target": "config:package.json",
+      "type": "depends-on",
+      "label": "project-level tsconfig is part of the project defined by package.json",
+      "weight": 0.4,
+      "direction": "outgoing"
+    },
+    {
+      "source": "config:tsconfig.node.json",
+      "target": "config:package.json",
+      "type": "depends-on",
+      "label": "node tsconfig is part of the project defined by package.json",
+      "weight": 0.4,
+      "direction": "outgoing"
+    }
+  ]
+}

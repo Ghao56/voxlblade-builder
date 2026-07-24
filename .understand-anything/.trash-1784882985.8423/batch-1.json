@@ -1,0 +1,16 @@
+{
+  "batchIndex": 1,
+  "nodes": [
+    {
+      "id": "config:.github/workflows/static.yml",
+      "type": "pipeline",
+      "name": "static.yml",
+      "filePath": ".github/workflows/static.yml",
+      "summary": "GitHub Actions workflow that builds and deploys the Vite/SvelteKit project as static content to GitHub Pages. Triggers on pushes to main or manual dispatch, installs Node 24, runs npm build, and deploys the dist artifact.",
+      "tags": ["ci-cd", "github-actions", "deployment", "github-pages", "static-site"],
+      "complexity": "simple",
+      "languageNotes": "YAML GitHub Actions workflow definition with two jobs: build (checkout, setup-node, install, build, upload artifact) and deploy (deploy-pages)."
+    }
+  ],
+  "edges": []
+}

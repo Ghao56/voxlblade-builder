@@ -1,0 +1,417 @@
+{
+  "batchIndex": 9,
+  "nodes": [
+    {
+      "id": "file:src/lib/ui/Divider.svelte",
+      "type": "file",
+      "name": "Divider.svelte",
+      "filePath": "src/lib/ui/Divider.svelte",
+      "summary": "A simple UI component that renders a styled horizontal rule (<hr>) with color variants (green, amber, red, purple, blue, teal, draco) and configurable spacing. Uses Svelte 5 runes for props.",
+      "tags": ["ui", "component", "divider", "svelte"],
+      "complexity": "low",
+      "languageNotes": "Svelte 5 with $props() rune. No script imports — purely presentational."
+    },
+    {
+      "id": "file:src/lib/ui/index.ts",
+      "type": "file",
+      "name": "index.ts (ui barrel)",
+      "filePath": "src/lib/ui/index.ts",
+      "summary": "Barrel re-export file for the shared UI component library. Exports Card, Badge, Button, Stat, Section, Divider, and Panel as named exports from their respective .svelte files.",
+      "tags": ["ui", "barrel", "re-export", "typescript"],
+      "complexity": "low",
+      "languageNotes": "Pure re-export module — no logic, just convenience imports."
+    },
+    {
+      "id": "file:src/lib/ui/Panel.svelte",
+      "type": "file",
+      "name": "Panel.svelte",
+      "filePath": "src/lib/ui/Panel.svelte",
+      "summary": "A styled panel container component with color variants and optional header/body slots. Renders a gradient background card with configurable padding and rounded corners.",
+      "tags": ["ui", "component", "container", "svelte"],
+      "complexity": "low",
+      "languageNotes": "Svelte 5 with $props() rune. Imports Snippet type from 'svelte' for slot rendering."
+    },
+    {
+      "id": "file:src/lib/ui/Section.svelte",
+      "type": "file",
+      "name": "Section.svelte",
+      "filePath": "src/lib/ui/Section.svelte",
+      "summary": "A section container with an optional title header and body slot. Supports multiple color variants including 'draco', gap sizes, and renders a bordered card with uppercase label styling.",
+      "tags": ["ui", "component", "section", "svelte"],
+      "complexity": "low",
+      "languageNotes": "Svelte 5 with $props() rune. Imports Snippet type from 'svelte'."
+    },
+    {
+      "id": "file:src/lib/ui/Stat.svelte",
+      "type": "file",
+      "name": "Stat.svelte",
+      "filePath": "src/lib/ui/Stat.svelte",
+      "summary": "A key-value stat display component showing a label and value (or slot content) side-by-side. Supports color variants, three sizes (sm/md/lg), and an optional hover state.",
+      "tags": ["ui", "component", "stat", "svelte"],
+      "complexity": "low",
+      "languageNotes": "Svelte 5 with $props() rune. Imports Snippet type from 'svelte'."
+    },
+    {
+      "id": "file:src/lib/uiConstants.ts",
+      "type": "file",
+      "name": "uiConstants.ts",
+      "filePath": "src/lib/uiConstants.ts",
+      "summary": "Defines constant lookup maps for UI display: UI_COLORS (hex colors for damage types, tag groups, source types, enchant rarities, and negative stats), SOURCE_LABELS (human-readable source names), STAT_LABELS, and TAG_LABELS.",
+      "tags": ["constants", "ui", "colors", "labels", "typescript"],
+      "complexity": "low",
+      "languageNotes": "Pure constant definitions using 'as const' assertions. No imports."
+    },
+    {
+      "id": "file:src/lib/utils.ts",
+      "type": "file",
+      "name": "utils.ts",
+      "filePath": "src/lib/utils.ts",
+      "summary": "Pure utility functions for the damage calculator: roundMultiplier and calcWardingDebuffMultiplier for game math, highlightTextParts for search query highlighting with HTML escaping, and calcProcChance for computing proc probability with different scaling types.",
+      "tags": ["utility", "math", "search", "proc", "typescript"],
+      "complexity": "medium",
+      "languageNotes": "Imports ProcCoefficient and ProcScalingType from ./types. Exports roundMultiplier, calcWardingDebuffMultiplier, highlightTextParts, and calcProcChance."
+    },
+    {
+      "id": "file:src/main.ts",
+      "type": "file",
+      "name": "main.ts",
+      "filePath": "src/main.ts",
+      "summary": "Application entry point. Mounts the Svelte App component to the #app DOM element, imports global CSS, and injects Vercel analytics.",
+      "tags": ["entry-point", "svelte", "analytics", "typescript"],
+      "complexity": "low",
+      "languageNotes": "Imports mount from 'svelte' (Svelte 5 API), App from ./App.svelte, ./app.css, and inject from @vercel/analytics."
+    },
+    {
+      "id": "file:src/ModalSearchHeader.svelte",
+      "type": "file",
+      "name": "ModalSearchHeader.svelte",
+      "filePath": "src/ModalSearchHeader.svelte",
+      "summary": "A composite modal header component that composes a title, search input with suggestions dropdown, tag filter, stat/weapon-stat filter, and optional sort buttons (Highest/Most Effective/Brawny). Acts as a reusable filter bar for modal dialogs.",
+      "tags": ["ui", "modal", "search", "filter", "svelte"],
+      "complexity": "high",
+      "languageNotes": "Svelte 2 style (export let, createEventDispatcher). Imports SuggestDrop, TagFilter, StatFilter, and WeaponStatFilter components. Dispatches events: select, toggle, clear, change, weaponStatFilterChange."
+    },
+    {
+      "id": "file:src/MountIcon.svelte",
+      "type": "file",
+      "name": "MountIcon.svelte",
+      "filePath": "src/MountIcon.svelte",
+      "summary": "An inline SVG icon component depicting a mount (horse/creature) silhouette with a blue-to-cyan gradient fill. Takes a configurable size prop.",
+      "tags": ["ui", "icon", "svg", "svelte"],
+      "complexity": "low",
+      "languageNotes": "Svelte 2 style (export let). No imports. Uses a unique gradient ID per instance via Math.random()."
+    },
+    {
+      "id": "file:src/ScalingBreakdownRow.svelte",
+      "type": "file",
+      "name": "ScalingBreakdownRow.svelte",
+      "filePath": "src/ScalingBreakdownRow.svelte",
+      "summary": "Renders a single row in the weapon scaling breakdown display, showing damage type color dot, scaling value, boost percentage, and resulting contribution as a grid layout with math operators (× and =).",
+      "tags": ["ui", "weapon", "scaling", "breakdown", "svelte"],
+      "complexity": "medium",
+      "languageNotes": "Svelte 2 style. Imports roundMultiplier from ./lib/utils and PERCENT_STATS from ./lib/types. Uses reactive $: to detect percentage stats."
+    },
+    {
+      "id": "file:src/StatFilter.svelte",
+      "type": "file",
+      "name": "StatFilter.svelte",
+      "filePath": "src/StatFilter.svelte",
+      "summary": "A collapsible stat filter panel for armor/infusion modals. Organizes stats into positive and negative tabs (Boost, Defense, Utility groups), supports include/exclude/Off tri-state filtering via stat chips, and emits change events with the active filter map and sort mode.",
+      "tags": ["ui", "filter", "stat", "modal", "svelte"],
+      "complexity": "high",
+      "languageNotes": "Svelte 2 style. Imports from svelte/transition (slide), ./lib/stats/elementalBoosts, ./lib/stats/filterActions, ./lib/uiConstants, ./lib/StatFilterShared.svelte, ./lib/ui/Badge.svelte, ./lib/ui/Button.svelte."
+    },
+    {
+      "id": "file:src/SuggestDrop.svelte",
+      "type": "file",
+      "name": "SuggestDrop.svelte",
+      "filePath": "src/SuggestDrop.svelte",
+      "summary": "An autocomplete suggestions dropdown that renders a list of name/perk suggestions with highlighted query matches. Each item shows a type badge and label, and dispatches a 'select' event on mousedown.",
+      "tags": ["ui", "search", "autocomplete", "dropdown", "svelte"],
+      "complexity": "medium",
+      "languageNotes": "Svelte 2 style. Imports createEventDispatcher from 'svelte' and highlightTextParts from ./lib/utils."
+    },
+    {
+      "id": "file:src/TagFilter.svelte",
+      "type": "file",
+      "name": "TagFilter.svelte",
+      "filePath": "src/TagFilter.svelte",
+      "summary": "A collapsible tag filter panel organized into groups (Combat, Support, Status, Weapon Art/Rune, Special). Supports multi-select toggling, summary chips in the header bar, and clear-all functionality. Used in modal search headers.",
+      "tags": ["ui", "filter", "tag", "modal", "svelte"],
+      "complexity": "medium",
+      "languageNotes": "Svelte 2 style. Imports svelte/transition (slide), createEventDispatcher and tick from 'svelte', UI_COLORS from ./lib/uiConstants, and Badge from ./lib/ui/Badge.svelte."
+    },
+    {
+      "id": "file:src/WeaponStatFilter.svelte",
+      "type": "file",
+      "name": "WeaponStatFilter.svelte",
+      "filePath": "src/WeaponStatFilter.svelte",
+      "summary": "A collapsible weapon-specific stat filter panel with three groups: Damage Type (true/physical/magic/etc.), Scaling (dexterity/elemental), and Boost/Stats. Exposes a matchesFilter() method and emits change events with the active filter map.",
+      "tags": ["ui", "filter", "weapon", "stat", "svelte"],
+      "complexity": "high",
+      "languageNotes": "Svelte 2 style with export let and exported method (matchesFilter). Imports from svelte/transition (slide), ./lib/stats/elementalBoosts, ./lib/stats/filterActions, ./lib/uiConstants, ./lib/StatFilterShared.svelte, ./lib/ui/Badge.svelte, ./lib/ui/Button.svelte."
+    },
+    {
+      "id": "file:src/WeaponStatsDisplay.svelte",
+      "type": "file",
+      "name": "WeaponStatsDisplay.svelte",
+      "filePath": "src/WeaponStatsDisplay.svelte",
+      "summary": "Displays a weapon's stats split into three labeled groups (Dmg Type, Scaling, Stats) as colored pill badges. Automatically categorizes stats by their key suffix (Type, Scaling, or other).",
+      "tags": ["ui", "weapon", "stats", "display", "svelte"],
+      "complexity": "medium",
+      "languageNotes": "Svelte 2 style. No project imports — purely self-contained with local helper functions for formatting."
+    },
+    {
+      "id": "file:vite.config.ts",
+      "type": "file",
+      "name": "vite.config.ts",
+      "filePath": "vite.config.ts",
+      "summary": "Vite build configuration for the voxlblade-builder project. Configures the Svelte plugin, VitePWA with autoUpdate service worker, workbox caching strategies, and a configurable base path for deployment.",
+      "tags": ["config", "build", "vite", "pwa", "typescript"],
+      "complexity": "low",
+      "languageNotes": "Imports defineConfig from 'vite', svelte from '@sveltejs/vite-plugin-svelte', VitePWA from 'vite-plugin-pwa'. No project-internal imports."
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/lib/ui/index.ts",
+      "target": "file:src/lib/ui/Stat.svelte",
+      "type": "imports",
+      "label": "re-exports default as Stat",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/ui/index.ts",
+      "target": "file:src/lib/ui/Section.svelte",
+      "type": "imports",
+      "label": "re-exports default as Section",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/ui/index.ts",
+      "target": "file:src/lib/ui/Divider.svelte",
+      "type": "imports",
+      "label": "re-exports default as Divider",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/ui/index.ts",
+      "target": "file:src/lib/ui/Panel.svelte",
+      "type": "imports",
+      "label": "re-exports default as Panel",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/ui/index.ts",
+      "target": "file:src/lib/ui/Card.svelte",
+      "type": "imports",
+      "label": "re-exports default as Card (external to batch)",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/ui/index.ts",
+      "target": "file:src/lib/ui/Badge.svelte",
+      "type": "imports",
+      "label": "re-exports default as Badge (external to batch)",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/ui/index.ts",
+      "target": "file:src/lib/ui/Button.svelte",
+      "type": "imports",
+      "label": "re-exports default as Button (external to batch)",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/utils.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "label": "imports ProcCoefficient, ProcScalingType",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/main.ts",
+      "target": "file:src/App.svelte",
+      "type": "imports",
+      "label": "imports App component for mounting",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/ModalSearchHeader.svelte",
+      "target": "file:src/SuggestDrop.svelte",
+      "type": "imports",
+      "label": "imports SuggestDrop component",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/ModalSearchHeader.svelte",
+      "target": "file:src/TagFilter.svelte",
+      "type": "imports",
+      "label": "imports TagFilter component",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/ModalSearchHeader.svelte",
+      "target": "file:src/StatFilter.svelte",
+      "type": "imports",
+      "label": "imports StatFilter component",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/ModalSearchHeader.svelte",
+      "target": "file:src/WeaponStatFilter.svelte",
+      "type": "imports",
+      "label": "imports WeaponStatFilter component",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/ScalingBreakdownRow.svelte",
+      "target": "file:src/lib/utils.ts",
+      "type": "imports",
+      "label": "imports roundMultiplier",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/ScalingBreakdownRow.svelte",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "label": "imports PERCENT_STATS",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/StatFilter.svelte",
+      "target": "file:src/lib/stats/elementalBoosts.ts",
+      "type": "imports",
+      "label": "imports ELEMENTAL_BOOST_STATS, NEGATIVE_ELEMENTAL_BOOST_STATS",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/StatFilter.svelte",
+      "target": "file:src/lib/stats/filterActions.ts",
+      "type": "imports",
+      "label": "imports createFilterActions",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/StatFilter.svelte",
+      "target": "file:src/lib/uiConstants.ts",
+      "type": "imports",
+      "label": "imports UI_COLORS",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/StatFilter.svelte",
+      "target": "file:src/lib/StatFilterShared.svelte",
+      "type": "imports",
+      "label": "imports StatChip component and buildStatMaps",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/StatFilter.svelte",
+      "target": "file:src/lib/ui/Badge.svelte",
+      "type": "imports",
+      "label": "imports Badge component (external to batch)",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/StatFilter.svelte",
+      "target": "file:src/lib/ui/Button.svelte",
+      "type": "imports",
+      "label": "imports Button component (external to batch)",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/SuggestDrop.svelte",
+      "target": "file:src/lib/utils.ts",
+      "type": "imports",
+      "label": "imports highlightTextParts",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/TagFilter.svelte",
+      "target": "file:src/lib/uiConstants.ts",
+      "type": "imports",
+      "label": "imports UI_COLORS",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/TagFilter.svelte",
+      "target": "file:src/lib/ui/Badge.svelte",
+      "type": "imports",
+      "label": "imports Badge component (external to batch)",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/WeaponStatFilter.svelte",
+      "target": "file:src/lib/stats/elementalBoosts.ts",
+      "type": "imports",
+      "label": "imports ELEMENTAL_BOOST_STATS",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/WeaponStatFilter.svelte",
+      "target": "file:src/lib/stats/filterActions.ts",
+      "type": "imports",
+      "label": "imports createFilterActions",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/WeaponStatFilter.svelte",
+      "target": "file:src/lib/uiConstants.ts",
+      "type": "imports",
+      "label": "imports UI_COLORS",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/WeaponStatFilter.svelte",
+      "target": "file:src/lib/StatFilterShared.svelte",
+      "type": "imports",
+      "label": "imports StatChip component and buildStatMaps",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/WeaponStatFilter.svelte",
+      "target": "file:src/lib/ui/Badge.svelte",
+      "type": "imports",
+      "label": "imports Badge component (external to batch)",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/WeaponStatFilter.svelte",
+      "target": "file:src/lib/ui/Button.svelte",
+      "type": "imports",
+      "label": "imports Button component (external to batch)",
+      "weight": 0.7,
+      "direction": "forward"
+    }
+  ]
+}

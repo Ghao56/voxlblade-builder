@@ -1,0 +1,186 @@
+{
+  "summary": "Graph is structurally sound (no duplicate nodes, no dangling references, no self-loops). Main gap is 88 missing import edges across 35 source files and 33 fully isolated nodes.",
+  "stats": {
+    "nodes": 148,
+    "edges": 231,
+    "duplicateNodeIds": 0,
+    "danglingEdgeRefs": 0,
+    "selfLoops": 0,
+    "duplicateEdges": 0,
+    "isolatedNodes": 33,
+    "missingImportEdges": 88,
+    "filesWithMissingEdges": 35,
+    "nodeTypes": { "file": 128, "config": 12, "document": 3, "binary": 3, "markup": 1, "pipeline": 1 },
+    "edgeTypes": { "imports": 213, "references": 12, "generated-from": 2, "depends-on": 2, "extends": 1, "includes": 1 },
+    "complexityDistribution": { "simple": 82, "moderate": 38, "complex": 28 }
+  },
+  "issues": [
+    {
+      "severity": "high",
+      "category": "missing-edges",
+      "description": "lib/engine/build.ts is missing 14 import edges — the most of any file. It imports from lib/types, data/cdr, data/statboost, data/BuffData, data/raceEffects, data/Boost, lib/utils, lib/engine/enchant, lib/engine/shrine, lib/engine/weapon, data/weaponArts, and lib/engine/dmgTypeBonuses, but none of these edges exist in the graph. This file is the core build calculation engine and should have thorough connectivity.",
+      "affectedNodes": ["file:src/lib/engine/build.ts"],
+      "fix": "Add 14 import edges from file:src/lib/engine/build.ts to its dependencies."
+    },
+    {
+      "severity": "high",
+      "category": "missing-edges",
+      "description": "lib/engine/data.ts barrel file is missing re-export edges to all 3 child modules (character.ts, equipment.ts, weapons.ts). The graph shows data.ts as a barrel but no outgoing edges to what it re-exports.",
+      "affectedNodes": ["file:src/lib/engine/data.ts", "file:src/lib/engine/data/character.ts", "file:src/lib/engine/data/equipment.ts", "file:src/lib/engine/data/weapons.ts"],
+      "fix": "Add 3 re-export edges from data.ts to character, equipment, and weapons."
+    },
+    {
+      "severity": "high",
+      "category": "missing-edges",
+      "description": "lib/constants/index.ts barrel is missing 3 re-export edges to boosts.ts, buffs.ts, and cdr.ts. These are confirmed re-exports in the source but absent from the graph.",
+      "affectedNodes": ["file:src/lib/constants/index.ts"],
+      "fix": "Add 3 re-export edges from constants/index.ts to boosts, buffs, and cdr."
+    },
+    {
+      "severity": "high",
+      "category": "missing-edges",
+      "description": "lib/constants.ts barrel is missing its re-export edge to lib/constants/index.ts. The graph has an edge from constants.ts but it's to .fallowrc.json (ignoreExports reference), not the actual barrel re-export.",
+      "affectedNodes": ["file:src/lib/constants.ts"],
+      "fix": "Add import edge from file:src/lib/constants.ts to file:src/lib/constants/index.ts."
+    },
+    {
+      "severity": "medium",
+      "category": "missing-edges",
+      "description": "All 4 modal components (AccessorySelectModal, WeaponPartModal, GuildModal, RaceModal) are missing import edges to lib/engine.ts barrel, ModalSearchHeader.svelte, DidYouMean.svelte, and Highlight.svelte. These are significant UI dependencies.",
+      "affectedNodes": ["file:src/lib/modals/AccessorySelectModal.svelte", "file:src/lib/modals/WeaponPartModal.svelte", "file:src/lib/modals/GuildModal.svelte", "file:src/lib/modals/RaceModal.svelte"],
+      "fix": "Add ~18 import edges across the 4 modal files."
+    },
+    {
+      "severity": "medium",
+      "category": "missing-edges",
+      "description": "src/App.svelte is missing 3 import edges: to DraconicAbilityStats.svelte and 2 to lib/engine.ts (the graph has one via engine/engine.ts but not directly).",
+      "affectedNodes": ["file:src/App.svelte"],
+      "fix": "Add import edge to DraconicAbilityStats.svelte and confirm lib/engine.ts barrel edge."
+    },
+    {
+      "severity": "medium",
+      "category": "missing-edges",
+      "description": "src/data/perkAutoDebuffs.ts is missing 7 import edges — to Boost.ts, constants/perks, BuffData.ts, types.ts, constants/game, constants/perk-base-damage, and enemyHpEffects.ts.",
+      "affectedNodes": ["file:src/data/perkAutoDebuffs.ts"],
+      "fix": "Add 7 import edges."
+    },
+    {
+      "severity": "medium",
+      "category": "missing-edges",
+      "description": "src/data/Perkbasedmg.ts is missing 3 import edges (DoTDamage, draconicColorEffects, types) and src/data/Runebasedmg.ts is missing 3 (types, HealBoost, constants/rune-base-damage).",
+      "affectedNodes": ["file:src/data/Perkbasedmg.ts", "file:src/data/Runebasedmg.ts"],
+      "fix": "Add 6 import edges across the two files."
+    },
+    {
+      "severity": "medium",
+      "category": "missing-edges",
+      "description": "src/lib/store.ts is missing import edges to lib/engine.ts and lib/constants/index.ts (it imports calcBuild, races, enforceEnchantSlot from engine and BUILD_STATE_DEFAULTS from constants).",
+      "affectedNodes": ["file:src/lib/store.ts"],
+      "fix": "Add 2 import edges."
+    },
+    {
+      "severity": "medium",
+      "category": "missing-edges",
+      "description": "src/lib/engine/weapon.ts and src/lib/engine/enchant.ts are each missing 2 import edges (to engine/data barrel and engine/_utils).",
+      "affectedNodes": ["file:src/lib/engine/weapon.ts", "file:src/lib/engine/enchant.ts"],
+      "fix": "Add 4 import edges."
+    },
+    {
+      "severity": "medium",
+      "category": "missing-edges",
+      "description": "src/lib/crit.ts is missing import edges to lib/types.ts and lib/utils.ts.",
+      "affectedNodes": ["file:src/lib/crit.ts"],
+      "fix": "Add 2 import edges."
+    },
+    {
+      "severity": "medium",
+      "category": "missing-edges",
+      "description": "src/lib/engine/dmgTypeBonuses.ts is missing import edges to constants/perks.ts and data/draconicBuffs.ts.",
+      "affectedNodes": ["file:src/lib/engine/dmgTypeBonuses.ts"],
+      "fix": "Add 2 import edges."
+    },
+    {
+      "severity": "low",
+      "category": "missing-edges",
+      "description": "Multiple small files have 1 missing edge each: statboost→types, TypedDmgBoost→BuffData, TypedDmgBoost→damage-types, defense→utils, dmgTypes→types, engine/format→_utils, engine/shrine→_utils, main→app.css, DamageAnalyzer→engine.ts, procCoefficients→types, weapon base dmg→types, weaponConditionalBoosts→utils, DidYouMean→utils, Highlight→utils, AppHeader→BuildSaves, stores/toast→constants/index, DmgTotalTooltip→dmgTypes, EmotionalTracker→store, LevelBar→store, DmgTotalTooltip→Badge, EmotionalTracker→Badge, LevelBar→Badge.",
+      "affectedNodes": ["file:src/data/statboost.ts", "file:src/data/TypedDmgBoost.ts", "file:src/lib/defense.ts", "file:src/lib/dmgTypes.ts", "file:src/lib/engine/format.ts", "file:src/lib/engine/shrine.ts", "file:src/main.ts", "file:src/DamageAnalyzer.svelte", "file:src/data/procCoefficients.ts", "file:src/data/weapon base dmg.ts", "file:src/data/weaponConditionalBoosts.ts", "file:src/DidYouMean.svelte", "file:src/Highlight.svelte", "file:src/lib/AppHeader.svelte", "file:src/lib/stores/toast.ts", "file:src/DmgTotalTooltip.svelte", "file:src/EmotionalTracker.svelte", "file:src/LevelBar.svelte"],
+      "fix": "Add ~22 individual import edges."
+    },
+    {
+      "severity": "low",
+      "category": "node-type",
+      "description": "3 nodes use type 'binary' and 1 uses type 'markup' — non-standard types flagged by the merge script. These are valid for their context (binary cache files, HTML markup) but could be normalized to 'file' with appropriate tags if consistency is desired.",
+      "affectedNodes": ["file:.fallow/cache.bin", "file:.fallow/churn.bin", "file:.fallow/graph-cache.bin", "file:markup:index.html"],
+      "fix": "Optionally change type to 'file' and add existing tags as descriptors. Low priority."
+    }
+  ],
+  "warnings": [
+    {
+      "severity": "medium",
+      "category": "isolated-nodes",
+      "description": "33 nodes have zero edges. While some are expected (binary files, lock files, README, AGENTS.md, ts-errors.txt), several JSON data files (armors.json, blades.json, enchantments.json, essences.json, gloves.json, guilds.json, handles.json, perks.json, races.json, rings.json, runes.json) are imported by engine/data modules but have no edges. These are consumed via JSON imports in the engine data layer.",
+      "affectedNodes": ["file:data:src/data/armors.json", "file:data:src/data/blades.json", "file:data:src/data/enchantments.json", "file:data:src/data/essences.json", "file:data:src/data/gloves.json", "file:data:src/data/guilds.json", "file:data:src/data/handles.json", "file:data:src/data/perks.json", "file:data:src/data/races.json", "file:data:src/data/rings.json", "file:data:src/data/runes.json"],
+      "fix": "Add import edges from engine/data/character.ts (races, guilds, perks), engine/data/equipment.ts (armors, rings, runes, enchantments), and engine/data/weapons.ts (blades, handles, gloves, essences) to their respective JSON files."
+    },
+    {
+      "severity": "low",
+      "category": "isolated-nodes",
+      "description": "Config/documentation files without edges are expected: .github/workflows/static.yml, .fallow/.gitignore, .gitignore, AGENTS.md, README.md, package-lock.json, pnpm-lock.yaml, ts-errors.txt, .vscode/extensions.json, .vscode/settings.json, .slim/deepwork/ui-upgrade.md, docs/ONBOARDING.md, vite.config.ts, tsconfig.json, tsconfig.node.json.",
+      "affectedNodes": [],
+      "fix": "No action needed. These are informational/config nodes with no source-code import relationships."
+    },
+    {
+      "severity": "low",
+      "category": "barrel-completeness",
+      "description": "lib/engine.ts only has edges to data.ts and build.ts. The other submodules (shrine, enchant, weapon, format) are re-exported via lib/engine/engine.ts instead. This is structurally valid (engine.ts re-exports engine.ts, which re-exports the submodules) but could confuse readers expecting a flat barrel. The graph does correctly show engine.ts→engine/engine.ts edges are absent, while engine.ts→data.ts and engine.ts→build.ts exist.",
+      "affectedNodes": ["file:src/lib/engine.ts"],
+      "fix": "No fix needed; this is a two-tier barrel pattern. Document in summary if clarity is desired."
+    },
+    {
+      "severity": "low",
+      "category": "complexity",
+      "description": "2 nodes with 'trivial' complexity were defaulted to 'moderate' by the merge script. This was already corrected, but the original batch data may contain inconsistencies worth noting.",
+      "affectedNodes": [],
+      "fix": "Already handled by merge script normalization."
+    },
+    {
+      "severity": "low",
+      "category": "edge-dropped",
+      "description": "One edge (DamageAnalyzer→lib/engine/index.ts) was dropped during assembly because the target node uses id 'file:src/lib/engine/engine.ts' not 'file:src/lib/engine/index.ts'. The edge was correctly dropped but represents a real import relationship that could be re-added targeting the correct node.",
+      "affectedNodes": ["file:src/DamageAnalyzer.svelte"],
+      "fix": "Add import edge from file:src/DamageAnalyzer.svelte to file:src/lib/engine/engine.ts (via the barrel). Note: the graph already has DamageAnalyzer→engine.ts through the lib/engine.ts barrel path."
+    }
+  ],
+  "suggestions": [
+    {
+      "priority": "high",
+      "category": "edge-completeness",
+      "description": "Add the 88 missing import edges to bring the graph to full import coverage. The most impactful files to fix are: lib/engine/build.ts (14), data/perkAutoDebuffs.ts (7), and the 4 modal components (~18 total). These represent the core calculation engine and primary UI modals.",
+      "effort": "medium"
+    },
+    {
+      "priority": "high",
+      "category": "data-edges",
+      "description": "Add import edges from engine/data/character.ts → {races.json, guilds.json, perks.json}, engine/data/equipment.ts → {armors.json, rings.json, runes.json, enchantments.json}, and engine/data/weapons.ts → {blades.json, handles.json, gloves.json, essences.json} to connect the 11 isolated JSON data nodes.",
+      "effort": "low"
+    },
+    {
+      "priority": "medium",
+      "category": "barrel-edges",
+      "description": "Add the 3 missing barrel re-export edges for constants/index.ts → {boosts, buffs, cdr} and the constants.ts → constants/index.ts edge.",
+      "effort": "low"
+    },
+    {
+      "priority": "low",
+      "category": "node-types",
+      "description": "Consider normalizing 'binary' and 'markup' node types to 'file' with descriptive tags for type consistency. The current 5 unique types (file, config, document, binary, markup, pipeline) could be reduced to 3 (file, config, document/pipeline).",
+      "effort": "low"
+    },
+    {
+      "priority": "low",
+      "category": "coverage",
+      "description": "The graph covers 148 of 200 project files (74%). The 52 uncovered files are primarily JSON data files (11), config files (12), and documentation (3) which may not need nodes. Verify if any src/ files are missing from the graph entirely.",
+      "effort": "low"
+    }
+  ]
+}

@@ -2,6 +2,7 @@
   import { fly, fade } from 'svelte/transition'
   import { onMount, onDestroy } from 'svelte';
   import EmotionalTracker from './EmotionalTracker.svelte';
+  import Modal from './lib/Modal.svelte'
   import { build } from './lib/store'
   import { addToast } from './lib/stores/toast'
   import Button from './lib/ui/Button.svelte'
@@ -13,7 +14,6 @@
     MAX_BUILD_SLOTS, CONFIRM_TIMEOUT_MS, STORAGE_KEY_SAVES, IMPORT_SUCCESS_DISPLAY_MS
   } from './lib/constants'
 
-  const MAX_SLOTS = MAX_BUILD_SLOTS
   const STORAGE_KEY = STORAGE_KEY_SAVES
 
   interface SaveSlot {
@@ -29,28 +29,48 @@
   }
   onDestroy(clearAllTimeouts);
 
-  function loadSlots(): (SaveSlot | null)[] {
+  function loadSlots(): SaveSlot[] {
     try {
       const raw = localStorage.getItem(STORAGE_KEY)
-      if (!raw) return Array(MAX_SLOTS).fill(null)
+      if (!raw) return []
       const parsed = JSON.parse(raw)
-      if (!Array.isArray(parsed)) return Array(MAX_SLOTS).fill(null)
-      const result: (SaveSlot | null)[] = []
-      for (let i = 0; i < MAX_SLOTS; i++) result.push(parsed[i] ?? null)
-      return result
-    } catch { return Array(MAX_SLOTS).fill(null) }
+      if (!Array.isArray(parsed)) return []
+      return (parsed as SaveSlot[]).filter(s => s !== null && s !== undefined)
+    } catch { return [] }
   }
 
-  function persistSlots(s: (SaveSlot | null)[]) {
+  function persistSlots(s: SaveSlot[]) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(s))
   }
 
-  let slots: (SaveSlot | null)[] = loadSlots()
+  let slots: SaveSlot[] = loadSlots()
   let editingIndex: number | null = null
   let editingName = ''
   let confirmLoad: number | null = null
   let confirmDelete: number | null = null
+  let duplicateModal: { targetIndex: number; duplicates: { slot: SaveSlot; index: number }[] } | null = null
   let open = false
+  let searchQuery = ''
+  let sortBy: 'slot' | 'name' | 'date' = 'slot'
+  let filteredSlots: { slot: SaveSlot; origIndex: number }[] = []
+
+  $: {
+    let indexed = slots.map((s, i) => ({ slot: s, origIndex: i }))
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase()
+      indexed = indexed.filter(({ slot }) => {
+        const summary = getBuildSummary(slot.state).toLowerCase()
+        return slot.name.toLowerCase().includes(q) || summary.includes(q)
+      })
+    }
+    const mode: string = sortBy
+    if (mode === 'name') {
+      indexed.sort((a, b) => a.slot.name.localeCompare(b.slot.name))
+    } else if (mode === 'date') {
+      indexed.sort((a, b) => b.slot.timestamp - a.slot.timestamp)
+    }
+    filteredSlots = indexed
+  }
 
   function startEdit(i: number) {
     editingIndex = i
@@ -78,12 +98,40 @@
     editingIndex = null
   }
 
+  function findAllDuplicates(state: BuildState, excludeIndex: number): { slot: SaveSlot; index: number }[] {
+    const result: { slot: SaveSlot; index: number }[] = []
+    for (let i = 0; i < slots.length; i++) {
+      if (i === excludeIndex) continue
+      if (JSON.stringify(slots[i].state) === JSON.stringify(state)) {
+        result.push({ slot: slots[i], index: i })
+      }
+    }
+    return result
+  }
+
   function saveBuild(i: number) {
-    const name = slots[i]?.name ?? `Build ${i + 1}`
-    slots[i] = { name, timestamp: Date.now(), state: structuredClone($build) }
+    const isNew = i >= slots.length
+    const dups = findAllDuplicates($build, isNew ? -1 : i)
+    if (dups.length > 0) {
+      duplicateModal = { targetIndex: i, duplicates: dups }
+      return
+    }
+    doSave(i)
+  }
+
+  function doSave(i: number) {
+    duplicateModal = null
+    const buildClone = structuredClone($build)
+    if (i < slots.length) {
+      slots[i] = { ...slots[i], timestamp: Date.now(), state: buildClone }
+    } else {
+      slots.push({ name: `Build ${slots.length + 1}`, timestamp: Date.now(), state: buildClone })
+    }
     slots = [...slots]
     persistSlots(slots)
     addToast(`Saved to slot ${i + 1}`, 'success')
+    editingIndex = i
+    editingName = slots[i].name
   }
 
   function loadBuild(i: number) {
@@ -94,9 +142,11 @@
         addToast(`Loaded build from slot ${i + 1}`, 'success')
       }
       confirmLoad = null
+      duplicateModal = null
     } else {
       confirmLoad = i
-     
+      duplicateModal = null
+      
       const timer = window.setTimeout(() => { 
         if (confirmLoad === i) confirmLoad = null 
       }, CONFIRM_TIMEOUT_MS);
@@ -106,13 +156,15 @@
 
   function deleteSlot(i: number) {
     if (confirmDelete === i) {
-      slots[i] = null;
-      slots = [...slots]; 
-      persistSlots(slots); 
+      slots.splice(i, 1)
+      slots = [...slots]
+      persistSlots(slots)
       confirmDelete = null
+      duplicateModal = null
       addToast(`Deleted slot ${i + 1}`, 'info')
     } else {
       confirmDelete = i
+      duplicateModal = null
       const timer = window.setTimeout(() => { 
         if (confirmDelete === i) confirmDelete = null 
       }, CONFIRM_TIMEOUT_MS);
@@ -130,8 +182,8 @@
     const parts: string[] = []
     if (state.race) parts.push(state.race)
     if (state.guild) parts.push(`${state.guild} R${state.guildRank}`)
-    if (state.weaponBlade && state.weaponHandle) parts.push(`${state.weaponBlade} + ${state.weaponHandle}`)
-    else if (state.monkGlove) parts.push(`Monk: ${state.monkGlove}`)
+    if (state.monkGlove || state.monkEssence) parts.push(`Monk: ${state.monkGlove} + ${state.monkEssence}`)
+    else if (state.weaponBlade && state.weaponHandle) parts.push(`${state.weaponBlade} + ${state.weaponHandle}`)
     if (state.selectedWeaponArt) parts.push(`WA: ${state.selectedWeaponArt}`)
     
     return parts.join(' · ') || 'Empty build'
@@ -359,7 +411,7 @@
     <rect x="4" y="9" width="8" height="4" rx="1" fill="currentColor" opacity="0.6"/>
   </svg>
   <span class="lbl">Builds</span>
-  <span class="cnt">{slots.filter(Boolean).length}/{MAX_SLOTS}</span>
+  <span class="cnt">{slots.length} saved</span>
   <span class="arr">{open ? '▲' : '▼'}</span>
 </button>
 
@@ -371,67 +423,94 @@
       <div class="drag-handle" aria-hidden="true"></div>
       <span class="saves-title">Saved Builds</span>
       <span class="saves-hint">Click load/delete twice to confirm</span>
-      <button class="saves-close" on:click={() => open = false} aria-label="Close saves panel">✕</button>
+      <button class="saves-close" on:click={() => open = false} aria-label="Close saves panel"><i class="fa fa-times"></i></button>
+    </div>
+    <div class="saves-toolbar">
+      <div class="search-wrap">
+        <span class="search-icon" aria-hidden="true"><i class="fa fa-search"></i></span>
+        <input
+          class="search-input"
+          type="text"
+          placeholder="Search builds…"
+          bind:value={searchQuery}
+        />
+        {#if searchQuery}
+          <button class="search-clear" on:click={() => searchQuery = ''} aria-label="Clear search"><i class="fa fa-times"></i></button>
+        {/if}
+      </div>
+      <div class="sort-group">
+        <button class="sort-btn" class:active={sortBy === 'slot'} on:click={() => sortBy = 'slot'} title="Sort by slot"><i class="fa fa-list-ol"></i></button>
+        <button class="sort-btn" class:active={sortBy === 'name'} on:click={() => sortBy = 'name'} title="Sort by name"><i class="fa fa-font"></i></button>
+        <button class="sort-btn" class:active={sortBy === 'date'} on:click={() => sortBy = 'date'} title="Sort by date"><i class="fa fa-calendar"></i></button>
+      </div>
     </div>
     <div class="saves-list">
-      {#each slots as slot, i}
-        <div class="save-slot" class:filled={!!slot}>
+      {#if filteredSlots.length === 0}
+        <div class="saves-empty">
+          {#if searchQuery}
+            <span class="empty-icon"><i class="fa fa-search"></i></span>
+            <span>No builds matching "{searchQuery}"</span>
+          {:else}
+            <span class="empty-icon"><i class="fa fa-inbox"></i></span>
+            <span>No saved builds yet</span>
+          {/if}
+        </div>
+      {/if}
+      {#each filteredSlots as { slot, origIndex: i } (i)}
+        <div class="save-slot filled">
           <div class="slot-left">
             <div class="slot-num">{i + 1}</div>
             <div class="slot-info">
-              {#if slot}
-                {#if editingIndex === i}
-                  <label for="edit-name-{i}" class="sr-only">Edit Build Name</label>
-                  <input 
-                    id="edit-name-{i}"
-                    class="name-input" 
-                    bind:value={editingName} 
-                    use:focusOnMount
-                    on:blur={() => confirmEdit(i)}
-                    on:keydown={e => { 
-                      if (e.key === 'Enter') confirmEdit(i);
-                      if (e.key === 'Escape') editingIndex = null 
-                    }} 
-                  />
-                {:else}
-                  <button class="slot-name" on:click={() => startEdit(i)} aria-label="Rename build {slot.name}">
-                    {slot.name}<span class="edit-icon" aria-hidden="true">✎</span>
-                  </button>
-                {/if}
-                <div class="slot-meta">
-                  <span class="slot-time">{formatDate(slot.timestamp)}</span>
-                  <span class="slot-summary">{getBuildSummary(slot.state)}</span>
-                </div>
+              {#if editingIndex === i}
+                <label for="edit-name-{i}" class="sr-only">Edit Build Name</label>
+                <input 
+                  id="edit-name-{i}"
+                  class="name-input" 
+                  bind:value={editingName} 
+                  use:focusOnMount
+                  on:blur={() => confirmEdit(i)}
+                  on:keydown={e => { 
+                    if (e.key === 'Enter') confirmEdit(i);
+                    if (e.key === 'Escape') editingIndex = null 
+                  }} 
+                />
               {:else}
-                <span class="slot-empty">Empty slot</span>
+                <button class="slot-name" on:click={() => startEdit(i)} aria-label="Rename build {slot.name}">
+                  {slot.name}<span class="edit-icon" aria-hidden="true"><i class="fa fa-pencil"></i></span>
+                </button>
               {/if}
+              <div class="slot-meta">
+                <span class="slot-time">{formatDate(slot.timestamp)}</span>
+                <span class="slot-summary">{getBuildSummary(slot.state)}</span>
+              </div>
             </div>
           </div>
           <div class="slot-actions">
             <Button variant="positive" size="sm" onclick={() => saveBuild(i)}>
-              {slot ? '↑ Save' : '+ Save'}
+              <i class="fa fa-arrow-up"></i> Save
             </Button>
-            {#if slot}
-              <Button variant={confirmLoad === i ? 'warning' : 'info'} size="sm" onclick={() => loadBuild(i)}>
-                {confirmLoad === i ? '✓ Sure?' : '↓ Load'}
-              </Button>
-              <button class="btn btn-share" class:btn-share--active={exportingSlot === i}
-                on:click={() => exportSlot(i)} title="Export this build as code" aria-label="Export Slot {i+1}">
-                <span>⬆</span>
-              </button>
-              <Button variant={confirmDelete === i ? 'warning' : 'negative'} size="sm" onclick={() => deleteSlot(i)} disabled={false}>
-                {confirmDelete === i ? '✗ Sure?' : '✕'}
-              </Button>
-            {/if}
+            <Button variant={confirmLoad === i ? 'warning' : 'info'} size="sm" onclick={() => loadBuild(i)}>
+              {@html confirmLoad === i ? '<i class="fa fa-check"></i> Sure?' : '<i class="fa fa-arrow-down"></i> Load'}
+            </Button>
+            <button class="btn btn-share" class:btn-share--active={exportingSlot === i}
+              on:click={() => exportSlot(i)} title="Export this build as code" aria-label="Export Slot {i+1}">
+              <i class="fa fa-upload"></i>
+            </button>
+            <Button variant={confirmDelete === i ? 'warning' : 'negative'} size="sm" onclick={() => deleteSlot(i)} disabled={false}>
+              {@html confirmDelete === i ? '<i class="fa fa-exclamation-triangle"></i> Sure?' : '<i class="fa fa-times"></i>'}
+            </Button>
           </div>
         </div>
       {/each}
+      <button class="add-slot-btn" on:click={() => saveBuild(slots.length)}>
+        <i class="fa fa-plus"></i> Save Current Build
+      </button>
     </div>
 
     <div class="share-section">
       <div class="share-row">
         <span class="export-label">Current build:</span>
-        <button class="btn btn-share" class:btn-share--active={currentExportCode === '...'} on:click={exportCurrent}>⬆ Export</button>
+        <button class="btn btn-share" class:btn-share--active={currentExportCode === '...'} on:click={exportCurrent}><i class="fa fa-upload"></i> Export</button>
         {#if currentExportCode && currentExportCode !== '...'}
           <label for="current-build-code" class="sr-only">Current Build Code</label>
           <input id="current-build-code" class="share-code" value={currentExportCode} readonly
@@ -453,16 +532,69 @@
       <div class="import-row">
         <label for="import-build-code" class="sr-only">Paste Build Code</label>
         <input id="import-build-code" class="share-code" bind:value={importCode} placeholder="Paste build code here…" />
-        <button class="btn btn-paste" on:click={async () => { try { importCode = await navigator.clipboard.readText() } catch {} }} title="Paste from clipboard">📋 Paste</button>
-        <Button variant="info" size="sm" onclick={importBuild}>⬇ Import</Button>
+        <button class="btn btn-paste" on:click={async () => { try { importCode = await navigator.clipboard.readText() } catch {} }} title="Paste from clipboard"><i class="fa fa-clipboard"></i> Paste</button>
+        <Button variant="info" size="sm" onclick={importBuild}><i class="fa fa-download"></i> Import</Button>
       </div>
   {#if importError}<span class="import-err">{importError}</span>{/if}
-  {#if importSuccess}<span class="import-ok">✓ Loaded!</span>{/if}
+  {#if importSuccess}<span class="import-ok"><i class="fa fa-check"></i> Loaded!</span>{/if}
     </div>
   </div>
 {/if}
 
 </div>
+
+{#if duplicateModal}
+  <Modal onclose={() => { duplicateModal = null }}>
+    <div class="dup-modal">
+      <div class="dup-modal-icon"><i class="fa fa-exclamation-triangle"></i></div>
+      <h3 class="dup-modal-title">Duplicate Build{duplicateModal.duplicates.length > 1 ? 's' : ''} Detected</h3>
+      <p class="dup-modal-msg">
+        This build is identical to {duplicateModal.duplicates.length} existing slot{duplicateModal.duplicates.length > 1 ? 's' : ''}:
+      </p>
+      <div class="dup-modal-list">
+        {#each duplicateModal.duplicates as dup}
+          <div class="dup-modal-item">
+            <span class="dup-modal-slot">Slot {dup.index + 1}</span>
+            <span class="dup-modal-name">{dup.slot.name}</span>
+          </div>
+        {/each}
+      </div>
+      <p class="dup-modal-msg dup-modal-msg--sub">
+        Save to <strong>Slot {duplicateModal.targetIndex + 1}</strong> anyway?
+      </p>
+      {#if duplicateModal.duplicates.length >= 2}
+        <p class="dup-modal-msg dup-modal-msg--sub" style="opacity:.6">
+          {duplicateModal.duplicates.length} duplicate{duplicateModal.duplicates.length > 1 ? 's' : ''} can be cleaned up now or later from the saves panel.
+        </p>
+      {/if}
+      <div class="dup-modal-actions">
+        <Button variant="neutral" onclick={() => { duplicateModal = null }}>
+          <i class="fa fa-times"></i> Cancel
+        </Button>
+        {#if duplicateModal.duplicates.length >= 2}
+          <Button variant="warning" onclick={() => {
+            const dups = duplicateModal!.duplicates
+            const indicesToRemove = dups.map(d => d.index).sort((a, b) => b - a)
+            let adjustedTarget = duplicateModal!.targetIndex
+            for (const idx of indicesToRemove) {
+              slots.splice(idx, 1)
+              if (idx < adjustedTarget) adjustedTarget--
+            }
+            slots = [...slots]
+            persistSlots(slots)
+            doSave(adjustedTarget)
+            addToast(`Deleted ${dups.length} duplicate${dups.length > 1 ? 's' : ''}`, 'info')
+          }}>
+            <i class="fa fa-trash"></i> Delete {duplicateModal.duplicates.length} Duplicates & Save
+          </Button>
+        {/if}
+        <Button variant="positive" onclick={() => doSave(duplicateModal!.targetIndex)}>
+          <i class="fa fa-check"></i> Save Anyway
+        </Button>
+      </div>
+    </div>
+  </Modal>
+{/if}
 
 <style>
   .sr-only {
@@ -484,13 +616,54 @@
   .saves-panel{
     position:absolute;top:calc(100% + 4px);left:0;z-index:var(--z-dropdown);
     background:var(--surface);border:1px solid rgba(74,222,128,.18);
-    border-radius:10px;padding:14px;min-width:340px;
+    border-radius:10px;padding:14px;min-width:420px;
     display:flex;flex-direction:column;gap:10px;
   }
   .saves-header{display:flex;align-items:baseline;justify-content:space-between;}
   .saves-title{font-size:.7rem;text-transform:uppercase;letter-spacing:.16em;font-weight:700;color:var(--accent);}
   .saves-hint{font-size:.62rem;color:var(--ink-muted);opacity:.5;font-style:italic;}
-  .saves-list{display:flex;flex-direction:column;gap:6px;}
+  .saves-toolbar{display:flex;gap:6px;align-items:center;}
+  .search-wrap{flex:1;position:relative;display:flex;align-items:center;}
+  .search-icon{position:absolute;left:8px;font-size:.7rem;pointer-events:none;opacity:.4;color:var(--ink-muted);}
+  .search-input{
+    width:100%;padding:5px 24px 5px 24px;border-radius:6px;border:1px solid var(--border);
+    background:var(--surface2);color:var(--ink);font-size:.72rem;font-family:var(--font-body);
+    outline:none;transition:border-color .15s;
+  }
+  .search-input:focus{border-color:rgba(74,222,128,.4);}
+  .search-input::placeholder{color:var(--ink-muted);opacity:.4;}
+  .search-clear{
+    position:absolute;right:4px;background:none;border:none;color:var(--ink-muted);
+    font-size:.7rem;cursor:pointer;padding:2px 4px;border-radius:3px;line-height:1;
+  }
+  .search-clear:hover{background:var(--surface3);color:var(--ink);}
+  .sort-group{display:flex;gap:2px;flex-shrink:0;}
+  .sort-btn{
+    padding:4px 6px;border-radius:5px;border:1px solid var(--border);background:var(--surface2);
+    color:var(--ink-muted);font-size:.6rem;font-weight:700;cursor:pointer;
+    transition:all .15s;line-height:1;
+  }
+  .sort-btn:hover{background:var(--surface3);color:var(--ink);}
+  .sort-btn.active{background:rgba(74,222,128,.12);border-color:rgba(74,222,128,.3);color:var(--accent);}
+  .saves-empty{
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+    padding:16px 8px;color:var(--ink-muted);font-size:.72rem;opacity:.5;text-align:center;
+  }
+  .empty-icon{font-size:1.2rem;}
+  .saves-list{display:flex;flex-direction:column;gap:6px;max-height:420px;overflow-y:auto;
+    scrollbar-width:thin;scrollbar-color:rgba(255,255,255,0.08) transparent;}
+  .saves-list::-webkit-scrollbar{width:5px;}
+  .saves-list::-webkit-scrollbar-track{background:transparent;}
+  .saves-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:3px;}
+  .add-slot-btn{
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    width:100%;padding:8px 12px;border-radius:8px;
+    background:transparent;border:1px dashed var(--border);
+    color:var(--ink-muted);font-family:var(--font-body);font-size:.75rem;font-weight:600;
+    cursor:pointer;transition:all var(--duration-fast) var(--ease-out);
+  }
+  .add-slot-btn:hover{background:rgba(74,222,128,.08);border-color:rgba(74,222,128,.3);color:var(--accent);}
+  .add-slot-btn i{font-size:.7rem;}
   .save-slot{
     display:flex;align-items:center;justify-content:space-between;gap:10px;
     padding:9px 12px;border-radius:8px;
@@ -523,8 +696,7 @@
   }
   .slot-meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
   .slot-time{font-size:.62rem;color:var(--ink-muted);opacity:.5;}
-  .slot-summary{font-size:.62rem;color:var(--ink-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;}
-  .slot-empty{font-size:.75rem;color:var(--ink-muted);opacity:.35;font-style:italic;}
+  .slot-summary{font-size:.62rem;color:var(--ink-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px;}
   .slot-actions{display:flex;align-items:center;gap:5px;flex-shrink:0;}
   .btn{
     font-size:.68rem;font-weight:700;font-family:var(--font-body);
@@ -589,8 +761,45 @@
     }
 
     .saves-header { flex-shrink: 0; flex-wrap: wrap; }
+    .saves-toolbar { flex-wrap: wrap; }
     .saves-list { flex: 1; overflow-y: auto; }
     .saves-close { display: block; }
     .saves-hint { display: none; }
   }
+
+  .dup-modal { text-align: center; padding: 8px 0; }
+  .dup-modal-icon {
+    font-size: 2rem; color: var(--accent2); margin-bottom: 12px;
+    animation: dupPulse 1.5s ease-in-out infinite;
+  }
+  @keyframes dupPulse { 0%,100% { opacity:.8; transform:scale(1); } 50% { opacity:1; transform:scale(1.08); } }
+  .dup-modal-title {
+    font-family: var(--font-display); font-size: 1.1rem; font-weight: 600;
+    color: var(--ink); margin: 0 0 8px;
+  }
+  .dup-modal-msg {
+    font-size: .85rem; color: var(--ink-muted); margin: 0 0 20px; line-height: 1.5;
+  }
+  .dup-modal-msg strong { color: var(--ink); }
+  .dup-modal-msg--sub { font-size: .8rem; margin-bottom: 12px; }
+  .dup-modal-list {
+    display: flex; flex-direction: column; gap: 6px;
+    max-height: 200px; overflow-y: auto;
+    margin-bottom: 16px;
+    scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.08) transparent;
+  }
+  .dup-modal-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px; border-radius: 6px;
+    background: var(--surface2); border: 1px solid var(--border);
+  }
+  .dup-modal-slot {
+    font-size: .72rem; font-weight: 700; color: var(--accent2);
+    white-space: nowrap;
+  }
+  .dup-modal-name {
+    font-size: .82rem; color: var(--ink); overflow: hidden;
+    text-overflow: ellipsis; white-space: nowrap;
+  }
+  .dup-modal-actions { display: flex; justify-content: center; gap: 12px; }
 </style>

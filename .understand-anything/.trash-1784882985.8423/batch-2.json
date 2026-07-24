@@ -1,0 +1,46 @@
+{
+  "batchIndex": 2,
+  "nodes": [
+    {
+      "id": "file:.fallow/.gitignore",
+      "type": "config",
+      "name": ".gitignore",
+      "filePath": ".fallow/.gitignore",
+      "summary": "Ignores all files within the .fallow directory, preventing fallow cache/artifact files from being committed to version control.",
+      "tags": ["config", "vcs", "fallow"],
+      "complexity": 0,
+      "languageNotes": "Git ignore syntax; contains a single wildcard pattern '*' to ignore all contents of the directory."
+    },
+    {
+      "id": "file:.fallow/cache.bin",
+      "type": "binary",
+      "name": "cache.bin",
+      "filePath": ".fallow/cache.bin",
+      "summary": "Binary cache file used by the fallow tool, likely storing computed analysis or metric data for the project.",
+      "tags": ["binary", "cache", "fallow"],
+      "complexity": 0,
+      "languageNotes": "Binary format; contents are opaque and machine-generated."
+    },
+    {
+      "id": "file:.fallow/churn.bin",
+      "type": "binary",
+      "name": "churn.bin",
+      "filePath": ".fallow/churn.bin",
+      "summary": "Binary file storing file churn/change-frequency data collected by the fallow tool.",
+      "tags": ["binary", "churn", "fallow"],
+      "complexity": 0,
+      "languageNotes": "Binary format; contents are opaque and machine-generated."
+    },
+    {
+      "id": "file:.fallow/graph-cache.bin",
+      "type": "binary",
+      "name": "graph-cache.bin",
+      "filePath": ".fallow/graph-cache.bin",
+      "summary": "Binary file caching a dependency or call graph computed by the fallow tool.",
+      "tags": ["binary", "graph", "cache", "fallow"],
+      "complexity": 0,
+      "languageNotes": "Binary format; contents are opaque and machine-generated."
+    }
+  ],
+  "edges": []
+}

@@ -104,6 +104,7 @@ import {
   }
   $: _photosynthesisStacks = perks['Photosynthesis'] ?? 0
   $: _vampireStacks = perks['Vampire'] ?? 0
+  $: _sunBlessedStacks = _allActiveBuffsRaw.filter(b => b.buffName === 'Sun Blessed').length > 0 ? 1 : 0
   $: {
   if (!environmentTouched) {
     if (_photosynthesisStacks > 0 && prevPhotosynthesis === 0 && _vampireStacks === 0 && $build.inDarkness) {
@@ -127,7 +128,7 @@ import {
   prevPhotosynthesis = _photosynthesisStacks
   prevVampire = _vampireStacks
 }
-  $: _effectiveInDarkness = $build.inDarkness
+  $: _effectiveInDarkness = _sunBlessedStacks > 0 ? false : $build.inDarkness
 
   $: _healScalingCtx = {
     perks,
@@ -401,10 +402,14 @@ import {
   $: _glyphConduitEntry = _typedBoostResult.activeEntries.find(e => e.perkName === 'Glyph Conduit')
   $: _glyphConduitMult = _glyphConduitEntry?.dmgMult ?? 1
 
+  $: _photosynthesisEntry = _typedBoostResult.activeEntries.find(e => e.perkName === 'Photosynthesis')
+  $: _photosynthesisDmgMult = _photosynthesisEntry?.dmgMult ?? 1
+
   $: _typedBoostEntries = (() => {
     const entries = _typedBoostResult.activeEntries.filter(e =>
       !(e.perkName === 'Rage' && rageDisabled) &&
       !(e.perkName === 'Glyph Conduit' && glyphConduitDisabled) &&
+      !(e.perkName === 'Photosynthesis' && disabledEffects.has('photosynthesis')) &&
       e.perkName !== 'Hex Shield'
     )
     const extinguishAmt = perks['Extinguish'] ?? 0
@@ -808,6 +813,16 @@ import {
         title: `Sunburn (${_sunburnAmt}): +${_sunburnAmt * 10}% dmg vs Burning · +${_sunburnAmt * 15}% if attack has Holy · ${_sunburnBurnChance}% apply Burn on Holy`,
         val: disabledEffects.has('sunburn') ? '—' : `+${_sunburnAmt * 10}%/+${_sunburnAmt * 15}%`,
         cond: disabledEffects.has('sunburn') ? 'disabled' : `vs Burning · ${_sunburnBurnChance}% Burn`,
+      })
+    }
+    if (_photosynthesisStacks > 0) {
+      const dmgActive = _photosynthesisDmgMult > 1 && !disabledEffects.has('photosynthesis')
+      const pct = Math.round((_photosynthesisDmgMult - 1) * 100)
+      chips.push({
+        key: 'photosynthesis', name: 'Photosynthesis',
+        title: `Photosynthesis (${_photosynthesisStacks}): +${pct}% dmg for Holy · Earth while in Sunlight`,
+        val: disabledEffects.has('photosynthesis') ? '—' : `×${+_photosynthesisDmgMult.toFixed(4)}`,
+        cond: disabledEffects.has('photosynthesis') ? 'disabled' : (`Sunlight · Holy · Earth` + (dmgActive ? '' : ' (inactive)')),
       })
     }
     if (_mortalWillAmt > 0) {
@@ -2998,7 +3013,7 @@ $: _groupedSelfDamageSources = (() => {
     <!-- Armor Pen column -->
     {#if ((stats as Record<string, number>).armorPenetration ?? 0) + _raceGlobalArmorPen > 0}
       <div class="da-section da-section--apen">
-        <div class="da-section-title">🛡 Armor Penetration</div>
+        <div class="da-section-title"><i class="fa fa-shield"></i> Armor Penetration</div>
         <div class="da-apen-inner">
           <span class="da-apen-val">{Math.round((((stats as Record<string, number>).armorPenetration ?? 0) + _raceGlobalArmorPen) * 100) / 100}</span>
         </div>
@@ -3007,9 +3022,33 @@ $: _groupedSelfDamageSources = (() => {
 
   </div>
 
+{#if _vampireStacks > 0 || _photosynthesisStacks > 0 || _sunBlessedStacks > 0}
+  <div class="da-section da-env-section">
+    <div class="da-section-title"><i class="fa fa-sun-o"></i> Environment</div>
+    <div class="da-env-row">
+      {#if _sunBlessedStacks > 0}
+        <span class="da-env-locked-hint"><i class="fa fa-lock"></i> Sun Blessed forces Sunlight</span>
+      {/if}
+      <button
+        class="da-env-btn"
+        class:da-env-btn--dark={_effectiveInDarkness}
+        class:da-env-btn--sun={!_effectiveInDarkness}
+        class:da-env-btn--locked={_sunBlessedStacks > 0}
+        disabled={_sunBlessedStacks > 0}
+        on:click={() => {
+          environmentTouched = true
+          build.update(s => ({ ...s, inDarkness: !s.inDarkness }))
+        }}
+      >
+        {@html _effectiveInDarkness ? '<i class="fa fa-moon-o"></i> Darkness' : '<i class="fa fa-sun-o"></i> Sunlight'}
+      </button>
+    </div>
+  </div>
+{/if}
+
 <!-- ══════════════════ COMBAT MULTIPLIERS ══════════════════ -->
 <div class="da-section">
-  <div class="da-section-title">⚔ Combat Multipliers</div>
+  <div class="da-section-title"><i class="fa fa-crosshairs"></i> Combat Multipliers</div>
     {#if !_hasSpecificBoosts}
       <div class="da-boost-row">
         {#each [..._visibleDmgEntries, ..._syntheticDmgBoostEntries] as entry}
@@ -3349,22 +3388,6 @@ $: _groupedSelfDamageSources = (() => {
             <span style="opacity: .6;">(base <strong>{(stats.tenacity ?? 0).toFixed(2)}</strong> + <strong>{_orkBuffTenacity.toFixed(2)}</strong> from {_orkBuffs.length} buff{_orkBuffs.length !== 1 ? 's' : ''})</span>
           </div>
         {/if}
-          {#if _vampireStacks > 0 || _photosynthesisStacks > 0}
-            <div class="ap-toggle-row">
-              <span class="ap-toggle-label">Environment</span>
-              <button
-                class="ap-toggle-btn da-env-toggle"
-                class:da-env-toggle--dark={$build.inDarkness}
-                class:da-env-toggle--sun={!$build.inDarkness}
-                on:click={() => {
-                  environmentTouched = true
-                  build.update(s => ({ ...s, inDarkness: !s.inDarkness }))
-                }}
-              >
-                {_effectiveInDarkness ? '🌙 Darkness' : '☀ Sunlight'}
-              </button>
-            </div>
-          {/if}
         {/if}
   {#if _m1FinisherWeaponBoost.mult !== 1 || _m2WeaponBoost.mult !== 1}
     <div class="da-weaponboost-row" style="margin-top: 8px;">
@@ -6703,6 +6726,66 @@ $: _groupedSelfDamageSources = (() => {
 }
 .da-env-toggle--dark:hover {
   box-shadow: 0 0 14px rgba(67,56,202,.5) inset, 0 0 12px rgba(129,140,248,.35);
+}
+.da-env-section {
+  margin-bottom: 12px;
+}
+.da-env-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 0;
+}
+.da-env-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  border-radius: 20px;
+  border: 1.5px solid rgba(255,255,255,.15);
+  background: rgba(255,255,255,.05);
+  color: var(--ink-text);
+  font-size: .82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s ease;
+  white-space: nowrap;
+}
+.da-env-btn:disabled {
+  cursor: not-allowed;
+  opacity: .7;
+}
+.da-env-btn--sun {
+  border-color: rgba(251,191,36,.6);
+  background: linear-gradient(160deg, rgba(251,191,36,.2), rgba(251,146,60,.1));
+  color: #fbbf24;
+  text-shadow: 0 0 10px rgba(251,191,36,.5);
+  box-shadow: 0 0 12px rgba(251,191,36,.3);
+}
+.da-env-btn--sun:not(:disabled):hover {
+  box-shadow: 0 0 16px rgba(251,191,36,.45);
+  transform: scale(1.03);
+}
+.da-env-btn--dark {
+  border-color: rgba(129,140,248,.55);
+  background: linear-gradient(160deg, rgba(30,27,75,.6), rgba(15,14,38,.55));
+  color: #a5b4fc;
+  text-shadow: 0 0 10px rgba(129,140,248,.5);
+  box-shadow: 0 0 12px rgba(67,56,202,.35) inset, 0 0 10px rgba(129,140,248,.25);
+}
+.da-env-btn--dark:not(:disabled):hover {
+  box-shadow: 0 0 16px rgba(67,56,202,.5) inset, 0 0 14px rgba(129,140,248,.35);
+  transform: scale(1.03);
+}
+.da-env-btn--locked {
+  border-style: dashed;
+  opacity: .6;
+}
+.da-env-locked-hint {
+  font-size: .72rem;
+  color: #fbbf24;
+  font-weight: 600;
+  opacity: .8;
 }
 .da-weaponboost-row {
   display: flex; align-items: center; gap: 8px; flex-wrap: wrap;

@@ -538,6 +538,14 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectUnit: 'flat',
     isNeutral: true,
   },
+  'Sun Blessed': {
+    name: 'Sun Blessed',
+    color: '#fbbf24',
+    description: 'Bathed in sacred sunlight. Forces environment to Sunlight.',
+    effectPerTenthPotency: 0,
+    effectUnit: 'flat',
+    isNeutral: true,
+  },
 }
 
 const ITEM_BUFF_MAP: GrantedBuff[] = [
@@ -663,6 +671,14 @@ const ITEM_BUFF_MAP: GrantedBuff[] = [
     duration: 5,
     condition: 'On cast',
     sourceName: 'Fireball Rune',
+    sourceType: 'rune',
+  },
+  {
+    buffName: 'Sun Blessed',
+    potency: 0,
+    duration: 50,
+    condition: 'Cast to create a small sun',
+    sourceName: 'False Sun Rune',
     sourceType: 'rune',
   },
 ]

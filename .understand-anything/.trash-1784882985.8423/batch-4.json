@@ -1,0 +1,116 @@
+{
+  "batchIndex": 4,
+  "nodes": [
+    {
+      "id": "data:src/data/armors.json",
+      "type": "file",
+      "name": "armors.json",
+      "filePath": "src/data/armors.json",
+      "summary": "Defines ~100+ armor sets for Voxel Blade. Each armor has a name, shared stats (elemental boosts/defenses, physical/magic defense, tenacity, protection, warding, resistances, speed/jump/attack speed), a perk with name and amount, and 1-3 parts (Helmet, Chestplate, Leggings) with descriptions. Covers a wide range of themed sets from basic (Civilian) to endgame (Queen Bumblz, Iron Slayer).",
+      "tags": ["data", "game-data", "armor", "equipment", "stats", "perks"],
+      "complexity": 1,
+      "languageNotes": "JSON array of objects; each armor has name, sharedPart (upgrade, stats, perkName, perkAmount), and parts array with type and description."
+    },
+    {
+      "id": "data:src/data/blades.json",
+      "type": "file",
+      "name": "blades.json",
+      "filePath": "src/data/blades.json",
+      "summary": "Defines 107 blade weapons across tiers 1-5. Each blade has name, tier, attackSpeed, stats (damage type weights, scaling values, boost values), optional perks array, and bladeType (Small/Medium/Heavy Blade or Hammer Head). Covers physical, elemental (fire, water, earth, air, hex, holy), and hybrid damage types.",
+      "tags": ["data", "game-data", "weapons", "blades", "damage", "tiers", "perks"],
+      "complexity": 1,
+      "languageNotes": "JSON array; each blade has name, tier, attackSpeed, stats object, optional perks array, and bladeType string."
+    },
+    {
+      "id": "data:src/data/enchantments.json",
+      "type": "file",
+      "name": "enchantments.json",
+      "filePath": "src/data/enchantments.json",
+      "summary": "Defines 52 enchantments split into unAscended (25) and Ascended (27) categories. Each has name, category, stacking type (exclusive or multi), stats with modifier operations (multiplier/addition), optional effects array, and additionalNotes. Enchantments modify weapon/armor stats with multiplicative or additive modifiers, and some grant special effects like Lifesteal, Perfection, or Wildfire.",
+      "tags": ["data", "game-data", "enchantments", "modifiers", "stacking", "effects"],
+      "complexity": 2,
+      "languageNotes": "JSON array; stats use a nested modifier pattern with type (multiplier/addition) and value. Effects have name and value fields."
+    },
+    {
+      "id": "data:src/data/essences.json",
+      "type": "file",
+      "name": "essences.json",
+      "filePath": "src/data/essences.json",
+      "summary": "Defines 106 essences across tiers 1-5. Essences are weapon components that pair with blades and handles. Each has name, tier, attackSpeed, stats (scaling and boost values), optional perks, and essenceType. Mirrors the blade data structure closely, providing the essence component for weapon crafting.",
+      "tags": ["data", "game-data", "weapons", "essences", "crafting", "tiers", "perks"],
+      "complexity": 1,
+      "languageNotes": "JSON array; structure similar to blades.json with name, tier, attackSpeed, stats, optional perks, and essenceType."
+    },
+    {
+      "id": "data:src/data/gloves.json",
+      "type": "file",
+      "name": "gloves.json",
+      "filePath": "src/data/gloves.json",
+      "summary": "Defines 22 gloves across tiers 1-4. Each glove has name, tier, attackSpeed, stats, perks array, and gloveType (Gloves or Shield). Gloves are equipment pieces that provide stats, perks, and some include spirit-based finisher abilities. Includes both offensive and defensive options like Croakernaut Shield.",
+      "tags": ["data", "game-data", "equipment", "gloves", "shields", "perks"],
+      "complexity": 1,
+      "languageNotes": "JSON array; smaller dataset with name, tier, attackSpeed, stats, perks array, and gloveType."
+    },
+    {
+      "id": "data:src/data/guilds.json",
+      "type": "file",
+      "name": "guilds.json",
+      "filePath": "src/data/guilds.json",
+      "summary": "Defines 9 guilds (Gladiator, Cursed, Cleric, Scholar, Knight, Thief, Draconic, Monk, Vampire), each with 3 ranks. Each guild has name and ranks array with rank number, stats bonuses, and perks. Guilds provide scaling stat bonuses and perks that improve with rank progression.",
+      "tags": ["data", "game-data", "guilds", "progression", "stats", "perks"],
+      "complexity": 2,
+      "languageNotes": "JSON array with nested ranks; each rank has stats and perks arrays."
+    },
+    {
+      "id": "data:src/data/handles.json",
+      "type": "file",
+      "name": "handles.json",
+      "filePath": "src/data/handles.json",
+      "summary": "Defines 104 handles across tiers 1-5. Handles are weapon components that pair with blades and essences. Each has name, tier, attackSpeed, stats (scaling and boost values), optional perks, and handleType (Medium Handle, Long Handle, or Pole). Handles determine weapon reach and provide additional perks and stats.",
+      "tags": ["data", "game-data", "weapons", "handles", "crafting", "tiers", "perks"],
+      "complexity": 1,
+      "languageNotes": "JSON array; structure similar to blades/essences with name, tier, attackSpeed, stats, optional perks, and handleType."
+    },
+    {
+      "id": "data:src/data/perks.json",
+      "type": "file",
+      "name": "perks.json",
+      "filePath": "src/data/perks.json",
+      "summary": "Defines 365 perks with names, descriptions, and tags. Each perk has a name, detailed description of its mechanic, and tags array classifying it (e.g., Offensive, Defensive, Armor, Weapon, Rune, Buff, Debuff, Finisher, etc.). This is the central reference for all perk effects used throughout the calculator.",
+      "tags": ["data", "game-data", "perks", "mechanics", "tags", "descriptions"],
+      "complexity": 2,
+      "languageNotes": "JSON array at 3689 lines; each perk has name, description string, and tags array of strings."
+    },
+    {
+      "id": "data:src/data/races.json",
+      "type": "file",
+      "name": "races.json",
+      "filePath": "src/data/races.json",
+      "summary": "Defines 10 playable races (Human, Half-Ork, Elf, Dark Elf, Dragon Blooded, Ork, High Elf, Arborian, Kitsune, Bunikin). Each race has a name and passive description, with some having statModifiers, cooldownModifiers, or special penetration values. Races provide unique passive bonuses that affect gameplay.",
+      "tags": ["data", "game-data", "races", "passives", "stat-modifiers"],
+      "complexity": 1,
+      "languageNotes": "JSON array; each race has name, passive text, and optional statModifiers/cooldownModifiers/special values."
+    },
+    {
+      "id": "data:src/data/rings.json",
+      "type": "file",
+      "name": "rings.json",
+      "filePath": "src/data/rings.json",
+      "summary": "Defines 35 rings. Each ring has name, description, upgrade level, stats, perkName, and perkAmount. Rings are equipment accessories that provide stat bonuses and perks. Covers various builds: offensive (Sharp Ring, Fire Ring), defensive (Bastion Ring, Parrying Ring), utility (Quickstep Ring, Lucky Ring), and summon-focused (Bumblz Honey Ring).",
+      "tags": ["data", "game-data", "equipment", "rings", "accessories", "perks"],
+      "complexity": 1,
+      "languageNotes": "JSON array; each ring has name, description, upgrade, stats, perkName, perkAmount."
+    },
+    {
+      "id": "data:src/data/runes.json",
+      "type": "file",
+      "name": "runes.json",
+      "filePath": "src/data/runes.json",
+      "summary": "Defines 41 runes (active abilities). Each rune has name, description, upgrade level, stats, cooldown, and optional perkName/perkAmount. Runes provide active skills like Fireball, Heal, Combat Roll, Summon mounts, and various offensive/defensive abilities. Each has a cooldown in seconds.",
+      "tags": ["data", "game-data", "runes", "active-abilities", "cooldowns", "skills"],
+      "complexity": 1,
+      "languageNotes": "JSON array; each rune has name, description, upgrade, stats, cooldown number, and optional perk fields."
+    }
+  ],
+  "edges": []
+}

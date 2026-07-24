@@ -1,0 +1,305 @@
+{
+  "batchIndex": 6,
+  "nodes": [
+    {
+      "id": "file:src/data/perkAutoDebuffs.ts",
+      "type": "file",
+      "name": "perkAutoDebuffs.ts",
+      "filePath": "src/data/perkAutoDebuffs.ts",
+      "summary": "Calculates automatic debuffs applied by perks (e.g., Burn from Exhaust, Bleed from Penance, Poison from Fungal Prototype). Exports getAutoDebuffs() which takes player state and returns an array of GrantedBuff debuff objects to apply on hit.",
+      "tags": ["data", "debuffs", "perks", "combat", "buff-system"],
+      "complexity": "high",
+      "languageNotes": "TypeScript. Imports constants from Boost, perks, perk-base-damage, game modules and types from lib/types. Contains ~15 perk-specific debuff branches with conditional logic."
+    },
+    {
+      "id": "file:src/data/Perkbasedmg.ts",
+      "type": "file",
+      "name": "Perkbasedmg.ts",
+      "filePath": "src/data/Perkbasedmg.ts",
+      "summary": "Central perk damage definition file. Defines PerkDmgDef interfaces and PERK_DMG_DEFS array containing ~30+ perk damage definitions (Springblast, Dragon State, Spore Burst, Venom Spitter, Dark Harvest, etc.) with base damage formulas, damage types, scaling modes, HP gates, and secondary effects.",
+      "tags": ["data", "damage", "perks", "combat", "formulas"],
+      "complexity": "high",
+      "languageNotes": "TypeScript. Large file (864 lines) with many imported constants from lib/constants. Defines complex types (PerkDmgCtx, HpGate, SecondaryEffect, TriggerChainEntry) and helper functions (gateThreshold, isHpGateActive, calcSpringblastBaseDamage, calcBomberChargeBaseDamage)."
+    },
+    {
+      "id": "file:src/data/procCoefficients.ts",
+      "type": "file",
+      "name": "procCoefficients.ts",
+      "filePath": "src/data/procCoefficients.ts",
+      "summary": "Defines proc coefficient lookup tables for weapons, weapon arts, runes, and perks. Maps weapon types to their M1/M2 proc coefficients and provides WA/rune/perk proc coefficient records for the proc chance system.",
+      "tags": ["data", "proc", "coefficients", "weapons", "balancing"],
+      "complexity": "low",
+      "languageNotes": "TypeScript. Pure data file with 4 exported Record objects (WEAPON_PROC_COEFFS, WA_PROC_COEFFS, RUNE_PROC_COEFFS, PERK_PROC_COEFFS) and 2 default constants."
+    },
+    {
+      "id": "file:src/data/raceEffects.ts",
+      "type": "file",
+      "name": "raceEffects.ts",
+      "filePath": "src/data/raceEffects.ts",
+      "summary": "Defines race-specific conditional effects, notably the Human race passive (damage boost and DR below 50% HP) and Ork Tenacity buff counting logic. Exports helper functions to get active race effects and calculate Ork Tenacity bonuses.",
+      "tags": ["data", "race", "passives", "combat", "hp-gating"],
+      "complexity": "low",
+      "languageNotes": "TypeScript. Imports HpGate and isHpGateActive from Perkbasedmg. Contains generic helper functions for Ork Tenacity buff filtering."
+    },
+    {
+      "id": "file:src/data/Runebasedmg.ts",
+      "type": "file",
+      "name": "Runebasedmg.ts",
+      "filePath": "src/data/Runebasedmg.ts",
+      "summary": "Defines rune damage definitions (RUNE_DMG_DEFS array) covering 12+ rune types (Ancient Cleric, Beenade, Boostshroom, Thunderous Charge, Sporeling Toss, Rocky Tail, etc.) with base damage formulas, damage types, scalings, hit counts, sliders, and shield definitions.",
+      "tags": ["data", "damage", "runes", "combat", "formulas"],
+      "complexity": "high",
+      "languageNotes": "TypeScript. Imports from lib/types, HealBoost, SummonData, and many constants from rune-base-damage. Defines RuneDmgCtx, RuneSliderDef, RuneShieldDef, and RuneDmgDef interfaces."
+    },
+    {
+      "id": "file:src/data/selfDamagePerks.ts",
+      "type": "file",
+      "name": "selfDamagePerks.ts",
+      "filePath": "src/data/selfDamagePerks.ts",
+      "summary": "Defines self-damage perk definitions (Undead Might, Explosive Charge, Dark Magic, Bombardier) and the calcSelfDamage() function. Computes damage dealt to the player when using certain perks, including DR reduction and multi-target falloff.",
+      "tags": ["data", "self-damage", "perks", "combat", "formulas"],
+      "complexity": "medium",
+      "languageNotes": "TypeScript. Self-contained with no imports. Exports SelfDamagePerkDef interface, SELF_DAMAGE_PERK_DEFS array, and calcSelfDamage function with harmonic-series multi-target falloff."
+    },
+    {
+      "id": "file:src/data/stanceOverlays.ts",
+      "type": "file",
+      "name": "stanceOverlays.ts",
+      "filePath": "src/data/stanceOverlays.ts",
+      "summary": "Resolves weapon stance overlays based on equipped items and perks (e.g., Blaster Ring changes M2 to Rifle/Shotgun, Locked And Loaded changes to Dual Guns/Side Gun, Cosmic Ray/Mine overrides). Returns the overlay weapon type and scope.",
+      "tags": ["data", "weapons", "stances", "equipment", "overrides"],
+      "complexity": "low",
+      "languageNotes": "TypeScript. Self-contained with no imports. Defines StanceOverlayResult, StanceOverlayCtx interfaces and resolveStanceOverlay() function with 6 overlay definitions."
+    },
+    {
+      "id": "file:src/data/statboost.ts",
+      "type": "file",
+      "name": "statboost.ts",
+      "filePath": "src/data/statboost.ts",
+      "summary": "Implements stat-transforming perk effects that modify player stats (e.g., Quick Witted converts speed to dex, Carapace converts earth to protection, Brawny converts elemental boosts to physical). Exports applyStatBoostPerks() which applies 16 perk handlers in a defined execution order.",
+      "tags": ["data", "stats", "perks", "stat-transformation", "build-optimization"],
+      "complexity": "high",
+      "languageNotes": "TypeScript. Imports StatMap/StatKey types and many conversion constants. Defines a PERK_REGISTRY with 16 named handlers and PERK_EXECUTION_ORDER for deterministic processing."
+    },
+    {
+      "id": "file:src/data/SummonData.ts",
+      "type": "file",
+      "name": "SummonData.ts",
+      "filePath": "src/data/SummonData.ts",
+      "summary": "Defines summon creature data (Mage Bomber, Blessedling) with stats, damage types, and attacks. Provides calcSummonStat() for scaling with summon boost and level, calcMaxSummonCount() for cap calculations, and lookup maps for WA-to-summon and perk definitions.",
+      "tags": ["data", "summons", "creatures", "stats", "scaling"],
+      "complexity": "medium",
+      "languageNotes": "TypeScript. Imports MAX_LEVEL from lib/constants. Defines SummonDef, SummonAttack, SummonPerkDef interfaces and exports SUMMON_MAP, WA_SUMMON_MAP lookup objects."
+    },
+    {
+      "id": "file:src/data/TypedDmgBoost.ts",
+      "type": "file",
+      "name": "TypedDmgBoost.ts",
+      "filePath": "src/data/TypedDmgBoost.ts",
+      "summary": "Calculates typed damage boosts from perks that scale specific damage types (Glyph Conduit boosts magic, Rage boosts physical+conditional, Photosynthesis boosts holy/earth in sunlight, Hex Shield boosts all types). Exports calcTypedDmgBoosts() returning per-type multipliers and active entries.",
+      "tags": ["data", "damage", "boosts", "perks", "typed-scaling"],
+      "complexity": "medium",
+      "languageNotes": "TypeScript. Imports GrantedBuff from BuffData and ALL_DMG_TYPES from damage-types constants. Defines TypedDmgBoostDef with getAffectedTypes/getDamageMultiplier callbacks."
+    },
+    {
+      "id": "file:src/data/weapon base dmg.ts",
+      "type": "file",
+      "name": "weapon base dmg.ts",
+      "filePath": "src/data/weapon base dmg.ts",
+      "summary": "Static data file defining WEAPON_BASE_DMG array with base M1/M2 damage values and hit patterns for 30+ weapon types (Fists, swords, spears, ranged weapons, etc.). Includes optional M2 charge mechanics for Rifle.",
+      "tags": ["data", "weapons", "damage", "base-stats", "static-data"],
+      "complexity": "low",
+      "languageNotes": "TypeScript. Imports WeaponBaseDmg type from lib/types. Pure data array with multi-hit notation ({n: dmg, count: hits})."
+    },
+    {
+      "id": "file:src/data/Weaponartcheck.ts",
+      "type": "file",
+      "name": "Weaponartcheck.ts",
+      "filePath": "src/data/Weaponartcheck.ts",
+      "summary": "Validates whether a weapon art can be equipped given current weapon scalings, stats, weapon type, and guild. Exports checkWA() for boolean validation and getUnmetReqs() for detailed unmet requirement strings. Handles scaling exemptions and weapon type equivalences.",
+      "tags": ["data", "weapon-arts", "requirements", "validation", "equipment"],
+      "complexity": "medium",
+      "languageNotes": "TypeScript. Imports WeaponArt/WeaponArtRequirement types from weaponArts. Defines SCALE_MAP, STAT_CHECKS mappings and helper functions for scaling/stat requirement checks."
+    },
+    {
+      "id": "file:src/data/weaponArts.ts",
+      "type": "file",
+      "name": "weaponArts.ts",
+      "filePath": "src/data/weaponArts.ts",
+      "summary": "Comprehensive weapon art definitions (WEAPON_ARTS array) with 40+ weapon arts covering all elements (fire, water, earth, air, hex, holy) and guilds (Monk). Each entry includes name, description, cooldown, base damage, damage type, scaling, requirements, and extras.",
+      "tags": ["data", "weapon-arts", "combat", "abilities", "static-data"],
+      "complexity": "high",
+      "languageNotes": "TypeScript. No imports. Large data file (511 lines) defining WeaponArt, WeaponArtRequirement, WAIndividualHit interfaces. Contains extensive requirements objects with scaling/stat/weapon-type constraints."
+    },
+    {
+      "id": "file:src/data/weaponConditionalBoosts.ts",
+      "type": "file",
+      "name": "weaponConditionalBoosts.ts",
+      "filePath": "src/data/weaponConditionalBoosts.ts",
+      "summary": "Defines conditional damage multipliers that apply to specific weapon types and hit scopes (e.g., Aggressive Personality boosts War Hammer/Dual Mallets M1 finisher and Mallet M2). Exports getWeaponConditionalBoost() returning a multiplier and matching perk labels.",
+      "tags": ["data", "weapons", "boosts", "conditional", "perks"],
+      "complexity": "low",
+      "languageNotes": "TypeScript. Imports roundMultiplier from lib/utils. Contains 2 boost definitions with weapon type and hit scope matching."
+    },
+    {
+      "id": "file:src/DidYouMean.svelte",
+      "type": "file",
+      "name": "DidYouMean.svelte",
+      "filePath": "src/DidYouMean.svelte",
+      "summary": "Svelte component displaying 'Did you mean?' suggestions when search yields no exact results. Renders clickable chips for suggested items (names or perks) with highlighted text matching, and a fallback empty-state message.",
+      "tags": ["ui", "search", "suggestions", "component"],
+      "complexity": "low",
+      "languageNotes": "Svelte component using createEventDispatcher. Imports highlightTextParts utility. Styled with scoped CSS using accent3/accent2 color variables."
+    },
+    {
+      "id": "file:src/DmgTotalTooltip.svelte",
+      "type": "file",
+      "name": "DmgTotalTooltip.svelte",
+      "filePath": "src/DmgTotalTooltip.svelte",
+      "summary": "Svelte tooltip component that displays a detailed damage breakdown for a computed hit. Shows a donut pie chart of damage type distribution, grouped entries with values and badges, and percentage breakdowns. Uses Svelte 5 runes for reactivity.",
+      "tags": ["ui", "tooltip", "damage", "visualization", "component"],
+      "complexity": "medium",
+      "languageNotes": "Svelte 5 with $props, $derived, $state runes. Imports BADGE_CONFIG/ComputedHit from dmgTypes and Badge UI component. Contains SVG pie chart with CSS transitions."
+    },
+    {
+      "id": "file:src/DraconicAbilityStats.svelte",
+      "type": "file",
+      "name": "DraconicAbilityStats.svelte",
+      "filePath": "src/DraconicAbilityStats.svelte",
+      "summary": "Svelte component displaying Draconic Rune Infusion ability stats (damage type, scaling, poise damage, and optional holy/water heals) based on selected draconic color. Minimal presentational component.",
+      "tags": ["ui", "draconic", "stats", "component"],
+      "complexity": "low",
+      "languageNotes": "Svelte component with exported props (dracoColor, poiseDmg, healHoly, healWater, showHoly, showWater). Minimal script, mostly template with scoped styles."
+    },
+    {
+      "id": "file:src/EmotionalTracker.svelte",
+      "type": "file",
+      "name": "EmotionalTracker.svelte",
+      "filePath": "src/EmotionalTracker.svelte",
+      "summary": "Svelte component for selecting the emotional state (buff/debuff/both) that affects gameplay calculations. Provides button toggles and a styled range slider with visual feedback (color, glow, border changes) tied to the build store's emotionalState field.",
+      "tags": ["ui", "emotional-state", "settings", "component", "build-config"],
+      "complexity": "medium",
+      "languageNotes": "Svelte component using $: reactivity and build store. Imports Badge UI component. Features a custom-styled range slider with segmented visual track and animated dot indicators."
+    },
+    {
+      "id": "file:src/Highlight.svelte",
+      "type": "file",
+      "name": "Highlight.svelte",
+      "filePath": "src/Highlight.svelte",
+      "summary": "Minimal Svelte component that highlights matching text segments within a string based on a search query. Uses highlightTextParts utility and renders matches with <mark> elements.",
+      "tags": ["ui", "text-highlighting", "search", "component"],
+      "complexity": "low",
+      "languageNotes": "Svelte component. Imports highlightTextParts from lib/utils. 16 lines, purely presentational."
+    },
+    {
+      "id": "file:src/LevelBar.svelte",
+      "type": "file",
+      "name": "LevelBar.svelte",
+      "filePath": "src/LevelBar.svelte",
+      "summary": "Interactive Svelte component for level and HP management. Displays an editable level input, a draggable HP fill bar with shield overlay, lost HP zone, threshold markers, and notches. Persists values to localStorage via the build store.",
+      "tags": ["ui", "level", "hp", "interactive", "component", "build-config"],
+      "complexity": "high",
+      "languageNotes": "Svelte component using $: reactivity. Imports tick from svelte, build store, MAX_LEVEL/calcBaseMaxHP/STORAGE_KEY constants, and Badge UI. Complex mouse drag handling, HP calculation from protection, and extensive CSS animations."
+    },
+    {
+      "id": "file:src/lib/AppHeader.svelte",
+      "type": "file",
+      "name": "AppHeader.svelte",
+      "filePath": "src/lib/AppHeader.svelte",
+      "summary": "Application header component with the VoxlBuilder branding, hint text, animated tab switcher (Overview/Analyze) with sliding bubble indicator, and embedded BuildSaves component.",
+      "tags": ["ui", "header", "navigation", "tabs", "component"],
+      "complexity": "medium",
+      "languageNotes": "Svelte component using createEventDispatcher, tick, onMount. Imports BuildSaves component. Features animated tab bubble with CSS transitions and responsive breakpoints."
+    },
+    {
+      "id": "file:src/lib/constants.ts",
+      "type": "file",
+      "name": "constants.ts",
+      "filePath": "src/lib/constants.ts",
+      "summary": "Barrel re-export file that re-exports everything from the constants/index module, serving as the single entry point for all game constants used throughout the project.",
+      "tags": ["constants", "barrel-export", "infrastructure"],
+      "complexity": "trivial",
+      "languageNotes": "TypeScript. Single line: export * from './constants/index'. Acts as a namespace aggregator for the constants subdirectory."
+    },
+    {
+      "id": "file:src/lib/constants/boosts.ts",
+      "type": "file",
+      "name": "boosts.ts",
+      "filePath": "src/lib/constants/boosts.ts",
+      "summary": "Defines numeric constants for damage boost multipliers and complex boost calculations (Frenzy, Blood Thirsty, Perfection, Scourge, Valor, Highlander, Emotional, etc.). Includes both simple per-stack multipliers and internal values for complex calcFn implementations.",
+      "tags": ["constants", "boosts", "damage", "balancing", "multipliers"],
+      "complexity": "low",
+      "languageNotes": "TypeScript. Pure data file with ~58 exported numeric constants. No imports, no functions."
+    },
+    {
+      "id": "file:src/lib/constants/buffs.ts",
+      "type": "file",
+      "name": "buffs.ts",
+      "filePath": "src/lib/constants/buffs.ts",
+      "summary": "Defines buff/debuff potency and duration constants used across the game's buff system. Covers rune-granted buffs, weapon-art buffs, perk buffs (Perfection, Bounce, Springblast, etc.), True Balance conversions, and generic debuff modifiers.",
+      "tags": ["constants", "buffs", "debuffs", "potency", "duration", "balancing"],
+      "complexity": "low",
+      "languageNotes": "TypeScript. Pure data file with ~152 exported numeric constants organized into thematic sections. No imports, no functions."
+    },
+    {
+      "id": "file:src/lib/constants/cdr.ts",
+      "type": "file",
+      "name": "cdr.ts",
+      "filePath": "src/lib/constants/cdr.ts",
+      "summary": "Defines cooldown reduction (CDR) constants for various perks and abilities (Caster, Channeled Weapon, Mage Rage, Poison Acceleration, Runic Winds, Wave Rider, Whirlwind, etc.).",
+      "tags": ["constants", "cooldown-reduction", "cdr", "balancing"],
+      "complexity": "trivial",
+      "languageNotes": "TypeScript. Pure data file with ~15 exported numeric constants. No imports, no functions."
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "file:src/lib/constants.ts",
+      "type": "imports",
+      "label": "imports from constants barrel",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/data/raceEffects.ts",
+      "target": "file:src/data/Perkbasedmg.ts",
+      "type": "imports",
+      "label": "imports HpGate type and isHpGateActive function",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/data/Runebasedmg.ts",
+      "target": "file:src/data/SummonData.ts",
+      "type": "imports",
+      "label": "imports calcMaxSummonCount",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/data/SummonData.ts",
+      "target": "file:src/lib/constants.ts",
+      "type": "imports",
+      "label": "imports MAX_LEVEL",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/data/Weaponartcheck.ts",
+      "target": "file:src/data/weaponArts.ts",
+      "type": "imports",
+      "label": "imports WeaponArt and WeaponArtRequirement types",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/LevelBar.svelte",
+      "target": "file:src/lib/constants.ts",
+      "type": "imports",
+      "label": "imports MAX_LEVEL, calcBaseMaxHP, STORAGE_KEY_LEVEL, STORAGE_KEY_HP_FILL",
+      "weight": 0.7,
+      "direction": "forward"
+    }
+  ]
+}

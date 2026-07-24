@@ -1,0 +1,60 @@
+{
+  "issues": [],
+  "warnings": [
+    "Node 'config:.github/workflows/static.yml' has no edges (orphan)",
+    "Node 'file:.fallow/.gitignore' has no edges (orphan)",
+    "Node 'file:.fallow/cache.bin' has no edges (orphan)",
+    "Node 'file:.fallow/churn.bin' has no edges (orphan)",
+    "Node 'file:.fallow/graph-cache.bin' has no edges (orphan)",
+    "Node 'config:.gitignore' has no edges (orphan)",
+    "Node 'document:AGENTS.md' has no edges (orphan)",
+    "Node 'document:README.md' has no edges (orphan)",
+    "Node 'config:package-lock.json' has no edges (orphan)",
+    "Node 'config:pnpm-lock.yaml' has no edges (orphan)",
+    "Node 'document:ts-errors.txt' has no edges (orphan)",
+    "Node 'file:data:src/data/armors.json' has no edges (orphan)",
+    "Node 'file:data:src/data/blades.json' has no edges (orphan)",
+    "Node 'file:data:src/data/enchantments.json' has no edges (orphan)",
+    "Node 'file:data:src/data/essences.json' has no edges (orphan)",
+    "Node 'file:data:src/data/gloves.json' has no edges (orphan)",
+    "Node 'file:data:src/data/guilds.json' has no edges (orphan)",
+    "Node 'file:data:src/data/handles.json' has no edges (orphan)",
+    "Node 'file:data:src/data/perks.json' has no edges (orphan)",
+    "Node 'file:data:src/data/races.json' has no edges (orphan)",
+    "Node 'file:data:src/data/rings.json' has no edges (orphan)",
+    "Node 'file:data:src/data/runes.json' has no edges (orphan)",
+    "Node 'file:.slim/deepwork/ui-upgrade.md' has no edges (orphan)",
+    "Node 'file:.vscode/extensions.json' has no edges (orphan)",
+    "Node 'file:.vscode/settings.json' has no edges (orphan)",
+    "Node 'file:decode_full.mjs' has no edges (orphan)",
+    "Node 'file:docs/ONBOARDING.md' has no edges (orphan)",
+    "Node 'file:src/app.css' has no edges (orphan)",
+    "Node 'file:src/DraconicAbilityStats.svelte' has no edges (orphan)",
+    "Node 'file:src/Highlight.svelte' has no edges (orphan)",
+    "Node 'file:src/lib/constants/boosts.ts' has no edges (orphan)",
+    "Node 'file:src/lib/constants/cdr.ts' has no edges (orphan)",
+    "Node 'file:src/WeaponStatsDisplay.svelte' has no edges (orphan)"
+  ],
+  "stats": {
+    "totalNodes": 148,
+    "totalEdges": 231,
+    "totalLayers": 6,
+    "tourSteps": 12,
+    "nodeTypes": {
+      "pipeline": 1,
+      "config": 12,
+      "binary": 3,
+      "document": 3,
+      "markup": 1,
+      "file": 128
+    },
+    "edgeTypes": {
+      "extends": 1,
+      "references": 12,
+      "includes": 1,
+      "generated-from": 2,
+      "depends-on": 2,
+      "imports": 213
+    }
+  }
+}

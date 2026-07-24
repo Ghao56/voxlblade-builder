@@ -1,0 +1,473 @@
+{
+  "batchIndex": 7,
+  "nodes": [
+    {
+      "id": "file:src/lib/constants/damage-types.ts",
+      "type": "file",
+      "name": "damage-types.ts",
+      "filePath": "src/lib/constants/damage-types.ts",
+      "summary": "Defines damage type metadata including labels, colors, defense inheritance mappings, priority ordering, and type constant arrays for all 11 damage types in the game.",
+      "tags": ["constants", "damage-types", "colors", "defense-inheritance"],
+      "complexity": "low",
+      "languageNotes": "Pure TypeScript with Record and readonly array exports"
+    },
+    {
+      "id": "file:src/lib/constants/debuff-effects.ts",
+      "type": "file",
+      "name": "debuff-effects.ts",
+      "filePath": "src/lib/constants/debuff-effects.ts",
+      "summary": "Defines numerical constants for debuff combat effects including weakness formula values, defense conversion rates, sticky damage multipliers, and despair damage coefficients.",
+      "tags": ["constants", "debuffs", "combat-effects"],
+      "complexity": "low",
+      "languageNotes": "Pure numeric constant exports"
+    },
+    {
+      "id": "file:src/lib/constants/defensive.ts",
+      "type": "file",
+      "name": "defensive.ts",
+      "filePath": "src/lib/constants/defensive.ts",
+      "summary": "Defines damage reduction (DR) values for all defensive perks including barbskin, stoneskin, adaptive plate, protector spirit, air pressure, valor shield, vampire, frenzy, stored corruption, mounted defense, carapace, and cursed bark.",
+      "tags": ["constants", "defensive", "damage-reduction", "perks"],
+      "complexity": "low",
+      "languageNotes": "Pure numeric constant exports with fractional values"
+    },
+    {
+      "id": "file:src/lib/constants/dot-damage.ts",
+      "type": "file",
+      "name": "dot-damage.ts",
+      "filePath": "src/lib/constants/dot-damage.ts",
+      "summary": "Defines damage-over-time (DoT) constants including base damage, infusion divisor, type scaling factors for bleed/burn/poison/caustic, potency caps, rounding factor, and builder-to-game conversion.",
+      "tags": ["constants", "dot", "damage-over-time", "scaling"],
+      "complexity": "low",
+      "languageNotes": "Pure numeric constant exports"
+    },
+    {
+      "id": "file:src/lib/constants/draconic-colors.ts",
+      "type": "file",
+      "name": "draconic-colors.ts",
+      "filePath": "src/lib/constants/draconic-colors.ts",
+      "summary": "Defines draconic color-specific multipliers for elemental effects including fire speed, air speed/knockback/cooldown, earth damage/speed/stun, water damage/speed/stun, and hex stun/random debuff chances.",
+      "tags": ["constants", "draconic", "colors", "multipliers"],
+      "complexity": "low",
+      "languageNotes": "Pure numeric constant exports"
+    },
+    {
+      "id": "file:src/lib/constants/draconic.ts",
+      "type": "file",
+      "name": "draconic.ts",
+      "filePath": "src/lib/constants/draconic.ts",
+      "summary": "Defines draconic infusion potency/duration multipliers, dragon state HP thresholds and base values, and bastion blessing multiplier.",
+      "tags": ["constants", "draconic", "infusion", "dragon-state"],
+      "complexity": "low",
+      "languageNotes": "Pure numeric constant exports"
+    },
+    {
+      "id": "file:src/lib/constants/game.ts",
+      "type": "file",
+      "name": "game.ts",
+      "filePath": "src/lib/constants/game.ts",
+      "summary": "Core game constants including max/default level, HP formulas with calcBaseMaxHP function, and UI timing constants for save debounce, undo window, search blur, import success display, focus delay, and toast duration.",
+      "tags": ["constants", "game", "hp", "timing", "core"],
+      "complexity": "low",
+      "languageNotes": "Constants with one exported helper function calcBaseMaxHP"
+    },
+    {
+      "id": "file:src/lib/constants/heals.ts",
+      "type": "file",
+      "name": "heals.ts",
+      "filePath": "src/lib/constants/heals.ts",
+      "summary": "Defines critical healing constants including base healing value, holy boost divisor, per-stack healing bonus, and ocean song per-stack multiplier.",
+      "tags": ["constants", "healing", "crit-healing"],
+      "complexity": "low",
+      "languageNotes": "Pure numeric constant exports"
+    },
+    {
+      "id": "file:src/lib/constants/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "src/lib/constants/index.ts",
+      "summary": "Barrel file that re-exports all constants modules including damage-types, game, storage, thresholds, perks, boosts, heals, draconic, perk-base-damage, rune-base-damage, buffs, stat-conversions, defensive, dot-damage, draconic-colors, cdr, and debuff-effects.",
+      "tags": ["barrel", "re-exports", "constants"],
+      "complexity": "low",
+      "languageNotes": "Pure re-export barrel file"
+    },
+    {
+      "id": "file:src/lib/constants/perk-base-damage.ts",
+      "type": "file",
+      "name": "perk-base-damage.ts",
+      "filePath": "src/lib/constants/perk-base-damage.ts",
+      "summary": "Defines base damage values for all damage-dealing perks including dragon claw, dragon bubble, springblast, various spirits (basic, buni, mageling, toadzerker, dire buni, void root, roguent), bounce momentum, protector spirit, air pressure/barrier, roaring heads, barbed flurry, honey arts, sickness, melting slime, whirlwind, volatile shell, royal finisher, grounded despair, echo incineration, venom spitter, spore burst, apollo boost, HP gates, bomber charge, and dark harvest.",
+      "tags": ["constants", "perk-base-damage", "damage-values"],
+      "complexity": "medium",
+      "languageNotes": "150 lines of numeric constants organized by perk name with comments"
+    },
+    {
+      "id": "file:src/lib/constants/perks.ts",
+      "type": "file",
+      "name": "perks.ts",
+      "filePath": "src/lib/constants/perks.ts",
+      "summary": "Defines perk-related constants including damage multipliers for luminescent, spirit winds, dark magic, wind walker, reaper, extinguish, explosive charge, wild bolt, lightning cloak, curse rip, true balance, emotional, toxin transfer, void rage, channeled weapon, draconic blood; crit base values; perk crit-rate multipliers; crit damage formulas; and special perk mechanics for mortal will, sunburn, frostbite, fiery pursuit, hypnotist, and phantom pain.",
+      "tags": ["constants", "perks", "crit", "damage-multipliers", "special-perks"],
+      "complexity": "medium",
+      "languageNotes": "88 lines with organized sections and comments"
+    },
+    {
+      "id": "file:src/lib/constants/rune-base-damage.ts",
+      "type": "file",
+      "name": "rune-base-damage.ts",
+      "filePath": "src/lib/constants/rune-base-damage.ts",
+      "summary": "Defines base damage values for all rune abilities including ancient cleric, beenade, boostshroom, thunderous charge, sporeling toss, foot dive, caci, cacitrops, hex web, brainblast, and rocky tail with its complex scaling formula constants.",
+      "tags": ["constants", "rune-base-damage", "damage-values"],
+      "complexity": "medium",
+      "languageNotes": "54 lines of numeric constants organized by rune name"
+    },
+    {
+      "id": "file:src/lib/constants/stat-conversions.ts",
+      "type": "file",
+      "name": "stat-conversions.ts",
+      "filePath": "src/lib/constants/stat-conversions.ts",
+      "summary": "Defines stat boost conversion rates for various perks including weight distribution, quick witted, whirl foot, carapace, extra layers, frozen heart, immovable, righted wrongs, rocky body, spellshield, strong tides, swift guard, true balance, rawny, and subtraction modifiers for roaring headings, lucky, and other perks.",
+      "tags": ["constants", "stat-conversions", "perk-conversions"],
+      "complexity": "low",
+      "languageNotes": "30 lines of numeric conversion constants"
+    },
+    {
+      "id": "file:src/lib/constants/storage.ts",
+      "type": "file",
+      "name": "storage.ts",
+      "filePath": "src/lib/constants/storage.ts",
+      "summary": "Defines localStorage keys for build data, defense data, level, HP fill, and saves; build state defaults with all equipment slots; save key mapping/unmapping for compact serialization; enchant slot mapping; and max build slots/confirm timeout.",
+      "tags": ["constants", "storage", "serialization", "build-state-defaults"],
+      "complexity": "medium",
+      "languageNotes": "39 lines with Record types and Object.fromEntries for reverse mappings"
+    },
+    {
+      "id": "file:src/lib/constants/thresholds.ts",
+      "type": "file",
+      "name": "thresholds.ts",
+      "filePath": "src/lib/constants/thresholds.ts",
+      "summary": "Defines threshold constants for armor penetration branching, cooldown minimum, and base critical damage percentage.",
+      "tags": ["constants", "thresholds", "armor-pen", "crit"],
+      "complexity": "low",
+      "languageNotes": "3 numeric constant exports"
+    },
+    {
+      "id": "file:src/lib/crit.ts",
+      "type": "file",
+      "name": "crit.ts",
+      "filePath": "src/lib/crit.ts",
+      "summary": "Implements the critical hit calculation system with natural crit sources (dexterity, elemental boosts, perfection), extra crit sources (carrying winds, caci king spirit), crit damage multipliers (thief training, venom eater, vital strikes, spark, critical master, splinter), primal divisor handling, and proc coefficient scaling. Returns detailed CritResult with breakdowns for natural/extra/damage sources and formula strings.",
+      "tags": ["engine", "crit", "damage-calculation", "proc-scaling"],
+      "complexity": "high",
+      "languageNotes": "341 lines with complex crit calculation logic, interface definitions, and data-driven source arrays"
+    },
+    {
+      "id": "file:src/lib/damageTypeResolve.ts",
+      "type": "file",
+      "name": "damageTypeResolve.ts",
+      "filePath": "src/lib/damageTypeResolve.ts",
+      "summary": "Resolves final damage type distributions by applying type bonuses, fire-air conversion (Echo Incineration), weapon art damage type selection (same as weapon/highest/specific), and air-to-magic conversion (Spirit Winds) with proper ordering of conversions.",
+      "tags": ["engine", "damage-types", "conversion", "weapon-art"],
+      "complexity": "medium",
+      "languageNotes": "99 lines with pure functions for damage type manipulation"
+    },
+    {
+      "id": "file:src/lib/defense.ts",
+      "type": "file",
+      "name": "defense.ts",
+      "filePath": "src/lib/defense.ts",
+      "summary": "Implements defense/damage reduction calculation with support for both percentage-based and flat defense sources, defense grouping by damage type (physical/air/earth share physical defense, fire/water/hex/holy share magic defense), and base armor defense percentage computation.",
+      "tags": ["engine", "defense", "damage-reduction", "armor"],
+      "complexity": "medium",
+      "languageNotes": "82 lines with interface definitions and calculation functions"
+    },
+    {
+      "id": "file:src/lib/dmgTypes.ts",
+      "type": "file",
+      "name": "dmgTypes.ts",
+      "filePath": "src/lib/dmgTypes.ts",
+      "summary": "Defines badge configuration with colors and labels for proc effects (Dragon State, Spore Burst, Chain, Luminescent, Explosive, etc.), and core interfaces for ComputedType (individual damage type calculation), PerkOnHitDmg (on-hit perk damage), and ComputedHit (complete hit calculation with grouped types).",
+      "tags": ["types", "interfaces", "badge-config", "damage-computation"],
+      "complexity": "medium",
+      "languageNotes": "72 lines with interface definitions and BadgeConfig Record"
+    },
+    {
+      "id": "file:src/lib/EnchantSelect.svelte",
+      "type": "file",
+      "name": "EnchantSelect.svelte",
+      "filePath": "src/lib/EnchantSelect.svelte",
+      "summary": "Svelte component providing a searchable dropdown for selecting enchantments with color-coded options, keyboard navigation, scroll-aware positioning via portal, and 60+ enchantment color mappings.",
+      "tags": ["ui", "svelte-component", "enchantment-selector", "dropdown"],
+      "complexity": "medium",
+      "languageNotes": "465 lines Svelte component with script, template, and scoped styles"
+    },
+    {
+      "id": "file:src/lib/enchantTooltip.ts",
+      "type": "file",
+      "name": "enchantTooltip.ts",
+      "filePath": "src/lib/enchantTooltip.ts",
+      "summary": "Generates formatted tooltip text for enchantments including description, stat modifications (with multiplier notation), effects list, and additional notes.",
+      "tags": ["ui", "tooltip", "enchantment"],
+      "complexity": "low",
+      "languageNotes": "27 lines single function"
+    },
+    {
+      "id": "file:src/lib/engine.ts",
+      "type": "file",
+      "name": "engine.ts",
+      "filePath": "src/lib/engine.ts",
+      "summary": "Barrel file that re-exports all engine submodules: data, shrine, enchant, weapon, build, and format.",
+      "tags": ["barrel", "re-exports", "engine"],
+      "complexity": "low",
+      "languageNotes": "Pure re-export barrel file"
+    },
+    {
+      "id": "file:src/lib/engine/_utils.ts",
+      "type": "file",
+      "name": "_utils.ts",
+      "filePath": "src/lib/engine/_utils.ts",
+      "summary": "Provides two rounding utility functions: round2 (2 decimal places) and round4 (4 decimal places) with epsilon correction for floating point precision.",
+      "tags": ["utility", "rounding", "engine-internal"],
+      "complexity": "low",
+      "languageNotes": "2 lines, single-expression arrow functions"
+    },
+    {
+      "id": "file:src/lib/engine/build.ts",
+      "type": "file",
+      "name": "build.ts",
+      "filePath": "src/lib/engine/build.ts",
+      "summary": "Core build calculation engine that accumulates equipment stats/perks, applies enchantments and infusions, computes CDR (cooldown reduction), calculates damage boosts from perks and race effects, resolves critical hits, computes buffs, and produces the final BuildResult with stats, perks, CDR breakdown, boost breakdown, and crit results. Handles both standard weapons (blade+handle) and monk weapons (glove+essence) with guild rank scaling.",
+      "tags": ["engine", "build-calculation", "core", "damage-engine", "equipment-accumulation"],
+      "complexity": "high",
+      "languageNotes": "565 lines with multiple helper functions, complex data flow, and many external dependencies"
+    },
+    {
+      "id": "file:src/lib/engine/data.ts",
+      "type": "file",
+      "name": "data.ts",
+      "filePath": "src/lib/engine/data.ts",
+      "summary": "Barrel file that re-exports engine data submodules: character, equipment, and weapons.",
+      "tags": ["barrel", "re-exports", "engine-data"],
+      "complexity": "low",
+      "languageNotes": "Pure re-export barrel file"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/damage-types.ts",
+      "type": "imports",
+      "label": "re-exports damage types",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/game.ts",
+      "type": "imports",
+      "label": "re-exports game constants",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/storage.ts",
+      "type": "imports",
+      "label": "re-exports storage",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/thresholds.ts",
+      "type": "imports",
+      "label": "re-exports thresholds",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/perks.ts",
+      "type": "imports",
+      "label": "re-exports perks",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/heals.ts",
+      "type": "imports",
+      "label": "re-exports heals",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/draconic.ts",
+      "type": "imports",
+      "label": "re-exports draconic",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/perk-base-damage.ts",
+      "type": "imports",
+      "label": "re-exports perk base damage",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/rune-base-damage.ts",
+      "type": "imports",
+      "label": "re-exports rune base damage",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/stat-conversions.ts",
+      "type": "imports",
+      "label": "re-exports stat conversions",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/defensive.ts",
+      "type": "imports",
+      "label": "re-exports defensive",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/dot-damage.ts",
+      "type": "imports",
+      "label": "re-exports dot damage",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/draconic-colors.ts",
+      "type": "imports",
+      "label": "re-exports draconic colors",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/debuff-effects.ts",
+      "type": "imports",
+      "label": "re-exports debuff effects",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/constants/storage.ts",
+      "target": "file:src/lib/constants/game.ts",
+      "type": "imports",
+      "label": "imports DEFAULT_LEVEL, DEFAULT_HP_FILL",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/crit.ts",
+      "target": "file:src/lib/constants/index.ts",
+      "type": "imports",
+      "label": "imports crit-related constants (BASE_CRIT_DAMAGE, DEX_CRIT_DIVISOR, etc.)",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/damageTypeResolve.ts",
+      "target": "file:src/lib/engine/_utils.ts",
+      "type": "imports",
+      "label": "imports round4 utility",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/damageTypeResolve.ts",
+      "target": "file:src/lib/constants/damage-types.ts",
+      "type": "imports",
+      "label": "imports DMG_TYPE_PRIORITY",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/EnchantSelect.svelte",
+      "target": "file:src/lib/constants/index.ts",
+      "type": "imports",
+      "label": "imports FOCUS_DELAY_MS",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/enchantTooltip.ts",
+      "target": "file:src/lib/engine.ts",
+      "type": "imports",
+      "label": "imports getEnchant function",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine.ts",
+      "target": "file:src/lib/engine/data.ts",
+      "type": "imports",
+      "label": "re-exports engine/data",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine.ts",
+      "target": "file:src/lib/engine/build.ts",
+      "type": "imports",
+      "label": "re-exports engine/build",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/data.ts",
+      "target": "file:src/lib/engine/_utils.ts",
+      "type": "imports",
+      "label": "re-exports engine utilities",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/crit.ts",
+      "type": "imports",
+      "label": "imports calcCrit and CritResult",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/damageTypeResolve.ts",
+      "type": "imports",
+      "label": "imports getFinalWaDmgTypes",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/constants/index.ts",
+      "type": "imports",
+      "label": "imports MAX_LEVEL, calcBaseMaxHP, QUEENS_POWER constants",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/engine/data.ts",
+      "type": "imports",
+      "label": "imports getRace, getGuild, getArmorPart, getRing, getRune, getBlade, getHandle, getGlove, getEssence, getPerk",
+      "weight": 0.7,
+      "direction": "forward"
+    }
+  ]
+}
