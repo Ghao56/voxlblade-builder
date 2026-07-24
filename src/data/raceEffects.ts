@@ -31,9 +31,13 @@ export function getOrkTenacityBuffs<T extends { buffName: string; isSelfDebuff?:
   buffs: T[],
   buffDefs: Record<string, { isDebuff?: boolean; isNeutral?: boolean } | undefined>,
 ): T[] {
+  const seen = new Set<string>()
   return buffs.filter(b => {
     const def = buffDefs[b.buffName]
-    return !def?.isDebuff && !b.isSelfDebuff && !def?.isNeutral
+    if (def?.isDebuff || b.isSelfDebuff || def?.isNeutral) return false
+    if (seen.has(b.buffName)) return false
+    seen.add(b.buffName)
+    return true
   })
 }
 
