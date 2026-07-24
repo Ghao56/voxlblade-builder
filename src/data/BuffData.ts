@@ -544,7 +544,6 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     description: 'Bathed in sacred sunlight. Forces environment to Sunlight.',
     effectPerTenthPotency: 0,
     effectUnit: 'flat',
-    isNeutral: true,
   },
 }
 
@@ -676,7 +675,7 @@ const ITEM_BUFF_MAP: GrantedBuff[] = [
   {
     buffName: 'Sun Blessed',
     potency: 0,
-    duration: 50,
+    duration: 10,
     condition: 'Cast to create a small sun',
     sourceName: 'False Sun Rune',
     sourceType: 'rune',

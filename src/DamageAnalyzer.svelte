@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fade } from 'svelte/transition'
-  import { build, result } from './lib/store'
+  import { build, result, effectiveDarknessOverride } from './lib/store'
   import { calcWeapon, calcMonkWeapon, isMonkGuild } from './lib/engine'
   import BaseDamageCalc from './BaseDamageCalc.svelte'
   import ScalingBreakdownRow from './ScalingBreakdownRow.svelte'
@@ -104,7 +104,7 @@ import {
   }
   $: _photosynthesisStacks = perks['Photosynthesis'] ?? 0
   $: _vampireStacks = perks['Vampire'] ?? 0
-  $: _sunBlessedStacks = _allActiveBuffsRaw.filter(b => b.buffName === 'Sun Blessed').length > 0 ? 1 : 0
+  $: _sunBlessedStacks = _allActiveBuffs.filter(b => b.buffName === 'Sun Blessed').length > 0 ? 1 : 0
   $: {
   if (!environmentTouched) {
     if (_photosynthesisStacks > 0 && prevPhotosynthesis === 0 && _vampireStacks === 0 && $build.inDarkness) {
@@ -129,6 +129,7 @@ import {
   prevVampire = _vampireStacks
 }
   $: _effectiveInDarkness = _sunBlessedStacks > 0 ? false : $build.inDarkness
+  $: effectiveDarknessOverride.set(_sunBlessedStacks > 0 ? false : null)
 
   $: _healScalingCtx = {
     perks,
@@ -3022,29 +3023,36 @@ $: _groupedSelfDamageSources = (() => {
 
   </div>
 
-{#if _vampireStacks > 0 || _photosynthesisStacks > 0 || _sunBlessedStacks > 0}
   <div class="da-section da-env-section">
-    <div class="da-section-title"><i class="fa fa-sun-o"></i> Environment</div>
-    <div class="da-env-row">
+    <div class="da-section-title"><i class="fa fa-globe"></i> Environment</div>
+    <div class="da-env-rows">
+      <div class="da-env-row">
+        <span class="da-env-label"><i class="fa fa-globe"></i> World</span>
+        <button
+          class="da-env-btn"
+          class:da-env-btn--dark={$build.inDarkness}
+          class:da-env-btn--sun={!$build.inDarkness}
+          on:click={() => {
+            environmentTouched = true
+            build.update(s => ({ ...s, inDarkness: !s.inDarkness }))
+          }}
+        >
+          {@html $build.inDarkness ? '<i class="fa fa-moon-o"></i> Darkness' : '<i class="fa fa-sun-o"></i> Sunlight'}
+        </button>
+      </div>
       {#if _sunBlessedStacks > 0}
-        <span class="da-env-locked-hint"><i class="fa fa-lock"></i> Sun Blessed forces Sunlight</span>
+        <div class="da-env-row">
+          <span class="da-env-label"><i class="fa fa-star"></i> Sun Blessed</span>
+          <button
+            class="da-env-btn da-env-btn--sun da-env-btn--locked"
+            disabled
+          >
+            <i class="fa fa-lock"></i> <i class="fa fa-sun-o"></i> Sunlight
+          </button>
+        </div>
       {/if}
-      <button
-        class="da-env-btn"
-        class:da-env-btn--dark={_effectiveInDarkness}
-        class:da-env-btn--sun={!_effectiveInDarkness}
-        class:da-env-btn--locked={_sunBlessedStacks > 0}
-        disabled={_sunBlessedStacks > 0}
-        on:click={() => {
-          environmentTouched = true
-          build.update(s => ({ ...s, inDarkness: !s.inDarkness }))
-        }}
-      >
-        {@html _effectiveInDarkness ? '<i class="fa fa-moon-o"></i> Darkness' : '<i class="fa fa-sun-o"></i> Sunlight'}
-      </button>
     </div>
   </div>
-{/if}
 
 <!-- ══════════════════ COMBAT MULTIPLIERS ══════════════════ -->
 <div class="da-section">
@@ -6730,11 +6738,27 @@ $: _groupedSelfDamageSources = (() => {
 .da-env-section {
   margin-bottom: 12px;
 }
+.da-env-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
 .da-env-row {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 6px 0;
+}
+.da-env-label {
+  font-size: .72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--ink-muted);
+  min-width: 100px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 .da-env-btn {
   display: inline-flex;

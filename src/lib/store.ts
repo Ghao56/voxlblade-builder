@@ -1,4 +1,4 @@
-import { writable, derived } from 'svelte/store'
+import { writable, derived, get } from 'svelte/store'
 import type { BuildState, EnchantSlot } from './types'
 import { calcBuild, races, enforceEnchantSlot, armorSupportsSlot } from './engine'
 import { STORAGE_KEY_BUILD, DEFAULT_LEVEL, DEFAULT_HP_FILL, DEFAULT_ENEMY_HP_FILL, SAVE_DEBOUNCE_MS } from './constants'
@@ -75,7 +75,12 @@ build.subscribe(state => {
   }, SAVE_DEBOUNCE_MS)
 })
 
-export const result = derived(build, $b => calcBuild($b))
+export const effectiveDarknessOverride = writable<boolean | null>(null)
+
+export const result = derived([build, effectiveDarknessOverride], ([$b, $override]) => {
+  const state = $override !== null ? { ...$b, inDarkness: $override } : $b
+  return calcBuild(state)
+})
 
 export function setEnchantment(slot: EnchantSlot, index: 0 | 1 | 2, value: string) {
   build.update(s => {

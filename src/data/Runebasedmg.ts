@@ -184,7 +184,7 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     scalings: { fire: 0.7, magic: 0.3 },
     note: 'Base Poise Damage 20. Applies Burn for 5s.',
   },
-  {
+    {
     runeName: 'Rocky Tail Rune',
     condition: 'On cast / hold for tail slap combo',
     getBaseDamage: () => ROCKY_TAIL_BASE_DMG,
@@ -196,5 +196,14 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
       const protRes = vs > 0 ? ROCKY_TAIL_VS_BASE_RES + ROCKY_TAIL_VS_PER_LEVEL * vs : ROCKY_TAIL_VS_DEFAULT_RES
       return Math.max(ROCKY_TAIL_MIN_HITS, Math.ceil(p / (ROCKY_TAIL_DIVISOR_COEFF * p + ROCKY_TAIL_DIVISOR_BASE + selfDamage * protRes)) * ROCKY_TAIL_HITS_MULT)
     },
+  },
+  {
+    runeName: 'False Sun Rune',
+    condition: 'Cast to create a small sun',
+    getBaseDamage: () => 2.5,
+    dmgTypes: { fire: 1.0, holy: 1.0 },
+    scalings: { fire: 1.0, holy: 1.0 },
+    hits: 10,
+    note: 'Lasts 20s, pulsating every 2s. Applies Sun Blessed each pulse (10s, does not apply to allies). Activates daylight required perks. Only 1 sun active at a time — recasting while active puts rune on 10s cooldown with no effect (can still proc rune-activated perks).',
   },
 ]
