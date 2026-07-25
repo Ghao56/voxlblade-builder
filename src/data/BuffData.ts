@@ -13,6 +13,7 @@ import {
   GLACIAL_SNAPPER_BLEED_DURATION, CACITROPS_BLEED_DURATION,
   BRAINBLAST_BURN_DURATION, BRAINBLAST_STICKY_POTENCY, BRAINBLAST_STICKY_DURATION,
   HEX_WEB_STICKY_POTENCY, HEX_WEB_STICKY_DURATION,
+  SNOEBALL_FROSTBITE_POTENCY, SNOEBALL_FROSTBITE_DURATION,
   BASIC_DEBUFF_POTENCY, BASIC_DEBUFF_DURATION, BASIC_SHATTER_POTENCY,
   BASIC_SLOWNESS_POTENCY, BASIC_WEAKNESS_POTENCY,
   WARRIOR_STOMP_RAGE_POTENCY, WARRIOR_STOMP_RAGE_DURATION,
@@ -680,6 +681,14 @@ const ITEM_BUFF_MAP: GrantedBuff[] = [
     sourceName: 'False Sun Rune',
     sourceType: 'rune',
   },
+  {
+    buffName: 'Frostbite',
+    potency: SNOEBALL_FROSTBITE_POTENCY,
+    duration: SNOEBALL_FROSTBITE_DURATION,
+    condition: 'On cast',
+    sourceName: 'Snoeball Rune',
+    sourceType: 'rune',
+  },  
 ]
 
 export const BASIC_DEBUFF_POOL: Array<{ buffName: string; potency: number; duration: number }> = [

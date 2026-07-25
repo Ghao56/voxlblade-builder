@@ -42,6 +42,8 @@ export const BRAINBLAST_STICKY_POTENCY = 0.1
 export const BRAINBLAST_STICKY_DURATION = 5
 export const HEX_WEB_STICKY_POTENCY = 0.1
 export const HEX_WEB_STICKY_DURATION = 5
+export const SNOEBALL_FROSTBITE_POTENCY = 0.1
+export const SNOEBALL_FROSTBITE_DURATION = 0.5
 
 // Basic debuff pool
 export const BASIC_DEBUFF_POTENCY = 0
