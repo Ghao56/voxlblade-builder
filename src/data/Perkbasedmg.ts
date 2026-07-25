@@ -862,6 +862,11 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
       const amt = Math.floor(perkAmount)
       return (PYRE_BLOOM_BASE_DMG + PYRE_BLOOM_DMG_PER_STACK * amt) * (1 + cd / PYRE_BLOOM_CD_DMG_DIVISOR)
     },
+    getHits: ({ perkAmount, statuses }) => {
+      const cd = statuses?.waCooldown ?? 10
+      const amt = Math.floor(perkAmount)
+      return Math.max(PYRE_BLOOM_AMMO_MIN, Math.min(PYRE_BLOOM_AMMO_MAX, Math.round((PYRE_BLOOM_AMMO_BASE + PYRE_BLOOM_AMMO_PER_STACK * amt) * ((cd / PYRE_BLOOM_AMMO_CD_DIVISOR) - PYRE_BLOOM_AMMO_CD_SUBTRACT))))
+    },
     dmgTypeMode: 'fixed',
     dmgTypes: { fire: 1.0 },
     scalingMode: 'fixed',
@@ -869,17 +874,6 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     isWA: true,
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
     secondaryEffects: [
-      {
-        label: 'Ammo per plant',
-        getValue: ({ perkAmount, statuses }) => {
-          const cd = statuses?.waCooldown ?? 10
-          const amt = Math.floor(perkAmount)
-          return Math.max(PYRE_BLOOM_AMMO_MIN, Math.min(PYRE_BLOOM_AMMO_MAX, Math.round((PYRE_BLOOM_AMMO_BASE + PYRE_BLOOM_AMMO_PER_STACK * amt) * ((cd / PYRE_BLOOM_AMMO_CD_DIVISOR) - PYRE_BLOOM_AMMO_CD_SUBTRACT))))
-        },
-        format: v => `${v}`,
-        condition: 'Min 1 · Max 10',
-        tone: 'offense',
-      },
       {
         label: 'Firerate',
         getValue: ({ statuses }) => {
