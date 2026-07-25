@@ -201,9 +201,17 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     runeName: 'False Sun Rune',
     condition: 'Cast to create a small sun',
     getBaseDamage: () => 2.5,
-    dmgTypes: { fire: 1.0, holy: 1.0 },
+    dmgTypes: { fire: 0.5, holy: 0.5 },
     scalings: { fire: 1.0, holy: 1.0 },
     hits: 10,
     note: 'Lasts 20s, pulsating every 2s. Applies Sun Blessed each pulse (10s, does not apply to allies). Activates daylight required perks. Only 1 sun active at a time — recasting while active puts rune on 10s cooldown with no effect (can still proc rune-activated perks).',
+  },
+    {
+    runeName: 'Snoeball Rune',
+    condition: 'Gather a large snoeball then throw it to cause a massive explosion that slows.',
+    getBaseDamage: () => 30,
+    dmgTypes: { water: 0.5, air: 0.5 },
+    scalings: { water: 1.0, magic: 1.0 },
+    note: 'Applies Frostbite for 5 seconds, Guardbreaks',
   },
 ]
