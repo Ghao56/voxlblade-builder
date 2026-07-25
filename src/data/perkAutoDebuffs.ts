@@ -3,7 +3,7 @@ import { HYPNOTIST_POTENCY_PER_PERK, HYPNOTIST_DURATION_BASE, HYPNOTIST_DURATION
 import type { GrantedBuff } from './BuffData'
 import { canProc, type ProcCoefficient } from '../lib/types'
 import { calcBaseMaxHP } from '../lib/constants/game'
-import { BELLOWING_EMBER_HP_GATE_THRESHOLD, BELLOWING_EMBER_HP_GATE_PER_STACK } from '../lib/constants/perk-base-damage'
+import { BELLOWING_EMBER_HP_GATE_THRESHOLD, BELLOWING_EMBER_HP_GATE_PER_STACK, PYRE_BLOOM_BURN_DURATION } from '../lib/constants/perk-base-damage'
 import { getActiveEnemyHpDebuffs } from './enemyHpEffects'
 
 export interface AutoDebuffInput {
@@ -217,6 +217,18 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
       duration: FIERY_PURSUIT_BURN_DURATION,
       condition: 'On dash before Weapon Art',
       sourceName: 'Fiery Pursuit',
+      sourceType: 'perk',
+    })
+  }
+
+  const pyreBloomAmt = perks['Pyre Bloom'] ?? 0
+  if (pyreBloomAmt > 0 && !existingBuffNames.includes('Burn')) {
+    debuffs.push({
+      buffName: 'Burn',
+      potency: 0,
+      duration: PYRE_BLOOM_BURN_DURATION,
+      condition: 'Pyre Bloom fireballs apply Burn',
+      sourceName: 'Pyre Bloom',
       sourceType: 'perk',
     })
   }

@@ -2155,7 +2155,7 @@ import {
         displayName: def.label ?? def.perkName,
         perkAmount,
         condition: def.condition,
-        hits: def.getHits ? def.getHits({ perkAmount }) : def.hits,
+        hits: def.getHits ? def.getHits({ perkAmount, statuses: _perkCtxStatuses }) : def.hits,
         isM1: def.isM1, isM2: def.isM2, isFinisher: def.isFinisher,
         isWA: def.isWA, isRune: def.isRune, isProcHit: def.isProcHit, finisherOnly: def.finisherOnly, guardbreak: def.guardbreak,
         procCoefficient: def.procCoefficient,
