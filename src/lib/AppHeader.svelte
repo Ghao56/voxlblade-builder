@@ -164,13 +164,13 @@
   }
 
   @media (max-width:640px) {
-    .header-content { flex-direction: column; align-items: flex-start; gap: 8px; padding: 20px 24px; }
+    .header-content { flex-direction: column; align-items: flex-start; gap: 6px; padding: 18px 22px; }
     .header-hint { display: none; }
-    .app-tab { padding: 10px 18px; font-size: .8rem; min-height: 44px; }
+    .app-tab { padding: 8px 16px; font-size: .75rem; min-height: 40px; }
   }
   @media (max-width:480px) {
-    h1 { font-size: 1.6rem; }
+    h1 { font-size: 1.5rem; }
     .header-content { padding: 16px 20px; }
-    .app-tab { padding: 8px 16px; font-size: .75rem; min-height: 40px; }
+    .app-tab { padding: 7px 14px; font-size: .72rem; min-height: 38px; }
   }
 </style>

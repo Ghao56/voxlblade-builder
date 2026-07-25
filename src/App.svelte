@@ -37,7 +37,8 @@
   import { DRACONIC_COLOR_ATTACK_STATS } from './data/draconicColorEffects'
   import EmotionalTracker from './EmotionalTracker.svelte'
   import LevelBar from './LevelBar.svelte'
-  import DamageAnalyzer from './DamageAnalyzer.svelte'
+  let DamageAnalyzer: typeof import('./DamageAnalyzer.svelte')['default'] | null = null
+  let analyzerLoading = false
   import TagFilter from './TagFilter.svelte'
   import StatFilter from './StatFilter.svelte'
   import WeaponStatFilter from './WeaponStatFilter.svelte'
@@ -519,6 +520,10 @@ function weaponMatchesFilter(item: any): boolean {
   function switchTab(tab: 'overview' | 'analyze') {
     if (tab === activeAppTab) return
     activeAppTab = tab
+    if (tab === 'analyze' && !DamageAnalyzer && !analyzerLoading) {
+      analyzerLoading = true
+      import('./DamageAnalyzer.svelte').then(m => { DamageAnalyzer = m.default; analyzerLoading = false })
+    }
   }
 
   // ── Undo clear ─────────────────────────────────────────────────────────────
@@ -1164,9 +1169,10 @@ function onStatFilterChange( e: CustomEvent<{
 }
 
   function toggleTag(tag: string) {
-    if (selectedTags.has(tag)) selectedTags.delete(tag)
-    else selectedTags.add(tag)
-    selectedTags = new Set(selectedTags)
+    const newSet = new Set(selectedTags)
+    if (newSet.has(tag)) newSet.delete(tag)
+    else newSet.add(tag)
+    selectedTags = newSet
   }
 
   function clearTags() {
@@ -3109,7 +3115,11 @@ $: _appWaAvgTotal = (() => {
         <div class="analyze-hp-bar">
           <LevelBar protection={$result.stats.protection ?? 0} hpThreshold={_dragonStateThreshold} />
         </div>
-        <DamageAnalyzer />
+        {#if DamageAnalyzer}
+          <svelte:component this={DamageAnalyzer} />
+        {:else if analyzerLoading}
+          <div style="text-align:center;padding:40px;opacity:0.5">Loading analyzer...</div>
+        {/if}
       </div>
     {/if}
 
@@ -4273,18 +4283,16 @@ $: _appWaAvgTotal = (() => {
 /* ── Responsive ── */
 @media (max-width: 640px) {
   .app { padding: 12px 10px 40px; }
-  .sg-cell { padding: 10px 12px; min-height: 80px; }
-  .sg-clear, .sg-ench-btn { width: 36px; height: 36px; }
+  .sg-cell { padding: 8px 10px; min-height: 72px; }
   .summary-title-row { flex-direction: column; gap: 8px; }
-  :global(.enchant-tooltip) { max-width: 200px; font-size: .75rem; }
+  :global(.enchant-tooltip) { max-width: 200px; font-size: .72rem; }
 }
 @media (max-width: 480px) {
   .app { padding: 8px 6px 32px; }
   .panel { padding: 12px; }
-  .sg-cell { min-height: 72px; padding: 8px 10px; }
-  .sg-clear, .sg-ench-btn { width: 40px; height: 40px; }
-  .sg-value { font-size: .8rem; }
-  .sg-label { font-size: .65rem; }
+  .sg-cell { min-height: 68px; padding: 6px 8px; }
+  .sg-value { font-size: .76rem; }
+  .sg-label { font-size: .6rem; }
   .summary-grid-wrap { margin-left: calc(-50vw + 50%); margin-right: calc(-50vw + 50%); width: 100vw; overflow-x: auto; padding: 4px; }
   .summary-grid { min-width: 500px; }
 }

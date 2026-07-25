@@ -141,7 +141,7 @@
   }
   :global(.modal-item-head) { display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
   :global(.modal-item-name) { font-size:.88rem; font-weight:600; color:var(--ink); }
-  :global(.modal-item-desc) { font-size:.76rem; color:var(--ink-muted); line-height:1.4; }
+  :global(.modal-item-desc) { font-size:.76rem; color:var(--ink-muted); line-height:1.5; word-wrap: break-word; }
   :global(.modal-item-stats) { display:flex; flex-wrap:wrap; gap:4px; margin-top:2px; }
   :global(.modal-stat-pill) {
     font-size:.67rem; font-weight:700; padding:2px 7px; border-radius:999px;
@@ -195,16 +195,19 @@
   :global(.inf-label) { font-size:.6rem; color:var(--infusion); font-weight:600; opacity:.7; }
 
   @media (max-width: 640px) {
-    :global(.modal-box) { padding: 20px; max-height: 94vh; }
+    :global(.modal-box) { padding: 16px; max-height: 94vh; }
     :global(.modal-list) { max-height: 65vh; }
-    :global(.modal-item) { padding: 14px 16px; min-height: 48px; }
-    :global(.modal-item-name) { font-size: .9rem; }
-    :global(.modal-filters) { flex-direction: column; gap: 8px; }
-    :global(.inf-label) { font-size: .7rem; }
+    :global(.modal-item) { padding: 12px 14px; }
+    :global(.modal-item-name) { font-size: .82rem; }
+    :global(.modal-item-desc) { font-size: .75rem; line-height: 1.5; }
+    :global(.modal-filters) { flex-direction: column; gap: 6px; }
+    :global(.inf-label) { font-size: .65rem; }
   }
   @media (max-width: 480px) {
-    :global(.modal-box) { padding: 16px; max-height: 92vh; }
-    :global(.modal-item) { padding: 12px 14px; min-height: 44px; }
-    :global(.modal-item-name) { font-size: .85rem; }
+    :global(.modal-box) { padding: 14px; max-height: 92vh; }
+    :global(.modal-list) { max-height: 70vh; }
+    :global(.modal-item) { padding: 10px 12px; }
+    :global(.modal-item-name) { font-size: .78rem; }
+    :global(.modal-item-desc) { font-size: .72rem; line-height: 1.5; }
   }
 </style>
