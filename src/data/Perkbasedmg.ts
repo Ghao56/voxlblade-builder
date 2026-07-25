@@ -865,7 +865,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     getHits: ({ perkAmount, statuses }) => {
       const cd = statuses?.waCooldown ?? 10
       const amt = Math.floor(perkAmount)
-      return Math.max(PYRE_BLOOM_AMMO_MIN, Math.min(PYRE_BLOOM_AMMO_MAX, Math.round((PYRE_BLOOM_AMMO_BASE + PYRE_BLOOM_AMMO_PER_STACK * amt) * ((cd / PYRE_BLOOM_AMMO_CD_DIVISOR) - PYRE_BLOOM_AMMO_CD_SUBTRACT))))
+      return Math.max(PYRE_BLOOM_AMMO_MIN, Math.min(PYRE_BLOOM_AMMO_MAX, Math.floor((PYRE_BLOOM_AMMO_BASE + PYRE_BLOOM_AMMO_PER_STACK * amt) * ((cd / PYRE_BLOOM_AMMO_CD_DIVISOR) - PYRE_BLOOM_AMMO_CD_SUBTRACT))))
     },
     dmgTypeMode: 'fixed',
     dmgTypes: { fire: 1.0 },
@@ -874,6 +874,17 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     isWA: true,
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
     secondaryEffects: [
+      {
+        label: 'Ammo per plant',
+        getValue: ({ perkAmount, statuses }) => {
+          const cd = statuses?.waCooldown ?? 10
+          const amt = Math.floor(perkAmount)
+          return Math.max(PYRE_BLOOM_AMMO_MIN, Math.min(PYRE_BLOOM_AMMO_MAX, Math.floor((PYRE_BLOOM_AMMO_BASE + PYRE_BLOOM_AMMO_PER_STACK * amt) * ((cd / PYRE_BLOOM_AMMO_CD_DIVISOR) - PYRE_BLOOM_AMMO_CD_SUBTRACT))))
+        },
+        format: v => `${v}`,
+        condition: 'Min 1 · Max 10',
+        tone: 'offense',
+      },
       {
         label: 'Firerate',
         getValue: ({ statuses }) => {
@@ -890,7 +901,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
           const cd = statuses?.waCooldown ?? 10
           const amt = Math.floor(perkAmount)
           const firerate = 1 + cd / PYRE_BLOOM_FIRERATE_DIVISOR
-          const hits = Math.max(PYRE_BLOOM_AMMO_MIN, Math.min(PYRE_BLOOM_AMMO_MAX, Math.round((PYRE_BLOOM_AMMO_BASE + PYRE_BLOOM_AMMO_PER_STACK * amt) * ((cd / PYRE_BLOOM_AMMO_CD_DIVISOR) - PYRE_BLOOM_AMMO_CD_SUBTRACT))))
+          const hits = Math.max(PYRE_BLOOM_AMMO_MIN, Math.min(PYRE_BLOOM_AMMO_MAX, Math.floor((PYRE_BLOOM_AMMO_BASE + PYRE_BLOOM_AMMO_PER_STACK * amt) * ((cd / PYRE_BLOOM_AMMO_CD_DIVISOR) - PYRE_BLOOM_AMMO_CD_SUBTRACT))))
           return firerate * hits
         },
         format: v => `${Math.round(v * 100) / 100}s`,
