@@ -2193,6 +2193,7 @@ export let cauterizeScalingMult: number = 1
   }
   .bdc-dummy-wrap { flex-shrink: 0; }
   .bdc-def-grid { flex: 1; }
+  .bdc-hit-grp-label { font-size: .65rem; }
 }
 
 .bdc-hit-grp-label {

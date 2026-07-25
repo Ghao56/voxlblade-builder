@@ -195,10 +195,16 @@
   :global(.inf-label) { font-size:.6rem; color:var(--infusion); font-weight:600; opacity:.7; }
 
   @media (max-width: 640px) {
-    :global(.modal-box) { padding: 16px; max-height: 94vh; }
-    :global(.modal-list) { max-height: 60vh; }
-    :global(.modal-item) { padding: 10px 12px; }
-    :global(.modal-item-name) { font-size: .82rem; }
-    :global(.modal-filters) { flex-direction: column; gap: 6px; }
+    :global(.modal-box) { padding: 20px; max-height: 94vh; }
+    :global(.modal-list) { max-height: 65vh; }
+    :global(.modal-item) { padding: 14px 16px; min-height: 48px; }
+    :global(.modal-item-name) { font-size: .9rem; }
+    :global(.modal-filters) { flex-direction: column; gap: 8px; }
+    :global(.inf-label) { font-size: .7rem; }
+  }
+  @media (max-width: 480px) {
+    :global(.modal-box) { padding: 16px; max-height: 92vh; }
+    :global(.modal-item) { padding: 12px 14px; min-height: 44px; }
+    :global(.modal-item-name) { font-size: .85rem; }
   }
 </style>

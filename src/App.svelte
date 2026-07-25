@@ -4273,17 +4273,18 @@ $: _appWaAvgTotal = (() => {
 /* ── Responsive ── */
 @media (max-width: 640px) {
   .app { padding: 12px 10px 40px; }
-  .sg-cell { padding: 8px 10px; min-height: 70px; }
-  .sg-clear, .sg-ench-btn { width: 26px; height: 26px; }
+  .sg-cell { padding: 10px 12px; min-height: 80px; }
+  .sg-clear, .sg-ench-btn { width: 36px; height: 36px; }
   .summary-title-row { flex-direction: column; gap: 8px; }
-  :global(.enchant-tooltip) { max-width: 200px; font-size: .72rem; }
+  :global(.enchant-tooltip) { max-width: 200px; font-size: .75rem; }
 }
 @media (max-width: 480px) {
   .app { padding: 8px 6px 32px; }
   .panel { padding: 12px; }
-  .sg-cell { min-height: 60px; padding: 6px 8px; }
-  .sg-value { font-size: .76rem; }
-  .sg-label { font-size: .52rem; }
+  .sg-cell { min-height: 72px; padding: 8px 10px; }
+  .sg-clear, .sg-ench-btn { width: 40px; height: 40px; }
+  .sg-value { font-size: .8rem; }
+  .sg-label { font-size: .65rem; }
   .summary-grid-wrap { margin-left: calc(-50vw + 50%); margin-right: calc(-50vw + 50%); width: 100vw; overflow-x: auto; padding: 4px; }
   .summary-grid { min-width: 500px; }
 }
