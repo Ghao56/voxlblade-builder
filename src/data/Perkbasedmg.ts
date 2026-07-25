@@ -97,6 +97,19 @@ import {
   DARK_HARVEST_COOLDOWN,
   PHANTOM_PAIN_BASE_PCT,
   PHANTOM_PAIN_PERK_MULT,
+  PYRE_BLOOM_BASE_DMG,
+  PYRE_BLOOM_DMG_PER_STACK,
+  PYRE_BLOOM_CD_DMG_DIVISOR,
+  PYRE_BLOOM_AMMO_BASE,
+  PYRE_BLOOM_AMMO_PER_STACK,
+  PYRE_BLOOM_AMMO_CD_DIVISOR,
+  PYRE_BLOOM_AMMO_CD_SUBTRACT,
+  PYRE_BLOOM_AMMO_MIN,
+  PYRE_BLOOM_AMMO_MAX,
+  PYRE_BLOOM_FIRERATE_DIVISOR,
+  PYRE_BLOOM_MAX_ACTIVE_BASE,
+  PYRE_BLOOM_MAX_ACTIVE_PER_STACK,
+  PYRE_BLOOM_BURN_DURATION,
 } from '../lib/constants'
 
 export interface PerkDmgCtx {
@@ -839,6 +852,59 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     scalings: { magic: 1.0, holy: 1.0, summon: 1.0 },
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
     note: 'Targets the closest enemy. Fires 9 times over 15 second. Cannot gain spiritual energy while this spirit is active. Does not count as a summon'
+  },
+  // ── Pyre Bloom ──────────────────────────────────────────────────────────
+  {
+    perkName: 'Pyre Bloom',
+    condition: 'On Weapon Art activation — summon a stationary Pyrebloom that shoots fireballs',
+    getBaseDamage: ({ perkAmount, statuses }) => {
+      const cd = statuses?.waCooldown ?? 10
+      const amt = Math.floor(perkAmount)
+      return (PYRE_BLOOM_BASE_DMG + PYRE_BLOOM_DMG_PER_STACK * amt) * (1 + cd / PYRE_BLOOM_CD_DMG_DIVISOR)
+    },
+    dmgTypeMode: 'fixed',
+    dmgTypes: { fire: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { fire: 1.0, summon: 1.0 },
+    isWA: true,
+    procCoefficient: { type: 'hasCoeff', value: 1.0 },
+    secondaryEffects: [
+      {
+        label: 'Ammo per plant',
+        getValue: ({ perkAmount, statuses }) => {
+          const cd = statuses?.waCooldown ?? 10
+          const amt = Math.floor(perkAmount)
+          return Math.max(PYRE_BLOOM_AMMO_MIN, Math.min(PYRE_BLOOM_AMMO_MAX, Math.round((PYRE_BLOOM_AMMO_BASE + PYRE_BLOOM_AMMO_PER_STACK * amt) * ((cd / PYRE_BLOOM_AMMO_CD_DIVISOR) - PYRE_BLOOM_AMMO_CD_SUBTRACT))))
+        },
+        format: v => `${v}`,
+        condition: 'Min 1 · Max 10',
+        tone: 'offense',
+      },
+      {
+        label: 'Firerate',
+        getValue: ({ statuses }) => {
+          const cd = statuses?.waCooldown ?? 10
+          return 1 + cd / PYRE_BLOOM_FIRERATE_DIVISOR
+        },
+        format: v => `${Math.round(v * 100) / 100}/s`,
+        condition: 'Fireballs per second',
+        tone: 'offense',
+      },
+      {
+        label: 'Max active',
+        getValue: ({ perkAmount }) => PYRE_BLOOM_MAX_ACTIVE_BASE + PYRE_BLOOM_MAX_ACTIVE_PER_STACK * Math.floor(perkAmount),
+        format: v => `${v}`,
+        condition: 'Oldest despawns when limit exceeded',
+        tone: 'utility',
+      },
+      {
+        label: 'Burn duration',
+        getValue: () => PYRE_BLOOM_BURN_DURATION,
+        format: v => `${v}s`,
+        tone: 'offense',
+      },
+    ],
+    note: 'Damage counts as Weapon Art damage and will proc related effects. Uses base Weapon Art cooldown in all calculations. Does not count as a summon — unaffected by summon-based perks or effects. Fireballs go through walls. Prioritizes closest target to player. Disappears on armor change.',
   },
   // ── Dark Harvest ──────────────────────────────────────────────────────
   {

@@ -2116,6 +2116,7 @@ import {
         poisonPotency: perks['Poison Potency'] ?? 0,
         burnPotency: _perkCtxBurnPotency,
         missingHpPct: Math.min(50, Math.max(0, 100 - (_hpFillPct ?? 100))),
+        waCooldown: selectedWA.cooldown,
       }
       const baseDmg_m2  = def.getBaseDamage({ perkAmount, finisherHits: _fhM2,  draconicColor: _effDraconicColor, statuses: _perkCtxStatuses })
       const baseDmg_m1f = def.getBaseDamage({ perkAmount, finisherHits: _fhM1f, draconicColor: _effDraconicColor, statuses: _perkCtxStatuses })
