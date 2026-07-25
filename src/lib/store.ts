@@ -152,14 +152,18 @@ export function moveArmorSlot(from: AnyArmorSlotKey, to: AnyArmorSlotKey): boole
     const toName = s[to]
     if (!fromName) return s
     if (!armorSupportsSlot(fromName, ARMOR_SLOT_TYPE_MAP[to])) return s
-    if (toName && !armorSupportsSlot(toName, ARMOR_SLOT_TYPE_MAP[from])) return s
-    moved = true
     const fromUp = UPGRADE_KEY_MAP[from]
     const toUp = UPGRADE_KEY_MAP[to]
-    const next = { ...s, [from]: toName, [to]: fromName }
-    next[fromUp] = s[toUp]
-    next[toUp] = s[fromUp]
-    return next
+    if (toName) {
+      if (!armorSupportsSlot(toName, ARMOR_SLOT_TYPE_MAP[from])) return s
+      moved = true
+      const next = { ...s, [from]: toName, [to]: fromName }
+      next[fromUp] = s[toUp]
+      next[toUp] = s[fromUp]
+      return next
+    }
+    moved = true
+    return { ...s, [to]: fromName, [toUp]: s[fromUp] }
   })
   return moved
 }
@@ -168,6 +172,31 @@ export function canArmorMoveToSlot(armorName: string, to: AnyArmorSlotKey): bool
   return !!armorName && armorSupportsSlot(armorName, ARMOR_SLOT_TYPE_MAP[to])
 }
 
-export function swapRingWithInfusion() {
-  build.update(s => ({ ...s, ring: s.infusionRing, infusionRing: s.ring, upgradeRing: s.upgradeInfusionRing ?? 0, upgradeInfusionRing: s.upgradeRing }))
+export type RingSlotKey = 'ring' | 'infusionRing'
+
+const RING_UPGRADE_KEY: Record<RingSlotKey, 'upgradeRing' | 'upgradeInfusionRing'> = {
+  ring: 'upgradeRing',
+  infusionRing: 'upgradeInfusionRing',
+}
+
+export function moveRingSlot(from: RingSlotKey, to: RingSlotKey): boolean {
+  if (from === to) return false
+  let moved = false
+  build.update(s => {
+    const fromName = s[from]
+    if (!fromName) return s
+    const toName = s[to]
+    const fromUp = RING_UPGRADE_KEY[from]
+    const toUp = RING_UPGRADE_KEY[to]
+    if (toName) {
+      moved = true
+      const next = { ...s, [from]: toName, [to]: fromName }
+      next[fromUp] = s[toUp]
+      next[toUp] = s[fromUp]
+      return next
+    }
+    moved = true
+    return { ...s, [to]: fromName, [toUp]: s[fromUp] }
+  })
+  return moved
 }

@@ -2134,7 +2134,7 @@ import {
       const isActive = isHpGateActive(def.hpGate, _hpFillPct, perkAmount) && isHpGateActive(def.enemyHpGate, _enemyHpFillPct, perkAmount) && (!isSpringblast || _allActiveBuffs.some(b => b.buffName === 'Bounce')) && (!def.requiredBuff || _allActiveBuffs.some(b => b.buffName === def.requiredBuff))
 
       const secondaryEffects = (def.secondaryEffects ?? []).filter(se => !se.showIf || se.showIf({ draconicColor: _effDraconicColor })).map(se => {
-        let raw = Math.round(se.getValue({ perkAmount, draconicColor: _effDraconicColor }) * 1000) / 1000
+        let raw = Math.round(se.getValue({ perkAmount, draconicColor: _effDraconicColor, statuses: _perkCtxStatuses }) * 1000) / 1000
         
         if (se.tone === 'defense') {
           const potMult = calcDefensivePotencyMult(perks, $build.draconicRuneInfusion, _effDraconicColor)

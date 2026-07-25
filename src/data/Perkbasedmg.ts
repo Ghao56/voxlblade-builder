@@ -100,6 +100,7 @@ import {
   PYRE_BLOOM_BASE_DMG,
   PYRE_BLOOM_DMG_PER_STACK,
   PYRE_BLOOM_CD_DMG_DIVISOR,
+
   PYRE_BLOOM_AMMO_BASE,
   PYRE_BLOOM_AMMO_PER_STACK,
   PYRE_BLOOM_AMMO_CD_DIVISOR,
@@ -860,7 +861,8 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     getBaseDamage: ({ perkAmount, statuses }) => {
       const cd = statuses?.waCooldown ?? 10
       const amt = Math.floor(perkAmount)
-      return (PYRE_BLOOM_BASE_DMG + PYRE_BLOOM_DMG_PER_STACK * amt) * (1 + cd / PYRE_BLOOM_CD_DMG_DIVISOR)
+      const shots = Math.max(PYRE_BLOOM_AMMO_MIN, Math.min(PYRE_BLOOM_AMMO_MAX, Math.floor((PYRE_BLOOM_AMMO_BASE + PYRE_BLOOM_AMMO_PER_STACK * amt) * ((cd / PYRE_BLOOM_AMMO_CD_DIVISOR) - PYRE_BLOOM_AMMO_CD_SUBTRACT))))
+      return (PYRE_BLOOM_BASE_DMG + PYRE_BLOOM_DMG_PER_STACK * amt) * (1 + cd / PYRE_BLOOM_CD_DMG_DIVISOR) + amt * shots
     },
     getHits: ({ perkAmount, statuses }) => {
       const cd = statuses?.waCooldown ?? 10

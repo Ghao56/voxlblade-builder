@@ -10,7 +10,7 @@
     calcWeapon, calcMonkWeapon, isMonkGuild, MONK_RANK_MULTIPLIER,
     type CDRResult
   } from './lib/engine'
-  import { setEnchantment, setGuild, moveArmorSlot, canArmorMoveToSlot, swapRingWithInfusion, swapEnchantments } from './lib/store'
+  import { setEnchantment, setGuild, moveArmorSlot, canArmorMoveToSlot, moveRingSlot, swapEnchantments } from './lib/store'
   import type { EnchantSlot, StatMap, StatPrefix, ScalingKey } from './lib/types'
   import { DMG_TYPE_PRIORITY, SCALING_TO_BOOST } from './lib/types'
   import { OFFENSIVE_BOOSTS } from './data/statboost'
@@ -86,6 +86,19 @@
     }
     return valid
   })()
+  $: armorCloneTargets = armorValidTargets ? new Set([...armorValidTargets].filter(s => !$build[s])) : null
+
+  $: activeRingSource = draggingRing ?? selectedRing
+  $: ringValidTargets = (() => {
+    if (!activeRingSource) return null
+    const srcName = $build[activeRingSource]
+    if (!srcName) return null
+    const other = activeRingSource === 'ring' ? 'infusionRing' : 'ring'
+    const valid = new Set<string>()
+    valid.add(other)
+    return valid
+  })()
+  $: ringCloneTargets = ringValidTargets ? new Set([...ringValidTargets].filter(s => !$build[s])) : null
 
   function onArmorDragStart(slot: AnyArmorSlotKey, e: DragEvent) {
     draggingArmorSlot = slot
@@ -109,8 +122,8 @@
   function onArmorDragEnd() { draggingArmorSlot = null; dragOverArmorSlot = null }
 
   function onArmorTap(slot: AnyArmorSlotKey) {
-    if (!$build[slot]) return
     if (!selectedArmorSlot) {
+      if (!$build[slot]) return
       selectedArmorSlot = slot
       return
     }
@@ -135,16 +148,20 @@
   }
   function onRingDrop(target: 'ring' | 'infusionRing', e: DragEvent) {
     e.preventDefault()
-    if (draggingRing && draggingRing !== target) swapRingWithInfusion()
+    if (draggingRing && draggingRing !== target) moveRingSlot(draggingRing, target)
     draggingRing = null
     dragOverRing = null
   }
   function onRingDragEnd() { draggingRing = null; dragOverRing = null }
 
   function onRingTap(target: 'ring' | 'infusionRing') {
-    if (!selectedRing) { selectedRing = target; return }
+    if (!selectedRing) {
+      if (!$build[target]) return
+      selectedRing = target
+      return
+    }
     if (selectedRing === target) { selectedRing = null; return }
-    swapRingWithInfusion()
+    moveRingSlot(selectedRing, target)
     selectedRing = null
   }
 
@@ -159,6 +176,7 @@
   let gridGrabOffX = 0
   let gridGrabOffY = 0
   let gridMoved = false
+  let gridJustDropped = false
   const GRID_DRAG_THRESHOLD = 5
 
   let gridTouchDragging = false
@@ -202,6 +220,8 @@
 
   function handleGridMouseDown(e: MouseEvent, slot: string, kind: GridDragKind) {
     if (e.button !== 0) return
+    if (kind === 'armor' && !$build[slot as AnyArmorSlotKey]) return
+    if (kind === 'ring' && !$build[slot as 'ring' | 'infusionRing']) return
     const el = e.currentTarget as HTMLElement
     const r = el.getBoundingClientRect()
     gridStartX = e.clientX; gridStartY = e.clientY
@@ -248,8 +268,10 @@
     document.removeEventListener('mouseup', onGridMouseUp)
     document.body.style.cursor = ''
     if (gridMoved && gridDragSlot) {
+      gridJustDropped = true
+      setTimeout(() => gridJustDropped = false, 300)
       if (gridDragKind === 'armor' && draggingArmorSlot && dragOverArmorSlot) moveArmorSlot(draggingArmorSlot, dragOverArmorSlot)
-      else if (gridDragKind === 'ring' && draggingRing && dragOverRing && draggingRing !== dragOverRing) swapRingWithInfusion()
+      else if (gridDragKind === 'ring' && draggingRing && dragOverRing && draggingRing !== dragOverRing) moveRingSlot(draggingRing, dragOverRing)
     }
     if (gridGhostEl) { gridGhostEl.remove(); gridGhostEl = null }
     draggingArmorSlot = null; dragOverArmorSlot = null
@@ -258,6 +280,8 @@
   }
 
   function handleGridTouchStart(e: TouchEvent, slot: string, kind: GridDragKind) {
+    if (kind === 'armor' && !$build[slot as AnyArmorSlotKey]) return
+    if (kind === 'ring' && !$build[slot as 'ring' | 'infusionRing']) return
     const t = e.touches[0]
     const el = e.currentTarget as HTMLElement
     const r = el.getBoundingClientRect()
@@ -284,7 +308,7 @@
     }
     if (gridTouchGhost) {
       gridTouchGhost.style.left = (t.clientX - gridTouchGrabX) + 'px'
-      gridTouchGhost.style.top = (t.clientY - gridTouchGrabY) + 'px'
+      gridTouchGhost.style.top = (t.clientY - gridTouchGrabY - 80) + 'px'
     }
     const target = gridHitTest(t.clientX, t.clientY)
     if (gridTouchKind === 'armor') {
@@ -307,8 +331,10 @@
     document.removeEventListener('touchend', onGridTouchEnd)
     document.removeEventListener('touchcancel', onGridTouchEnd)
     if (gridTouchMoved && gridTouchSlot) {
+      gridJustDropped = true
+      setTimeout(() => gridJustDropped = false, 300)
       if (gridTouchKind === 'armor' && draggingArmorSlot && dragOverArmorSlot) moveArmorSlot(draggingArmorSlot, dragOverArmorSlot)
-      else if (gridTouchKind === 'ring' && draggingRing && dragOverRing && draggingRing !== dragOverRing) swapRingWithInfusion()
+      else if (gridTouchKind === 'ring' && draggingRing && dragOverRing && draggingRing !== dragOverRing) moveRingSlot(draggingRing, dragOverRing)
     }
     if (gridTouchGhost) { gridTouchGhost.remove(); gridTouchGhost = null }
     draggingArmorSlot = null; dragOverArmorSlot = null
@@ -1693,9 +1719,10 @@ $: _appWaAvgTotal = (() => {
                   class:sg-drop-target={dragOverArmorSlot === 'infusionHelmet'}
                   class:sg-selected={selectedArmorSlot === 'infusionHelmet'}
                   class:sg-valid-target={armorValidTargets?.has('infusionHelmet')}
+                  class:sg-clone-target={armorCloneTargets?.has('infusionHelmet')}
                   data-slot="infusionHelmet"
                   role="button" tabindex="0"
-                  on:click={() => selectedArmorSlot ? onArmorTap('infusionHelmet') : openModal('infusion-helmet')}
+                  on:click={() => { if (gridJustDropped) return; selectedArmorSlot ? onArmorTap('infusionHelmet') : openModal('infusion-helmet') }}
                   on:keydown={e => e.key === 'Enter' && (selectedArmorSlot ? onArmorTap('infusion-helmet') : openModal('infusion-helmet'))}
                   on:mousedown={e => handleGridMouseDown(e, 'infusionHelmet', 'armor')}
                   on:touchstart={e => handleGridTouchStart(e, 'infusionHelmet', 'armor')}>
@@ -1709,9 +1736,10 @@ $: _appWaAvgTotal = (() => {
                   class:sg-drop-target={dragOverArmorSlot === 'helmet'}
                   class:sg-selected={selectedArmorSlot === 'helmet'}
                   class:sg-valid-target={armorValidTargets?.has('helmet')}
+                  class:sg-clone-target={armorCloneTargets?.has('helmet')}
                   data-slot="helmet"
                   role="button" tabindex="0"
-                  on:click={() => selectedArmorSlot ? onArmorTap('helmet') : openModal('armor-helmet')}
+                  on:click={() => { if (gridJustDropped) return; selectedArmorSlot ? onArmorTap('helmet') : openModal('armor-helmet') }}
                   on:keydown={e => e.key === 'Enter' && (selectedArmorSlot ? onArmorTap('helmet') : openModal('armor-helmet'))}
                   on:mousedown={e => handleGridMouseDown(e, 'helmet', 'armor')}
                   on:touchstart={e => handleGridTouchStart(e, 'helmet', 'armor')}>
@@ -1758,9 +1786,10 @@ $: _appWaAvgTotal = (() => {
                   class:sg-drop-target={dragOverArmorSlot === 'infusionChestplate'}
                   class:sg-selected={selectedArmorSlot === 'infusionChestplate'}
                   class:sg-valid-target={armorValidTargets?.has('infusionChestplate')}
+                  class:sg-clone-target={armorCloneTargets?.has('infusionChestplate')}
                   data-slot="infusionChestplate"
                   role="button" tabindex="0"
-                  on:click={() => selectedArmorSlot ? onArmorTap('infusionChestplate') : openModal('infusion-chestplate')}
+                  on:click={() => { if (gridJustDropped) return; selectedArmorSlot ? onArmorTap('infusionChestplate') : openModal('infusion-chestplate') }}
                   on:keydown={e => e.key === 'Enter' && (selectedArmorSlot ? onArmorTap('infusion-chestplate') : openModal('infusion-chestplate'))}
                   on:mousedown={e => handleGridMouseDown(e, 'infusionChestplate', 'armor')}
                   on:touchstart={e => handleGridTouchStart(e, 'infusionChestplate', 'armor')}>
@@ -1774,9 +1803,10 @@ $: _appWaAvgTotal = (() => {
                   class:sg-drop-target={dragOverArmorSlot === 'chestplate'}
                   class:sg-selected={selectedArmorSlot === 'chestplate'}
                   class:sg-valid-target={armorValidTargets?.has('chestplate')}
+                  class:sg-clone-target={armorCloneTargets?.has('chestplate')}
                   data-slot="chestplate"
                   role="button" tabindex="0"
-                  on:click={() => selectedArmorSlot ? onArmorTap('chestplate') : openModal('armor-chestplate')}
+                  on:click={() => { if (gridJustDropped) return; selectedArmorSlot ? onArmorTap('chestplate') : openModal('armor-chestplate') }}
                   on:keydown={e => e.key === 'Enter' && (selectedArmorSlot ? onArmorTap('chestplate') : openModal('armor-chestplate'))}
                   on:mousedown={e => handleGridMouseDown(e, 'chestplate', 'armor')}
                   on:touchstart={e => handleGridTouchStart(e, 'chestplate', 'armor')}>
@@ -1802,10 +1832,11 @@ $: _appWaAvgTotal = (() => {
                 <div class="sg-cell sg-infusion sg-span2 sg-clickable" class:sg-empty={!$build.infusionRing}
                   class:sg-drop-target={dragOverRing === 'infusionRing'}
                   class:sg-selected={selectedRing === 'infusionRing'}
-                  class:sg-valid-target={draggingRing === 'ring' || selectedRing === 'ring'}
+                  class:sg-valid-target={ringValidTargets?.has('infusionRing') && !ringCloneTargets?.has('infusionRing')}
+                  class:sg-clone-target={ringCloneTargets?.has('infusionRing')}
                   data-slot="infusionRing"
                   role="button" tabindex="0"
-                  on:click={() => selectedRing ? onRingTap('infusionRing') : openModal('infusion-ring')}
+                  on:click={() => { if (gridJustDropped) return; selectedRing ? onRingTap('infusionRing') : openModal('infusion-ring') }}
                   on:keydown={e => e.key === 'Enter' && (selectedRing ? onRingTap('infusionRing') : openModal('infusion-ring'))}
                   on:mousedown={e => handleGridMouseDown(e, 'infusionRing', 'ring')}
                   on:touchstart={e => handleGridTouchStart(e, 'infusionRing', 'ring')}>
@@ -1818,10 +1849,11 @@ $: _appWaAvgTotal = (() => {
                 <div class="sg-cell sg-item sg-span2 sg-clickable" class:sg-empty={!$build.ring}
                   class:sg-drop-target={dragOverRing === 'ring'}
                   class:sg-selected={selectedRing === 'ring'}
-                  class:sg-valid-target={draggingRing === 'infusionRing' || selectedRing === 'infusionRing'}
+                  class:sg-valid-target={ringValidTargets?.has('ring') && !ringCloneTargets?.has('ring')}
+                  class:sg-clone-target={ringCloneTargets?.has('ring')}
                   data-slot="ring"
                   role="button" tabindex="0"
-                  on:click={() => selectedRing ? onRingTap('ring') : openModal('ring')}
+                  on:click={() => { if (gridJustDropped) return; selectedRing ? onRingTap('ring') : openModal('ring') }}
                   on:keydown={e => e.key === 'Enter' && (selectedRing ? onRingTap('ring') : openModal('ring'))}
                   on:mousedown={e => handleGridMouseDown(e, 'ring', 'ring')}
                   on:touchstart={e => handleGridTouchStart(e, 'ring', 'ring')}>
@@ -1860,9 +1892,10 @@ $: _appWaAvgTotal = (() => {
                   class:sg-drop-target={dragOverArmorSlot === 'infusionLeggings'}
                   class:sg-selected={selectedArmorSlot === 'infusionLeggings'}
                   class:sg-valid-target={armorValidTargets?.has('infusionLeggings')}
+                  class:sg-clone-target={armorCloneTargets?.has('infusionLeggings')}
                   data-slot="infusionLeggings"
                   role="button" tabindex="0"
-                  on:click={() => selectedArmorSlot ? onArmorTap('infusionLeggings') : openModal('infusion-leggings')}
+                  on:click={() => { if (gridJustDropped) return; selectedArmorSlot ? onArmorTap('infusionLeggings') : openModal('infusion-leggings') }}
                   on:keydown={e => e.key === 'Enter' && (selectedArmorSlot ? onArmorTap('infusion-leggings') : openModal('infusion-leggings'))}
                   on:mousedown={e => handleGridMouseDown(e, 'infusionLeggings', 'armor')}
                   on:touchstart={e => handleGridTouchStart(e, 'infusionLeggings', 'armor')}>
@@ -1876,9 +1909,10 @@ $: _appWaAvgTotal = (() => {
                   class:sg-drop-target={dragOverArmorSlot === 'leggings'}
                   class:sg-selected={selectedArmorSlot === 'leggings'}
                   class:sg-valid-target={armorValidTargets?.has('leggings')}
+                  class:sg-clone-target={armorCloneTargets?.has('leggings')}
                   data-slot="leggings"
                   role="button" tabindex="0"
-                  on:click={() => selectedArmorSlot ? onArmorTap('leggings') : openModal('armor-leggings')}
+                  on:click={() => { if (gridJustDropped) return; selectedArmorSlot ? onArmorTap('leggings') : openModal('armor-leggings') }}
                   on:keydown={e => e.key === 'Enter' && (selectedArmorSlot ? onArmorTap('leggings') : openModal('armor-leggings'))}
                   on:mousedown={e => handleGridMouseDown(e, 'leggings', 'armor')}
                   on:touchstart={e => handleGridTouchStart(e, 'leggings', 'armor')}>
@@ -3211,17 +3245,27 @@ $: _appWaAvgTotal = (() => {
     border-color: rgba(74,222,128,.6) !important;
     box-shadow: 0 0 8px rgba(74,222,128,.5);
   }
+  .sg-clone-target {
+    background: rgba(56,189,248,.25) !important;
+    border-color: rgba(56,189,248,.55) !important;
+    box-shadow: 0 0 8px rgba(56,189,248,.4);
+  }
   .sg-drop-target {
     background: rgba(74,222,128,.4) !important;
     border-color: rgba(74,222,128,.7) !important;
     box-shadow: 0 0 12px rgba(74,222,128,.6);
     transform: scale(1.03);
   }
-  .summary-grid.sg-armor-dragging .sg-cell:not(.sg-selected):not(.sg-valid-target):not(.sg-drop-target):not(.sg-weapon):not(.sg-race):not(.sg-guild) {
+  .sg-drop-target.sg-clone-target {
+    background: rgba(56,189,248,.35) !important;
+    border-color: rgba(56,189,248,.65) !important;
+    box-shadow: 0 0 12px rgba(56,189,248,.5);
+  }
+  .summary-grid.sg-armor-dragging .sg-cell:not(.sg-selected):not(.sg-valid-target):not(.sg-clone-target):not(.sg-drop-target):not(.sg-weapon):not(.sg-race):not(.sg-guild) {
     opacity: .35;
     cursor: not-allowed;
   }
-  .summary-grid.sg-ring-dragging .sg-cell:not(.sg-selected):not(.sg-valid-target):not(.sg-drop-target):not(.sg-weapon):not(.sg-race):not(.sg-guild) {
+  .summary-grid.sg-ring-dragging .sg-cell:not(.sg-selected):not(.sg-valid-target):not(.sg-clone-target):not(.sg-drop-target):not(.sg-weapon):not(.sg-race):not(.sg-guild) {
     opacity: .35;
     cursor: not-allowed;
   }
