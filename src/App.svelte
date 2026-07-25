@@ -86,7 +86,7 @@
     }
     return valid
   })()
-  $: armorCloneTargets = armorValidTargets ? new Set([...armorValidTargets].filter(s => !$build[s])) : null
+  $: armorCloneTargets = (dragMode === 'clone' && armorValidTargets) ? new Set([...armorValidTargets].filter(s => !$build[s])) : null
 
   $: activeRingSource = draggingRing ?? selectedRing
   $: ringValidTargets = (() => {
@@ -98,7 +98,7 @@
     valid.add(other)
     return valid
   })()
-  $: ringCloneTargets = ringValidTargets ? new Set([...ringValidTargets].filter(s => !$build[s])) : null
+  $: ringCloneTargets = (dragMode === 'clone' && ringValidTargets) ? new Set([...ringValidTargets].filter(s => !$build[s])) : null
 
   function onArmorDragStart(slot: AnyArmorSlotKey, e: DragEvent) {
     draggingArmorSlot = slot
@@ -115,7 +115,7 @@
   }
   function onArmorDrop(slot: AnyArmorSlotKey, e: DragEvent) {
     e.preventDefault()
-    if (draggingArmorSlot) moveArmorSlot(draggingArmorSlot, slot)
+    if (draggingArmorSlot) moveArmorSlot(draggingArmorSlot, slot, dragMode === 'clone')
     draggingArmorSlot = null
     dragOverArmorSlot = null
   }
@@ -128,8 +128,20 @@
       return
     }
     if (selectedArmorSlot === slot) { selectedArmorSlot = null; return }
-    moveArmorSlot(selectedArmorSlot, slot)
+    const srcSlot = selectedArmorSlot
+    const action = $build[slot] ? 'swap' : dragMode === 'clone' ? 'clone' : 'move'
+    moveArmorSlot(srcSlot, slot, dragMode === 'clone')
     selectedArmorSlot = null
+    flashTapAction(slot, action)
+  }
+
+  function flashTapAction(slot: string, action: string) {
+    const el = document.querySelector(`[data-slot="${slot}"]`) as HTMLElement
+    if (!el) return
+    const badge = ensureActionBadge()
+    updateActionBadge(el, action)
+    setTimeout(() => { hideActionBadge() }, 900)
+    setTimeout(() => { removeActionBadge() }, 1100)
   }
 
   let draggingRing: 'ring' | 'infusionRing' | null = null
@@ -148,7 +160,7 @@
   }
   function onRingDrop(target: 'ring' | 'infusionRing', e: DragEvent) {
     e.preventDefault()
-    if (draggingRing && draggingRing !== target) moveRingSlot(draggingRing, target)
+    if (draggingRing && draggingRing !== target) moveRingSlot(draggingRing, target, dragMode === 'clone')
     draggingRing = null
     dragOverRing = null
   }
@@ -161,9 +173,13 @@
       return
     }
     if (selectedRing === target) { selectedRing = null; return }
-    moveRingSlot(selectedRing, target)
+    const action = $build[target] ? 'swap' : dragMode === 'clone' ? 'clone' : 'move'
+    moveRingSlot(selectedRing, target, dragMode === 'clone')
     selectedRing = null
+    flashTapAction(target, action)
   }
+
+  let dragMode: 'move' | 'clone' = 'clone'
 
   // ── Grid mouse/touch drag (replaces HTML5 DnD) ───────────────────────
   type GridDragKind = 'armor' | 'ring'
@@ -189,6 +205,72 @@
   let gridTouchGrabY = 0
   let gridTouchMoved = false
   const GRID_TOUCH_THRESHOLD = 8
+
+  let gridActionLabel = ''
+  let gridActionBadgeEl: HTMLDivElement | null = null
+
+  function ensureActionBadge(): HTMLDivElement {
+    if (!gridActionBadgeEl) {
+      gridActionBadgeEl = document.createElement('div')
+      gridActionBadgeEl.className = 'grid-action-badge'
+      document.body.appendChild(gridActionBadgeEl)
+    }
+    return gridActionBadgeEl
+  }
+
+  function updateActionBadge(ghostEl: HTMLElement | null, action: string) {
+    const badge = ensureActionBadge()
+    if (!ghostEl || !action) {
+      badge.style.opacity = '0'
+      badge.style.transform = 'scale(0.7)'
+      gridActionLabel = ''
+      return
+    }
+    if (gridActionLabel !== action) {
+      gridActionLabel = action
+      badge.textContent = action === 'clone' ? '⊕ CLONE' : action === 'move' ? '➔ MOVE' : '⇄ SWAP'
+      badge.classList.toggle('grid-action-badge--clone', action === 'clone')
+      badge.classList.toggle('grid-action-badge--swap', action === 'swap')
+      badge.classList.toggle('grid-action-badge--move', action === 'move')
+      badge.style.animation = 'none'
+      badge.offsetHeight
+      badge.style.animation = 'badgePop 0.25s ease-out'
+    }
+    const gr = ghostEl.getBoundingClientRect()
+    badge.style.left = (gr.left + gr.width / 2) + 'px'
+    badge.style.top = (gr.bottom + 6) + 'px'
+    badge.style.opacity = '1'
+    badge.style.transform = 'scale(1)'
+  }
+
+  function hideActionBadge() {
+    if (gridActionBadgeEl) {
+      gridActionBadgeEl.style.opacity = '0'
+      gridActionBadgeEl.style.transform = 'scale(0.7)'
+    }
+    gridActionLabel = ''
+  }
+
+  function removeActionBadge() {
+    if (gridActionBadgeEl) {
+      gridActionBadgeEl.remove()
+      gridActionBadgeEl = null
+    }
+    gridActionLabel = ''
+  }
+
+  function getGridDragAction(kind: GridDragKind, src: string | null, tgt: string | null): string {
+    if (!src || !tgt || src === tgt) return ''
+    if (kind === 'armor') {
+      const destName = $build[tgt as AnyArmorSlotKey]
+      if (destName) return 'swap'
+      return dragMode === 'clone' ? 'clone' : 'move'
+    } else {
+      const destName = $build[tgt as 'ring' | 'infusionRing']
+      if (destName) return 'swap'
+      return dragMode === 'clone' ? 'clone' : 'move'
+    }
+  }
 
   function createGridGhost(src: HTMLElement) {
     const ghost = src.cloneNode(true) as HTMLElement
@@ -261,6 +343,8 @@
       if (target && target !== gridDragSlot && (target === 'ring' || target === 'infusionRing')) { dragOverRing = target as 'ring' | 'infusionRing' }
       else { dragOverRing = null }
     }
+    const hasTarget = (gridDragKind === 'armor') ? !!dragOverArmorSlot : !!dragOverRing
+    updateActionBadge(gridGhostEl, hasTarget ? getGridDragAction(gridDragKind, gridDragSlot, target) : '')
   }
 
   function onGridMouseUp() {
@@ -270,10 +354,11 @@
     if (gridMoved && gridDragSlot) {
       gridJustDropped = true
       setTimeout(() => gridJustDropped = false, 300)
-      if (gridDragKind === 'armor' && draggingArmorSlot && dragOverArmorSlot) moveArmorSlot(draggingArmorSlot, dragOverArmorSlot)
-      else if (gridDragKind === 'ring' && draggingRing && dragOverRing && draggingRing !== dragOverRing) moveRingSlot(draggingRing, dragOverRing)
+      if (gridDragKind === 'armor' && draggingArmorSlot && dragOverArmorSlot) moveArmorSlot(draggingArmorSlot, dragOverArmorSlot, dragMode === 'clone')
+      else if (gridDragKind === 'ring' && draggingRing && dragOverRing && draggingRing !== dragOverRing) moveRingSlot(draggingRing, dragOverRing, dragMode === 'clone')
     }
     if (gridGhostEl) { gridGhostEl.remove(); gridGhostEl = null }
+    removeActionBadge()
     draggingArmorSlot = null; dragOverArmorSlot = null
     draggingRing = null; dragOverRing = null
     gridDragging = false; gridDragSlot = null; gridDragKind = null; gridMoved = false
@@ -324,6 +409,8 @@
       if (target && target !== gridTouchSlot && (target === 'ring' || target === 'infusionRing')) { dragOverRing = target as 'ring' | 'infusionRing' }
       else { dragOverRing = null }
     }
+    const hasTarget = (gridTouchKind === 'armor') ? !!dragOverArmorSlot : !!dragOverRing
+    updateActionBadge(gridTouchGhost, hasTarget ? getGridDragAction(gridTouchKind, gridTouchSlot, target) : '')
   }
 
   function onGridTouchEnd() {
@@ -333,10 +420,11 @@
     if (gridTouchMoved && gridTouchSlot) {
       gridJustDropped = true
       setTimeout(() => gridJustDropped = false, 300)
-      if (gridTouchKind === 'armor' && draggingArmorSlot && dragOverArmorSlot) moveArmorSlot(draggingArmorSlot, dragOverArmorSlot)
-      else if (gridTouchKind === 'ring' && draggingRing && dragOverRing && draggingRing !== dragOverRing) moveRingSlot(draggingRing, dragOverRing)
+      if (gridTouchKind === 'armor' && draggingArmorSlot && dragOverArmorSlot) moveArmorSlot(draggingArmorSlot, dragOverArmorSlot, dragMode === 'clone')
+      else if (gridTouchKind === 'ring' && draggingRing && dragOverRing && draggingRing !== dragOverRing) moveRingSlot(draggingRing, dragOverRing, dragMode === 'clone')
     }
     if (gridTouchGhost) { gridTouchGhost.remove(); gridTouchGhost = null }
+    removeActionBadge()
     draggingArmorSlot = null; dragOverArmorSlot = null
     draggingRing = null; dragOverRing = null
     gridTouchDragging = false; gridTouchSlot = null; gridTouchKind = null; gridTouchMoved = false
@@ -1674,6 +1762,14 @@ $: _appWaAvgTotal = (() => {
           <LevelBar protection={$result.stats.protection ?? 0} hpThreshold={_dragonStateThreshold} />
         </div>
         <div class="summary-actions">
+          <div class="drag-mode-toggle">
+            <button class="drag-mode-btn" class:drag-mode-btn--active={dragMode === 'move'} on:click={() => dragMode = 'move'} title="Move: drag to empty slot moves the item">
+              <i class="fa fa-arrows-alt"></i> Move
+            </button>
+            <button class="drag-mode-btn" class:drag-mode-btn--active={dragMode === 'clone'} on:click={() => dragMode = 'clone'} title="Clone: drag to empty slot copies the item">
+              <i class="fa fa-clone"></i> Clone
+            </button>
+          </div>
           <Button variant="negative" size="md" onclick={handleClearBuild} disabled={false}>
             ✕ Clear All
           </Button>
@@ -4109,6 +4205,25 @@ $: _appWaAvgTotal = (() => {
 
 :global(.dab-notes) { font-size:.68rem; color:var(--draco-text); opacity:.65; font-style:italic; line-height:1.4; letter-spacing:.02em; }
 
+.drag-mode-toggle {
+  display: inline-flex; gap: 2px; border-radius: 7px; padding: 2px;
+  background: var(--surface3); border: 1px solid var(--border);
+}
+.drag-mode-btn {
+  display: flex; align-items: center; gap: 5px;
+  padding: 5px 10px; border-radius: 5px; border: none;
+  background: transparent; color: var(--ink-muted);
+  font-family: var(--font-body); font-size: .72rem; font-weight: 700;
+  cursor: pointer; transition: all .15s;
+  white-space: nowrap;
+}
+.drag-mode-btn:hover { background: rgba(255,255,255,.06); color: var(--ink); }
+.drag-mode-btn--active {
+  background: rgba(74,222,128,.15); color: var(--accent);
+  box-shadow: 0 1px 4px rgba(74,222,128,.2);
+}
+.drag-mode-btn i { font-size: .65rem; }
+
 .cdr-mult--increase { color: var(--neg); }
 .summary-title-row {
   display: flex;
@@ -4171,5 +4286,35 @@ $: _appWaAvgTotal = (() => {
   .sg-label { font-size: .52rem; }
   .summary-grid-wrap { margin-left: calc(-50vw + 50%); margin-right: calc(-50vw + 50%); width: 100vw; overflow-x: auto; padding: 4px; }
   .summary-grid { min-width: 500px; }
+}
+
+:global(.grid-action-badge) {
+  position: fixed; z-index: 10000; pointer-events: none;
+  transform: translateX(-50%) scale(1);
+  padding: 5px 14px; border-radius: 20px;
+  font-family: var(--font-display, system-ui); font-size: .72rem; font-weight: 800;
+  letter-spacing: .06em; text-transform: uppercase;
+  color: #fff; white-space: nowrap;
+  box-shadow: 0 4px 20px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,.15);
+  transition: opacity .18s ease, transform .18s ease;
+  opacity: 0; transform: translateX(-50%) scale(0.7);
+  backdrop-filter: blur(6px);
+}
+:global(.grid-action-badge--clone) {
+  background: linear-gradient(135deg, rgba(56,189,248,.92), rgba(99,102,241,.88));
+  box-shadow: 0 4px 20px rgba(56,189,248,.4), 0 0 0 1px rgba(56,189,248,.3);
+}
+:global(.grid-action-badge--swap) {
+  background: linear-gradient(135deg, rgba(74,222,128,.92), rgba(34,197,94,.88));
+  box-shadow: 0 4px 20px rgba(74,222,128,.4), 0 0 0 1px rgba(74,222,128,.3);
+}
+:global(.grid-action-badge--move) {
+  background: linear-gradient(135deg, rgba(251,191,36,.92), rgba(245,158,11,.88));
+  box-shadow: 0 4px 20px rgba(251,191,36,.4), 0 0 0 1px rgba(251,191,36,.3);
+}
+@keyframes badgePop {
+  0% { transform: translateX(-50%) scale(0.5); opacity: 0; }
+  60% { transform: translateX(-50%) scale(1.12); opacity: 1; }
+  100% { transform: translateX(-50%) scale(1); opacity: 1; }
 }
 </style>

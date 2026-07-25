@@ -144,7 +144,7 @@ const UPGRADE_KEY_MAP: Record<AnyArmorSlotKey, 'upgradeHelmet' | 'upgradeChestpl
   infusionHelmet: 'upgradeInfusionHelmet', infusionChestplate: 'upgradeInfusionChestplate', infusionLeggings: 'upgradeInfusionLeggings',
 }
 
-export function moveArmorSlot(from: AnyArmorSlotKey, to: AnyArmorSlotKey): boolean {
+export function moveArmorSlot(from: AnyArmorSlotKey, to: AnyArmorSlotKey, clone = true): boolean {
   if (from === to) return false
   let moved = false
   build.update(s => {
@@ -163,7 +163,10 @@ export function moveArmorSlot(from: AnyArmorSlotKey, to: AnyArmorSlotKey): boole
       return next
     }
     moved = true
-    return { ...s, [to]: fromName, [toUp]: s[fromUp] }
+    if (clone) {
+      return { ...s, [to]: fromName, [toUp]: s[fromUp] }
+    }
+    return { ...s, [from]: '', [to]: fromName, [fromUp]: 0, [toUp]: s[fromUp] }
   })
   return moved
 }
@@ -179,7 +182,7 @@ const RING_UPGRADE_KEY: Record<RingSlotKey, 'upgradeRing' | 'upgradeInfusionRing
   infusionRing: 'upgradeInfusionRing',
 }
 
-export function moveRingSlot(from: RingSlotKey, to: RingSlotKey): boolean {
+export function moveRingSlot(from: RingSlotKey, to: RingSlotKey, clone = true): boolean {
   if (from === to) return false
   let moved = false
   build.update(s => {
@@ -196,7 +199,10 @@ export function moveRingSlot(from: RingSlotKey, to: RingSlotKey): boolean {
       return next
     }
     moved = true
-    return { ...s, [to]: fromName, [toUp]: s[fromUp] }
+    if (clone) {
+      return { ...s, [to]: fromName, [toUp]: s[fromUp] }
+    }
+    return { ...s, [from]: '', [to]: fromName, [fromUp]: 0, [toUp]: s[fromUp] }
   })
   return moved
 }
