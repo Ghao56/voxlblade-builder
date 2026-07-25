@@ -880,8 +880,20 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
           const cd = statuses?.waCooldown ?? 10
           return 1 + cd / PYRE_BLOOM_FIRERATE_DIVISOR
         },
-        format: v => `${Math.round(v * 100) / 100}/s`,
-        condition: 'Fireballs per second',
+        format: v => `${Math.round(v * 100) / 100}s`,
+        condition: 'Interval between fireballs',
+        tone: 'offense',
+      },
+      {
+        label: 'Lifetime',
+        getValue: ({ perkAmount, statuses }) => {
+          const cd = statuses?.waCooldown ?? 10
+          const amt = Math.floor(perkAmount)
+          const firerate = 1 + cd / PYRE_BLOOM_FIRERATE_DIVISOR
+          const hits = Math.max(PYRE_BLOOM_AMMO_MIN, Math.min(PYRE_BLOOM_AMMO_MAX, Math.round((PYRE_BLOOM_AMMO_BASE + PYRE_BLOOM_AMMO_PER_STACK * amt) * ((cd / PYRE_BLOOM_AMMO_CD_DIVISOR) - PYRE_BLOOM_AMMO_CD_SUBTRACT))))
+          return firerate * hits
+        },
+        format: v => `${Math.round(v * 100) / 100}s`,
         tone: 'offense',
       },
       {
