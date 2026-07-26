@@ -7,6 +7,11 @@
 #   node_modules/, .git/, dist/, build/, obj/, *.lock, *.min.js, etc.
 #
 
+# --- Understand-Anything internal artifacts ---
+.understand-anything/.trash-*
+.understand-anything/intermediate/
+.understand-anything/tmp/
+
 # --- From .gitignore (uncomment to exclude) ---
 
 # logs

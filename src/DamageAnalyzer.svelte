@@ -1436,7 +1436,6 @@ import {
   $: _hasSpecificBoosts = boosts.dmgEntries.some(e => !!(e as any).appliesTo)
 
   $: _allUniversalChips = [..._visibleDmgEntries.filter(e => !(e as any).appliesTo), ..._syntheticDmgBoostEntries.filter(e => {
-    if (e.sourceName === 'Curse Rip' && disableCurseRip) return false
     if (e.sourceName === 'Reaper' && disableReaper) return false
     return true
   })]
@@ -2073,7 +2072,9 @@ import {
             }),
             _perkDmgTypeBonuses
           )
-        : _applyDmgBonuses(baseDmgTypes, _perkDmgTypeBonusesDoT)
+        : def.isWA
+          ? _applyDmgBonuses(baseDmgTypes, _waDmgTypeBonuses)
+          : _applyDmgBonuses(baseDmgTypes, _perkDmgTypeBonusesDoT)
       const resolvedDmgTypes = applyAirToMagicConversion(baseResolvedDmgTypes, _spiritWindsConversionRate, _darkMagicHexBonus, _echoIncinerationAmt)
       const resolvedDmgTypesWithMw = (def.isFinisher || def.isM2) && _mortalWillHolyTypeBonus > 0
         ? { ...resolvedDmgTypes, holy: Math.round(((resolvedDmgTypes.holy ?? 0) + _mortalWillHolyTypeBonus) * 10000) / 10000 }
