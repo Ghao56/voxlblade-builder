@@ -3989,7 +3989,7 @@ $: _groupedSelfDamageSources = (() => {
                       <span class="da-hit-num" style="--tc:#c084fc">{atk.baseDmg}</span>
                       <span class="da-hit-type">{atk.label}</span>
                     </div>
-                    {#if atk.guardbreak}<Badge color="#f87171" square size="xs" class="da-badge-self-center">GB</Badge>{/if}
+                    {#if atk.guardbreak}<Badge color="#f87171" square size="xs" class="da-badge-self-center">Guardbreak</Badge>{/if}
                   {/each}
                 {:else}
                   <div class="da-hit-chunk" style="--tc:#c084fc">
@@ -4141,9 +4141,13 @@ $: _groupedSelfDamageSources = (() => {
       <div class="da-wbd-card-head">
         <span class="da-wbd-dot da-wbd-dot--gun"></span>
         <span class="da-wbd-card-name">{_draconicBloodEntry.displayName}</span>
-        <Badge color="#38bdf8">Rune</Badge>
       </div>
       <div class="da-wbd-card-divider"></div>
+      <div class="da-pbd-badges">
+        {#if _draconicBloodEntry.isWA}<Badge color="#a78bfa" square size="xs">WA</Badge>{/if}
+        <Badge color="#38bdf8" square size="xs">Rune</Badge>
+        {#if _draconicBloodEntry.guardbreak}<Badge color="#f87171" square size="xs">Guardbreak</Badge>{/if}
+      </div>
       <div class="da-wbd-section">
         <div class="da-hits-row">
           <div class="da-hit-card">
@@ -4154,7 +4158,6 @@ $: _groupedSelfDamageSources = (() => {
                 <span class="da-hit-type">{t.label}</span>
               </div>
             {/each}
-            {#if _draconicBloodEntry.guardbreak}<Badge color="#f87171" square size="xs" class="da-badge-self-center">GB</Badge>{/if}
           </div>
         </div>
       </div>
@@ -4288,16 +4291,6 @@ $: _groupedSelfDamageSources = (() => {
             {/each}
           </div>
         {/if}
-        {#if entry.triggerChain && entry.triggerChain.length > 0}
-          <div class="da-pbd-trigger-chain">
-            {#each entry.triggerChain as tc}
-              <div class="da-pbd-trigger-entry">
-                <span class="da-pbd-trigger-icon">{tc.trigger === 'always' ? '✓' : '🎲'}</span>
-                <span class="da-pbd-trigger-name">{tc.perk}</span>
-              </div>
-            {/each}
-          </div>
-        {/if}
         <!-- Note -->
         {#if entry.note}
           <div class="da-pbd-note">{entry.note}</div>
@@ -4383,9 +4376,6 @@ $: _groupedSelfDamageSources = (() => {
         </div>
         {#if perkName === 'Dark Magic'}
           <div class="da-pbd-note">Self damage = 0.5% × {fmtNum(activeSrc.preBoostDmg)} pre-boost damage</div>
-        {/if}
-        {#if perkName === 'Undead Might'}
-          <div class="da-pbd-note">Activates on: {['Fiery Pursuit', 'Pyre Bloom', 'Apollo Boost', 'Mageling Spirit'].filter(p => (perks[p] ?? 0) > 0).join(', ') || 'none'}</div>
         {/if}
       </div>
     {/each}
