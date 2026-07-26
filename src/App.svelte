@@ -16,6 +16,7 @@
   import { OFFENSIVE_BOOSTS } from './data/statboost'
   import { enchantments, getEnchant as ge, isExclusiveEnchant } from './lib/engine'
   import EnchantSelect from './lib/EnchantSelect.svelte'
+  import RollValue from './lib/ui/RollValue.svelte'
   import { getEnchantTooltipText } from './lib/enchantTooltip'
   import { applyUpgrade, UPGRADE_MAX } from './lib/types'
   import { WEAPON_ARTS, type WeaponArt } from './data/weaponArts'
@@ -2273,7 +2274,7 @@ $: _appWaAvgTotal = (() => {
                       {#each statRows as [k, v]}
                         <div class="ss-row">
                           <span class="ss-key">{formatLabel(k)}</span>
-                          <span class="ss-val" class:neg={v < 0}>{formatStat(k, v)}</span>
+                          <RollValue value={formatStat(k, v)} classList="ss-val{v < 0 ? ' neg' : ''}" />
                         </div>
                       {/each}
                     </div>
@@ -3478,8 +3479,8 @@ $: _appWaAvgTotal = (() => {
   .ss-row { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:3px 5px; border-radius:4px; font-size:.75rem; transition:background .1s; }
   .ss-row:hover { background:var(--surface3); }
   .ss-key { color:var(--ink-muted); }
-  .ss-val { font-weight:700; color:var(--accent); white-space:nowrap; }
-  .ss-val.neg { color:var(--neg); }
+  :global(.ss-val) { font-weight:700; color:var(--accent); white-space:nowrap; }
+  :global(.ss-val.neg) { color:var(--neg); }
   .swap-mode-banner {
     display:flex; align-items:center; gap:10px; padding:10px 14px; margin-bottom:10px;
     background:linear-gradient(135deg, rgba(251,191,36,0.12), rgba(251,146,60,0.08));

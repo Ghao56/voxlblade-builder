@@ -162,9 +162,11 @@
             {#if isInfusion}<span class="inf-label">×0.5</span>{/if}
           </span>
           {#if statFilterSortMode === 'most-effective' && weaponResult?.scalings}
-            <Badge color="#a78bfa" size="xs">+{computeItemEffectiveBoost(item)}%</Badge>
+            {@const _eff = computeItemEffectiveBoost(item)}
+            <Badge color="#a78bfa" size="xs">{_eff > 0 ? '+' : ''}{_eff}%</Badge>
           {:else if statFilterSortMode === 'brawny' && weaponResult?.scalings}
-            <Badge color="#fb923c" size="xs">+{computeItemBrawnyBoost(item)}%</Badge>
+            {@const _brawny = computeItemBrawnyBoost(item)}
+            <Badge color="#fb923c" size="xs">{_brawny > 0 ? '+' : ''}{_brawny}%</Badge>
           {/if}
         </div>
         {#if getItemDesc(item)}
