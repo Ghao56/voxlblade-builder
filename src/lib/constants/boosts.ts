@@ -56,3 +56,13 @@ export const VAMPIRE_SUNLIGHT_HEAL_MULT = 0.5
 export const TOXIN_CASTER_MULT_PER_STACK = 0.05
 export const CUT_DOWN_MULT_PER_AMOUNT = 0.30
 export const EXECUTIONER_MULT_PER_AMOUNT = 0.50
+
+// ── Heat Drill ────────────────────────────────
+export const HEAT_DRILL_COOLDOWN = 15
+export const HEAT_DRILL_LUNGE_BASE = 15
+export const HEAT_DRILL_LUNGE_PER_STACK = 7.5
+export const HEAT_DRILL_EXPLOSION_BASE = 15
+export const HEAT_DRILL_EXPLOSION_PER_STACK = 7.5
+export const HEAT_DRILL_SMALL_EXPLOSION_BASE = 3.75
+export const HEAT_DRILL_SMALL_EXPLOSION_PER_STACK = 1.875
+export const HEAT_DRILL_SMALL_EXPLOSION_HITS = 3

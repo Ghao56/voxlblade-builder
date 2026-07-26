@@ -28,6 +28,8 @@
     DRAGON_BUBBLE_WATER_HEAL_BASE, DRAGON_BUBBLE_WATER_HEAL_PER_STACK,
     UNDO_WINDOW_MS, SEARCH_BLUR_DELAY_MS,
     BOMBER_CHARGE_BASE, BOMBER_CHARGE_PCT_PER_STACK, BOMBER_CHARGE_MISSING_HP_MULT,
+    HEAT_DRILL_COOLDOWN,
+    getWADisplayName,
   } from './lib/constants'
   import { DEFAULT_DMG_TYPE } from './lib/constants/damage-types'
   import {
@@ -38,7 +40,6 @@
   import EmotionalTracker from './EmotionalTracker.svelte'
   import LevelBar from './LevelBar.svelte'
   let DamageAnalyzer: typeof import('./DamageAnalyzer.svelte')['default'] | null = null
-  let analyzerLoading = false
   import TagFilter from './TagFilter.svelte'
   import StatFilter from './StatFilter.svelte'
   import WeaponStatFilter from './WeaponStatFilter.svelte'
@@ -520,10 +521,6 @@ function weaponMatchesFilter(item: any): boolean {
   function switchTab(tab: 'overview' | 'analyze') {
     if (tab === activeAppTab) return
     activeAppTab = tab
-    if (tab === 'analyze' && !DamageAnalyzer && !analyzerLoading) {
-      analyzerLoading = true
-      import('./DamageAnalyzer.svelte').then(m => { DamageAnalyzer = m.default; analyzerLoading = false })
-    }
   }
 
   // ── Undo clear ─────────────────────────────────────────────────────────────
@@ -577,6 +574,7 @@ function weaponMatchesFilter(item: any): boolean {
   onMount(async () => {
     await tick()
     waHydrated = true
+    import('./DamageAnalyzer.svelte').then(m => { DamageAnalyzer = m.default })
   })
 
   // ── Armor drag/tap helpers ────────────────────────────────────────────────
@@ -789,6 +787,10 @@ $: statRows = Object.entries($result.stats).filter(([k, v]) => {
     if (found && availableWeaponArts.some(wa => wa.name === found.name)) return found
     return availableWeaponArts[0] ?? WEAPON_ARTS[0]
   })()
+
+  $: _waDisplayName = getWADisplayName(selectedWA.name, $result.perks)
+  $: _heatDrillAmt = $result.perks['Heat Drill'] ?? 0
+  $: _waCooldown = (_heatDrillAmt > 0 && (selectedWA.name === 'Lunge' || selectedWA.name === 'Barrage')) ? HEAT_DRILL_COOLDOWN : selectedWA.cooldown
 
   $: monkGlovePerkBonus = (() => {
     if (!isMonk || !weaponResult?.part1Name) return 0
@@ -2233,15 +2235,15 @@ $: _appWaAvgTotal = (() => {
               </div>
               <div class="wa-selected" class:wa-selected--invalid={!waAvailable}>
                   <div class="wa-selected-top">
-                    <span class="wa-name">{selectedWA.name}</span>
+                    <span class="wa-name">{_waDisplayName}</span>
                     {#if hasWACDR}
                       <Badge color="#34d399" size="sm">
-                        <span class="wa-cd-old">{selectedWA.cooldown}s</span>
+                        <span class="wa-cd-old">{_waCooldown}s</span>
                         <span class="wa-cd-arrow">→</span>
-                        {Math.max(1, Math.floor(selectedWA.cooldown * cdr.waCDR))}s
+                        {Math.max(1, Math.floor(_waCooldown * cdr.waCDR))}s
                       </Badge>
                     {:else}
-                      <Badge color="#34d399" size="sm">CD: {selectedWA.cooldown}s</Badge>
+                      <Badge color="#34d399" size="sm">CD: {_waCooldown}s</Badge>
                     {/if}
                     {#if !waAvailable}
                       <Badge color="#f87171" size="sm">⚠ Req. not met</Badge>
@@ -2669,15 +2671,15 @@ $: _appWaAvgTotal = (() => {
     <div class="detail-head">
       <span class="detail-type" style="color:var(--accent3)">Weapon Art</span>
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-        <span class="detail-name">{selectedWA.name}</span>
+        <span class="detail-name">{_waDisplayName}</span>
         {#if hasWACDR}
           <Badge color="#34d399" size="sm">
-            <span class="wa-cd-old">{selectedWA.cooldown}s</span>
+            <span class="wa-cd-old">{_waCooldown}s</span>
             <span class="wa-cd-arrow">→</span>
-            {Math.max(1, Math.floor(selectedWA.cooldown * cdr.waCDR))}s
+            {Math.max(1, Math.floor(_waCooldown * cdr.waCDR))}s
           </Badge>
         {:else}
-          <Badge color="#34d399" size="sm">CD: {selectedWA.cooldown}s</Badge>
+          <Badge color="#34d399" size="sm">CD: {_waCooldown}s</Badge>
         {/if}
         {#if !waAvailable}<Badge color="#f87171" size="sm">⚠ Req. not met</Badge>{/if}
       </div>
@@ -2875,7 +2877,7 @@ $: _appWaAvgTotal = (() => {
             </span>
           </div>
         {/each}
-        <CdrStepsCalc breakdown={cdr.waBreakdown} baseCd={selectedWA.cooldown} />
+        <CdrStepsCalc breakdown={cdr.waBreakdown} baseCd={_waCooldown} />
       </div>
     {/if}
     {#if _appWaAvgTotal}
@@ -3117,8 +3119,6 @@ $: _appWaAvgTotal = (() => {
         </div>
         {#if DamageAnalyzer}
           <svelte:component this={DamageAnalyzer} />
-        {:else if analyzerLoading}
-          <div style="text-align:center;padding:40px;opacity:0.5">Loading analyzer...</div>
         {/if}
       </div>
     {/if}

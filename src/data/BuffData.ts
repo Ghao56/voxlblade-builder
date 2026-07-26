@@ -1130,6 +1130,9 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
     { buffName: 'Slowness', potency: 0.2, duration: 5, condition: 'Random (1 of 6) on Laser hit', sourceName: 'Wild Bolt', sourceType: 'perk' },
     { buffName: 'Weakness', potency: 0.5, duration: 5, condition: 'Random (1 of 6) on Laser hit', sourceName: 'Wild Bolt', sourceType: 'perk' },
   ],
+  'Heat Drill': () => [
+    { buffName: 'Burn', potency: 0, duration: 5, condition: 'Applies Burn on Lunge/Barrage hit', sourceName: 'Heat Drill', sourceType: 'perk' },
+  ],
   'Storm Rend': (amount) => [
     {
       buffName: 'Electrical Rend',

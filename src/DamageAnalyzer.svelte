@@ -69,6 +69,11 @@ import {
   SUNBURN_BURN_CHANCE_PER_STACK,
   PHANTOM_PAIN_BASE_PCT,
   PHANTOM_PAIN_PERK_MULT,
+  HEAT_DRILL_COOLDOWN, HEAT_DRILL_LUNGE_BASE, HEAT_DRILL_LUNGE_PER_STACK,
+  HEAT_DRILL_EXPLOSION_BASE, HEAT_DRILL_EXPLOSION_PER_STACK,
+  HEAT_DRILL_SMALL_EXPLOSION_BASE, HEAT_DRILL_SMALL_EXPLOSION_PER_STACK,
+  HEAT_DRILL_SMALL_EXPLOSION_HITS,
+  getWADisplayName,
 } from './lib/constants'
 
 
@@ -694,6 +699,7 @@ import {
   $: _oceanSongAmt = perks['Ocean Song'] ?? 0
   $: _wildBoltAmt = perks['Wild Bolt'] ?? 0
   $: _weightySlamAmt = perks['Weighty Slam'] ?? 0
+  $: _heatDrillAmt = perks['Heat Drill'] ?? 0
   $: _lightningCloakActive = _allActiveBuffs.some(b => b.buffName === 'Lightning Cloak')
   $: _activeLightningCloakBuffs = _allActiveBuffs.filter(b => b.buffName === 'Lightning Cloak')
   $: _stormRendAmt = perks['Storm Rend'] ?? 0
@@ -1659,6 +1665,8 @@ import {
   })()
 
   $: selectedWA = WEAPON_ARTS.find(wa => wa.name === $build.selectedWeaponArt) ?? WEAPON_ARTS[0]
+  $: _waDisplayName = getWADisplayName(selectedWA.name, perks)
+  $: _waCooldown = (_heatDrillActive) ? HEAT_DRILL_COOLDOWN : selectedWA.cooldown
 
   function parseWAHitsAll(baseDamage: string | undefined): {
     dmg: Array<{ n: number; count: number }>
@@ -1683,11 +1691,20 @@ import {
   }
 
   $: _waAllHits = parseWAHitsAll(selectedWA.baseDamage)
+  $: _heatDrillActive = _heatDrillAmt > 0 && (selectedWA.name === 'Lunge' || selectedWA.name === 'Barrage')
   $: _waHitsSeq = (() => {
     if (selectedWA.baseDamagePerDebuff) {
       const count = _generalActiveDebuffCount
       if (count <= 0) return null
       return [{ n: selectedWA.baseDamagePerDebuff * count, count: 1 }]
+    }
+    if (_heatDrillActive) {
+      const a = _heatDrillAmt
+      return [
+        { n: HEAT_DRILL_LUNGE_BASE + HEAT_DRILL_LUNGE_PER_STACK * a, count: 1 },
+        { n: HEAT_DRILL_EXPLOSION_BASE + HEAT_DRILL_EXPLOSION_PER_STACK * a, count: 1 },
+        { n: HEAT_DRILL_SMALL_EXPLOSION_BASE + HEAT_DRILL_SMALL_EXPLOSION_PER_STACK * a, count: HEAT_DRILL_SMALL_EXPLOSION_HITS },
+      ]
     }
     return _waAllHits.dmg.length > 0 ? _waAllHits.dmg.map(h => 
       _wildBoltAmt > 0 && selectedWA.name === 'Laser' 
@@ -1715,6 +1732,13 @@ import {
     }
     if (_weightySlamAmt > 0 && selectedWA.name === 'Slam') {
       return apply(_applyDmgBonuses({ physical: 1 }, _waDmgTypeBonuses))
+    }
+    if (_heatDrillActive) {
+      const entries = Object.entries(_weaponDmgTypesBase)
+      const highestKey = entries.length > 0
+        ? entries.reduce((a, b) => b[1] > a[1] ? b : a)[0]
+        : Object.keys(_weaponDmgTypes)[0] ?? 'physical'
+      return apply(_applyDmgBonuses({ [highestKey]: 1 }, _waDmgTypeBonuses))
     }
     const dt = selectedWA.damageType
     
@@ -1762,6 +1786,13 @@ import {
     }
     if (_weightySlamAmt > 0 && selectedWA.name === 'Slam') {
       return { physical: 1 }
+    }
+    if (_heatDrillActive) {
+      const entries = Object.entries(_weaponDmgTypesBase)
+      const highestKey = entries.length > 0
+        ? entries.reduce((a, b) => b[1] > a[1] ? b : a)[0]
+        : Object.keys(_weaponDmgTypes)[0] ?? 'physical'
+      return { [highestKey]: 1 }
     }
     const dt = selectedWA.damageType
     if (!dt || dt === 'Same as weapon') {
@@ -2117,7 +2148,7 @@ import {
         poisonPotency: perks['Poison Potency'] ?? 0,
         burnPotency: _perkCtxBurnPotency,
         missingHpPct: Math.min(50, Math.max(0, 100 - (_hpFillPct ?? 100))),
-        waCooldown: selectedWA.cooldown,
+        waCooldown: _waCooldown,
       }
       const baseDmg_m2  = def.getBaseDamage({ perkAmount, finisherHits: _fhM2,  draconicColor: _effDraconicColor, statuses: _perkCtxStatuses })
       const baseDmg_m1f = def.getBaseDamage({ perkAmount, finisherHits: _fhM1f, draconicColor: _effDraconicColor, statuses: _perkCtxStatuses })
@@ -2382,18 +2413,32 @@ import {
             t += parseFloat(m[1]) * ((stats as Record<string,number>)[(/dex/i.test(m[2]) ? 'dexterity' : m[2].toLowerCase()) + 'Boost'] ?? 0)
           sc = 1 + t / 100
         } else if (hss === 'Same as weapon') sc = _scalingMult
-        const hitDt = selectedWA.hitDamageTypes?.length
-         ? (() => {
-            const _hdt = selectedWA.hitDamageTypes[Math.min(i, selectedWA.hitDamageTypes.length - 1)]
-            return _hdt === 'Same as weapon'
-              ? _applyDmgBonuses({ ..._convertedWeaponDmgTypes }, _waOnlyBonuses)
-              : applyAirToMagicConversion(_resolveHitDmgTypes(_hdt, _weaponDmgTypes, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexBonus, _echoIncinerationAmt)
-          })()
-         : _waDmgTypes
-        
-        const hitDtBase = selectedWA.hitDamageTypes?.length
-         ? _resolveHitDmgTypesBase(selectedWA.hitDamageTypes[Math.min(i, selectedWA.hitDamageTypes.length - 1)], _weaponDmgTypesBase)
-         : _waDmgTypesBase
+
+        let hitDt: Record<string, number>
+        let hitDtBase: Record<string, number>
+        if (_heatDrillActive) {
+          if (i === 0) {
+            const entries = Object.entries(_weaponDmgTypesBase)
+            const highestKey = entries.length > 0
+              ? entries.reduce((a, b) => b[1] > a[1] ? b : a)[0]
+              : Object.keys(_weaponDmgTypes)[0] ?? 'physical'
+            hitDt = applyAirToMagicConversion(_applyDmgBonuses({ [highestKey]: 1 }, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexBonus, _echoIncinerationAmt)
+            hitDtBase = { [highestKey]: 1 }
+          } else {
+            const explTypes = _applyDmgBonuses({ fire: 0.5, air: 0.5 }, _waDmgTypeBonuses)
+            hitDt = applyAirToMagicConversion(explTypes, _spiritWindsConversionRate, _darkMagicHexBonus, _echoIncinerationAmt)
+            hitDtBase = { fire: 0.5, air: 0.5 }
+          }
+        } else if (selectedWA.hitDamageTypes?.length) {
+          const _hdt = selectedWA.hitDamageTypes[Math.min(i, selectedWA.hitDamageTypes.length - 1)]
+          hitDt = _hdt === 'Same as weapon'
+            ? _applyDmgBonuses({ ..._convertedWeaponDmgTypes }, _waOnlyBonuses)
+            : applyAirToMagicConversion(_resolveHitDmgTypes(_hdt, _weaponDmgTypes, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexBonus, _echoIncinerationAmt)
+          hitDtBase = _resolveHitDmgTypesBase(selectedWA.hitDamageTypes[Math.min(i, selectedWA.hitDamageTypes.length - 1)], _weaponDmgTypesBase)
+        } else {
+          hitDt = _waDmgTypes
+          hitDtBase = _waDmgTypesBase
+        }
         
         const waIsFinisher = selectedWA.hits?.[i]?.isFinisher ?? false
         const mwMult = waIsFinisher && _mortalWillFinisherDmgMult !== 1 ? _mortalWillFinisherDmgMult : 1
@@ -2410,7 +2455,7 @@ import {
         result.push({
           group: 'WA', index: i, count: h.count, base: h.n, scalingMult: sc, combatMult: _waCombatMult,
           isFinisher: waIsFinisher, dmgTypes: hitDmgTypesForMw,
-          baseDmgTypes: hitDtBase, label: selectedWA.name,
+          baseDmgTypes: hitDtBase,           label: _waDisplayName,
           ...(selectedWA.hits?.[i]?.isCrit ? { forceCrit: true } : {}),
           ...(combinedWbMult !== 1 ? { weaponBoostMult: combinedWbMult, weaponBoostLabel: wbLabel } : {}),
           canApplyBurn: _hasSingedBurn,
@@ -2429,7 +2474,7 @@ import {
           combatMult: _healFinalMultiplier,
           isFinisher: false,
           dmgTypes: { heal: 1.0 },
-          label: selectedWA.name,
+          label: _waDisplayName,
           isHeal: true,
         })
       })
@@ -2649,7 +2694,7 @@ import {
     }
     if (_oceanSongAmt > 0) {
       const osScaling = _computePerkScalingMult({ water: 1.0, dexterity: 1.0 })
-      const baseHeal = (1 + OCEAN_SONG_PER_STACK * _oceanSongAmt) * (1 + selectedWA.cooldown / 30)
+      const baseHeal = (1 + OCEAN_SONG_PER_STACK * _oceanSongAmt) * (1 + _waCooldown / 30)
       result.push({
         group: 'Perk', index: result.length, count: 1, base: baseHeal, scalingMult: osScaling, combatMult: _healFinalMultiplier,
         isFinisher: false, dmgTypes: { heal: 1.0 }, label: 'Ocean Song', isHeal: true,
@@ -2792,7 +2837,7 @@ import {
             ...new Set(
               _bdcWeaponHits
                 .filter(h => h.group === 'WA' && !h.isHeal)
-                .map(h => h.label ?? selectedWA.name)
+                .map(h => h.label ?? _waDisplayName)
             )
           ]
           for (const label of waLabels) {
@@ -3674,7 +3719,7 @@ $: _groupedSelfDamageSources = (() => {
       <div class="da-wbd-section">
         <div class="da-wbd-row-label da-wbd-row-label--wa">
           <Badge color="#a78bfa" square size="xs">WA</Badge>
-          <span class="da-wbd-lbl-text da-wbd-lbl-text--wa">{selectedWA.name}</span>
+          <span class="da-wbd-lbl-text da-wbd-lbl-text--wa">{_waDisplayName}</span>
         </div>
         <div class="da-hits-row">
           {#if _waDebuffWarning}
@@ -3690,8 +3735,8 @@ $: _groupedSelfDamageSources = (() => {
    {/each}
  </div>
  {/if}
-     </div>
-   </div>
+      </div>
+    </div>
 
   <div class="da-wbd-body">
   {#if !_currentLabel && !showAllWeapons}
@@ -3844,7 +3889,7 @@ $: _groupedSelfDamageSources = (() => {
         <div class="da-wbd-section">
           <div class="da-wbd-row-label da-wbd-row-label--wa">
             <Badge color="#a78bfa" square size="xs">WA</Badge>
-            <span class="da-wbd-lbl-text da-wbd-lbl-text--wa">{selectedWA.name}</span>
+            <span class="da-wbd-lbl-text da-wbd-lbl-text--wa">{_waDisplayName}</span>
           </div>
           <div class="da-hits-row">
           {#if (perks['Bomber Charge'] ?? 0) > 0 && selectedWA.name === 'Retaliate'}
@@ -4046,6 +4091,19 @@ $: _groupedSelfDamageSources = (() => {
                 ({_wildBoltElemIdx + 1}/{WILD_BOLT_ELEMENTS.length})
               </div>
               <div class="da-wb-line">Debuff (5s, 1 of 6): Bleed · Burn · Poison · Shatter · Slowness · Weakness</div>
+            </div>
+          {/if}
+          {#if _heatDrillActive}
+            <div class="da-wild-bolt-box" style="border-color:rgba(251,146,60,.3);background:rgba(251,146,60,.06)">
+              <div class="da-wb-row">
+                <span class="da-wb-header" style="color:#fb923c">Heat Drill ×{_heatDrillAmt}</span>
+              </div>
+              <div class="da-wb-line">CD: {HEAT_DRILL_COOLDOWN}s · Base DMG:</div>
+              <div class="da-wb-line" style="margin-left:8px">Lunge: {HEAT_DRILL_LUNGE_BASE} + {HEAT_DRILL_LUNGE_PER_STACK}×{_heatDrillAmt} = {fmtNum(HEAT_DRILL_LUNGE_BASE + HEAT_DRILL_LUNGE_PER_STACK * _heatDrillAmt)}</div>
+              <div class="da-wb-line" style="margin-left:8px">Explosion: {HEAT_DRILL_EXPLOSION_BASE} + {HEAT_DRILL_EXPLOSION_PER_STACK}×{_heatDrillAmt} = {fmtNum(HEAT_DRILL_EXPLOSION_BASE + HEAT_DRILL_EXPLOSION_PER_STACK * _heatDrillAmt)}</div>
+              <div class="da-wb-line" style="margin-left:8px">Small (×{HEAT_DRILL_SMALL_EXPLOSION_HITS}): {HEAT_DRILL_SMALL_EXPLOSION_BASE} + {HEAT_DRILL_SMALL_EXPLOSION_PER_STACK}×{_heatDrillAmt} = {fmtNum(HEAT_DRILL_SMALL_EXPLOSION_BASE + HEAT_DRILL_SMALL_EXPLOSION_PER_STACK * _heatDrillAmt)}</div>
+              <div class="da-wb-line">Lunge: Highest weapon type · Explosions: 0.5 Fire + 0.5 Air</div>
+              <div class="da-wb-line">Applies Burn</div>
             </div>
           {/if}
           </div>
@@ -4466,7 +4524,7 @@ $: _groupedSelfDamageSources = (() => {
     <div class="ds-wa-subsection">
       <div class="ds-wa-header">
         <Badge color="#4ade80">WA</Badge>
-        <span class="ds-wa-name">{selectedWA.name}</span>
+        <span class="ds-wa-name">{_waDisplayName}</span>
       </div>
       <div class="ds-table">
         <div class="ds-head">
@@ -5026,7 +5084,7 @@ $: _groupedSelfDamageSources = (() => {
     <div class="ds-wa-subsection" style="margin-top:12px">
       <div class="ds-wa-header">
         <Badge color="#4ade80">WA</Badge>
-        <span class="ds-wa-name" style="color:#4ade80">{selectedWA.name}</span>
+        <span class="ds-wa-name" style="color:#4ade80">{_waDisplayName}</span>
       </div>
       <div class="ds-table">
         <div class="ds-head">
