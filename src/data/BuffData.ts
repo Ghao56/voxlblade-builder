@@ -539,6 +539,14 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectUnit: 'flat',
     isNeutral: true,
   },
+  'Arrows': {
+    name: 'Arrows',
+    color: '#a78bfa',
+    description: 'Resource used for Bastion Ballista. Gain Arrows after not shooting them for a while.',
+    effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
+    effectUnit: 'flat',
+    isNeutral: true,
+  },
   'Sun Blessed': {
     name: 'Sun Blessed',
     color: '#fbbf24',
@@ -722,6 +730,17 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       duration: BOUNCE_MOMENTUM_DURATION_PER_AMOUNT * amount,
       condition: 'On jump while Bounce is active',
       sourceName: 'Bounce Momentum',
+      sourceType: 'perk',
+    },
+  ],
+
+  'Bastion Ballista': (amount) => [
+    {
+      buffName: 'Arrows',
+      potency: 50 * amount,
+      duration: 0,
+      condition: `Max Potency: ${50 * amount} · Restore after 12s without firing`,
+      sourceName: 'Bastion Ballista',
       sourceType: 'perk',
     },
   ],

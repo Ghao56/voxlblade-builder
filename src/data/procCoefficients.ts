@@ -48,20 +48,5 @@ export const WA_PROC_COEFFS: Record<string, ProcCoefficient> = {
   'Laser':     { type: 'hasCoeff', value: 1.0 },
 }
 
-/** Rune proc coefficients. User to provide values. */
-export const RUNE_PROC_COEFFS: Record<string, ProcCoefficient> = {
-  'Fireball':    { type: 'hasCoeff', value: 0.0 },
-}
-
-/** Perk-on-hit proc coefficients. User to provide values / adjust. */
-export const PERK_PROC_COEFFS: Record<string, ProcCoefficient> = {
-  'Springblast':     { type: 'hasCoeff', value: 1.0 },
-  'Luminescent':     { type: 'noProc' },
-  'Dragon State':    { type: 'hasCoeff', value: 1.0 },
-}
-
 /** Default fallback when a weapon/WA/rune is not found in the lookup tables. */
 export const DEFAULT_PROC_COEFF: ProcCoefficient = { type: 'hasCoeff', value: 1.0 }
-
-/** Default for incoming rune damage */
-export const DEFAULT_RUNE_PROC_COEFF: ProcCoefficient = { type: 'hasCoeff', value: 0.0 }

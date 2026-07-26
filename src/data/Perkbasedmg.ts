@@ -111,6 +111,12 @@ import {
   PYRE_BLOOM_MAX_ACTIVE_BASE,
   PYRE_BLOOM_MAX_ACTIVE_PER_STACK,
   PYRE_BLOOM_BURN_DURATION,
+  BASTION_BALLISTA_BASE_DMG,
+  BASTION_BALLISTA_DMG_PER_STACK,
+  BASTION_BALLISTA_MAX_POTENCY_BASE,
+  BASTION_BALLISTA_RESTORE_DELAY,
+  BASTION_BALLISTA_FIRE_COOLDOWN,
+  BASTION_BALLISTA_PROC_COEFF,
 } from '../lib/constants'
 
 export interface PerkDmgCtx {
@@ -147,12 +153,6 @@ export const DRAGON_STATE_HP_GATE: HpGate = {
   hpThreshold: 80,
   aboveThreshold: true,
   getThreshold: (perkAmount) => DRAGON_STATE_HP_BASE - DRAGON_STATE_HP_PER_STACK * perkAmount,
-}
-
-export const BELLOWING_EMBER_HP_GATE: HpGate = {
-  hpThreshold: BELLOWING_EMBER_HP_GATE_THRESHOLD,
-  aboveThreshold: false,
-  getThreshold: (perkAmount) => BELLOWING_EMBER_HP_GATE_THRESHOLD + BELLOWING_EMBER_HP_GATE_PER_STACK * (perkAmount - 1),
 }
 
 export interface SecondaryEffect {
@@ -236,6 +236,24 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     scalings: { physical: 1.0 },
     guardbreak: true,
     note: 'Activates on every finisher hit. Reduced chance to proc other effects. Deals high knockback. Half activations with Dual Guns or Storm Caster.',
+  },
+  // ── Bastion Ballista ─────────────────────────────────────────────────────
+  {
+    perkName: 'Bastion Ballista',
+    label: 'Bastion Ballista Arrow',
+    condition: 'On hit at range (Arrows resource)',
+    getBaseDamage: ({ perkAmount }) => BASTION_BALLISTA_BASE_DMG + BASTION_BALLISTA_DMG_PER_STACK * perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { earth: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { dexterity: 1.0, earth: 1.0 },
+    procCoefficient: { type: 'hasCoeff', value: BASTION_BALLISTA_PROC_COEFF },
+    secondaryEffects: [
+      { label: 'Max Arrows', getValue: ({ perkAmount }) => BASTION_BALLISTA_MAX_POTENCY_BASE * perkAmount, condition: 'Potency of Arrows resource', tone: 'utility' },
+      { label: 'Fire Cooldown', getValue: () => BASTION_BALLISTA_FIRE_COOLDOWN, condition: 'Between arrow activations (per enemy)', tone: 'utility' },
+      { label: 'Restore Delay', getValue: () => BASTION_BALLISTA_RESTORE_DELAY, format: (v) => `${v}s`, condition: 'Without firing to restore arrows', tone: 'utility' },
+    ],
+    note: 'Fires additional arrows the further from the target. Reduced proc chance (0.2). Arrows restore after 12s without firing.',
   },
   // ── Basic Spirit ───────────────────────────────────────────────────────────
   {
@@ -948,3 +966,17 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     note: `Activates on the hit that brings the enemy below 50% HP. ${DARK_HARVEST_COOLDOWN}s cooldown per enemy. Cannot be procced by attacks without a proc coefficient. Healing counts as lifesteal.`,
   },
 ]
+
+const _perkDmgDefMap = new Map<string, PerkDmgDef[]>()
+for (const def of PERK_DMG_DEFS) {
+  const arr = _perkDmgDefMap.get(def.perkName) ?? []
+  arr.push(def)
+  _perkDmgDefMap.set(def.perkName, arr)
+}
+
+export function findPerkDmgDef(perkName: string, label?: string): PerkDmgDef | undefined {
+  const defs = _perkDmgDefMap.get(perkName)
+  if (!defs) return undefined
+  if (label !== undefined) return defs.find(d => d.label === label)
+  return defs[0]
+}

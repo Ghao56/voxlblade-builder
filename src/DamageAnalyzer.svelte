@@ -12,7 +12,7 @@
   import { getDraconicInfusionBuff, getDraconicAbilityDebuffs, getEffectiveDraconicInfusionPotency, getDraconicInfusionPotMult, getDraconicInfusionDurMult } from './data/draconicBuffs'  
   import { WA_SUMMON_MAP, SUMMON_MAP, calcSummonStat, calcMaxSummonCount } from './data/SummonData'
   import CritIcon from './CritIcon.svelte'
-  import { PERK_DMG_DEFS, SECONDARY_TONE_COLORS, isHpGateActive, DRAGON_STATE_HP_GATE, calcSpringblastBaseDamage, calcBomberChargeBaseDamage, type TriggerChainEntry } from './data/Perkbasedmg'
+  import { PERK_DMG_DEFS, findPerkDmgDef, SECONDARY_TONE_COLORS, isHpGateActive, DRAGON_STATE_HP_GATE, calcSpringblastBaseDamage, calcBomberChargeBaseDamage, type TriggerChainEntry } from './data/Perkbasedmg'
   import { resolveDefenseSources, calcBaseArmorDefPct, DEF_GROUP, type DefenseSource } from './lib/defense'
   import { getActiveRaceEffect, getOrkTenacityBuffs, calcOrkTenacityBonus } from './data/raceEffects'
   import { getActiveDefensivePerkSources, calcDefensivePotencyMult } from './data/defensivePerks'
@@ -686,7 +686,7 @@ import {
     _hpFillPct,
     _dragonStateAmt
   )
-  $: _dragonStateDef = PERK_DMG_DEFS.find(d => d.perkName === 'Dragon State')
+  $: _dragonStateDef = findPerkDmgDef('Dragon State')
   $: _dragonStateBaseDmg = _dragonStateAmt > 0 && _dragonStateDef
     ? _dragonStateDef.getBaseDamage({ perkAmount: _dragonStateAmt })
     : 0
@@ -722,7 +722,7 @@ import {
   $: _blubBlubAmt = (perks['Blub Blub'] ?? 0) && !disabledEffects.has('blubBlub') ? perks['Blub Blub'] ?? 0 : 0
   $: _crushingPressureAmt = perks['Crushing Pressure'] ?? 0
   $: _echoIncinerationAmt = perks['Echo Incineration'] ?? 0
-  $: _echoIncinerationDef = PERK_DMG_DEFS.find(d => d.perkName === 'Echo Incineration')
+  $: _echoIncinerationDef = findPerkDmgDef('Echo Incineration')
   $: _echoIncinerationBaseDmg = (_echoIncinerationAmt > 0 && !disabledEffects.has('echoIncineration') && _echoIncinerationDef)
     ? _echoIncinerationDef.getBaseDamage({ perkAmount: _echoIncinerationAmt })
     : 0
@@ -730,7 +730,7 @@ import {
   $: _echoIncinerationScalingMult = _echoIncinerationAmt > 0 ? _computePerkScalingMult(_echoIncinerationScalings) : 1
 
   $: _bombardierAmt = perks['Bombardier'] ?? 0
-  $: _bombardierDef = _bombardierAmt > 0 ? PERK_DMG_DEFS.find(d => d.perkName === 'Bombardier') : undefined
+  $: _bombardierDef = _bombardierAmt > 0 ? findPerkDmgDef('Bombardier') : undefined
   $: _bombardierBaseDmg = (_bombardierAmt > 0 && !disabledEffects.has('bombardier') && _bombardierDef)
     ? _bombardierDef.getBaseDamage({ perkAmount: _bombardierAmt })
     : 0
@@ -738,7 +738,7 @@ import {
   $: _bombardierScalingMult = _bombardierAmt > 0 ? _computePerkScalingMult(_bombardierScalings) : 1
 
   $: _cauterizeAmt = (perks['Cauterize'] ?? 0)
-  $: _cauterizeDef = PERK_DMG_DEFS.find(d => d.perkName === 'Cauterize')
+  $: _cauterizeDef = findPerkDmgDef('Cauterize')
   $: _burnApplicationCount = getBurnApplicationCount([..._allActiveBuffs, ..._cauterizedAbilityDebuffs]) + (_hasSingedBurn && _echoIncinerationAmt > 0 ? 1 : 0)
   $: _cauterizeBurnPotency = (() => {
     let pot = perks['Burn Potency'] ?? 0
@@ -1292,6 +1292,23 @@ import {
   let draconicInfusionDisabled = false
   let disableCurseRip = false
   let disableReaper = false
+
+  const _boostCondDisableRules: Array<{ sourceName: string; test: () => boolean }> = [
+    { sourceName: 'Spirit Winds',   test: () => _effectiveTailwindPotency <= 0 },
+    { sourceName: 'Venom Eater',    test: () => !showCritValues || !_dummyHasPoisonActive },
+    { sourceName: 'Golden Crits',   test: () => !showCritValues },
+    { sourceName: 'Blood Thirsty',  test: () => !_dummyHasBleedActive },
+    { sourceName: 'Gelid Lance',    test: () => !_dummyHasBleedActive },
+    { sourceName: 'Gorecast',       test: () => !_dummyHasBleedActive },
+    { sourceName: 'Venom Spitter',  test: () => !_dummyHasPoisonActive },
+    { sourceName: 'Frostbite',      test: () => !_dummyHasSlowActive && !_dummyHasFrostbiteActive },
+  ]
+  function _isBoostCondDisabled(sourceName: string): boolean {
+    for (const rule of _boostCondDisableRules) {
+      if (rule.sourceName === sourceName && rule.test()) return true
+    }
+    return false
+  }
   type LightningCloakState = 'off' | 'third' | 'twoThirds'
   let lightningCloakState: LightningCloakState = 'third'
   let stormRendState: LightningCloakState = 'third'
@@ -1377,13 +1394,13 @@ import {
 
     return entries
   })()
-  $: activeEntries = [...boosts.dmgEntries.filter(e => !disabledBoosts.has(e.sourceName) && !(e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) && !(e.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)) && !(e.sourceName === 'Golden Crits' && !showCritValues) && !(e.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive) && !(e.sourceName === 'Gelid Lance' && !_dummyHasBleedActive) && !(e.sourceName === 'Gorecast' && !_dummyHasBleedActive) && !(e.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive) && !(e.sourceName === 'Frostbite' && !_dummyHasSlowActive && !_dummyHasFrostbiteActive) && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance' && e.sourceName !== 'Frenzy' && e.sourceName !== 'Dark One'), ..._syntheticDmgBoostEntries.filter(e => {
+  $: activeEntries = [...boosts.dmgEntries.filter(e => !disabledBoosts.has(e.sourceName) && !_isBoostCondDisabled(e.sourceName) && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance' && e.sourceName !== 'Frenzy' && e.sourceName !== 'Dark One'), ..._syntheticDmgBoostEntries.filter(e => {
     if (e.sourceName === 'Curse Rip' && disableCurseRip) return false
     if (e.sourceName === 'Reaper' && disableReaper) return false
     if (disabledBoosts.has(e.sourceName)) return false
     return true
   })]
-  $: hasDisabledVisible = boosts.dmgEntries.some(e => disabledBoosts.has(e.sourceName) || (e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (e.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive) || (e.sourceName === 'Gelid Lance' && !_dummyHasBleedActive) || (e.sourceName === 'Gorecast' && !_dummyHasBleedActive) || (e.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)) || (e.sourceName === 'Golden Crits' && !showCritValues) || (e.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive) || (e.sourceName === 'Frostbite' && !_dummyHasSlowActive && !_dummyHasFrostbiteActive)) || (_curseRipPerkAmount > 0 && disableCurseRip) || (_reaperPerkAmount > 0 && disableReaper) || ((perks['True Balance'] ?? 0) > 0 && disabledBoosts.has('True Balance')) || ((perks['Frenzy'] ?? 0) > 0 && disabledBoosts.has('Frenzy')) || (_sunburnAmt > 0 && disabledEffects.has('sunburn')) || (_mortalWillAmt > 0 && disabledEffects.has('mortalWill'))
+  $: hasDisabledVisible = boosts.dmgEntries.some(e => disabledBoosts.has(e.sourceName) || _isBoostCondDisabled(e.sourceName)) || (_curseRipPerkAmount > 0 && disableCurseRip) || (_reaperPerkAmount > 0 && disableReaper) || ((perks['True Balance'] ?? 0) > 0 && disabledBoosts.has('True Balance')) || ((perks['Frenzy'] ?? 0) > 0 && disabledBoosts.has('Frenzy')) || (_sunburnAmt > 0 && disabledEffects.has('sunburn')) || (_mortalWillAmt > 0 && disabledEffects.has('mortalWill'))
 
   $: _levelMult = (() => {
     const levelEntry = boosts.dmgEntries.find(e => e.sourceName === 'Level Damage')
@@ -1631,7 +1648,7 @@ import {
     const _color = _effDraconicColor
     if (!_color || (_color !== 'holy' && _color !== 'water')) return null
     
-    const healSe = (PERK_DMG_DEFS.find(d => d.perkName === 'Draconic Blood' && d.label === _draconicBloodEntry.displayName)
+    const healSe = (findPerkDmgDef('Draconic Blood', _draconicBloodEntry.displayName)
       ?.secondaryEffects ?? []).find(se =>
         (_color === 'holy'  && se.label === 'Base Heal (Holy)') ||
         (_color === 'water' && se.label === 'Base Heal (Water)')
@@ -1890,6 +1907,28 @@ import {
     })
   }
 
+  if (_heatDrillActive) {
+    return seq.map((h, i) => {
+      const base = typeof h === 'number' ? h : h.n
+      const count = typeof h === 'number' ? 1 : h.count
+      const dtFinal = i === 0
+        ? (() => {
+            const entries = Object.entries(_weaponDmgTypesBase)
+            const highestKey = entries.length > 0 ? entries.reduce((a, b) => b[1] > a[1] ? b : a)[0] : 'physical'
+            return applyAirToMagicConversion(_applyDmgBonuses({ [highestKey]: 1 }, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexBonus, _echoIncinerationAmt)
+          })()
+        : applyAirToMagicConversion(_applyDmgBonuses({ fire: 0.5, air: 0.5 }, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexBonus, _echoIncinerationAmt)
+      const types: DamageDisplayType[] = Object.entries(dtFinal).map(([k, mult]) => ({
+        label: k.charAt(0).toUpperCase() + k.slice(1),
+        rawVal: Math.round(base * 10000) / 10000,
+        val: Math.round(base * (mult as number) * 10000) / 10000,
+        scalingMult: _waScalingMult * _waCombatMult,
+        color: DMG_TYPE_COLORS[k] ?? '#e8e4da',
+      }))
+      return { base, count, types }
+    })
+  }
+
   return seqWithTypes(seq, _waDmgTypes, 1, 1, new Set(), 1)
 })()
 
@@ -1978,7 +2017,7 @@ import {
     }
   }
   $: _visibleDmgEntries = boosts.dmgEntries.filter(e =>
-    (e.sourceName !== 'Rider' || mountActive) && e.sourceName !== 'Frenzy' && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance' && e.sourceName !== 'Dark One' && !(e.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive) && !(e.sourceName === 'Gelid Lance' && !_dummyHasBleedActive) && !(e.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)) && !(e.sourceName === 'Golden Crits' && !showCritValues) && !(e.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive) && !(e.sourceName === 'Frostbite' && !_dummyHasSlowActive && !_dummyHasFrostbiteActive)
+    (e.sourceName !== 'Rider' || mountActive) && e.sourceName !== 'Frenzy' && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance' && e.sourceName !== 'Dark One' && !_isBoostCondDisabled(e.sourceName)
   ).map(e => {
     if (e.sourceName === 'Primal' && _critDisabledPerkNames.size > 0) {
       const stacks = perks['Primal'] ?? 0
@@ -2227,7 +2266,7 @@ import {
       if (!e.isActive) continue
       if (!e.isProcHit && e.perkName !== 'Springblast') continue
       if (e.perkName === 'Echo Incineration' || e.perkName === 'Bombardier') continue
-      const perkDef = PERK_DMG_DEFS.find(d => d.perkName === e.perkName)
+      const perkDef = findPerkDmgDef(e.perkName)
 
       const perkSunburnMult = _sunburnActive && _sunburnEnemyBurning
         ? ((e.resolvedDmgTypes.holy ?? 0) > 0 ? _sunburnHolyDmgMult : _sunburnUniversalDmgMult) : 1
@@ -2526,7 +2565,7 @@ import {
        // Check for heal effects from Draconic Blood abilities
        if (entry.perkName === 'Draconic Blood') {
           const _color = _effDraconicColor
-          const healSe = (PERK_DMG_DEFS.find(d => d.perkName === 'Draconic Blood' && d.label === entry.displayName)
+          const healSe = (findPerkDmgDef('Draconic Blood', entry.displayName)
             ?.secondaryEffects ?? []).find(se =>
               (_color === 'holy'  && se.label === 'Base Heal (Holy)') ||
               (_color === 'water' && se.label === 'Base Heal (Water)')
@@ -2553,7 +2592,7 @@ import {
 
        // Check for heal secondary effects (e.g. Dark Harvest)
        if (entry.perkName === 'Dark Harvest') {
-          const healSe = (PERK_DMG_DEFS.find(d => d.perkName === 'Dark Harvest')
+          const healSe = (findPerkDmgDef('Dark Harvest')
             ?.secondaryEffects ?? []).find(se => se.label === 'Heal')
           
           if (healSe) {
@@ -3130,14 +3169,9 @@ $: _groupedSelfDamageSources = (() => {
     {#if !_hasSpecificBoosts}
       <div class="da-boost-row">
         {#each [..._visibleDmgEntries, ..._syntheticDmgBoostEntries] as entry}
-          {@const _venomEaterDisabled = entry.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)}
-          {@const _bloodThirstyDisabled = entry.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive}
-          {@const _gelidLanceDisabled = entry.sourceName === 'Gelid Lance' && !_dummyHasBleedActive}
-          {@const _gorecastDisabled = entry.sourceName === 'Gorecast' && !_dummyHasBleedActive}
-          {@const _venomSpitterDisabled = entry.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive}
-          {@const _frostbiteDisabled = entry.sourceName === 'Frostbite' && !_dummyHasSlowActive && !_dummyHasFrostbiteActive}
-          {@const _goldenCritsDisabled = entry.sourceName === 'Golden Crits' && !showCritValues}
-          {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (entry.sourceName === 'Curse Rip' && disableCurseRip) || (entry.sourceName === 'Reaper' && disableReaper) || _venomEaterDisabled || _bloodThirstyDisabled || _gelidLanceDisabled || _gorecastDisabled || _venomSpitterDisabled || _frostbiteDisabled || _goldenCritsDisabled}
+          {@const _isCondDisabled = _isBoostCondDisabled(entry.sourceName)}
+          {@const _isCursedManual = (entry.sourceName === 'Curse Rip' && disableCurseRip) || (entry.sourceName === 'Reaper' && disableReaper)}
+          {@const disabled = disabledBoosts.has(entry.sourceName) || _isCondDisabled || _isCursedManual}
           {@const effectiveMultiplier = disabled ? 1 : entry.rawMultiplier}
           <button
             class="da-boost-chip"
@@ -3145,14 +3179,7 @@ $: _groupedSelfDamageSources = (() => {
             class:da-boost-chip--off={disabled}
             title={entry.condition ?? ''}
             on:click={() => {
-              if (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) return
-              if (_venomEaterDisabled) return
-              if (_bloodThirstyDisabled) return
-              if (_gelidLanceDisabled) return
-              if (_gorecastDisabled) return
-              if (_venomSpitterDisabled) return
-              if (_frostbiteDisabled) return
-              if (_goldenCritsDisabled) return
+              if (_isCondDisabled) return
               if (_critDisabledPerkNames.has(entry.sourceName)) return
               if (entry.sourceName === 'Curse Rip') disableCurseRip = !disableCurseRip
               else if (entry.sourceName === 'Reaper') disableReaper = !disableReaper
@@ -3179,28 +3206,16 @@ $: _groupedSelfDamageSources = (() => {
       <div class="da-boost-split">
         <div class="da-boost-universal">
           {#each _allUniversalChips as entry}
-            {@const _venomEaterDisabled = entry.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)}
-            {@const _bloodThirstyDisabled = entry.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive}
-            {@const _gelidLanceDisabled = entry.sourceName === 'Gelid Lance' && !_dummyHasBleedActive}
-            {@const _gorecastDisabled = entry.sourceName === 'Gorecast' && !_dummyHasBleedActive}
-            {@const _venomSpitterDisabled = entry.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive}
-            {@const _frostbiteDisabled = entry.sourceName === 'Frostbite' && !_dummyHasSlowActive && !_dummyHasFrostbiteActive}
-            {@const _goldenCritsDisabled = entry.sourceName === 'Golden Crits' && !showCritValues}
-            {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || (entry.sourceName === 'Curse Rip' && disableCurseRip) || (entry.sourceName === 'Reaper' && disableReaper) || _venomEaterDisabled || _bloodThirstyDisabled || _gelidLanceDisabled || _gorecastDisabled || _venomSpitterDisabled || _frostbiteDisabled || _goldenCritsDisabled}
+            {@const _isCondDisabled = _isBoostCondDisabled(entry.sourceName)}
+            {@const _isCursedManual = (entry.sourceName === 'Curse Rip' && disableCurseRip) || (entry.sourceName === 'Reaper' && disableReaper)}
+            {@const disabled = disabledBoosts.has(entry.sourceName) || _isCondDisabled || _isCursedManual}
             <button
               class="da-boost-chip"
               class:da-boost-chip--lvl={entry.sourceName === 'Level Damage'}
               class:da-boost-chip--off={disabled}
               title={entry.condition ?? ''}
               on:click={() => {
-                if (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) return
-                if (_venomEaterDisabled) return
-                if (_bloodThirstyDisabled) return
-                if (_gelidLanceDisabled) return
-                if (_gorecastDisabled) return
-                if (_venomSpitterDisabled) return
-                if (_frostbiteDisabled) return
-                if (_goldenCritsDisabled) return
+                if (_isCondDisabled) return
                 if (_critDisabledPerkNames.has(entry.sourceName)) return
                 if (entry.sourceName === 'Curse Rip') disableCurseRip = !disableCurseRip
                 else if (entry.sourceName === 'Reaper') disableReaper = !disableReaper
@@ -3229,19 +3244,13 @@ $: _groupedSelfDamageSources = (() => {
 
               {#if grp.allChips.length > 0}
                 {#each grp.allChips as entry}
-                  {@const _venomEaterDisabled = entry.sourceName === 'Venom Eater' && (!showCritValues || !_dummyHasPoisonActive)}
-                  {@const _bloodThirstyDisabled = entry.sourceName === 'Blood Thirsty' && !_dummyHasBleedActive}
-                  {@const _gelidLanceDisabled = entry.sourceName === 'Gelid Lance' && !_dummyHasBleedActive}
-                  {@const _gorecastDisabled = entry.sourceName === 'Gorecast' && !_dummyHasBleedActive}
-                  {@const _venomSpitterDisabled = entry.sourceName === 'Venom Spitter' && !_dummyHasPoisonActive}
-                  {@const _frostbiteDisabled = entry.sourceName === 'Frostbite' && !_dummyHasSlowActive && !_dummyHasFrostbiteActive}
-                  {@const _goldenCritsDisabled = entry.sourceName === 'Golden Crits' && !showCritValues}
-                  {@const disabled = disabledBoosts.has(entry.sourceName) || (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) || _venomEaterDisabled || _bloodThirstyDisabled || _gelidLanceDisabled || _gorecastDisabled || _venomSpitterDisabled || _frostbiteDisabled || _goldenCritsDisabled}
+                  {@const _isCondDisabled = _isBoostCondDisabled(entry.sourceName)}
+                  {@const disabled = disabledBoosts.has(entry.sourceName) || _isCondDisabled}
                   <button
                     class="da-boost-chip da-boost-chip--sm"
                     class:da-boost-chip--off={disabled}
                     title={entry.condition ?? ''}
-                    on:click={() => { if (entry.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0) return; if (_venomEaterDisabled) return; if (_bloodThirstyDisabled) return; if (_gelidLanceDisabled) return; if (_gorecastDisabled) return; if (_venomSpitterDisabled) return; if (_frostbiteDisabled) return; if (_goldenCritsDisabled) return; if (_critDisabledPerkNames.has(entry.sourceName)) return; toggleBoost(entry.sourceName) }}
+                    on:click={() => { if (_isCondDisabled) return; if (_critDisabledPerkNames.has(entry.sourceName)) return; toggleBoost(entry.sourceName) }}
                   >
                     <span class="da-bc-name">{entry.sourceName}</span>
                     <span class="da-bc-val">{disabled ? '—' : `×${+entry.rawMultiplier.toFixed(4)}`}</span>
@@ -4091,19 +4100,6 @@ $: _groupedSelfDamageSources = (() => {
                 ({_wildBoltElemIdx + 1}/{WILD_BOLT_ELEMENTS.length})
               </div>
               <div class="da-wb-line">Debuff (5s, 1 of 6): Bleed · Burn · Poison · Shatter · Slowness · Weakness</div>
-            </div>
-          {/if}
-          {#if _heatDrillActive}
-            <div class="da-wild-bolt-box" style="border-color:rgba(251,146,60,.3);background:rgba(251,146,60,.06)">
-              <div class="da-wb-row">
-                <span class="da-wb-header" style="color:#fb923c">Heat Drill ×{_heatDrillAmt}</span>
-              </div>
-              <div class="da-wb-line">CD: {HEAT_DRILL_COOLDOWN}s · Base DMG:</div>
-              <div class="da-wb-line" style="margin-left:8px">Lunge: {HEAT_DRILL_LUNGE_BASE} + {HEAT_DRILL_LUNGE_PER_STACK}×{_heatDrillAmt} = {fmtNum(HEAT_DRILL_LUNGE_BASE + HEAT_DRILL_LUNGE_PER_STACK * _heatDrillAmt)}</div>
-              <div class="da-wb-line" style="margin-left:8px">Explosion: {HEAT_DRILL_EXPLOSION_BASE} + {HEAT_DRILL_EXPLOSION_PER_STACK}×{_heatDrillAmt} = {fmtNum(HEAT_DRILL_EXPLOSION_BASE + HEAT_DRILL_EXPLOSION_PER_STACK * _heatDrillAmt)}</div>
-              <div class="da-wb-line" style="margin-left:8px">Small (×{HEAT_DRILL_SMALL_EXPLOSION_HITS}): {HEAT_DRILL_SMALL_EXPLOSION_BASE} + {HEAT_DRILL_SMALL_EXPLOSION_PER_STACK}×{_heatDrillAmt} = {fmtNum(HEAT_DRILL_SMALL_EXPLOSION_BASE + HEAT_DRILL_SMALL_EXPLOSION_PER_STACK * _heatDrillAmt)}</div>
-              <div class="da-wb-line">Lunge: Highest weapon type · Explosions: 0.5 Fire + 0.5 Air</div>
-              <div class="da-wb-line">Applies Burn</div>
             </div>
           {/if}
           </div>

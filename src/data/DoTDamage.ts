@@ -1,18 +1,8 @@
-import { DOT_BASE_DAMAGE, DOT_INFLICTION_DIVISOR, DOT_POTENCY_POWER_CAP, DOT_ROUND_FACTOR, DOT_BUILDER_TO_GAME, DOT_SLOW_MULT_PER_SECOND } from '../lib/constants/dot-damage'
+import { DOT_BASE_DAMAGE, DOT_INFLICTION_DIVISOR, DOT_POTENCY_POWER_CAP, DOT_ROUND_FACTOR, DOT_BUILDER_TO_GAME } from '../lib/constants/dot-damage'
 
 const DOT_TYPES = ['Bleed', 'Burn', 'Poison'] as const
 export type DotType = typeof DOT_TYPES[number]
 export const DOT_TYPE_LIST: ReadonlyArray<DotType> = DOT_TYPES
-
-export interface DotTickResult {
-  type: string
-  tickDamage: number
-  dotPotency?: number
-  inflictionPotency?: number
-  debuffName?: string
-  slowDuration?: number
-  baseTick?: number
-}
 
 /** Stat scalings per DoT type. Same format as weapon scalings. */
 export const DOT_SCALINGS: Record<string, Record<string, number>> = {
@@ -60,25 +50,6 @@ export function calcDotTick(
   const baseDmg = getDotBase(inflictionPotency)
   const mult = getDotPotencyMult(dotPotency)
   return Math.round(baseDmg * mult * DOT_ROUND_FACTOR) / DOT_ROUND_FACTOR
-}
-
-/**
- * Compute Caustic Slow damage.
- * Uses the same base DoT formula as calcDotTick but scales with Poison Potency
- * and gains a bonus multiplier when the enemy has the Slow debuff.
- *
- * @param poisonPotencyBuilder - builder-display Poison Potency (e.g. 5 → game 0.5)
- * @param slowDuration - total duration in seconds of the enemy's Slow debuff
- */
-export function calcCausticSlow(
-  poisonPotencyBuilder: number,
-  slowDuration: number,
-): { baseTick: number; tickDamage: number; slowMult: number } {
-  const inflictionPotency = poisonPotencyBuilder * DOT_BUILDER_TO_GAME
-  const baseTick = calcDotTick(inflictionPotency, inflictionPotency)
-  const slowMult = slowDuration > 0 ? 1 + slowDuration * DOT_SLOW_MULT_PER_SECOND : 1
-  const tickDamage = Math.round(baseTick * slowMult * DOT_ROUND_FACTOR) / DOT_ROUND_FACTOR
-  return { baseTick, tickDamage, slowMult }
 }
 
 /**

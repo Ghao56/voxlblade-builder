@@ -3,7 +3,7 @@ export interface EnemyHpGate {
   aboveThreshold: boolean
 }
 
-export function isEnemyHpGateActive(gate: EnemyHpGate, enemyHpFillPct: number): boolean {
+function isEnemyHpGateActive(gate: EnemyHpGate, enemyHpFillPct: number): boolean {
   return gate.aboveThreshold ? enemyHpFillPct > gate.hpThreshold : enemyHpFillPct <= gate.hpThreshold
 }
 
@@ -27,7 +27,7 @@ export interface EnemyHpEffectDef {
   dotBoost?: EnemyHpDotBoost
 }
 
-export const ENEMY_HP_EFFECT_DEFS: EnemyHpEffectDef[] = [
+const ENEMY_HP_EFFECT_DEFS: EnemyHpEffectDef[] = [
   {
     perkName: 'Mycotic Bloom',
     condition: 'Poisoned enemies above 50% HP',
