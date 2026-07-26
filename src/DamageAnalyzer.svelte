@@ -2539,7 +2539,7 @@ import {
       const _preColorBase = _rawBase
 
       result.push({
-        group: entry.perkName === 'Draconic Blood' ? 'Rune' : 'Perk',
+        group: entry.perkName === 'Draconic Blood' ? 'Rune' : entry.isWA ? 'WA' : entry.isRune ? 'Rune' : 'Perk',
         index: result.length,
         count: entry.perkName === 'Springblast' ? springblastFinisherHits : (entry.hits ?? 1),
         base: _preColorBase,
@@ -4331,8 +4331,8 @@ $: _groupedSelfDamageSources = (() => {
     {#each _groupedSelfDamageSources as group}
       {@const perkName = group.sources[0].def.perkName}
       {@const isMulti = group.sources.length > 1}
-      {@const selectedGroup = _selfDmgTab[perkName] ?? group.sources[0].group}
-      {@const activeSrc = isMulti ? group.sources.find(s => s.group === selectedGroup) ?? group.sources[0] : group.sources[0]}
+      {@const selectedLabel = _selfDmgTab[perkName] ?? group.sources[0].label}
+      {@const activeSrc = isMulti ? group.sources.find(s => s.label === selectedLabel) ?? group.sources[0] : group.sources[0]}
       <div class="da-pbd-card">
         <div class="da-pbd-head">
           <span class="da-pbd-name">{perkName}</span>
@@ -4341,12 +4341,13 @@ $: _groupedSelfDamageSources = (() => {
         {#if isMulti}
           <div class="da-pbd-badges">
             {#each group.sources as src}
+              {@const isActive = src.label === selectedLabel}
               <button
                 class="da-selfdmg-tab"
-                class:da-selfdmg-tab--active={src.group === selectedGroup}
-                style={src.group === selectedGroup && src.group === 'WA' ? 'color:#a78bfa;border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.1)' : src.group === selectedGroup && src.group === 'Rune' ? 'color:#38bdf8;border-color:rgba(56,189,248,.3);background:rgba(56,189,248,.1)' : ''}
-                on:click={() => { _selfDmgTab[perkName] = src.group }}
-              >{src.group}</button>
+                class:da-selfdmg-tab--active={isActive}
+                style={isActive && src.group === 'WA' ? 'color:#a78bfa;border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.1)' : isActive && src.group === 'Rune' ? 'color:#38bdf8;border-color:rgba(56,189,248,.3);background:rgba(56,189,248,.1)' : ''}
+                on:click={() => { _selfDmgTab[perkName] = src.label }}
+              >{src.label}</button>
             {/each}
           </div>
         {:else if activeSrc.group === 'Per Proc'}
@@ -4382,6 +4383,9 @@ $: _groupedSelfDamageSources = (() => {
         </div>
         {#if perkName === 'Dark Magic'}
           <div class="da-pbd-note">Self damage = 0.5% × {fmtNum(activeSrc.preBoostDmg)} pre-boost damage</div>
+        {/if}
+        {#if perkName === 'Undead Might'}
+          <div class="da-pbd-note">Activates on: {['Fiery Pursuit', 'Pyre Bloom', 'Apollo Boost', 'Mageling Spirit'].filter(p => (perks[p] ?? 0) > 0).join(', ') || 'none'}</div>
         {/if}
       </div>
     {/each}
