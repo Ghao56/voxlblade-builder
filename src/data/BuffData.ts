@@ -1318,6 +1318,16 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       sourceType: 'perk',
     },
   ],
+    'Frozen Waste': (amount) => [
+    {
+      buffName: 'Slowness',
+      potency: 1,
+      duration: 15,
+      condition: 'Upon blocking an attack',
+      sourceName: 'Frozen Waste',
+      sourceType: 'perk',
+    },
+  ],
 }
 
 const WEAPON_ART_BUFF_MAP: Record<string, GrantedBuff[]> = {
