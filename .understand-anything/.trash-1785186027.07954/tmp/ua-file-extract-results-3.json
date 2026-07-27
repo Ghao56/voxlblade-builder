@@ -1,0 +1,979 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 3,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "src/data/perkAutoDebuffs.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 274,
+      "nonEmptyLines": 251,
+      "functions": [
+        {
+          "name": "calcActualHpFillPct",
+          "startLine": 22,
+          "endLine": 31,
+          "params": [
+            "hpFill",
+            "level",
+            "protection"
+          ]
+        },
+        {
+          "name": "getAutoDebuffs",
+          "startLine": 33,
+          "endLine": 274,
+          "params": [
+            "input"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "calcActualHpFillPct",
+          "line": 22,
+          "isDefault": false
+        },
+        {
+          "name": "getAutoDebuffs",
+          "line": 33,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "calcActualHpFillPct",
+          "callee": "calcBaseMaxHP",
+          "lineNumber": 28
+        },
+        {
+          "caller": "calcActualHpFillPct",
+          "callee": "Math.max",
+          "lineNumber": 29
+        },
+        {
+          "caller": "calcActualHpFillPct",
+          "callee": "Math.round",
+          "lineNumber": 29
+        },
+        {
+          "caller": "calcActualHpFillPct",
+          "callee": "Math.round",
+          "lineNumber": 29
+        },
+        {
+          "caller": "calcActualHpFillPct",
+          "callee": "Math.min",
+          "lineNumber": 30
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "playerBuffNames.includes",
+          "lineNumber": 37
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 38
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "canProc",
+          "lineNumber": 39
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 42
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "calcActualHpFillPct",
+          "lineNumber": 54
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 55
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 56
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "dotDebuffs.some",
+          "lineNumber": 70
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 70
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 71
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 72
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 84
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 85
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 96
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 97
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 108
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 109
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 120
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 121
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 132
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 133
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "calcActualHpFillPct",
+          "lineNumber": 145
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 147
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 148
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 160
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 161
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 173
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.some",
+          "lineNumber": 173
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 174
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.some",
+          "lineNumber": 174
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 176
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 188
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 189
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "Math.round",
+          "lineNumber": 193
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "weakeningAmt.toFixed",
+          "lineNumber": 193
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 200
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 202
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 213
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 214
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 225
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 226
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 237
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 238
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "runicBladesAmt.toFixed",
+          "lineNumber": 242
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 249
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 250
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "hypnotistAmt.toFixed",
+          "lineNumber": 254
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "getActiveEnemyHpDebuffs",
+          "lineNumber": 260
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 262
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 263
+        }
+      ],
+      "metrics": {
+        "importCount": 7,
+        "exportCount": 2,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/constants/perk-base-damage.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 183,
+      "nonEmptyLines": 149,
+      "exports": [
+        {
+          "name": "DRAGON_CLAW_BASE_DAMAGE",
+          "line": 6,
+          "isDefault": false
+        },
+        {
+          "name": "DRAGON_CLAW_DAMAGE_PER_STACK",
+          "line": 7,
+          "isDefault": false
+        },
+        {
+          "name": "DRAGON_CLAW_HOLY_HEAL_BASE",
+          "line": 8,
+          "isDefault": false
+        },
+        {
+          "name": "DRAGON_CLAW_HOLY_HEAL_PER_STACK",
+          "line": 9,
+          "isDefault": false
+        },
+        {
+          "name": "DRAGON_CLAW_WATER_HEAL_BASE",
+          "line": 10,
+          "isDefault": false
+        },
+        {
+          "name": "DRAGON_CLAW_WATER_HEAL_PER_STACK",
+          "line": 11,
+          "isDefault": false
+        },
+        {
+          "name": "DRAGON_CLAW_POISE_DAMAGE",
+          "line": 12,
+          "isDefault": false
+        },
+        {
+          "name": "DRAGON_BUBBLE_BASE_DAMAGE",
+          "line": 15,
+          "isDefault": false
+        },
+        {
+          "name": "DRAGON_BUBBLE_DAMAGE_PER_STACK",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "DRAGON_BUBBLE_HOLY_HEAL_BASE",
+          "line": 17,
+          "isDefault": false
+        },
+        {
+          "name": "DRAGON_BUBBLE_HOLY_HEAL_PER_STACK",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "DRAGON_BUBBLE_WATER_HEAL_BASE",
+          "line": 19,
+          "isDefault": false
+        },
+        {
+          "name": "DRAGON_BUBBLE_WATER_HEAL_PER_STACK",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "DRAGON_BUBBLE_POISE_DAMAGE",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "SPRINGBLAST_BASE_HIT",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "SPRINGBLAST_PER_STACK_HIT",
+          "line": 25,
+          "isDefault": false
+        },
+        {
+          "name": "SPRINGBLAST_MULT_PER_STACK",
+          "line": 26,
+          "isDefault": false
+        },
+        {
+          "name": "SPRINGBLAST_DENOM_HALF",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "SPRINGBLAST_ROUND",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "BASIC_SPIRIT_BASE_DMG",
+          "line": 31,
+          "isDefault": false
+        },
+        {
+          "name": "BASIC_SPIRIT_HITS",
+          "line": 32,
+          "isDefault": false
+        },
+        {
+          "name": "BUNI_SPIRIT_BASE_DMG",
+          "line": 35,
+          "isDefault": false
+        },
+        {
+          "name": "BUNI_SPIRIT_HITS",
+          "line": 36,
+          "isDefault": false
+        },
+        {
+          "name": "MAGELING_SPIRIT_BASE_DMG",
+          "line": 39,
+          "isDefault": false
+        },
+        {
+          "name": "TOADZERKER_SPIRIT_BASE_DMG",
+          "line": 42,
+          "isDefault": false
+        },
+        {
+          "name": "DIRE_BUNI_SPIRIT_BASE_DMG",
+          "line": 45,
+          "isDefault": false
+        },
+        {
+          "name": "VOID_ROOT_SPIRIT_BASE_DMG",
+          "line": 48,
+          "isDefault": false
+        },
+        {
+          "name": "VOID_ROOT_SPIRIT_HITS",
+          "line": 49,
+          "isDefault": false
+        },
+        {
+          "name": "ROGUENT_SPIRIT_BASE_DMG",
+          "line": 52,
+          "isDefault": false
+        },
+        {
+          "name": "ROGUENT_SPIRIT_HITS",
+          "line": 53,
+          "isDefault": false
+        },
+        {
+          "name": "BOUNCE_MOMENTUM_BASE_DMG",
+          "line": 56,
+          "isDefault": false
+        },
+        {
+          "name": "BOUNCE_MOMENTUM_DMG_PER_STACK",
+          "line": 57,
+          "isDefault": false
+        },
+        {
+          "name": "PROTECTOR_SPIRIT_BASE_DMG",
+          "line": 60,
+          "isDefault": false
+        },
+        {
+          "name": "PROTECTOR_SPIRIT_DMG_PER_STACK",
+          "line": 61,
+          "isDefault": false
+        },
+        {
+          "name": "AIR_PRESSURE_DMG_PER_STACK",
+          "line": 64,
+          "isDefault": false
+        },
+        {
+          "name": "AIR_BARRIER_DMG_PER_STACK",
+          "line": 67,
+          "isDefault": false
+        },
+        {
+          "name": "ROARING_HEADS_BASE_DMG",
+          "line": 70,
+          "isDefault": false
+        },
+        {
+          "name": "ROARING_HEADS_DMG_PER_STACK",
+          "line": 71,
+          "isDefault": false
+        },
+        {
+          "name": "BARBED_FLURRY_BASE_DMG",
+          "line": 74,
+          "isDefault": false
+        },
+        {
+          "name": "BARBED_FLURRY_DMG_PER_STACK",
+          "line": 75,
+          "isDefault": false
+        },
+        {
+          "name": "HONEY_ARTS_BASE_DMG",
+          "line": 78,
+          "isDefault": false
+        },
+        {
+          "name": "HONEY_ARTS_DMG_PER_STACK",
+          "line": 79,
+          "isDefault": false
+        },
+        {
+          "name": "HONEY_ARTS_STICKY_DURATION",
+          "line": 80,
+          "isDefault": false
+        },
+        {
+          "name": "SICKNESS_BASE_DMG",
+          "line": 83,
+          "isDefault": false
+        },
+        {
+          "name": "SICKNESS_DMG_PER_STACK",
+          "line": 84,
+          "isDefault": false
+        },
+        {
+          "name": "MELTING_SLIME_BASE_DMG",
+          "line": 87,
+          "isDefault": false
+        },
+        {
+          "name": "MELTING_SLIME_FIRE_SCALE_BASE",
+          "line": 88,
+          "isDefault": false
+        },
+        {
+          "name": "MELTING_SLIME_FIRE_SCALE_PER_STACK",
+          "line": 89,
+          "isDefault": false
+        },
+        {
+          "name": "MELTING_SLIME_EARTH_SCALE_BASE",
+          "line": 90,
+          "isDefault": false
+        },
+        {
+          "name": "MELTING_SLIME_EARTH_SCALE_PER_STACK",
+          "line": 91,
+          "isDefault": false
+        },
+        {
+          "name": "WHIRLWIND_BASE_DMG",
+          "line": 94,
+          "isDefault": false
+        },
+        {
+          "name": "WHIRLWIND_DMG_PER_STACK",
+          "line": 95,
+          "isDefault": false
+        },
+        {
+          "name": "VOLATILE_SHELL_BASE_DMG",
+          "line": 98,
+          "isDefault": false
+        },
+        {
+          "name": "VOLATILE_SHELL_DMG_PER_STACK",
+          "line": 99,
+          "isDefault": false
+        },
+        {
+          "name": "VOLATILE_SHELL_POISON_DURATION",
+          "line": 100,
+          "isDefault": false
+        },
+        {
+          "name": "ROYAL_FINISHER_BASE_DMG",
+          "line": 103,
+          "isDefault": false
+        },
+        {
+          "name": "ROYAL_FINISHER_DMG_PER_STACK",
+          "line": 104,
+          "isDefault": false
+        },
+        {
+          "name": "GROUNDED_DESPAIR_BASE_DMG",
+          "line": 107,
+          "isDefault": false
+        },
+        {
+          "name": "GROUNDED_DESPAIR_DMG_PER_STACK",
+          "line": 108,
+          "isDefault": false
+        },
+        {
+          "name": "ECHO_INCINERATION_BASE_DMG",
+          "line": 111,
+          "isDefault": false
+        },
+        {
+          "name": "ECHO_INCINERATION_DMG_PER_STACK",
+          "line": 112,
+          "isDefault": false
+        },
+        {
+          "name": "VENOM_SPITTER_BASE_DMG",
+          "line": 115,
+          "isDefault": false
+        },
+        {
+          "name": "VENOM_SPITTER_DMG_PER_STACK",
+          "line": 116,
+          "isDefault": false
+        },
+        {
+          "name": "VENOM_SPITTER_HIT_DIVISOR",
+          "line": 117,
+          "isDefault": false
+        },
+        {
+          "name": "SPORE_BURST_POTENCY_MULT",
+          "line": 120,
+          "isDefault": false
+        },
+        {
+          "name": "SPORE_BURST_BASE",
+          "line": 121,
+          "isDefault": false
+        },
+        {
+          "name": "SPORE_BURST_ROUND",
+          "line": 122,
+          "isDefault": false
+        },
+        {
+          "name": "APOLLO_BOOST_BASE",
+          "line": 125,
+          "isDefault": false
+        },
+        {
+          "name": "APOLLO_BOOST_SUB_BASE",
+          "line": 126,
+          "isDefault": false
+        },
+        {
+          "name": "APOLLO_BOOST_PER_STACK",
+          "line": 127,
+          "isDefault": false
+        },
+        {
+          "name": "APOLLO_BOOST_HITS_BASE",
+          "line": 128,
+          "isDefault": false
+        },
+        {
+          "name": "APOLLO_BOOST_HITS_PER_STACK",
+          "line": 129,
+          "isDefault": false
+        },
+        {
+          "name": "APOLLO_BOOST_TAUNT_DURATION",
+          "line": 130,
+          "isDefault": false
+        },
+        {
+          "name": "BELLOWING_EMBER_HP_GATE_THRESHOLD",
+          "line": 133,
+          "isDefault": false
+        },
+        {
+          "name": "BELLOWING_EMBER_HP_GATE_PER_STACK",
+          "line": 134,
+          "isDefault": false
+        },
+        {
+          "name": "PROTECTOR_SPIRIT_HP_GATE",
+          "line": 135,
+          "isDefault": false
+        },
+        {
+          "name": "PROTECTOR_SPIRIT_ALWAYS_ACTIVE_AT",
+          "line": 136,
+          "isDefault": false
+        },
+        {
+          "name": "BOMBER_CHARGE_BASE",
+          "line": 139,
+          "isDefault": false
+        },
+        {
+          "name": "BOMBER_CHARGE_PCT_PER_STACK",
+          "line": 140,
+          "isDefault": false
+        },
+        {
+          "name": "BOMBER_CHARGE_MISSING_HP_MULT",
+          "line": 141,
+          "isDefault": false
+        },
+        {
+          "name": "BOMBER_CHARGE_MISSING_HP_CAP",
+          "line": 142,
+          "isDefault": false
+        },
+        {
+          "name": "DARK_HARVEST_BASE_DAMAGE",
+          "line": 145,
+          "isDefault": false
+        },
+        {
+          "name": "DARK_HARVEST_DAMAGE_PER_STACK",
+          "line": 146,
+          "isDefault": false
+        },
+        {
+          "name": "DARK_HARVEST_HP_GATE_THRESHOLD",
+          "line": 147,
+          "isDefault": false
+        },
+        {
+          "name": "DARK_HARVEST_HEAL_PER_STACK",
+          "line": 148,
+          "isDefault": false
+        },
+        {
+          "name": "DARK_HARVEST_COOLDOWN",
+          "line": 149,
+          "isDefault": false
+        },
+        {
+          "name": "PYRE_BLOOM_BASE_DMG",
+          "line": 152,
+          "isDefault": false
+        },
+        {
+          "name": "PYRE_BLOOM_DMG_PER_STACK",
+          "line": 153,
+          "isDefault": false
+        },
+        {
+          "name": "PYRE_BLOOM_CD_DMG_DIVISOR",
+          "line": 154,
+          "isDefault": false
+        },
+        {
+          "name": "PYRE_BLOOM_AMMO_BASE",
+          "line": 155,
+          "isDefault": false
+        },
+        {
+          "name": "PYRE_BLOOM_AMMO_PER_STACK",
+          "line": 156,
+          "isDefault": false
+        },
+        {
+          "name": "PYRE_BLOOM_AMMO_CD_DIVISOR",
+          "line": 157,
+          "isDefault": false
+        },
+        {
+          "name": "PYRE_BLOOM_AMMO_CD_SUBTRACT",
+          "line": 158,
+          "isDefault": false
+        },
+        {
+          "name": "PYRE_BLOOM_AMMO_MIN",
+          "line": 159,
+          "isDefault": false
+        },
+        {
+          "name": "PYRE_BLOOM_AMMO_MAX",
+          "line": 160,
+          "isDefault": false
+        },
+        {
+          "name": "PYRE_BLOOM_FIRERATE_DIVISOR",
+          "line": 161,
+          "isDefault": false
+        },
+        {
+          "name": "PYRE_BLOOM_MAX_ACTIVE_BASE",
+          "line": 162,
+          "isDefault": false
+        },
+        {
+          "name": "PYRE_BLOOM_MAX_ACTIVE_PER_STACK",
+          "line": 163,
+          "isDefault": false
+        },
+        {
+          "name": "PYRE_BLOOM_BURN_DURATION",
+          "line": 164,
+          "isDefault": false
+        },
+        {
+          "name": "BASTION_BALLISTA_BASE_DMG",
+          "line": 167,
+          "isDefault": false
+        },
+        {
+          "name": "BASTION_BALLISTA_DMG_PER_STACK",
+          "line": 168,
+          "isDefault": false
+        },
+        {
+          "name": "BASTION_BALLISTA_MAX_POTENCY_BASE",
+          "line": 169,
+          "isDefault": false
+        },
+        {
+          "name": "BASTION_BALLISTA_RESTORE_DELAY",
+          "line": 170,
+          "isDefault": false
+        },
+        {
+          "name": "BASTION_BALLISTA_FIRE_COOLDOWN",
+          "line": 171,
+          "isDefault": false
+        },
+        {
+          "name": "BASTION_BALLISTA_PROC_COEFF",
+          "line": 172,
+          "isDefault": false
+        },
+        {
+          "name": "RUNIC_BLADES_BASE_DMG",
+          "line": 175,
+          "isDefault": false
+        },
+        {
+          "name": "RUNIC_BLADES_DMG_PER_STACK",
+          "line": 176,
+          "isDefault": false
+        },
+        {
+          "name": "RUNIC_BLADES_DEBUFF_DURATION_PER_STACK",
+          "line": 177,
+          "isDefault": false
+        },
+        {
+          "name": "RUNIC_BLADES_INNER_COOLDOWN",
+          "line": 178,
+          "isDefault": false
+        },
+        {
+          "name": "GNAWING_POISON_BASE_DMG",
+          "line": 181,
+          "isDefault": false
+        },
+        {
+          "name": "GNAWING_POISON_DMG_PER_STACK",
+          "line": 182,
+          "isDefault": false
+        },
+        {
+          "name": "GNAWING_POISON_COOLDOWN",
+          "line": 183,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 112,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/constants/storage.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 41,
+      "nonEmptyLines": 36,
+      "exports": [
+        {
+          "name": "STORAGE_KEY_BUILD",
+          "line": 3,
+          "isDefault": false
+        },
+        {
+          "name": "STORAGE_KEY_DEFENSES",
+          "line": 4,
+          "isDefault": false
+        },
+        {
+          "name": "STORAGE_KEY_LEVEL",
+          "line": 5,
+          "isDefault": false
+        },
+        {
+          "name": "STORAGE_KEY_HP_FILL",
+          "line": 6,
+          "isDefault": false
+        },
+        {
+          "name": "STORAGE_KEY_SAVES",
+          "line": 7,
+          "isDefault": false
+        },
+        {
+          "name": "BUILD_STATE_DEFAULTS",
+          "line": 9,
+          "isDefault": false
+        },
+        {
+          "name": "SAVE_KEY_MAP",
+          "line": 22,
+          "isDefault": false
+        },
+        {
+          "name": "SAVE_KEY_UNMAP",
+          "line": 33,
+          "isDefault": false
+        },
+        {
+          "name": "ENCH_MAP",
+          "line": 35,
+          "isDefault": false
+        },
+        {
+          "name": "ENCH_UNMAP",
+          "line": 38,
+          "isDefault": false
+        },
+        {
+          "name": "MAX_BUILD_SLOTS",
+          "line": 40,
+          "isDefault": false
+        },
+        {
+          "name": "CONFIRM_TIMEOUT_MS",
+          "line": 41,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 12,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    }
+  ]
+}

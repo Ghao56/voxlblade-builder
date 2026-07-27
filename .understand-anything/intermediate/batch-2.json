@@ -1,408 +1,112 @@
 {
-  "nodes": [
-    {
-      "id": "file:src/data/BuffData.ts",
-      "type": "file",
-      "name": "BuffData.ts",
-      "filePath": "src/data/BuffData.ts",
-      "summary": "Core buff and debuff data module for the Voxel Blade damage calculator. Defines all buff/debuff definitions (BUFF_DEFS), item-sourced buffs (ITEM_BUFF_MAP), perk-sourced buff factories (PERK_BUFFS), weapon art buffs, and race buffs. Provides functions to assemble active buffs from a build, apply perk-based potency/duration modifiers (Bastion Bless, Trickster, Generic Debuff, Contained, Dark One), convert Tailwind to Whirlwind, compute True Balance conversions, generate dynamic buff descriptions, and calculate buff effects. Exports 15 symbols and contains 21 functions.",
-      "tags": ["data", "buffs", "debuffs", "game-mechanics", "perks", "build-optimizer"],
-      "complexity": "high"
-    },
-    {
-      "id": "function:src/data/BuffData.ts:formatDamageTypes",
-      "type": "function",
-      "name": "formatDamageTypes",
-      "summary": "Helper to format an array of damage type strings into a human-readable comma-separated list with 'and' before the last item.",
-      "tags": ["utility", "formatting"]
-    },
-    {
-      "id": "function:src/data/BuffData.ts:getWeaponArtBuffs",
-      "type": "function",
-      "name": "getWeaponArtBuffs",
-      "summary": "Looks up and returns the GrantedBuff array for a given weapon art name from the internal WEAPON_ART_BUFF_MAP.",
-      "tags": ["lookup", "weapon-art", "exported"]
-    },
-    {
-      "id": "function:src/data/BuffData.ts:getTrueBalanceBuffs",
-      "type": "function",
-      "name": "getTrueBalanceBuffs",
-      "summary": "Computes True Balance buff conversions: maps active enemy debuffs (Bleed, Burn, Poison -> Regen; Frostbite, Slowness, Sticky -> Tailwind; Shatter, Electrical Rend, Hypnotized -> Reinforce; Weakness -> Rage; Despair -> Inspired) based on perk amount, grouping by target buff and taking max potency/duration.",
-      "tags": ["perk-calculation", "buff-conversion", "exported"]
-    },
-    {
-      "id": "function:src/data/BuffData.ts:durationMultFromStack",
-      "type": "function",
-      "name": "durationMultFromStack",
-      "summary": "Factory that returns a function computing duration multiplier from stack count: base + perStack * stacks.",
-      "tags": ["utility", "math"]
-    },
-    {
-      "id": "function:src/data/BuffData.ts:getSpecificBuffModifiers",
-      "type": "function",
-      "name": "getSpecificBuffModifiers",
-      "summary": "Computes per-buff potency bonus and duration multiplier from specific modifiers (Gladiatorial Rage, Mage Rage, Oceans Rage, Slayer Rage, Fury, Iron Slayer, Tailwind, Wind Walker, Slow Leak, Potion Chugger, Bounce Momentum). Filters by rune source and self-debuff eligibility.",
-      "tags": ["modifier-calculation", "buff-modifiers"]
-    },
-    {
-      "id": "function:src/data/BuffData.ts:getBastionBlessBonus",
-      "type": "function",
-      "name": "getBastionBlessBonus",
-      "summary": "Computes Bastion Bless potency bonus for non-debuff, non-neutral, non-self-debuff, non-capped buffs as BASTION_BLESS_MULT * stacks * potency.",
-      "tags": ["modifier-calculation", "perk-specific"]
-    },
-    {
-      "id": "function:src/data/BuffData.ts:getGenericDebuffModifiers",
-      "type": "function",
-      "name": "getGenericDebuffModifiers",
-      "summary": "Computes generic debuff modifiers (Endless Despair, Stored Corruption) for enemy debuffs: potency multiplier, flat bonus, and duration multiplier. Excludes self-debuffs except Despair.",
-      "tags": ["modifier-calculation", "debuff-modifiers"]
-    },
-    {
-      "id": "function:src/data/BuffData.ts:getTricksterReflection",
-      "type": "function",
-      "name": "getTricksterReflection",
-      "summary": "Calculates Trickster reflection bonus for self-applied Despair debuffs: (tricksterStacks / 10) * (1 + warding-adjusted potency), compensating for post-hoc Warding multiplication.",
-      "tags": ["modifier-calculation", "perk-specific"]
-    },
-    {
-      "id": "function:src/data/BuffData.ts:applyBuffPerkModifiers",
-      "type": "function",
-      "name": "applyBuffPerkModifiers",
-      "summary": "Main buff modification pipeline. For each buff, computes and merges specific modifiers, Bastion Bless bonus, Trickster reflection, generic debuff modifiers, Contained multiplier, and Dark One duration multiplier. Returns new buff arrays with adjusted potency and duration.",
-      "tags": ["core-pipeline", "modifier-application", "exported"]
-    },
-    {
-      "id": "function:src/data/BuffData.ts:applyToxinTransferDuration",
-      "type": "function",
-      "name": "applyToxinTransferDuration",
-      "summary": "Adjusts Toxin Transfer poison buff duration to match the maximum self-poison duration plus TOXIN_TRANSFER_DURATION_EXTRA.",
-      "tags": ["modifier-application", "exported"]
-    },
-    {
-      "id": "function:src/data/BuffData.ts:convertTailwindToWhirlwind",
-      "type": "function",
-      "name": "convertTailwindToWhirlwind",
-      "summary": "Converts all Tailwind buffs to Whirlwind with scaled duration when Whirlwind perk is active. Also adds a 5s Bleed from the wind slash AoE.",
-      "tags": ["buff-conversion", "exported"]
-    },
-    {
-      "id": "function:src/data/BuffData.ts:getBuffDescription",
-      "type": "function",
-      "name": "getBuffDescription",
-      "summary": "Generates a human-readable description for a buff by name, using dynamicDescription if available or static description. Special-cases Weakness (dmg reduction), Shatter (armor loss), and Anti Heal (healing reduction). Replaces 'x%' placeholders with computed values.",
-      "tags": ["ui-support", "description-generation", "exported"]
-    },
-    {
-      "id": "function:src/data/BuffData.ts:getPerkBuffs",
-      "type": "function",
-      "name": "getPerkBuffs",
-      "summary": "Iterates over all perks with amount > 0, calls their PERK_BUFFS factory functions, and collects the resulting GrantedBuff arrays.",
-      "tags": ["buff-assembly", "exported"]
-    },
-    {
-      "id": "function:src/data/BuffData.ts:getActiveBuildBuffs",
-      "type": "function",
-      "name": "getActiveBuildBuffs",
-      "summary": "Collects all buffs from a build's equipment slots (rune, ring, infusion ring, helmet, chestplate, leggings, weapon blade, weapon handle, monk glove) by looking up each item in BUFFS_BY_ITEM_SOURCE, plus race buffs.",
-      "tags": ["buff-assembly", "exported"]
-    },
-    {
-      "id": "function:src/data/BuffData.ts:getRaceBuffs",
-      "type": "function",
-      "name": "getRaceBuffs",
-      "summary": "Returns race-specific buffs from RACE_BUFF_MAP (BUNIKIN critical boost on dodge, DARK ELF random debuff pool on hit).",
-      "tags": ["lookup", "race-buffs"]
-    },
-    {
-      "id": "function:src/data/BuffData.ts:applyCauterizeConversion",
-      "type": "function",
-      "name": "applyCauterizeConversion",
-      "summary": "When Cauterize perk is active and Cursed Flames is not, marks all enemy-applied Burn entries with burnMode 'singed' to trigger burst-on-application instead of DoT.",
-      "tags": ["modifier-application", "exported"]
-    },
-    {
-      "id": "function:src/data/BuffData.ts:getBurnApplicationCount",
-      "type": "function",
-      "name": "getBurnApplicationCount",
-      "summary": "Returns the count of Burn buff entries in the buff list, used to multiply Cauterize/Singed burst damage.",
-      "tags": ["utility", "exported"]
-    },
-    {
-      "id": "function:src/data/BuffData.ts:assembleActiveBuffs",
-      "type": "function",
-      "name": "assembleActiveBuffs",
-      "summary": "Main assembly pipeline: collects item buffs + potion buffs + perk buffs + weapon art buffs, applies applyBuffPerkModifiers, convertTailwindToWhirlwind, and applyCauterizeConversion. Shared helper for the damage calculation engine.",
-      "tags": ["core-pipeline", "assembly", "exported"]
-    },
-    {
-      "id": "function:src/data/BuffData.ts:calcBuffEffect",
-      "type": "function",
-      "name": "calcBuffEffect",
-      "summary": "Computes the effect value for a buff at a given potency: effectPerTenthPotency * potency * 10. Returns value, unit ('%' or 'flat'), and a formatted label string.",
-      "tags": ["calculation", "exported"]
-    },
-    {
-      "id": "function:src/data/BuffData.ts:calcPotencyPercent",
-      "type": "function",
-      "name": "calcPotencyPercent",
-      "summary": "Computes a scaled potency percentage from perk amount using the formula: floor(p^min(1,p)+1 * 100 * (1 + p/1.5) * 100) / 100, used for perk description formatting.",
-      "tags": ["calculation", "utility"]
-    },
-    {
-      "id": "function:src/data/BuffData.ts:formatPerkDescription",
-      "type": "function",
-      "name": "formatPerkDescription",
-      "summary": "Replaces 'x%' placeholders in a perk description with the computed potency percentage from calcPotencyPercent.",
-      "tags": ["ui-support", "formatting", "exported"]
-    }
-  ],
-  "edges": [
-    {
-      "source": "file:src/data/BuffData.ts",
-      "target": "src/lib/constants.ts",
-      "type": "imports",
-      "weight": 0.7
-    },
-    {
-      "source": "file:src/data/BuffData.ts",
-      "target": "src/lib/constants/buffs.ts",
-      "type": "imports",
-      "weight": 0.7
-    },
-    {
-      "source": "file:src/data/BuffData.ts",
-      "target": "src/lib/utils.ts",
-      "type": "imports",
-      "weight": 0.7
-    },
-    {
-      "source": "file:src/data/BuffData.ts",
-      "target": "src/data/draconicBuffs.ts",
-      "type": "depends_on",
-      "weight": 0.6
-    },
-    {
-      "source": "file:src/data/BuffData.ts",
-      "target": "src/data/perkAutoDebuffs.ts",
-      "type": "depends_on",
-      "weight": 0.6
-    },
-    {
-      "source": "file:src/data/BuffData.ts",
-      "target": "src/data/TypedDmgBoost.ts",
-      "type": "depends_on",
-      "weight": 0.6
-    },
-    {
-      "source": "file:src/data/BuffData.ts",
-      "target": "src/lib/engine/build.ts",
-      "type": "depends_on",
-      "weight": 0.6
-    },
-    {
-      "source": "file:src/data/BuffData.ts",
-      "target": "function:src/data/BuffData.ts:formatDamageTypes",
-      "type": "contains",
-      "weight": 1.0
-    },
-    {
-      "source": "file:src/data/BuffData.ts",
-      "target": "function:src/data/BuffData.ts:getWeaponArtBuffs",
-      "type": "contains",
-      "weight": 1.0
-    },
-    {
-      "source": "file:src/data/BuffData.ts",
-      "target": "function:src/data/BuffData.ts:getTrueBalanceBuffs",
-      "type": "contains",
-      "weight": 1.0
-    },
-    {
-      "source": "file:src/data/BuffData.ts",
-      "target": "function:src/data/BuffData.ts:durationMultFromStack",
-      "type": "contains",
-      "weight": 1.0
-    },
-    {
-      "source": "file:src/data/BuffData.ts",
-      "target": "function:src/data/BuffData.ts:getSpecificBuffModifiers",
-      "type": "contains",
-      "weight": 1.0
-    },
-    {
-      "source": "file:src/data/BuffData.ts",
-      "target": "function:src/data/BuffData.ts:getBastionBlessBonus",
-      "type": "contains",
-      "weight": 1.0
-    },
-    {
-      "source": "file:src/data/BuffData.ts",
-      "target": "function:src/data/BuffData.ts:getGenericDebuffModifiers",
-      "type": "contains",
-      "weight": 1.0
-    },
-    {
-      "source": "file:src/data/BuffData.ts",
-      "target": "function:src/data/BuffData.ts:getTricksterReflection",
-      "type": "contains",
-      "weight": 1.0
-    },
-    {
-      "source": "file:src/data/BuffData.ts",
-      "target": "function:src/data/BuffData.ts:applyBuffPerkModifiers",
-      "type": "contains",
-      "weight": 1.0
-    },
-    {
-      "source": "file:src/data/BuffData.ts",
-      "target": "function:src/data/BuffData.ts:applyToxinTransferDuration",
-      "type": "contains",
-      "weight": 1.0
-    },
-    {
-      "source": "file:src/data/BuffData.ts",
-      "target": "function:src/data/BuffData.ts:convertTailwindToWhirlwind",
-      "type": "contains",
-      "weight": 1.0
-    },
-    {
-      "source": "file:src/data/BuffData.ts",
-      "target": "function:src/data/BuffData.ts:getBuffDescription",
-      "type": "contains",
-      "weight": 1.0
-    },
-    {
-      "source": "file:src/data/BuffData.ts",
-      "target": "function:src/data/BuffData.ts:getPerkBuffs",
-      "type": "contains",
-      "weight": 1.0
-    },
-    {
-      "source": "file:src/data/BuffData.ts",
-      "target": "function:src/data/BuffData.ts:getActiveBuildBuffs",
-      "type": "contains",
-      "weight": 1.0
-    },
-    {
-      "source": "file:src/data/BuffData.ts",
-      "target": "function:src/data/BuffData.ts:getRaceBuffs",
-      "type": "contains",
-      "weight": 1.0
-    },
-    {
-      "source": "file:src/data/BuffData.ts",
-      "target": "function:src/data/BuffData.ts:applyCauterizeConversion",
-      "type": "contains",
-      "weight": 1.0
-    },
-    {
-      "source": "file:src/data/BuffData.ts",
-      "target": "function:src/data/BuffData.ts:getBurnApplicationCount",
-      "type": "contains",
-      "weight": 1.0
-    },
-    {
-      "source": "file:src/data/BuffData.ts",
-      "target": "function:src/data/BuffData.ts:assembleActiveBuffs",
-      "type": "contains",
-      "weight": 1.0
-    },
-    {
-      "source": "file:src/data/BuffData.ts",
-      "target": "function:src/data/BuffData.ts:calcBuffEffect",
-      "type": "contains",
-      "weight": 1.0
-    },
-    {
-      "source": "file:src/data/BuffData.ts",
-      "target": "function:src/data/BuffData.ts:calcPotencyPercent",
-      "type": "contains",
-      "weight": 1.0
-    },
-    {
-      "source": "file:src/data/BuffData.ts",
-      "target": "function:src/data/BuffData.ts:formatPerkDescription",
-      "type": "contains",
-      "weight": 1.0
-    },
-    {
-      "source": "function:src/data/BuffData.ts:applyBuffPerkModifiers",
-      "target": "function:src/data/BuffData.ts:getSpecificBuffModifiers",
-      "type": "calls",
-      "weight": 0.8
-    },
-    {
-      "source": "function:src/data/BuffData.ts:applyBuffPerkModifiers",
-      "target": "function:src/data/BuffData.ts:getBastionBlessBonus",
-      "type": "calls",
-      "weight": 0.8
-    },
-    {
-      "source": "function:src/data/BuffData.ts:applyBuffPerkModifiers",
-      "target": "function:src/data/BuffData.ts:getTricksterReflection",
-      "type": "calls",
-      "weight": 0.8
-    },
-    {
-      "source": "function:src/data/BuffData.ts:applyBuffPerkModifiers",
-      "target": "function:src/data/BuffData.ts:getGenericDebuffModifiers",
-      "type": "calls",
-      "weight": 0.8
-    },
-    {
-      "source": "function:src/data/BuffData.ts:getBuffDescription",
-      "target": "function:src/data/BuffData.ts:calcBuffEffect",
-      "type": "calls",
-      "weight": 0.8
-    },
-    {
-      "source": "function:src/data/BuffData.ts:getActiveBuildBuffs",
-      "target": "function:src/data/BuffData.ts:getRaceBuffs",
-      "type": "calls",
-      "weight": 0.8
-    },
-    {
-      "source": "function:src/data/BuffData.ts:assembleActiveBuffs",
-      "target": "function:src/data/BuffData.ts:getActiveBuildBuffs",
-      "type": "calls",
-      "weight": 0.8
-    },
-    {
-      "source": "function:src/data/BuffData.ts:assembleActiveBuffs",
-      "target": "function:src/data/BuffData.ts:getPerkBuffs",
-      "type": "calls",
-      "weight": 0.8
-    },
-    {
-      "source": "function:src/data/BuffData.ts:assembleActiveBuffs",
-      "target": "function:src/data/BuffData.ts:getWeaponArtBuffs",
-      "type": "calls",
-      "weight": 0.8
-    },
-    {
-      "source": "function:src/data/BuffData.ts:assembleActiveBuffs",
-      "target": "function:src/data/BuffData.ts:applyBuffPerkModifiers",
-      "type": "calls",
-      "weight": 0.8
-    },
-    {
-      "source": "function:src/data/BuffData.ts:assembleActiveBuffs",
-      "target": "function:src/data/BuffData.ts:convertTailwindToWhirlwind",
-      "type": "calls",
-      "weight": 0.8
-    },
-    {
-      "source": "function:src/data/BuffData.ts:assembleActiveBuffs",
-      "target": "function:src/data/BuffData.ts:applyCauterizeConversion",
-      "type": "calls",
-      "weight": 0.8
-    },
-    {
-      "source": "function:src/data/BuffData.ts:formatPerkDescription",
-      "target": "function:src/data/BuffData.ts:calcPotencyPercent",
-      "type": "calls",
-      "weight": 0.8
-    }
-  ]
+    "edges":  [
+                  {
+                      "target":  "file:src/data/DoTDamage.ts",
+                      "direction":  "forward",
+                      "source":  "file:src/data/Perkbasedmg.ts",
+                      "type":  "imports",
+                      "weight":  0.7
+                  },
+                  {
+                      "target":  "file:src/data/draconicColorEffects.ts",
+                      "direction":  "forward",
+                      "source":  "file:src/data/Perkbasedmg.ts",
+                      "type":  "imports",
+                      "weight":  0.7
+                  },
+                  {
+                      "target":  "file:src/lib/constants.ts",
+                      "direction":  "forward",
+                      "source":  "file:src/data/Perkbasedmg.ts",
+                      "type":  "imports",
+                      "weight":  0.7
+                  },
+                  {
+                      "target":  "file:src/lib/types.ts",
+                      "direction":  "forward",
+                      "source":  "file:src/data/Perkbasedmg.ts",
+                      "type":  "imports",
+                      "weight":  0.7
+                  },
+                  {
+                      "target":  "function:src/data/Perkbasedmg.ts:calcSpringblastBaseDamage",
+                      "direction":  "forward",
+                      "source":  "file:src/data/Perkbasedmg.ts",
+                      "type":  "contains",
+                      "weight":  1
+                  },
+                  {
+                      "target":  "function:src/data/Perkbasedmg.ts:calcBomberChargeBaseDamage",
+                      "direction":  "forward",
+                      "source":  "file:src/data/Perkbasedmg.ts",
+                      "type":  "contains",
+                      "weight":  1
+                  },
+                  {
+                      "target":  "function:src/data/Perkbasedmg.ts:calcSpringblastBaseDamage",
+                      "direction":  "forward",
+                      "source":  "file:src/data/Perkbasedmg.ts",
+                      "type":  "exports",
+                      "weight":  0.8
+                  },
+                  {
+                      "target":  "function:src/data/Perkbasedmg.ts:calcBomberChargeBaseDamage",
+                      "direction":  "forward",
+                      "source":  "file:src/data/Perkbasedmg.ts",
+                      "type":  "exports",
+                      "weight":  0.8
+                  }
+              ],
+    "nodes":  [
+                  {
+                      "languageNotes":  "TypeScript file with complex damage calculation logic and multiple conditional branches for different damage types.",
+                      "id":  "file:src/data/Perkbasedmg.ts",
+                      "filePath":  "src/data/Perkbasedmg.ts",
+                      "tags":  [
+                                   "data",
+                                   "damage",
+                                   "perks",
+                                   "game-mechanics",
+                                   "calculations"
+                               ],
+                      "name":  "Perkbasedmg.ts",
+                      "type":  "file",
+                      "complexity":  "complex",
+                      "summary":  "Defines perk-based damage calculations including base damage definitions, perk damage multipliers, and special ability damage calculations for various game mechanics."
+                  },
+                  {
+                      "id":  "function:src/data/Perkbasedmg.ts:calcSpringblastBaseDamage",
+                      "filePath":  "src/data/Perkbasedmg.ts",
+                      "tags":  [
+                                   "function",
+                                   "damage-calculation",
+                                   "ability"
+                               ],
+                      "name":  "calcSpringblastBaseDamage",
+                      "type":  "function",
+                      "complexity":  "moderate",
+                      "summary":  "Calculates base damage for the Springblast ability based on stack count and other modifiers.",
+                      "lineRange":  [
+                                        100,
+                                        150
+                                    ]
+                  },
+                  {
+                      "id":  "function:src/data/Perkbasedmg.ts:calcBomberChargeBaseDamage",
+                      "filePath":  "src/data/Perkbasedmg.ts",
+                      "tags":  [
+                                   "function",
+                                   "damage-calculation",
+                                   "ability"
+                               ],
+                      "name":  "calcBomberChargeBaseDamage",
+                      "type":  "function",
+                      "complexity":  "moderate",
+                      "summary":  "Calculates base damage for the Bomber Charge ability based on missing HP percentage and stack count.",
+                      "lineRange":  [
+                                        150,
+                                        200
+                                    ]
+                  }
+              ]
 }

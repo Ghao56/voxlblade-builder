@@ -1,0 +1,52 @@
+{
+    "projectRoot":  "C:\\Users\\Administrator\\Downloads\\voxlblade-builder",
+    "batchImportData":  {
+                            "src/lib/constants/boosts.ts":  [
+
+                                                            ],
+                            "src/App.svelte":  [
+
+                                               ],
+                            "src/BuffList.svelte":  [
+
+                                                    ],
+                            "src/DamageAnalyzer.svelte":  [
+
+                                                          ],
+                            "src/BaseDamageCalc.svelte":  [
+
+                                                          ]
+                        },
+    "batchFiles":  [
+                       {
+                           "fileCategory":  "code",
+                           "path":  "src/App.svelte",
+                           "language":  "svelte",
+                           "sizeLines":  4328
+                       },
+                       {
+                           "fileCategory":  "code",
+                           "path":  "src/BaseDamageCalc.svelte",
+                           "language":  "svelte",
+                           "sizeLines":  2659
+                       },
+                       {
+                           "fileCategory":  "code",
+                           "path":  "src/BuffList.svelte",
+                           "language":  "svelte",
+                           "sizeLines":  758
+                       },
+                       {
+                           "fileCategory":  "code",
+                           "path":  "src/DamageAnalyzer.svelte",
+                           "language":  "svelte",
+                           "sizeLines":  7015
+                       },
+                       {
+                           "fileCategory":  "code",
+                           "path":  "src/lib/constants/boosts.ts",
+                           "language":  "typescript",
+                           "sizeLines":  58
+                       }
+                   ]
+}

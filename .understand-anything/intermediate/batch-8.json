@@ -1,24 +1,21 @@
 {
-  "nodes": [
-    {
-      "id": "file:stats.html",
-      "type": "file",
-      "name": "stats.html",
-      "filePath": "stats.html",
-      "summary": "Generated Rollup Visualizer HTML output (4950 lines). Contains inline CSS for treemap UI, a bundled Preact-based drawChart library, D3 scale modules (linear, sequential, etc.), and embedded JSON bundle data listing all source modules with sizes. Serves as a self-contained bundle size analysis report for the voxlblade-builder project.",
-      "tags": ["generated", "build-output", "visualization", "rollup", "treemap", "markup"],
-      "complexity": "low",
-      "lineCount": 4950,
-      "fileCategory": "markup"
-    }
-  ],
-  "edges": [
-    {
-      "source": "file:stats.html",
-      "target": "file:stats.html",
-      "type": "contains",
-      "weight": 1.0,
-      "label": "Contains embedded Preact, D3 scales, and drawChart visualization logic"
-    }
-  ]
+    "edges":  [
+
+              ],
+    "nodes":  [
+                  {
+                      "id":  "file:stats.html",
+                      "name":  "stats.html",
+                      "tags":  [
+                                   "build",
+                                   "analysis",
+                                   "visualization",
+                                   "development"
+                               ],
+                      "complexity":  "simple",
+                      "filePath":  "stats.html",
+                      "type":  "file",
+                      "summary":  "HTML page for displaying Vite bundle analysis and build statistics using rollup-plugin-visualizer."
+                  }
+              ]
 }

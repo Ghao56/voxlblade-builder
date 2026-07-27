@@ -214,7 +214,10 @@
       "HEAT_DRILL_EXPLOSION_PER_STACK",
       "HEAT_DRILL_SMALL_EXPLOSION_BASE",
       "HEAT_DRILL_SMALL_EXPLOSION_PER_STACK",
-      "HEAT_DRILL_SMALL_EXPLOSION_HITS"
+      "HEAT_DRILL_SMALL_EXPLOSION_HITS",
+      "ESSENCE_RAY_BASE",
+      "ESSENCE_RAY_PER_STACK",
+      "ESSENCE_RAY_HITS"
     ],
     "src/lib/constants/buffs.ts": [
       "RAGE_POTION_POTENCY",
@@ -561,7 +564,14 @@
       "BASTION_BALLISTA_MAX_POTENCY_BASE",
       "BASTION_BALLISTA_RESTORE_DELAY",
       "BASTION_BALLISTA_FIRE_COOLDOWN",
-      "BASTION_BALLISTA_PROC_COEFF"
+      "BASTION_BALLISTA_PROC_COEFF",
+      "RUNIC_BLADES_BASE_DMG",
+      "RUNIC_BLADES_DMG_PER_STACK",
+      "RUNIC_BLADES_DEBUFF_DURATION_PER_STACK",
+      "RUNIC_BLADES_INNER_COOLDOWN",
+      "GNAWING_POISON_BASE_DMG",
+      "GNAWING_POISON_DMG_PER_STACK",
+      "GNAWING_POISON_COOLDOWN"
     ],
     "src/lib/constants/perks.ts": [
       "POTION_CHUGGER_POTENCY_MULT_PER_STACK",
@@ -874,52 +884,6 @@
       "batchIndex": 1,
       "files": [
         {
-          "path": "src/lib/constants/buffs.ts",
-          "language": "typescript",
-          "sizeLines": 154,
-          "fileCategory": "code"
-        }
-      ],
-      "batchImportData": {
-        "src/lib/constants/buffs.ts": []
-      },
-      "neighborMap": {
-        "src/lib/constants/buffs.ts": [
-          {
-            "path": "src/data/BuffData.ts",
-            "batchIndex": 2,
-            "symbols": [
-              "BUFF_DEFS",
-              "BASIC_DEBUFF_POOL",
-              "getWeaponArtBuffs",
-              "getTrueBalanceBuffs",
-              "applyBuffPerkModifiers",
-              "applyToxinTransferDuration",
-              "convertTailwindToWhirlwind",
-              "getBuffDescription",
-              "getPerkBuffs",
-              "getActiveBuildBuffs",
-              "applyCauterizeConversion",
-              "getBurnApplicationCount",
-              "assembleActiveBuffs",
-              "calcBuffEffect",
-              "formatPerkDescription"
-            ]
-          },
-          {
-            "path": "src/lib/engine/build.ts",
-            "batchIndex": 1,
-            "symbols": [
-              "calcBuild"
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "batchIndex": 2,
-      "files": [
-        {
           "path": "src/data/BuffData.ts",
           "language": "typescript",
           "sizeLines": 1897,
@@ -1080,7 +1044,7 @@
           },
           {
             "path": "src/lib/utils.ts",
-            "batchIndex": 2,
+            "batchIndex": 5,
             "symbols": [
               "roundMultiplier",
               "calcWardingDebuffMultiplier",
@@ -1125,61 +1089,118 @@
       }
     },
     {
-      "batchIndex": 3,
+      "batchIndex": 2,
       "files": [
         {
-          "path": "src/lib/constants/perks.ts",
+          "path": "src/data/Perkbasedmg.ts",
           "language": "typescript",
-          "sizeLines": 88,
+          "sizeLines": 949,
           "fileCategory": "code"
         }
       ],
       "batchImportData": {
-        "src/lib/constants/perks.ts": []
+        "src/data/Perkbasedmg.ts": [
+          "src/data/DoTDamage.ts",
+          "src/data/draconicColorEffects.ts",
+          "src/lib/constants.ts",
+          "src/lib/types.ts"
+        ]
       },
       "neighborMap": {
-        "src/lib/constants/perks.ts": [
+        "src/data/Perkbasedmg.ts": [
           {
-            "path": "src/data/debuffCombatEffects.ts",
-            "batchIndex": 3,
+            "path": "src/data/DoTDamage.ts",
+            "batchIndex": 2,
             "symbols": [
-              "DEBUFF_COMBAT_EFFECTS"
+              "DOT_TYPE_LIST",
+              "DOT_SCALINGS",
+              "DOT_DMG_TYPE_MAP",
+              "getDotBase",
+              "getDotPotencyMult",
+              "calcDotTick",
+              "toGamePotency",
+              "calcDotDisplayPotency"
             ]
           },
           {
-            "path": "src/data/perkAutoDebuffs.ts",
-            "batchIndex": 3,
+            "path": "src/data/draconicColorEffects.ts",
+            "batchIndex": 2,
             "symbols": [
-              "calcActualHpFillPct",
-              "getAutoDebuffs"
+              "DRACONIC_COLOR_ATTACK_STATS",
+              "getDraconicColorDmgMultiplier"
             ]
           },
           {
-            "path": "src/lib/engine/dmgTypeBonuses.ts",
-            "batchIndex": 3,
+            "path": "src/lib/constants.ts",
+            "batchIndex": 2,
+            "symbols": []
+          },
+          {
+            "path": "src/lib/types.ts",
+            "batchIndex": 4,
             "symbols": [
-              "PERK_DMG_TYPE_BONUS_DEFS",
-              "buildDmgTypeBonuses"
+              "PERCENT_STATS",
+              "STAT_KEYS",
+              "UPGRADE_MAX",
+              "applyUpgrade",
+              "getProcCoeffValue",
+              "canProc",
+              "DMG_TYPE_COLORS",
+              "DMG_TYPE_PRIORITY",
+              "SCALING_TO_BOOST"
+            ]
+          },
+          {
+            "path": "src/data/raceEffects.ts",
+            "batchIndex": 2,
+            "symbols": [
+              "getActiveRaceEffect",
+              "getOrkTenacityBuffs",
+              "calcOrkTenacityBonus"
             ]
           }
         ]
       }
     },
     {
-      "batchIndex": 4,
+      "batchIndex": 3,
       "files": [
         {
-          "path": "src/lib/types.ts",
+          "path": "src/data/perkAutoDebuffs.ts",
           "language": "typescript",
-          "sizeLines": 288,
+          "sizeLines": 262,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/lib/constants/perk-base-damage.ts",
+          "language": "typescript",
+          "sizeLines": 165,
+          "fileCategory": "code"
+        },
+        {
+          "path": "src/lib/constants/storage.ts",
+          "language": "typescript",
+          "sizeLines": 39,
           "fileCategory": "code"
         }
       ],
       "batchImportData": {
-        "src/lib/types.ts": []
+        "src/data/perkAutoDebuffs.ts": [
+          "src/data/Boost.ts",
+          "src/data/BuffData.ts",
+          "src/data/enemyHpEffects.ts",
+          "src/lib/constants/game.ts",
+          "src/lib/constants/perk-base-damage.ts",
+          "src/lib/constants/perks.ts",
+          "src/lib/types.ts"
+        ],
+        "src/lib/constants/perk-base-damage.ts": [],
+        "src/lib/constants/storage.ts": [
+          "src/lib/constants/game.ts"
+        ]
       },
       "neighborMap": {
-        "src/lib/types.ts": [
+        "src/data/perkAutoDebuffs.ts": [
           {
             "path": "src/data/Boost.ts",
             "batchIndex": 3,
@@ -1195,225 +1216,170 @@
             ]
           },
           {
-            "path": "src/data/mountRunes.ts",
-            "batchIndex": 4,
+            "path": "src/data/BuffData.ts",
+            "batchIndex": 1,
             "symbols": [
-              "MOUNT_RUNE_DEFS"
+              "BUFF_DEFS",
+              "BASIC_DEBUFF_POOL",
+              "getWeaponArtBuffs",
+              "getTrueBalanceBuffs",
+              "applyBuffPerkModifiers",
+              "applyToxinTransferDuration",
+              "convertTailwindToWhirlwind",
+              "getBuffDescription",
+              "getPerkBuffs",
+              "getActiveBuildBuffs",
+              "applyCauterizeConversion",
+              "getBurnApplicationCount",
+              "assembleActiveBuffs",
+              "calcBuffEffect",
+              "formatPerkDescription"
             ]
           },
           {
-            "path": "src/data/perkAutoDebuffs.ts",
+            "path": "src/data/enemyHpEffects.ts",
             "batchIndex": 3,
             "symbols": [
-              "calcActualHpFillPct",
-              "getAutoDebuffs"
+              "getActiveEnemyHpDebuffs",
+              "getEnemyHpDotMultiplier"
             ]
           },
           {
-            "path": "src/data/Perkbasedmg.ts",
-            "batchIndex": 5,
+            "path": "src/lib/constants/game.ts",
+            "batchIndex": 3,
             "symbols": [
-              "gateThreshold",
-              "isHpGateActive",
-              "DRAGON_STATE_HP_GATE",
-              "SECONDARY_TONE_COLORS",
-              "calcSpringblastBaseDamage",
-              "calcBomberChargeBaseDamage",
-              "PERK_DMG_DEFS",
-              "findPerkDmgDef"
+              "MAX_LEVEL",
+              "DEFAULT_LEVEL",
+              "DEFAULT_HP_FILL",
+              "DEFAULT_ENEMY_HP_FILL",
+              "BASE_HP",
+              "HP_PER_LEVEL",
+              "calcBaseMaxHP",
+              "SAVE_DEBOUNCE_MS",
+              "UNDO_WINDOW_MS",
+              "SEARCH_BLUR_DELAY_MS",
+              "IMPORT_SUCCESS_DISPLAY_MS",
+              "FOCUS_DELAY_MS",
+              "DEFAULT_TOAST_DURATION_MS"
             ]
           },
           {
-            "path": "src/data/procCoefficients.ts",
+            "path": "src/lib/constants/perks.ts",
+            "batchIndex": 3,
+            "symbols": [
+              "POTION_CHUGGER_POTENCY_MULT_PER_STACK",
+              "LUMINESCENT_PCT_PER_STACK",
+              "SPIRIT_WINDS_PCT_PER_STACK",
+              "DARK_MAGIC_PCT_PER_STACK",
+              "WIND_WALKER_PEN_PER_STACK",
+              "REAPER_PCT_PER_DEBUFF_PER_STACK",
+              "EXTINGUISH_MULT_PER_STACK",
+              "EXPLOSIVE_CHARGE_PCT",
+              "WILD_BOLT_DMG_REDUCTION",
+              "LIGHTNING_CLOAK_FRACTION",
+              "CURSE_RIP_DIVISOR",
+              "CURSE_RIP_DMG_BOOST_CONST",
+              "CURSE_RIP_DMG_BOOST_PER_DEBUFF",
+              "TRUE_BALANCE_DMG_DIVISOR",
+              "TRUE_BALANCE_HEAL_DIVISOR",
+              "EMOTIONAL_PCT_PER_STACK",
+              "TOXIN_TRANSFER_PCT_PER_STACK",
+              "VOID_RAGE_PCT_PER_STACK",
+              "CHANNELED_WEAPON_PCT_PER_STACK",
+              "DRACONIC_BLOOD_PCT_PER_STACK",
+              "WILD_BOLT_ELEMENTS",
+              "BASE_CRIT_DAMAGE",
+              "DEX_CRIT_DIVISOR",
+              "PRIMAL_DIVISOR",
+              "FLOWING_CRITS_BOOST_MULT",
+              "SPELL_SLINGER_BOOST_MULT",
+              "SHARP_CRITS_BOOST_MULT",
+              "SEISMIC_MOMENTUM_BOOST_MULT",
+              "PERFECTION_CRIT_PER_STACK",
+              "CACI_KING_SPIRIT_CRIT_PER_STACK",
+              "THIEF_TRAINING_CRIT_DMG_MULT",
+              "THIEF_TRAINING_CRIT_DMG_SUB",
+              "VENOM_EATER_CRIT_DMG_SUB",
+              "VENOM_EATER_CRIT_DMG_MULT",
+              "VITAL_STRIKES_CRIT_DMG_PER_STACK",
+              "SPARK_CRIT_DMG_PER_STACK",
+              "CRITICAL_MASTER_CRIT_DMG_PER_STACK",
+              "SPLINTER_CRIT_DMG_PER_STACK",
+              "MORTAL_WILL_HOLY_TYPE_PER_STACK",
+              "MORTAL_WILL_DMG_PER_HOLY_BOOST_PCT",
+              "SUNBURN_UNIVERSAL_DMG_PER_STACK",
+              "SUNBURN_HOLY_EXTRA_DMG_PER_STACK",
+              "SUNBURN_BURN_BASE_CHANCE",
+              "SUNBURN_BURN_CHANCE_PER_STACK",
+              "FROSTBITE_SLOW_POTENCY_PER_STACK",
+              "FROSTBITE_CHANCE_PER_STACK",
+              "FIERY_PURSUIT_BASE_DMG",
+              "FIERY_PURSUIT_DMG_PER_STACK",
+              "FIERY_PURSUIT_BURN_DURATION",
+              "HYPNOTIST_POTENCY_PER_PERK",
+              "HYPNOTIST_DURATION_BASE",
+              "HYPNOTIST_DURATION_PER_PERK",
+              "HYPNOTIST_MAGIC_ARMOR_PER_POTENCY",
+              "PHANTOM_PAIN_BASE_PCT",
+              "PHANTOM_PAIN_PERK_MULT"
+            ]
+          },
+          {
+            "path": "src/lib/types.ts",
             "batchIndex": 4,
             "symbols": [
-              "WEAPON_PROC_COEFFS",
-              "WA_PROC_COEFFS",
-              "DEFAULT_PROC_COEFF"
+              "PERCENT_STATS",
+              "STAT_KEYS",
+              "UPGRADE_MAX",
+              "applyUpgrade",
+              "getProcCoeffValue",
+              "canProc",
+              "DMG_TYPE_COLORS",
+              "DMG_TYPE_PRIORITY",
+              "SCALING_TO_BOOST"
             ]
-          },
+          }
+        ],
+        "src/lib/constants/storage.ts": [
           {
-            "path": "src/data/Runebasedmg.ts",
-            "batchIndex": 2,
+            "path": "src/lib/constants/game.ts",
+            "batchIndex": 3,
             "symbols": [
-              "RUNE_DMG_DEFS"
-            ]
-          },
-          {
-            "path": "src/data/statboost.ts",
-            "batchIndex": 4,
-            "symbols": [
-              "OFFENSIVE_BOOSTS",
-              "applyStatBoostPerks"
-            ]
-          },
-          {
-            "path": "src/data/weapon base dmg.ts",
-            "batchIndex": 4,
-            "symbols": [
-              "WEAPON_BASE_DMG"
-            ]
-          },
-          {
-            "path": "src/lib/crit.ts",
-            "batchIndex": 2,
-            "symbols": [
-              "calcCrit"
-            ]
-          },
-          {
-            "path": "src/lib/dmgTypes.ts",
-            "batchIndex": 4,
-            "symbols": [
-              "BADGE_CONFIG"
-            ]
-          },
-          {
-            "path": "src/lib/engine/build.ts",
-            "batchIndex": 1,
-            "symbols": [
-              "calcBuild"
-            ]
-          },
-          {
-            "path": "src/lib/engine/data/character.ts",
-            "batchIndex": 4,
-            "symbols": [
-              "races",
-              "guilds",
-              "getRace",
-              "getGuild",
-              "getPerk",
-              "getGuildRank",
-              "isMonkGuild"
-            ]
-          },
-          {
-            "path": "src/lib/engine/data/equipment.ts",
-            "batchIndex": 4,
-            "symbols": [
-              "rings",
-              "runes",
-              "enchantments",
-              "enchantmentsRaw",
-              "armors",
-              "getEnchant",
-              "getRing",
-              "getRune",
-              "getArmorPart",
-              "getArmorSlotTypes",
-              "armorSupportsSlot"
-            ]
-          },
-          {
-            "path": "src/lib/engine/data/weapons.ts",
-            "batchIndex": 4,
-            "symbols": [
-              "blades",
-              "handles",
-              "gloves",
-              "essences",
-              "getBlade",
-              "getHandle",
-              "getGlove",
-              "getEssence"
-            ]
-          },
-          {
-            "path": "src/lib/engine/enchant.ts",
-            "batchIndex": 1,
-            "symbols": [
-              "applyEnchantmentsToSlot",
-              "applyPerkEffectiveness",
-              "applyInfusion",
-              "isExclusiveEnchant",
-              "enforceEnchantSlot"
-            ]
-          },
-          {
-            "path": "src/lib/engine/format.ts",
-            "batchIndex": 1,
-            "symbols": [
-              "formatStat",
-              "formatLabel"
-            ]
-          },
-          {
-            "path": "src/lib/engine/shrine.ts",
-            "batchIndex": 1,
-            "symbols": [
-              "SHRINE_MULTIPLIERS",
-              "applyShrineToScalings",
-              "applyShrineToStats"
-            ]
-          },
-          {
-            "path": "src/lib/engine/weapon.ts",
-            "batchIndex": 1,
-            "symbols": [
-              "MONK_RANK_MULTIPLIER",
-              "calcWeapon",
-              "calcMonkWeapon"
-            ]
-          },
-          {
-            "path": "src/lib/store.ts",
-            "batchIndex": 6,
-            "symbols": [
-              "build",
-              "effectiveDarknessOverride",
-              "result",
-              "setEnchantment",
-              "swapEnchantments",
-              "clearBuild",
-              "setGuild",
-              "moveArmorSlot",
-              "canArmorMoveToSlot",
-              "moveRingSlot"
-            ]
-          },
-          {
-            "path": "src/lib/utils.ts",
-            "batchIndex": 2,
-            "symbols": [
-              "roundMultiplier",
-              "calcWardingDebuffMultiplier",
-              "highlightTextParts",
-              "calcProcChance"
+              "MAX_LEVEL",
+              "DEFAULT_LEVEL",
+              "DEFAULT_HP_FILL",
+              "DEFAULT_ENEMY_HP_FILL",
+              "BASE_HP",
+              "HP_PER_LEVEL",
+              "calcBaseMaxHP",
+              "SAVE_DEBOUNCE_MS",
+              "UNDO_WINDOW_MS",
+              "SEARCH_BLUR_DELAY_MS",
+              "IMPORT_SUCCESS_DISPLAY_MS",
+              "FOCUS_DELAY_MS",
+              "DEFAULT_TOAST_DURATION_MS"
             ]
           }
         ]
       }
     },
     {
-      "batchIndex": 6,
+      "batchIndex": 4,
       "files": [
         {
-          "path": "src/lib/store.ts",
+          "path": "src/lib/dmgTypes.ts",
           "language": "typescript",
-          "sizeLines": 207,
+          "sizeLines": 72,
           "fileCategory": "code"
         }
       ],
       "batchImportData": {
-        "src/lib/store.ts": [
-          "src/lib/constants.ts",
-          "src/lib/engine.ts",
+        "src/lib/dmgTypes.ts": [
           "src/lib/types.ts"
         ]
       },
       "neighborMap": {
-        "src/lib/store.ts": [
-          {
-            "path": "src/lib/constants.ts",
-            "batchIndex": 2,
-            "symbols": []
-          },
-          {
-            "path": "src/lib/engine.ts",
-            "batchIndex": 6,
-            "symbols": []
-          },
+        "src/lib/dmgTypes.ts": [
           {
             "path": "src/lib/types.ts",
             "batchIndex": 4,
@@ -1457,15 +1423,15 @@
           "fileCategory": "code"
         },
         {
-          "path": "src/BuffList.svelte",
+          "path": "src/BaseDamageCalc.svelte",
           "language": "svelte",
-          "sizeLines": 758,
+          "sizeLines": 2659,
           "fileCategory": "code"
         },
         {
-          "path": "src/BuildSaves.svelte",
+          "path": "src/BuffList.svelte",
           "language": "svelte",
-          "sizeLines": 1098,
+          "sizeLines": 758,
           "fileCategory": "code"
         },
         {
@@ -1475,18 +1441,18 @@
           "fileCategory": "code"
         },
         {
-          "path": "src/lib/AppHeader.svelte",
-          "language": "svelte",
-          "sizeLines": 175,
+          "path": "src/lib/constants/boosts.ts",
+          "language": "typescript",
+          "sizeLines": 58,
           "fileCategory": "code"
         }
       ],
       "batchImportData": {
         "src/App.svelte": [],
+        "src/BaseDamageCalc.svelte": [],
         "src/BuffList.svelte": [],
-        "src/BuildSaves.svelte": [],
         "src/DamageAnalyzer.svelte": [],
-        "src/lib/AppHeader.svelte": []
+        "src/lib/constants/boosts.ts": []
       },
       "neighborMap": {
         "src/App.svelte": [
@@ -1497,6 +1463,21 @@
           }
         ]
       }
+    },
+    {
+      "batchIndex": 13,
+      "files": [
+        {
+          "path": "src/lib/uiConstants.ts",
+          "language": "typescript",
+          "sizeLines": 78,
+          "fileCategory": "code"
+        }
+      ],
+      "batchImportData": {
+        "src/lib/uiConstants.ts": []
+      },
+      "neighborMap": {}
     }
   ]
 }

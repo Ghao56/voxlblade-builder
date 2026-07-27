@@ -78,8 +78,11 @@ import {
 } from './lib/constants'
 
 
-  $: _m1FinisherWeaponBoost = getWeaponConditionalBoost(perks, _baseWeaponType, 'm1Finisher')
-  $: _m2WeaponBoost         = getWeaponConditionalBoost(perks, _baseWeaponType, 'm2')
+  $: _m1FinisherWeaponBoostRaw = getWeaponConditionalBoost(perks, _baseWeaponType, 'm1Finisher')
+  $: _m2WeaponBoostRaw         = getWeaponConditionalBoost(perks, _baseWeaponType, 'm2')
+  $: _m1FinisherWeaponBoost = disableWeaponBoost ? { mult: 1, labels: [] as string[] } : _m1FinisherWeaponBoostRaw
+  $: _m2WeaponBoost         = disableWeaponBoost ? { mult: 1, labels: [] as string[] } : _m2WeaponBoostRaw
+  $: _weaponBoostLabels = [...new Set([..._m1FinisherWeaponBoostRaw.labels, ..._m2WeaponBoostRaw.labels])]
 
   $: _activeRaceEffect = getActiveRaceEffect($build.race, _hpFillPct)
   const _DEF_TYPE_LIST = TRACKED_TYPES_WITH_TRUE
@@ -1236,6 +1239,11 @@ import {
     return row.m1 ? hitIndex === row.m1.length - 1 : false
   }
 
+  function applyPiercerTrueConversion(types: Record<string, number>, piercerRank: number): Record<string, number> {
+    if (piercerRank <= 0) return { ...types }
+    return { true: roundMultiplier(1 + 0.1 * piercerRank) }
+  }
+
   $: natSources = crit.naturalBreakdown
   $: _critDisabledPerkNames = (() => {
     const names = new Set<string>()
@@ -1311,6 +1319,7 @@ import {
   let draconicInfusionDisabled = false
   let disableCurseRip = false
   let disableReaper = false
+  let disableWeaponBoost = false
 
   const _boostCondDisableRules: Array<{ sourceName: string; test: () => boolean }> = [
     { sourceName: 'Spirit Winds',   test: () => _effectiveTailwindPotency <= 0 },
@@ -2357,6 +2366,7 @@ import {
     isFinisher: boolean
     dmgTypes: Record<string, number>
     baseDmgTypes?: Record<string, number>
+    boostDmgTypes?: Record<string, number>
     label?: string
     isHeal?: boolean
     isM1?: boolean
@@ -2389,6 +2399,9 @@ import {
           const hitDmgTypes = finisherHit && _mortalWillHolyTypeBonus > 0
             ? { ...m1Types, holy: Math.round(((m1Types.holy ?? 0) + _mortalWillHolyTypeBonus) * 10000) / 10000 }
             : m1Types
+          const piercerRank = (finisherHit && !disableWeaponBoost) ? (perks['Piercer'] ?? 0) : 0
+          const finalDmgTypes = piercerRank > 0 ? applyPiercerTrueConversion(hitDmgTypes, piercerRank) : hitDmgTypes
+          const boostDmgTypes = piercerRank > 0 ? { ...hitDmgTypes } : undefined
           const sunburnMult = _sunburnActive && _sunburnEnemyBurning
             ? ((hitDmgTypes.holy ?? 0) > 0 ? _sunburnHolyDmgMult : _sunburnUniversalDmgMult) : 1
           const combinedWbMult = roundMultiplier((wb?.mult ?? 1) * mwMult * sunburnMult)
@@ -2399,8 +2412,9 @@ import {
           ].filter(Boolean).join(', ')
           result.push({
             group: 'M1', index: i, count, base, scalingMult: _scalingMult, combatMult: _m1CombatMult,
-            isFinisher: finisherHit, dmgTypes: hitDmgTypes,
+            isFinisher: finisherHit, dmgTypes: finalDmgTypes,
             baseDmgTypes: _weaponDmgTypesBase,
+            ...(piercerRank > 0 ? { boostDmgTypes } : {}),
             ...(combinedWbMult !== 1 ? { weaponBoostMult: combinedWbMult, weaponBoostLabel: wbLabel } : {}),
             canApplyBurn: _hasSingedBurn,
             finisherGroupHitCount: finisherHit ? _m1FinisherHits : undefined,
@@ -2415,6 +2429,9 @@ import {
           const hitDmgTypes = _mortalWillHolyTypeBonus > 0
             ? { ...m2Types, holy: Math.round(((m2Types.holy ?? 0) + _mortalWillHolyTypeBonus) * 10000) / 10000 }
             : m2Types
+          const piercerRank = disableWeaponBoost ? 0 : (perks['Piercer'] ?? 0)
+          const finalDmgTypes = piercerRank > 0 ? applyPiercerTrueConversion(hitDmgTypes, piercerRank) : hitDmgTypes
+          const boostDmgTypes = piercerRank > 0 ? { ...hitDmgTypes } : undefined
           const mwMult = _mortalWillFinisherDmgMult !== 1 ? _mortalWillFinisherDmgMult : 1
           const sunburnMult = _sunburnActive && _sunburnEnemyBurning
             ? ((hitDmgTypes.holy ?? 0) > 0 ? _sunburnHolyDmgMult : _sunburnUniversalDmgMult) : 1
@@ -2426,8 +2443,9 @@ import {
           ].filter(Boolean).join(', ')
           result.push({
             group: 'M2', index: i, count, base, scalingMult: _scalingMult, combatMult: _m2CombatMult,
-            isFinisher: true, dmgTypes: hitDmgTypes,
+            isFinisher: true, dmgTypes: finalDmgTypes,
             baseDmgTypes: _weaponDmgTypesBase,
+            ...(piercerRank > 0 ? { boostDmgTypes } : {}),
             ...(combinedWbMult !== 1 ? { weaponBoostMult: combinedWbMult, weaponBoostLabel: wbLabel } : {}),
             canApplyBurn: _hasSingedBurn,
             finisherGroupHitCount: _m2FinisherHits,
@@ -3527,20 +3545,28 @@ $: _groupedSelfDamageSources = (() => {
           </div>
         {/if}
         {/if}
-  {#if _m1FinisherWeaponBoost.mult !== 1 || _m2WeaponBoost.mult !== 1}
-    <div class="da-weaponboost-row" style="margin-top: 8px;">
-      {#if _m1FinisherWeaponBoost.mult !== 1}
-        <span class="da-weaponboost-badge">
-          M1 Finisher ×{+_m1FinisherWeaponBoost.mult.toFixed(4)}
+  {#if _m1FinisherWeaponBoostRaw.mult !== 1 || _m2WeaponBoostRaw.mult !== 1}
+    {@const _wbM1 = _m1FinisherWeaponBoostRaw.mult !== 1}
+    {@const _wbM2 = _m2WeaponBoostRaw.mult !== 1}
+    {@const _wbSame = _m1FinisherWeaponBoostRaw.mult === _m2WeaponBoostRaw.mult}
+    <div class="da-boost-row" style="margin-top: 6px;">
+      <button
+        class="da-boost-chip"
+        class:da-boost-chip--off={disableWeaponBoost}
+        on:click={() => { disableWeaponBoost = !disableWeaponBoost }}
+      >
+        <span class="da-bc-name">{_weaponBoostLabels.join(', ')}</span>
+        <span class="da-bc-val">
+          {#if _wbSame}
+            ×{+_m1FinisherWeaponBoostRaw.mult.toFixed(4)}
+          {:else}
+            {#if _wbM1}M1×{+_m1FinisherWeaponBoostRaw.mult.toFixed(4)}{/if}
+            {#if _wbM2}M2×{+_m2WeaponBoostRaw.mult.toFixed(4)}{/if}
+          {/if}
         </span>
-        <span class="da-weaponboost-sources">{_m1FinisherWeaponBoost.labels.join(', ')}</span>
-      {/if}
-      {#if _m2WeaponBoost.mult !== 1}
-        <span class="da-weaponboost-badge">
-          M2 ×{+_m2WeaponBoost.mult.toFixed(4)}
-        </span>
-        <span class="da-weaponboost-sources">{_m2WeaponBoost.labels.join(', ')}</span>
-      {/if}
+        <span class="da-bc-cond">finisher</span>
+        <span class="da-bc-toggle">{disableWeaponBoost ? 'OFF' : 'ON'}</span>
+      </button>
     </div>
   {/if}
   {#if _allHealEntriesForDisplay.length > 0}
@@ -6977,19 +7003,6 @@ $: _groupedSelfDamageSources = (() => {
   color: #fbbf24;
   font-weight: 600;
   opacity: .8;
-}
-.da-weaponboost-row {
-  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-  padding: 5px 10px; border-radius: 6px;
-  background: rgba(251,191,36,.06); border: 1px solid rgba(251,191,36,.2);
-}
-.da-weaponboost-badge {
-  font-size: .75rem; font-weight: 800;
-  color: #fbbf24; font-family: 'Courier New', monospace;
-}
-
-.da-weaponboost-sources {
-  font-size: .6rem; color: var(--ink-muted); opacity: .5; font-style: italic;
 }
 
 .da-section--selfdmg {

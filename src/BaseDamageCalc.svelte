@@ -110,6 +110,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     base: number; scalingMult: number; combatMult: number; isFinisher: boolean
     dmgTypes: Record<string, number>
     baseDmgTypes?: Record<string, number>
+    boostDmgTypes?: Record<string, number>
     label?: string
     isM1?: boolean
     isM2?: boolean
@@ -123,6 +124,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     procCoefficient?: ProcCoefficient
     canApplyBurn?: boolean
     procCount?: number
+    finisherGroupHitCount?: number
   }> = []
   export let typedBoostEntries: TypedDmgBoostEntry[] = []
   export let luminescentPct: number = 0
@@ -544,7 +546,19 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       const typeIsHeal   = hit.dmgTypeIsHeal?.[k] ?? isHeal
       const typeCombat   = hit.dmgTypeCombatMults?.[k] ?? hit.combatMult
       const typeNoCrit   = healCritDmgMult > 0 && typeIsHeal ? false : (hit.dmgTypeIsCritExempt?.[k] ?? typeIsHeal)
-      const applicableBoosts = getApplicableBoosts(k, typeIsHeal, hit.group, hit.procCoefficient)
+      const applicableBoosts = (() => {
+        if (hit.boostDmgTypes) {
+          if (k in hit.boostDmgTypes) {
+            return getApplicableBoosts(k, typeIsHeal, hit.group, hit.procCoefficient)
+          }
+          const allBoosts = Object.keys(hit.boostDmgTypes).flatMap(bk =>
+            getApplicableBoosts(bk, typeIsHeal, hit.group, hit.procCoefficient)
+          )
+          const seen = new Set<string>()
+          return allBoosts.filter(e => !seen.has(e.perkName) && seen.add(e.perkName))
+        }
+        return getApplicableBoosts(k, typeIsHeal, hit.group, hit.procCoefficient)
+      })()
       const typedMultUsed = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
 
       const enemyDefPct = typeIsHeal ? 0 : defPctForType(k)

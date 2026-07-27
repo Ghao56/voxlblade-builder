@@ -1,0 +1,16 @@
+{
+    "projectRoot":  "C:\\Users\\Administrator\\Downloads\\voxlblade-builder",
+    "batchImportData":  {
+                            "src/lib/uiConstants.ts":  [
+
+                                                       ]
+                        },
+    "batchFiles":  [
+                       {
+                           "fileCategory":  "code",
+                           "path":  "src/lib/uiConstants.ts",
+                           "language":  "typescript",
+                           "sizeLines":  78
+                       }
+                   ]
+}

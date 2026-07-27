@@ -1,0 +1,359 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 5,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "src/App.svelte",
+      "language": "svelte",
+      "fileCategory": "code",
+      "totalLines": 4434,
+      "nonEmptyLines": 4138,
+      "metrics": {}
+    },
+    {
+      "path": "src/BaseDamageCalc.svelte",
+      "language": "svelte",
+      "fileCategory": "code",
+      "totalLines": 2702,
+      "nonEmptyLines": 2558,
+      "metrics": {}
+    },
+    {
+      "path": "src/BuffList.svelte",
+      "language": "svelte",
+      "fileCategory": "code",
+      "totalLines": 790,
+      "nonEmptyLines": 721,
+      "metrics": {}
+    },
+    {
+      "path": "src/DamageAnalyzer.svelte",
+      "language": "svelte",
+      "fileCategory": "code",
+      "totalLines": 7116,
+      "nonEmptyLines": 6695,
+      "metrics": {}
+    },
+    {
+      "path": "src/lib/constants/boosts.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 73,
+      "nonEmptyLines": 65,
+      "exports": [
+        {
+          "name": "FRENZY_BASE",
+          "line": 1,
+          "isDefault": false
+        },
+        {
+          "name": "FRENZY_RAGE_MULT",
+          "line": 2,
+          "isDefault": false
+        },
+        {
+          "name": "MINION_ABSORPTION_MULT",
+          "line": 4,
+          "isDefault": false
+        },
+        {
+          "name": "VENOM_EATER_HEAL_PER_STACK",
+          "line": 6,
+          "isDefault": false
+        },
+        {
+          "name": "SIPHONING_ROT_HEAL_PER_STACK",
+          "line": 7,
+          "isDefault": false
+        },
+        {
+          "name": "LIFESTEAL_HEAL_PCT_PER_STACK",
+          "line": 8,
+          "isDefault": false
+        },
+        {
+          "name": "LIFESTEAL_FLAT_HEAL_PER_STACK",
+          "line": 9,
+          "isDefault": false
+        },
+        {
+          "name": "HOLY_INFUSION_POTENCY_MULT",
+          "line": 11,
+          "isDefault": false
+        },
+        {
+          "name": "BELLOWING_EMBER_BASE_MULT",
+          "line": 13,
+          "isDefault": false
+        },
+        {
+          "name": "BELLOWING_EMBER_FIRE_MULT",
+          "line": 14,
+          "isDefault": false
+        },
+        {
+          "name": "BLOOD_THIRSTY_MULT_PER_STACK",
+          "line": 17,
+          "isDefault": false
+        },
+        {
+          "name": "VENOM_SPITTER_MULT_PER_STACK",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "PERFECTION_MULT_PER_STACK",
+          "line": 19,
+          "isDefault": false
+        },
+        {
+          "name": "STEALTH_MULT_PER_STACK",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "GOLDEN_CRITS_MULT_PER_STACK",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "GOLDEN_CRITS_BASE_PROC_CHANCE",
+          "line": 22,
+          "isDefault": false
+        },
+        {
+          "name": "ROYAL_PARRY_MULT_PER_STACK",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "SPELL_PIERCER_MULT_PER_STACK",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "SCOURGE_MULT_PER_STACK",
+          "line": 25,
+          "isDefault": false
+        },
+        {
+          "name": "SHARPSHOOTER_MULT_PER_STACK",
+          "line": 26,
+          "isDefault": false
+        },
+        {
+          "name": "VALOR_MULT_PER_STACK",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "GORECAST_MULT_PER_STACK",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "UNDEAD_MIGHT_MULT_PER_STACK",
+          "line": 29,
+          "isDefault": false
+        },
+        {
+          "name": "HIGHLANDER_MULT_PER_STACK",
+          "line": 30,
+          "isDefault": false
+        },
+        {
+          "name": "EMOTIONAL_MULT_PER_STACK",
+          "line": 31,
+          "isDefault": false
+        },
+        {
+          "name": "HEAL_BOOST_MULT_PER_STACK",
+          "line": 32,
+          "isDefault": false
+        },
+        {
+          "name": "OCEANS_RAGE_MULT_PER_STACK",
+          "line": 33,
+          "isDefault": false
+        },
+        {
+          "name": "VENOM_EATER_DMG_MULT_PER_STACK",
+          "line": 36,
+          "isDefault": false
+        },
+        {
+          "name": "FEROCITY_TENACITY_MULT",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "SPIRIT_WINDS_TAILWIND_MULT",
+          "line": 38,
+          "isDefault": false
+        },
+        {
+          "name": "SPIRIT_WINDS_PER_STACK",
+          "line": 39,
+          "isDefault": false
+        },
+        {
+          "name": "GUARDIAN_SPIN_BASE",
+          "line": 40,
+          "isDefault": false
+        },
+        {
+          "name": "GUARDIAN_SPIN_MULT_PER_STACK",
+          "line": 41,
+          "isDefault": false
+        },
+        {
+          "name": "WILD_BOLT_MULT_PER_STACK",
+          "line": 42,
+          "isDefault": false
+        },
+        {
+          "name": "WEIGHTY_SLAM_MULT_PER_STACK",
+          "line": 43,
+          "isDefault": false
+        },
+        {
+          "name": "RIDER_MULT_PER_STACK",
+          "line": 44,
+          "isDefault": false
+        },
+        {
+          "name": "QUICKDRAW_MULT",
+          "line": 45,
+          "isDefault": false
+        },
+        {
+          "name": "SPRING_POWERED_MULT",
+          "line": 46,
+          "isDefault": false
+        },
+        {
+          "name": "THIEF_TRAINING_BEHIND_MULT",
+          "line": 47,
+          "isDefault": false
+        },
+        {
+          "name": "THIEF_TRAINING_WOULD_CRIT_MULT",
+          "line": 48,
+          "isDefault": false
+        },
+        {
+          "name": "VASSALS_CROAK_MULT_PER_STACK",
+          "line": 49,
+          "isDefault": false
+        },
+        {
+          "name": "RAGING_BOUNCE_MULT",
+          "line": 50,
+          "isDefault": false
+        },
+        {
+          "name": "GUIDING_WINDS_MULT_PER_STACK",
+          "line": 51,
+          "isDefault": false
+        },
+        {
+          "name": "GUIDING_WINDS_WA_MULT_PER_STACK",
+          "line": 52,
+          "isDefault": false
+        },
+        {
+          "name": "CIVILIAN_MULT_PER_STACK",
+          "line": 53,
+          "isDefault": false
+        },
+        {
+          "name": "VAMPIRE_DIVISOR",
+          "line": 54,
+          "isDefault": false
+        },
+        {
+          "name": "VAMPIRE_SUNLIGHT_HEAL_MULT",
+          "line": 55,
+          "isDefault": false
+        },
+        {
+          "name": "TOXIN_CASTER_MULT_PER_STACK",
+          "line": 56,
+          "isDefault": false
+        },
+        {
+          "name": "CUT_DOWN_MULT_PER_AMOUNT",
+          "line": 57,
+          "isDefault": false
+        },
+        {
+          "name": "EXECUTIONER_MULT_PER_AMOUNT",
+          "line": 58,
+          "isDefault": false
+        },
+        {
+          "name": "HEAT_DRILL_COOLDOWN",
+          "line": 61,
+          "isDefault": false
+        },
+        {
+          "name": "HEAT_DRILL_LUNGE_BASE",
+          "line": 62,
+          "isDefault": false
+        },
+        {
+          "name": "HEAT_DRILL_LUNGE_PER_STACK",
+          "line": 63,
+          "isDefault": false
+        },
+        {
+          "name": "HEAT_DRILL_EXPLOSION_BASE",
+          "line": 64,
+          "isDefault": false
+        },
+        {
+          "name": "HEAT_DRILL_EXPLOSION_PER_STACK",
+          "line": 65,
+          "isDefault": false
+        },
+        {
+          "name": "HEAT_DRILL_SMALL_EXPLOSION_BASE",
+          "line": 66,
+          "isDefault": false
+        },
+        {
+          "name": "HEAT_DRILL_SMALL_EXPLOSION_PER_STACK",
+          "line": 67,
+          "isDefault": false
+        },
+        {
+          "name": "HEAT_DRILL_SMALL_EXPLOSION_HITS",
+          "line": 68,
+          "isDefault": false
+        },
+        {
+          "name": "ESSENCE_RAY_BASE",
+          "line": 71,
+          "isDefault": false
+        },
+        {
+          "name": "ESSENCE_RAY_PER_STACK",
+          "line": 72,
+          "isDefault": false
+        },
+        {
+          "name": "ESSENCE_RAY_HITS",
+          "line": 73,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 61,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    }
+  ]
+}
