@@ -3685,17 +3685,5 @@
       "Magic",
       "Weapon"
     ]
-  },
-  {
-    "name": "Gnawing Poison",
-    "description": "Using a Finisher bites all enemies you have Poisoned, dealing a burst of Hex and Physical Damage. Has a 1.5s Cooldown and a Proc Coefficient. Grants Poison Potency.",
-    "tags": [
-      "Offensive",
-      "Debuff",
-      "Finisher",
-      "Poison Potency",
-      "Hex",
-      "Physical"
-    ]
   }
 ]
