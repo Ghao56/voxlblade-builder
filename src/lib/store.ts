@@ -50,6 +50,8 @@ const DEFAULT_BUILD: BuildState = {
   sporelingsSummoned: 0,
   inDarkness: true,
   cdrToggles: {},
+  potion1: "",
+  potion2: "",
 }
 
 function loadBuild(): BuildState {

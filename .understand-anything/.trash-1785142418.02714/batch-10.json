@@ -1,0 +1,466 @@
+{
+  "nodes": [
+    {
+      "id": "document::.slim/deepwork/ui-upgrade.md",
+      "type": "document",
+      "label": "ui-upgrade.md",
+      "filePath": ".slim/deepwork/ui-upgrade.md",
+      "description": "Plan document for upgrading the UI from Svelte 4 to Svelte 5 runes. Outlines migration steps, component modernization strategy, and phased rollout approach.",
+      "language": "markdown",
+      "category": "docs",
+      "size": 99
+    },
+    {
+      "id": "file::.understand-anything/.understandignore",
+      "type": "file",
+      "label": ".understandignore",
+      "filePath": ".understand-anything/.understandignore",
+      "description": "Ignore patterns for the understand-anything knowledge graph tool. Lists files and directories excluded from analysis.",
+      "language": "unknown",
+      "category": "code",
+      "size": 62
+    },
+    {
+      "id": "file::analyze-mounticon.mjs",
+      "type": "file",
+      "label": "analyze-mounticon.mjs",
+      "filePath": "analyze-mounticon.mjs",
+      "description": "Utility script for analyzing MountIcon SVG files. Processes mount icon data for use in the damage calculator UI.",
+      "language": "javascript",
+      "category": "code",
+      "size": 11
+    },
+    {
+      "id": "file::decode_full.mjs",
+      "type": "file",
+      "label": "decode_full.mjs",
+      "filePath": "decode_full.mjs",
+      "description": "Debug/development tool that decodes base64-encoded full build state from URL parameters. Uses eval for deserialization (CWE-502 security finding).",
+      "language": "javascript",
+      "category": "code",
+      "size": 263
+    },
+    {
+      "id": "document::docs/ONBOARDING.md",
+      "type": "document",
+      "label": "ONBOARDING.md",
+      "filePath": "docs/ONBOARDING.md",
+      "description": "Comprehensive onboarding guide for new contributors. Documents project setup, architecture, tech stack, development workflow, build configuration, and contribution guidelines.",
+      "language": "markdown",
+      "category": "docs",
+      "size": 405
+    },
+    {
+      "id": "file::src/app.css",
+      "type": "file",
+      "label": "app.css",
+      "filePath": "src/app.css",
+      "description": "Global CSS stylesheet (343 lines) defining the application's design system. Sets CSS custom properties for colors, typography, spacing, glass morphism effects, and dark theme tokens. Defines reusable utility classes and component styles.",
+      "language": "css",
+      "category": "markup",
+      "size": 342
+    },
+    {
+      "id": "file::src/App.svelte",
+      "type": "file",
+      "label": "App.svelte",
+      "filePath": "src/App.svelte",
+      "description": "Root application component (4330 lines). Orchestrates the entire damage calculator UI: weapon configuration, armor slots, enchantment selectors, stat displays, race/guild selectors, and the main damage output panel. Imports from nearly every module in the codebase. Contains the primary build state management and equipment drag-and-drop logic.",
+      "language": "svelte",
+      "category": "code",
+      "size": 4330
+    },
+    {
+      "id": "file::src/BaseDamageCalc.svelte",
+      "type": "file",
+      "label": "BaseDamageCalc.svelte",
+      "filePath": "src/BaseDamageCalc.svelte",
+      "description": "Component (2660 lines) that computes and displays base damage breakdowns for each attack type (M1/M2/WA). Handles damage type resolution, defense calculations, critical hit display, armor penetration, perk on-hit damage, and status effect damage. Central to the damage output visualization.",
+      "language": "svelte",
+      "category": "code",
+      "size": 2660
+    },
+    {
+      "id": "file::src/BuffList.svelte",
+      "type": "file",
+      "label": "BuffList.svelte",
+      "filePath": "src/BuffList.svelte",
+      "description": "Component (759 lines) displaying active buffs and debuffs for the current build. Aggregates buffs from items, perks, weapon arts, draconic infusions, and race effects. Shows potency, duration, and source labels with color-coded badges.",
+      "language": "svelte",
+      "category": "code",
+      "size": 759
+    },
+    {
+      "id": "file::src/BuildSaves.svelte",
+      "type": "file",
+      "label": "BuildSaves.svelte",
+      "filePath": "src/BuildSaves.svelte",
+      "description": "Component (1098 lines) managing build save/load functionality. Provides slot-based build persistence to localStorage, import/export via encoded strings, build search, and the save slot picker UI.",
+      "language": "svelte",
+      "category": "code",
+      "size": 1098
+    },
+    {
+      "id": "file::src/CdrStepsCalc.svelte",
+      "type": "file",
+      "label": "CdrStepsCalc.svelte",
+      "filePath": "src/CdrStepsCalc.svelte",
+      "description": "Small component (92 lines) displaying a step-by-step cooldown reduction calculation. Shows each CDR source as a multiply/divide operation with animated arrow transitions from base cooldown to final value with floor and minimum cap display.",
+      "language": "svelte",
+      "category": "code",
+      "size": 92
+    },
+    {
+      "id": "file::src/CritIcon.svelte",
+      "type": "file",
+      "label": "CritIcon.svelte",
+      "filePath": "src/CritIcon.svelte",
+      "description": "Simple SVG icon component (13 lines) rendering a critical hit symbol. Uses a gradient fill from red to orange for the starburst shape.",
+      "language": "svelte",
+      "category": "code",
+      "size": 13
+    },
+    {
+      "id": "file::src/DamageAnalyzer.svelte",
+      "type": "file",
+      "label": "DamageAnalyzer.svelte",
+      "filePath": "src/DamageAnalyzer.svelte",
+      "description": "The largest component (7015 lines). Full damage analysis engine UI. Computes complete damage breakdowns including: weapon stats, enchantment effects, buff/debuff modifiers, racial bonuses, guild bonuses, perk synergies, defense calculations, damage type resolution, crit analysis, summon damage, DOT ticks, and heal calculations. Displays detailed per-hit and per-DPS breakdowns.",
+      "language": "svelte",
+      "category": "code",
+      "size": 7015
+    },
+    {
+      "id": "file::src/data/draconicRunes.ts",
+      "type": "file",
+      "label": "draconicRunes.ts",
+      "filePath": "src/data/draconicRunes.ts",
+      "description": "Module (104 lines) computing draconic rune and draconic infusion bonuses to damage types. Provides applyDraconicBonuses and getDraconicBonuses functions that add elemental damage bonuses based on rune stacks and infusion state.",
+      "language": "typescript",
+      "category": "code",
+      "size": 104
+    },
+    {
+      "id": "file::src/data/selfDamagePerks.ts",
+      "type": "file",
+      "label": "selfDamagePerks.ts",
+      "filePath": "src/data/selfDamagePerks.ts",
+      "description": "Module (82 lines) defining perks that deal self-damage (Undead Might, Explosive Charge, Dark Magic, Bombardier). Each definition specifies the damage fraction, damage type distribution, DR reduction per stack, and affected attack types. Includes calcSelfDamage function with harmonic-series multi-target falloff.",
+      "language": "typescript",
+      "category": "code",
+      "size": 82
+    },
+    {
+      "id": "file::src/data/stanceOverlays.ts",
+      "type": "file",
+      "label": "stanceOverlays.ts",
+      "filePath": "src/data/stanceOverlays.ts",
+      "description": "Module (59 lines) resolving stance overlay types based on weapon configuration. Checks Blaster Ring, Locked And Loaded, Cosmic Ray, and Mine conditions against weapon perks and fist/weapon type to determine Rifle/Shotgun/Dual Guns/Side Gun overlay styles.",
+      "language": "typescript",
+      "category": "code",
+      "size": 59
+    },
+    {
+      "id": "file::src/DidYouMean.svelte",
+      "type": "file",
+      "label": "DidYouMean.svelte",
+      "filePath": "src/DidYouMean.svelte",
+      "description": "Component (110 lines) showing fuzzy search suggestions when no exact results are found. Displays clickable chips with highlighted text matching for name and perk search results.",
+      "language": "svelte",
+      "category": "code",
+      "size": 110
+    },
+    {
+      "id": "file::src/DmgTotalTooltip.svelte",
+      "type": "file",
+      "label": "DmgTotalTooltip.svelte",
+      "filePath": "src/DmgTotalTooltip.svelte",
+      "description": "Component (169 lines) displaying a tooltip with damage breakdown by type. Groups ComputedHit entries by damage type, shows animated pie chart visualization, and lists per-type totals with percentage bars.",
+      "language": "svelte",
+      "category": "code",
+      "size": 169
+    },
+    {
+      "id": "file::src/DraconicAbilityStats.svelte",
+      "type": "file",
+      "label": "DraconicAbilityStats.svelte",
+      "filePath": "src/DraconicAbilityStats.svelte",
+      "description": "Small component (42 lines) displaying draconic ability stat rows: damage type, scaling, poise damage, and optional holy/water heal values.",
+      "language": "svelte",
+      "category": "code",
+      "size": 42
+    },
+    {
+      "id": "file::src/EmotionalTracker.svelte",
+      "type": "file",
+      "label": "EmotionalTracker.svelte",
+      "filePath": "src/EmotionalTracker.svelte",
+      "description": "Component (231 lines) managing the Emotional state selector (Buffs only / Debuffs only / Both). Provides a 3-position slider with color-coded states that persists to the build store.",
+      "language": "svelte",
+      "category": "code",
+      "size": 231
+    },
+    {
+      "id": "file::src/Highlight.svelte",
+      "type": "file",
+      "label": "Highlight.svelte",
+      "filePath": "src/Highlight.svelte",
+      "description": "Simple component (16 lines) rendering text with search-term highlighting. Wraps highlighted portions in <mark> tags using highlightTextParts utility.",
+      "language": "svelte",
+      "category": "code",
+      "size": 16
+    },
+    {
+      "id": "file::src/LevelBar.svelte",
+      "type": "file",
+      "label": "LevelBar.svelte",
+      "filePath": "src/LevelBar.svelte",
+      "description": "Component (398 lines) displaying and editing the character level and HP bar. Features draggable fill indicator, shield HP overlay, protection stat display, editable level input with keyboard shortcuts, and responsive styling.",
+      "language": "svelte",
+      "category": "code",
+      "size": 398
+    },
+    {
+      "id": "file::src/lib/AppHeader.svelte",
+      "type": "file",
+      "label": "AppHeader.svelte",
+      "filePath": "src/lib/AppHeader.svelte",
+      "description": "Header component (176 lines) with the VoxlBuilder title, tab navigation (Overview/Analyze), and animated tab bubble transition. Includes BuildSaves integration.",
+      "language": "svelte",
+      "category": "code",
+      "size": 176
+    },
+    {
+      "id": "file::src/lib/constants/boosts.ts",
+      "type": "file",
+      "label": "boosts.ts",
+      "filePath": "src/lib/constants/boosts.ts",
+      "description": "Constants module (68 lines) defining all perk-related damage boost multipliers. Contains ~55 exported numeric constants for per-stack multipliers (Blood Thirsty, Venom Spitter, Perfection, etc.) and complex boost parameters (Heat Drill cooldown/damage, Quickdraw, Spring Powered, etc.).",
+      "language": "typescript",
+      "category": "code",
+      "size": 68
+    },
+    {
+      "id": "file::src/lib/constants/cdr.ts",
+      "type": "file",
+      "label": "cdr.ts",
+      "filePath": "src/lib/constants/cdr.ts",
+      "description": "Constants module (25 lines) defining cooldown reduction values for various CDR sources: Caster Rune/WA, Channeled Weapon, Mage Rage, Poison Accel, Runic Winds, Wave Rider, Whirlwind, and Gladiatorial set bonus.",
+      "language": "typescript",
+      "category": "code",
+      "size": 25
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge::file::src/main.ts::imports::file::src/App.svelte",
+      "source": "file::src/main.ts",
+      "target": "file::src/App.svelte",
+      "type": "imports",
+      "label": "mounts App as root component"
+    },
+    {
+      "id": "edge::file::src/main.ts::imports::file::src/app.css",
+      "source": "file::src/main.ts",
+      "target": "file::src/app.css",
+      "type": "imports",
+      "label": "imports global CSS styles"
+    },
+    {
+      "id": "edge::file::src/App.svelte::imports::file::src/BuffList.svelte",
+      "source": "file::src/App.svelte",
+      "target": "file::src/BuffList.svelte",
+      "type": "imports",
+      "label": "renders active buffs/debuffs"
+    },
+    {
+      "id": "edge::file::src/App.svelte::imports::file::src/BuildSaves.svelte",
+      "source": "file::src/App.svelte",
+      "target": "file::src/BuildSaves.svelte",
+      "type": "imports",
+      "label": "manages build save/load UI"
+    },
+    {
+      "id": "edge::file::src/App.svelte::imports::file::src/LevelBar.svelte",
+      "source": "file::src/App.svelte",
+      "target": "file::src/LevelBar.svelte",
+      "type": "imports",
+      "label": "displays character level and HP"
+    },
+    {
+      "id": "edge::file::src/App.svelte::imports::file::src/EmotionalTracker.svelte",
+      "source": "file::src/App.svelte",
+      "target": "file::src/EmotionalTracker.svelte",
+      "type": "imports",
+      "label": "provides emotional state selector"
+    },
+    {
+      "id": "edge::file::src/App.svelte::imports::file::src/CdrStepsCalc.svelte",
+      "source": "file::src/App.svelte",
+      "target": "file::src/CdrStepsCalc.svelte",
+      "type": "imports",
+      "label": "displays CDR step breakdown"
+    },
+    {
+      "id": "edge::file::src/App.svelte::imports::file::src/lib/AppHeader.svelte",
+      "source": "file::src/App.svelte",
+      "target": "file::src/lib/AppHeader.svelte",
+      "type": "imports",
+      "label": "renders application header and tabs"
+    },
+    {
+      "id": "edge::file::src/App.svelte::imports::file::src/data/draconicRunes.ts",
+      "source": "file::src/App.svelte",
+      "target": "file::src/data/draconicRunes.ts",
+      "type": "imports",
+      "label": "applies draconic rune bonuses"
+    },
+    {
+      "id": "edge::file::src/App.svelte::imports::file::src/data/selfDamagePerks.ts",
+      "source": "file::src/App.svelte",
+      "target": "file::src/data/selfDamagePerks.ts",
+      "type": "imports",
+      "label": "calculates self-damage from perks"
+    },
+    {
+      "id": "edge::file::src/App.svelte::imports::file::src/data/stanceOverlays.ts",
+      "source": "file::src/App.svelte",
+      "target": "file::src/data/stanceOverlays.ts",
+      "type": "imports",
+      "label": "resolves weapon stance overlay type"
+    },
+    {
+      "id": "edge::file::src/App.svelte::imports::file::src/Highlight.svelte",
+      "source": "file::src/App.svelte",
+      "target": "file::src/Highlight.svelte",
+      "type": "imports",
+      "label": "highlights search terms in modal results"
+    },
+    {
+      "id": "edge::file::src/App.svelte::imports::file::src/DraconicAbilityStats.svelte",
+      "source": "file::src/App.svelte",
+      "target": "file::src/DraconicAbilityStats.svelte",
+      "type": "imports",
+      "label": "displays draconic ability stats"
+    },
+    {
+      "id": "edge::file::src/App.svelte::imports::file::src/DidYouMean.svelte",
+      "source": "file::src/App.svelte",
+      "target": "file::src/DidYouMean.svelte",
+      "type": "imports",
+      "label": "shows fuzzy search suggestions"
+    },
+    {
+      "id": "edge::file::src/App.svelte::imports::file::src/lib/constants/boosts.ts",
+      "source": "file::src/App.svelte",
+      "target": "file::src/lib/constants/boosts.ts",
+      "type": "imports",
+      "label": "references boost multiplier constants"
+    },
+    {
+      "id": "edge::file::src/App.svelte::imports::file::src/lib/constants/cdr.ts",
+      "source": "file::src/App.svelte",
+      "target": "file::src/lib/constants/cdr.ts",
+      "type": "imports",
+      "label": "references CDR constants"
+    },
+    {
+      "id": "edge::file::src/DamageAnalyzer.svelte::imports::file::src/BaseDamageCalc.svelte",
+      "source": "file::src/DamageAnalyzer.svelte",
+      "target": "file::src/BaseDamageCalc.svelte",
+      "type": "imports",
+      "label": "renders base damage calculation rows"
+    },
+    {
+      "id": "edge::file::src/DamageAnalyzer.svelte::imports::file::src/data/draconicRunes.ts",
+      "source": "file::src/DamageAnalyzer.svelte",
+      "target": "file::src/data/draconicRunes.ts",
+      "type": "imports",
+      "label": "applies draconic rune bonuses"
+    },
+    {
+      "id": "edge::file::src/DamageAnalyzer.svelte::imports::file::src/data/selfDamagePerks.ts",
+      "source": "file::src/DamageAnalyzer.svelte",
+      "target": "file::src/data/selfDamagePerks.ts",
+      "type": "imports",
+      "label": "calculates self-damage from perks"
+    },
+    {
+      "id": "edge::file::src/DamageAnalyzer.svelte::imports::file::src/data/stanceOverlays.ts",
+      "source": "file::src/DamageAnalyzer.svelte",
+      "target": "file::src/data/stanceOverlays.ts",
+      "type": "imports",
+      "label": "resolves weapon stance overlays"
+    },
+    {
+      "id": "edge::file::src/BaseDamageCalc.svelte::imports::file::src/CritIcon.svelte",
+      "source": "file::src/BaseDamageCalc.svelte",
+      "target": "file::src/CritIcon.svelte",
+      "type": "imports",
+      "label": "renders critical hit icon"
+    },
+    {
+      "id": "edge::file::src/BaseDamageCalc.svelte::imports::file::src/DmgTotalTooltip.svelte",
+      "source": "file::src/BaseDamageCalc.svelte",
+      "target": "file::src/DmgTotalTooltip.svelte",
+      "type": "imports",
+      "label": "displays damage type breakdown tooltip"
+    },
+    {
+      "id": "edge::file::src/BuildSaves.svelte::imports::file::src/Highlight.svelte",
+      "source": "file::src/BuildSaves.svelte",
+      "target": "file::src/Highlight.svelte",
+      "type": "imports",
+      "label": "highlights search matches in save slots"
+    },
+    {
+      "id": "edge::file::src/BuffList.svelte::imports::file::src/lib/constants/boosts.ts",
+      "source": "file::src/BuffList.svelte",
+      "target": "file::src/lib/constants/boosts.ts",
+      "type": "imports",
+      "label": "references boost multiplier constants"
+    },
+    {
+      "id": "edge::file::src/lib/AppHeader.svelte::imports::file::src/BuildSaves.svelte",
+      "source": "file::src/lib/AppHeader.svelte",
+      "target": "file::src/BuildSaves.svelte",
+      "type": "imports",
+      "label": "renders build saves in header"
+    },
+    {
+      "id": "edge::file::src/CdrStepsCalc.svelte::imports::file::src/lib/constants/cdr.ts",
+      "source": "file::src/CdrStepsCalc.svelte",
+      "target": "file::src/lib/constants/cdr.ts",
+      "type": "imports",
+      "label": "references CD_MINIMUM constant"
+    },
+    {
+      "id": "edge::file::src/DmgTotalTooltip.svelte::imports::file::src/CritIcon.svelte",
+      "source": "file::src/DmgTotalTooltip.svelte",
+      "target": "file::src/CritIcon.svelte",
+      "type": "unused-reference",
+      "label": "CritIcon is available but not directly used in DmgTotalTooltip"
+    },
+    {
+      "id": "edge::file::src/EmotionalTracker.svelte::imports::file::src/lib/constants/boosts.ts",
+      "source": "file::src/EmotionalTracker.svelte",
+      "target": "file::src/lib/constants/boosts.ts",
+      "type": "unused-reference",
+      "label": "boosts module available but not directly imported"
+    },
+    {
+      "id": "edge::document::.slim/deepwork/ui-upgrade.md::describes::file::src/App.svelte",
+      "source": "document::.slim/deepwork/ui-upgrade.md",
+      "target": "file::src/App.svelte",
+      "type": "describes",
+      "label": "describes the UI upgrade plan for the main component"
+    },
+    {
+      "id": "edge::document::docs/ONBOARDING.md::references::file::src/App.svelte",
+      "source": "document::docs/ONBOARDING.md",
+      "target": "file::src/App.svelte",
+      "type": "references",
+      "label": "references App.svelte in architecture overview"
+    }
+  ]
+}

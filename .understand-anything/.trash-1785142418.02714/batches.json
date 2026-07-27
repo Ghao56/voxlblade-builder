@@ -58,7 +58,6 @@
       "getDotBase",
       "getDotPotencyMult",
       "calcDotTick",
-      "calcCausticSlow",
       "toGamePotency",
       "calcDotDisplayPotency"
     ],
@@ -78,8 +77,6 @@
       "getDraconicBonuses"
     ],
     "src/data/enemyHpEffects.ts": [
-      "isEnemyHpGateActive",
-      "ENEMY_HP_EFFECT_DEFS",
       "getActiveEnemyHpDebuffs",
       "getEnemyHpDotMultiplier"
     ],
@@ -97,19 +94,16 @@
       "gateThreshold",
       "isHpGateActive",
       "DRAGON_STATE_HP_GATE",
-      "BELLOWING_EMBER_HP_GATE",
       "SECONDARY_TONE_COLORS",
       "calcSpringblastBaseDamage",
       "calcBomberChargeBaseDamage",
-      "PERK_DMG_DEFS"
+      "PERK_DMG_DEFS",
+      "findPerkDmgDef"
     ],
     "src/data/procCoefficients.ts": [
       "WEAPON_PROC_COEFFS",
       "WA_PROC_COEFFS",
-      "RUNE_PROC_COEFFS",
-      "PERK_PROC_COEFFS",
-      "DEFAULT_PROC_COEFF",
-      "DEFAULT_RUNE_PROC_COEFF"
+      "DEFAULT_PROC_COEFF"
     ],
     "src/data/raceEffects.ts": [
       "getActiveRaceEffect",
@@ -212,7 +206,15 @@
       "VAMPIRE_SUNLIGHT_HEAL_MULT",
       "TOXIN_CASTER_MULT_PER_STACK",
       "CUT_DOWN_MULT_PER_AMOUNT",
-      "EXECUTIONER_MULT_PER_AMOUNT"
+      "EXECUTIONER_MULT_PER_AMOUNT",
+      "HEAT_DRILL_COOLDOWN",
+      "HEAT_DRILL_LUNGE_BASE",
+      "HEAT_DRILL_LUNGE_PER_STACK",
+      "HEAT_DRILL_EXPLOSION_BASE",
+      "HEAT_DRILL_EXPLOSION_PER_STACK",
+      "HEAT_DRILL_SMALL_EXPLOSION_BASE",
+      "HEAT_DRILL_SMALL_EXPLOSION_PER_STACK",
+      "HEAT_DRILL_SMALL_EXPLOSION_HITS"
     ],
     "src/lib/constants/buffs.ts": [
       "BUFF_EFFECT_PER_TENTH",
@@ -372,13 +374,10 @@
       "TRACKED_TYPES_WITH_TRUE"
     ],
     "src/lib/constants/debuff-effects.ts": [
-      "DEBUFF_WEAKNESS_FORMULA_ONE",
-      "DEBUFF_DEFENSE_CONVERSION",
       "DEBUFF_STICKY_DMG_MULT",
       "DEBUFF_DESPAIR_DISPLAY_DIVISOR",
       "DEBUFF_DESPAIR_DISPLAY_MULT",
-      "DEBUFF_DESPAIR_DMG_COEFF",
-      "DEBUFF_DESPAIR_DMG_DIVISOR"
+      "DEBUFF_DESPAIR_DMG_COEFF"
     ],
     "src/lib/constants/defensive.ts": [
       "BARBSKIN_DR_PER_STACK",
@@ -403,18 +402,9 @@
     "src/lib/constants/dot-damage.ts": [
       "DOT_BASE_DAMAGE",
       "DOT_INFLICTION_DIVISOR",
-      "DOT_BLEED_DEX_SCALE",
-      "DOT_BLEED_PHYS_SCALE",
-      "DOT_BURN_FIRE_SCALE",
-      "DOT_POISON_HEX_SCALE",
-      "DOT_POISON_EARTH_SCALE",
-      "DOT_CAUSTIC_HEX_SCALE",
-      "DOT_CAUSTIC_EARTH_SCALE",
-      "DOT_POTENCY_POWER_BASE",
       "DOT_POTENCY_POWER_CAP",
       "DOT_ROUND_FACTOR",
-      "DOT_BUILDER_TO_GAME",
-      "DOT_SLOW_MULT_PER_SECOND"
+      "DOT_BUILDER_TO_GAME"
     ],
     "src/lib/constants/draconic-colors.ts": [
       "DRACONIC_FIRE_SPEED_MULT",
@@ -535,7 +525,6 @@
       "APOLLO_BOOST_HITS_BASE",
       "APOLLO_BOOST_HITS_PER_STACK",
       "APOLLO_BOOST_TAUNT_DURATION",
-      "DRAGON_STATE_HP_GATE_THRESHOLD",
       "BELLOWING_EMBER_HP_GATE_THRESHOLD",
       "BELLOWING_EMBER_HP_GATE_PER_STACK",
       "PROTECTOR_SPIRIT_HP_GATE",
@@ -561,7 +550,13 @@
       "PYRE_BLOOM_FIRERATE_DIVISOR",
       "PYRE_BLOOM_MAX_ACTIVE_BASE",
       "PYRE_BLOOM_MAX_ACTIVE_PER_STACK",
-      "PYRE_BLOOM_BURN_DURATION"
+      "PYRE_BLOOM_BURN_DURATION",
+      "BASTION_BALLISTA_BASE_DMG",
+      "BASTION_BALLISTA_DMG_PER_STACK",
+      "BASTION_BALLISTA_MAX_POTENCY_BASE",
+      "BASTION_BALLISTA_RESTORE_DELAY",
+      "BASTION_BALLISTA_FIRE_COOLDOWN",
+      "BASTION_BALLISTA_PROC_COEFF"
     ],
     "src/lib/constants/perks.ts": [
       "LUMINESCENT_PCT_PER_STACK",
@@ -1750,11 +1745,11 @@
               "gateThreshold",
               "isHpGateActive",
               "DRAGON_STATE_HP_GATE",
-              "BELLOWING_EMBER_HP_GATE",
               "SECONDARY_TONE_COLORS",
               "calcSpringblastBaseDamage",
               "calcBomberChargeBaseDamage",
-              "PERK_DMG_DEFS"
+              "PERK_DMG_DEFS",
+              "findPerkDmgDef"
             ]
           },
           {

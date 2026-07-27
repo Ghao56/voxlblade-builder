@@ -1,0 +1,259 @@
+{
+  "nodes": [
+    {
+      "id": "file::src/lib/ui/Stat.svelte",
+      "type": "file",
+      "label": "Stat.svelte",
+      "filePath": "src/lib/ui/Stat.svelte",
+      "description": "Reusable stat display UI component (90 lines) using Svelte 5 runes ($props). Renders a label-value pair with variant colors (green/amber/red/purple/blue/teal) and sizes (sm/md/lg). Supports children snippets for custom value rendering.",
+      "language": "svelte",
+      "category": "code",
+      "size": 90
+    },
+    {
+      "id": "file::src/lib/uiConstants.ts",
+      "type": "file",
+      "label": "uiConstants.ts",
+      "filePath": "src/lib/ui/uiConstants.ts",
+      "description": "UI constants module (78 lines) defining UI_COLORS (damage type colors, tag group colors, source type colors, enchant rarity colors, negative stat colors), SOURCE_LABELS, STAT_LABELS, and TAG_LABELS mappings used across the UI.",
+      "language": "typescript",
+      "category": "code",
+      "size": 78
+    },
+    {
+      "id": "file::src/main.ts",
+      "type": "file",
+      "label": "main.ts",
+      "filePath": "src/main.ts",
+      "description": "Application entry point (8 lines). Imports and mounts the App.svelte component, imports global CSS, and initializes Vercel analytics.",
+      "language": "typescript",
+      "category": "code",
+      "size": 8
+    },
+    {
+      "id": "file::src/ModalSearchHeader.svelte",
+      "type": "file",
+      "label": "ModalSearchHeader.svelte",
+      "filePath": "src/ModalSearchHeader.svelte",
+      "description": "Component (199 lines) providing a reusable search header for modal dialogs. Includes search input, suggestion dropdown, tag filter, stat filter (weapon or standard), and optional sort buttons. Used by AccessorySelectModal and WeaponPartModal.",
+      "language": "svelte",
+      "category": "code",
+      "size": 199
+    },
+    {
+      "id": "file::src/MountIcon.svelte",
+      "type": "file",
+      "label": "MountIcon.svelte",
+      "filePath": "src/MountIcon.svelte",
+      "description": "SVG icon component (64 lines) rendering a detailed mount icon with gradient fill. Contains complex SVG path data for the mount silhouette.",
+      "language": "svelte",
+      "category": "code",
+      "size": 64
+    },
+    {
+      "id": "file::src/ScalingBreakdownRow.svelte",
+      "type": "file",
+      "label": "ScalingBreakdownRow.svelte",
+      "filePath": "src/ScalingBreakdownRow.svelte",
+      "description": "Component (102 lines) displaying a single weapon scaling breakdown row. Shows stat name, base value, multiplier arrow, scaled value, boost percentage, and effective contribution in a grid layout.",
+      "language": "svelte",
+      "category": "code",
+      "size": 102
+    },
+    {
+      "id": "file::src/StatFilter.svelte",
+      "type": "file",
+      "label": "StatFilter.svelte",
+      "filePath": "src/StatFilter.svelte",
+      "description": "Component (334 lines) providing stat-based filtering for equipment selection. Groups stats into Boost/Defense/Speed categories with include/exclude toggle chips. Supports sort modes: highest, lowest, alphabetical, most-effective, brawny.",
+      "language": "svelte",
+      "category": "code",
+      "size": 334
+    },
+    {
+      "id": "file::src/SuggestDrop.svelte",
+      "type": "file",
+      "label": "SuggestDrop.svelte",
+      "filePath": "src/SuggestDrop.svelte",
+      "description": "Component (67 lines) rendering a dropdown of search suggestions. Displays items with type labels (Name/Perk) and highlighted text matching the search query.",
+      "language": "svelte",
+      "category": "code",
+      "size": 67
+    },
+    {
+      "id": "file::src/TagFilter.svelte",
+      "type": "file",
+      "label": "TagFilter.svelte",
+      "filePath": "src/TagFilter.svelte",
+      "description": "Component (330 lines) providing tag-based filtering for perk/weapon selection. Groups tags into Combat/Support/Status/Weapon Art-Rune/Special categories with toggle chips. Supports hiding specific tags and excluding tags from the filter.",
+      "language": "svelte",
+      "category": "code",
+      "size": 330
+    },
+    {
+      "id": "file::src/WeaponStatFilter.svelte",
+      "type": "file",
+      "label": "WeaponStatFilter.svelte",
+      "filePath": "src/WeaponStatFilter.svelte",
+      "description": "Component (240 lines) providing weapon-specific stat filtering. Similar to StatFilter but specialized for weapon part selection with damage scaling and attack speed focus.",
+      "language": "svelte",
+      "category": "code",
+      "size": 240
+    },
+    {
+      "id": "file::src/WeaponStatsDisplay.svelte",
+      "type": "file",
+      "label": "WeaponStatsDisplay.svelte",
+      "filePath": "src/WeaponStatsDisplay.svelte",
+      "description": "Component (121 lines) displaying computed weapon stats in a compact panel. Shows damage, attack speed, and scaling values with color-coded labels.",
+      "language": "svelte",
+      "category": "code",
+      "size": 121
+    },
+    {
+      "id": "file::vite.config.ts",
+      "type": "file",
+      "label": "vite.config.ts",
+      "filePath": "vite.config.ts",
+      "description": "Vite build configuration (59 lines). Configures Svelte plugin, VitePWA for PWA support with auto-update and StaleWhileRevalidate caching, and rollup-plugin-visualizer for bundle analysis. Uses configurable base path via VITE_BASE_PATH env var.",
+      "language": "typescript",
+      "category": "code",
+      "size": 59
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge::file::src/main.ts::imports::file::src/App.svelte",
+      "source": "file::src/main.ts",
+      "target": "file::src/App.svelte",
+      "type": "imports",
+      "label": "mounts App as root component"
+    },
+    {
+      "id": "edge::file::src/main.ts::imports::file::src/app.css",
+      "source": "file::src/main.ts",
+      "target": "file::src/app.css",
+      "type": "imports",
+      "label": "imports global CSS"
+    },
+    {
+      "id": "edge::file::src/ModalSearchHeader.svelte::imports::file::src/SuggestDrop.svelte",
+      "source": "file::src/ModalSearchHeader.svelte",
+      "target": "file::src/SuggestDrop.svelte",
+      "type": "imports",
+      "label": "renders search suggestions dropdown"
+    },
+    {
+      "id": "edge::file::src/ModalSearchHeader.svelte::imports::file::src/TagFilter.svelte",
+      "source": "file::src/ModalSearchHeader.svelte",
+      "target": "file::src/TagFilter.svelte",
+      "type": "imports",
+      "label": "renders tag filter chips"
+    },
+    {
+      "id": "edge::file::src/ModalSearchHeader.svelte::imports::file::src/StatFilter.svelte",
+      "source": "file::src/ModalSearchHeader.svelte",
+      "target": "file::src/StatFilter.svelte",
+      "type": "imports",
+      "label": "renders standard stat filter"
+    },
+    {
+      "id": "edge::file::src/ModalSearchHeader.svelte::imports::file::src/WeaponStatFilter.svelte",
+      "source": "file::src/ModalSearchHeader.svelte",
+      "target": "file::src/WeaponStatFilter.svelte",
+      "type": "imports",
+      "label": "renders weapon stat filter"
+    },
+    {
+      "id": "edge::file::src/StatFilter.svelte::imports::file::src/lib/StatFilterShared.svelte",
+      "source": "file::src/StatFilter.svelte",
+      "target": "file::src/lib/StatFilterShared.svelte",
+      "type": "imports",
+      "label": "uses shared StatChip component"
+    },
+    {
+      "id": "edge::file::src/StatFilter.svelte::imports::file::src/lib/stats/elementalBoosts.ts",
+      "source": "file::src/StatFilter.svelte",
+      "target": "file::src/lib/stats/elementalBoosts.ts",
+      "type": "imports",
+      "label": "reads elemental boost stat definitions"
+    },
+    {
+      "id": "edge::file::src/StatFilter.svelte::imports::file::src/lib/stats/filterActions.ts",
+      "source": "file::src/StatFilter.svelte",
+      "target": "file::src/lib/stats/filterActions.ts",
+      "type": "imports",
+      "label": "creates filter action handlers"
+    },
+    {
+      "id": "edge::file::src/StatFilter.svelte::imports::file::src/lib/uiConstants.ts",
+      "source": "file::src/StatFilter.svelte",
+      "target": "file::src/lib/uiConstants.ts",
+      "type": "imports",
+      "label": "reads UI color constants"
+    },
+    {
+      "id": "edge::file::src/TagFilter.svelte::imports::file::src/lib/uiConstants.ts",
+      "source": "file::src/TagFilter.svelte",
+      "target": "file::src/lib/uiConstants.ts",
+      "type": "imports",
+      "label": "reads UI color constants"
+    },
+    {
+      "id": "edge::file::src/ScalingBreakdownRow.svelte::imports::file::src/lib/types.ts",
+      "source": "file::src/ScalingBreakdownRow.svelte",
+      "target": "file::src/lib/types.ts",
+      "type": "imports",
+      "label": "reads PERCENT_STATS set"
+    },
+    {
+      "id": "edge::file::src/WeaponStatsDisplay.svelte::imports::file::src/ScalingBreakdownRow.svelte",
+      "source": "file::src/WeaponStatsDisplay.svelte",
+      "target": "file::src/ScalingBreakdownRow.svelte",
+      "type": "imports",
+      "label": "renders per-stat scaling breakdown rows"
+    },
+    {
+      "id": "edge::file::src/SuggestDrop.svelte::imports::file::src/lib/utils.ts",
+      "source": "file::src/SuggestDrop.svelte",
+      "target": "file::src/lib/utils.ts",
+      "type": "imports",
+      "label": "uses highlightTextParts utility"
+    },
+    {
+      "id": "edge::file::src/DidYouMean.svelte::imports::file::src/lib/utils.ts",
+      "source": "file::src/DidYouMean.svelte",
+      "target": "file::src/lib/utils.ts",
+      "type": "imports",
+      "label": "uses highlightTextParts utility"
+    },
+    {
+      "id": "edge::file::vite.config.ts::configures::config::package.json",
+      "source": "file::vite.config.ts",
+      "target": "config::package.json",
+      "type": "configures",
+      "label": "Vite build config referenced by package.json scripts"
+    },
+    {
+      "id": "edge::file::vite.config.ts::imports::file::src/main.ts",
+      "source": "file::vite.config.ts",
+      "target": "file::src/main.ts",
+      "type": "entry-point-for",
+      "label": "Vite serves main.ts as the entry point"
+    },
+    {
+      "id": "edge::file::src/lib/ui/Stat.svelte::imports::file::src/lib/ui/index.ts",
+      "source": "file::src/lib/ui/Stat.svelte",
+      "target": "file::src/lib/ui/index.ts",
+      "type": "re-exported-by",
+      "label": "exported via ui barrel"
+    },
+    {
+      "id": "edge::file::src/lib/uiConstants.ts::imports::file::src/lib/types.ts",
+      "source": "file::src/lib/uiConstants.ts",
+      "target": "file::src/lib/types.ts",
+      "type": "unused-reference",
+      "label": "uiConstants defines its own label maps independent of types.ts"
+    }
+  ]
+}

@@ -1,0 +1,585 @@
+{
+  "nodes": [
+    {
+      "id": "file::src/data/weaponConditionalBoosts.ts",
+      "type": "file",
+      "label": "weaponConditionalBoosts.ts",
+      "filePath": "src/data/weaponConditionalBoosts.ts",
+      "description": "Defines conditional damage boosts applied to specific weapon types when matching perks and hit scopes (M1 finisher or M2). Iterates over a static list of boost definitions and accumulates a combined multiplier.",
+      "language": "TypeScript",
+      "category": "code",
+      "size": 46
+    },
+    {
+      "id": "func::src/data/weaponConditionalBoosts.ts::getWeaponConditionalBoost",
+      "type": "function",
+      "label": "getWeaponConditionalBoost",
+      "filePath": "src/data/weaponConditionalBoosts.ts",
+      "line": 30,
+      "description": "Given perk levels, a weapon type, and a hit scope, returns the combined damage multiplier and labels of all matching conditional boosts. Each matching boost applies multiplicatively: mult *= 1 + multiplierPerPerk * perkStacks.",
+      "signature": "getWeaponConditionalBoost(perks: Record<string, number>, finalWeaponType: string, hitScope: WeaponHitScope): { mult: number; labels: string[] }",
+      "exported": true,
+      "sideEffects": false
+    },
+    {
+      "id": "type::src/data/weaponConditionalBoosts.ts::WeaponHitScope",
+      "type": "type",
+      "label": "WeaponHitScope",
+      "filePath": "src/data/weaponConditionalBoosts.ts",
+      "line": 3,
+      "description": "Union type restricting valid hit scopes to 'm1Finisher' or 'm2', representing which attack phase triggers a conditional boost.",
+      "definition": "'m1Finisher' | 'm2'"
+    },
+    {
+      "id": "interface::src/data/weaponConditionalBoosts.ts::WeaponConditionalBoost",
+      "type": "interface",
+      "label": "WeaponConditionalBoost",
+      "filePath": "src/data/weaponConditionalBoosts.ts",
+      "line": 5,
+      "description": "Internal interface describing a single conditional boost definition: the perk name, multiplier per stack, applicable weapon types, hit scope, and a human-readable condition string.",
+      "fields": ["perkName", "multiplierPerPerk", "weaponTypes", "hitScope", "condition"]
+    },
+    {
+      "id": "const::src/data/weaponConditionalBoosts.ts::WEAPON_CONDITIONAL_BOOSTS",
+      "type": "constant",
+      "label": "WEAPON_CONDITIONAL_BOOSTS",
+      "filePath": "src/data/weaponConditionalBoosts.ts",
+      "line": 13,
+      "description": "Static array of WeaponConditionalBoost definitions. Currently contains two entries for the 'Aggressive Personality' perk — one for War Hammer/Dual Mallets M1 finisher and one for Mallet M2.",
+      "visibility": "module"
+    },
+
+    {
+      "id": "file::src/lib/crit.ts",
+      "type": "file",
+      "label": "crit.ts",
+      "filePath": "src/lib/crit.ts",
+      "description": "Core critical hit calculation engine. Computes natural crit chance, extra crit chance, combined effective crit chance, and crit damage multiplier from stats and perks. Handles Primal division, proc coefficient scaling, and sources for both crit chance and crit damage.",
+      "language": "TypeScript",
+      "category": "code",
+      "size": 341
+    },
+    {
+      "id": "func::src/lib/crit.ts::calcCrit",
+      "type": "function",
+      "label": "calcCrit",
+      "filePath": "src/lib/crit.ts",
+      "line": 225,
+      "description": "Main critical hit calculator. Aggregates natural crit sources (dexterity, elemental boosts, Perfection, Seismic Momentum), extra crit sources (Carrying Winds, King's Luck), and crit damage sources. Applies Primal division to natural sources when active. Computes combined crit chance via independence formula and adjusts for proc coefficient scaling. Returns a comprehensive CritResult with breakdowns for UI display.",
+      "signature": "calcCrit(stats: StatMap, perks: Record<string, number>, hitProcCoeff?: ProcCoefficient): CritResult",
+      "exported": true,
+      "sideEffects": false
+    },
+    {
+      "id": "func::src/lib/crit.ts::calcDexterity",
+      "type": "function",
+      "label": "calcDexterity",
+      "filePath": "src/lib/crit.ts",
+      "line": 32,
+      "description": "Converts dexterity boost stat to a crit chance percentage by dividing by DEX_CRIT_DIVISOR and rounding.",
+      "signature": "calcDexterity(stats: StatMap): number",
+      "exported": false,
+      "sideEffects": false
+    },
+    {
+      "id": "func::src/lib/crit.ts::calcElementalBoost",
+      "type": "function",
+      "label": "calcElementalBoost",
+      "filePath": "src/lib/crit.ts",
+      "line": 37,
+      "description": "Generic helper for elemental crit sources. Multiplies a stat value (e.g., airBoost) by a per-stack multiplier and the number of perk stacks, returning 0 if the stat is non-positive.",
+      "signature": "calcElementalBoost(perks: Record<string, number>, perkName: string, statValue: number | undefined, multiplier: number): number",
+      "exported": false,
+      "sideEffects": false
+    },
+    {
+      "id": "func::src/lib/crit.ts::calcPerfection",
+      "type": "function",
+      "label": "calcPerfection",
+      "filePath": "src/lib/crit.ts",
+      "line": 49,
+      "description": "Calculates crit chance from Perfection perk stacks (stacks * PERFECTION_CRIT_PER_STACK).",
+      "signature": "calcPerfection(perks: Record<string, number>): number",
+      "exported": false,
+      "sideEffects": false
+    },
+    {
+      "id": "func::src/lib/crit.ts::hasActiveGatingPerks",
+      "type": "function",
+      "label": "hasActiveGatingPerks",
+      "filePath": "src/lib/crit.ts",
+      "line": 189,
+      "description": "Returns true if any source in the given array has at least one gating perk with stacks > 0.",
+      "signature": "hasActiveGatingPerks(sources: CritSource[], perks: Record<string, number>): boolean",
+      "exported": false,
+      "sideEffects": false
+    },
+    {
+      "id": "func::src/lib/crit.ts::round",
+      "type": "function",
+      "label": "round (crit)",
+      "filePath": "src/lib/crit.ts",
+      "line": 221,
+      "description": "Local rounding helper: rounds to 2 decimal places.",
+      "signature": "round(n: number): number",
+      "exported": false,
+      "sideEffects": false
+    },
+    {
+      "id": "interface::src/lib/crit.ts::CritResult",
+      "type": "interface",
+      "label": "CritResult",
+      "filePath": "src/lib/crit.ts",
+      "line": 193,
+      "description": "Comprehensive return type from calcCrit. Contains natural and extra crit chances, effective crit chances with/without proc scaling, crit damage multiplier, breakdown arrays for all sources, Primal state, formula string, and optional proc scaling info.",
+      "fields": ["naturalCritChance", "effectiveNaturalCrit", "effectiveNaturalCritWithProc", "critDamageMultiplier", "naturalBreakdown", "extraCritChance", "extraBreakdown", "allCritBreakdown", "effectiveCritChance", "effectiveCritChanceWithProc", "critFormula", "critDmgBreakdown", "primalActive", "primalStacks", "hasCritRelevantPerks", "procScalingInfo"]
+    },
+    {
+      "id": "interface::src/lib/crit.ts::CritSource",
+      "type": "interface",
+      "label": "CritSource",
+      "filePath": "src/lib/crit.ts",
+      "line": 25,
+      "description": "Describes a single source of crit chance or crit damage: a label, a calculation function, optional gating perks that must be active, and whether the source counts as a natural equivalent for Primal scaling.",
+      "fields": ["label", "calc", "gatingPerks", "naturalEquivalent"]
+    },
+    {
+      "id": "const::src/lib/crit.ts::NATURAL_CRIT_SOURCES",
+      "type": "constant",
+      "label": "NATURAL_CRIT_SOURCES",
+      "filePath": "src/lib/crit.ts",
+      "line": 81,
+      "description": "Array of crit sources that count as 'natural' and are affected by Primal division: Dexterity Boost, Seismic Momentum, Flowing Crits, Spell Slinger, Sharp Crits, and Perfection.",
+      "visibility": "module"
+    },
+    {
+      "id": "const::src/lib/crit.ts::EXTRA_CRIT_SOURCES",
+      "type": "constant",
+      "label": "EXTRA_CRIT_SOURCES",
+      "filePath": "src/lib/crit.ts",
+      "line": 99,
+      "description": "Array of crit sources that are independent of natural sources and combined via the independence formula: Carrying Winds and Caci King Spirit (King's Luck).",
+      "visibility": "module"
+    },
+    {
+      "id": "const::src/lib/crit.ts::CRIT_DMG_SOURCES",
+      "type": "constant",
+      "label": "CRIT_DMG_SOURCES",
+      "filePath": "src/lib/crit.ts",
+      "line": 120,
+      "description": "Array of sources contributing to the crit damage multiplier: Thief Training, Dexterity, Seismic Momentum, all elemental crit sources, Venom Eater, Vital Strikes, Spark, Critical Master, and Splinter.",
+      "visibility": "module"
+    },
+    {
+      "id": "const::src/lib/crit.ts::ELEMENTAL_CRIT_SOURCES",
+      "type": "constant",
+      "label": "ELEMENTAL_CRIT_SOURCES",
+      "filePath": "src/lib/crit.ts",
+      "line": 54,
+      "description": "Shared array of elemental crit sources (Flowing Crits, Spell Slinger, Sharp Crits, Perfection) used in both natural crit chance and crit damage calculations.",
+      "visibility": "module"
+    },
+    {
+      "id": "const::src/lib/crit.ts::ALL_CRIT_SOURCES",
+      "type": "constant",
+      "label": "ALL_CRIT_SOURCES",
+      "filePath": "src/lib/crit.ts",
+      "line": 183,
+      "description": "Concatenation of NATURAL_CRIT_SOURCES, EXTRA_CRIT_SOURCES, and CRIT_DMG_SOURCES, used by hasActiveGatingPerks to check for any crit-relevant perks.",
+      "visibility": "module"
+    },
+    {
+      "id": "const::src/lib/crit.ts::CRIT_DISABLED_PERKS",
+      "type": "constant",
+      "label": "CRIT_DISABLED_PERKS",
+      "filePath": "src/lib/crit.ts",
+      "line": 23,
+      "description": "List of perk names that disable crit calculations: 'Seismic Momentum' and 'Fractured Energy'.",
+      "visibility": "module"
+    },
+
+    {
+      "id": "file::src/lib/defense.ts",
+      "type": "file",
+      "label": "defense.ts",
+      "filePath": "src/lib/defense.ts",
+      "description": "Defense calculation module. Resolves defense sources (percent-based and flat) into damage multipliers, groups damage types by which defense stats apply, and computes total base armor defense percentage.",
+      "language": "TypeScript",
+      "category": "code",
+      "size": 82
+    },
+    {
+      "id": "func::src/lib/defense.ts::resolveDefenseSources",
+      "type": "function",
+      "label": "resolveDefenseSources",
+      "filePath": "src/lib/defense.ts",
+      "line": 34,
+      "description": "Separates defense sources into percent-based and flat categories, computes individual multipliers and true DR percentages, then multiplies them within each category to produce combined percentMultiplier, flatMultiplier, and a finalMultiplier.",
+      "signature": "resolveDefenseSources(sources: DefenseSource[]): DefenseBreakdown",
+      "exported": true,
+      "sideEffects": false
+    },
+    {
+      "id": "func::src/lib/defense.ts::calcBaseArmorDefPct",
+      "type": "function",
+      "label": "calcBaseArmorDefPct",
+      "filePath": "src/lib/defense.ts",
+      "line": 77,
+      "description": "Looks up the relevant defense stat keys for a given damage type from DEF_GROUP, sums them from the stats record, and returns the total defense percentage.",
+      "signature": "calcBaseArmorDefPct(dmgType: string, stats: Record<string, number>): number",
+      "exported": true,
+      "sideEffects": false
+    },
+    {
+      "id": "func::src/lib/defense.ts::calcDefMultiplier",
+      "type": "function",
+      "label": "calcDefMultiplier",
+      "filePath": "src/lib/defense.ts",
+      "line": 3,
+      "description": "Converts a defense percentage to a damage multiplier. Positive def gives 1/(1+def) (damage reduction); negative def gives 1+|def| (damage amplification).",
+      "signature": "calcDefMultiplier(defPct: number): number",
+      "exported": false,
+      "sideEffects": false
+    },
+    {
+      "id": "func::src/lib/defense.ts::calcTrueDrPercent",
+      "type": "function",
+      "label": "calcTrueDrPercent",
+      "filePath": "src/lib/defense.ts",
+      "line": 9,
+      "description": "Computes the true damage reduction percentage from a defense stat: def/(1+max(def,0)), displayed as a percentage.",
+      "signature": "calcTrueDrPercent(defPct: number): number",
+      "exported": false,
+      "sideEffects": false
+    },
+    {
+      "id": "interface::src/lib/defense.ts::DefenseSource",
+      "type": "interface",
+      "label": "DefenseSource",
+      "filePath": "src/lib/defense.ts",
+      "line": 14,
+      "description": "Input interface for a single defense source with a name, defense percentage, optional flat flag, and optional condition string.",
+      "fields": ["name", "defPct", "isFlat", "condition"]
+    },
+    {
+      "id": "interface::src/lib/defense.ts::ResolvedDefenseSource",
+      "type": "interface",
+      "label": "ResolvedDefenseSource",
+      "filePath": "src/lib/defense.ts",
+      "line": 21,
+      "description": "Extended DefenseSource with computed damage multiplier and true DR percentage.",
+      "fields": ["name", "defPct", "isFlat", "condition", "mult", "trueDrPct"]
+    },
+    {
+      "id": "interface::src/lib/defense.ts::DefenseBreakdown",
+      "type": "interface",
+      "label": "DefenseBreakdown",
+      "filePath": "src/lib/defense.ts",
+      "line": 26,
+      "description": "Result of resolveDefenseSources: lists of resolved percent and flat sources, their combined multipliers, and the final combined multiplier.",
+      "fields": ["percentSources", "flatSources", "percentMultiplier", "flatMultiplier", "finalMultiplier"]
+    },
+    {
+      "id": "const::src/lib/defense.ts::DEF_GROUP",
+      "type": "constant",
+      "label": "DEF_GROUP",
+      "filePath": "src/lib/defense.ts",
+      "line": 64,
+      "description": "Mapping from damage type strings (physical, air, earth, fire, water, hex, holy, magic, true, summon) to the defense stat keys that reduce that damage type. True and summon have no defense sources.",
+      "exported": true
+    },
+
+    {
+      "id": "file::src/lib/utils.ts",
+      "type": "file",
+      "label": "utils.ts",
+      "filePath": "src/lib/utils.ts",
+      "description": "Shared utility functions used across the calculation engine and UI. Provides multiplier rounding, warding debuff multiplier calculation, text highlighting for search, and proc chance computation with different scaling modes.",
+      "language": "TypeScript",
+      "category": "code",
+      "size": 113
+    },
+    {
+      "id": "func::src/lib/utils.ts::roundMultiplier",
+      "type": "function",
+      "label": "roundMultiplier",
+      "filePath": "src/lib/utils.ts",
+      "line": 9,
+      "description": "Rounds a multiplier to 4 decimal places to avoid floating-point precision issues in stacked multiplicative calculations.",
+      "signature": "roundMultiplier(multiplier: number): number",
+      "exported": true,
+      "sideEffects": false
+    },
+    {
+      "id": "func::src/lib/utils.ts::calcWardingDebuffMultiplier",
+      "type": "function",
+      "label": "calcWardingDebuffMultiplier",
+      "filePath": "src/lib/utils.ts",
+      "line": 13,
+      "description": "Computes the damage multiplier from warding. Positive warding reduces damage via 1/(1+wardingPct); negative warding amplifies via 1-wardingPct.",
+      "signature": "calcWardingDebuffMultiplier(warding: number): number",
+      "exported": true,
+      "sideEffects": false
+    },
+    {
+      "id": "func::src/lib/utils.ts::highlightTextParts",
+      "type": "function",
+      "label": "highlightTextParts",
+      "filePath": "src/lib/utils.ts",
+      "line": 60,
+      "description": "Splits text into an array of {text, highlight} parts based on case-insensitive substring matching of a query. Used by UI components to render search highlights without raw HTML.",
+      "signature": "highlightTextParts(text: string, query: string): Array<{ text: string; highlight: boolean }>",
+      "exported": true,
+      "sideEffects": false
+    },
+    {
+      "id": "func::src/lib/utils.ts::calcProcChance",
+      "type": "function",
+      "label": "calcProcChance",
+      "filePath": "src/lib/utils.ts",
+      "line": 98,
+      "description": "Pure utility to compute actual proc chance from a base chance, a hit's proc coefficient, and a scaling mode. 'normal' multiplies directly, 'positiveOnly' only buffs (never debuffs), 'ignore' returns base chance unchanged. noProc coefficient returns 0 for normal scaling but preserves base for positiveOnly.",
+      "signature": "calcProcChance(baseChance: number, procCoeff: ProcCoefficient, scaling: ProcScalingType): number",
+      "exported": true,
+      "sideEffects": false
+    },
+    {
+      "id": "func::src/lib/utils.ts::calculateMultiplierFromPct",
+      "type": "function",
+      "label": "calculateMultiplierFromPct",
+      "filePath": "src/lib/utils.ts",
+      "line": 1,
+      "description": "Converts a percentage to a multiplier: (1 + pct/100), rounded to 4 decimal places.",
+      "signature": "calculateMultiplierFromPct(pct: number): number",
+      "exported": false,
+      "sideEffects": false
+    },
+    {
+      "id": "func::src/lib/utils.ts::multiplyMultipliers",
+      "type": "function",
+      "label": "multiplyMultipliers",
+      "filePath": "src/lib/utils.ts",
+      "line": 5,
+      "description": "Reduces an array of multipliers into a single product starting from 1.0.",
+      "signature": "multiplyMultipliers(multipliers: number[]): number",
+      "exported": false,
+      "sideEffects": false
+    },
+    {
+      "id": "func::src/lib/utils.ts::escapeHtml",
+      "type": "function",
+      "label": "escapeHtml",
+      "filePath": "src/lib/utils.ts",
+      "line": 29,
+      "description": "Escapes HTML special characters (&, <, >, \", ') to their entity equivalents.",
+      "signature": "escapeHtml(text: string): string",
+      "exported": false,
+      "sideEffects": false
+    },
+    {
+      "id": "func::src/lib/utils.ts::highlightText",
+      "type": "function",
+      "label": "highlightText",
+      "filePath": "src/lib/utils.ts",
+      "line": 33,
+      "description": "Wraps case-insensitive query matches in <mark class=\"modal-hl\"> tags within HTML-escaped text. Used for HTML-based highlighting (contrasted with highlightTextParts which returns structured data).",
+      "signature": "highlightText(text: string, query: string): string",
+      "exported": false,
+      "sideEffects": false
+    },
+    {
+      "id": "const::src/lib/utils.ts::htmlEscapeMap",
+      "type": "constant",
+      "label": "htmlEscapeMap",
+      "filePath": "src/lib/utils.ts",
+      "line": 21,
+      "description": "Lookup table mapping HTML special characters to their escaped entity strings.",
+      "visibility": "module"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge::src/data/weaponConditionalBoosts.ts::imports::src/lib/utils.ts",
+      "source": "file::src/data/weaponConditionalBoosts.ts",
+      "target": "file::src/lib/utils.ts",
+      "type": "import",
+      "label": "imports roundMultiplier"
+    },
+    {
+      "id": "edge::src/lib/crit.ts::imports::src/lib/constants/perks.ts",
+      "source": "file::src/lib/crit.ts",
+      "target": "file::src/lib/constants/perks.ts",
+      "type": "import",
+      "label": "imports crit constants"
+    },
+    {
+      "id": "edge::src/lib/crit.ts::imports::src/lib/types.ts",
+      "source": "file::src/lib/crit.ts",
+      "target": "file::src/lib/types.ts",
+      "type": "import",
+      "label": "imports ProcCoefficient, StatMap"
+    },
+    {
+      "id": "edge::src/lib/crit.ts::imports::src/lib/utils.ts",
+      "source": "file::src/lib/crit.ts",
+      "target": "file::src/lib/utils.ts",
+      "type": "import",
+      "label": "imports calcProcChance"
+    },
+    {
+      "id": "edge::src/lib/defense.ts::imports::src/lib/utils.ts",
+      "source": "file::src/lib/defense.ts",
+      "target": "file::src/lib/utils.ts",
+      "type": "import",
+      "label": "imports roundMultiplier"
+    },
+    {
+      "id": "edge::src/lib/defense.ts::imports::src/lib/constants/defensive.ts",
+      "source": "file::src/lib/defense.ts",
+      "target": "file::src/lib/constants/defensive.ts",
+      "type": "import",
+      "label": "imports defense constants"
+    },
+    {
+      "id": "edge::src/lib/defense.ts::imports::src/lib/constants/game.ts",
+      "source": "file::src/lib/defense.ts",
+      "target": "file::src/lib/constants/game.ts",
+      "type": "import",
+      "label": "imports game constants"
+    },
+    {
+      "id": "edge::src/lib/defense.ts::imports::src/lib/types.ts",
+      "source": "file::src/lib/defense.ts",
+      "target": "file::src/lib/types.ts",
+      "type": "import",
+      "label": "imports types"
+    },
+    {
+      "id": "edge::src/lib/utils.ts::imports::src/lib/types.ts",
+      "source": "file::src/lib/utils.ts",
+      "target": "file::src/lib/types.ts",
+      "type": "import",
+      "label": "imports ProcCoefficient, ProcScalingType"
+    },
+    {
+      "id": "edge::func::getWeaponConditionalBoost::uses::func::roundMultiplier",
+      "source": "func::src/data/weaponConditionalBoosts.ts::getWeaponConditionalBoost",
+      "target": "func::src/lib/utils.ts::roundMultiplier",
+      "type": "uses",
+      "label": "calls roundMultiplier on final multiplier"
+    },
+    {
+      "id": "edge::func::getWeaponConditionalBoost::reads::const::WEAPON_CONDITIONAL_BOOSTS",
+      "source": "func::src/data/weaponConditionalBoosts.ts::getWeaponConditionalBoost",
+      "target": "const::src/data/weaponConditionalBoosts.ts::WEAPON_CONDITIONAL_BOOSTS",
+      "type": "reads",
+      "label": "iterates boost definitions"
+    },
+    {
+      "id": "edge::func::calcCrit::uses::func::calcProcChance",
+      "source": "func::src/lib/crit.ts::calcCrit",
+      "target": "func::src/lib/utils.ts::calcProcChance",
+      "type": "uses",
+      "label": "scales crit chance with proc coefficient"
+    },
+    {
+      "id": "edge::func::calcCrit::uses::func::calcDexterity",
+      "source": "func::src/lib/crit.ts::calcCrit",
+      "target": "func::src/lib/crit.ts::calcDexterity",
+      "type": "uses",
+      "label": "computes dex-based crit"
+    },
+    {
+      "id": "edge::func::calcCrit::uses::func::calcElementalBoost",
+      "source": "func::src/lib/crit.ts::calcCrit",
+      "target": "func::src/lib/crit.ts::calcElementalBoost",
+      "type": "uses",
+      "label": "computes elemental crit boosts"
+    },
+    {
+      "id": "edge::func::calcCrit::uses::func::calcPerfection",
+      "source": "func::src/lib/crit.ts::calcCrit",
+      "target": "func::src/lib/crit.ts::calcPerfection",
+      "type": "uses",
+      "label": "computes Perfection crit"
+    },
+    {
+      "id": "edge::func::calcCrit::uses::func::hasActiveGatingPerks",
+      "source": "func::src/lib/crit.ts::calcCrit",
+      "target": "func::src/lib/crit.ts::hasActiveGatingPerks",
+      "type": "uses",
+      "label": "checks for crit-relevant perks"
+    },
+    {
+      "id": "edge::func::calcCrit::reads::const::NATURAL_CRIT_SOURCES",
+      "source": "func::src/lib/crit.ts::calcCrit",
+      "target": "const::src/lib/crit.ts::NATURAL_CRIT_SOURCES",
+      "type": "reads",
+      "label": "iterates natural crit sources"
+    },
+    {
+      "id": "edge::func::calcCrit::reads::const::EXTRA_CRIT_SOURCES",
+      "source": "func::src/lib/crit.ts::calcCrit",
+      "target": "const::src/lib/crit.ts::EXTRA_CRIT_SOURCES",
+      "type": "reads",
+      "label": "iterates extra crit sources"
+    },
+    {
+      "id": "edge::func::calcCrit::reads::const::CRIT_DMG_SOURCES",
+      "source": "func::src/lib/crit.ts::calcCrit",
+      "target": "const::src/lib/crit.ts::CRIT_DMG_SOURCES",
+      "type": "reads",
+      "label": "iterates crit damage sources"
+    },
+    {
+      "id": "edge::func::calcCrit::returns::interface::CritResult",
+      "source": "func::src/lib/crit.ts::calcCrit",
+      "target": "interface::src/lib/crit.ts::CritResult",
+      "type": "returns",
+      "label": "produces CritResult"
+    },
+    {
+      "id": "edge::func::resolveDefenseSources::uses::func::calcDefMultiplier",
+      "source": "func::src/lib/defense.ts::resolveDefenseSources",
+      "target": "func::src/lib/defense.ts::calcDefMultiplier",
+      "type": "uses",
+      "label": "computes percent-based multiplier"
+    },
+    {
+      "id": "edge::func::resolveDefenseSources::uses::func::calcTrueDrPercent",
+      "source": "func::src/lib/defense.ts::resolveDefenseSources",
+      "target": "func::src/lib/defense.ts::calcTrueDrPercent",
+      "type": "uses",
+      "label": "computes true DR percentage"
+    },
+    {
+      "id": "edge::func::resolveDefenseSources::uses::func::roundMultiplier",
+      "source": "func::src/lib/defense.ts::resolveDefenseSources",
+      "target": "func::src/lib/utils.ts::roundMultiplier",
+      "type": "uses",
+      "label": "rounds all computed multipliers"
+    },
+    {
+      "id": "edge::func::resolveDefenseSources::returns::interface::DefenseBreakdown",
+      "source": "func::src/lib/defense.ts::resolveDefenseSources",
+      "target": "interface::src/lib/defense.ts::DefenseBreakdown",
+      "type": "returns",
+      "label": "produces DefenseBreakdown"
+    },
+    {
+      "id": "edge::func::calcBaseArmorDefPct::reads::const::DEF_GROUP",
+      "source": "func::src/lib/defense.ts::calcBaseArmorDefPct",
+      "target": "const::src/lib/defense.ts::DEF_GROUP",
+      "type": "reads",
+      "label": "looks up defense stat keys"
+    },
+    {
+      "id": "edge::func::highlightTextParts::uses::func::escapeHtml",
+      "source": "func::src/lib/utils.ts::highlightTextParts",
+      "target": "func::src/lib/utils.ts::escapeHtml",
+      "type": "uses",
+      "label": "(highlightText uses escapeHtml internally; highlightTextParts is structured)",
+      "comment": "highlightTextParts does not directly use escapeHtml but highlightText does; both are in the same module"
+    }
+  ]
+}

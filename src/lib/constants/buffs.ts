@@ -2,6 +2,13 @@
 // Buff/debuff potency & duration constants (from BuffData.ts)
 // ──────────────────────────────────────────────
 
+// Potion constants
+export const RAGE_POTION_POTENCY = 0.4
+export const RAGE_POTION_DURATION = 15
+export const POISON_POTION_POTENCY = 0
+export const POISON_POTION_DURATION = 10
+export const POTION_CHUGGER_POTENCY_MULT_PER_LEVEL = 0.20
+
 // Buff effect per 0.1 potency
 export const BUFF_EFFECT_PER_TENTH = 0.1
 

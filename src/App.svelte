@@ -51,6 +51,7 @@
   import { calcOrkTenacityBonus } from './data/raceEffects'
   import { CDR_PERK_DATA } from './data/cdr'
   import { calcMaxSummonCount } from './data/SummonData'
+  import { POTIONS } from './data/potions'
   import CdrStepsCalc from './CdrStepsCalc.svelte'
   import { RaceModal, GuildModal, AccessorySelectModal, WeaponPartModal } from './lib/modals'
   import AppHeader from './lib/AppHeader.svelte'
@@ -610,6 +611,7 @@ function weaponMatchesFilter(item: any): boolean {
   // ── Collapsible panels ─────────────────────────────────────────────────────
   let showDetailsPanel = true
   let showPerksPanel = true
+  let showPotionsDrawer = false
   let activePerksTab: 'perks' | 'boosts' = 'perks'
   let activeDetailsTab: 'selection' | 'weapon' = 'selection'
 
@@ -2115,6 +2117,12 @@ $: _appWaAvgTotal = (() => {
                     <button class="sg-clear" on:click|stopPropagation={() => setGuild('', 1)} title="Clear">✕</button>
                   {/if}
                 </div>
+                <button class="sg-cell sg-item sg-potion-toggle"
+                  class:sg-potion-toggle--active={showPotionsDrawer || $build.potion1 || $build.potion2}
+                  on:click={() => showPotionsDrawer = !showPotionsDrawer}>
+                  <span class="sg-label">Potions</span>
+                  <span class="sg-potion-toggle-indicator">{$build.potion1 || $build.potion2 ? '●' : '○'}</span>
+                </button>
               </div>
               {#if isDraconic && isDragonBlooded}
                 <div class="sg-cell sg-span10 sg-draconic-row">
@@ -3124,6 +3132,32 @@ $: _appWaAvgTotal = (() => {
       </div>
     {/if}
 
+  {#if showPotionsDrawer}
+    <div class="potions-drawer-overlay" on:click={() => showPotionsDrawer = false}></div>
+    <div class="potions-drawer" transition:fade={{ duration: 150 }}>
+      <div class="potions-drawer-header">
+        <span class="potions-drawer-title">Potions</span>
+        <button class="potions-drawer-close" on:click={() => showPotionsDrawer = false}>✕</button>
+      </div>
+      <div class="potions-drawer-body">
+        <label class="potions-drawer-label">Potion 1</label>
+        <select class="potion-drawer-select" bind:value={$build.potion1}>
+          <option value="">No Potion</option>
+          {#each POTIONS as potion}
+            <option value={potion.name}>{potion.name}</option>
+          {/each}
+        </select>
+        <label class="potions-drawer-label">Potion 2</label>
+        <select class="potion-drawer-select" bind:value={$build.potion2}>
+          <option value="">No Potion</option>
+          {#each POTIONS as potion}
+            <option value={potion.name}>{potion.name}</option>
+          {/each}
+        </select>
+      </div>
+    </div>
+  {/if}
+
   <Toast />
 </div> <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -3340,6 +3374,42 @@ $: _appWaAvgTotal = (() => {
   .sg-guild  { background:linear-gradient(135deg,rgba(245,158,11,.12),rgba(245,158,11,.06)); border-color:rgba(245,158,11,.22); }
   .sg-monk-glove   { background:linear-gradient(135deg,rgba(232,121,249,.12),rgba(232,121,249,.06)); border-color:rgba(232,121,249,.22); }
   .sg-monk-essence { background:linear-gradient(135deg,rgba(129,140,248,.12),rgba(129,140,248,.06)); border-color:rgba(129,140,248,.22); }
+
+  .sg-potion-toggle {
+    background: linear-gradient(135deg,rgba(168,85,247,.12),rgba(168,85,247,.06));
+    border-color: rgba(168,85,247,.22);
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer; transition: all .15s ease;
+  }
+  .sg-potion-toggle:hover { border-color: rgba(168,85,247,.4); background: linear-gradient(135deg,rgba(168,85,247,.18),rgba(168,85,247,.10)); }
+  .sg-potion-toggle--active { border-color: rgba(168,85,247,.55); background: linear-gradient(135deg,rgba(168,85,247,.24),rgba(168,85,247,.14)); box-shadow: 0 0 10px rgba(168,85,247,.15); }
+  .sg-potion-toggle .sg-label { color:#a855f7; }
+  .sg-potion-toggle-indicator { font-size: 14px; color: #a855f7; opacity: .8; }
+
+  .potions-drawer-overlay { position:fixed; inset:0; z-index:900; background:rgba(0,0,0,.35); backdrop-filter:blur(2px); }
+  .potions-drawer {
+    position:fixed; top:0; right:0; z-index:901; width:300px; height:100vh;
+    background: linear-gradient(180deg, var(--surface2) 0%, var(--surface) 100%);
+    border-left: 1px solid rgba(168,85,247,.3);
+    box-shadow: -4px 0 30px rgba(0,0,0,.4);
+    display: flex; flex-direction: column;
+  }
+  .potions-drawer-header {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 18px; border-bottom:1px solid rgba(168,85,247,.2);
+  }
+  .potions-drawer-title { font-size:.8rem; text-transform:uppercase; letter-spacing:.14em; color:#a855f7; font-weight:700; }
+  .potions-drawer-close {
+    background:none; border:none; color:var(--ink-muted); font-size:16px; cursor:pointer; padding:4px 8px; border-radius:4px;
+  }
+  .potions-drawer-close:hover { color:var(--ink); background:rgba(168,85,247,.1); }
+  .potions-drawer-body { padding:18px; display:flex; flex-direction:column; gap:8px; }
+  .potions-drawer-label { font-size:.7rem; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-muted); font-weight:600; }
+  .potion-drawer-select {
+    width:100%; background:rgba(30,30,40,.7); border:1px solid rgba(168,85,247,.3);
+    border-radius:6px; color:var(--ink); padding:8px 10px; font-size:13px; cursor:pointer;
+  }
+  .potion-drawer-select:focus { outline:1px solid rgba(168,85,247,.5); }
 
   .sg-selected {
     background: rgba(251,191,36,.3) !important;

@@ -215,6 +215,9 @@ export interface BuildState {
   sporelingsSummoned: number
   inDarkness: boolean
   cdrToggles: Record<string, boolean>
+  // Potion slots
+  potion1: string
+  potion2: string
 }
 
 export type ProcCoefficient =

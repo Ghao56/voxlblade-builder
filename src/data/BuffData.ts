@@ -57,6 +57,9 @@ import {
   MOD_FURY_DURATION, MOD_TAILWIND_POTENCY, MOD_WIND_WALKER_DURATION_DIVISOR, MOD_SLOW_LEAK_DURATION,
   ENDLESS_DESPAIR_POTENCY_PER_STACK, ENDLESS_DESPAIR_FLAT_BONUS,
   ENDLESS_DESPAIR_DURATION_PER_STACK, STORED_CORRUPTION_DURATION_PER_STACK,
+  RAGE_POTION_POTENCY, RAGE_POTION_DURATION,
+  POISON_POTION_POTENCY, POISON_POTION_DURATION,
+  POTION_CHUGGER_POTENCY_MULT_PER_LEVEL,
 } from '../lib/constants/buffs'
 
 export interface BuffDefinition {
@@ -450,6 +453,24 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectUnit: 'flat',
   },
 
+  // Potions
+  'Rage Potion': {
+    name: 'Rage Potion',
+    color: '#f70201',
+    description: 'Deal x% more physical damage for 15 seconds.',
+    effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
+    effectUnit: 'flat',
+    statKey: 'physicalBoost',
+  },
+  'Poison Potion': {
+    name: 'Poison Potion',
+    color: '#d900ff',
+    description: 'Poisons over time for 10 seconds.',
+    effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
+    effectUnit: 'flat',
+    isDebuff: true,
+  },
+
   //Neutral
   'Last Croak': {
     name: 'Last Croak',
@@ -696,7 +717,24 @@ const ITEM_BUFF_MAP: GrantedBuff[] = [
     condition: 'On cast',
     sourceName: 'Snoeball Rune',
     sourceType: 'rune',
-  },  
+  },
+  // Potions
+  {
+    buffName: 'Rage Potion',
+    potency: RAGE_POTION_POTENCY,
+    duration: RAGE_POTION_DURATION,
+    condition: 'On use',
+    sourceName: 'Rage Potion',
+    sourceType: 'rune',
+  },
+  {
+    buffName: 'Poison Potion',
+    potency: POISON_POTION_POTENCY,
+    duration: POISON_POTION_DURATION,
+    condition: 'On use',
+    sourceName: 'Poison Potion',
+    sourceType: 'rune',
+  },
 ]
 
 export const BASIC_DEBUFF_POOL: Array<{ buffName: string; potency: number; duration: number }> = [
@@ -1432,6 +1470,9 @@ const BUFF_POTENCY_MODIFIERS: BuffPotencyModifier[] = [
   { buffName: 'Tailwind', potencyPerStack: MOD_TAILWIND_POTENCY, label: 'Tailwind' },
   { buffName: 'Tailwind', potencyPerStack: 0, label: 'Wind Walker', durationMultiplierFormula: stacks => 1 + stacks / MOD_WIND_WALKER_DURATION_DIVISOR },
   { buffName: 'Bleed', potencyPerStack: 0, label: 'Slow Leak', durationMultiplierPerStack: MOD_SLOW_LEAK_DURATION },
+  // Potion Chugger modifiers (20% of base potency per stack)
+  { buffName: 'Rage Potion', potencyPerStack: RAGE_POTION_POTENCY * POTION_CHUGGER_POTENCY_MULT_PER_LEVEL, label: 'Potion Chugger' },
+  { buffName: 'Poison Potion', potencyPerStack: POISON_POTION_POTENCY * POTION_CHUGGER_POTENCY_MULT_PER_LEVEL, label: 'Potion Chugger' },
 ]
 
 const MODIFIERS_BY_BUFF = BUFF_POTENCY_MODIFIERS.reduce((acc, mod) => {
@@ -1824,6 +1865,8 @@ export interface ActiveBuffsBuildInput {
   monkGlove: string
   race?: string
   selectedWeaponArt: string
+  potion1?: string
+  potion2?: string
 }
 
 /**
@@ -1874,8 +1917,18 @@ export function assembleActiveBuffs(
     weaponBlade: build.weaponBlade, weaponHandle: build.weaponHandle,
     monkGlove: build.monkGlove, race: build.race,
   })
+
+  // Add potion buffs
+  const potionBuffs: GrantedBuff[] = []
+  if (build.potion1 && BUFFS_BY_ITEM_SOURCE[build.potion1]) {
+    potionBuffs.push(...BUFFS_BY_ITEM_SOURCE[build.potion1])
+  }
+  if (build.potion2 && BUFFS_BY_ITEM_SOURCE[build.potion2]) {
+    potionBuffs.push(...BUFFS_BY_ITEM_SOURCE[build.potion2])
+  }
+
   const buffs = convertTailwindToWhirlwind(applyBuffPerkModifiers(
-    [...itemBuffs, ...getPerkBuffs(perks), ...getWeaponArtBuffs(build.selectedWeaponArt)],
+    [...itemBuffs, ...potionBuffs, ...getPerkBuffs(perks), ...getWeaponArtBuffs(build.selectedWeaponArt)],
     perks,
     build.rune || undefined,
     wardingDebuffMult,

@@ -1,0 +1,766 @@
+{
+  "nodes": [
+    {
+      "id": "src/data/Boost.ts",
+      "type": "file",
+      "label": "Boost.ts",
+      "description": "Defines the damage boost calculation system for the Voxel Blade build calculator. Contains BoostDef/BoostContext interfaces and a comprehensive BOOST_DEFS array of 30+ damage boosts (Blood Thirsty, Frenzy, Primal, Penance, Vampire, etc.), each with either simple multiplier-per-perk values or complex custom calcFn closures. Also exports helper functions calcMinionAbsorptionPotency and calcFrenzyPct, and Penance bleed constants.",
+      "fileCategory": "code",
+      "language": "typescript"
+    },
+    {
+      "id": "src/data/Boost.ts::calcMinionAbsorptionPotency",
+      "type": "function",
+      "label": "calcMinionAbsorptionPotency",
+      "description": "Calculates the potency of Minion Absorption based on summon boost percentage and stack count. Returns a rounded decimal representing the damage boost multiplier.",
+      "signature": "(summonBoostPct: number, stacks: number) => number"
+    },
+    {
+      "id": "src/data/Boost.ts::calcFrenzyPct",
+      "type": "function",
+      "label": "calcFrenzyPct",
+      "description": "Calculates the Frenzy damage percentage by combining the base frenzy value with a rage-potency-scaled multiplier.",
+      "signature": "(ragePotency: number) => number"
+    },
+    {
+      "id": "src/data/Boost.ts::PENANCE_HP_THRESHOLD",
+      "type": "constant",
+      "label": "PENANCE_HP_THRESHOLD",
+      "description": "HP threshold (35%) at which Penance reaches max boost and triggers bleed."
+    },
+    {
+      "id": "src/data/Boost.ts::PENANCE_MAX_BOOST",
+      "type": "constant",
+      "label": "PENANCE_MAX_BOOST",
+      "description": "Maximum damage boost from Penance (25%)."
+    },
+    {
+      "id": "src/data/Boost.ts::PENANCE_BLEED_POTENCY",
+      "type": "constant",
+      "label": "PENANCE_BLEED_POTENCY",
+      "description": "Potency of the Penance bleed effect (0 = status-only, no damage)."
+    },
+    {
+      "id": "src/data/Boost.ts::PENANCE_BLEED_DURATION",
+      "type": "constant",
+      "label": "PENANCE_BLEED_DURATION",
+      "description": "Duration in seconds of the Penance bleed (5s)."
+    },
+    {
+      "id": "src/data/Boost.ts::BoostContext",
+      "type": "interface",
+      "label": "BoostContext",
+      "description": "Context object passed to complex boost calcFn functions. Contains player state (perks, crit chance, jump boost, rage potency, HP fill, enemy HP, etc.) needed to evaluate conditional boosts."
+    },
+    {
+      "id": "src/data/Boost.ts::BoostDef",
+      "type": "interface",
+      "label": "BoostDef",
+      "description": "Definition structure for a damage boost. Supports simple multiplierPerPerk boosts, complex calcFn-based boosts, attack-type filtering (appliesTo), proc coefficient scaling, and user-facing toggles."
+    },
+    {
+      "id": "src/data/Boost.ts::BOOST_DEFS",
+      "type": "constant",
+      "label": "BOOST_DEFS",
+      "description": "Array of all 30+ damage boost definitions. Each entry describes a boost source (perk name, level, etc.), its type (dmg/heal), how it scales, conditions, and attack-type applicability."
+    },
+    {
+      "id": "src/data/Boost.ts::BOOST_DEF_MAP",
+      "type": "constant",
+      "label": "BOOST_DEF_MAP",
+      "description": "Map<string, BoostDef> for O(1) lookup of boost definitions by source name."
+    },
+    {
+      "id": "src/data/debuffCombatEffects.ts",
+      "type": "file",
+      "label": "debuffCombatEffects.ts",
+      "description": "Defines the combat effects applied by debuffs on enemies. Exports a DEBUFF_COMBAT_EFFECTS record mapping debuff names (Weakness, Shatter, Sticky variants, Electrical Rend, Despair, Frostbite, Hypnotized) to DebuffCombatEffect objects containing description generators, damage multipliers, defense reductions, and element-specific damage multipliers.",
+      "fileCategory": "code",
+      "language": "typescript"
+    },
+    {
+      "id": "src/data/debuffCombatEffects.ts::DebuffCombatEffect",
+      "type": "interface",
+      "label": "DebuffCombatEffect",
+      "description": "Structure defining a debuff's combat impact: a description function, optional damage multiplier, optional defense reduction across 8 stat types, and optional element-specific damage multipliers."
+    },
+    {
+      "id": "src/data/debuffCombatEffects.ts::DEBUFF_COMBAT_EFFECTS",
+      "type": "constant",
+      "label": "DEBUFF_COMBAT_EFFECTS",
+      "description": "Record<string, DebuffCombatEffect> mapping 9 debuff names to their combat effect definitions. Covers Weakness, Shatter, Sticky (4 variants), Electrical Rend, Despair, Frostbite, and Hypnotized."
+    },
+    {
+      "id": "src/data/enemyHpEffects.ts",
+      "type": "file",
+      "label": "enemyHpEffects.ts",
+      "description": "Defines HP-gated enemy effects that trigger based on enemy current HP percentage. Contains interfaces for HP gates, debuff effects, and DoT boosts, plus a static ENEMY_HP_EFFECT_DEFS array (currently Mycotic Bloom). Exports functions getActiveEnemyHpDebuffs and getEnemyHpDotMultiplier to evaluate which effects are active given the current enemy HP and active debuffs.",
+      "fileCategory": "code",
+      "language": "typescript"
+    },
+    {
+      "id": "src/data/enemyHpEffects.ts::EnemyHpGate",
+      "type": "interface",
+      "label": "EnemyHpGate",
+      "description": "HP threshold gate: hpThreshold (percentage) and aboveThreshold (above or below)."
+    },
+    {
+      "id": "src/data/enemyHpEffects.ts::EnemyHpDebuffEffect",
+      "type": "interface",
+      "label": "EnemyHpDebuffEffect",
+      "description": "Defines a debuff that gets applied based on enemy HP gate: buffName, potency function, and duration."
+    },
+    {
+      "id": "src/data/enemyHpEffects.ts::EnemyHpDotBoost",
+      "type": "interface",
+      "label": "EnemyHpDotBoost",
+      "description": "Defines a DoT damage multiplier based on enemy HP gate: dotType and getMultiplier function."
+    },
+    {
+      "id": "src/data/enemyHpEffects.ts::EnemyHpEffectDef",
+      "type": "interface",
+      "label": "EnemyHpEffectDef",
+      "description": "Complete definition of an enemy HP-gated effect: perk name, condition description, HP gate, optional required debuff, optional debuff grant, optional DoT boost."
+    },
+    {
+      "id": "src/data/enemyHpEffects.ts::getActiveEnemyHpDebuffs",
+      "type": "function",
+      "label": "getActiveEnemyHpDebuffs",
+      "description": "Evaluates all ENEMY_HP_EFFECT_DEFS and returns debuffs whose HP gates and prerequisite debuffs are met given current perks, enemy HP, and active debuffs.",
+      "signature": "(perks: Record<string, number>, enemyHpFillPct: number, activeDebuffNames: string[]) => Array<{ buffName, potency, duration, condition, sourceName }>"
+    },
+    {
+      "id": "src/data/enemyHpEffects.ts::getEnemyHpDotMultiplier",
+      "type": "function",
+      "label": "getEnemyHpDotMultiplier",
+      "description": "Returns the cumulative DoT damage multiplier from all active enemy HP-gated dot boosts for a given dot type.",
+      "signature": "(perks: Record<string, number>, enemyHpFillPct: number, dotType: string) => number"
+    },
+    {
+      "id": "src/data/perkAutoDebuffs.ts",
+      "type": "file",
+      "label": "perkAutoDebuffs.ts",
+      "description": "Determines which debuffs are automatically applied by perks during combat. Contains calcActualHpFillPct for effective HP calculation accounting for protection, and getAutoDebuffs which evaluates 16+ perk conditions (Exhaust, Penance, Melting Shred, Fungal Prototype, Venom Spitter, Toxin Caster, Gorecast, Splinter, Bellowing Ember, Frostbite, Gelid Lance, Weakening, Sunburn, Fiery Pursuit, Pyre Bloom, Hypnotist) to produce GrantedBuff arrays.",
+      "fileCategory": "code",
+      "language": "typescript"
+    },
+    {
+      "id": "src/data/perkAutoDebuffs.ts::AutoDebuffInput",
+      "type": "interface",
+      "label": "AutoDebuffInput",
+      "description": "Input parameters for getAutoDebuffs: existing buffs, player perks, HP fill, level, protection, WA proc coefficient, enemy HP, and damage type flags."
+    },
+    {
+      "id": "src/data/perkAutoDebuffs.ts::calcActualHpFillPct",
+      "type": "function",
+      "label": "calcActualHpFillPct",
+      "description": "Calculates effective HP fill percentage accounting for negative protection (armor reduction that reduces max HP). Returns clamped value at 100%.",
+      "signature": "(hpFill: number, level: number, protection: number) => number"
+    },
+    {
+      "id": "src/data/perkAutoDebuffs.ts::getAutoDebuffs",
+      "type": "function",
+      "label": "getAutoDebuffs",
+      "description": "Main auto-debuff evaluation function. Checks 16+ perk conditions against current game state and returns an array of GrantedBuff objects representing debuffs to apply to the enemy. Handles HP-gated debuffs, element-gated debuffs, proc-gated debuffs, and mutual exclusion (won't re-apply existing debuffs).",
+      "signature": "(input: AutoDebuffInput) => GrantedBuff[]"
+    },
+    {
+      "id": "src/lib/constants/debuff-effects.ts",
+      "type": "file",
+      "label": "debuff-effects.ts",
+      "description": "Small constants file defining numeric multipliers used by debuff combat effects. Contains the Sticky damage multiplier (1.2x), Despair display divisor/coefficient for UI formatting, and Despair damage coefficient (0.085).",
+      "fileCategory": "code",
+      "language": "typescript"
+    },
+    {
+      "id": "src/lib/constants/debuff-effects.ts::DEBUFF_STICKY_DMG_MULT",
+      "type": "constant",
+      "label": "DEBUFF_STICKY_DMG_MULT",
+      "description": "Damage multiplier applied to targets affected by Sticky debuff (1.2 = +20% damage taken)."
+    },
+    {
+      "id": "src/lib/constants/debuff-effects.ts::DEBUFF_DESPAIR_DISPLAY_DIVISOR",
+      "type": "constant",
+      "label": "DEBUFF_DESPAIR_DISPLAY_DIVISOR",
+      "description": "Divisor used to convert raw Despair potency to display percentage."
+    },
+    {
+      "id": "src/lib/constants/debuff-effects.ts::DEBUFF_DESPAIR_DISPLAY_MULT",
+      "type": "constant",
+      "label": "DEBUFF_DESPAIR_DISPLAY_MULT",
+      "description": "Multiplier used in Despair UI display calculations."
+    },
+    {
+      "id": "src/lib/constants/debuff-effects.ts::DEBUFF_DESPAIR_DMG_COEFF",
+      "type": "constant",
+      "label": "DEBUFF_DESPAIR_DMG_COEFF",
+      "description": "Damage coefficient for Despair debuff (0.085). Multiplied by potency/display-divisor to get actual damage boost."
+    },
+    {
+      "id": "src/lib/constants/game.ts",
+      "type": "file",
+      "label": "game.ts",
+      "description": "Core game constants serving as the single source of truth for game-wide values. Defines level caps (MAX_LEVEL=80, DEFAULT_LEVEL=80), HP formula constants (BASE_HP=120, HP_PER_LEVEL=0.0125) with calcBaseMaxHP function, default fill percentages, and timing constants for UI operations (save debounce, undo window, search blur delay, toast duration, etc.).",
+      "fileCategory": "code",
+      "language": "typescript"
+    },
+    {
+      "id": "src/lib/constants/game.ts::MAX_LEVEL",
+      "type": "constant",
+      "label": "MAX_LEVEL",
+      "description": "Maximum character level (80)."
+    },
+    {
+      "id": "src/lib/constants/game.ts::DEFAULT_LEVEL",
+      "type": "constant",
+      "label": "DEFAULT_LEVEL",
+      "description": "Default character level used in the calculator (80)."
+    },
+    {
+      "id": "src/lib/constants/game.ts::DEFAULT_HP_FILL",
+      "type": "constant",
+      "label": "DEFAULT_HP_FILL",
+      "description": "Default HP fill percentage (100%)."
+    },
+    {
+      "id": "src/lib/constants/game.ts::DEFAULT_ENEMY_HP_FILL",
+      "type": "constant",
+      "label": "DEFAULT_ENEMY_HP_FILL",
+      "description": "Default enemy HP fill percentage (100%)."
+    },
+    {
+      "id": "src/lib/constants/game.ts::BASE_HP",
+      "type": "constant",
+      "label": "BASE_HP",
+      "description": "Base max HP at level 0 (120)."
+    },
+    {
+      "id": "src/lib/constants/game.ts::HP_PER_LEVEL",
+      "type": "constant",
+      "label": "HP_PER_LEVEL",
+      "description": "HP scaling per level (1.25% per level, stored as 0.0125)."
+    },
+    {
+      "id": "src/lib/constants/game.ts::calcBaseMaxHP",
+      "type": "function",
+      "label": "calcBaseMaxHP",
+      "description": "Calculates base max HP for a given level using the formula: BASE_HP * (1 + level * HP_PER_LEVEL).",
+      "signature": "(level: number) => number"
+    },
+    {
+      "id": "src/lib/constants/game.ts::SAVE_DEBOUNCE_MS",
+      "type": "constant",
+      "label": "SAVE_DEBOUNCE_MS",
+      "description": "Debounce delay for auto-saving build state (300ms)."
+    },
+    {
+      "id": "src/lib/constants/game.ts::UNDO_WINDOW_MS",
+      "type": "constant",
+      "label": "UNDO_WINDOW_MS",
+      "description": "Time window for undo operations (8000ms)."
+    },
+    {
+      "id": "src/lib/constants/game.ts::SEARCH_BLUR_DELAY_MS",
+      "type": "constant",
+      "label": "SEARCH_BLUR_DELAY_MS",
+      "description": "Delay before search input loses focus (150ms)."
+    },
+    {
+      "id": "src/lib/constants/game.ts::IMPORT_SUCCESS_DISPLAY_MS",
+      "type": "constant",
+      "label": "IMPORT_SUCCESS_DISPLAY_MS",
+      "description": "Duration to show import success message (2000ms)."
+    },
+    {
+      "id": "src/lib/constants/game.ts::FOCUS_DELAY_MS",
+      "type": "constant",
+      "label": "FOCUS_DELAY_MS",
+      "description": "Delay before focusing an element (20ms)."
+    },
+    {
+      "id": "src/lib/constants/game.ts::DEFAULT_TOAST_DURATION_MS",
+      "type": "constant",
+      "label": "DEFAULT_TOAST_DURATION_MS",
+      "description": "Default toast notification duration (3000ms)."
+    },
+    {
+      "id": "src/lib/constants/perk-base-damage.ts",
+      "type": "file",
+      "label": "perk-base-damage.ts",
+      "description": "Contains raw numeric base damage values for all perk-triggered abilities, weapon arts, and spirit summons. Organized by ability name (Dragon Claw, Dragon Bubble, Springblast, various Spirits, Honey Arts, Melting Slime, Pyre Bloom, Bastion Ballista, etc.). Each ability has base damage, per-stack scaling, and optionally special properties (healing, poise damage, duration, ammo, cooldown).",
+      "fileCategory": "code",
+      "language": "typescript"
+    },
+    {
+      "id": "src/lib/constants/perks.ts",
+      "type": "file",
+      "label": "perks.ts",
+      "description": "Contains perk-specific numeric constants used across the damage engine. Covers crit base values (BASE_CRIT_DAMAGE=150), crit rate multipliers for various perks (Flowing Crits, Spell Slinger, Sharp Crits, etc.), crit damage formulas (Thief Training, Venom Eater, Vital Strikes, etc.), element multipliers (Luminescent, Spirit Winds, Dark Magic, etc.), and combat mechanic values (Sunburn, Frostbite, Fiery Pursuit, Hypnotist, Phantom Pain).",
+      "fileCategory": "code",
+      "language": "typescript"
+    },
+    {
+      "id": "src/lib/constants/perks.ts::LUMINESCENT_PCT_PER_STACK",
+      "type": "constant",
+      "label": "LUMINESCENT_PCT_PER_STACK",
+      "description": "Luminescent damage percentage per stack (5%)."
+    },
+    {
+      "id": "src/lib/constants/perks.ts::SPIRIT_WINDS_PCT_PER_STACK",
+      "type": "constant",
+      "label": "SPIRIT_WINDS_PCT_PER_STACK",
+      "description": "Spirit Winds damage percentage per stack (10%)."
+    },
+    {
+      "id": "src/lib/constants/perks.ts::DARK_MAGIC_PCT_PER_STACK",
+      "type": "constant",
+      "label": "DARK_MAGIC_PCT_PER_STACK",
+      "description": "Dark Magic damage percentage per stack (20%)."
+    },
+    {
+      "id": "src/lib/constants/perks.ts::BASE_CRIT_DAMAGE",
+      "type": "constant",
+      "label": "BASE_CRIT_DAMAGE",
+      "description": "Base critical hit damage multiplier (150%)."
+    },
+    {
+      "id": "src/lib/constants/perks.ts::DEX_CRIT_DIVISOR",
+      "type": "constant",
+      "label": "DEX_CRIT_DIVISOR",
+      "description": "Divisor for Dexterity-based crit chance calculation."
+    },
+    {
+      "id": "src/lib/constants/perks.ts::FROSTBITE_SLOW_POTENCY_PER_STACK",
+      "type": "constant",
+      "label": "FROSTBITE_SLOW_POTENCY_PER_STACK",
+      "description": "Slowness potency applied by Frostbite per perk stack."
+    },
+    {
+      "id": "src/lib/constants/perks.ts::FROSTBITE_CHANCE_PER_STACK",
+      "type": "constant",
+      "label": "FROSTBITE_CHANCE_PER_STACK",
+      "description": "Proc chance for Frostbite slow per perk stack."
+    },
+    {
+      "id": "src/lib/constants/perks.ts::SUNBURN_BURN_BASE_CHANCE",
+      "type": "constant",
+      "label": "SUNBURN_BURN_BASE_CHANCE",
+      "description": "Base chance for Sunburn to apply Burn (24%)."
+    },
+    {
+      "id": "src/lib/constants/perks.ts::SUNBURN_BURN_CHANCE_PER_STACK",
+      "type": "constant",
+      "label": "SUNBURN_BURN_CHANCE_PER_STACK",
+      "description": "Additional Burn chance per Sunburn stack (6%)."
+    },
+    {
+      "id": "src/lib/constants/perks.ts::FIERY_PURSUIT_BURN_DURATION",
+      "type": "constant",
+      "label": "FIERY_PURSUIT_BURN_DURATION",
+      "description": "Duration of Burn applied by Fiery Pursuit (5s)."
+    },
+    {
+      "id": "src/lib/constants/perks.ts::HYPNOTIST_POTENCY_PER_PERK",
+      "type": "constant",
+      "label": "HYPNOTIST_POTENCY_PER_PERK",
+      "description": "Hypnotized debuff potency per perk point."
+    },
+    {
+      "id": "src/lib/constants/perks.ts::HYPNOTIST_DURATION_BASE",
+      "type": "constant",
+      "label": "HYPNOTIST_DURATION_BASE",
+      "description": "Base duration of Hypnotized debuff (10s)."
+    },
+    {
+      "id": "src/lib/constants/perks.ts::HYPNOTIST_DURATION_PER_PERK",
+      "type": "constant",
+      "label": "HYPNOTIST_DURATION_PER_PERK",
+      "description": "Additional Hypnotized duration per perk point (5s)."
+    },
+    {
+      "id": "src/lib/constants/perks.ts::HYPNOTIST_MAGIC_ARMOR_PER_POTENCY",
+      "type": "constant",
+      "label": "HYPNOTIST_MAGIC_ARMOR_PER_POTENCY",
+      "description": "Magic armor reduction per point of Hypnotized potency (50)."
+    },
+    {
+      "id": "src/lib/constants/storage.ts",
+      "type": "file",
+      "label": "storage.ts",
+      "description": "Defines localStorage keys and serialization mappings for build state persistence. Contains STORAGE_KEY_* constants for each saved data category, BUILD_STATE_DEFAULTS record with all default build values, SAVE_KEY_MAP/UNMAP for compact save serialization, and ENCH_MAP/UNMAP for enchantment serialization. Also defines MAX_BUILD_SLOTS (5) and CONFIRM_TIMEOUT_MS.",
+      "fileCategory": "code",
+      "language": "typescript"
+    },
+    {
+      "id": "src/lib/constants/storage.ts::STORAGE_KEY_BUILD",
+      "type": "constant",
+      "label": "STORAGE_KEY_BUILD",
+      "description": "localStorage key for build state: 'voxlbuilder_build_v1'."
+    },
+    {
+      "id": "src/lib/constants/storage.ts::STORAGE_KEY_DEFENSES",
+      "type": "constant",
+      "label": "STORAGE_KEY_DEFENSES",
+      "description": "localStorage key for defense stats: 'voxlbuilder_defenses_v1'."
+    },
+    {
+      "id": "src/lib/constants/storage.ts::STORAGE_KEY_LEVEL",
+      "type": "constant",
+      "label": "STORAGE_KEY_LEVEL",
+      "description": "localStorage key for character level: 'voxlbuilder_level'."
+    },
+    {
+      "id": "src/lib/constants/storage.ts::STORAGE_KEY_HP_FILL",
+      "type": "constant",
+      "label": "STORAGE_KEY_HP_FILL",
+      "description": "localStorage key for HP fill percentage: 'voxlbuilder_hpfill'."
+    },
+    {
+      "id": "src/lib/constants/storage.ts::STORAGE_KEY_SAVES",
+      "type": "constant",
+      "label": "STORAGE_KEY_SAVES",
+      "description": "localStorage key for saved builds: 'voxlbuilder_saves'."
+    },
+    {
+      "id": "src/lib/constants/storage.ts::BUILD_STATE_DEFAULTS",
+      "type": "constant",
+      "label": "BUILD_STATE_DEFAULTS",
+      "description": "Record of default values for all build state fields including equipment slots, upgrades, weapon art, racial/guild settings, HP fill, level, summon count, and UI toggles."
+    },
+    {
+      "id": "src/lib/constants/storage.ts::SAVE_KEY_MAP",
+      "type": "constant",
+      "label": "SAVE_KEY_MAP",
+      "description": "Maps full build state property names to compact 2-3 character keys for URL/save serialization."
+    },
+    {
+      "id": "src/lib/constants/storage.ts::SAVE_KEY_UNMAP",
+      "type": "constant",
+      "label": "SAVE_KEY_UNMAP",
+      "description": "Reverse mapping from compact save keys back to full property names."
+    },
+    {
+      "id": "src/lib/constants/storage.ts::ENCH_MAP",
+      "type": "constant",
+      "label": "ENCH_MAP",
+      "description": "Maps equipment slot names to compact enchantment serialization keys."
+    },
+    {
+      "id": "src/lib/constants/storage.ts::ENCH_UNMAP",
+      "type": "constant",
+      "label": "ENCH_UNMAP",
+      "description": "Reverse mapping from compact enchantment keys to equipment slot names."
+    },
+    {
+      "id": "src/lib/constants/storage.ts::MAX_BUILD_SLOTS",
+      "type": "constant",
+      "label": "MAX_BUILD_SLOTS",
+      "description": "Maximum number of build save slots (5)."
+    },
+    {
+      "id": "src/lib/constants/storage.ts::CONFIRM_TIMEOUT_MS",
+      "type": "constant",
+      "label": "CONFIRM_TIMEOUT_MS",
+      "description": "Timeout for confirmation dialogs (3000ms)."
+    },
+    {
+      "id": "src/lib/engine/dmgTypeBonuses.ts",
+      "type": "file",
+      "label": "dmgTypeBonuses.ts",
+      "description": "Engine module that calculates elemental/magical damage type bonuses from perks. Defines PerkDmgTypeBonusDef interface and PERK_DMG_TYPE_BONUS_DEFS array (Void Rage → hex, Channeled Weapon → magic, Emotional → fire, Draconic Blood → dynamic based on draconic color). The buildDmgTypeBonuses function evaluates all definitions against current player state and returns a Record<string, number> of damage type to bonus percentage, also accounting for Toxin Transfer hex bonus.",
+      "fileCategory": "code",
+      "language": "typescript"
+    },
+    {
+      "id": "src/lib/engine/dmgTypeBonuses.ts::PerkDmgTypeBonusDef",
+      "type": "interface",
+      "label": "PerkDmgTypeBonusDef",
+      "description": "Definition for a perk that grants bonus damage of a specific element type. Supports fixed or dynamic type, fixed or computed amount-per-stack, conditional activation, and proc exemption."
+    },
+    {
+      "id": "src/lib/engine/dmgTypeBonuses.ts::PERK_DMG_TYPE_BONUS_DEFS",
+      "type": "constant",
+      "label": "PERK_DMG_TYPE_BONUS_DEFS",
+      "description": "Array of 4 perk damage type bonus definitions: Void Rage (hex, conditional on rage), Channeled Weapon (magic), Emotional (fire, conditional on debuffs state), Draconic Blood (dynamic type, conditional on draconic infusion)."
+    },
+    {
+      "id": "src/lib/engine/dmgTypeBonuses.ts::buildDmgTypeBonuses",
+      "type": "function",
+      "label": "buildDmgTypeBonuses",
+      "description": "Evaluates all PERK_DMG_TYPE_BONUS_DEFS against current player state, accumulates damage type bonuses into a Record<string, number>, handles Draconic Blood dynamic typing and Toxin Transfer hex bonus injection. Supports exclusion of specific perks and no-proc exemption filtering.",
+      "signature": "(includeNoProcExempt: boolean, ctx: { perks, ragePotency, draconicRuneInfusion, emotionalState, draconicColor, guild, draconicInfusionDisabled, toxinTransferHexBonus, rageDisabled }, excludePerks?: Set<string>) => Record<string, number>"
+    }
+  ],
+  "edges": [
+    {
+      "source": "src/data/Boost.ts",
+      "target": "src/lib/constants/game.ts",
+      "type": "imports",
+      "label": "imports game constants"
+    },
+    {
+      "source": "src/data/Boost.ts",
+      "target": "src/lib/constants/perks.ts",
+      "type": "imports",
+      "label": "imports perk multiplier constants"
+    },
+    {
+      "source": "src/data/debuffCombatEffects.ts",
+      "target": "src/lib/constants/debuff-effects.ts",
+      "type": "imports",
+      "label": "imports debuff effect constants"
+    },
+    {
+      "source": "src/data/enemyHpEffects.ts",
+      "target": "src/lib/constants/perks.ts",
+      "type": "imports",
+      "label": "imports HYPNOTIST_MAGIC_ARMOR_PER_POTENCY"
+    },
+    {
+      "source": "src/data/perkAutoDebuffs.ts",
+      "target": "src/data/Boost.ts",
+      "type": "imports",
+      "label": "imports Penance bleed constants"
+    },
+    {
+      "source": "src/data/perkAutoDebuffs.ts",
+      "target": "src/lib/constants/game.ts",
+      "type": "imports",
+      "label": "imports calcBaseMaxHP"
+    },
+    {
+      "source": "src/data/perkAutoDebuffs.ts",
+      "target": "src/lib/constants/perks.ts",
+      "type": "imports",
+      "label": "imports Sunburn, Frostbite, Fiery Pursuit, Hypnotist constants"
+    },
+    {
+      "source": "src/data/perkAutoDebuffs.ts",
+      "target": "src/lib/constants/perk-base-damage.ts",
+      "type": "imports",
+      "label": "imports Bellowing Ember and Pyre Bloom constants"
+    },
+    {
+      "source": "src/data/perkAutoDebuffs.ts",
+      "target": "src/data/enemyHpEffects.ts",
+      "type": "imports",
+      "label": "imports getActiveEnemyHpDebuffs"
+    },
+    {
+      "source": "src/lib/constants/storage.ts",
+      "target": "src/lib/constants/game.ts",
+      "type": "imports",
+      "label": "imports DEFAULT_LEVEL and DEFAULT_HP_FILL"
+    },
+    {
+      "source": "src/lib/engine/dmgTypeBonuses.ts",
+      "target": "src/lib/constants/perks.ts",
+      "type": "imports",
+      "label": "imports Void Rage, Channeled Weapon, Emotional, Draconic Blood constants"
+    },
+    {
+      "source": "src/data/Boost.ts::calcMinionAbsorptionPotency",
+      "target": "src/data/Boost.ts::BOOST_DEFS",
+      "type": "uses",
+      "label": "called by Minion Absorption boost calcFn"
+    },
+    {
+      "source": "src/data/Boost.ts::calcFrenzyPct",
+      "target": "src/data/Boost.ts::BOOST_DEFS",
+      "type": "uses",
+      "label": "called by Frenzy boost calcFn"
+    },
+    {
+      "source": "src/data/Boost.ts::BOOST_DEFS",
+      "target": "src/data/Boost.ts::BOOST_DEF_MAP",
+      "type": "feeds",
+      "label": "BOOST_DEFS array feeds BOOST_DEF_MAP construction"
+    },
+    {
+      "source": "src/data/Boost.ts::BOOST_DEFS",
+      "target": "src/lib/constants/perks.ts::LUMINESCENT_PCT_PER_STACK",
+      "type": "uses",
+      "label": "references perk constants for boost calculations"
+    },
+    {
+      "source": "src/data/debuffCombatEffects.ts::DEBUFF_COMBAT_EFFECTS",
+      "target": "src/lib/constants/debuff-effects.ts::DEBUFF_STICKY_DMG_MULT",
+      "type": "uses",
+      "label": "Sticky variants use DEBUFF_STICKY_DMG_MULT"
+    },
+    {
+      "source": "src/data/debuffCombatEffects.ts::DEBUFF_COMBAT_EFFECTS",
+      "target": "src/lib/constants/debuff-effects.ts::DEBUFF_DESPAIR_DISPLAY_DIVISOR",
+      "type": "uses",
+      "label": "Despair uses display divisor"
+    },
+    {
+      "source": "src/data/debuffCombatEffects.ts::DEBUFF_COMBAT_EFFECTS",
+      "target": "src/lib/constants/debuff-effects.ts::DEBUFF_DESPAIR_DMG_COEFF",
+      "type": "uses",
+      "label": "Despair uses damage coefficient"
+    },
+    {
+      "source": "src/data/debuffCombatEffects.ts::DEBUFF_COMBAT_EFFECTS",
+      "target": "src/lib/constants/debuff-effects.ts::DEBUFF_DESPAIR_DISPLAY_MULT",
+      "type": "uses",
+      "label": "Despair uses display multiplier"
+    },
+    {
+      "source": "src/data/enemyHpEffects.ts::getActiveEnemyHpDebuffs",
+      "target": "src/lib/constants/perks.ts::HYPNOTIST_MAGIC_ARMOR_PER_POTENCY",
+      "type": "uses",
+      "label": "Hypnotized debuff reduction uses this constant"
+    },
+    {
+      "source": "src/data/perkAutoDebuffs.ts::getAutoDebuffs",
+      "target": "src/data/Boost.ts::PENANCE_HP_THRESHOLD",
+      "type": "uses",
+      "label": "Penance bleed check uses HP threshold"
+    },
+    {
+      "source": "src/data/perkAutoDebuffs.ts::getAutoDebuffs",
+      "target": "src/data/Boost.ts::PENANCE_BLEED_POTENCY",
+      "type": "uses",
+      "label": "Penance bleed grants this potency"
+    },
+    {
+      "source": "src/data/perkAutoDebuffs.ts::getAutoDebuffs",
+      "target": "src/data/Boost.ts::PENANCE_BLEED_DURATION",
+      "type": "uses",
+      "label": "Penance bleed uses this duration"
+    },
+    {
+      "source": "src/data/perkAutoDebuffs.ts::calcActualHpFillPct",
+      "target": "src/lib/constants/game.ts::calcBaseMaxHP",
+      "type": "calls",
+      "label": "calculates effective max HP"
+    },
+    {
+      "source": "src/data/perkAutoDebuffs.ts::getAutoDebuffs",
+      "target": "src/data/perkAutoDebuffs.ts::calcActualHpFillPct",
+      "type": "calls",
+      "label": "called for Penance and Bellowing Ember HP checks"
+    },
+    {
+      "source": "src/data/perkAutoDebuffs.ts::getAutoDebuffs",
+      "target": "src/lib/constants/perks.ts::HYPNOTIST_POTENCY_PER_PERK",
+      "type": "uses",
+      "label": "Hypnotized potency calculation"
+    },
+    {
+      "source": "src/data/perkAutoDebuffs.ts::getAutoDebuffs",
+      "target": "src/lib/constants/perks.ts::HYPNOTIST_DURATION_BASE",
+      "type": "uses",
+      "label": "Hypnotized duration calculation"
+    },
+    {
+      "source": "src/data/perkAutoDebuffs.ts::getAutoDebuffs",
+      "target": "src/lib/constants/perks.ts::HYPNOTIST_DURATION_PER_PERK",
+      "type": "uses",
+      "label": "Hypnotized duration per stack"
+    },
+    {
+      "source": "src/data/perkAutoDebuffs.ts::getAutoDebuffs",
+      "target": "src/lib/constants/perks.ts::FIERY_PURSUIT_BURN_DURATION",
+      "type": "uses",
+      "label": "Burn duration from Fiery Pursuit"
+    },
+    {
+      "source": "src/data/perkAutoDebuffs.ts::getAutoDebuffs",
+      "target": "src/lib/constants/perks.ts::SUNBURN_BURN_BASE_CHANCE",
+      "type": "uses",
+      "label": "Sunburn burn chance calculation"
+    },
+    {
+      "source": "src/data/perkAutoDebuffs.ts::getAutoDebuffs",
+      "target": "src/lib/constants/perks.ts::SUNBURN_BURN_CHANCE_PER_STACK",
+      "type": "uses",
+      "label": "Sunburn burn chance per stack"
+    },
+    {
+      "source": "src/data/perkAutoDebuffs.ts::getAutoDebuffs",
+      "target": "src/lib/constants/perks.ts::FROSTBITE_SLOW_POTENCY_PER_STACK",
+      "type": "uses",
+      "label": "Frostbite slow potency"
+    },
+    {
+      "source": "src/data/perkAutoDebuffs.ts::getAutoDebuffs",
+      "target": "src/lib/constants/perks.ts::FROSTBITE_CHANCE_PER_STACK",
+      "type": "uses",
+      "label": "Frostbite proc chance"
+    },
+    {
+      "source": "src/data/perkAutoDebuffs.ts::getAutoDebuffs",
+      "target": "src/lib/constants/perk-base-damage.ts",
+      "type": "uses",
+      "label": "imports Bellowing Ember and Pyre Bloom constants for HP gate and duration"
+    },
+    {
+      "source": "src/data/perkAutoDebuffs.ts::getAutoDebuffs",
+      "target": "src/data/enemyHpEffects.ts::getActiveEnemyHpDebuffs",
+      "type": "calls",
+      "label": "appends enemy HP-gated debuffs to output"
+    },
+    {
+      "source": "src/lib/constants/storage.ts::BUILD_STATE_DEFAULTS",
+      "target": "src/lib/constants/game.ts::DEFAULT_LEVEL",
+      "type": "uses",
+      "label": "uses DEFAULT_LEVEL as default value"
+    },
+    {
+      "source": "src/lib/constants/storage.ts::BUILD_STATE_DEFAULTS",
+      "target": "src/lib/constants/game.ts::DEFAULT_HP_FILL",
+      "type": "uses",
+      "label": "uses DEFAULT_HP_FILL as default value"
+    },
+    {
+      "source": "src/lib/constants/storage.ts::SAVE_KEY_UNMAP",
+      "target": "src/lib/constants/storage.ts::SAVE_KEY_MAP",
+      "type": "derived_from",
+      "label": "constructed by inverting SAVE_KEY_MAP"
+    },
+    {
+      "source": "src/lib/constants/storage.ts::ENCH_UNMAP",
+      "target": "src/lib/constants/storage.ts::ENCH_MAP",
+      "type": "derived_from",
+      "label": "constructed by inverting ENCH_MAP"
+    },
+    {
+      "source": "src/lib/engine/dmgTypeBonuses.ts::PERK_DMG_TYPE_BONUS_DEFS",
+      "target": "src/lib/constants/perks.ts::VOID_RAGE_PCT_PER_STACK",
+      "type": "uses",
+      "label": "Void Rage bonus amount"
+    },
+    {
+      "source": "src/lib/engine/dmgTypeBonuses.ts::PERK_DMG_TYPE_BONUS_DEFS",
+      "target": "src/lib/constants/perks.ts::CHANNELED_WEAPON_PCT_PER_STACK",
+      "type": "uses",
+      "label": "Channeled Weapon bonus amount"
+    },
+    {
+      "source": "src/lib/engine/dmgTypeBonuses.ts::PERK_DMG_TYPE_BONUS_DEFS",
+      "target": "src/lib/constants/perks.ts::EMOTIONAL_PCT_PER_STACK",
+      "type": "uses",
+      "label": "Emotional bonus amount"
+    },
+    {
+      "source": "src/lib/engine/dmgTypeBonuses.ts::PERK_DMG_TYPE_BONUS_DEFS",
+      "target": "src/lib/constants/perks.ts::DRACONIC_BLOOD_PCT_PER_STACK",
+      "type": "uses",
+      "label": "Draconic Blood base bonus amount"
+    },
+    {
+      "source": "src/lib/engine/dmgTypeBonuses.ts::PERK_DMG_TYPE_BONUS_DEFS",
+      "target": "src/lib/engine/dmgTypeBonuses.ts::PerkDmgTypeBonusDef",
+      "type": "implements",
+      "label": "each definition conforms to PerkDmgTypeBonusDef interface"
+    },
+    {
+      "source": "src/lib/engine/dmgTypeBonuses.ts::buildDmgTypeBonuses",
+      "target": "src/lib/engine/dmgTypeBonuses.ts::PERK_DMG_TYPE_BONUS_DEFS",
+      "type": "iterates",
+      "label": "evaluates all bonus definitions"
+    }
+  ]
+}

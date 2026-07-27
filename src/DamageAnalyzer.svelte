@@ -2857,7 +2857,7 @@ import {
 
   $: _bombardierSelfDmgBase = (() => {
     if (_bombardierAmt <= 0 || disabledEffects.has('bombardier') || !_bombardierDef) return 0
-    const typeMultSum = Object.values(_bombardierDef.dmgTypes).reduce((s, m) => s + m, 0)
+    const typeMultSum = Object.values(_bombardierDef.dmgTypes ?? {}).reduce((s, m) => s + m, 0)
     return _bombardierDef.getBaseDamage({ perkAmount: _bombardierAmt }) * typeMultSum * _bombardierScalingMult * _levelMult
   })()
 

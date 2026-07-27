@@ -28,11 +28,23 @@
     }
   }
 
-  import { onMount } from 'svelte'
+  import { onMount, onDestroy } from 'svelte'
+  let cleanupKeydown: (() => void) | undefined
   onMount(() => {
     updateBubble(false)
     window.addEventListener('resize', () => updateBubble(false))
+    function handleKeydown(e: KeyboardEvent) {
+      if (e.key === 'Tab' && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        const tag = (e.target as HTMLElement)?.tagName?.toLowerCase()
+        if (tag === 'input' || tag === 'textarea' || tag === 'select') return
+        e.preventDefault()
+        dispatch('switchTab', activeAppTab === 'overview' ? 'analyze' : 'overview')
+      }
+    }
+    window.addEventListener('keydown', handleKeydown)
+    cleanupKeydown = () => window.removeEventListener('keydown', handleKeydown)
   })
+  onDestroy(() => { cleanupKeydown?.() })
 
   $: if (activeAppTab) updateBubble(true)
 </script>

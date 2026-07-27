@@ -1,0 +1,212 @@
+{
+  "meta": {
+    "reviewedFile": "assembled-graph.json",
+    "projectRoot": "D:\\voxlblade-builder",
+    "timestamp": "2026-07-27",
+    "graphStats": {
+      "totalNodes": 357,
+      "totalEdges": 257,
+      "nodeTypeBreakdown": {
+        "file": 242,
+        "function": 66,
+        "module": 27,
+        "schema": 11,
+        "config": 7,
+        "pipeline": 2,
+        "document": 2
+      }
+    }
+  },
+  "issues": [],
+  "warnings": [
+    {
+      "category": "missing-descriptions",
+      "severity": "medium",
+      "count": 46,
+      "description": "46 nodes lack summary/description/purpose fields, making them opaque in the knowledge graph",
+      "affectedNodes": [
+        "file:MountRuneM1Def",
+        "file:MountRuneWADef",
+        "file:MountRuneDef",
+        "file:ComputedType",
+        "file:PerkOnHitDmg",
+        "file:ComputedHit",
+        "function:__nofilepath__:getProcCoeffValue",
+        "function:__nofilepath__:canProc",
+        "file:SCALING_TO_BOOST",
+        "function:__nofilepath__:setEnchantment",
+        "function:__nofilepath__:swapEnchantments",
+        "function:__nofilepath__:clearBuild",
+        "function:__nofilepath__:setGuild",
+        "function:__nofilepath__:moveArmorSlot",
+        "function:__nofilepath__:canArmorMoveToSlot",
+        "function:__nofilepath__:moveRingSlot",
+        "file:PERCENT_STATS",
+        "file:STAT_KEYS",
+        "file:UPGRADE_MAX",
+        "file:WEAPON_BASE_DMG",
+        "file:MOUNT_RUNE_DEFS",
+        "file:WEAPON_PROC_COEFFS",
+        "file:WA_PROC_COEFFS",
+        "file:DEFAULT_PROC_COEFF",
+        "file:OFFENSIVE_BOOSTS",
+        "file:WEIGHT_DISTRIBUTION_SPLIT_RATIO",
+        "file:BuildState",
+        "file:ProcCoefficient",
+        "file:WeaponBaseDmg",
+        "file:WeaponHit",
+        "file:StatKey",
+        "file:StatMap",
+        "file:WeaponBlade",
+        "file:WeaponHandle",
+        "file:MonkGlove",
+        "file:MonkEssence",
+        "file:Race",
+        "file:Guild",
+        "file:Enchantment",
+        "file:Armor",
+        "file:Ring",
+        "file:Rune",
+        "file:BoostEntry",
+        "file:BoostResult",
+        "file:EnchantSlot"
+      ],
+      "recommendation": "Add summary/description to these nodes, especially the function nodes and type definitions which are important for understanding code relationships"
+    },
+    {
+      "category": "orphan-nodes",
+      "severity": "medium",
+      "count": 125,
+      "description": "125 nodes have no edges connecting them to the rest of the graph, limiting discoverability",
+      "breakdown": {
+        "schemaNodes": 11,
+        "description": "All 11 JSON schema data files (armors.json, blades.json, etc.) are orphaned despite being imported by engine/data modules",
+        "configNodes": 1,
+        "description_config": "vercel.json is orphaned despite being referenced in build pipeline",
+        "interfaceNodes": 18,
+        "description_interface": "TypeScript interfaces/types from types.ts (Race, Guild, Armor, etc.) lack edges despite being used extensively",
+        "constantNodes": 22,
+        "description_constant": "Individual constant nodes (BASE_CRIT_DAMAGE, MAX_LEVEL, etc.) lack edges despite being referenced by function nodes",
+        "functionNodes": 14,
+        "description_function": "Functions like getOrkTenacityBuffs, calcOrkTenacityBonus lack edges despite being exported and used"
+      },
+      "recommendation": "Add import/use edges for schema nodes to their importer modules, and for individual constants to the functions that use them"
+    },
+    {
+      "category": "schema-field-mixing",
+      "severity": "low",
+      "count": 65,
+      "description": "65 nodes use 'file' field while 215 use 'filePath' field for the same purpose",
+      "examples": {
+        "fileField": ["module:src/data/mountRunes.ts", "module:src/data/procCoefficients.ts", "file:MountRuneM1Def"],
+        "filePathField": ["file:src/data/BuffData.ts", "file:src/data/TypedDmgBoost.ts", "module:src/data/DoTDamage.ts"]
+      },
+      "recommendation": "Standardize to 'filePath' field name across all node types for consistency"
+    },
+    {
+      "category": "noinconsistent-id-patterns",
+      "severity": "medium",
+      "count": 21,
+      "description": "21 function nodes use '__nofilepath__' in their ID instead of the actual file path, making them unlocatable",
+      "affectedNodes": [
+        "function:__nofilepath__:applyStatBoostPerks (actual: src/data/statboost.ts:225)",
+        "function:__nofilepath__:getEnchantTooltipText (actual: src/lib/enchantTooltip.ts:3)",
+        "function:__nofilepath__:calcBuild (actual: src/lib/engine.ts -> build.ts)",
+        "function:__nofilepath__:applyUpgrade (actual: src/lib/types.ts:75)",
+        "function:__nofilepath__:getProcCoeffValue (actual: src/lib/types.ts:224)",
+        "function:__nofilepath__:canProc (actual: src/lib/types.ts:230)",
+        "function:__nofilepath__:setEnchantment (actual: src/lib/store.ts:85)",
+        "function:__nofilepath__:swapEnchantments (actual: src/lib/store.ts:99)",
+        "function:__nofilepath__:clearBuild (actual: src/lib/store.ts:115)",
+        "function:__nofilepath__:setGuild (actual: src/lib/store.ts:119)",
+        "function:__nofilepath__:moveArmorSlot (actual: src/lib/store.ts:147)",
+        "function:__nofilepath__:canArmorMoveToSlot (actual: src/lib/store.ts:174)",
+        "function:__nofilepath__:moveRingSlot (actual: src/lib/store.ts:185)",
+        "function:__nofilepath__:src/data/Boost.ts::calcMinionAbsorptionPotency",
+        "function:__nofilepath__:src/data/Boost.ts::calcFrenzyPct",
+        "function:__nofilepath__:src/data/enemyHpEffects.ts::getActiveEnemyHpDebuffs",
+        "function:__nofilepath__:src/data/enemyHpEffects.ts::getEnemyHpDotMultiplier",
+        "function:__nofilepath__:src/data/perkAutoDebuffs.ts::calcActualHpFillPct",
+        "function:__nofilepath__:src/data/perkAutoDebuffs.ts::getAutoDebuffs",
+        "function:__nofilepath__:src/lib/constants/game.ts::calcBaseMaxHP",
+        "function:__nofilepath__:src/lib/engine/dmgTypeBonuses.ts::buildDmgTypeBonuses"
+      ],
+      "recommendation": "Replace __nofilepath__ with the actual file path prefix (e.g., function:src/lib/store.ts:setEnchantment)"
+    },
+    {
+      "category": "edge-type-inconsistency",
+      "severity": "low",
+      "count": 2,
+      "description": "Edge type naming is inconsistent: 'import' (14 edges) vs 'imports' (104 edges), 'depends_on' (10 edges) vs 'depends-on' (3 edges)",
+      "examples": {
+        "importVsImports": "module:src/data/statboost.ts uses type='import' while module:src/data/DoTDamage.ts uses type='imports'",
+        "dependsOnVsDependsOn": "file:src/lib/engine/build.ts uses type='depends_on' while file:result uses type='depends-on'"
+      },
+      "recommendation": "Normalize edge types to use hyphens consistently (imports, depends-on) or underscores consistently (imports, depends_on)"
+    },
+    {
+      "category": "interface-type-id-prefixes",
+      "severity": "low",
+      "count": 5,
+      "description": "Some nodes use unusual ID prefixes that mix multiple conventions: 'file:type::', 'file:interface::', 'file:const::'",
+      "affectedPrefixes": [
+        "file:type::src/data/weaponConditionalBoosts.ts::WeaponHitScope",
+        "file:interface::src/data/weaponConditionalBoosts.ts::WeaponConditionalBoost",
+        "file:const::src/data/weaponConditionalBoosts.ts::WEAPON_CONDITIONAL_BOOSTS",
+        "file:interface::src/lib/crit.ts::CritResult",
+        "file:const::src/lib/crit.ts::NATURAL_CRIT_SOURCES"
+      ],
+      "recommendation": "Use the standard prefix pattern: 'type::', 'interface::', 'constant::' without the 'file:' prefix"
+    }
+  ],
+  "suggestions": [
+    {
+      "category": "add-schema-edges",
+      "description": "Add import edges from engine/data modules (character.ts, equipment.ts, weapons.ts) to their corresponding schema JSON nodes (races.json, armors.json, blades.json, etc.)",
+      "impact": "Would connect 11 currently orphaned schema nodes to the dependency graph",
+      "edgesToAdd": [
+        { "source": "module:src/lib/engine/data/character.ts", "target": "schema::src/data/races.json", "type": "imports" },
+        { "source": "module:src/lib/engine/data/character.ts", "target": "schema::src/data/guilds.json", "type": "imports" },
+        { "source": "module:src/lib/engine/data/character.ts", "target": "schema::src/data/perks.json", "type": "imports" },
+        { "source": "module:src/lib/engine/data/equipment.ts", "target": "schema::src/data/rings.json", "type": "imports" },
+        { "source": "module:src/lib/engine/data/equipment.ts", "target": "schema::src/data/runes.json", "type": "imports" },
+        { "source": "module:src/lib/engine/data/equipment.ts", "target": "schema::src/data/enchantments.json", "type": "imports" },
+        { "source": "module:src/lib/engine/data/equipment.ts", "target": "schema::src/data/armors.json", "type": "imports" },
+        { "source": "module:src/lib/engine/data/weapons.ts", "target": "schema::src/data/blades.json", "type": "imports" },
+        { "source": "module:src/lib/engine/data/weapons.ts", "target": "schema::src/data/handles.json", "type": "imports" },
+        { "source": "module:src/lib/engine/data/weapons.ts", "target": "schema::src/data/gloves.json", "type": "imports" },
+        { "source": "module:src/lib/engine/data/weapons.ts", "target": "schema::src/data/essences.json", "type": "imports" }
+      ]
+    },
+    {
+      "category": "add-type-definition-edges",
+      "description": "Add 'exports' edges from the barrel module (module:src/lib/types.ts) to each type/interface constant node, and 'imports' edges from consumer modules",
+      "impact": "Would connect ~40 orphaned type/constant nodes to the type definition barrel and their consumers",
+      "estimatedEdgeCount": 40
+    },
+    {
+      "category": "add-function-body-edges",
+      "description": "Add 'calls' edges for remaining orphaned function nodes that are called by other functions but lack edge representation",
+      "impact": "Would improve accuracy of the call graph",
+      "examples": [
+        "getOrkTenacityBuffs and calcOrkTenacityBonus should have edges from their callers",
+        "getDraconicInfusionDurMult and getDraconicAbilityDebuffs should have edges from modules that use them"
+      ]
+    },
+    {
+      "category": "consolidate-duplicate-edge-types",
+      "description": "The 'unused-reference' edge type (4 edges) should be merged into the regular 'imports' type with lower weight, or documented as intentionally marking unused imports",
+      "affectedEdges": [
+        "DmgTotalTooltip.svelte -> CritIcon.svelte",
+        "EmotionalTracker.svelte -> boosts.ts",
+        "EnchantSelect.svelte -> cdr.ts",
+        "Modal.svelte -> defensive.ts"
+      ]
+    },
+    {
+      "category": "add-cyclic-dependency-detection",
+      "description": "The graph currently has no cycle detection. Consider adding a check for circular import chains which could indicate architectural issues",
+      "potentialCycleRisk": "BuffData.ts <-> Perkbasedmg.ts (Perkbasedmg imports from DoTDamage which imports from constants that BuffData also imports)"
+    }
+  ]
+}

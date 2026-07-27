@@ -1,0 +1,202 @@
+{
+  "nodes": [
+    {
+      "id": "file::.fallowrc.json",
+      "type": "file",
+      "label": ".fallowrc.json",
+      "filePath": ".fallowrc.json",
+      "description": "Configuration file for Fallow, the dead-code/unused-dependency linter. Defines which directories and file patterns to scan, severity thresholds, and output formats.",
+      "language": "json",
+      "category": "config",
+      "size": 56
+    },
+    {
+      "id": "file::AGENTS.md",
+      "type": "file",
+      "label": "AGENTS.md",
+      "filePath": "AGENTS.md",
+      "description": "Agent context file for the voxlblade-builder project. Documents the project overview, tech stack (Svelte 5 + Vite + TypeScript + Tailwind CSS v4), project structure, development workflow, and AI agent interaction guidelines.",
+      "language": "markdown",
+      "category": "docs",
+      "size": 59
+    },
+    {
+      "id": "file::README.md",
+      "type": "file",
+      "label": "README.md",
+      "filePath": "README.md",
+      "description": "Project README for the Voxel Blade damage calculator and build optimizer web app.",
+      "language": "markdown",
+      "category": "docs",
+      "size": 47
+    },
+    {
+      "id": "file::fallow-output.json",
+      "type": "file",
+      "label": "fallow-output.json",
+      "filePath": "fallow-output.json",
+      "description": "Output report from Fallow dead-code analysis. Contains 28 issues including unused exports, unreachable code, and unused dependencies across the codebase.",
+      "language": "json",
+      "category": "config",
+      "size": 782
+    },
+    {
+      "id": "file::fallow-security.json",
+      "type": "file",
+      "label": "fallow-security.json",
+      "filePath": "fallow-security.json",
+      "description": "Security findings report from Fallow. Identifies CWE-79 XSS in DidYouMean.svelte (unsanitized user input in innerHTML) and CWE-502 deserialization risk in decode_full.mjs (eval on base64-encoded JSON).",
+      "language": "json",
+      "category": "config",
+      "size": 1391
+    },
+    {
+      "id": "file::index.html",
+      "type": "file",
+      "label": "index.html",
+      "filePath": "index.html",
+      "description": "Root HTML entry point for the Vite SPA. Contains a single <div id='app'> mount target and a <script type='module' src='/src/main.ts'> tag.",
+      "language": "html",
+      "category": "markup",
+      "size": 14
+    },
+    {
+      "id": "config::package.json",
+      "type": "config",
+      "label": "package.json",
+      "filePath": "package.json",
+      "description": "Project manifest defining the voxlblade package (private, ESM). Scripts: dev (vite), build (vite build), preview, check (svelte-check + tsc). Key dependencies: @vercel/analytics ^2.0.1. Key devDependencies: svelte ^5.55.4, vite ^8.10, typescript ~6.0.2, fallow ^2.104.0, rollup-plugin-visualizer ^7.0.1.",
+      "language": "json",
+      "category": "config",
+      "size": 30
+    },
+    {
+      "id": "file::stats-data.json",
+      "type": "file",
+      "label": "stats-data.json",
+      "filePath": "stats-data.json",
+      "description": "Generated data file from the Rollup Visualizer bundle analysis plugin. Contains module size statistics used to produce the stats.html report.",
+      "language": "json",
+      "category": "config",
+      "size": 1
+    },
+    {
+      "id": "file::stats.html",
+      "type": "file",
+      "label": "stats.html",
+      "filePath": "stats.html",
+      "description": "Generated Rollup Visualizer HTML report showing the bundle composition and size of each module in the built application.",
+      "language": "html",
+      "category": "markup",
+      "size": 4950
+    },
+    {
+      "id": "file::ts-errors.txt",
+      "type": "file",
+      "label": "ts-errors.txt",
+      "filePath": "ts-errors.txt",
+      "description": "Output file for TypeScript compilation errors. Currently empty, indicating no active type errors.",
+      "language": "txt",
+      "category": "docs",
+      "size": 0
+    },
+    {
+      "id": "config::tsconfig.json",
+      "type": "config",
+      "label": "tsconfig.json",
+      "filePath": "tsconfig.json",
+      "description": "Root TypeScript configuration. Extends tsconfig.app.json as the default project config.",
+      "language": "json",
+      "category": "config",
+      "size": 2
+    },
+    {
+      "id": "config::tsconfig.app.json",
+      "type": "config",
+      "label": "tsconfig.app.json",
+      "filePath": "tsconfig.app.json",
+      "description": "TypeScript configuration for the application source code. Extends @tsconfig/svelte. Targets ES2023, ESNext modules, enables allowJs/checkJs, includes src/**/*.ts, src/**/*.js, src/**/*.svelte.",
+      "language": "json",
+      "category": "config",
+      "size": 20
+    },
+    {
+      "id": "config::tsconfig.node.json",
+      "type": "config",
+      "label": "tsconfig.node.json",
+      "filePath": "tsconfig.node.json",
+      "description": "TypeScript configuration for Node-side build tooling (vite.config.ts). Targets ES2023, uses bundler moduleResolution, enables verbatimModuleSyntax and erasableSyntaxOnly.",
+      "language": "json",
+      "category": "config",
+      "size": 24
+    },
+    {
+      "id": "config::vercel.json",
+      "type": "config",
+      "label": "vercel.json",
+      "filePath": "vercel.json",
+      "description": "Vercel deployment configuration. Defines SPA rewrites, build settings, and hosting headers for the deployed application.",
+      "language": "json",
+      "category": "config",
+      "size": 33
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge::config::tsconfig.json::extends::config::tsconfig.app.json",
+      "source": "config::tsconfig.json",
+      "target": "config::tsconfig.app.json",
+      "type": "extends",
+      "label": "root tsconfig inherits from app config"
+    },
+    {
+      "id": "edge::config::package.json::defines::config::tsconfig.app.json",
+      "source": "config::package.json",
+      "target": "config::tsconfig.app.json",
+      "type": "references",
+      "label": "check script references tsconfig.app.json"
+    },
+    {
+      "id": "edge::config::package.json::defines::config::tsconfig.node.json",
+      "source": "config::package.json",
+      "target": "config::tsconfig.node.json",
+      "type": "references",
+      "label": "check script references tsconfig.node.json"
+    },
+    {
+      "id": "edge::file::fallow-output.json::generated-by::file::.fallowrc.json",
+      "source": "file::fallow-output.json",
+      "target": "file::.fallowrc.json",
+      "type": "generated-by",
+      "label": "Fallow output generated from fallowrc config"
+    },
+    {
+      "id": "edge::file::fallow-security.json::generated-by::file::.fallowrc.json",
+      "source": "file::fallow-security.json",
+      "target": "file::.fallowrc.json",
+      "type": "generated-by",
+      "label": "Fallow security report generated from fallowrc config"
+    },
+    {
+      "id": "edge::file::stats-data.json::generated-by::config::package.json",
+      "source": "file::stats-data.json",
+      "target": "config::package.json",
+      "type": "generated-by",
+      "label": "stats-data generated by rollup-plugin-visualizer devDependency"
+    },
+    {
+      "id": "edge::file::stats.html::generated-by::config::package.json",
+      "source": "file::stats.html",
+      "target": "config::package.json",
+      "type": "generated-by",
+      "label": "stats.html generated by rollup-plugin-visualizer devDependency"
+    },
+    {
+      "id": "edge::file::index.html::entry-point-for::config::package.json",
+      "source": "file::index.html",
+      "target": "config::package.json",
+      "type": "entry-point-for",
+      "label": "SPA entry point loaded by Vite dev server"
+    }
+  ]
+}

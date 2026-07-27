@@ -848,7 +848,7 @@
         <input
           class="search-input"
           type="text"
-          placeholder="Search by name, weapon, armor…"
+          placeholder="Search by name, weapon, perk…"
           bind:value={searchQuery}
           onfocus={() => { if (searchQuery.trim() && searchSuggestions.length) searchSuggestions = searchSuggestions }}
         />

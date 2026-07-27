@@ -1,0 +1,466 @@
+{
+  "nodes": [
+    {
+      "id": "file::src/lib/constants/defensive.ts",
+      "type": "file",
+      "label": "defensive.ts",
+      "filePath": "src/lib/constants/defensive.ts",
+      "description": "Constants module (22 lines) defining defensive perk DR values: Barbskin, Stoneskin, Adaptive Plate, Protector Spirit, Air Pressure, Valor, Vampire, Frenzy, Stored Corruption, Mounted Defense, Carapace, and Cursed Bark.",
+      "language": "typescript",
+      "category": "code",
+      "size": 22
+    },
+    {
+      "id": "file::src/lib/constants/draconic-colors.ts",
+      "type": "file",
+      "label": "draconic-colors.ts",
+      "filePath": "src/lib/constants/draconic-colors.ts",
+      "description": "Constants module (20 lines) defining draconic color multiplier values for Fire, Air, Earth, Water, and Hex dragon states: speed, damage, stun, knockback, and cooldown multipliers.",
+      "language": "typescript",
+      "category": "code",
+      "size": 20
+    },
+    {
+      "id": "file::src/lib/constants/draconic.ts",
+      "type": "file",
+      "label": "draconic.ts",
+      "filePath": "src/lib/constants/draconic.ts",
+      "description": "Constants module (10 lines) defining draconic infusion potency/duration multipliers and dragon state HP/damage parameters.",
+      "language": "typescript",
+      "category": "code",
+      "size": 10
+    },
+    {
+      "id": "file::src/lib/constants/heals.ts",
+      "type": "file",
+      "label": "heals.ts",
+      "filePath": "src/lib/constants/heals.ts",
+      "description": "Constants module (5 lines) defining critical healing base value, holy boost divisor, per-stack healing bonus, and Ocean Song per-stack heal percentage.",
+      "language": "typescript",
+      "category": "code",
+      "size": 5
+    },
+    {
+      "id": "file::src/lib/constants/index.ts",
+      "type": "file",
+      "label": "index.ts",
+      "filePath": "src/lib/constants/index.ts",
+      "description": "Barrel re-export file (18 lines) that re-exports all sub-modules from the constants directory: damage-types, game, storage, thresholds, perks, boosts, heals, draconic, perk-base-damage, rune-base-damage, buffs, stat-conversions, defensive, dot-damage, draconic-colors, cdr, debuff-effects, and wa-display.",
+      "language": "typescript",
+      "category": "code",
+      "size": 18
+    },
+    {
+      "id": "file::src/lib/constants/thresholds.ts",
+      "type": "file",
+      "label": "thresholds.ts",
+      "filePath": "src/lib/constants/thresholds.ts",
+      "description": "Constants module (5 lines) defining armor penetration branch threshold, minimum cooldown, and base crit damage percentage.",
+      "language": "typescript",
+      "category": "code",
+      "size": 5
+    },
+    {
+      "id": "file::src/lib/EnchantSelect.svelte",
+      "type": "file",
+      "label": "EnchantSelect.svelte",
+      "filePath": "src/lib/EnchantSelect.svelte",
+      "description": "Component (465 lines) providing a searchable dropdown for selecting enchantments. Features color-coded enchantment names by rarity/type, text search with highlight, scroll-based keyboard navigation, and exclusive enchantment slot enforcement.",
+      "language": "svelte",
+      "category": "code",
+      "size": 465
+    },
+    {
+      "id": "file::src/lib/engine/engine.ts",
+      "type": "file",
+      "label": "engine.ts",
+      "filePath": "src/lib/engine/engine.ts",
+      "description": "Barrel re-export file (6 lines) for the engine module. Re-exports all sub-modules: data, shrine, enchant, weapon, build, and format.",
+      "language": "typescript",
+      "category": "code",
+      "size": 6
+    },
+    {
+      "id": "file::src/lib/Modal.svelte",
+      "type": "file",
+      "label": "Modal.svelte",
+      "filePath": "src/lib/Modal.svelte",
+      "description": "Reusable modal dialog component (213 lines). Provides overlay backdrop with click-to-close, animated fly-in dialog box, focus trapping, close button, and slot-based content area.",
+      "language": "svelte",
+      "category": "code",
+      "size": 213
+    },
+    {
+      "id": "file::src/lib/modals/AccessorySelectModal.svelte",
+      "type": "file",
+      "label": "AccessorySelectModal.svelte",
+      "filePath": "src/lib/modals/AccessorySelectModal.svelte",
+      "description": "Modal (200 lines) for selecting ring or rune accessories. Uses ModalSearchHeader for search/filter and displays items in a grid with stat previews.",
+      "language": "svelte",
+      "category": "code",
+      "size": 200
+    },
+    {
+      "id": "file::src/lib/modals/GuildModal.svelte",
+      "type": "file",
+      "label": "GuildModal.svelte",
+      "filePath": "src/lib/modals/GuildModal.svelte",
+      "description": "Modal (98 lines) for selecting a guild. Lists available guilds with rank progression and stat bonus previews.",
+      "language": "svelte",
+      "category": "code",
+      "size": 98
+    },
+    {
+      "id": "file::src/lib/modals/index.ts",
+      "type": "file",
+      "label": "index.ts",
+      "filePath": "src/lib/modals/index.ts",
+      "description": "Barrel re-export file (4 lines) exporting RaceModal, GuildModal, AccessorySelectModal, and WeaponPartModal.",
+      "language": "typescript",
+      "category": "code",
+      "size": 4
+    },
+    {
+      "id": "file::src/lib/modals/RaceModal.svelte",
+      "type": "file",
+      "label": "RaceModal.svelte",
+      "filePath": "src/lib/modals/RaceModal.svelte",
+      "description": "Modal (60 lines) for selecting a character race. Lists available races with passive ability descriptions.",
+      "language": "svelte",
+      "category": "code",
+      "size": 60
+    },
+    {
+      "id": "file::src/lib/modals/WeaponPartModal.svelte",
+      "type": "file",
+      "label": "WeaponPartModal.svelte",
+      "filePath": "src/lib/modals/WeaponPartModal.svelte",
+      "description": "Modal (137 lines) for selecting weapon parts (blades, handles, gloves, essences). Uses ModalSearchHeader with stat filtering and weapon stat comparison.",
+      "language": "svelte",
+      "category": "code",
+      "size": 137
+    },
+    {
+      "id": "file::src/lib/StatFilterShared.svelte",
+      "type": "file",
+      "label": "StatFilterShared.svelte",
+      "filePath": "src/lib/StatFilterShared.svelte",
+      "description": "Shared Svelte component (97 lines) providing StatChip UI and buildStatMaps utility used by both StatFilter and WeaponStatFilter. Renders stat filter chips with include/exclude toggle states.",
+      "language": "svelte",
+      "category": "code",
+      "size": 97
+    },
+    {
+      "id": "file::src/lib/stats/elementalBoosts.ts",
+      "type": "file",
+      "label": "elementalBoosts.ts",
+      "filePath": "src/lib/stats/elementalBoosts.ts",
+      "description": "Constants module (22 lines) defining ELEMENTAL_BOOST_STATS and NEGATIVE_ELEMENTAL_BOOST_STATS arrays listing all elemental boost stat keys and labels.",
+      "language": "typescript",
+      "category": "code",
+      "size": 22
+    },
+    {
+      "id": "file::src/lib/stats/filterActions.ts",
+      "type": "file",
+      "label": "filterActions.ts",
+      "filePath": "src/lib/stats/filterActions.ts",
+      "description": "Utility module (41 lines) providing createFilterActions factory that returns toggle/remove/clear/handleChipKeyDown actions for managing stat filter state (include/exclude/none).",
+      "language": "typescript",
+      "category": "code",
+      "size": 41
+    },
+    {
+      "id": "file::src/lib/Toast.svelte",
+      "type": "file",
+      "label": "Toast.svelte",
+      "filePath": "src/lib/Toast.svelte",
+      "description": "Toast notification component (100 lines) displaying success/error/info/warning messages with animated fly-in, auto-dismiss timer, and type-specific styling.",
+      "language": "svelte",
+      "category": "code",
+      "size": 100
+    },
+    {
+      "id": "file::src/lib/ui/Badge.svelte",
+      "type": "file",
+      "label": "Badge.svelte",
+      "filePath": "src/lib/ui/Badge.svelte",
+      "description": "Reusable badge/pill UI component (148 lines) with color, size (xs/sm/md), square variant, and dot prefix options.",
+      "language": "svelte",
+      "category": "code",
+      "size": 148
+    },
+    {
+      "id": "file::src/lib/ui/Button.svelte",
+      "type": "file",
+      "label": "Button.svelte",
+      "filePath": "src/lib/ui/Button.svelte",
+      "description": "Reusable button UI component (143 lines) with variant (primary/secondary/ghost/danger), size, icon, disabled, and loading states.",
+      "language": "svelte",
+      "category": "code",
+      "size": 143
+    },
+    {
+      "id": "file::src/lib/ui/Card.svelte",
+      "type": "file",
+      "label": "Card.svelte",
+      "filePath": "src/lib/ui/Card.svelte",
+      "description": "Reusable card container UI component (103 lines) with glass morphism styling, hover effects, and optional header/footer slots.",
+      "language": "svelte",
+      "category": "code",
+      "size": 103
+    },
+    {
+      "id": "file::src/lib/ui/Divider.svelte",
+      "type": "file",
+      "label": "Divider.svelte",
+      "filePath": "src/lib/ui/Divider.svelte",
+      "description": "Simple divider UI component (42 lines) rendering a horizontal rule with configurable thickness and color.",
+      "language": "svelte",
+      "category": "code",
+      "size": 42
+    },
+    {
+      "id": "file::src/lib/ui/index.ts",
+      "type": "file",
+      "label": "index.ts",
+      "filePath": "src/lib/ui/index.ts",
+      "description": "Barrel re-export file (7 lines) exporting Card, Badge, Button, Stat, Section, Divider, and Panel UI components.",
+      "language": "typescript",
+      "category": "code",
+      "size": 7
+    },
+    {
+      "id": "file::src/lib/ui/Panel.svelte",
+      "type": "file",
+      "label": "Panel.svelte",
+      "filePath": "src/lib/ui/Panel.svelte",
+      "description": "Panel container UI component (94 lines) with collapsible header, glass morphism styling, and slot-based content area.",
+      "language": "svelte",
+      "category": "code",
+      "size": 94
+    },
+    {
+      "id": "file::src/lib/ui/Section.svelte",
+      "type": "file",
+      "label": "Section.svelte",
+      "filePath": "src/lib/ui/Section.svelte",
+      "description": "Section container UI component (129 lines) with title, description, and content slots for organizing related UI elements.",
+      "language": "svelte",
+      "category": "code",
+      "size": 129
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge::file::src/lib/constants/index.ts::re-exports::file::src/lib/constants/defensive.ts",
+      "source": "file::src/lib/constants/index.ts",
+      "target": "file::src/lib/constants/defensive.ts",
+      "type": "re-exports",
+      "label": "re-exports defensive constants"
+    },
+    {
+      "id": "edge::file::src/lib/constants/index.ts::re-exports::file::src/lib/constants/draconic-colors.ts",
+      "source": "file::src/lib/constants/index.ts",
+      "target": "file::src/lib/constants/draconic-colors.ts",
+      "type": "re-exports",
+      "label": "re-exports draconic color constants"
+    },
+    {
+      "id": "edge::file::src/lib/constants/index.ts::re-exports::file::src/lib/constants/draconic.ts",
+      "source": "file::src/lib/constants/index.ts",
+      "target": "file::src/lib/constants/draconic.ts",
+      "type": "re-exports",
+      "label": "re-exports draconic constants"
+    },
+    {
+      "id": "edge::file::src/lib/constants/index.ts::re-exports::file::src/lib/constants/heals.ts",
+      "source": "file::src/lib/constants/index.ts",
+      "target": "file::src/lib/constants/heals.ts",
+      "type": "re-exports",
+      "label": "re-exports heal constants"
+    },
+    {
+      "id": "edge::file::src/lib/constants/index.ts::re-exports::file::src/lib/constants/thresholds.ts",
+      "source": "file::src/lib/constants/index.ts",
+      "target": "file::src/lib/constants/thresholds.ts",
+      "type": "re-exports",
+      "label": "re-exports threshold constants"
+    },
+    {
+      "id": "edge::file::src/lib/engine/engine.ts::re-exports::file::src/lib/engine/build.ts",
+      "source": "file::src/lib/engine/engine.ts",
+      "target": "file::src/lib/engine/build.ts",
+      "type": "re-exports",
+      "label": "re-exports build module"
+    },
+    {
+      "id": "edge::file::src/lib/engine/engine.ts::re-exports::file::src/lib/engine/enchant.ts",
+      "source": "file::src/lib/engine/engine.ts",
+      "target": "file::src/lib/engine/enchant.ts",
+      "type": "re-exports",
+      "label": "re-exports enchant module"
+    },
+    {
+      "id": "edge::file::src/lib/engine/engine.ts::re-exports::file::src/lib/engine/weapon.ts",
+      "source": "file::src/lib/engine/engine.ts",
+      "target": "file::src/lib/engine/weapon.ts",
+      "type": "re-exports",
+      "label": "re-exports weapon module"
+    },
+    {
+      "id": "edge::file::src/lib/engine/engine.ts::re-exports::file::src/lib/engine/shrine.ts",
+      "source": "file::src/lib/engine/engine.ts",
+      "target": "file::src/lib/engine/shrine.ts",
+      "type": "re-exports",
+      "label": "re-exports shrine module"
+    },
+    {
+      "id": "edge::file::src/lib/engine/engine.ts::re-exports::file::src/lib/engine/format.ts",
+      "source": "file::src/lib/engine/engine.ts",
+      "target": "file::src/lib/engine/format.ts",
+      "type": "re-exports",
+      "label": "re-exports format module"
+    },
+    {
+      "id": "edge::file::src/lib/engine/engine.ts::re-exports::file::src/lib/engine/data.ts",
+      "source": "file::src/lib/engine/engine.ts",
+      "target": "file::src/lib/engine/data.ts",
+      "type": "re-exports",
+      "label": "re-exports data module"
+    },
+    {
+      "id": "edge::file::src/lib/modals/index.ts::re-exports::file::src/lib/modals/RaceModal.svelte",
+      "source": "file::src/lib/modals/index.ts",
+      "target": "file::src/lib/modals/RaceModal.svelte",
+      "type": "re-exports",
+      "label": "re-exports RaceModal"
+    },
+    {
+      "id": "edge::file::src/lib/modals/index.ts::re-exports::file::src/lib/modals/GuildModal.svelte",
+      "source": "file::src/lib/modals/index.ts",
+      "target": "file::src/lib/modals/GuildModal.svelte",
+      "type": "re-exports",
+      "label": "re-exports GuildModal"
+    },
+    {
+      "id": "edge::file::src/lib/modals/index.ts::re-exports::file::src/lib/modals/AccessorySelectModal.svelte",
+      "source": "file::src/lib/modals/index.ts",
+      "target": "file::src/lib/modals/AccessorySelectModal.svelte",
+      "type": "re-exports",
+      "label": "re-exports AccessorySelectModal"
+    },
+    {
+      "id": "edge::file::src/lib/modals/index.ts::re-exports::file::src/lib/modals/WeaponPartModal.svelte",
+      "source": "file::src/lib/modals/index.ts",
+      "target": "file::src/lib/modals/WeaponPartModal.svelte",
+      "type": "re-exports",
+      "label": "re-exports WeaponPartModal"
+    },
+    {
+      "id": "edge::file::src/lib/ui/index.ts::re-exports::file::src/lib/ui/Card.svelte",
+      "source": "file::src/lib/ui/index.ts",
+      "target": "file::src/lib/ui/Card.svelte",
+      "type": "re-exports",
+      "label": "re-exports Card"
+    },
+    {
+      "id": "edge::file::src/lib/ui/index.ts::re-exports::file::src/lib/ui/Badge.svelte",
+      "source": "file::src/lib/ui/index.ts",
+      "target": "file::src/lib/ui/Badge.svelte",
+      "type": "re-exports",
+      "label": "re-exports Badge"
+    },
+    {
+      "id": "edge::file::src/lib/ui/index.ts::re-exports::file::src/lib/ui/Button.svelte",
+      "source": "file::src/lib/ui/index.ts",
+      "target": "file::src/lib/ui/Button.svelte",
+      "type": "re-exports",
+      "label": "re-exports Button"
+    },
+    {
+      "id": "edge::file::src/lib/ui/index.ts::re-exports::file::src/lib/ui/Panel.svelte",
+      "source": "file::src/lib/ui/index.ts",
+      "target": "file::src/lib/ui/Panel.svelte",
+      "type": "re-exports",
+      "label": "re-exports Panel"
+    },
+    {
+      "id": "edge::file::src/lib/ui/index.ts::re-exports::file::src/lib/ui/Section.svelte",
+      "source": "file::src/lib/ui/index.ts",
+      "target": "file::src/lib/ui/Section.svelte",
+      "type": "re-exports",
+      "label": "re-exports Section"
+    },
+    {
+      "id": "edge::file::src/lib/ui/index.ts::re-exports::file::src/lib/ui/Divider.svelte",
+      "source": "file::src/lib/ui/index.ts",
+      "target": "file::src/lib/ui/Divider.svelte",
+      "type": "re-exports",
+      "label": "re-exports Divider"
+    },
+    {
+      "id": "edge::file::src/lib/EnchantSelect.svelte::imports::file::src/lib/constants/index.ts",
+      "source": "file::src/lib/EnchantSelect.svelte",
+      "target": "file::src/lib/constants/index.ts",
+      "type": "imports",
+      "label": "imports FOCUS_DELAY_MS constant"
+    },
+    {
+      "id": "edge::file::src/lib/modals/AccessorySelectModal.svelte::imports::file::src/lib/Modal.svelte",
+      "source": "file::src/lib/modals/AccessorySelectModal.svelte",
+      "target": "file::src/lib/Modal.svelte",
+      "type": "imports",
+      "label": "wraps content in Modal"
+    },
+    {
+      "id": "edge::file::src/lib/modals/GuildModal.svelte::imports::file::src/lib/Modal.svelte",
+      "source": "file::src/lib/modals/GuildModal.svelte",
+      "target": "file::src/lib/Modal.svelte",
+      "type": "imports",
+      "label": "wraps content in Modal"
+    },
+    {
+      "id": "edge::file::src/lib/modals/WeaponPartModal.svelte::imports::file::src/lib/Modal.svelte",
+      "source": "file::src/lib/modals/WeaponPartModal.svelte",
+      "target": "file::src/lib/Modal.svelte",
+      "type": "imports",
+      "label": "wraps content in Modal"
+    },
+    {
+      "id": "edge::file::src/lib/modals/RaceModal.svelte::imports::file::src/lib/Modal.svelte",
+      "source": "file::src/lib/modals/RaceModal.svelte",
+      "target": "file::src/lib/Modal.svelte",
+      "type": "imports",
+      "label": "wraps content in Modal"
+    },
+    {
+      "id": "edge::file::src/lib/StatFilterShared.svelte::imports::file::src/lib/ui/Badge.svelte",
+      "source": "file::src/lib/StatFilterShared.svelte",
+      "target": "file::src/lib/ui/Badge.svelte",
+      "type": "imports",
+      "label": "renders stat filter chips as badges"
+    },
+    {
+      "id": "edge::file::src/lib/Toast.svelte::imports::file::src/lib/stores/toast.ts",
+      "source": "file::src/lib/Toast.svelte",
+      "target": "file::src/lib/stores/toast.ts",
+      "type": "imports",
+      "label": "reads toast notifications from store"
+    },
+    {
+      "id": "edge::file::src/lib/EnchantSelect.svelte::imports::file::src/lib/constants/cdr.ts",
+      "source": "file::src/lib/EnchantSelect.svelte",
+      "target": "file::src/lib/constants/cdr.ts",
+      "type": "unused-reference",
+      "label": "constants/index.ts barrel includes cdr.ts"
+    },
+    {
+      "id": "edge::file::src/lib/Modal.svelte::imports::file::src/lib/constants/defensive.ts",
+      "source": "file::src/lib/Modal.svelte",
+      "target": "file::src/lib/constants/defensive.ts",
+      "type": "unused-reference",
+      "label": "no direct import, but part of constants barrel"
+    }
+  ]
+}

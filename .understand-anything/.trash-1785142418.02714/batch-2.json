@@ -1,0 +1,894 @@
+{
+  "nodes": [
+    {
+      "id": "src/data/DoTDamage.ts",
+      "type": "module",
+      "label": "DoTDamage",
+      "filePath": "src/data/DoTDamage.ts",
+      "startLine": 1,
+      "endLine": 74,
+      "description": "DoT (Damage over Time) calculation module. Defines DoT types (Bleed, Burn, Poison), stat scalings, damage type mappings, and functions for computing DoT tick damage, potency multipliers, and display potency with Endless Despair modifier."
+    },
+    {
+      "id": "src/data/DoTDamage.ts::DOT_TYPE_LIST",
+      "type": "constant",
+      "label": "DOT_TYPE_LIST",
+      "filePath": "src/data/DoTDamage.ts",
+      "startLine": 5,
+      "endLine": 5,
+      "description": "ReadonlyArray of DoT type names: 'Bleed', 'Burn', 'Poison'"
+    },
+    {
+      "id": "src/data/DoTDamage.ts::DOT_SCALINGS",
+      "type": "constant",
+      "label": "DOT_SCALINGS",
+      "filePath": "src/data/DoTDamage.ts",
+      "startLine": 8,
+      "endLine": 13,
+      "description": "Stat scaling definitions per DoT type. Bleed=dexterity+physical, Burn=fire×1.5, Poison=hex+earth, Caustic Slow=hex+earth"
+    },
+    {
+      "id": "src/data/DoTDamage.ts::DOT_DMG_TYPE_MAP",
+      "type": "constant",
+      "label": "DOT_DMG_TYPE_MAP",
+      "filePath": "src/data/DoTDamage.ts",
+      "startLine": 16,
+      "endLine": 21,
+      "description": "Maps each DoT type to the damage type used for defense mitigation (Bleed→physical, Burn→fire, Poison→hex, Caustic Slow→true)"
+    },
+    {
+      "id": "src/data/DoTDamage.ts::getDotBase",
+      "type": "function",
+      "label": "getDotBase",
+      "filePath": "src/data/DoTDamage.ts",
+      "startLine": 27,
+      "endLine": 29,
+      "description": "Returns flat base damage before potency multiplier. Formula: DOT_BASE_DAMAGE × (1 + inflictionPotency / DOT_INFLICTION_DIVISOR)"
+    },
+    {
+      "id": "src/data/DoTDamage.ts::getDotPotencyMult",
+      "type": "function",
+      "label": "getDotPotencyMult",
+      "filePath": "src/data/DoTDamage.ts",
+      "startLine": 36,
+      "endLine": 38,
+      "description": "Returns potency multiplier: (1 + dotPotency)^(1 + min(1, dotPotency)). Exponent caps at 2 when dotPotency >= 1.0"
+    },
+    {
+      "id": "src/data/DoTDamage.ts::calcDotTick",
+      "type": "function",
+      "label": "calcDotTick",
+      "filePath": "src/data/DoTDamage.ts",
+      "startLine": 46,
+      "endLine": 53,
+      "description": "Computes a single DoT tick for given dotPotency and inflictionPotency. Combines getDotBase and getDotPotencyMult with rounding."
+    },
+    {
+      "id": "src/data/DoTDamage.ts::toGamePotency",
+      "type": "function",
+      "label": "toGamePotency",
+      "filePath": "src/data/DoTDamage.ts",
+      "startLine": 59,
+      "endLine": 61,
+      "description": "Converts builder-display perk value to game-internal value (×0.1)"
+    },
+    {
+      "id": "src/data/DoTDamage.ts::calcDotDisplayPotency",
+      "type": "function",
+      "label": "calcDotDisplayPotency",
+      "filePath": "src/data/DoTDamage.ts",
+      "startLine": 70,
+      "endLine": 73,
+      "description": "Computes effective DoT display potency applying Endless Despair modifier when present"
+    },
+    {
+      "id": "src/data/HealBoost.ts",
+      "type": "module",
+      "label": "HealBoost",
+      "filePath": "src/data/HealBoost.ts",
+      "startLine": 1,
+      "endLine": 216,
+      "description": "Heal boost multiplier calculation module. Defines healing sources (perks, runes, weapon arts, passives) and computes the combined heal multiplier by iterating over HealBoostDef entries, applying conditions, and multiplying results. Handles level healing, Emotional, Heal Boost, Oceans Rage, Vampire sunlight, Frenzy self, Dragon Infusion holy, and Anti Heal reduction."
+    },
+    {
+      "id": "src/data/HealBoost.ts::HealSource",
+      "type": "type",
+      "label": "HealSource",
+      "filePath": "src/data/HealBoost.ts",
+      "startLine": 11,
+      "endLine": 11,
+      "description": "Union type for healing sources: 'perk' | 'rune' | 'weaponArt' | 'passive'"
+    },
+    {
+      "id": "src/data/HealBoost.ts::HealBoostContext",
+      "type": "interface",
+      "label": "HealBoostContext",
+      "filePath": "src/data/HealBoost.ts",
+      "startLine": 13,
+      "endLine": 24,
+      "description": "Context for heal boost calculation containing perks, emotional state, darkness, level, draconic color, slider value, guild, rage potency, and active buffs"
+    },
+    {
+      "id": "src/data/HealBoost.ts::HealBoostResult",
+      "type": "interface",
+      "label": "HealBoostResult",
+      "filePath": "src/data/HealBoost.ts",
+      "startLine": 123,
+      "endLine": 131,
+      "description": "Result of heal boost calculation with individual entries and final multiplied multiplier"
+    },
+    {
+      "id": "src/data/HealBoost.ts::calculateHealBoost",
+      "type": "function",
+      "label": "calculateHealBoost",
+      "filePath": "src/data/HealBoost.ts",
+      "startLine": 133,
+      "endLine": 208,
+      "description": "Calculates combined heal boost multiplier from all active sources. Iterates over HealBoostDef entries, applies conditions and custom calcFns, multiplies all raw multipliers, and applies Anti Heal self-debuff reduction."
+    },
+    {
+      "id": "src/data/Perkbasedmg.ts",
+      "type": "module",
+      "label": "Perkbasedmg",
+      "filePath": "src/data/Perkbasedmg.ts",
+      "startLine": 1,
+      "endLine": 982,
+      "description": "Perk-based damage definitions. Large module defining ~30+ perk damage effects (Springblast, Bastion Ballista, spirits, Dragon State, Dragon Claw/Bubble, Volatile Shell, Dark Harvest, Pyre Bloom, etc.) with HP gate logic, secondary effects, trigger chains, proc coefficients, and dynamic damage type/scaling resolution."
+    },
+    {
+      "id": "src/data/Perkbasedmg.ts::gateThreshold",
+      "type": "function",
+      "label": "gateThreshold",
+      "filePath": "src/data/Perkbasedmg.ts",
+      "startLine": 139,
+      "endLine": 143,
+      "description": "Returns the HP threshold for a gate, returning undefined if the perk amount meets alwaysActiveAtPerkAmount"
+    },
+    {
+      "id": "src/data/Perkbasedmg.ts::isHpGateActive",
+      "type": "function",
+      "label": "isHpGateActive",
+      "filePath": "src/data/Perkbasedmg.ts",
+      "startLine": 145,
+      "endLine": 150,
+      "description": "Determines if an HP gate is active based on hpFillPct, perkAmount, and gate direction (aboveThreshold/belowThreshold)"
+    },
+    {
+      "id": "src/data/Perkbasedmg.ts::DRAGON_STATE_HP_GATE",
+      "type": "constant",
+      "label": "DRAGON_STATE_HP_GATE",
+      "filePath": "src/data/Perkbasedmg.ts",
+      "startLine": 152,
+      "endLine": 156,
+      "description": "HP gate for Dragon State: 80% threshold (above), dynamically reduced by perk stacks"
+    },
+    {
+      "id": "src/data/Perkbasedmg.ts::SECONDARY_TONE_COLORS",
+      "type": "constant",
+      "label": "SECONDARY_TONE_COLORS",
+      "filePath": "src/data/Perkbasedmg.ts",
+      "startLine": 168,
+      "endLine": 172,
+      "description": "Color mapping for secondary effect tones: defense=#f87171, offense=#fb923c, utility=#8a8d85"
+    },
+    {
+      "id": "src/data/Perkbasedmg.ts::calcSpringblastBaseDamage",
+      "type": "function",
+      "label": "calcSpringblastBaseDamage",
+      "filePath": "src/data/Perkbasedmg.ts",
+      "startLine": 213,
+      "endLine": 215,
+      "description": "Calculates Springblast base damage from perk amount using constants SPRINGBLAST_BASE_HIT, PER_STACK_HIT, MULT_PER_STACK"
+    },
+    {
+      "id": "src/data/Perkbasedmg.ts::calcBomberChargeBaseDamage",
+      "type": "function",
+      "label": "calcBomberChargeBaseDamage",
+      "filePath": "src/data/Perkbasedmg.ts",
+      "startLine": 217,
+      "endLine": 221,
+      "description": "Calculates Bomber Charge base damage factoring in missing HP percentage with a cap"
+    },
+    {
+      "id": "src/data/Perkbasedmg.ts::PERK_DMG_DEFS",
+      "type": "constant",
+      "label": "PERK_DMG_DEFS",
+      "filePath": "src/data/Perkbasedmg.ts",
+      "startLine": 223,
+      "endLine": 968,
+      "description": "Array of PerkDmgDef objects defining all perk damage effects: Springblast, Bastion Ballista, Basic/Buni/Mageling/Toadzerker/Dire Buni/Void Root/Bomber/Roguent Spirits, Bounce Momentum, Bomber Charge, Protector Spirit, Air Pressure/Barrier, Apollo Boost, Dragon Claw/Bubble, Roaring Heads, Barbed Flurry, Honey Arts, Sickness, Melting Slime, Whirlwind, Dragon State, Volatile Shell, Spore Burst, Royal Finisher, Grounded Despair, Echo Incineration, Bombardier, Venom Spitter, Cauterize, Steam Charge, Quarry, Wind Drill, Fiery Pursuit, Bulfrogg/Gremlin/Queen Bumblz Spirits, Pyre Bloom, Dark Harvest."
+    },
+    {
+      "id": "src/data/Perkbasedmg.ts::findPerkDmgDef",
+      "type": "function",
+      "label": "findPerkDmgDef",
+      "filePath": "src/data/Perkbasedmg.ts",
+      "startLine": 977,
+      "endLine": 982,
+      "description": "Looks up a PerkDmgDef by perk name and optional label from the internal map"
+    },
+    {
+      "id": "src/data/Runebasedmg.ts",
+      "type": "module",
+      "label": "Runebasedmg",
+      "filePath": "src/data/Runebasedmg.ts",
+      "startLine": 1,
+      "endLine": 217,
+      "description": "Rune-based damage definitions. Defines damage for 14 rune types (Ancient Cleric, Beenade, Boostshroom, Thunderous Charge, Sporeling Toss, Foot Dive, Caci, Cacitrops, Hex Web, Brainblast, Fireball, Rocky Tail, False Sun, Snoeball) with slider-based and potency-based hit counts, shield defs, and heal-only runes."
+    },
+    {
+      "id": "src/data/Runebasedmg.ts::RUNE_DMG_DEFS",
+      "type": "constant",
+      "label": "RUNE_DMG_DEFS",
+      "filePath": "src/data/Runebasedmg.ts",
+      "startLine": 68,
+      "endLine": 217,
+      "description": "Array of RuneDmgDef objects defining damage, types, scalings, hit counts, notes, sliders, and shields for each rune"
+    },
+    {
+      "id": "src/data/SummonData.ts",
+      "type": "module",
+      "label": "SummonData",
+      "filePath": "src/data/SummonData.ts",
+      "startLine": 1,
+      "endLine": 84,
+      "description": "Summon data module. Defines summon stat calculation, max summon count (base 15 + Swarm perk), summon definitions (Mage Bomber, Blessedling), WA-to-summon name mapping, and summon perk definitions."
+    },
+    {
+      "id": "src/data/SummonData.ts::calcSummonStat",
+      "type": "function",
+      "label": "calcSummonStat",
+      "filePath": "src/data/SummonData.ts",
+      "startLine": 3,
+      "endLine": 5,
+      "description": "Calculates summon stat: base × (1 + (summonBoostPct/100) × (1 + level/MAX_LEVEL)), rounded to 2 decimals"
+    },
+    {
+      "id": "src/data/SummonData.ts::calcMaxSummonCount",
+      "type": "function",
+      "label": "calcMaxSummonCount",
+      "filePath": "src/data/SummonData.ts",
+      "startLine": 9,
+      "endLine": 11,
+      "description": "Returns max summon count: 15 + floor(Swarm perk amount)"
+    },
+    {
+      "id": "src/data/SummonData.ts::SUMMON_MAP",
+      "type": "constant",
+      "label": "SUMMON_MAP",
+      "filePath": "src/data/SummonData.ts",
+      "startLine": 52,
+      "endLine": 52,
+      "description": "Map of summon name to SummonDef objects (Mage Bomber, Blessedling)"
+    },
+    {
+      "id": "src/data/SummonData.ts::WA_SUMMON_MAP",
+      "type": "constant",
+      "label": "WA_SUMMON_MAP",
+      "filePath": "src/data/SummonData.ts",
+      "startLine": 54,
+      "endLine": 60,
+      "description": "Mapping from weapon art summon names to base summon names"
+    },
+    {
+      "id": "src/data/cdr.ts",
+      "type": "module",
+      "label": "cdr",
+      "filePath": "src/data/cdr.ts",
+      "startLine": 1,
+      "endLine": 64,
+      "description": "Cooldown reduction perk data module. Defines CDR entries for perks: Caster, Channeled Weapon, Mage Rage, Poison Acceleration, Runic Winds, Wave Rider, Whirlwind, Gladiatorial Rage, and Voltaic Body with rune/WA percentage reductions, multipliers, filters, and toggle flags."
+    },
+    {
+      "id": "src/data/cdr.ts::CDR_PERK_DATA",
+      "type": "constant",
+      "label": "CDR_PERK_DATA",
+      "filePath": "src/data/cdr.ts",
+      "startLine": 31,
+      "endLine": 64,
+      "description": "Record mapping perk names to PerkCDREntry objects with runePct, waPct, runeMultiplier, waMultiplier, runeSetCD, filters, and toggleable flag"
+    },
+    {
+      "id": "src/data/defensivePerks.ts",
+      "type": "module",
+      "label": "defensivePerks",
+      "filePath": "src/data/defensivePerks.ts",
+      "startLine": 1,
+      "endLine": 207,
+      "description": "Defensive perk calculations. Defines 13 defensive perk sources (Barbskin, Stoneskin, Adaptive Plate ×2, Protector Spirit, Air Pressure, Valor, Vampire, Frenzy, Stored Corruption, Mounted Defense, Carapace, Cursed Bark) with DR per stack, conditions, HP thresholds, and custom DR functions. Also calculates defensive potency multiplier from Bastion Bless and Draconic Infusion."
+    },
+    {
+      "id": "src/data/defensivePerks.ts::getActiveDefensivePerkSources",
+      "type": "function",
+      "label": "getActiveDefensivePerkSources",
+      "filePath": "src/data/defensivePerks.ts",
+      "startLine": 147,
+      "endLine": 187,
+      "description": "Returns array of active defensive perk sources given current game state (perks, HP, conditions). Filters by HP thresholds, darkness, rage, mount, shield, and debuff count."
+    },
+    {
+      "id": "src/data/defensivePerks.ts::calcDefensivePotencyMult",
+      "type": "function",
+      "label": "calcDefensivePotencyMult",
+      "filePath": "src/data/defensivePerks.ts",
+      "startLine": 189,
+      "endLine": 207,
+      "description": "Calculates defensive potency multiplier from Bastion Bless stacks and Draconic Holy Infusion"
+    },
+    {
+      "id": "src/data/draconicBuffs.ts",
+      "type": "module",
+      "label": "draconicBuffs",
+      "filePath": "src/data/draconicBuffs.ts",
+      "startLine": 1,
+      "endLine": 112,
+      "description": "Draconic infusion buff calculations. Computes potency/duration multipliers from Draconic Blood perk, generates GrantedBuff objects for draconic infusion (per-color effects: air=atk speed+knockback, fire=burn+potency, hex=debuff potency+duration, holy=healing+buff potency, water=immunity+pulse, earth=poise+stun res), and generates ability debuffs for Dragon Claw/Bubble (Hex→random debuffs, Fire→burn)."
+    },
+    {
+      "id": "src/data/draconicBuffs.ts::getDraconicInfusionPotMult",
+      "type": "function",
+      "label": "getDraconicInfusionPotMult",
+      "filePath": "src/data/draconicBuffs.ts",
+      "startLine": 4,
+      "endLine": 6,
+      "description": "Returns draconic infusion potency multiplier: 1 + perkAmt × DRACONIC_INFUSION_POT_MULT"
+    },
+    {
+      "id": "src/data/draconicBuffs.ts::getDraconicInfusionDurMult",
+      "type": "function",
+      "label": "getDraconicInfusionDurMult",
+      "filePath": "src/data/draconicBuffs.ts",
+      "startLine": 7,
+      "endLine": 9,
+      "description": "Returns draconic infusion duration multiplier: 1 + perkAmt × DRACONIC_INFUSION_DUR_MULT"
+    },
+    {
+      "id": "src/data/draconicBuffs.ts::getEffectiveDraconicInfusionPotency",
+      "type": "function",
+      "label": "getEffectiveDraconicInfusionPotency",
+      "filePath": "src/data/draconicBuffs.ts",
+      "startLine": 19,
+      "endLine": 30,
+      "description": "Computes effective draconic infusion potency by generating raw buffs then applying buff perk modifiers from BuffData"
+    },
+    {
+      "id": "src/data/draconicBuffs.ts::getDraconicInfusionBuff",
+      "type": "function",
+      "label": "getDraconicInfusionBuff",
+      "filePath": "src/data/draconicBuffs.ts",
+      "startLine": 32,
+      "endLine": 72,
+      "description": "Generates GrantedBuff array for draconic infusion based on guild, rune infusion type, color, and perk amount. Returns empty if not Draconic guild or not infusion type."
+    },
+    {
+      "id": "src/data/draconicBuffs.ts::getDraconicAbilityDebuffs",
+      "type": "function",
+      "label": "getDraconicAbilityDebuffs",
+      "filePath": "src/data/draconicBuffs.ts",
+      "startLine": 74,
+      "endLine": 112,
+      "description": "Generates debuff GrantedBuff array for Dragon Claw/Bubble abilities based on color (Hex→Weakness+random pool, Fire→Burn, others→empty)"
+    },
+    {
+      "id": "src/data/draconicColorEffects.ts",
+      "type": "module",
+      "label": "draconicColorEffects",
+      "filePath": "src/data/draconicColorEffects.ts",
+      "startLine": 1,
+      "endLine": 50,
+      "description": "Draconic color-based attack stats. Defines attack modifiers per draconic color (fire, air, earth, water, holy, hex) including damage multipliers, speed, knockback, cooldown, stun, burn/weakness application, and random debuff chances."
+    },
+    {
+      "id": "src/data/draconicColorEffects.ts::DRACONIC_COLOR_ATTACK_STATS",
+      "type": "constant",
+      "label": "DRACONIC_COLOR_ATTACK_STATS",
+      "filePath": "src/data/draconicColorEffects.ts",
+      "startLine": 33,
+      "endLine": 40,
+      "description": "Array of DraconicColorAttackStats defining per-color combat modifiers (fire, air, earth, water, holy, hex) with stat type, hex color, and various multiplier/effect flags"
+    },
+    {
+      "id": "src/data/draconicColorEffects.ts::getDraconicColorDmgMultiplier",
+      "type": "function",
+      "label": "getDraconicColorDmgMultiplier",
+      "filePath": "src/data/draconicColorEffects.ts",
+      "startLine": 44,
+      "endLine": 46,
+      "description": "Returns damage multiplier for a draconic color (earth×1.5, water×1.1, others×1.0), defaulting to 1"
+    },
+    {
+      "id": "src/data/raceEffects.ts",
+      "type": "module",
+      "label": "raceEffects",
+      "filePath": "src/data/raceEffects.ts",
+      "startLine": 1,
+      "endLine": 49,
+      "description": "Race-based conditional effects module. Defines Human race passive (below 50% HP: ×1.2 dmg, 20% flat DR) and Ork Tenacity logic (bonus per unique non-debuff, non-neutral buff)."
+    },
+    {
+      "id": "src/data/raceEffects.ts::getActiveRaceEffect",
+      "type": "function",
+      "label": "getActiveRaceEffect",
+      "filePath": "src/data/raceEffects.ts",
+      "startLine": 24,
+      "endLine": 26,
+      "description": "Returns the active RaceConditionalEffect for a given race name and HP fill percentage using isHpGateActive"
+    },
+    {
+      "id": "src/data/raceEffects.ts::getOrkTenacityBuffs",
+      "type": "function",
+      "label": "getOrkTenacityBuffs",
+      "filePath": "src/data/raceEffects.ts",
+      "startLine": 30,
+      "endLine": 42,
+      "description": "Filters buffs to only unique, non-debuff, non-self-debuff, non-neutral buffs for Ork Tenacity bonus calculation"
+    },
+    {
+      "id": "src/data/raceEffects.ts::calcOrkTenacityBonus",
+      "type": "function",
+      "label": "calcOrkTenacityBonus",
+      "filePath": "src/data/raceEffects.ts",
+      "startLine": 44,
+      "endLine": 48,
+      "description": "Calculates Ork Tenacity bonus: 0.1 × count of unique qualifying buffs"
+    },
+    {
+      "id": "src/lib/constants.ts",
+      "type": "module",
+      "label": "constants",
+      "filePath": "src/lib/constants.ts",
+      "startLine": 1,
+      "endLine": 1,
+      "description": "Barrel re-export module. Re-exports everything from ./constants/index which aggregates all constant sub-modules."
+    },
+    {
+      "id": "src/lib/constants/dot-damage.ts",
+      "type": "module",
+      "label": "dot-damage constants",
+      "filePath": "src/lib/constants/dot-damage.ts",
+      "startLine": 1,
+      "endLine": 10,
+      "description": "DoT damage constants: DOT_BASE_DAMAGE=1.75, DOT_INFLICTION_DIVISOR=1.1, DOT_POTENCY_POWER_CAP=1, DOT_ROUND_FACTOR=1000, DOT_BUILDER_TO_GAME=0.1"
+    },
+    {
+      "id": "src/lib/constants/dot-damage.ts::DOT_BASE_DAMAGE",
+      "type": "constant",
+      "label": "DOT_BASE_DAMAGE",
+      "filePath": "src/lib/constants/dot-damage.ts",
+      "startLine": 5,
+      "endLine": 5,
+      "description": "Base damage constant for DoT ticks: 1.75"
+    },
+    {
+      "id": "src/lib/constants/dot-damage.ts::DOT_INFLICTION_DIVISOR",
+      "type": "constant",
+      "label": "DOT_INFLICTION_DIVISOR",
+      "filePath": "src/lib/constants/dot-damage.ts",
+      "startLine": 6,
+      "endLine": 6,
+      "description": "Divisor for infliction potency in DoT base formula: 1.1"
+    },
+    {
+      "id": "src/lib/constants/dot-damage.ts::DOT_POTENCY_POWER_CAP",
+      "type": "constant",
+      "label": "DOT_POTENCY_POWER_CAP",
+      "filePath": "src/lib/constants/dot-damage.ts",
+      "startLine": 8,
+      "endLine": 8,
+      "description": "Maximum exponent power for DoT potency multiplier: 1"
+    },
+    {
+      "id": "src/lib/constants/dot-damage.ts::DOT_ROUND_FACTOR",
+      "type": "constant",
+      "label": "DOT_ROUND_FACTOR",
+      "filePath": "src/lib/constants/dot-damage.ts",
+      "startLine": 9,
+      "endLine": 9,
+      "description": "Rounding factor for DoT calculations: 1000"
+    },
+    {
+      "id": "src/lib/constants/dot-damage.ts::DOT_BUILDER_TO_GAME",
+      "type": "constant",
+      "label": "DOT_BUILDER_TO_GAME",
+      "filePath": "src/lib/constants/dot-damage.ts",
+      "startLine": 10,
+      "endLine": 10,
+      "description": "Conversion factor from builder display value to game value: 0.1"
+    },
+    {
+      "id": "src/lib/constants/rune-base-damage.ts",
+      "type": "module",
+      "label": "rune-base-damage constants",
+      "filePath": "src/lib/constants/rune-base-damage.ts",
+      "startLine": 1,
+      "endLine": 54,
+      "description": "Rune base damage constants for all rune types: Ancient Cleric (base 0.5, shield 20+4/val), Beenade (11, max potency 5), Boostshroom (3), Thunderous Charge (20), Sporeling Toss (3.5, 2 hits base), Foot Dive (18), Caci (5×3), Cacitrops (4×27), Hex Web (2×10), Brainblast (10×2), Rocky Tail (8 with protection scaling and hit divisor logic)."
+    },
+    {
+      "id": "src/lib/constants/rune-base-damage.ts::ANCIENT_CLERIC_BASE_DMG",
+      "type": "constant",
+      "label": "ANCIENT_CLERIC_BASE_DMG",
+      "filePath": "src/lib/constants/rune-base-damage.ts",
+      "startLine": 6,
+      "endLine": 6,
+      "description": "Ancient Cleric rune base heal: 0.5"
+    },
+    {
+      "id": "src/lib/constants/rune-base-damage.ts::BEENADE_BASE_DMG",
+      "type": "constant",
+      "label": "BEENADE_BASE_DMG",
+      "filePath": "src/lib/constants/rune-base-damage.ts",
+      "startLine": 12,
+      "endLine": 12,
+      "description": "Beenade rune base damage: 11"
+    },
+    {
+      "id": "src/lib/constants/rune-base-damage.ts::BOOSTSHROOM_BASE_DMG",
+      "type": "constant",
+      "label": "BOOSTSHROOM_BASE_DMG",
+      "filePath": "src/lib/constants/rune-base-damage.ts",
+      "startLine": 16,
+      "endLine": 16,
+      "description": "Boostshroom rune base damage: 3"
+    },
+    {
+      "id": "src/lib/constants/rune-base-damage.ts::THUNDEROUS_CHARGE_BASE_DMG",
+      "type": "constant",
+      "label": "THUNDEROUS_CHARGE_BASE_DMG",
+      "filePath": "src/lib/constants/rune-base-damage.ts",
+      "startLine": 19,
+      "endLine": 19,
+      "description": "Thunderous Charge rune base damage: 20"
+    },
+    {
+      "id": "src/lib/constants/rune-base-damage.ts::SPORELING_TOSS_BASE_DMG",
+      "type": "constant",
+      "label": "SPORELING_TOSS_BASE_DMG",
+      "filePath": "src/lib/constants/rune-base-damage.ts",
+      "startLine": 22,
+      "endLine": 22,
+      "description": "Sporeling Toss rune base damage: 3.5"
+    },
+    {
+      "id": "src/lib/constants/rune-base-damage.ts::ROCKY_TAIL_BASE_DMG",
+      "type": "constant",
+      "label": "ROCKY_TAIL_BASE_DMG",
+      "filePath": "src/lib/constants/rune-base-damage.ts",
+      "startLine": 46,
+      "endLine": 46,
+      "description": "Rocky Tail rune base damage: 8"
+    },
+    {
+      "id": "src/lib/stores/toast.ts",
+      "type": "module",
+      "label": "toast store",
+      "filePath": "src/lib/stores/toast.ts",
+      "startLine": 1,
+      "endLine": 28,
+      "description": "Toast notification Svelte writable store. Manages a list of Toast objects with id, message, type (success/error/info/warning), and optional auto-dismiss duration."
+    },
+    {
+      "id": "src/lib/stores/toast.ts::toasts",
+      "type": "constant",
+      "label": "toasts",
+      "filePath": "src/lib/stores/toast.ts",
+      "startLine": 13,
+      "endLine": 13,
+      "description": "Svelte writable store holding the current Toast[] array"
+    },
+    {
+      "id": "src/lib/stores/toast.ts::addToast",
+      "type": "function",
+      "label": "addToast",
+      "filePath": "src/lib/stores/toast.ts",
+      "startLine": 17,
+      "endLine": 24,
+      "description": "Adds a toast notification to the store with auto-incrementing id, optional type, and auto-removal after duration"
+    },
+    {
+      "id": "src/lib/stores/toast.ts::removeToast",
+      "type": "function",
+      "label": "removeToast",
+      "filePath": "src/lib/stores/toast.ts",
+      "startLine": 26,
+      "endLine": 28,
+      "description": "Removes a toast by id from the store"
+    }
+  ],
+  "edges": [
+    {
+      "source": "src/data/DoTDamage.ts",
+      "target": "src/lib/constants/dot-damage.ts",
+      "type": "imports",
+      "label": "imports DOT_BASE_DAMAGE, DOT_INFLICTION_DIVISOR, DOT_POTENCY_POWER_CAP, DOT_ROUND_FACTOR, DOT_BUILDER_TO_GAME"
+    },
+    {
+      "source": "src/data/DoTDamage.ts",
+      "target": "src/lib/constants/game.ts",
+      "type": "imports",
+      "label": "imports game constants"
+    },
+    {
+      "source": "src/data/DoTDamage.ts",
+      "target": "src/lib/constants/perks.ts",
+      "type": "imports",
+      "label": "imports perk constants"
+    },
+    {
+      "source": "src/data/DoTDamage.ts",
+      "target": "src/lib/types.ts",
+      "type": "imports",
+      "label": "imports type definitions"
+    },
+    {
+      "source": "src/data/DoTDamage.ts::calcDotTick",
+      "target": "src/data/DoTDamage.ts::getDotBase",
+      "type": "calls",
+      "label": "calls getDotBase to compute flat base damage"
+    },
+    {
+      "source": "src/data/DoTDamage.ts::calcDotTick",
+      "target": "src/data/DoTDamage.ts::getDotPotencyMult",
+      "type": "calls",
+      "label": "calls getDotPotencyMult for exponent multiplier"
+    },
+    {
+      "source": "src/data/DoTDamage.ts::calcDotDisplayPotency",
+      "target": "src/data/DoTDamage.ts::toGamePotency",
+      "type": "calls",
+      "label": "uses toGamePotency conversion (inline equivalent)"
+    },
+    {
+      "source": "src/data/HealBoost.ts",
+      "target": "src/lib/utils.ts",
+      "type": "imports",
+      "label": "imports roundMultiplier"
+    },
+    {
+      "source": "src/data/HealBoost.ts",
+      "target": "src/lib/constants.ts",
+      "type": "imports",
+      "label": "imports EMOTIONAL_MULT_PER_STACK, HEAL_BOOST_MULT_PER_STACK, MAX_LEVEL, OCEANS_RAGE_MULT_PER_STACK, VAMPIRE_SUNLIGHT_HEAL_MULT"
+    },
+    {
+      "source": "src/data/HealBoost.ts",
+      "target": "src/data/draconicBuffs.ts",
+      "type": "imports",
+      "label": "imports getEffectiveDraconicInfusionPotency"
+    },
+    {
+      "source": "src/data/HealBoost.ts::calculateHealBoost",
+      "target": "src/data/draconicBuffs.ts::getEffectiveDraconicInfusionPotency",
+      "type": "calls",
+      "label": "calls getEffectiveDraconicInfusionPotency for Dragon Infusion (Holy) heal boost"
+    },
+    {
+      "source": "src/data/Perkbasedmg.ts",
+      "target": "src/data/DoTDamage.ts",
+      "type": "imports",
+      "label": "imports getDotPotencyMult"
+    },
+    {
+      "source": "src/data/Perkbasedmg.ts",
+      "target": "src/data/draconicColorEffects.ts",
+      "type": "imports",
+      "label": "imports getDraconicColorDmgMultiplier"
+    },
+    {
+      "source": "src/data/Perkbasedmg.ts",
+      "target": "src/lib/types.ts",
+      "type": "imports",
+      "label": "imports ProcCoefficient type"
+    },
+    {
+      "source": "src/data/Perkbasedmg.ts",
+      "target": "src/lib/constants/perk-base-damage.ts",
+      "type": "imports",
+      "label": "imports ~70+ perk base damage constants (DRAGON_STATE_*, SPRINGBLAST_*, BOMBER_*, etc.)"
+    },
+    {
+      "source": "src/data/Perkbasedmg.ts",
+      "target": "src/lib/constants/perks.ts",
+      "type": "imports",
+      "label": "imports perk constants"
+    },
+    {
+      "source": "src/data/Perkbasedmg.ts::Cauterize",
+      "target": "src/data/DoTDamage.ts::getDotPotencyMult",
+      "type": "calls",
+      "label": "Cauterize perk calls getDotPotencyMult for burn potency scaling"
+    },
+    {
+      "source": "src/data/Perkbasedmg.ts::Dragon Claw",
+      "target": "src/data/draconicColorEffects.ts::getDraconicColorDmgMultiplier",
+      "type": "calls",
+      "label": "Dragon Claw secondary effect calls getDraconicColorDmgMultiplier"
+    },
+    {
+      "source": "src/data/Perkbasedmg.ts::Dragon Bubble",
+      "target": "src/data/draconicColorEffects.ts::getDraconicColorDmgMultiplier",
+      "type": "calls",
+      "label": "Dragon Bubble secondary effect calls getDraconicColorDmgMultiplier"
+    },
+    {
+      "source": "src/data/Perkbasedmg.ts",
+      "target": "src/data/Perkbasedmg.ts::PERK_DMG_DEFS",
+      "type": "exports",
+      "label": "exports PERK_DMG_DEFS array"
+    },
+    {
+      "source": "src/data/Perkbasedmg.ts",
+      "target": "src/data/Perkbasedmg.ts::findPerkDmgDef",
+      "type": "exports",
+      "label": "exports findPerkDmgDef lookup function"
+    },
+    {
+      "source": "src/data/Runebasedmg.ts",
+      "target": "src/lib/types.ts",
+      "type": "imports",
+      "label": "imports BuildState type"
+    },
+    {
+      "source": "src/data/Runebasedmg.ts",
+      "target": "src/data/HealBoost.ts",
+      "type": "imports",
+      "label": "imports calculateHealBoost, HealBoostContext"
+    },
+    {
+      "source": "src/data/Runebasedmg.ts",
+      "target": "src/data/SummonData.ts",
+      "type": "imports",
+      "label": "imports calcMaxSummonCount"
+    },
+    {
+      "source": "src/data/Runebasedmg.ts",
+      "target": "src/lib/constants/rune-base-damage.ts",
+      "type": "imports",
+      "label": "imports ~28 rune base damage constants"
+    },
+    {
+      "source": "src/data/Runebasedmg.ts::calculateRuneHealScaling",
+      "target": "src/data/HealBoost.ts::calculateHealBoost",
+      "type": "calls",
+      "label": "calculateRuneHealScaling calls calculateHealBoost for heal-only runes"
+    },
+    {
+      "source": "src/data/Runebasedmg.ts::Sporeling Toss",
+      "target": "src/data/SummonData.ts::calcMaxSummonCount",
+      "type": "calls",
+      "label": "Sporeling Toss slider getMax calls calcMaxSummonCount for cap"
+    },
+    {
+      "source": "src/data/SummonData.ts",
+      "target": "src/lib/constants.ts",
+      "type": "imports",
+      "label": "imports MAX_LEVEL from barrel export"
+    },
+    {
+      "source": "src/data/cdr.ts",
+      "target": "src/lib/constants.ts",
+      "type": "imports",
+      "label": "imports CDR_CASTER_RUNE_PCT, CDR_CASTER_WA_PCT, CDR_CHANNELED_WEAPON_*, CDR_MAGE_RAGE_RUNE_PCT, CDR_POISON_ACCEL_*, CDR_RUNIC_WINDS_RUNE_PCT, CDR_WAVE_RIDER_WA_PCT, CDR_WHIRLWIND_*, CDR_GLADIATORIAL_SET_CD, CDR_VOLTAIC_BODY_MULT"
+    },
+    {
+      "source": "src/data/defensivePerks.ts",
+      "target": "src/lib/constants.ts",
+      "type": "imports",
+      "label": "imports 20 defensive constants (BASTION_BLESS_MULT, BARBSKIN_DR_PER_STACK, STONESKIN_*, ADAPTIVE_PLATE_*, etc.)"
+    },
+    {
+      "source": "src/data/defensivePerks.ts",
+      "target": "src/data/draconicBuffs.ts",
+      "type": "imports",
+      "label": "imports getDraconicInfusionPotMult"
+    },
+    {
+      "source": "src/data/defensivePerks.ts::calcDefensivePotencyMult",
+      "target": "src/data/draconicBuffs.ts::getDraconicInfusionPotMult",
+      "type": "calls",
+      "label": "calls getDraconicInfusionPotMult for Holy Infusion defensive potency"
+    },
+    {
+      "source": "src/data/draconicBuffs.ts",
+      "target": "src/lib/constants.ts",
+      "type": "imports",
+      "label": "imports DRACONIC_INFUSION_POT_MULT, DRACONIC_INFUSION_DUR_MULT, HOLY_INFUSION_POTENCY_MULT"
+    },
+    {
+      "source": "src/data/draconicBuffs.ts",
+      "target": "src/data/BuffData.ts",
+      "type": "imports",
+      "label": "imports applyBuffPerkModifiers, BASIC_DEBUFF_POOL, GrantedBuff type"
+    },
+    {
+      "source": "src/data/draconicBuffs.ts::getEffectiveDraconicInfusionPotency",
+      "target": "src/data/draconicBuffs.ts::getDraconicInfusionBuff",
+      "type": "calls",
+      "label": "calls getDraconicInfusionBuff to get raw buffs"
+    },
+    {
+      "source": "src/data/draconicBuffs.ts::getEffectiveDraconicInfusionPotency",
+      "target": "src/data/BuffData.ts",
+      "type": "calls",
+      "label": "calls applyBuffPerkModifiers from BuffData to modify potency"
+    },
+    {
+      "source": "src/data/draconicColorEffects.ts",
+      "target": "src/lib/constants.ts",
+      "type": "imports",
+      "label": "imports DRACONIC_FIRE_SPEED_MULT, DRACONIC_AIR_*, DRACONIC_EARTH_*, DRACONIC_WATER_*, DRACONIC_HEX_*"
+    },
+    {
+      "source": "src/data/raceEffects.ts",
+      "target": "src/data/Perkbasedmg.ts",
+      "type": "imports",
+      "label": "imports HpGate type and isHpGateActive function"
+    },
+    {
+      "source": "src/data/raceEffects.ts::getActiveRaceEffect",
+      "target": "src/data/Perkbasedmg.ts::isHpGateActive",
+      "type": "calls",
+      "label": "calls isHpGateActive to check if race conditional effect is active"
+    },
+    {
+      "source": "src/lib/constants.ts",
+      "target": "src/lib/constants/index.ts",
+      "type": "imports",
+      "label": "re-exports everything from constants/index barrel"
+    },
+    {
+      "source": "src/lib/stores/toast.ts",
+      "target": "src/lib/constants.ts",
+      "type": "imports",
+      "label": "imports DEFAULT_TOAST_DURATION_MS"
+    },
+    {
+      "source": "src/lib/stores/toast.ts::addToast",
+      "target": "src/lib/stores/toast.ts::toasts",
+      "type": "calls",
+      "label": "addToast updates the toasts writable store"
+    },
+    {
+      "source": "src/lib/stores/toast.ts::addToast",
+      "target": "src/lib/stores/toast.ts::removeToast",
+      "type": "calls",
+      "label": "addToast schedules removeToast via setTimeout"
+    },
+    {
+      "source": "src/lib/stores/toast.ts::removeToast",
+      "target": "src/lib/stores/toast.ts::toasts",
+      "type": "calls",
+      "label": "removeToast updates the toasts writable store"
+    },
+    {
+      "source": "src/data/Perkbasedmg.ts::findPerkDmgDef",
+      "target": "src/data/Perkbasedmg.ts::PERK_DMG_DEFS",
+      "type": "references",
+      "label": "findPerkDmgDef reads from internal _perkDmgDefMap built from PERK_DMG_DEFS"
+    },
+    {
+      "source": "src/data/Perkbasedmg.ts::Dragon State",
+      "target": "src/data/Perkbasedmg.ts::DRAGON_STATE_HP_GATE",
+      "type": "references",
+      "label": "Dragon State perk references DRAGON_STATE_HP_GATE"
+    },
+    {
+      "source": "src/data/HealBoost.ts::calculateHealBoost",
+      "target": "src/data/HealBoost.ts::HealBoostContext",
+      "type": "references",
+      "label": "calculateHealBoost takes HealBoostContext parameter"
+    },
+    {
+      "source": "src/data/HealBoost.ts::calculateHealBoost",
+      "target": "src/data/HealBoost.ts::HealBoostResult",
+      "type": "references",
+      "label": "calculateHealBoost returns HealBoostResult"
+    },
+    {
+      "source": "src/data/Runebasedmg.ts::RUNE_DMG_DEFS",
+      "target": "src/data/Runebasedmg.ts",
+      "type": "exports",
+      "label": "exports RUNE_DMG_DEFS array of rune damage definitions"
+    }
+  ]
+}

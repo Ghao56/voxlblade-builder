@@ -29,18 +29,42 @@ import { resolveWaDamageTypeKeys } from './lib/damageTypeResolve'
 
 
   $: wardingDebuffMult = calcWardingDebuffMultiplier($result.stats.warding ?? 0)
-  $: itemBuffs = getActiveBuildBuffs({
-    rune: $build.rune,
-    ring: $build.ring,
-    infusionRing: $build.infusionRing,
-    helmet: $build.helmet,
-    chestplate: $build.chestplate,
-    leggings: $build.leggings,
-    weaponBlade: $build.weaponBlade,
-    weaponHandle: $build.weaponHandle,
-    monkGlove: $build.monkGlove,
-    race: $build.race,
-  })
+  $: itemBuffs = (() => {
+    const base = getActiveBuildBuffs({
+      rune: $build.rune,
+      ring: $build.ring,
+      infusionRing: $build.infusionRing,
+      helmet: $build.helmet,
+      chestplate: $build.chestplate,
+      leggings: $build.leggings,
+      weaponBlade: $build.weaponBlade,
+      weaponHandle: $build.weaponHandle,
+      monkGlove: $build.monkGlove,
+      race: $build.race,
+    })
+    const potionBuffs: any[] = []
+    if ($build.potion1 && BUFF_DEFS[$build.potion1]) {
+      potionBuffs.push({
+        buffName: $build.potion1,
+        potency: $build.potion1 === 'Rage Potion' ? 0.4 : 0,
+        duration: $build.potion1 === 'Rage Potion' ? 15 : 10,
+        condition: 'On use',
+        sourceName: $build.potion1,
+        sourceType: 'rune',
+      })
+    }
+    if ($build.potion2 && BUFF_DEFS[$build.potion2]) {
+      potionBuffs.push({
+        buffName: $build.potion2,
+        potency: $build.potion2 === 'Rage Potion' ? 0.4 : 0,
+        duration: $build.potion2 === 'Rage Potion' ? 15 : 10,
+        condition: 'On use',
+        sourceName: $build.potion2,
+        sourceType: 'rune',
+      })
+    }
+    return [...base, ...potionBuffs]
+  })()
 
   $: perkBuffs = (() => {
     const buffs = getPerkBuffs($result.perks)
