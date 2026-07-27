@@ -55,7 +55,7 @@
   $: _neg = parseNum(displayed).num < 0
 </script>
 
-<span class="roll-val {classList}" class:roll-neg={_neg}>{displayed}</span>
+<span class="roll-val {classList}" class:roll-neg={_neg} style="color:{_neg ? 'var(--neg)' : 'var(--accent)'}">{displayed}</span>
 
 <style>
   .roll-val {

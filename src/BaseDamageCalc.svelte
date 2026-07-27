@@ -933,7 +933,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       if (!map.has(key)) map.set(key, [])
       map.get(key)!.push(h)
     }
-    return [...map.entries()].map(([label, list]) => {
+    const merged = [...map.entries()].map(([label, list]) => {
       if (list.length <= 1) return { label, list }
       const base = list.find(h => !h.isHeal) ?? list[0]
       const ungroupedTypes = list.flatMap(h => h.types.filter(t => t.ungroup))
@@ -941,6 +941,8 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       const dmgTypes = list.filter(h => !h.isHeal).flatMap(h => h.types.filter(t => !t.ungroup))
       return { label, list: [{ ...base, types: [...dmgTypes, ...healTypes, ...ungroupedTypes], isHeal: false }] }
     })
+    const allHits = merged.flatMap(g => g.list)
+    return allHits.length > 0 ? [{ label: 'Perk', list: allHits }] : []
   })()
   $: hitGroups = [
     { label: m1Label, list: m1Hits },
@@ -2268,6 +2270,8 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   padding: 0 2px 6px;
   border-bottom: 1px solid rgba(255,255,255,.06);
   margin-bottom: 2px;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .bdc-grp-total {

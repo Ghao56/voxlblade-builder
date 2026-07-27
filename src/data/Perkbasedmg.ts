@@ -121,6 +121,9 @@ import {
   RUNIC_BLADES_DMG_PER_STACK,
   RUNIC_BLADES_DEBUFF_DURATION_PER_STACK,
   RUNIC_BLADES_INNER_COOLDOWN,
+  GNAWING_POISON_BASE_DMG,
+  GNAWING_POISON_DMG_PER_STACK,
+  GNAWING_POISON_COOLDOWN,
 } from '../lib/constants'
 
 export interface PerkDmgCtx {
@@ -1048,6 +1051,21 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     ],
     note: 'Applies Runic Blades debuff on WA/Rune hit. Hits against marked targets launch blades. Very short internal cooldown (~0.05-0.1s). Cannot proc other effects.',
     requiredEnemyDebuff: 'Runic Blades',
+  },
+  // ── Gnawing Poison ─────────────────────────────────────────────────────
+  {
+    perkName: 'Gnawing Poison',
+    condition: 'On Finisher',
+    getBaseDamage: ({ perkAmount }) => GNAWING_POISON_BASE_DMG + GNAWING_POISON_DMG_PER_STACK * perkAmount,
+    hits: 1,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { hex: 0.5, physical: 0.5 },
+    scalingMode: 'fixed',
+    scalings: { hex: 1.0, physical: 1.0 },
+    finisherOnly: true,
+    procCoefficient: { type: 'hasCoeff', value: 1.0 },
+    requiredEnemyDebuff: 'Poison',
+    note: `Bites all enemies you have Poisoned, dealing burst damage. ${GNAWING_POISON_COOLDOWN}s cooldown. Can proc other effects. You don't have to hit an opponent — just using your finisher after having inflicted a target with Poison activates it. Grants Poison Potency. Damage may increase depending on how many enemies you have Poisoned (unknown scaling).`,
   },
 ]
 
