@@ -1020,6 +1020,11 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
 <div class="bdc-root da-section">
   <div class="da-section-title">Damage Calculator</div>
 
+  <div class="bdc-cooldown-warning">
+    <i class="fa fa-exclamation-triangle"></i>
+    Calculated damage does not respect the cooldown of <strong>[EFFECT]</strong>, and may not be accurate
+  </div>
+
   <div class="bdc-layout">
 
     <div class="bdc-dummy-col">
@@ -1836,6 +1841,30 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   margin-bottom: 14px;
   border-bottom: 1px solid var(--border, rgba(255, 255, 255, .06));
   padding-bottom: 8px;
+}
+
+.bdc-cooldown-warning {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(245, 158, 11, 0.14);
+  border: 2px solid rgba(245, 158, 11, 0.45);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  color: #fbbf24;
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1.4;
+}
+.bdc-cooldown-warning i.fa {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  color: #f59e0b;
+}
+.bdc-cooldown-warning strong {
+  color: #fde68a;
+  font-size: 0.95rem;
 }
 
 .bdc-layout {
