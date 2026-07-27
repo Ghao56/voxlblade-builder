@@ -117,6 +117,10 @@ import {
   BASTION_BALLISTA_RESTORE_DELAY,
   BASTION_BALLISTA_FIRE_COOLDOWN,
   BASTION_BALLISTA_PROC_COEFF,
+  RUNIC_BLADES_BASE_DMG,
+  RUNIC_BLADES_DMG_PER_STACK,
+  RUNIC_BLADES_DEBUFF_DURATION_PER_STACK,
+  RUNIC_BLADES_INNER_COOLDOWN,
 } from '../lib/constants'
 
 export interface PerkDmgCtx {
@@ -208,6 +212,7 @@ export interface PerkDmgDef {
   triggerChain?: TriggerChainEntry[]
   activeIf?: (ctx: { draconicRuneInfusion: string; draconicColor: string; selectedWeaponArt?: string }) => boolean
   requiredBuff?: string
+  requiredEnemyDebuff?: string
 }
 
 export function calcSpringblastBaseDamage(perkAmount: number): number {
@@ -1020,6 +1025,29 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     scalings: { earth: 1.0 },
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
     note: 'Has a cooldown of 0.5 seconds.',
+  },
+  // ── Runic Blades ──────────────────────────────────────────────────────
+  {
+    perkName: 'Runic Blades',
+    condition: 'On Weapon Art or Rune hit — launches a magical blade at target marked with Runic Blades debuff',
+    getBaseDamage: ({ perkAmount }) => RUNIC_BLADES_BASE_DMG + RUNIC_BLADES_DMG_PER_STACK * perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { magic: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { magic: 1.0 },
+    isProcHit: true,
+    procCoefficient: { type: 'hasCoeff', value: 0 },
+    secondaryEffects: [
+      {
+        label: 'Debuff Duration',
+        getValue: ({ perkAmount }) => RUNIC_BLADES_DEBUFF_DURATION_PER_STACK * perkAmount,
+        format: v => `${Math.round(v * 10) / 10}s`,
+        condition: 'Runic Blades debuff on target',
+        tone: 'offense',
+      },
+    ],
+    note: 'Applies Runic Blades debuff on WA/Rune hit. Hits against marked targets launch blades. Very short internal cooldown (~0.05-0.1s). Cannot proc other effects.',
+    requiredEnemyDebuff: 'Runic Blades',
   },
 ]
 

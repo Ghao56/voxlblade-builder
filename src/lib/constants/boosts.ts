@@ -66,3 +66,8 @@ export const HEAT_DRILL_EXPLOSION_PER_STACK = 7.5
 export const HEAT_DRILL_SMALL_EXPLOSION_BASE = 3.75
 export const HEAT_DRILL_SMALL_EXPLOSION_PER_STACK = 1.875
 export const HEAT_DRILL_SMALL_EXPLOSION_HITS = 6
+
+// ── Essence Ray ─────────────────────────────
+export const ESSENCE_RAY_BASE = 1.1
+export const ESSENCE_RAY_PER_STACK = 0.275
+export const ESSENCE_RAY_HITS = 23

@@ -18,6 +18,7 @@ export const BADGE_CONFIG: Record<string, { color: string; label: string; title:
   'Bombardier': { color: '#f97316', label: '✦ Bombardier', title: 'Bombardier: explosion on any hit · RNG chance · Cannot proc other effects' },
   'Phantom Pain': { color: '#e879f9', label: '✦ Phantom Pain', title: 'Phantom Pain: repeats a portion of the hit\'s damage as Hex after a short delay · Cannot proc other effects' },
   'Lifesteal': { color: '#4ade80', label: '✦ Lifesteal', title: 'Lifesteal: heal 0.5% of damage dealt per stack + 0.1 flat HP per stack' },
+  'Runic Blades': { color: '#43d8ff', label: '✦ Runic Blades', title: 'Runic Blades: magic proc on any hit vs Runic Blades target · Scales with weapon' },
 }
 
 export interface ComputedType {

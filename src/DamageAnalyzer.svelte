@@ -73,6 +73,7 @@ import {
   HEAT_DRILL_EXPLOSION_BASE, HEAT_DRILL_EXPLOSION_PER_STACK,
   HEAT_DRILL_SMALL_EXPLOSION_BASE, HEAT_DRILL_SMALL_EXPLOSION_PER_STACK,
   HEAT_DRILL_SMALL_EXPLOSION_HITS,
+  ESSENCE_RAY_BASE, ESSENCE_RAY_PER_STACK, ESSENCE_RAY_HITS,
   getWADisplayName,
 } from './lib/constants'
 
@@ -700,6 +701,7 @@ import {
   $: _wildBoltAmt = perks['Wild Bolt'] ?? 0
   $: _weightySlamAmt = perks['Weighty Slam'] ?? 0
   $: _heatDrillAmt = perks['Heat Drill'] ?? 0
+  $: _essenceRayAmt = perks['Essence Ray'] ?? 0
   $: _lightningCloakActive = _allActiveBuffs.some(b => b.buffName === 'Lightning Cloak')
   $: _activeLightningCloakBuffs = _allActiveBuffs.filter(b => b.buffName === 'Lightning Cloak')
   $: _stormRendAmt = perks['Storm Rend'] ?? 0
@@ -736,6 +738,14 @@ import {
     : 0
   $: _bombardierScalings = _bombardierDef?.scalings ?? {}
   $: _bombardierScalingMult = _bombardierAmt > 0 ? _computePerkScalingMult(_bombardierScalings) : 1
+
+  $: _runicBladesAmt = perks['Runic Blades'] ?? 0
+  $: _runicBladesDef = _runicBladesAmt > 0 ? findPerkDmgDef('Runic Blades') : undefined
+  $: _runicBladesBaseDmg = (_runicBladesAmt > 0 && !disabledEffects.has('runicBlades') && _runicBladesDef)
+    ? _runicBladesDef.getBaseDamage({ perkAmount: _runicBladesAmt })
+    : 0
+  $: _runicBladesScalings = _runicBladesDef?.scalings ?? {}
+  $: _runicBladesScalingMult = _runicBladesAmt > 0 ? _computePerkScalingMult(_runicBladesScalings) : 1
 
   $: _cauterizeAmt = (perks['Cauterize'] ?? 0)
   $: _cauterizeDef = findPerkDmgDef('Cauterize')
@@ -795,6 +805,15 @@ import {
         val: disabledEffects.has('bombardier') ? '—'
           : `+${(_bombardierDef?.getBaseDamage({ perkAmount: _bombardierAmt }) ?? 0).toFixed(2)}`,
         cond: '40% chance',
+      })
+    }
+    if (_runicBladesAmt > 0) {
+      chips.push({
+        key: 'runicBlades', name: 'Runic Blades',
+        title: 'Runic Blades: procs on any hit with proc coefficient vs marked target · magic · normal scaling',
+        val: disabledEffects.has('runicBlades') ? '—'
+          : `+${_runicBladesBaseDmg.toFixed(2)}`,
+        cond: 'vs Runic Blades target',
       })
     }
     if ((perks['Blub Blub'] ?? 0) > 0) {
@@ -1013,9 +1032,9 @@ import {
         rageApplied,
       }
     })
-    return { base, count, types }
-  })
-}
+      return { base, count, types }
+    })
+  }
 
   $: _isMonk = isMonkGuild($build.guild)
   $: _isDragonBlooded = $build.race === 'DRAGON BLOODED'
@@ -1709,6 +1728,7 @@ import {
 
   $: _waAllHits = parseWAHitsAll(selectedWA.baseDamage)
   $: _heatDrillActive = _heatDrillAmt > 0 && (selectedWA.name === 'Lunge' || selectedWA.name === 'Barrage')
+  $: _essenceRayActive = _essenceRayAmt > 0 && selectedWA.name === 'Magical Ray'
   $: _waHitsSeq = (() => {
     if (selectedWA.baseDamagePerDebuff) {
       const count = _generalActiveDebuffCount
@@ -1722,6 +1742,10 @@ import {
         { n: HEAT_DRILL_EXPLOSION_BASE + HEAT_DRILL_EXPLOSION_PER_STACK * a, count: 1 },
         { n: HEAT_DRILL_SMALL_EXPLOSION_BASE + HEAT_DRILL_SMALL_EXPLOSION_PER_STACK * a, count: HEAT_DRILL_SMALL_EXPLOSION_HITS },
       ]
+    }
+    if (_essenceRayActive) {
+      const a = _essenceRayAmt
+      return [{ n: ESSENCE_RAY_BASE + ESSENCE_RAY_PER_STACK * a, count: ESSENCE_RAY_HITS }]
     }
     return _waAllHits.dmg.length > 0 ? _waAllHits.dmg.map(h => 
       _wildBoltAmt > 0 && selectedWA.name === 'Laser' 
@@ -1756,6 +1780,9 @@ import {
         ? entries.reduce((a, b) => b[1] > a[1] ? b : a)[0]
         : Object.keys(_weaponDmgTypes)[0] ?? 'physical'
       return apply(_applyDmgBonuses({ [highestKey]: 1 }, _waDmgTypeBonuses))
+    }
+    if (_essenceRayActive) {
+      return apply(_applyDmgBonuses({ true: 1 }, _waDmgTypeBonuses))
     }
     const dt = selectedWA.damageType
     
@@ -1810,6 +1837,9 @@ import {
         ? entries.reduce((a, b) => b[1] > a[1] ? b : a)[0]
         : Object.keys(_weaponDmgTypes)[0] ?? 'physical'
       return { [highestKey]: 1 }
+    }
+    if (_essenceRayActive) {
+      return { true: 1 }
     }
     const dt = selectedWA.damageType
     if (!dt || dt === 'Same as weapon') {
@@ -1918,6 +1948,22 @@ import {
             return applyAirToMagicConversion(_applyDmgBonuses({ [highestKey]: 1 }, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexBonus, _echoIncinerationAmt)
           })()
         : applyAirToMagicConversion(_applyDmgBonuses({ fire: 0.5, air: 0.5 }, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexBonus, _echoIncinerationAmt)
+      const types: DamageDisplayType[] = Object.entries(dtFinal).map(([k, mult]) => ({
+        label: k.charAt(0).toUpperCase() + k.slice(1),
+        rawVal: Math.round(base * 10000) / 10000,
+        val: Math.round(base * (mult as number) * 10000) / 10000,
+        scalingMult: _waScalingMult * _waCombatMult,
+        color: DMG_TYPE_COLORS[k] ?? '#e8e4da',
+      }))
+      return { base, count, types }
+    })
+  }
+
+  if (_essenceRayActive) {
+    return seq.map((h) => {
+      const base = typeof h === 'number' ? h : h.n
+      const count = typeof h === 'number' ? 1 : h.count
+      const dtFinal = applyAirToMagicConversion(_applyDmgBonuses({ true: 1 }, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexBonus, _echoIncinerationAmt)
       const types: DamageDisplayType[] = Object.entries(dtFinal).map(([k, mult]) => ({
         label: k.charAt(0).toUpperCase() + k.slice(1),
         rawVal: Math.round(base * 10000) / 10000,
@@ -2106,7 +2152,7 @@ import {
     triggerChain?: TriggerChainEntry[]
   }
 
-  $: _activePerkDmgEntries = (void activeEntries, (() => {
+  $: _activePerkDmgEntries = (void activeEntries, void disabledDebuffs, (() => {
     const out: PerkDmgComputedEntry[] = []
     for (const def of PERK_DMG_DEFS) {
       const perkAmount = perks[def.perkName] ?? 0
@@ -2202,7 +2248,7 @@ import {
       const halfActivations = hasHalfActivations || undefined
       const oncePerFinisher = isSpringblast ? false : (def.finisherOnly ? true : undefined)
 
-      const isActive = isHpGateActive(def.hpGate, _hpFillPct, perkAmount) && isHpGateActive(def.enemyHpGate, _enemyHpFillPct, perkAmount) && (!isSpringblast || _allActiveBuffs.some(b => b.buffName === 'Bounce')) && (!def.requiredBuff || _allActiveBuffs.some(b => b.buffName === def.requiredBuff))
+      const isActive = isHpGateActive(def.hpGate, _hpFillPct, perkAmount) && isHpGateActive(def.enemyHpGate, _enemyHpFillPct, perkAmount) && (!isSpringblast || _allActiveBuffs.some(b => b.buffName === 'Bounce')) && (!def.requiredBuff || _allActiveBuffs.some(b => b.buffName === def.requiredBuff)) && (!def.requiredEnemyDebuff || (_dummyDebuffs.some(d => d.name === def.requiredEnemyDebuff) && !disabledDebuffs.has(def.requiredEnemyDebuff!)))
 
       const secondaryEffects = (def.secondaryEffects ?? []).filter(se => !se.showIf || se.showIf({ draconicColor: _effDraconicColor })).map(se => {
         let raw = Math.round(se.getValue({ perkAmount, draconicColor: _effDraconicColor, statuses: _perkCtxStatuses }) * 1000) / 1000
@@ -2265,7 +2311,7 @@ import {
     for (const e of _activePerkDmgEntries) {
       if (!e.isActive) continue
       if (!e.isProcHit && e.perkName !== 'Springblast') continue
-      if (e.perkName === 'Echo Incineration' || e.perkName === 'Bombardier') continue
+      if (e.perkName === 'Echo Incineration' || e.perkName === 'Bombardier' || e.perkName === 'Runic Blades') continue
       const perkDef = findPerkDmgDef(e.perkName)
 
       const perkSunburnMult = _sunburnActive && _sunburnEnemyBurning
@@ -2468,6 +2514,9 @@ import {
             hitDt = applyAirToMagicConversion(explTypes, _spiritWindsConversionRate, _darkMagicHexBonus, _echoIncinerationAmt)
             hitDtBase = { fire: 0.5, air: 0.5 }
           }
+        } else if (_essenceRayActive) {
+          hitDt = applyAirToMagicConversion(_applyDmgBonuses({ true: 1 }, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexBonus, _echoIncinerationAmt)
+          hitDtBase = { true: 1 }
         } else if (selectedWA.hitDamageTypes?.length) {
           const _hdt = selectedWA.hitDamageTypes[Math.min(i, selectedWA.hitDamageTypes.length - 1)]
           hitDt = _hdt === 'Same as weapon'
@@ -3012,6 +3061,8 @@ $: _groupedSelfDamageSources = (() => {
     bombardierScalingMult={_bombardierScalingMult}
     cauterizeBaseDmg={_cauterizeBaseDmg}
     cauterizeScalingMult={_cauterizeScalingMult}
+    runicBladesBaseDmg={_runicBladesBaseDmg}
+    runicBladesScalingMult={_runicBladesScalingMult}
     m1Label={_activeMountRuneDef && mountActive ? 'M1/M2' : 'M1'}
     draconicRunesBonus={getDraconicBonuses({
       draconicRunesStacks: perks['Draconic Runes'] ?? 0,

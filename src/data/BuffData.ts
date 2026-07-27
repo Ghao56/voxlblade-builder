@@ -444,6 +444,14 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectUnit: 'flat',
     isDebuff: true,
   },
+  'Runic Blades': {
+    name: 'Runic Blades',
+    color: '#43d8ff',
+    description: 'Marks target for runic blades.',
+    effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
+    effectUnit: 'flat',
+    isDebuff: true,
+  },
 
   'Minion Absorbed': {
     name: 'Minion Absorbed',

@@ -3,7 +3,7 @@ import { HYPNOTIST_POTENCY_PER_PERK, HYPNOTIST_DURATION_BASE, HYPNOTIST_DURATION
 import type { GrantedBuff } from './BuffData'
 import { canProc, type ProcCoefficient } from '../lib/types'
 import { calcBaseMaxHP } from '../lib/constants/game'
-import { BELLOWING_EMBER_HP_GATE_THRESHOLD, BELLOWING_EMBER_HP_GATE_PER_STACK, PYRE_BLOOM_BURN_DURATION } from '../lib/constants/perk-base-damage'
+import { BELLOWING_EMBER_HP_GATE_THRESHOLD, BELLOWING_EMBER_HP_GATE_PER_STACK, PYRE_BLOOM_BURN_DURATION, RUNIC_BLADES_DEBUFF_DURATION_PER_STACK } from '../lib/constants/perk-base-damage'
 import { getActiveEnemyHpDebuffs } from './enemyHpEffects'
 
 export interface AutoDebuffInput {
@@ -229,6 +229,18 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
       duration: PYRE_BLOOM_BURN_DURATION,
       condition: 'Pyre Bloom fireballs apply Burn',
       sourceName: 'Pyre Bloom',
+      sourceType: 'perk',
+    })
+  }
+
+  const runicBladesAmt = perks['Runic Blades'] ?? 0
+  if (runicBladesAmt > 0 && exhaustCanProc && !existingBuffNames.includes('Runic Blades')) {
+    debuffs.push({
+      buffName: 'Runic Blades',
+      potency: 0,
+      duration: RUNIC_BLADES_DEBUFF_DURATION_PER_STACK * runicBladesAmt,
+      condition: `On Weapon Art or Rune hit · Duration = ${RUNIC_BLADES_DEBUFF_DURATION_PER_STACK}s × ${runicBladesAmt.toFixed(1)}`,
+      sourceName: 'Runic Blades',
       sourceType: 'perk',
     })
   }

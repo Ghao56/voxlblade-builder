@@ -61,8 +61,10 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   export let echoIncinerationScalingMult: number = 1
   export let bombardierBaseDmg: number = 0
   export let bombardierScalingMult: number = 1
-export let cauterizeBaseDmg: number = 0
-export let cauterizeScalingMult: number = 1
+  export let cauterizeBaseDmg: number = 0
+  export let cauterizeScalingMult: number = 1
+  export let runicBladesBaseDmg: number = 0
+  export let runicBladesScalingMult: number = 1
   export let m1Label: string = 'M1'
   export let mountActive: boolean = false
   export let mountLabel: string = ''
@@ -607,6 +609,13 @@ export let cauterizeScalingMult: number = 1
 
     if (!isHeal && bombardierBaseDmg > 0 && canProc(hit.procCoefficient)) {
       addProcEffect(bombardierBaseDmg, 1, { magic: 0.5, holy: 0.5 }, 'Bombardier', bombardierScalingMult, hit.combatMult)
+    }
+
+    if (!isHeal && runicBladesBaseDmg > 0 && canProc(hit.procCoefficient)) {
+      const rbDebuffActive = appliedDebuffs.some(d => d.name === 'Runic Blades' && !disabledDebuffs.has(d.name))
+      if (rbDebuffActive) {
+        addProcEffect(runicBladesBaseDmg, 1, { magic: 1.0 }, 'Runic Blades', runicBladesScalingMult, hit.combatMult)
+      }
     }
 
     if (!isHeal && luminescentPct > 0 && canProc(hit.procCoefficient)) {

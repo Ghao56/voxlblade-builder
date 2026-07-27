@@ -3,6 +3,7 @@ export const WA_PERK_DISPLAY_NAMES: Record<string, Record<string, string>> = {
   'Guardian Spin': { 'Spin': 'Guardian Spin' },
   'Wild Bolt': { 'Laser': 'Wild Bolt' },
   'Heat Drill': { 'Lunge': 'Heat Drill', 'Barrage': 'Heat Drill' },
+  'Essence Ray': { 'Magical Ray': 'Essence Ray' },
 }
 
 export function getWADisplayName(
