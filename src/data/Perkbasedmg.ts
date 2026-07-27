@@ -965,6 +965,62 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     ],
     note: `Activates on the hit that brings the enemy below 50% HP. ${DARK_HARVEST_COOLDOWN}s cooldown per enemy. Cannot be procced by attacks without a proc coefficient. Healing counts as lifesteal.`,
   },
+  // ── Blastshield ──────────────────────────────────────────────────────
+  {
+    perkName: 'Blastshield',
+    condition: 'When Hit',
+    getBaseDamage: ({ perkAmount }) => 15 + 15 * perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { earth: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { earth: 1.0 },
+    procCoefficient: { type: 'hasCoeff', value: 1.0 },
+    secondaryEffects: [
+      {
+        label: 'Poise Damage',
+        getValue: ({ perkAmount }) => 25 + 25 * perkAmount,
+        format: v => `${v}`,
+        tone: 'offense',
+      },
+    ],
+    note: 'Has a cooldown of 5 seconds. Shockwave does not activate from Self Damage or Debuffs',
+  },
+  // ── Frozen Waste ──────────────────────────────────────────────────────
+  {
+    perkName: 'Frozen Waste',
+    condition: 'When Blocking an attack',
+    getBaseDamage: ({ perkAmount }) => 15 + 15 * perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { water: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { water: 1.0, physical: 1.0 },
+    procCoefficient: { type: 'hasCoeff', value: 1.0 },
+    guardbreak: true,
+    note: 'Roughly 8 second cooldown at 1 of this perk, and 7 seconds at 2 of this perk. Activates even when guardbroken. Size scales with perk amount.',
+  },
+  // ── Gravity Well ──────────────────────────────────────────────────────
+  {
+    perkName: 'Gravity Well',
+    condition: 'on Weapon Art or Rune use',
+    getBaseDamage: ({ perkAmount }) => 20 + 2 * perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { earth: 0.5, magic: 0.5 },
+    scalingMode: 'fixed',
+    scalings: { earth: 0.5, magic: 0.5 },
+    procCoefficient: { type: 'hasCoeff', value: 1.0 },
+  },
+// ── Heavy Slate ──────────────────────────────────────────────────────
+  {
+    perkName: 'Heavy Slate',
+    condition: 'When hit by an attack that doesn\'t Stun you',
+    getBaseDamage: ({ perkAmount }) => 5 + 2 * perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { earth: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { earth: 1.0 },
+    procCoefficient: { type: 'hasCoeff', value: 1.0 },
+    note: 'Has a cooldown of 0.5 seconds.',
+  },
 ]
 
 const _perkDmgDefMap = new Map<string, PerkDmgDef[]>()
