@@ -22,6 +22,7 @@
   import { getDraconicInfusionBuff, getDraconicAbilityDebuffs, getDraconicInfusionPotMult, getDraconicInfusionDurMult } from './data/draconicBuffs'
   import { calcMinionAbsorptionPotency } from './data/Boost'
   import { WEAPON_ARTS } from './data/weaponArts'
+  import { POTION_MAP } from './data/potions'
   import { UI_COLORS, SOURCE_LABELS } from './lib/uiConstants'
 import { getAutoDebuffs } from './data/perkAutoDebuffs'
 import { WA_PROC_COEFFS, DEFAULT_PROC_COEFF } from './data/procCoefficients'
@@ -43,24 +44,28 @@ import { resolveWaDamageTypeKeys } from './lib/damageTypeResolve'
       race: $build.race,
     })
     const potionBuffs: any[] = []
-    if ($build.potion1 && BUFF_DEFS[$build.potion1]) {
+    const potionBuffMap: Record<string, string> = { 'Rage Potion': 'Rage', 'Poison Potion': 'Poison' }
+    const potionSelfDebuff: Record<string, boolean> = { 'Poison Potion': true }
+    if ($build.potion1 && POTION_MAP[$build.potion1]) {
       potionBuffs.push({
-        buffName: $build.potion1,
+        buffName: potionBuffMap[$build.potion1] ?? $build.potion1,
         potency: $build.potion1 === 'Rage Potion' ? 0.4 : 0,
         duration: $build.potion1 === 'Rage Potion' ? 15 : 10,
         condition: 'On use',
         sourceName: $build.potion1,
-        sourceType: 'rune',
+        sourceType: 'item',
+        isSelfDebuff: potionSelfDebuff[$build.potion1] ?? false,
       })
     }
-    if ($build.potion2 && BUFF_DEFS[$build.potion2]) {
+    if ($build.potion2 && POTION_MAP[$build.potion2]) {
       potionBuffs.push({
-        buffName: $build.potion2,
+        buffName: potionBuffMap[$build.potion2] ?? $build.potion2,
         potency: $build.potion2 === 'Rage Potion' ? 0.4 : 0,
         duration: $build.potion2 === 'Rage Potion' ? 15 : 10,
         condition: 'On use',
         sourceName: $build.potion2,
-        sourceType: 'rune',
+        sourceType: 'item',
+        isSelfDebuff: potionSelfDebuff[$build.potion2] ?? false,
       })
     }
     return [...base, ...potionBuffs]
@@ -295,6 +300,7 @@ $: groupedBuffs = (() => {
     weaponArt: UI_COLORS.weaponArt,
     race:      UI_COLORS.race,
     cantrip: UI_COLORS.cantrip,
+    item:   UI_COLORS.item,
   }
 
   const SRC_LABEL: Record<string, string> = {
@@ -303,6 +309,7 @@ $: groupedBuffs = (() => {
     weaponArt: SOURCE_LABELS.weaponArt,
     race: SOURCE_LABELS.race,
     cantrip: SOURCE_LABELS.cantrip,
+    item: SOURCE_LABELS.item,
   }
   function fmtPotency(v: number): string {
     return String(Math.round(v * 10000) / 10000);

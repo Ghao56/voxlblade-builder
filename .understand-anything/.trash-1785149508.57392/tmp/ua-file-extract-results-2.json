@@ -1,0 +1,662 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 1,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "src/data/BuffData.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 1973,
+      "nonEmptyLines": 1846,
+      "functions": [
+        {
+          "name": "formatDamageTypes",
+          "startLine": 79,
+          "endLine": 83,
+          "params": [
+            "types"
+          ]
+        },
+        {
+          "name": "getWeaponArtBuffs",
+          "startLine": 1368,
+          "endLine": 1370,
+          "params": [
+            "weaponArtName"
+          ]
+        },
+        {
+          "name": "getTrueBalanceBuffs",
+          "startLine": 1394,
+          "endLine": 1443,
+          "params": [
+            "perkAmount",
+            "activeDebuffs"
+          ]
+        },
+        {
+          "name": "durationMultFromStack",
+          "startLine": 1454,
+          "endLine": 1456,
+          "params": [
+            "base",
+            "perStack"
+          ]
+        },
+        {
+          "name": "getSpecificBuffModifiers",
+          "startLine": 1512,
+          "endLine": 1547,
+          "params": [
+            "buff",
+            "def",
+            "perks"
+          ]
+        },
+        {
+          "name": "getBastionBlessBonus",
+          "startLine": 1549,
+          "endLine": 1568,
+          "params": [
+            "buff",
+            "def",
+            "perks"
+          ]
+        },
+        {
+          "name": "getGenericDebuffModifiers",
+          "startLine": 1570,
+          "endLine": 1612,
+          "params": [
+            "buff",
+            "def",
+            "perks"
+          ]
+        },
+        {
+          "name": "getTricksterReflection",
+          "startLine": 1614,
+          "endLine": 1637,
+          "params": [
+            "buff",
+            "def",
+            "perks",
+            "wardingDebuffMult"
+          ]
+        },
+        {
+          "name": "applyBuffPerkModifiers",
+          "startLine": 1639,
+          "endLine": 1715,
+          "params": [
+            "buffs",
+            "perks",
+            "activeRune",
+            "wardingDebuffMult"
+          ]
+        },
+        {
+          "name": "applyToxinTransferDuration",
+          "startLine": 1717,
+          "endLine": 1735,
+          "params": [
+            "buffs",
+            "perks"
+          ]
+        },
+        {
+          "name": "convertTailwindToWhirlwind",
+          "startLine": 1737,
+          "endLine": 1761,
+          "params": [
+            "buffs",
+            "perks"
+          ]
+        },
+        {
+          "name": "getBuffDescription",
+          "startLine": 1763,
+          "endLine": 1792,
+          "params": [
+            "buffName",
+            "perks",
+            "potency"
+          ]
+        },
+        {
+          "name": "getPerkBuffs",
+          "startLine": 1794,
+          "endLine": 1807,
+          "params": [
+            "perks"
+          ]
+        },
+        {
+          "name": "getActiveBuildBuffs",
+          "startLine": 1809,
+          "endLine": 1828,
+          "params": [
+            "build"
+          ]
+        },
+        {
+          "name": "getRaceBuffs",
+          "startLine": 1852,
+          "endLine": 1854,
+          "params": [
+            "race"
+          ]
+        },
+        {
+          "name": "applyCauterizeConversion",
+          "startLine": 1877,
+          "endLine": 1890,
+          "params": [
+            "buffs",
+            "perks"
+          ]
+        },
+        {
+          "name": "getBurnApplicationCount",
+          "startLine": 1898,
+          "endLine": 1900,
+          "params": [
+            "buffs"
+          ]
+        },
+        {
+          "name": "assembleActiveBuffs",
+          "startLine": 1909,
+          "endLine": 1937,
+          "params": [
+            "build",
+            "perks",
+            "wardingDebuffMult"
+          ]
+        },
+        {
+          "name": "calcBuffEffect",
+          "startLine": 1939,
+          "endLine": 1960,
+          "params": [
+            "buffName",
+            "potency"
+          ]
+        },
+        {
+          "name": "calcPotencyPercent",
+          "startLine": 1962,
+          "endLine": 1969,
+          "params": [
+            "perkAmount"
+          ]
+        },
+        {
+          "name": "formatPerkDescription",
+          "startLine": 1971,
+          "endLine": 1973,
+          "params": [
+            "desc",
+            "count"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "BUFF_DEFS",
+          "line": 99,
+          "isDefault": false
+        },
+        {
+          "name": "BASIC_DEBUFF_POOL",
+          "line": 740,
+          "isDefault": false
+        },
+        {
+          "name": "getWeaponArtBuffs",
+          "line": 1368,
+          "isDefault": false
+        },
+        {
+          "name": "getTrueBalanceBuffs",
+          "line": 1394,
+          "isDefault": false
+        },
+        {
+          "name": "applyBuffPerkModifiers",
+          "line": 1639,
+          "isDefault": false
+        },
+        {
+          "name": "applyToxinTransferDuration",
+          "line": 1717,
+          "isDefault": false
+        },
+        {
+          "name": "convertTailwindToWhirlwind",
+          "line": 1737,
+          "isDefault": false
+        },
+        {
+          "name": "getBuffDescription",
+          "line": 1763,
+          "isDefault": false
+        },
+        {
+          "name": "getPerkBuffs",
+          "line": 1794,
+          "isDefault": false
+        },
+        {
+          "name": "getActiveBuildBuffs",
+          "line": 1809,
+          "isDefault": false
+        },
+        {
+          "name": "applyCauterizeConversion",
+          "line": 1877,
+          "isDefault": false
+        },
+        {
+          "name": "getBurnApplicationCount",
+          "line": 1898,
+          "isDefault": false
+        },
+        {
+          "name": "assembleActiveBuffs",
+          "line": 1909,
+          "isDefault": false
+        },
+        {
+          "name": "calcBuffEffect",
+          "line": 1939,
+          "isDefault": false
+        },
+        {
+          "name": "formatPerkDescription",
+          "line": 1971,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "formatDamageTypes",
+          "callee": "types.slice(0, -1).join",
+          "lineNumber": 82
+        },
+        {
+          "caller": "formatDamageTypes",
+          "callee": "types.slice",
+          "lineNumber": 82
+        },
+        {
+          "caller": "formatDamageTypes",
+          "callee": "types.at",
+          "lineNumber": 82
+        },
+        {
+          "caller": "getTrueBalanceBuffs",
+          "callee": "activeDebuffs.filter",
+          "lineNumber": 1400
+        },
+        {
+          "caller": "getTrueBalanceBuffs",
+          "callee": "mapping.getPotency",
+          "lineNumber": 1420
+        },
+        {
+          "caller": "getTrueBalanceBuffs",
+          "callee": "mapping.getDuration",
+          "lineNumber": 1421
+        },
+        {
+          "caller": "getTrueBalanceBuffs",
+          "callee": "grouped.get",
+          "lineNumber": 1423
+        },
+        {
+          "caller": "getTrueBalanceBuffs",
+          "callee": "existing.sources.includes",
+          "lineNumber": 1425
+        },
+        {
+          "caller": "getTrueBalanceBuffs",
+          "callee": "existing.sources.push",
+          "lineNumber": 1426
+        },
+        {
+          "caller": "getTrueBalanceBuffs",
+          "callee": "Math.max",
+          "lineNumber": 1429
+        },
+        {
+          "caller": "getTrueBalanceBuffs",
+          "callee": "Math.max",
+          "lineNumber": 1430
+        },
+        {
+          "caller": "getTrueBalanceBuffs",
+          "callee": "grouped.set",
+          "lineNumber": 1432
+        },
+        {
+          "caller": "getTrueBalanceBuffs",
+          "callee": "[...grouped.entries()].map",
+          "lineNumber": 1435
+        },
+        {
+          "caller": "getTrueBalanceBuffs",
+          "callee": "grouped.entries",
+          "lineNumber": 1435
+        },
+        {
+          "caller": "getTrueBalanceBuffs",
+          "callee": "roundMultiplier",
+          "lineNumber": 1437
+        },
+        {
+          "caller": "getTrueBalanceBuffs",
+          "callee": "data.sources.join",
+          "lineNumber": 1439
+        },
+        {
+          "caller": "getSpecificBuffModifiers",
+          "callee": "mod.durationMultiplierFormula",
+          "lineNumber": 1539
+        },
+        {
+          "caller": "getTricksterReflection",
+          "callee": "roundMultiplier",
+          "lineNumber": 1636
+        },
+        {
+          "caller": "applyBuffPerkModifiers",
+          "callee": "buffs.map",
+          "lineNumber": 1649
+        },
+        {
+          "caller": "applyBuffPerkModifiers",
+          "callee": "getSpecificBuffModifiers",
+          "lineNumber": 1653
+        },
+        {
+          "caller": "applyBuffPerkModifiers",
+          "callee": "getBastionBlessBonus",
+          "lineNumber": 1654
+        },
+        {
+          "caller": "applyBuffPerkModifiers",
+          "callee": "getTricksterReflection",
+          "lineNumber": 1655
+        },
+        {
+          "caller": "applyBuffPerkModifiers",
+          "callee": "getGenericDebuffModifiers",
+          "lineNumber": 1656
+        },
+        {
+          "caller": "applyBuffPerkModifiers",
+          "callee": "roundMultiplier",
+          "lineNumber": 1696
+        },
+        {
+          "caller": "applyBuffPerkModifiers",
+          "callee": "roundMultiplier",
+          "lineNumber": 1698
+        },
+        {
+          "caller": "applyBuffPerkModifiers",
+          "callee": "Math.round",
+          "lineNumber": 1706
+        },
+        {
+          "caller": "applyBuffPerkModifiers",
+          "callee": "roundMultiplier",
+          "lineNumber": 1711
+        },
+        {
+          "caller": "applyToxinTransferDuration",
+          "callee": "Math.max",
+          "lineNumber": 1724
+        },
+        {
+          "caller": "applyToxinTransferDuration",
+          "callee": "buffs\r\n      .filter(b => b.buffName === 'Poison' && b.isSelfDebuff)\r\n      .map",
+          "lineNumber": 1726
+        },
+        {
+          "caller": "applyToxinTransferDuration",
+          "callee": "buffs\r\n      .filter",
+          "lineNumber": 1726
+        },
+        {
+          "caller": "applyToxinTransferDuration",
+          "callee": "buffs.map",
+          "lineNumber": 1731
+        },
+        {
+          "caller": "convertTailwindToWhirlwind",
+          "callee": "buffs.map",
+          "lineNumber": 1743
+        },
+        {
+          "caller": "convertTailwindToWhirlwind",
+          "callee": "Math.round",
+          "lineNumber": 1749
+        },
+        {
+          "caller": "convertTailwindToWhirlwind",
+          "callee": "BOUNCE_DURATION_MULT",
+          "lineNumber": 1749
+        },
+        {
+          "caller": "convertTailwindToWhirlwind",
+          "callee": "result.push",
+          "lineNumber": 1752
+        },
+        {
+          "caller": "getBuffDescription",
+          "callee": "buff.dynamicDescription",
+          "lineNumber": 1772
+        },
+        {
+          "caller": "getBuffDescription",
+          "callee": "roundMultiplier",
+          "lineNumber": 1776
+        },
+        {
+          "caller": "getBuffDescription",
+          "callee": "(dmgReduction * 100).toFixed(4).replace",
+          "lineNumber": 1777
+        },
+        {
+          "caller": "getBuffDescription",
+          "callee": "(dmgReduction * 100).toFixed",
+          "lineNumber": 1777
+        },
+        {
+          "caller": "getBuffDescription",
+          "callee": "roundMultiplier",
+          "lineNumber": 1781
+        },
+        {
+          "caller": "getBuffDescription",
+          "callee": "roundMultiplier",
+          "lineNumber": 1785
+        },
+        {
+          "caller": "getBuffDescription",
+          "callee": "(dmgReduction * 100).toFixed(4).replace",
+          "lineNumber": 1786
+        },
+        {
+          "caller": "getBuffDescription",
+          "callee": "(dmgReduction * 100).toFixed",
+          "lineNumber": 1786
+        },
+        {
+          "caller": "getBuffDescription",
+          "callee": "calcBuffEffect",
+          "lineNumber": 1789
+        },
+        {
+          "caller": "getBuffDescription",
+          "callee": "desc.replace",
+          "lineNumber": 1791
+        },
+        {
+          "caller": "getBuffDescription",
+          "callee": "(pct).toFixed(4).replace",
+          "lineNumber": 1791
+        },
+        {
+          "caller": "getBuffDescription",
+          "callee": "(pct).toFixed",
+          "lineNumber": 1791
+        },
+        {
+          "caller": "getPerkBuffs",
+          "callee": "Object.entries",
+          "lineNumber": 1797
+        },
+        {
+          "caller": "getPerkBuffs",
+          "callee": "factory",
+          "lineNumber": 1801
+        },
+        {
+          "caller": "getPerkBuffs",
+          "callee": "buffs.push",
+          "lineNumber": 1802
+        },
+        {
+          "caller": "getPerkBuffs",
+          "callee": "Math.round",
+          "lineNumber": 1802
+        },
+        {
+          "caller": "getActiveBuildBuffs",
+          "callee": "buffs.push",
+          "lineNumber": 1823
+        },
+        {
+          "caller": "getActiveBuildBuffs",
+          "callee": "buffs.push",
+          "lineNumber": 1826
+        },
+        {
+          "caller": "getActiveBuildBuffs",
+          "callee": "getRaceBuffs",
+          "lineNumber": 1826
+        },
+        {
+          "caller": "applyCauterizeConversion",
+          "callee": "buffs.map",
+          "lineNumber": 1884
+        },
+        {
+          "caller": "getBurnApplicationCount",
+          "callee": "buffs.filter",
+          "lineNumber": 1899
+        },
+        {
+          "caller": "assembleActiveBuffs",
+          "callee": "getActiveBuildBuffs",
+          "lineNumber": 1914
+        },
+        {
+          "caller": "assembleActiveBuffs",
+          "callee": "potionBuffs.push",
+          "lineNumber": 1924
+        },
+        {
+          "caller": "assembleActiveBuffs",
+          "callee": "potionBuffs.push",
+          "lineNumber": 1927
+        },
+        {
+          "caller": "assembleActiveBuffs",
+          "callee": "convertTailwindToWhirlwind",
+          "lineNumber": 1930
+        },
+        {
+          "caller": "assembleActiveBuffs",
+          "callee": "applyBuffPerkModifiers",
+          "lineNumber": 1930
+        },
+        {
+          "caller": "assembleActiveBuffs",
+          "callee": "getPerkBuffs",
+          "lineNumber": 1931
+        },
+        {
+          "caller": "assembleActiveBuffs",
+          "callee": "getWeaponArtBuffs",
+          "lineNumber": 1931
+        },
+        {
+          "caller": "assembleActiveBuffs",
+          "callee": "applyCauterizeConversion",
+          "lineNumber": 1936
+        },
+        {
+          "caller": "calcBuffEffect",
+          "callee": "roundMultiplier",
+          "lineNumber": 1952
+        },
+        {
+          "caller": "calcBuffEffect",
+          "callee": "def.description.split(' ').slice(0, 3).join",
+          "lineNumber": 1956
+        },
+        {
+          "caller": "calcBuffEffect",
+          "callee": "def.description.split(' ').slice",
+          "lineNumber": 1956
+        },
+        {
+          "caller": "calcBuffEffect",
+          "callee": "def.description.split",
+          "lineNumber": 1956
+        },
+        {
+          "caller": "calcPotencyPercent",
+          "callee": "Math.floor",
+          "lineNumber": 1964
+        },
+        {
+          "caller": "calcPotencyPercent",
+          "callee": "Math.pow",
+          "lineNumber": 1965
+        },
+        {
+          "caller": "calcPotencyPercent",
+          "callee": "Math.min",
+          "lineNumber": 1965
+        },
+        {
+          "caller": "formatPerkDescription",
+          "callee": "desc.replace",
+          "lineNumber": 1972
+        },
+        {
+          "caller": "formatPerkDescription",
+          "callee": "Math.round",
+          "lineNumber": 1972
+        },
+        {
+          "caller": "formatPerkDescription",
+          "callee": "calcPotencyPercent",
+          "lineNumber": 1972
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 15,
+        "functionCount": 21,
+        "classCount": 0
+      }
+    }
+  ]
+}

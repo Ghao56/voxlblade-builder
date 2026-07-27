@@ -23,6 +23,7 @@ export const UI_COLORS = {
   weaponArt: '#4ade80',
   race: '#facc15',
   cantrip: '#38bdf8',
+  item: '#f472b6',
 
   // Enchant rarity colors
   refined: '#e5e7eb',
@@ -44,6 +45,7 @@ export const SOURCE_LABELS = {
   weaponArt: 'W. Art',
   race: 'Race',
   cantrip: 'cantrip',
+  item: 'Item',
 } as const
 
 const STAT_LABELS = {

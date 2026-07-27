@@ -1,0 +1,45 @@
+{
+  "issues": [],
+  "warnings": [],
+  "stats": {
+    "totalNodes": 263,
+    "totalEdges": 336,
+    "nodeTypes": {
+      "file": 104,
+      "function": 137,
+      "pipeline": 2,
+      "config": 7,
+      "schema": 11,
+      "document": 2
+    },
+    "edgeTypes": {
+      "imports": 75,
+      "contains": 137,
+      "calls": 56,
+      "depends_on": 33,
+      "re_exports": 15,
+      "generated_by": 5,
+      "unused_reference": 4,
+      "references": 3,
+      "defines": 2,
+      "entry_point_for": 2,
+      "extends": 1,
+      "produced_by": 1,
+      "configures": 1,
+      "re_exported_by": 1
+    }
+  },
+  "fixes_applied": [
+    "Normalized 33 single-colon file IDs (file:X) to double-colon (file::X) and remapped 285 edge references",
+    "Fixed filePath mismatch for uiConstants.ts (id path didn't match filePath)",
+    "Normalized node schema: added name/summary/tags fields to 103 nodes that only had label/description/category",
+    "Normalized edge type depends-on to depends_on (1 occurrence)",
+    "Normalized edge types: generated-by, entry-point-for, produced-by, unused-reference, re-exports, re-exported-by to underscore convention (28 edges)",
+    "Normalized edge type import to imports for consistency (4 edges)",
+    "Removed 1 self-loop edge (file:stats.html contains itself)"
+  ],
+  "remaining_considerations": [
+    "Edge type imports (75) vs depends_on (33) overlap: depends_on edges often duplicate a preceding imports edge for the same source-target pair. Could be deduplicated in a future pass.",
+    "103 nodes have empty tags arrays; tags could be populated from filePath heuristics or file content analysis for richer graph queries."
+  ]
+}

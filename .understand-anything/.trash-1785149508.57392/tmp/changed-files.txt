@@ -1,0 +1,12 @@
+﻿src/App.svelte
+src/BuffList.svelte
+src/BuildSaves.svelte
+src/DamageAnalyzer.svelte
+src/data/BuffData.ts
+src/data/potions.ts
+src/lib/AppHeader.svelte
+src/lib/constants/buffs.ts
+src/lib/constants/perks.ts
+src/lib/store.ts
+src/lib/types.ts
+stats.html

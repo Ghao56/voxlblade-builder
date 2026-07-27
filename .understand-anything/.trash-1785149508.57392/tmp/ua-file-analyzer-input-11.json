@@ -1,0 +1,17 @@
+{
+  "projectRoot": "C:\\Users\\Administrator\\Downloads\\voxlblade-builder",
+  "batchFiles": [
+    {"path": "src/App.svelte", "language": "svelte", "sizeLines": 4328, "fileCategory": "code"},
+    {"path": "src/BuffList.svelte", "language": "svelte", "sizeLines": 758, "fileCategory": "code"},
+    {"path": "src/BuildSaves.svelte", "language": "svelte", "sizeLines": 1098, "fileCategory": "code"},
+    {"path": "src/DamageAnalyzer.svelte", "language": "svelte", "sizeLines": 7015, "fileCategory": "code"},
+    {"path": "src/lib/AppHeader.svelte", "language": "svelte", "sizeLines": 175, "fileCategory": "code"}
+  ],
+  "batchImportData": {
+    "src/App.svelte": [],
+    "src/BuffList.svelte": [],
+    "src/BuildSaves.svelte": [],
+    "src/DamageAnalyzer.svelte": [],
+    "src/lib/AppHeader.svelte": []
+  }
+}

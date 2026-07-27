@@ -90,7 +90,7 @@ export interface GrantedBuff {
   duration: number
   condition?: string
   sourceName: string
-  sourceType: 'perk' | 'weaponArt' | 'rune' | 'cantrip' | 'race'
+  sourceType: 'perk' | 'weaponArt' | 'rune' | 'cantrip' | 'race' | 'item'
   isSelfDebuff?: boolean
   burnMode?: 'dot' | 'singed'
 }
@@ -453,23 +453,8 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectUnit: 'flat',
   },
 
-  // Potions
-  'Rage Potion': {
-    name: 'Rage Potion',
-    color: '#f70201',
-    description: 'Deal x% more physical damage for 15 seconds.',
-    effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
-    effectUnit: 'flat',
-    statKey: 'physicalBoost',
-  },
-  'Poison Potion': {
-    name: 'Poison Potion',
-    color: '#d900ff',
-    description: 'Poisons over time for 10 seconds.',
-    effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
-    effectUnit: 'flat',
-    isDebuff: true,
-  },
+
+
 
   //Neutral
   'Last Croak': {
@@ -720,20 +705,21 @@ const ITEM_BUFF_MAP: GrantedBuff[] = [
   },
   // Potions
   {
-    buffName: 'Rage Potion',
+    buffName: 'Rage',
     potency: RAGE_POTION_POTENCY,
     duration: RAGE_POTION_DURATION,
     condition: 'On use',
     sourceName: 'Rage Potion',
-    sourceType: 'rune',
+    sourceType: 'item',
   },
   {
-    buffName: 'Poison Potion',
+    buffName: 'Poison',
     potency: POISON_POTION_POTENCY,
     duration: POISON_POTION_DURATION,
     condition: 'On use',
     sourceName: 'Poison Potion',
-    sourceType: 'rune',
+    sourceType: 'item',
+    isSelfDebuff: true,
   },
 ]
 
@@ -1471,8 +1457,8 @@ const BUFF_POTENCY_MODIFIERS: BuffPotencyModifier[] = [
   { buffName: 'Tailwind', potencyPerStack: 0, label: 'Wind Walker', durationMultiplierFormula: stacks => 1 + stacks / MOD_WIND_WALKER_DURATION_DIVISOR },
   { buffName: 'Bleed', potencyPerStack: 0, label: 'Slow Leak', durationMultiplierPerStack: MOD_SLOW_LEAK_DURATION },
   // Potion Chugger modifiers (20% of base potency per stack)
-  { buffName: 'Rage Potion', potencyPerStack: RAGE_POTION_POTENCY * POTION_CHUGGER_POTENCY_MULT_PER_LEVEL, label: 'Potion Chugger' },
-  { buffName: 'Poison Potion', potencyPerStack: POISON_POTION_POTENCY * POTION_CHUGGER_POTENCY_MULT_PER_LEVEL, label: 'Potion Chugger' },
+  { buffName: 'Rage', potencyPerStack: RAGE_POTION_POTENCY * POTION_CHUGGER_POTENCY_MULT_PER_LEVEL, label: 'Potion Chugger', runeFilter: 'Rage Potion' },
+  { buffName: 'Poison', potencyPerStack: POISON_POTION_POTENCY * POTION_CHUGGER_POTENCY_MULT_PER_LEVEL, label: 'Potion Chugger', runeFilter: 'Poison Potion' },
 ]
 
 const MODIFIERS_BY_BUFF = BUFF_POTENCY_MODIFIERS.reduce((acc, mod) => {

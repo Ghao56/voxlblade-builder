@@ -1,0 +1,297 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 1,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "src/lib/constants/perks.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 90,
+      "nonEmptyLines": 64,
+      "exports": [
+        {
+          "name": "POTION_CHUGGER_POTENCY_MULT_PER_STACK",
+          "line": 1,
+          "isDefault": false
+        },
+        {
+          "name": "LUMINESCENT_PCT_PER_STACK",
+          "line": 3,
+          "isDefault": false
+        },
+        {
+          "name": "SPIRIT_WINDS_PCT_PER_STACK",
+          "line": 5,
+          "isDefault": false
+        },
+        {
+          "name": "DARK_MAGIC_PCT_PER_STACK",
+          "line": 7,
+          "isDefault": false
+        },
+        {
+          "name": "WIND_WALKER_PEN_PER_STACK",
+          "line": 9,
+          "isDefault": false
+        },
+        {
+          "name": "REAPER_PCT_PER_DEBUFF_PER_STACK",
+          "line": 11,
+          "isDefault": false
+        },
+        {
+          "name": "EXTINGUISH_MULT_PER_STACK",
+          "line": 13,
+          "isDefault": false
+        },
+        {
+          "name": "EXPLOSIVE_CHARGE_PCT",
+          "line": 15,
+          "isDefault": false
+        },
+        {
+          "name": "WILD_BOLT_DMG_REDUCTION",
+          "line": 17,
+          "isDefault": false
+        },
+        {
+          "name": "LIGHTNING_CLOAK_FRACTION",
+          "line": 19,
+          "isDefault": false
+        },
+        {
+          "name": "CURSE_RIP_DIVISOR",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "CURSE_RIP_DMG_BOOST_CONST",
+          "line": 22,
+          "isDefault": false
+        },
+        {
+          "name": "CURSE_RIP_DMG_BOOST_PER_DEBUFF",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "TRUE_BALANCE_DMG_DIVISOR",
+          "line": 25,
+          "isDefault": false
+        },
+        {
+          "name": "TRUE_BALANCE_HEAL_DIVISOR",
+          "line": 26,
+          "isDefault": false
+        },
+        {
+          "name": "EMOTIONAL_PCT_PER_STACK",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "TOXIN_TRANSFER_PCT_PER_STACK",
+          "line": 30,
+          "isDefault": false
+        },
+        {
+          "name": "VOID_RAGE_PCT_PER_STACK",
+          "line": 32,
+          "isDefault": false
+        },
+        {
+          "name": "CHANNELED_WEAPON_PCT_PER_STACK",
+          "line": 34,
+          "isDefault": false
+        },
+        {
+          "name": "DRACONIC_BLOOD_PCT_PER_STACK",
+          "line": 36,
+          "isDefault": false
+        },
+        {
+          "name": "WILD_BOLT_ELEMENTS",
+          "line": 38,
+          "isDefault": false
+        },
+        {
+          "name": "BASE_CRIT_DAMAGE",
+          "line": 41,
+          "isDefault": false
+        },
+        {
+          "name": "DEX_CRIT_DIVISOR",
+          "line": 42,
+          "isDefault": false
+        },
+        {
+          "name": "PRIMAL_DIVISOR",
+          "line": 43,
+          "isDefault": false
+        },
+        {
+          "name": "FLOWING_CRITS_BOOST_MULT",
+          "line": 46,
+          "isDefault": false
+        },
+        {
+          "name": "SPELL_SLINGER_BOOST_MULT",
+          "line": 47,
+          "isDefault": false
+        },
+        {
+          "name": "SHARP_CRITS_BOOST_MULT",
+          "line": 48,
+          "isDefault": false
+        },
+        {
+          "name": "SEISMIC_MOMENTUM_BOOST_MULT",
+          "line": 49,
+          "isDefault": false
+        },
+        {
+          "name": "PERFECTION_CRIT_PER_STACK",
+          "line": 50,
+          "isDefault": false
+        },
+        {
+          "name": "CACI_KING_SPIRIT_CRIT_PER_STACK",
+          "line": 51,
+          "isDefault": false
+        },
+        {
+          "name": "THIEF_TRAINING_CRIT_DMG_MULT",
+          "line": 54,
+          "isDefault": false
+        },
+        {
+          "name": "THIEF_TRAINING_CRIT_DMG_SUB",
+          "line": 55,
+          "isDefault": false
+        },
+        {
+          "name": "VENOM_EATER_CRIT_DMG_SUB",
+          "line": 56,
+          "isDefault": false
+        },
+        {
+          "name": "VENOM_EATER_CRIT_DMG_MULT",
+          "line": 57,
+          "isDefault": false
+        },
+        {
+          "name": "VITAL_STRIKES_CRIT_DMG_PER_STACK",
+          "line": 58,
+          "isDefault": false
+        },
+        {
+          "name": "SPARK_CRIT_DMG_PER_STACK",
+          "line": 59,
+          "isDefault": false
+        },
+        {
+          "name": "CRITICAL_MASTER_CRIT_DMG_PER_STACK",
+          "line": 60,
+          "isDefault": false
+        },
+        {
+          "name": "SPLINTER_CRIT_DMG_PER_STACK",
+          "line": 61,
+          "isDefault": false
+        },
+        {
+          "name": "MORTAL_WILL_HOLY_TYPE_PER_STACK",
+          "line": 64,
+          "isDefault": false
+        },
+        {
+          "name": "MORTAL_WILL_DMG_PER_HOLY_BOOST_PCT",
+          "line": 65,
+          "isDefault": false
+        },
+        {
+          "name": "SUNBURN_UNIVERSAL_DMG_PER_STACK",
+          "line": 68,
+          "isDefault": false
+        },
+        {
+          "name": "SUNBURN_HOLY_EXTRA_DMG_PER_STACK",
+          "line": 69,
+          "isDefault": false
+        },
+        {
+          "name": "SUNBURN_BURN_BASE_CHANCE",
+          "line": 70,
+          "isDefault": false
+        },
+        {
+          "name": "SUNBURN_BURN_CHANCE_PER_STACK",
+          "line": 71,
+          "isDefault": false
+        },
+        {
+          "name": "FROSTBITE_SLOW_POTENCY_PER_STACK",
+          "line": 74,
+          "isDefault": false
+        },
+        {
+          "name": "FROSTBITE_CHANCE_PER_STACK",
+          "line": 75,
+          "isDefault": false
+        },
+        {
+          "name": "FIERY_PURSUIT_BASE_DMG",
+          "line": 78,
+          "isDefault": false
+        },
+        {
+          "name": "FIERY_PURSUIT_DMG_PER_STACK",
+          "line": 79,
+          "isDefault": false
+        },
+        {
+          "name": "FIERY_PURSUIT_BURN_DURATION",
+          "line": 80,
+          "isDefault": false
+        },
+        {
+          "name": "HYPNOTIST_POTENCY_PER_PERK",
+          "line": 83,
+          "isDefault": false
+        },
+        {
+          "name": "HYPNOTIST_DURATION_BASE",
+          "line": 84,
+          "isDefault": false
+        },
+        {
+          "name": "HYPNOTIST_DURATION_PER_PERK",
+          "line": 85,
+          "isDefault": false
+        },
+        {
+          "name": "HYPNOTIST_MAGIC_ARMOR_PER_POTENCY",
+          "line": 86,
+          "isDefault": false
+        },
+        {
+          "name": "PHANTOM_PAIN_BASE_PCT",
+          "line": 89,
+          "isDefault": false
+        },
+        {
+          "name": "PHANTOM_PAIN_PERK_MULT",
+          "line": 90,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 55,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    }
+  ]
+}

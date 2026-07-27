@@ -1,0 +1,219 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/lib/store.ts",
+      "type": "file",
+      "name": "store.ts",
+      "filePath": "src/lib/store.ts",
+      "summary": "Svelte store module managing build state persistence, enchantment manipulation, guild/race configuration, and armor/ring slot reordering. Exports reactive stores and updater functions that form the central state management layer for the Voxel Blade damage calculator.",
+      "tags": ["svelte-store", "state-management", "persistence", "build-config", "ui-state"],
+      "complexity": "moderate",
+      "lines": 210,
+      "functionCount": 8,
+      "exportCount": 10,
+      "importCount": 3
+    },
+    {
+      "id": "function:src/lib/store.ts:loadBuild",
+      "type": "function",
+      "name": "loadBuild",
+      "filePath": "src/lib/store.ts",
+      "summary": "Loads the persisted BuildState from localStorage, merges it with defaults via spread operator, and returns a complete BuildState. Uses defensive try/catch to fall back to defaults on parse errors or missing data.",
+      "tags": ["local-storage", "deserialization", "defaults", "initialization"],
+      "complexity": "low",
+      "startLine": 57,
+      "endLine": 66,
+      "params": []
+    },
+    {
+      "id": "function:src/lib/store.ts:setEnchantment",
+      "type": "function",
+      "name": "setEnchantment",
+      "filePath": "src/lib/store.ts",
+      "summary": "Sets a single enchantment value at a given index within a specified armor slot. Delegates constraint enforcement (e.g. no duplicate enchantments) to the engine's enforceEnchantSlot function.",
+      "tags": ["state-update", "enchantments", "slot-management"],
+      "complexity": "low",
+      "startLine": 87,
+      "endLine": 99,
+      "params": ["slot", "index", "value"]
+    },
+    {
+      "id": "function:src/lib/store.ts:swapEnchantments",
+      "type": "function",
+      "name": "swapEnchantments",
+      "filePath": "src/lib/store.ts",
+      "summary": "Swaps the entire enchantment arrays between two different armor slots. Short-circuits if both slots are the same.",
+      "tags": ["state-update", "enchantments", "swap"],
+      "complexity": "low",
+      "startLine": 101,
+      "endLine": 115,
+      "params": ["slotA", "slotB"]
+    },
+    {
+      "id": "function:src/lib/store.ts:clearBuild",
+      "type": "function",
+      "name": "clearBuild",
+      "filePath": "src/lib/store.ts",
+      "summary": "Resets the entire build state to the DEFAULT_BUILD constant, effectively restoring all equipment, enchantments, and settings to initial values.",
+      "tags": ["state-update", "reset", "defaults"],
+      "complexity": "low",
+      "startLine": 117,
+      "endLine": 119,
+      "params": []
+    },
+    {
+      "id": "function:src/lib/store.ts:setGuild",
+      "type": "function",
+      "name": "setGuild",
+      "filePath": "src/lib/store.ts",
+      "summary": "Sets the guild name and rank. Automatically forces the race to 'DRAGON BLOODED' and initializes draconic color if the guild is 'Draconic'; clears draconic fields otherwise.",
+      "tags": ["state-update", "guild", "race-override", "draconic"],
+      "complexity": "medium",
+      "startLine": 121,
+      "endLine": 133,
+      "params": ["guildName", "guildRank"]
+    },
+    {
+      "id": "function:src/lib/store.ts:moveArmorSlot",
+      "type": "function",
+      "name": "moveArmorSlot",
+      "filePath": "src/lib/store.ts",
+      "summary": "Moves or clones an armor piece between a primary slot (helmet/chestplate/leggings) and its infusion counterpart. Validates slot compatibility via armorSupportsSlot, swaps or copies the upgrade level, and returns whether the move succeeded.",
+      "tags": ["state-update", "armor", "slot-management", "drag-drop", "cloning"],
+      "complexity": "high",
+      "startLine": 149,
+      "endLine": 174,
+      "params": ["from", "to", "clone"]
+    },
+    {
+      "id": "function:src/lib/store.ts:canArmorMoveToSlot",
+      "type": "function",
+      "name": "canArmorMoveToSlot",
+      "filePath": "src/lib/store.ts",
+      "summary": "Predicate that checks whether a given armor name is compatible with a target slot type (Helmet/Chestplate/Leggings) by delegating to armorSupportsSlot.",
+      "tags": ["predicate", "armor", "slot-validation"],
+      "complexity": "low",
+      "startLine": 176,
+      "endLine": 178,
+      "params": ["armorName", "to"]
+    },
+    {
+      "id": "function:src/lib/store.ts:moveRingSlot",
+      "type": "function",
+      "name": "moveRingSlot",
+      "filePath": "src/lib/store.ts",
+      "summary": "Moves or clones a ring between the primary ring slot and its infusion counterpart, including the associated upgrade level. Follows the same clone-or-swap pattern as moveArmorSlot.",
+      "tags": ["state-update", "ring", "slot-management", "cloning"],
+      "complexity": "medium",
+      "startLine": 187,
+      "endLine": 210,
+      "params": ["from", "to", "clone"]
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "file:src/lib/constants.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "detail": "Imports STORAGE_KEY_BUILD, DEFAULT_LEVEL, DEFAULT_HP_FILL, DEFAULT_ENEMY_HP_FILL, SAVE_DEBOUNCE_MS"
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "file:src/lib/engine.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "detail": "Imports calcBuild, races, enforceEnchantSlot, armorSupportsSlot"
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "detail": "Imports BuildState, EnchantSlot type definitions"
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "function:src/lib/store.ts:loadBuild",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "function:src/lib/store.ts:setEnchantment",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "function:src/lib/store.ts:swapEnchantments",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "function:src/lib/store.ts:clearBuild",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "function:src/lib/store.ts:setGuild",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "function:src/lib/store.ts:moveArmorSlot",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "function:src/lib/store.ts:canArmorMoveToSlot",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "function:src/lib/store.ts:moveRingSlot",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "function:src/lib/store.ts:setEnchantment",
+      "target": "file:src/lib/engine.ts",
+      "type": "calls",
+      "weight": 0.8,
+      "detail": "Calls enforceEnchantSlot (from engine)"
+    },
+    {
+      "source": "function:src/lib/store.ts:moveArmorSlot",
+      "target": "file:src/lib/engine.ts",
+      "type": "calls",
+      "weight": 0.8,
+      "detail": "Calls armorSupportsSlot (from engine)"
+    },
+    {
+      "source": "function:src/lib/store.ts:canArmorMoveToSlot",
+      "target": "file:src/lib/engine.ts",
+      "type": "calls",
+      "weight": 0.8,
+      "detail": "Calls armorSupportsSlot (from engine)"
+    },
+    {
+      "source": "function:src/lib/store.ts:loadBuild",
+      "target": "file:src/lib/store.ts",
+      "type": "depends_on",
+      "weight": 0.6,
+      "detail": "References DEFAULT_BUILD defined at module scope"
+    },
+    {
+      "source": "function:src/lib/store.ts:clearBuild",
+      "target": "file:src/lib/store.ts",
+      "type": "depends_on",
+      "weight": 0.6,
+      "detail": "References DEFAULT_BUILD defined at module scope"
+    }
+  ]
+}

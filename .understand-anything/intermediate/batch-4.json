@@ -1,0 +1,190 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/lib/types.ts",
+      "type": "file",
+      "name": "types.ts",
+      "filePath": "src/lib/types.ts",
+      "summary": "Core type definitions module for the voxlblade-builder project. Defines fundamental stat types (StatKey, StatMap), equipment interfaces (Race, Guild, Armor, Ring, Rune), weapon component types (WeaponBlade, WeaponHandle, MonkGlove, MonkEssence), the full BuildState interface, proc coefficient handling (ProcCoefficient, ProcScalingType), boost system types (BoostEntry, BoostResult), and upgrade logic. Also re-exports DMG_TYPE_COLORS and DMG_TYPE_PRIORITY from constants. This file is the foundational type layer imported by nearly every other module in the engine and data layers.",
+      "tags": ["types", "interfaces", "constants", "core", "foundational"],
+      "complexity": "low"
+    },
+    {
+      "id": "function:src/lib/types.ts:applyUpgrade",
+      "type": "function",
+      "name": "applyUpgrade",
+      "summary": "Applies an upgrade level multiplier to a StatMap. Positive stat values are scaled up by (1 + level * 0.1) and negative values are scaled down (divided), producing an upgraded copy of the stats. Returns a shallow copy with no mutation.",
+      "tags": ["stat-calculation", "upgrade", "pure-function"],
+      "complexity": "low"
+    },
+    {
+      "id": "function:src/lib/types.ts:getProcCoeffValue",
+      "type": "function",
+      "name": "getProcCoeffValue",
+      "summary": "Extracts the numeric proc coefficient value from a ProcCoefficient union type. Returns 0 for 'noProc', the stored value for 'hasCoeff', and a default of 1 when undefined.",
+      "tags": ["proc-coefficient", "utility", "pure-function"],
+      "complexity": "low"
+    },
+    {
+      "id": "function:src/lib/types.ts:canProc",
+      "type": "function",
+      "name": "canProc",
+      "summary": "Determines whether a given ProcCoefficient allows procing by checking if its resolved value is greater than 0. Delegates to getProcCoeffValue.",
+      "tags": ["proc-coefficient", "utility", "pure-function"],
+      "complexity": "low"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/lib/types.ts",
+      "target": "function:src/lib/types.ts:applyUpgrade",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lib/types.ts",
+      "target": "function:src/lib/types.ts:getProcCoeffValue",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lib/types.ts",
+      "target": "function:src/lib/types.ts:canProc",
+      "type": "contains",
+      "weight": 1.0
+    },
+    {
+      "source": "function:src/lib/types.ts:canProc",
+      "target": "function:src/lib/types.ts:getProcCoeffValue",
+      "type": "calls",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lib/types.ts",
+      "target": "file:src/lib/constants/damage-types.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "detail": "re-exports DMG_TYPE_COLORS and DMG_TYPE_PRIORITY"
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "depends_on",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/lib/engine/enchant.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "depends_on",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/lib/engine/format.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "depends_on",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/lib/engine/shrine.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "depends_on",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/lib/engine/weapon.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "depends_on",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/lib/crit.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "depends_on",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/lib/dmgTypes.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "depends_on",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "depends_on",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/lib/utils.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "depends_on",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/lib/engine/data/character.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "depends_on",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/lib/engine/data/equipment.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "depends_on",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/lib/engine/data/weapons.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "depends_on",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/data/Boost.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "depends_on",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "depends_on",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/data/Runebasedmg.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "depends_on",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/data/procCoefficients.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "depends_on",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/data/statboost.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "depends_on",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/data/weapon base dmg.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "depends_on",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/data/perkAutoDebuffs.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "depends_on",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/data/mountRunes.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "depends_on",
+      "weight": 0.6
+    }
+  ]
+}

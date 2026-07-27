@@ -1,0 +1,101 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 1,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "src/lib/types.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 292,
+      "nonEmptyLines": 254,
+      "functions": [
+        {
+          "name": "applyUpgrade",
+          "startLine": 75,
+          "endLine": 89,
+          "params": [
+            "stats",
+            "level"
+          ]
+        },
+        {
+          "name": "getProcCoeffValue",
+          "startLine": 227,
+          "endLine": 231,
+          "params": [
+            "pc"
+          ]
+        },
+        {
+          "name": "canProc",
+          "startLine": 233,
+          "endLine": 235,
+          "params": [
+            "pc"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "PERCENT_STATS",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "STAT_KEYS",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "UPGRADE_MAX",
+          "line": 72,
+          "isDefault": false
+        },
+        {
+          "name": "applyUpgrade",
+          "line": 75,
+          "isDefault": false
+        },
+        {
+          "name": "getProcCoeffValue",
+          "line": 227,
+          "isDefault": false
+        },
+        {
+          "name": "canProc",
+          "line": 233,
+          "isDefault": false
+        },
+        {
+          "name": "DMG_TYPE_COLORS",
+          "line": 257,
+          "isDefault": false
+        },
+        {
+          "name": "DMG_TYPE_PRIORITY",
+          "line": 265,
+          "isDefault": false
+        },
+        {
+          "name": "SCALING_TO_BOOST",
+          "line": 267,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "canProc",
+          "callee": "getProcCoeffValue",
+          "lineNumber": 234
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 9,
+        "functionCount": 3,
+        "classCount": 0
+      }
+    }
+  ]
+}

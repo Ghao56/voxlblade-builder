@@ -1,0 +1,47 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 5,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "src/App.svelte",
+      "language": "svelte",
+      "fileCategory": "code",
+      "totalLines": 4431,
+      "nonEmptyLines": 4135,
+      "metrics": {}
+    },
+    {
+      "path": "src/BuffList.svelte",
+      "language": "svelte",
+      "fileCategory": "code",
+      "totalLines": 783,
+      "nonEmptyLines": 714,
+      "metrics": {}
+    },
+    {
+      "path": "src/BuildSaves.svelte",
+      "language": "svelte",
+      "fileCategory": "code",
+      "totalLines": 1288,
+      "nonEmptyLines": 1198,
+      "metrics": {}
+    },
+    {
+      "path": "src/DamageAnalyzer.svelte",
+      "language": "svelte",
+      "fileCategory": "code",
+      "totalLines": 7065,
+      "nonEmptyLines": 6646,
+      "metrics": {}
+    },
+    {
+      "path": "src/lib/AppHeader.svelte",
+      "language": "svelte",
+      "fileCategory": "code",
+      "totalLines": 188,
+      "nonEmptyLines": 175,
+      "metrics": {}
+    }
+  ]
+}

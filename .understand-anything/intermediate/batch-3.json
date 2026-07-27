@@ -1,0 +1,33 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/lib/constants/perks.ts",
+      "type": "file",
+      "name": "perks.ts",
+      "filePath": "src/lib/constants/perks.ts",
+      "summary": "Defines a comprehensive set of numerical constants and configuration values for various game perks, including potency multipliers, crit damage, crit rate, elemental bonuses, and damage formulas.",
+      "tags": ["constants", "perks", "game-mechanics", "configuration", "balance"],
+      "complexity": "low"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/data/debuffCombatEffects.ts",
+      "target": "file:src/lib/constants/perks.ts",
+      "type": "depends_on",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/data/perkAutoDebuffs.ts",
+      "target": "file:src/lib/constants/perks.ts",
+      "type": "depends_on",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/lib/engine/dmgTypeBonuses.ts",
+      "target": "file:src/lib/constants/perks.ts",
+      "type": "depends_on",
+      "weight": 0.6
+    }
+  ]
+}

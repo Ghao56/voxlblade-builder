@@ -1,0 +1,37 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/lib/constants/buffs.ts",
+      "type": "file",
+      "name": "buffs.ts",
+      "filePath": "src/lib/constants/buffs.ts",
+      "summary": "Pure constants module defining buff/debuff potency and duration values for the Voxel Blade damage engine. Exports 132 named numeric constants covering potion effects, rune-granted buffs, weapon-art buffs, True Balance conversions, perk buff factory values, buff potency modifiers, and generic debuff modifiers. No functions or classes — serves as a centralized data registry consumed by the buff calculation engine.",
+      "tags": ["constants", "buffs", "debuffs", "potency", "duration", "game-data", "pure-data"],
+      "complexity": {
+        "cyclomatic": 1,
+        "cognitive": 0,
+        "lines": 161,
+        "exports": 132,
+        "imports": 0,
+        "functions": 0,
+        "classes": 0
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/lib/constants/buffs.ts",
+      "target": "file:src/data/BuffData.ts",
+      "type": "depends_on",
+      "weight": 0.6,
+      "detail": "BuffData.ts consumes buff constants for BUFF_DEFS, BASIC_DEBUFF_POOL, getWeaponArtBuffs, getTrueBalanceBuffs, applyBuffPerkModifiers, and other buff calculation functions"
+    },
+    {
+      "source": "file:src/lib/constants/buffs.ts",
+      "target": "file:src/lib/engine/build.ts",
+      "type": "depends_on",
+      "weight": 0.6,
+      "detail": "build.ts uses buff constants indirectly through the buff calculation pipeline in calcBuild"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "projectRoot": "C:\\Users\\Administrator\\Downloads\\voxlblade-builder",
+  "batchFiles": [
+    {"path": "src/data/BuffData.ts", "language": "typescript", "sizeLines": 1897, "fileCategory": "code"}
+  ],
+  "batchImportData": {
+    "src/data/BuffData.ts": ["src/lib/constants.ts", "src/lib/constants/buffs.ts", "src/lib/utils.ts"]
+  }
+}

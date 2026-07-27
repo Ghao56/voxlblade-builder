@@ -1,0 +1,2221 @@
+{
+  "scriptCompleted": true,
+  "entryPointCandidates": [
+    {
+      "id": "file::src/App.svelte",
+      "score": 6,
+      "name": "App.svelte",
+      "summary": "Main application root component (4431 lines). Orchestrates the entire Voxel Blade build calculator UI including weapon/armor/ring/rune selection modals, enchantment management, drag-and-drop equipment reordering, build state display, tab switching between Overview and Analyze views, and summary statistics. Imports the damage calculation engine, game data, and dozens of child components."
+    },
+    {
+      "id": "file::src/main.ts",
+      "score": 5,
+      "name": "main.ts",
+      "summary": "Application entry point (8 lines). Imports and mounts the App.svelte component, imports global CSS, and initializes Vercel analytics."
+    },
+    {
+      "id": "file::src/lib/constants/index.ts",
+      "score": 4,
+      "name": "index.ts",
+      "summary": "Barrel re-export file (18 lines) that re-exports all sub-modules from the constants directory: damage-types, game, storage, thresholds, perks, boosts, heals, draconic, perk-base-damage, rune-base-damage, buffs, stat-conversions, defensive, dot-damage, draconic-colors, cdr, debuff-effects, and wa-display."
+    },
+    {
+      "id": "file::src/lib/modals/index.ts",
+      "score": 4,
+      "name": "index.ts",
+      "summary": "Barrel re-export file (4 lines) exporting RaceModal, GuildModal, AccessorySelectModal, and WeaponPartModal."
+    },
+    {
+      "id": "file::src/lib/ui/index.ts",
+      "score": 4,
+      "name": "index.ts",
+      "summary": "Barrel re-export file (7 lines) exporting Card, Badge, Button, Stat, Section, Divider, and Panel UI components."
+    },
+    {
+      "id": "file::AGENTS.md",
+      "score": 2,
+      "name": "AGENTS.md",
+      "summary": "Agent context file for the voxlblade-builder project. Documents the project overview, tech stack (Svelte 5 + Vite + TypeScript + Tailwind CSS v4), project structure, development workflow, and AI agent interaction guidelines."
+    },
+    {
+      "id": "file::README.md",
+      "score": 2,
+      "name": "README.md",
+      "summary": "Project README for the Voxel Blade damage calculator and build optimizer web app."
+    },
+    {
+      "id": "file::fallow-output.json",
+      "score": 2,
+      "name": "fallow-output.json",
+      "summary": "Output report from Fallow dead-code analysis. Contains 28 issues including unused exports, unreachable code, and unused dependencies across the codebase."
+    },
+    {
+      "id": "file::fallow-security.json",
+      "score": 2,
+      "name": "fallow-security.json",
+      "summary": "Security findings report from Fallow. Identifies CWE-79 XSS in DidYouMean.svelte (unsanitized user input in innerHTML) and CWE-502 deserialization risk in decode_full.mjs (eval on base64-encoded JSON)."
+    },
+    {
+      "id": "file::index.html",
+      "score": 2,
+      "name": "index.html",
+      "summary": "Root HTML entry point for the Vite SPA. Contains a single <div id='app'> mount target and a <script type='module' src='/src/main.ts'> tag."
+    },
+    {
+      "id": "file::stats-data.json",
+      "score": 2,
+      "name": "stats-data.json",
+      "summary": "Generated data file from the Rollup Visualizer bundle analysis plugin. Contains module size statistics used to produce the stats.html report."
+    },
+    {
+      "id": "file::ts-errors.txt",
+      "score": 2,
+      "name": "ts-errors.txt",
+      "summary": "Output file for TypeScript compilation errors. Currently empty, indicating no active type errors."
+    },
+    {
+      "id": "file::.understand-anything/config.json",
+      "score": 2,
+      "name": "config.json",
+      "summary": "Configuration for the understand-anything knowledge graph tool. Sets outputLanguage to English."
+    },
+    {
+      "id": "file::.understand-anything/dashboard-errors.txt",
+      "score": 2,
+      "name": "dashboard-errors.txt",
+      "summary": "Error log from the understand-anything dashboard. Currently empty."
+    },
+    {
+      "id": "file::.understand-anything/dashboard-output.txt",
+      "score": 2,
+      "name": "dashboard-output.txt",
+      "summary": "Output log from the understand-anything dashboard. Currently empty."
+    },
+    {
+      "id": "file::.understand-anything/.understandignore",
+      "score": 2,
+      "name": ".understandignore",
+      "summary": "Ignore patterns for the understand-anything knowledge graph tool. Lists files and directories excluded from analysis."
+    },
+    {
+      "id": "file::analyze-mounticon.mjs",
+      "score": 2,
+      "name": "analyze-mounticon.mjs",
+      "summary": "Utility script for analyzing MountIcon SVG files. Processes mount icon data for use in the damage calculator UI."
+    },
+    {
+      "id": "file::decode_full.mjs",
+      "score": 2,
+      "name": "decode_full.mjs",
+      "summary": "Debug/development tool that decodes base64-encoded full build state from URL parameters. Uses eval for deserialization (CWE-502 security finding)."
+    },
+    {
+      "id": "file::src/app.css",
+      "score": 2,
+      "name": "app.css",
+      "summary": "Global CSS stylesheet (343 lines) defining the application's design system. Sets CSS custom properties for colors, typography, spacing, glass morphism effects, and dark theme tokens. Defines reusable utility classes and component styles."
+    },
+    {
+      "id": "file::src/BaseDamageCalc.svelte",
+      "score": 2,
+      "name": "BaseDamageCalc.svelte",
+      "summary": "Component (2660 lines) that computes and displays base damage breakdowns for each attack type (M1/M2/WA). Handles damage type resolution, defense calculations, critical hit display, armor penetration, perk on-hit damage, and status effect damage. Central to the damage output visualization."
+    },
+    {
+      "id": "file::src/CdrStepsCalc.svelte",
+      "score": 2,
+      "name": "CdrStepsCalc.svelte",
+      "summary": "Small component (92 lines) displaying a step-by-step cooldown reduction calculation. Shows each CDR source as a multiply/divide operation with animated arrow transitions from base cooldown to final value with floor and minimum cap display."
+    },
+    {
+      "id": "file::src/DidYouMean.svelte",
+      "score": 2,
+      "name": "DidYouMean.svelte",
+      "summary": "Component (110 lines) showing fuzzy search suggestions when no exact results are found. Displays clickable chips with highlighted text matching for name and perk search results."
+    },
+    {
+      "id": "file::src/DmgTotalTooltip.svelte",
+      "score": 2,
+      "name": "DmgTotalTooltip.svelte",
+      "summary": "Component (169 lines) displaying a tooltip with damage breakdown by type. Groups ComputedHit entries by damage type, shows animated pie chart visualization, and lists per-type totals with percentage bars."
+    },
+    {
+      "id": "file::src/DraconicAbilityStats.svelte",
+      "score": 2,
+      "name": "DraconicAbilityStats.svelte",
+      "summary": "Small component (42 lines) displaying draconic ability stat rows: damage type, scaling, poise damage, and optional holy/water heal values."
+    },
+    {
+      "id": "file::src/EmotionalTracker.svelte",
+      "score": 2,
+      "name": "EmotionalTracker.svelte",
+      "summary": "Component (231 lines) managing the Emotional state selector (Buffs only / Debuffs only / Both). Provides a 3-position slider with color-coded states that persists to the build store."
+    },
+    {
+      "id": "file::src/Highlight.svelte",
+      "score": 2,
+      "name": "Highlight.svelte",
+      "summary": "Simple component (16 lines) rendering text with search-term highlighting. Wraps highlighted portions in <mark> tags using highlightTextParts utility."
+    },
+    {
+      "id": "file::src/LevelBar.svelte",
+      "score": 2,
+      "name": "LevelBar.svelte",
+      "summary": "Component (398 lines) displaying and editing the character level and HP bar. Features draggable fill indicator, shield HP overlay, protection stat display, editable level input with keyboard shortcuts, and responsive styling."
+    },
+    {
+      "id": "file::src/ModalSearchHeader.svelte",
+      "score": 2,
+      "name": "ModalSearchHeader.svelte",
+      "summary": "Component (199 lines) providing a reusable search header for modal dialogs. Includes search input, suggestion dropdown, tag filter, stat filter (weapon or standard), and optional sort buttons. Used by AccessorySelectModal and WeaponPartModal."
+    },
+    {
+      "id": "file::src/MountIcon.svelte",
+      "score": 2,
+      "name": "MountIcon.svelte",
+      "summary": "SVG icon component (64 lines) rendering a detailed mount icon with gradient fill. Contains complex SVG path data for the mount silhouette."
+    },
+    {
+      "id": "file::src/ScalingBreakdownRow.svelte",
+      "score": 2,
+      "name": "ScalingBreakdownRow.svelte",
+      "summary": "Component (102 lines) displaying a single weapon scaling breakdown row. Shows stat name, base value, multiplier arrow, scaled value, boost percentage, and effective contribution in a grid layout."
+    },
+    {
+      "id": "file::src/StatFilter.svelte",
+      "score": 2,
+      "name": "StatFilter.svelte",
+      "summary": "Component (334 lines) providing stat-based filtering for equipment selection. Groups stats into Boost/Defense/Speed categories with include/exclude toggle chips. Supports sort modes: highest, lowest, alphabetical, most-effective, brawny."
+    },
+    {
+      "id": "file::src/SuggestDrop.svelte",
+      "score": 2,
+      "name": "SuggestDrop.svelte",
+      "summary": "Component (67 lines) rendering a dropdown of search suggestions. Displays items with type labels (Name/Perk) and highlighted text matching the search query."
+    },
+    {
+      "id": "file::src/TagFilter.svelte",
+      "score": 2,
+      "name": "TagFilter.svelte",
+      "summary": "Component (330 lines) providing tag-based filtering for perk/weapon selection. Groups tags into Combat/Support/Status/Weapon Art-Rune/Special categories with toggle chips. Supports hiding specific tags and excluding tags from the filter."
+    },
+    {
+      "id": "file::src/WeaponStatFilter.svelte",
+      "score": 2,
+      "name": "WeaponStatFilter.svelte",
+      "summary": "Component (240 lines) providing weapon-specific stat filtering. Similar to StatFilter but specialized for weapon part selection with damage scaling and attack speed focus."
+    },
+    {
+      "id": "file::src/WeaponStatsDisplay.svelte",
+      "score": 2,
+      "name": "WeaponStatsDisplay.svelte",
+      "summary": "Component (121 lines) displaying computed weapon stats in a compact panel. Shows damage, attack speed, and scaling values with color-coded labels."
+    },
+    {
+      "id": "file::vite.config.ts",
+      "score": 2,
+      "name": "vite.config.ts",
+      "summary": "Vite build configuration (59 lines). Configures Svelte plugin, VitePWA for PWA support with auto-update and StaleWhileRevalidate caching, and rollup-plugin-visualizer for bundle analysis. Uses configurable base path via VITE_BASE_PATH env var."
+    },
+    {
+      "id": "file::stats.html",
+      "score": 2,
+      "name": "stats.html",
+      "summary": "Generated Rollup Visualizer HTML output (4950 lines). Contains inline CSS for treemap UI, a bundled Preact-based drawChart library, D3 scale modules (linear, sequential, etc.), and embedded JSON bundle data listing all source modules with sizes. Serves as a self-contained bundle size analysis report for the voxlblade-builder project."
+    },
+    {
+      "id": "file::src/BuffList.svelte",
+      "score": 2,
+      "name": "BuffList.svelte",
+      "summary": "Buff/debuff/neutral effect display component (783 lines). Computes active buffs from equipped items, perks, weapon arts, and draconic infusion. Groups duplicate buffs, applies perk modifiers, handles DoT display potency, and provides a tabbed UI (Buffs/Debuffs/Neutral) with expand/collapse. Displays potency, duration, sources, and effect descriptions."
+    },
+    {
+      "id": "file::src/BuildSaves.svelte",
+      "score": 2,
+      "name": "BuildSaves.svelte",
+      "summary": "Build save/load management component (1098 lines). Handles localStorage persistence of build slots, import/export with deflate compression, drag-to-reorder, fuzzy search across saved builds, duplicate detection, and build state serialization/deserialization with key mapping and sanitization."
+    },
+    {
+      "id": "file::src/DamageAnalyzer.svelte",
+      "score": 2,
+      "name": "DamageAnalyzer.svelte",
+      "summary": "Detailed damage analysis component (7015 lines, largest file in project). Computes full damage breakdowns per attack type (M1, M2, WA, Rune, Perk), applies buff/debuff multipliers, calculates DoT ticks, defense mitigation, weapon charge, scaling breakdowns, self-damage, summon damage, and healing. Provides interactive toggles for individual buffs, boosts, and debuffs."
+    },
+    {
+      "id": "document::.slim/deepwork/ui-upgrade.md",
+      "score": 2,
+      "name": "ui-upgrade.md",
+      "summary": "Plan document for upgrading the UI from Svelte 4 to Svelte 5 runes. Outlines migration steps, component modernization strategy, and phased rollout approach."
+    },
+    {
+      "id": "document::docs/ONBOARDING.md",
+      "score": 2,
+      "name": "ONBOARDING.md",
+      "summary": "Comprehensive onboarding guide for new contributors. Documents project setup, architecture, tech stack, development workflow, build configuration, and contribution guidelines."
+    },
+    {
+      "id": "file::src/data/TypedDmgBoost.ts",
+      "score": 1,
+      "name": "TypedDmgBoost.ts",
+      "summary": "Calculates per-damage-type damage multipliers and heal multipliers from active buffs and perks (e.g., Glyph Conduit for magic, Rage for physical/magic/water, Photosynthesis for holy/earth in sunlight). Aggregates into a dmgMultByType map."
+    },
+    {
+      "id": "file::src/data/Weaponartcheck.ts",
+      "score": 1,
+      "name": "Weaponartcheck.ts",
+      "summary": "Validates whether a weapon art's requirements (scaling, stats, weapon type, guild, both-parts) are met by the current build, and produces human-readable lists of unmet requirements."
+    },
+    {
+      "id": "file::src/lib/engine/build.ts",
+      "score": 1,
+      "name": "build.ts",
+      "summary": "Core build calculation engine: accumulates stats and perks from all equipment slots (race, guild, armor, ring, rune, weapon), applies enchantments and infusions, finalizes perks with effectiveness scaling, computes CDR, boosts, crit, and assembles active buffs. Exports calcBuild as the main entry point."
+    },
+    {
+      "id": "file::src/lib/engine/enchant.ts",
+      "score": 1,
+      "name": "enchant.ts",
+      "summary": "Enchantment application engine: applies stat-selecting enchantments (Restored, Flawless), direct stat modifiers, perk modifiers, perk effectiveness scaling, infusion (50% stat halving), and exclusive enchant slot enforcement."
+    },
+    {
+      "id": "file::src/lib/engine/format.ts",
+      "score": 1,
+      "name": "format.ts",
+      "summary": "Formatting utilities for stat display: formats numeric stat values with +/- signs, percentage suffixes for percent-type stats, and converts camelCase stat keys to readable labels."
+    },
+    {
+      "id": "file::src/lib/engine/weapon.ts",
+      "score": 1,
+      "name": "weapon.ts",
+      "summary": "Weapon calculation engine: combines blade/handle (or glove/essence for monk) stats, scalings, damage types, and perks; resolves weapon type from handle+blade combo with perk overrides; detects hybrid bonus; applies shrine multipliers and monk rank bonuses. Exports calcWeapon and calcMonkWeapon."
+    },
+    {
+      "id": "file::src/data/debuffCombatEffects.ts",
+      "score": 1,
+      "name": "debuffCombatEffects.ts",
+      "summary": "Defines the combat effects applied by debuffs on enemies. Exports a DEBUFF_COMBAT_EFFECTS record mapping debuff names (Weakness, Shatter, Sticky variants, Electrical Rend, Despair, Frostbite, Hypnotized) to DebuffCombatEffect objects containing description generators, damage multipliers, defense reductions, and element-specific damage multipliers."
+    },
+    {
+      "id": "file::src/data/enemyHpEffects.ts",
+      "score": 1,
+      "name": "enemyHpEffects.ts",
+      "summary": "Defines HP-gated enemy effects that trigger based on enemy current HP percentage. Contains interfaces for HP gates, debuff effects, and DoT boosts, plus a static ENEMY_HP_EFFECT_DEFS array (currently Mycotic Bloom). Exports functions getActiveEnemyHpDebuffs and getEnemyHpDotMultiplier to evaluate which effects are active given the current enemy HP and active debuffs."
+    },
+    {
+      "id": "file::src/data/perkAutoDebuffs.ts",
+      "score": 1,
+      "name": "perkAutoDebuffs.ts",
+      "summary": "Determines which debuffs are automatically applied by perks during combat. Contains calcActualHpFillPct for effective HP calculation accounting for protection, and getAutoDebuffs which evaluates 16+ perk conditions (Exhaust, Penance, Melting Shred, Fungal Prototype, Venom Spitter, Toxin Caster, Gorecast, Splinter, Bellowing Ember, Frostbite, Gelid Lance, Weakening, Sunburn, Fiery Pursuit, Pyre Bloom, Hypnotist) to produce GrantedBuff arrays."
+    },
+    {
+      "id": "file::src/lib/constants/debuff-effects.ts",
+      "score": 1,
+      "name": "debuff-effects.ts",
+      "summary": "Small constants file defining numeric multipliers used by debuff combat effects. Contains the Sticky damage multiplier (1.2x), Despair display divisor/coefficient for UI formatting, and Despair damage coefficient (0.085)."
+    },
+    {
+      "id": "file::src/lib/constants/perk-base-damage.ts",
+      "score": 1,
+      "name": "perk-base-damage.ts",
+      "summary": "Contains raw numeric base damage values for all perk-triggered abilities, weapon arts, and spirit summons. Organized by ability name (Dragon Claw, Dragon Bubble, Springblast, various Spirits, Honey Arts, Melting Slime, Pyre Bloom, Bastion Ballista, etc.). Each ability has base damage, per-stack scaling, and optionally special properties (healing, poise damage, duration, ammo, cooldown)."
+    },
+    {
+      "id": "file::src/lib/constants/storage.ts",
+      "score": 1,
+      "name": "storage.ts",
+      "summary": "Defines localStorage keys and serialization mappings for build state persistence. Contains STORAGE_KEY_* constants for each saved data category, BUILD_STATE_DEFAULTS record with all default build values, SAVE_KEY_MAP/UNMAP for compact save serialization, and ENCH_MAP/UNMAP for enchantment serialization. Also defines MAX_BUILD_SLOTS (5) and CONFIRM_TIMEOUT_MS."
+    },
+    {
+      "id": "file::src/lib/engine/dmgTypeBonuses.ts",
+      "score": 1,
+      "name": "dmgTypeBonuses.ts",
+      "summary": "Engine module that calculates elemental/magical damage type bonuses from perks. Defines PerkDmgTypeBonusDef interface and PERK_DMG_TYPE_BONUS_DEFS array (Void Rage Ä‚Â¢Ã¢â‚¬Â Ã¢â‚¬â„¢ hex, Channeled Weapon Ä‚Â¢Ã¢â‚¬Â Ã¢â‚¬â„¢ magic, Emotional Ä‚Â¢Ã¢â‚¬Â Ã¢â‚¬â„¢ fire, Draconic Blood Ä‚Â¢Ã¢â‚¬Â Ã¢â‚¬â„¢ dynamic based on draconic color). The buildDmgTypeBonuses function evaluates all definitions against current player state and returns a Record<string, number> of damage type to bonus percentage, also accounting for Toxin Transfer hex bonus."
+    },
+    {
+      "id": "file::src/data/weaponConditionalBoosts.ts",
+      "score": 1,
+      "name": "weaponConditionalBoosts.ts",
+      "summary": "Defines conditional damage boosts applied to specific weapon types when matching perks and hit scopes (M1 finisher or M2). Iterates over a static list of boost definitions and accumulates a combined multiplier."
+    },
+    {
+      "id": "file::src/lib/crit.ts",
+      "score": 1,
+      "name": "crit.ts",
+      "summary": "Core critical hit calculation engine. Computes natural crit chance, extra crit chance, combined effective crit chance, and crit damage multiplier from stats and perks. Handles Primal division, proc coefficient scaling, and sources for both crit chance and crit damage."
+    },
+    {
+      "id": "file::src/lib/defense.ts",
+      "score": 1,
+      "name": "defense.ts",
+      "summary": "Defense calculation module. Resolves defense sources (percent-based and flat) into damage multipliers, groups damage types by which defense stats apply, and computes total base armor defense percentage."
+    },
+    {
+      "id": "file::.github/workflows/static.yml",
+      "score": 1,
+      "name": "static.yml",
+      "summary": "GitHub Actions workflow that builds the Vite project and deploys static assets to GitHub Pages on push to main or manual dispatch."
+    },
+    {
+      "id": "file::.fallowrc.json",
+      "score": 1,
+      "name": ".fallowrc.json",
+      "summary": "Configuration file for Fallow, the dead-code/unused-dependency linter. Defines which directories and file patterns to scan, severity thresholds, and output formats."
+    },
+    {
+      "id": "file::.understand-anything/knowledge-graph.json",
+      "score": 1,
+      "name": "knowledge-graph.json",
+      "summary": "The existing knowledge graph produced by the understand-anything tool. Contains layered node/edge data representing the codebase architecture, component relationships, and module dependencies."
+    },
+    {
+      "id": "file::src/CritIcon.svelte",
+      "score": 1,
+      "name": "CritIcon.svelte",
+      "summary": "Simple SVG icon component (13 lines) rendering a critical hit symbol. Uses a gradient fill from red to orange for the starburst shape."
+    },
+    {
+      "id": "file::src/data/draconicRunes.ts",
+      "score": 1,
+      "name": "draconicRunes.ts",
+      "summary": "Module (104 lines) computing draconic rune and draconic infusion bonuses to damage types. Provides applyDraconicBonuses and getDraconicBonuses functions that add elemental damage bonuses based on rune stacks and infusion state."
+    },
+    {
+      "id": "file::src/data/selfDamagePerks.ts",
+      "score": 1,
+      "name": "selfDamagePerks.ts",
+      "summary": "Module (82 lines) defining perks that deal self-damage (Undead Might, Explosive Charge, Dark Magic, Bombardier). Each definition specifies the damage fraction, damage type distribution, DR reduction per stack, and affected attack types. Includes calcSelfDamage function with harmonic-series multi-target falloff."
+    },
+    {
+      "id": "file::src/data/stanceOverlays.ts",
+      "score": 1,
+      "name": "stanceOverlays.ts",
+      "summary": "Module (59 lines) resolving stance overlay types based on weapon configuration. Checks Blaster Ring, Locked And Loaded, Cosmic Ray, and Mine conditions against weapon perks and fist/weapon type to determine Rifle/Shotgun/Dual Guns/Side Gun overlay styles."
+    },
+    {
+      "id": "file::src/lib/constants/boosts.ts",
+      "score": 1,
+      "name": "boosts.ts",
+      "summary": "Constants module (68 lines) defining all perk-related damage boost multipliers. Contains ~55 exported numeric constants for per-stack multipliers (Blood Thirsty, Venom Spitter, Perfection, etc.) and complex boost parameters (Heat Drill cooldown/damage, Quickdraw, Spring Powered, etc.)."
+    },
+    {
+      "id": "file::src/lib/constants/draconic-colors.ts",
+      "score": 1,
+      "name": "draconic-colors.ts",
+      "summary": "Constants module (20 lines) defining draconic color multiplier values for Fire, Air, Earth, Water, and Hex dragon states: speed, damage, stun, knockback, and cooldown multipliers."
+    },
+    {
+      "id": "file::src/lib/constants/draconic.ts",
+      "score": 1,
+      "name": "draconic.ts",
+      "summary": "Constants module (10 lines) defining draconic infusion potency/duration multipliers and dragon state HP/damage parameters."
+    },
+    {
+      "id": "file::src/lib/constants/heals.ts",
+      "score": 1,
+      "name": "heals.ts",
+      "summary": "Constants module (5 lines) defining critical healing base value, holy boost divisor, per-stack healing bonus, and Ocean Song per-stack heal percentage."
+    },
+    {
+      "id": "file::src/lib/constants/thresholds.ts",
+      "score": 1,
+      "name": "thresholds.ts",
+      "summary": "Constants module (5 lines) defining armor penetration branch threshold, minimum cooldown, and base crit damage percentage."
+    },
+    {
+      "id": "file::src/lib/EnchantSelect.svelte",
+      "score": 1,
+      "name": "EnchantSelect.svelte",
+      "summary": "Component (465 lines) providing a searchable dropdown for selecting enchantments. Features color-coded enchantment names by rarity/type, text search with highlight, scroll-based keyboard navigation, and exclusive enchantment slot enforcement."
+    },
+    {
+      "id": "file::src/lib/engine/engine.ts",
+      "score": 1,
+      "name": "engine.ts",
+      "summary": "Barrel re-export file (6 lines) for the engine module. Re-exports all sub-modules: data, shrine, enchant, weapon, build, and format."
+    },
+    {
+      "id": "file::src/lib/modals/AccessorySelectModal.svelte",
+      "score": 1,
+      "name": "AccessorySelectModal.svelte",
+      "summary": "Modal (200 lines) for selecting ring or rune accessories. Uses ModalSearchHeader for search/filter and displays items in a grid with stat previews."
+    },
+    {
+      "id": "file::src/lib/modals/GuildModal.svelte",
+      "score": 1,
+      "name": "GuildModal.svelte",
+      "summary": "Modal (98 lines) for selecting a guild. Lists available guilds with rank progression and stat bonus previews."
+    },
+    {
+      "id": "file::src/lib/modals/RaceModal.svelte",
+      "score": 1,
+      "name": "RaceModal.svelte",
+      "summary": "Modal (60 lines) for selecting a character race. Lists available races with passive ability descriptions."
+    },
+    {
+      "id": "file::src/lib/modals/WeaponPartModal.svelte",
+      "score": 1,
+      "name": "WeaponPartModal.svelte",
+      "summary": "Modal (137 lines) for selecting weapon parts (blades, handles, gloves, essences). Uses ModalSearchHeader with stat filtering and weapon stat comparison."
+    },
+    {
+      "id": "file::src/lib/StatFilterShared.svelte",
+      "score": 1,
+      "name": "StatFilterShared.svelte",
+      "summary": "Shared Svelte component (97 lines) providing StatChip UI and buildStatMaps utility used by both StatFilter and WeaponStatFilter. Renders stat filter chips with include/exclude toggle states."
+    },
+    {
+      "id": "file::src/lib/stats/elementalBoosts.ts",
+      "score": 1,
+      "name": "elementalBoosts.ts",
+      "summary": "Constants module (22 lines) defining ELEMENTAL_BOOST_STATS and NEGATIVE_ELEMENTAL_BOOST_STATS arrays listing all elemental boost stat keys and labels."
+    },
+    {
+      "id": "file::src/lib/stats/filterActions.ts",
+      "score": 1,
+      "name": "filterActions.ts",
+      "summary": "Utility module (41 lines) providing createFilterActions factory that returns toggle/remove/clear/handleChipKeyDown actions for managing stat filter state (include/exclude/none)."
+    },
+    {
+      "id": "file::src/lib/Toast.svelte",
+      "score": 1,
+      "name": "Toast.svelte",
+      "summary": "Toast notification component (100 lines) displaying success/error/info/warning messages with animated fly-in, auto-dismiss timer, and type-specific styling."
+    },
+    {
+      "id": "file::src/lib/ui/Button.svelte",
+      "score": 1,
+      "name": "Button.svelte",
+      "summary": "Reusable button UI component (143 lines) with variant (primary/secondary/ghost/danger), size, icon, disabled, and loading states."
+    },
+    {
+      "id": "file::src/lib/ui/Card.svelte",
+      "score": 1,
+      "name": "Card.svelte",
+      "summary": "Reusable card container UI component (103 lines) with glass morphism styling, hover effects, and optional header/footer slots."
+    },
+    {
+      "id": "file::src/lib/ui/Divider.svelte",
+      "score": 1,
+      "name": "Divider.svelte",
+      "summary": "Simple divider UI component (42 lines) rendering a horizontal rule with configurable thickness and color."
+    },
+    {
+      "id": "file::src/lib/ui/Panel.svelte",
+      "score": 1,
+      "name": "Panel.svelte",
+      "summary": "Panel container UI component (94 lines) with collapsible header, glass morphism styling, and slot-based content area."
+    },
+    {
+      "id": "file::src/lib/ui/Section.svelte",
+      "score": 1,
+      "name": "Section.svelte",
+      "summary": "Section container UI component (129 lines) with title, description, and content slots for organizing related UI elements."
+    },
+    {
+      "id": "file::src/lib/ui/Stat.svelte",
+      "score": 1,
+      "name": "Stat.svelte",
+      "summary": "Reusable stat display UI component (90 lines) using Svelte 5 runes ($props). Renders a label-value pair with variant colors (green/amber/red/purple/blue/teal) and sizes (sm/md/lg). Supports children snippets for custom value rendering."
+    },
+    {
+      "id": "file::src/lib/AppHeader.svelte",
+      "score": 1,
+      "name": "AppHeader.svelte",
+      "summary": "Application header component (175 lines). Displays the VoxlBuilder title, embeds the BuildSaves panel, and provides a tab switcher between Overview and Analyze views with an animated sliding bubble indicator. Supports keyboard shortcut (Tab) to toggle between views."
+    }
+  ],
+  "fanInRanking": [
+    {
+      "id": "file::src/lib/types.ts",
+      "fanIn": 16,
+      "name": "types.ts"
+    },
+    {
+      "id": "file::src/lib/engine/_utils.ts",
+      "fanIn": 9,
+      "name": "_utils.ts"
+    },
+    {
+      "id": "file::src/lib/constants/perks.ts",
+      "fanIn": 8,
+      "name": "perks.ts"
+    },
+    {
+      "id": "file::src/lib/engine/data.ts",
+      "fanIn": 5,
+      "name": "data.ts"
+    },
+    {
+      "id": "file::src/lib/utils.ts",
+      "fanIn": 5,
+      "name": "utils.ts"
+    },
+    {
+      "id": "file::src/lib/Modal.svelte",
+      "fanIn": 4,
+      "name": "Modal.svelte"
+    },
+    {
+      "id": "file::src/data/BuffData.ts",
+      "fanIn": 4,
+      "name": "BuffData.ts"
+    },
+    {
+      "id": "function:src/App.svelte:gridHitTest",
+      "fanIn": 4,
+      "name": "gridHitTest"
+    },
+    {
+      "id": "function:src/App.svelte:updateActionBadge",
+      "fanIn": 4,
+      "name": "updateActionBadge"
+    },
+    {
+      "id": "function:src/BuildSaves.svelte:persistSlots",
+      "fanIn": 4,
+      "name": "persistSlots"
+    },
+    {
+      "id": "file::src/data/weaponArts.ts",
+      "fanIn": 3,
+      "name": "weaponArts.ts"
+    },
+    {
+      "id": "file::src/lib/constants/damage-types.ts",
+      "fanIn": 3,
+      "name": "damage-types.ts"
+    },
+    {
+      "id": "file::src/lib/engine/shrine.ts",
+      "fanIn": 3,
+      "name": "shrine.ts"
+    },
+    {
+      "id": "file::src/lib/constants/game.ts",
+      "fanIn": 3,
+      "name": "game.ts"
+    },
+    {
+      "id": "config::package.json",
+      "fanIn": 3,
+      "name": "package.json"
+    },
+    {
+      "id": "file::src/lib/constants/defensive.ts",
+      "fanIn": 3,
+      "name": "defensive.ts"
+    },
+    {
+      "id": "function:src/App.svelte:onArmorDragStart",
+      "fanIn": 3,
+      "name": "onArmorDragStart"
+    },
+    {
+      "id": "function:src/App.svelte:getGridDragAction",
+      "fanIn": 3,
+      "name": "getGridDragAction"
+    },
+    {
+      "id": "function:src/App.svelte:computeArmorEffectiveBoost",
+      "fanIn": 3,
+      "name": "computeArmorEffectiveBoost"
+    },
+    {
+      "id": "function:src/App.svelte:matchSearch",
+      "fanIn": 3,
+      "name": "matchSearch"
+    }
+  ],
+  "fanOutRanking": [
+    {
+      "id": "file::src/App.svelte",
+      "fanOut": 50,
+      "name": "App.svelte"
+    },
+    {
+      "id": "file::src/DamageAnalyzer.svelte",
+      "fanOut": 28,
+      "name": "DamageAnalyzer.svelte"
+    },
+    {
+      "id": "file::src/BuildSaves.svelte",
+      "fanOut": 27,
+      "name": "BuildSaves.svelte"
+    },
+    {
+      "id": "file::src/data/BuffData.ts",
+      "fanOut": 22,
+      "name": "BuffData.ts"
+    },
+    {
+      "id": "file::src/lib/engine/build.ts",
+      "fanOut": 14,
+      "name": "build.ts"
+    },
+    {
+      "id": "file::src/lib/store.ts",
+      "fanOut": 10,
+      "name": "store.ts"
+    },
+    {
+      "id": "file::src/data/perkAutoDebuffs.ts",
+      "fanOut": 9,
+      "name": "perkAutoDebuffs.ts"
+    },
+    {
+      "id": "file::src/lib/engine/weapon.ts",
+      "fanOut": 7,
+      "name": "weapon.ts"
+    },
+    {
+      "id": "file::src/lib/engine/enchant.ts",
+      "fanOut": 6,
+      "name": "enchant.ts"
+    },
+    {
+      "id": "file::src/lib/ui/index.ts",
+      "fanOut": 6,
+      "name": "index.ts"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:assembleActiveBuffs",
+      "fanOut": 6,
+      "name": "assembleActiveBuffs"
+    },
+    {
+      "id": "file::src/lib/constants/index.ts",
+      "fanOut": 5,
+      "name": "index.ts"
+    },
+    {
+      "id": "file::src/lib/engine/format.ts",
+      "fanOut": 4,
+      "name": "format.ts"
+    },
+    {
+      "id": "file::src/lib/engine/shrine.ts",
+      "fanOut": 4,
+      "name": "shrine.ts"
+    },
+    {
+      "id": "file::src/data/Boost.ts",
+      "fanOut": 4,
+      "name": "Boost.ts"
+    },
+    {
+      "id": "file::src/lib/modals/index.ts",
+      "fanOut": 4,
+      "name": "index.ts"
+    },
+    {
+      "id": "file::src/ModalSearchHeader.svelte",
+      "fanOut": 4,
+      "name": "ModalSearchHeader.svelte"
+    },
+    {
+      "id": "file::src/StatFilter.svelte",
+      "fanOut": 4,
+      "name": "StatFilter.svelte"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:applyBuffPerkModifiers",
+      "fanOut": 4,
+      "name": "applyBuffPerkModifiers"
+    },
+    {
+      "id": "file::src/lib/types.ts",
+      "fanOut": 4,
+      "name": "types.ts"
+    }
+  ],
+  "bfsTraversal": {
+    "startNode": "file::src/App.svelte",
+    "order": [
+      "file::src/App.svelte",
+      "file::src/BuffList.svelte",
+      "file::src/DamageAnalyzer.svelte",
+      "file::src/lib/AppHeader.svelte",
+      "file::src/BuildSaves.svelte"
+    ],
+    "depthMap": {
+      "file::src/App.svelte": 0,
+      "file::src/BuffList.svelte": 1,
+      "file::src/DamageAnalyzer.svelte": 1,
+      "file::src/lib/AppHeader.svelte": 1,
+      "file::src/BuildSaves.svelte": 2
+    },
+    "byDepth": {
+      "0": [
+        "file::src/App.svelte"
+      ],
+      "1": [
+        "file::src/BuffList.svelte",
+        "file::src/DamageAnalyzer.svelte",
+        "file::src/lib/AppHeader.svelte"
+      ],
+      "2": [
+        "file::src/BuildSaves.svelte"
+      ]
+    }
+  },
+  "nonCodeFiles": {
+    "documentation": [
+      {
+        "id": "document::.slim/deepwork/ui-upgrade.md",
+        "name": "ui-upgrade.md",
+        "summary": "Plan document for upgrading the UI from Svelte 4 to Svelte 5 runes. Outlines migration steps, component modernization strategy, and phased rollout approach."
+      },
+      {
+        "id": "document::docs/ONBOARDING.md",
+        "name": "ONBOARDING.md",
+        "summary": "Comprehensive onboarding guide for new contributors. Documents project setup, architecture, tech stack, development workflow, build configuration, and contribution guidelines."
+      }
+    ],
+    "infrastructure": [
+      {
+        "id": "pipeline::.github/workflows/static.yml::build",
+        "name": "build",
+        "summary": "CI job that checks out the repo, sets up Node 24, installs dependencies, runs the Vite build, and uploads the dist/ directory as a Pages artifact."
+      },
+      {
+        "id": "pipeline::.github/workflows/static.yml::deploy",
+        "name": "deploy",
+        "summary": "CI job that depends on the build job and deploys the uploaded artifact to GitHub Pages using actions/deploy-pages@v5."
+      }
+    ],
+    "data": [
+      {
+        "id": "schema::src/data/armors.json",
+        "name": "armors.json",
+        "summary": "Static game data defining all armor pieces. Each entry contains name, slot (head/chest/legs), stats (physicalDefense, magicDefense, etc.), optional perk references, set bonuses, and rarity information."
+      },
+      {
+        "id": "schema::src/data/blades.json",
+        "name": "blades.json",
+        "summary": "Static game data defining all blade weapon parts. Each entry contains name, base damage values, scaling stats, element types, attack speed modifiers, and weapon-type classification."
+      },
+      {
+        "id": "schema::src/data/enchantments.json",
+        "name": "enchantments.json",
+        "summary": "Static game data defining all enchantments. Each entry contains name, category (refined/strengthened/dexterous/burning/etc.), stat bonuses, and slot compatibility."
+      },
+      {
+        "id": "schema::src/data/essences.json",
+        "name": "essences.json",
+        "summary": "Static game data defining all essence weapon parts. Each entry contains name, base stats, element modifiers, and weapon-type restrictions."
+      },
+      {
+        "id": "schema::src/data/gloves.json",
+        "name": "gloves.json",
+        "summary": "Static game data defining all glove weapon parts. Each entry contains name, base stats, and scaling information."
+      },
+      {
+        "id": "schema::src/data/guilds.json",
+        "name": "guilds.json",
+        "summary": "Static game data defining all guilds. Each entry contains name, guild ranks with stat bonuses, perk references, and description. Used to populate the guild selector in the character configuration."
+      },
+      {
+        "id": "schema::src/data/handles.json",
+        "name": "handles.json",
+        "summary": "Static game data defining all handle weapon parts. Each entry contains name, base damage, scaling stats, weapon-type modifiers, and attack properties."
+      },
+      {
+        "id": "schema::src/data/perks.json",
+        "name": "perks.json",
+        "summary": "Comprehensive static game data defining all perks. Massive dataset (3688 lines) containing every perk's name, description, tags (combat/support/status), stat bonuses, damage formulas, cooldown references, and scaling parameters. Core reference for the entire damage calculation engine."
+      },
+      {
+        "id": "schema::src/data/races.json",
+        "name": "races.json",
+        "summary": "Static game data defining all 11 playable races. Each entry contains name, passive abilities, stat modifiers (HP, speed, elemental resistances), and racial perk references."
+      },
+      {
+        "id": "schema::src/data/rings.json",
+        "name": "rings.json",
+        "summary": "Static game data defining all ring accessories. Each entry contains name, stat bonuses, perk slots, and rarity information."
+      },
+      {
+        "id": "schema::src/data/runes.json",
+        "name": "runes.json",
+        "summary": "Static game data defining all runes. Each entry contains name, activation conditions, stat bonuses, damage effects, and cooldown properties."
+      }
+    ],
+    "config": [
+      {
+        "id": "config::package.json",
+        "name": "package.json",
+        "summary": "Project manifest defining the voxlblade package (private, ESM). Scripts: dev (vite), build (vite build), preview, check (svelte-check + tsc). Key dependencies: @vercel/analytics ^2.0.1. Key devDependencies: svelte ^5.55.4, vite ^8.10, typescript ~6.0.2, fallow ^2.104.0, rollup-plugin-visualizer ^7.0.1."
+      },
+      {
+        "id": "config::tsconfig.json",
+        "name": "tsconfig.json",
+        "summary": "Root TypeScript configuration. Extends tsconfig.app.json as the default project config."
+      },
+      {
+        "id": "config::tsconfig.app.json",
+        "name": "tsconfig.app.json",
+        "summary": "TypeScript configuration for the application source code. Extends @tsconfig/svelte. Targets ES2023, ESNext modules, enables allowJs/checkJs, includes src/**/*.ts, src/**/*.js, src/**/*.svelte."
+      },
+      {
+        "id": "config::tsconfig.node.json",
+        "name": "tsconfig.node.json",
+        "summary": "TypeScript configuration for Node-side build tooling (vite.config.ts). Targets ES2023, uses bundler moduleResolution, enables verbatimModuleSyntax and erasableSyntaxOnly."
+      },
+      {
+        "id": "config::vercel.json",
+        "name": "vercel.json",
+        "summary": "Vercel deployment configuration. Defines SPA rewrites, build settings, and hosting headers for the deployed application."
+      },
+      {
+        "id": "config::.understand-anything/fingerprints.json",
+        "name": "fingerprints.json",
+        "summary": "Cache of file fingerprints (SHA-256 hashes) for 148 tracked files. Used by the understand-anything tool to detect which files have changed since the last analysis run. Associated with git commit 38c34cb."
+      },
+      {
+        "id": "config::.understand-anything/meta.json",
+        "name": "meta.json",
+        "summary": "Metadata for the understand-anything analysis. Records lastAnalyzed timestamp (2026-07-24), total files analyzed (148), and the git commit hash (38c34cb) at time of last run."
+      }
+    ]
+  },
+  "clusters": [
+    {
+      "nodes": [
+        "file::src/lib/constants/buffs.ts",
+        "file::src/data/BuffData.ts",
+        "file::src/lib/engine/build.ts"
+      ],
+      "edgeCount": 7
+    },
+    {
+      "nodes": [
+        "file::src/lib/store.ts",
+        "function:src/lib/store.ts:loadBuild"
+      ],
+      "edgeCount": 4
+    }
+  ],
+  "layers": {
+    "count": 0,
+    "list": []
+  },
+  "nodeSummaryIndex": {
+    "file::src/data/TypedDmgBoost.ts": {
+      "name": "TypedDmgBoost.ts",
+      "type": "file",
+      "summary": "Calculates per-damage-type damage multipliers and heal multipliers from active buffs and perks (e.g., Glyph Conduit for magic, Rage for physical/magic/water, Photosynthesis for holy/earth in sunlight). Aggregates into a dmgMultByType map."
+    },
+    "file::src/data/Weaponartcheck.ts": {
+      "name": "Weaponartcheck.ts",
+      "type": "file",
+      "summary": "Validates whether a weapon art's requirements (scaling, stats, weapon type, guild, both-parts) are met by the current build, and produces human-readable lists of unmet requirements."
+    },
+    "file::src/data/weaponArts.ts": {
+      "name": "weaponArts.ts",
+      "type": "file",
+      "summary": "Defines the WeaponArt and WeaponArtRequirement interfaces and the WEAPON_ARTS data array containing all weapon art definitions with their names, descriptions, cooldowns, damage, scaling, hits, and requirements."
+    },
+    "file::src/lib/constants/damage-types.ts": {
+      "name": "damage-types.ts",
+      "type": "file",
+      "summary": "Defines all damage type metadata (labels, colors), defense inheritance mappings, type priority ordering, and exported constant arrays for the game's 11 damage types (physical, magic, fire, water, earth, air, hex, holy, true, summon, heal)."
+    },
+    "file::src/lib/damageTypeResolve.ts": {
+      "name": "damageTypeResolve.ts",
+      "type": "file",
+      "summary": "Resolves weapon art damage types from string descriptions into numeric type maps, applies type bonuses, and performs damage type conversions (Fire<->Air via Echo Incineration, Air->Magic via Spirit Winds, Dark Magic hex bonus)."
+    },
+    "file::src/lib/engine/_utils.ts": {
+      "name": "_utils.ts",
+      "type": "file",
+      "summary": "Minimal utility module exporting round2 and round4 functions for numeric rounding with epsilon correction, used throughout the engine layer."
+    },
+    "file::src/lib/engine/build.ts": {
+      "name": "build.ts",
+      "type": "file",
+      "summary": "Core build calculation engine: accumulates stats and perks from all equipment slots (race, guild, armor, ring, rune, weapon), applies enchantments and infusions, finalizes perks with effectiveness scaling, computes CDR, boosts, crit, and assembles active buffs. Exports calcBuild as the main entry point."
+    },
+    "file::src/lib/engine/data.ts": {
+      "name": "data.ts",
+      "type": "file",
+      "summary": "Barrel re-export module that re-exports all symbols from character, equipment, and weapon data sub-modules, providing a single import point for game data accessors."
+    },
+    "file::src/lib/engine/enchant.ts": {
+      "name": "enchant.ts",
+      "type": "file",
+      "summary": "Enchantment application engine: applies stat-selecting enchantments (Restored, Flawless), direct stat modifiers, perk modifiers, perk effectiveness scaling, infusion (50% stat halving), and exclusive enchant slot enforcement."
+    },
+    "file::src/lib/engine/format.ts": {
+      "name": "format.ts",
+      "type": "file",
+      "summary": "Formatting utilities for stat display: formats numeric stat values with +/- signs, percentage suffixes for percent-type stats, and converts camelCase stat keys to readable labels."
+    },
+    "file::src/lib/engine/shrine.ts": {
+      "name": "shrine.ts",
+      "type": "file",
+      "summary": "Shrine multiplier system: defines tier-based stat multipliers (3.0x at tier 1 down to 1.0x at tier 5) and applies them to weapon stats and scalings when the shrine is active."
+    },
+    "file::src/lib/engine/weapon.ts": {
+      "name": "weapon.ts",
+      "type": "file",
+      "summary": "Weapon calculation engine: combines blade/handle (or glove/essence for monk) stats, scalings, damage types, and perks; resolves weapon type from handle+blade combo with perk overrides; detects hybrid bonus; applies shrine multipliers and monk rank bonuses. Exports calcWeapon and calcMonkWeapon."
+    },
+    "file::src/data/Boost.ts": {
+      "name": "Boost.ts",
+      "type": "file",
+      "summary": "Defines the damage boost calculation system for the Voxel Blade build calculator. Contains BoostDef/BoostContext interfaces and a comprehensive BOOST_DEFS array of 30+ damage boosts (Blood Thirsty, Frenzy, Primal, Penance, Vampire, etc.), each with either simple multiplier-per-perk values or complex custom calcFn closures. Also exports helper functions calcMinionAbsorptionPotency and calcFrenzyPct, and Penance bleed constants."
+    },
+    "file::src/data/debuffCombatEffects.ts": {
+      "name": "debuffCombatEffects.ts",
+      "type": "file",
+      "summary": "Defines the combat effects applied by debuffs on enemies. Exports a DEBUFF_COMBAT_EFFECTS record mapping debuff names (Weakness, Shatter, Sticky variants, Electrical Rend, Despair, Frostbite, Hypnotized) to DebuffCombatEffect objects containing description generators, damage multipliers, defense reductions, and element-specific damage multipliers."
+    },
+    "file::src/data/enemyHpEffects.ts": {
+      "name": "enemyHpEffects.ts",
+      "type": "file",
+      "summary": "Defines HP-gated enemy effects that trigger based on enemy current HP percentage. Contains interfaces for HP gates, debuff effects, and DoT boosts, plus a static ENEMY_HP_EFFECT_DEFS array (currently Mycotic Bloom). Exports functions getActiveEnemyHpDebuffs and getEnemyHpDotMultiplier to evaluate which effects are active given the current enemy HP and active debuffs."
+    },
+    "file::src/data/perkAutoDebuffs.ts": {
+      "name": "perkAutoDebuffs.ts",
+      "type": "file",
+      "summary": "Determines which debuffs are automatically applied by perks during combat. Contains calcActualHpFillPct for effective HP calculation accounting for protection, and getAutoDebuffs which evaluates 16+ perk conditions (Exhaust, Penance, Melting Shred, Fungal Prototype, Venom Spitter, Toxin Caster, Gorecast, Splinter, Bellowing Ember, Frostbite, Gelid Lance, Weakening, Sunburn, Fiery Pursuit, Pyre Bloom, Hypnotist) to produce GrantedBuff arrays."
+    },
+    "file::src/lib/constants/debuff-effects.ts": {
+      "name": "debuff-effects.ts",
+      "type": "file",
+      "summary": "Small constants file defining numeric multipliers used by debuff combat effects. Contains the Sticky damage multiplier (1.2x), Despair display divisor/coefficient for UI formatting, and Despair damage coefficient (0.085)."
+    },
+    "file::src/lib/constants/game.ts": {
+      "name": "game.ts",
+      "type": "file",
+      "summary": "Core game constants serving as the single source of truth for game-wide values. Defines level caps (MAX_LEVEL=80, DEFAULT_LEVEL=80), HP formula constants (BASE_HP=120, HP_PER_LEVEL=0.0125) with calcBaseMaxHP function, default fill percentages, and timing constants for UI operations (save debounce, undo window, search blur delay, toast duration, etc.)."
+    },
+    "file::src/lib/constants/perk-base-damage.ts": {
+      "name": "perk-base-damage.ts",
+      "type": "file",
+      "summary": "Contains raw numeric base damage values for all perk-triggered abilities, weapon arts, and spirit summons. Organized by ability name (Dragon Claw, Dragon Bubble, Springblast, various Spirits, Honey Arts, Melting Slime, Pyre Bloom, Bastion Ballista, etc.). Each ability has base damage, per-stack scaling, and optionally special properties (healing, poise damage, duration, ammo, cooldown)."
+    },
+    "file::src/lib/constants/perks.ts": {
+      "name": "perks.ts",
+      "type": "file",
+      "summary": "Defines a comprehensive set of numerical constants and configuration values for various game perks, including potency multipliers, crit damage, crit rate, elemental bonuses, and damage formulas."
+    },
+    "file::src/lib/constants/storage.ts": {
+      "name": "storage.ts",
+      "type": "file",
+      "summary": "Defines localStorage keys and serialization mappings for build state persistence. Contains STORAGE_KEY_* constants for each saved data category, BUILD_STATE_DEFAULTS record with all default build values, SAVE_KEY_MAP/UNMAP for compact save serialization, and ENCH_MAP/UNMAP for enchantment serialization. Also defines MAX_BUILD_SLOTS (5) and CONFIRM_TIMEOUT_MS."
+    },
+    "file::src/lib/engine/dmgTypeBonuses.ts": {
+      "name": "dmgTypeBonuses.ts",
+      "type": "file",
+      "summary": "Engine module that calculates elemental/magical damage type bonuses from perks. Defines PerkDmgTypeBonusDef interface and PERK_DMG_TYPE_BONUS_DEFS array (Void Rage Ä‚Â¢Ã¢â‚¬Â Ã¢â‚¬â„¢ hex, Channeled Weapon Ä‚Â¢Ã¢â‚¬Â Ã¢â‚¬â„¢ magic, Emotional Ä‚Â¢Ã¢â‚¬Â Ã¢â‚¬â„¢ fire, Draconic Blood Ä‚Â¢Ã¢â‚¬Â Ã¢â‚¬â„¢ dynamic based on draconic color). The buildDmgTypeBonuses function evaluates all definitions against current player state and returns a Record<string, number> of damage type to bonus percentage, also accounting for Toxin Transfer hex bonus."
+    },
+    "file::src/data/weaponConditionalBoosts.ts": {
+      "name": "weaponConditionalBoosts.ts",
+      "type": "file",
+      "summary": "Defines conditional damage boosts applied to specific weapon types when matching perks and hit scopes (M1 finisher or M2). Iterates over a static list of boost definitions and accumulates a combined multiplier."
+    },
+    "file::src/lib/crit.ts": {
+      "name": "crit.ts",
+      "type": "file",
+      "summary": "Core critical hit calculation engine. Computes natural crit chance, extra crit chance, combined effective crit chance, and crit damage multiplier from stats and perks. Handles Primal division, proc coefficient scaling, and sources for both crit chance and crit damage."
+    },
+    "file::src/lib/defense.ts": {
+      "name": "defense.ts",
+      "type": "file",
+      "summary": "Defense calculation module. Resolves defense sources (percent-based and flat) into damage multipliers, groups damage types by which defense stats apply, and computes total base armor defense percentage."
+    },
+    "file::src/lib/utils.ts": {
+      "name": "utils.ts",
+      "type": "file",
+      "summary": "Shared utility functions used across the calculation engine and UI. Provides multiplier rounding, warding debuff multiplier calculation, text highlighting for search, and proc chance computation with different scaling modes."
+    },
+    "file::.github/workflows/static.yml": {
+      "name": "static.yml",
+      "type": "file",
+      "summary": "GitHub Actions workflow that builds the Vite project and deploys static assets to GitHub Pages on push to main or manual dispatch."
+    },
+    "pipeline::.github/workflows/static.yml::build": {
+      "name": "build",
+      "type": "pipeline",
+      "summary": "CI job that checks out the repo, sets up Node 24, installs dependencies, runs the Vite build, and uploads the dist/ directory as a Pages artifact."
+    },
+    "pipeline::.github/workflows/static.yml::deploy": {
+      "name": "deploy",
+      "type": "pipeline",
+      "summary": "CI job that depends on the build job and deploys the uploaded artifact to GitHub Pages using actions/deploy-pages@v5."
+    },
+    "file::.fallowrc.json": {
+      "name": ".fallowrc.json",
+      "type": "file",
+      "summary": "Configuration file for Fallow, the dead-code/unused-dependency linter. Defines which directories and file patterns to scan, severity thresholds, and output formats."
+    },
+    "file::AGENTS.md": {
+      "name": "AGENTS.md",
+      "type": "file",
+      "summary": "Agent context file for the voxlblade-builder project. Documents the project overview, tech stack (Svelte 5 + Vite + TypeScript + Tailwind CSS v4), project structure, development workflow, and AI agent interaction guidelines."
+    },
+    "file::README.md": {
+      "name": "README.md",
+      "type": "file",
+      "summary": "Project README for the Voxel Blade damage calculator and build optimizer web app."
+    },
+    "file::fallow-output.json": {
+      "name": "fallow-output.json",
+      "type": "file",
+      "summary": "Output report from Fallow dead-code analysis. Contains 28 issues including unused exports, unreachable code, and unused dependencies across the codebase."
+    },
+    "file::fallow-security.json": {
+      "name": "fallow-security.json",
+      "type": "file",
+      "summary": "Security findings report from Fallow. Identifies CWE-79 XSS in DidYouMean.svelte (unsanitized user input in innerHTML) and CWE-502 deserialization risk in decode_full.mjs (eval on base64-encoded JSON)."
+    },
+    "file::index.html": {
+      "name": "index.html",
+      "type": "file",
+      "summary": "Root HTML entry point for the Vite SPA. Contains a single <div id='app'> mount target and a <script type='module' src='/src/main.ts'> tag."
+    },
+    "config::package.json": {
+      "name": "package.json",
+      "type": "config",
+      "summary": "Project manifest defining the voxlblade package (private, ESM). Scripts: dev (vite), build (vite build), preview, check (svelte-check + tsc). Key dependencies: @vercel/analytics ^2.0.1. Key devDependencies: svelte ^5.55.4, vite ^8.10, typescript ~6.0.2, fallow ^2.104.0, rollup-plugin-visualizer ^7.0.1."
+    },
+    "file::stats-data.json": {
+      "name": "stats-data.json",
+      "type": "file",
+      "summary": "Generated data file from the Rollup Visualizer bundle analysis plugin. Contains module size statistics used to produce the stats.html report."
+    },
+    "file::ts-errors.txt": {
+      "name": "ts-errors.txt",
+      "type": "file",
+      "summary": "Output file for TypeScript compilation errors. Currently empty, indicating no active type errors."
+    },
+    "config::tsconfig.json": {
+      "name": "tsconfig.json",
+      "type": "config",
+      "summary": "Root TypeScript configuration. Extends tsconfig.app.json as the default project config."
+    },
+    "config::tsconfig.app.json": {
+      "name": "tsconfig.app.json",
+      "type": "config",
+      "summary": "TypeScript configuration for the application source code. Extends @tsconfig/svelte. Targets ES2023, ESNext modules, enables allowJs/checkJs, includes src/**/*.ts, src/**/*.js, src/**/*.svelte."
+    },
+    "config::tsconfig.node.json": {
+      "name": "tsconfig.node.json",
+      "type": "config",
+      "summary": "TypeScript configuration for Node-side build tooling (vite.config.ts). Targets ES2023, uses bundler moduleResolution, enables verbatimModuleSyntax and erasableSyntaxOnly."
+    },
+    "config::vercel.json": {
+      "name": "vercel.json",
+      "type": "config",
+      "summary": "Vercel deployment configuration. Defines SPA rewrites, build settings, and hosting headers for the deployed application."
+    },
+    "file::.understand-anything/config.json": {
+      "name": "config.json",
+      "type": "file",
+      "summary": "Configuration for the understand-anything knowledge graph tool. Sets outputLanguage to English."
+    },
+    "file::.understand-anything/dashboard-errors.txt": {
+      "name": "dashboard-errors.txt",
+      "type": "file",
+      "summary": "Error log from the understand-anything dashboard. Currently empty."
+    },
+    "file::.understand-anything/dashboard-output.txt": {
+      "name": "dashboard-output.txt",
+      "type": "file",
+      "summary": "Output log from the understand-anything dashboard. Currently empty."
+    },
+    "config::.understand-anything/fingerprints.json": {
+      "name": "fingerprints.json",
+      "type": "config",
+      "summary": "Cache of file fingerprints (SHA-256 hashes) for 148 tracked files. Used by the understand-anything tool to detect which files have changed since the last analysis run. Associated with git commit 38c34cb."
+    },
+    "file::.understand-anything/knowledge-graph.json": {
+      "name": "knowledge-graph.json",
+      "type": "file",
+      "summary": "The existing knowledge graph produced by the understand-anything tool. Contains layered node/edge data representing the codebase architecture, component relationships, and module dependencies."
+    },
+    "config::.understand-anything/meta.json": {
+      "name": "meta.json",
+      "type": "config",
+      "summary": "Metadata for the understand-anything analysis. Records lastAnalyzed timestamp (2026-07-24), total files analyzed (148), and the git commit hash (38c34cb) at time of last run."
+    },
+    "schema::src/data/armors.json": {
+      "name": "armors.json",
+      "type": "schema",
+      "summary": "Static game data defining all armor pieces. Each entry contains name, slot (head/chest/legs), stats (physicalDefense, magicDefense, etc.), optional perk references, set bonuses, and rarity information."
+    },
+    "schema::src/data/blades.json": {
+      "name": "blades.json",
+      "type": "schema",
+      "summary": "Static game data defining all blade weapon parts. Each entry contains name, base damage values, scaling stats, element types, attack speed modifiers, and weapon-type classification."
+    },
+    "schema::src/data/enchantments.json": {
+      "name": "enchantments.json",
+      "type": "schema",
+      "summary": "Static game data defining all enchantments. Each entry contains name, category (refined/strengthened/dexterous/burning/etc.), stat bonuses, and slot compatibility."
+    },
+    "schema::src/data/essences.json": {
+      "name": "essences.json",
+      "type": "schema",
+      "summary": "Static game data defining all essence weapon parts. Each entry contains name, base stats, element modifiers, and weapon-type restrictions."
+    },
+    "schema::src/data/gloves.json": {
+      "name": "gloves.json",
+      "type": "schema",
+      "summary": "Static game data defining all glove weapon parts. Each entry contains name, base stats, and scaling information."
+    },
+    "schema::src/data/guilds.json": {
+      "name": "guilds.json",
+      "type": "schema",
+      "summary": "Static game data defining all guilds. Each entry contains name, guild ranks with stat bonuses, perk references, and description. Used to populate the guild selector in the character configuration."
+    },
+    "schema::src/data/handles.json": {
+      "name": "handles.json",
+      "type": "schema",
+      "summary": "Static game data defining all handle weapon parts. Each entry contains name, base damage, scaling stats, weapon-type modifiers, and attack properties."
+    },
+    "schema::src/data/perks.json": {
+      "name": "perks.json",
+      "type": "schema",
+      "summary": "Comprehensive static game data defining all perks. Massive dataset (3688 lines) containing every perk's name, description, tags (combat/support/status), stat bonuses, damage formulas, cooldown references, and scaling parameters. Core reference for the entire damage calculation engine."
+    },
+    "schema::src/data/races.json": {
+      "name": "races.json",
+      "type": "schema",
+      "summary": "Static game data defining all 11 playable races. Each entry contains name, passive abilities, stat modifiers (HP, speed, elemental resistances), and racial perk references."
+    },
+    "schema::src/data/rings.json": {
+      "name": "rings.json",
+      "type": "schema",
+      "summary": "Static game data defining all ring accessories. Each entry contains name, stat bonuses, perk slots, and rarity information."
+    },
+    "schema::src/data/runes.json": {
+      "name": "runes.json",
+      "type": "schema",
+      "summary": "Static game data defining all runes. Each entry contains name, activation conditions, stat bonuses, damage effects, and cooldown properties."
+    },
+    "document::.slim/deepwork/ui-upgrade.md": {
+      "name": "ui-upgrade.md",
+      "type": "document",
+      "summary": "Plan document for upgrading the UI from Svelte 4 to Svelte 5 runes. Outlines migration steps, component modernization strategy, and phased rollout approach."
+    },
+    "file::.understand-anything/.understandignore": {
+      "name": ".understandignore",
+      "type": "file",
+      "summary": "Ignore patterns for the understand-anything knowledge graph tool. Lists files and directories excluded from analysis."
+    },
+    "file::analyze-mounticon.mjs": {
+      "name": "analyze-mounticon.mjs",
+      "type": "file",
+      "summary": "Utility script for analyzing MountIcon SVG files. Processes mount icon data for use in the damage calculator UI."
+    },
+    "file::decode_full.mjs": {
+      "name": "decode_full.mjs",
+      "type": "file",
+      "summary": "Debug/development tool that decodes base64-encoded full build state from URL parameters. Uses eval for deserialization (CWE-502 security finding)."
+    },
+    "document::docs/ONBOARDING.md": {
+      "name": "ONBOARDING.md",
+      "type": "document",
+      "summary": "Comprehensive onboarding guide for new contributors. Documents project setup, architecture, tech stack, development workflow, build configuration, and contribution guidelines."
+    },
+    "file::src/app.css": {
+      "name": "app.css",
+      "type": "file",
+      "summary": "Global CSS stylesheet (343 lines) defining the application's design system. Sets CSS custom properties for colors, typography, spacing, glass morphism effects, and dark theme tokens. Defines reusable utility classes and component styles."
+    },
+    "file::src/BaseDamageCalc.svelte": {
+      "name": "BaseDamageCalc.svelte",
+      "type": "file",
+      "summary": "Component (2660 lines) that computes and displays base damage breakdowns for each attack type (M1/M2/WA). Handles damage type resolution, defense calculations, critical hit display, armor penetration, perk on-hit damage, and status effect damage. Central to the damage output visualization."
+    },
+    "file::src/CdrStepsCalc.svelte": {
+      "name": "CdrStepsCalc.svelte",
+      "type": "file",
+      "summary": "Small component (92 lines) displaying a step-by-step cooldown reduction calculation. Shows each CDR source as a multiply/divide operation with animated arrow transitions from base cooldown to final value with floor and minimum cap display."
+    },
+    "file::src/CritIcon.svelte": {
+      "name": "CritIcon.svelte",
+      "type": "file",
+      "summary": "Simple SVG icon component (13 lines) rendering a critical hit symbol. Uses a gradient fill from red to orange for the starburst shape."
+    },
+    "file::src/data/draconicRunes.ts": {
+      "name": "draconicRunes.ts",
+      "type": "file",
+      "summary": "Module (104 lines) computing draconic rune and draconic infusion bonuses to damage types. Provides applyDraconicBonuses and getDraconicBonuses functions that add elemental damage bonuses based on rune stacks and infusion state."
+    },
+    "file::src/data/selfDamagePerks.ts": {
+      "name": "selfDamagePerks.ts",
+      "type": "file",
+      "summary": "Module (82 lines) defining perks that deal self-damage (Undead Might, Explosive Charge, Dark Magic, Bombardier). Each definition specifies the damage fraction, damage type distribution, DR reduction per stack, and affected attack types. Includes calcSelfDamage function with harmonic-series multi-target falloff."
+    },
+    "file::src/data/stanceOverlays.ts": {
+      "name": "stanceOverlays.ts",
+      "type": "file",
+      "summary": "Module (59 lines) resolving stance overlay types based on weapon configuration. Checks Blaster Ring, Locked And Loaded, Cosmic Ray, and Mine conditions against weapon perks and fist/weapon type to determine Rifle/Shotgun/Dual Guns/Side Gun overlay styles."
+    },
+    "file::src/DidYouMean.svelte": {
+      "name": "DidYouMean.svelte",
+      "type": "file",
+      "summary": "Component (110 lines) showing fuzzy search suggestions when no exact results are found. Displays clickable chips with highlighted text matching for name and perk search results."
+    },
+    "file::src/DmgTotalTooltip.svelte": {
+      "name": "DmgTotalTooltip.svelte",
+      "type": "file",
+      "summary": "Component (169 lines) displaying a tooltip with damage breakdown by type. Groups ComputedHit entries by damage type, shows animated pie chart visualization, and lists per-type totals with percentage bars."
+    },
+    "file::src/DraconicAbilityStats.svelte": {
+      "name": "DraconicAbilityStats.svelte",
+      "type": "file",
+      "summary": "Small component (42 lines) displaying draconic ability stat rows: damage type, scaling, poise damage, and optional holy/water heal values."
+    },
+    "file::src/EmotionalTracker.svelte": {
+      "name": "EmotionalTracker.svelte",
+      "type": "file",
+      "summary": "Component (231 lines) managing the Emotional state selector (Buffs only / Debuffs only / Both). Provides a 3-position slider with color-coded states that persists to the build store."
+    },
+    "file::src/Highlight.svelte": {
+      "name": "Highlight.svelte",
+      "type": "file",
+      "summary": "Simple component (16 lines) rendering text with search-term highlighting. Wraps highlighted portions in <mark> tags using highlightTextParts utility."
+    },
+    "file::src/LevelBar.svelte": {
+      "name": "LevelBar.svelte",
+      "type": "file",
+      "summary": "Component (398 lines) displaying and editing the character level and HP bar. Features draggable fill indicator, shield HP overlay, protection stat display, editable level input with keyboard shortcuts, and responsive styling."
+    },
+    "file::src/lib/constants/boosts.ts": {
+      "name": "boosts.ts",
+      "type": "file",
+      "summary": "Constants module (68 lines) defining all perk-related damage boost multipliers. Contains ~55 exported numeric constants for per-stack multipliers (Blood Thirsty, Venom Spitter, Perfection, etc.) and complex boost parameters (Heat Drill cooldown/damage, Quickdraw, Spring Powered, etc.)."
+    },
+    "file::src/lib/constants/cdr.ts": {
+      "name": "cdr.ts",
+      "type": "file",
+      "summary": "Constants module (25 lines) defining cooldown reduction values for various CDR sources: Caster Rune/WA, Channeled Weapon, Mage Rage, Poison Accel, Runic Winds, Wave Rider, Whirlwind, and Gladiatorial set bonus."
+    },
+    "file::src/lib/constants/defensive.ts": {
+      "name": "defensive.ts",
+      "type": "file",
+      "summary": "Constants module (22 lines) defining defensive perk DR values: Barbskin, Stoneskin, Adaptive Plate, Protector Spirit, Air Pressure, Valor, Vampire, Frenzy, Stored Corruption, Mounted Defense, Carapace, and Cursed Bark."
+    },
+    "file::src/lib/constants/draconic-colors.ts": {
+      "name": "draconic-colors.ts",
+      "type": "file",
+      "summary": "Constants module (20 lines) defining draconic color multiplier values for Fire, Air, Earth, Water, and Hex dragon states: speed, damage, stun, knockback, and cooldown multipliers."
+    },
+    "file::src/lib/constants/draconic.ts": {
+      "name": "draconic.ts",
+      "type": "file",
+      "summary": "Constants module (10 lines) defining draconic infusion potency/duration multipliers and dragon state HP/damage parameters."
+    },
+    "file::src/lib/constants/heals.ts": {
+      "name": "heals.ts",
+      "type": "file",
+      "summary": "Constants module (5 lines) defining critical healing base value, holy boost divisor, per-stack healing bonus, and Ocean Song per-stack heal percentage."
+    },
+    "file::src/lib/constants/index.ts": {
+      "name": "index.ts",
+      "type": "file",
+      "summary": "Barrel re-export file (18 lines) that re-exports all sub-modules from the constants directory: damage-types, game, storage, thresholds, perks, boosts, heals, draconic, perk-base-damage, rune-base-damage, buffs, stat-conversions, defensive, dot-damage, draconic-colors, cdr, debuff-effects, and wa-display."
+    },
+    "file::src/lib/constants/thresholds.ts": {
+      "name": "thresholds.ts",
+      "type": "file",
+      "summary": "Constants module (5 lines) defining armor penetration branch threshold, minimum cooldown, and base crit damage percentage."
+    },
+    "file::src/lib/EnchantSelect.svelte": {
+      "name": "EnchantSelect.svelte",
+      "type": "file",
+      "summary": "Component (465 lines) providing a searchable dropdown for selecting enchantments. Features color-coded enchantment names by rarity/type, text search with highlight, scroll-based keyboard navigation, and exclusive enchantment slot enforcement."
+    },
+    "file::src/lib/engine/engine.ts": {
+      "name": "engine.ts",
+      "type": "file",
+      "summary": "Barrel re-export file (6 lines) for the engine module. Re-exports all sub-modules: data, shrine, enchant, weapon, build, and format."
+    },
+    "file::src/lib/Modal.svelte": {
+      "name": "Modal.svelte",
+      "type": "file",
+      "summary": "Reusable modal dialog component (213 lines). Provides overlay backdrop with click-to-close, animated fly-in dialog box, focus trapping, close button, and slot-based content area."
+    },
+    "file::src/lib/modals/AccessorySelectModal.svelte": {
+      "name": "AccessorySelectModal.svelte",
+      "type": "file",
+      "summary": "Modal (200 lines) for selecting ring or rune accessories. Uses ModalSearchHeader for search/filter and displays items in a grid with stat previews."
+    },
+    "file::src/lib/modals/GuildModal.svelte": {
+      "name": "GuildModal.svelte",
+      "type": "file",
+      "summary": "Modal (98 lines) for selecting a guild. Lists available guilds with rank progression and stat bonus previews."
+    },
+    "file::src/lib/modals/index.ts": {
+      "name": "index.ts",
+      "type": "file",
+      "summary": "Barrel re-export file (4 lines) exporting RaceModal, GuildModal, AccessorySelectModal, and WeaponPartModal."
+    },
+    "file::src/lib/modals/RaceModal.svelte": {
+      "name": "RaceModal.svelte",
+      "type": "file",
+      "summary": "Modal (60 lines) for selecting a character race. Lists available races with passive ability descriptions."
+    },
+    "file::src/lib/modals/WeaponPartModal.svelte": {
+      "name": "WeaponPartModal.svelte",
+      "type": "file",
+      "summary": "Modal (137 lines) for selecting weapon parts (blades, handles, gloves, essences). Uses ModalSearchHeader with stat filtering and weapon stat comparison."
+    },
+    "file::src/lib/StatFilterShared.svelte": {
+      "name": "StatFilterShared.svelte",
+      "type": "file",
+      "summary": "Shared Svelte component (97 lines) providing StatChip UI and buildStatMaps utility used by both StatFilter and WeaponStatFilter. Renders stat filter chips with include/exclude toggle states."
+    },
+    "file::src/lib/stats/elementalBoosts.ts": {
+      "name": "elementalBoosts.ts",
+      "type": "file",
+      "summary": "Constants module (22 lines) defining ELEMENTAL_BOOST_STATS and NEGATIVE_ELEMENTAL_BOOST_STATS arrays listing all elemental boost stat keys and labels."
+    },
+    "file::src/lib/stats/filterActions.ts": {
+      "name": "filterActions.ts",
+      "type": "file",
+      "summary": "Utility module (41 lines) providing createFilterActions factory that returns toggle/remove/clear/handleChipKeyDown actions for managing stat filter state (include/exclude/none)."
+    },
+    "file::src/lib/Toast.svelte": {
+      "name": "Toast.svelte",
+      "type": "file",
+      "summary": "Toast notification component (100 lines) displaying success/error/info/warning messages with animated fly-in, auto-dismiss timer, and type-specific styling."
+    },
+    "file::src/lib/ui/Badge.svelte": {
+      "name": "Badge.svelte",
+      "type": "file",
+      "summary": "Reusable badge/pill UI component (148 lines) with color, size (xs/sm/md), square variant, and dot prefix options."
+    },
+    "file::src/lib/ui/Button.svelte": {
+      "name": "Button.svelte",
+      "type": "file",
+      "summary": "Reusable button UI component (143 lines) with variant (primary/secondary/ghost/danger), size, icon, disabled, and loading states."
+    },
+    "file::src/lib/ui/Card.svelte": {
+      "name": "Card.svelte",
+      "type": "file",
+      "summary": "Reusable card container UI component (103 lines) with glass morphism styling, hover effects, and optional header/footer slots."
+    },
+    "file::src/lib/ui/Divider.svelte": {
+      "name": "Divider.svelte",
+      "type": "file",
+      "summary": "Simple divider UI component (42 lines) rendering a horizontal rule with configurable thickness and color."
+    },
+    "file::src/lib/ui/index.ts": {
+      "name": "index.ts",
+      "type": "file",
+      "summary": "Barrel re-export file (7 lines) exporting Card, Badge, Button, Stat, Section, Divider, and Panel UI components."
+    },
+    "file::src/lib/ui/Panel.svelte": {
+      "name": "Panel.svelte",
+      "type": "file",
+      "summary": "Panel container UI component (94 lines) with collapsible header, glass morphism styling, and slot-based content area."
+    },
+    "file::src/lib/ui/Section.svelte": {
+      "name": "Section.svelte",
+      "type": "file",
+      "summary": "Section container UI component (129 lines) with title, description, and content slots for organizing related UI elements."
+    },
+    "file::src/lib/ui/Stat.svelte": {
+      "name": "Stat.svelte",
+      "type": "file",
+      "summary": "Reusable stat display UI component (90 lines) using Svelte 5 runes ($props). Renders a label-value pair with variant colors (green/amber/red/purple/blue/teal) and sizes (sm/md/lg). Supports children snippets for custom value rendering."
+    },
+    "file::src/lib/ui/uiConstants.ts": {
+      "name": "uiConstants.ts",
+      "type": "file",
+      "summary": "UI constants module (78 lines) defining UI_COLORS (damage type colors, tag group colors, source type colors, enchant rarity colors, negative stat colors), SOURCE_LABELS, STAT_LABELS, and TAG_LABELS mappings used across the UI."
+    },
+    "file::src/main.ts": {
+      "name": "main.ts",
+      "type": "file",
+      "summary": "Application entry point (8 lines). Imports and mounts the App.svelte component, imports global CSS, and initializes Vercel analytics."
+    },
+    "file::src/ModalSearchHeader.svelte": {
+      "name": "ModalSearchHeader.svelte",
+      "type": "file",
+      "summary": "Component (199 lines) providing a reusable search header for modal dialogs. Includes search input, suggestion dropdown, tag filter, stat filter (weapon or standard), and optional sort buttons. Used by AccessorySelectModal and WeaponPartModal."
+    },
+    "file::src/MountIcon.svelte": {
+      "name": "MountIcon.svelte",
+      "type": "file",
+      "summary": "SVG icon component (64 lines) rendering a detailed mount icon with gradient fill. Contains complex SVG path data for the mount silhouette."
+    },
+    "file::src/ScalingBreakdownRow.svelte": {
+      "name": "ScalingBreakdownRow.svelte",
+      "type": "file",
+      "summary": "Component (102 lines) displaying a single weapon scaling breakdown row. Shows stat name, base value, multiplier arrow, scaled value, boost percentage, and effective contribution in a grid layout."
+    },
+    "file::src/StatFilter.svelte": {
+      "name": "StatFilter.svelte",
+      "type": "file",
+      "summary": "Component (334 lines) providing stat-based filtering for equipment selection. Groups stats into Boost/Defense/Speed categories with include/exclude toggle chips. Supports sort modes: highest, lowest, alphabetical, most-effective, brawny."
+    },
+    "file::src/SuggestDrop.svelte": {
+      "name": "SuggestDrop.svelte",
+      "type": "file",
+      "summary": "Component (67 lines) rendering a dropdown of search suggestions. Displays items with type labels (Name/Perk) and highlighted text matching the search query."
+    },
+    "file::src/TagFilter.svelte": {
+      "name": "TagFilter.svelte",
+      "type": "file",
+      "summary": "Component (330 lines) providing tag-based filtering for perk/weapon selection. Groups tags into Combat/Support/Status/Weapon Art-Rune/Special categories with toggle chips. Supports hiding specific tags and excluding tags from the filter."
+    },
+    "file::src/WeaponStatFilter.svelte": {
+      "name": "WeaponStatFilter.svelte",
+      "type": "file",
+      "summary": "Component (240 lines) providing weapon-specific stat filtering. Similar to StatFilter but specialized for weapon part selection with damage scaling and attack speed focus."
+    },
+    "file::src/WeaponStatsDisplay.svelte": {
+      "name": "WeaponStatsDisplay.svelte",
+      "type": "file",
+      "summary": "Component (121 lines) displaying computed weapon stats in a compact panel. Shows damage, attack speed, and scaling values with color-coded labels."
+    },
+    "file::vite.config.ts": {
+      "name": "vite.config.ts",
+      "type": "file",
+      "summary": "Vite build configuration (59 lines). Configures Svelte plugin, VitePWA for PWA support with auto-update and StaleWhileRevalidate caching, and rollup-plugin-visualizer for bundle analysis. Uses configurable base path via VITE_BASE_PATH env var."
+    },
+    "file::src/lib/constants/buffs.ts": {
+      "name": "buffs.ts",
+      "type": "file",
+      "summary": "Pure constants module defining buff/debuff potency and duration values for the Voxel Blade damage engine. Exports 132 named numeric constants covering potion effects, rune-granted buffs, weapon-art buffs, True Balance conversions, perk buff factory values, buff potency modifiers, and generic debuff modifiers. No functions or classes — serves as a centralized data registry consumed by the buff calculation engine."
+    },
+    "file::src/data/BuffData.ts": {
+      "name": "BuffData.ts",
+      "type": "file",
+      "summary": "Core buff and debuff data module for the Voxel Blade damage calculator. Defines all buff/debuff definitions (BUFF_DEFS), item-sourced buffs (ITEM_BUFF_MAP), perk-sourced buff factories (PERK_BUFFS), weapon art buffs, and race buffs. Provides functions to assemble active buffs from a build, apply perk-based potency/duration modifiers (Bastion Bless, Trickster, Generic Debuff, Contained, Dark One), convert Tailwind to Whirlwind, compute True Balance conversions, generate dynamic buff descriptions, and calculate buff effects. Exports 15 symbols and contains 21 functions."
+    },
+    "function:src/data/BuffData.ts:formatDamageTypes": {
+      "name": "formatDamageTypes",
+      "type": "function",
+      "summary": "Helper to format an array of damage type strings into a human-readable comma-separated list with 'and' before the last item."
+    },
+    "function:src/data/BuffData.ts:getWeaponArtBuffs": {
+      "name": "getWeaponArtBuffs",
+      "type": "function",
+      "summary": "Looks up and returns the GrantedBuff array for a given weapon art name from the internal WEAPON_ART_BUFF_MAP."
+    },
+    "function:src/data/BuffData.ts:getTrueBalanceBuffs": {
+      "name": "getTrueBalanceBuffs",
+      "type": "function",
+      "summary": "Computes True Balance buff conversions: maps active enemy debuffs (Bleed, Burn, Poison -> Regen; Frostbite, Slowness, Sticky -> Tailwind; Shatter, Electrical Rend, Hypnotized -> Reinforce; Weakness -> Rage; Despair -> Inspired) based on perk amount, grouping by target buff and taking max potency/duration."
+    },
+    "function:src/data/BuffData.ts:durationMultFromStack": {
+      "name": "durationMultFromStack",
+      "type": "function",
+      "summary": "Factory that returns a function computing duration multiplier from stack count: base + perStack * stacks."
+    },
+    "function:src/data/BuffData.ts:getSpecificBuffModifiers": {
+      "name": "getSpecificBuffModifiers",
+      "type": "function",
+      "summary": "Computes per-buff potency bonus and duration multiplier from specific modifiers (Gladiatorial Rage, Mage Rage, Oceans Rage, Slayer Rage, Fury, Iron Slayer, Tailwind, Wind Walker, Slow Leak, Potion Chugger, Bounce Momentum). Filters by rune source and self-debuff eligibility."
+    },
+    "function:src/data/BuffData.ts:getBastionBlessBonus": {
+      "name": "getBastionBlessBonus",
+      "type": "function",
+      "summary": "Computes Bastion Bless potency bonus for non-debuff, non-neutral, non-self-debuff, non-capped buffs as BASTION_BLESS_MULT * stacks * potency."
+    },
+    "function:src/data/BuffData.ts:getGenericDebuffModifiers": {
+      "name": "getGenericDebuffModifiers",
+      "type": "function",
+      "summary": "Computes generic debuff modifiers (Endless Despair, Stored Corruption) for enemy debuffs: potency multiplier, flat bonus, and duration multiplier. Excludes self-debuffs except Despair."
+    },
+    "function:src/data/BuffData.ts:getTricksterReflection": {
+      "name": "getTricksterReflection",
+      "type": "function",
+      "summary": "Calculates Trickster reflection bonus for self-applied Despair debuffs: (tricksterStacks / 10) * (1 + warding-adjusted potency), compensating for post-hoc Warding multiplication."
+    },
+    "function:src/data/BuffData.ts:applyBuffPerkModifiers": {
+      "name": "applyBuffPerkModifiers",
+      "type": "function",
+      "summary": "Main buff modification pipeline. For each buff, computes and merges specific modifiers, Bastion Bless bonus, Trickster reflection, generic debuff modifiers, Contained multiplier, and Dark One duration multiplier. Returns new buff arrays with adjusted potency and duration."
+    },
+    "function:src/data/BuffData.ts:applyToxinTransferDuration": {
+      "name": "applyToxinTransferDuration",
+      "type": "function",
+      "summary": "Adjusts Toxin Transfer poison buff duration to match the maximum self-poison duration plus TOXIN_TRANSFER_DURATION_EXTRA."
+    },
+    "function:src/data/BuffData.ts:convertTailwindToWhirlwind": {
+      "name": "convertTailwindToWhirlwind",
+      "type": "function",
+      "summary": "Converts all Tailwind buffs to Whirlwind with scaled duration when Whirlwind perk is active. Also adds a 5s Bleed from the wind slash AoE."
+    },
+    "function:src/data/BuffData.ts:getBuffDescription": {
+      "name": "getBuffDescription",
+      "type": "function",
+      "summary": "Generates a human-readable description for a buff by name, using dynamicDescription if available or static description. Special-cases Weakness (dmg reduction), Shatter (armor loss), and Anti Heal (healing reduction). Replaces 'x%' placeholders with computed values."
+    },
+    "function:src/data/BuffData.ts:getPerkBuffs": {
+      "name": "getPerkBuffs",
+      "type": "function",
+      "summary": "Iterates over all perks with amount > 0, calls their PERK_BUFFS factory functions, and collects the resulting GrantedBuff arrays."
+    },
+    "function:src/data/BuffData.ts:getActiveBuildBuffs": {
+      "name": "getActiveBuildBuffs",
+      "type": "function",
+      "summary": "Collects all buffs from a build's equipment slots (rune, ring, infusion ring, helmet, chestplate, leggings, weapon blade, weapon handle, monk glove) by looking up each item in BUFFS_BY_ITEM_SOURCE, plus race buffs."
+    },
+    "function:src/data/BuffData.ts:getRaceBuffs": {
+      "name": "getRaceBuffs",
+      "type": "function",
+      "summary": "Returns race-specific buffs from RACE_BUFF_MAP (BUNIKIN critical boost on dodge, DARK ELF random debuff pool on hit)."
+    },
+    "function:src/data/BuffData.ts:applyCauterizeConversion": {
+      "name": "applyCauterizeConversion",
+      "type": "function",
+      "summary": "When Cauterize perk is active and Cursed Flames is not, marks all enemy-applied Burn entries with burnMode 'singed' to trigger burst-on-application instead of DoT."
+    },
+    "function:src/data/BuffData.ts:getBurnApplicationCount": {
+      "name": "getBurnApplicationCount",
+      "type": "function",
+      "summary": "Returns the count of Burn buff entries in the buff list, used to multiply Cauterize/Singed burst damage."
+    },
+    "function:src/data/BuffData.ts:assembleActiveBuffs": {
+      "name": "assembleActiveBuffs",
+      "type": "function",
+      "summary": "Main assembly pipeline: collects item buffs + potion buffs + perk buffs + weapon art buffs, applies applyBuffPerkModifiers, convertTailwindToWhirlwind, and applyCauterizeConversion. Shared helper for the damage calculation engine."
+    },
+    "function:src/data/BuffData.ts:calcBuffEffect": {
+      "name": "calcBuffEffect",
+      "type": "function",
+      "summary": "Computes the effect value for a buff at a given potency: effectPerTenthPotency * potency * 10. Returns value, unit ('%' or 'flat'), and a formatted label string."
+    },
+    "function:src/data/BuffData.ts:calcPotencyPercent": {
+      "name": "calcPotencyPercent",
+      "type": "function",
+      "summary": "Computes a scaled potency percentage from perk amount using the formula: floor(p^min(1,p)+1 * 100 * (1 + p/1.5) * 100) / 100, used for perk description formatting."
+    },
+    "function:src/data/BuffData.ts:formatPerkDescription": {
+      "name": "formatPerkDescription",
+      "type": "function",
+      "summary": "Replaces 'x%' placeholders in a perk description with the computed potency percentage from calcPotencyPercent."
+    },
+    "file::src/lib/types.ts": {
+      "name": "types.ts",
+      "type": "file",
+      "summary": "Core type definitions module for the voxlblade-builder project. Defines fundamental stat types (StatKey, StatMap), equipment interfaces (Race, Guild, Armor, Ring, Rune), weapon component types (WeaponBlade, WeaponHandle, MonkGlove, MonkEssence), the full BuildState interface, proc coefficient handling (ProcCoefficient, ProcScalingType), boost system types (BoostEntry, BoostResult), and upgrade logic. Also re-exports DMG_TYPE_COLORS and DMG_TYPE_PRIORITY from constants. This file is the foundational type layer imported by nearly every other module in the engine and data layers."
+    },
+    "function:src/lib/types.ts:applyUpgrade": {
+      "name": "applyUpgrade",
+      "type": "function",
+      "summary": "Applies an upgrade level multiplier to a StatMap. Positive stat values are scaled up by (1 + level * 0.1) and negative values are scaled down (divided), producing an upgraded copy of the stats. Returns a shallow copy with no mutation."
+    },
+    "function:src/lib/types.ts:getProcCoeffValue": {
+      "name": "getProcCoeffValue",
+      "type": "function",
+      "summary": "Extracts the numeric proc coefficient value from a ProcCoefficient union type. Returns 0 for 'noProc', the stored value for 'hasCoeff', and a default of 1 when undefined."
+    },
+    "function:src/lib/types.ts:canProc": {
+      "name": "canProc",
+      "type": "function",
+      "summary": "Determines whether a given ProcCoefficient allows procing by checking if its resolved value is greater than 0. Delegates to getProcCoeffValue."
+    },
+    "file::src/lib/store.ts": {
+      "name": "store.ts",
+      "type": "file",
+      "summary": "Svelte store module managing build state persistence, enchantment manipulation, guild/race configuration, and armor/ring slot reordering. Exports reactive stores and updater functions that form the central state management layer for the Voxel Blade damage calculator."
+    },
+    "function:src/lib/store.ts:loadBuild": {
+      "name": "loadBuild",
+      "type": "function",
+      "summary": "Loads the persisted BuildState from localStorage, merges it with defaults via spread operator, and returns a complete BuildState. Uses defensive try/catch to fall back to defaults on parse errors or missing data."
+    },
+    "function:src/lib/store.ts:setEnchantment": {
+      "name": "setEnchantment",
+      "type": "function",
+      "summary": "Sets a single enchantment value at a given index within a specified armor slot. Delegates constraint enforcement (e.g. no duplicate enchantments) to the engine's enforceEnchantSlot function."
+    },
+    "function:src/lib/store.ts:swapEnchantments": {
+      "name": "swapEnchantments",
+      "type": "function",
+      "summary": "Swaps the entire enchantment arrays between two different armor slots. Short-circuits if both slots are the same."
+    },
+    "function:src/lib/store.ts:clearBuild": {
+      "name": "clearBuild",
+      "type": "function",
+      "summary": "Resets the entire build state to the DEFAULT_BUILD constant, effectively restoring all equipment, enchantments, and settings to initial values."
+    },
+    "function:src/lib/store.ts:setGuild": {
+      "name": "setGuild",
+      "type": "function",
+      "summary": "Sets the guild name and rank. Automatically forces the race to 'DRAGON BLOODED' and initializes draconic color if the guild is 'Draconic'; clears draconic fields otherwise."
+    },
+    "function:src/lib/store.ts:moveArmorSlot": {
+      "name": "moveArmorSlot",
+      "type": "function",
+      "summary": "Moves or clones an armor piece between a primary slot (helmet/chestplate/leggings) and its infusion counterpart. Validates slot compatibility via armorSupportsSlot, swaps or copies the upgrade level, and returns whether the move succeeded."
+    },
+    "function:src/lib/store.ts:canArmorMoveToSlot": {
+      "name": "canArmorMoveToSlot",
+      "type": "function",
+      "summary": "Predicate that checks whether a given armor name is compatible with a target slot type (Helmet/Chestplate/Leggings) by delegating to armorSupportsSlot."
+    },
+    "function:src/lib/store.ts:moveRingSlot": {
+      "name": "moveRingSlot",
+      "type": "function",
+      "summary": "Moves or clones a ring between the primary ring slot and its infusion counterpart, including the associated upgrade level. Follows the same clone-or-swap pattern as moveArmorSlot."
+    },
+    "file::stats.html": {
+      "name": "stats.html",
+      "type": "file",
+      "summary": "Generated Rollup Visualizer HTML output (4950 lines). Contains inline CSS for treemap UI, a bundled Preact-based drawChart library, D3 scale modules (linear, sequential, etc.), and embedded JSON bundle data listing all source modules with sizes. Serves as a self-contained bundle size analysis report for the voxlblade-builder project."
+    },
+    "file::src/App.svelte": {
+      "name": "App.svelte",
+      "type": "file",
+      "summary": "Main application root component (4431 lines). Orchestrates the entire Voxel Blade build calculator UI including weapon/armor/ring/rune selection modals, enchantment management, drag-and-drop equipment reordering, build state display, tab switching between Overview and Analyze views, and summary statistics. Imports the damage calculation engine, game data, and dozens of child components."
+    },
+    "file::src/BuffList.svelte": {
+      "name": "BuffList.svelte",
+      "type": "file",
+      "summary": "Buff/debuff/neutral effect display component (783 lines). Computes active buffs from equipped items, perks, weapon arts, and draconic infusion. Groups duplicate buffs, applies perk modifiers, handles DoT display potency, and provides a tabbed UI (Buffs/Debuffs/Neutral) with expand/collapse. Displays potency, duration, sources, and effect descriptions."
+    },
+    "file::src/BuildSaves.svelte": {
+      "name": "BuildSaves.svelte",
+      "type": "file",
+      "summary": "Build save/load management component (1098 lines). Handles localStorage persistence of build slots, import/export with deflate compression, drag-to-reorder, fuzzy search across saved builds, duplicate detection, and build state serialization/deserialization with key mapping and sanitization."
+    },
+    "file::src/DamageAnalyzer.svelte": {
+      "name": "DamageAnalyzer.svelte",
+      "type": "file",
+      "summary": "Detailed damage analysis component (7015 lines, largest file in project). Computes full damage breakdowns per attack type (M1, M2, WA, Rune, Perk), applies buff/debuff multipliers, calculates DoT ticks, defense mitigation, weapon charge, scaling breakdowns, self-damage, summon damage, and healing. Provides interactive toggles for individual buffs, boosts, and debuffs."
+    },
+    "file::src/lib/AppHeader.svelte": {
+      "name": "AppHeader.svelte",
+      "type": "file",
+      "summary": "Application header component (175 lines). Displays the VoxlBuilder title, embeds the BuildSaves panel, and provides a tab switcher between Overview and Analyze views with an animated sliding bubble indicator. Supports keyboard shortcut (Tab) to toggle between views."
+    },
+    "function:src/App.svelte:onArmorDragStart": {
+      "name": "onArmorDragStart",
+      "type": "function",
+      "summary": "Initiates HTML5 drag for an armor slot. Sets draggingArmorSlot state and configures dataTransfer."
+    },
+    "function:src/App.svelte:onArmorDragOver": {
+      "name": "onArmorDragOver",
+      "type": "function",
+      "summary": "Validates and handles drag-over for armor slots using canArmorMoveToSlot bidirectional check."
+    },
+    "function:src/App.svelte:onArmorDrop": {
+      "name": "onArmorDrop",
+      "type": "function",
+      "summary": "Executes armor move/clone/swap on drop by calling moveArmorSlot from store."
+    },
+    "function:src/App.svelte:onArmorTap": {
+      "name": "onArmorTap",
+      "type": "function",
+      "summary": "Touch-friendly armor slot tap handler for selecting/moving/cloning armor on mobile."
+    },
+    "function:src/App.svelte:onRingDragStart": {
+      "name": "onRingDragStart",
+      "type": "function",
+      "summary": "Initiates HTML5 drag for ring/infusionRing slots."
+    },
+    "function:src/App.svelte:onRingDrop": {
+      "name": "onRingDrop",
+      "type": "function",
+      "summary": "Executes ring move/swap on drop by calling moveRingSlot from store."
+    },
+    "function:src/App.svelte:onRingTap": {
+      "name": "onRingTap",
+      "type": "function",
+      "summary": "Touch-friendly ring slot tap handler."
+    },
+    "function:src/App.svelte:getGridDragAction": {
+      "name": "getGridDragAction",
+      "type": "function",
+      "summary": "Determines the drag action label (clone/move/swap) for a grid drag source and target."
+    },
+    "function:src/App.svelte:createGridGhost": {
+      "name": "createGridGhost",
+      "type": "function",
+      "summary": "Creates a floating ghost element for visual drag feedback during grid drag operations."
+    },
+    "function:src/App.svelte:gridHitTest": {
+      "name": "gridHitTest",
+      "type": "function",
+      "summary": "Performs hit-testing to find which data-slot cell is under the pointer during grid drag."
+    },
+    "function:src/App.svelte:handleGridMouseDown": {
+      "name": "handleGridMouseDown",
+      "type": "function",
+      "summary": "Initiates custom mouse-based grid drag (replaces HTML5 DnD). Captures start position and registers move/up listeners."
+    },
+    "function:src/App.svelte:onGridMouseMove": {
+      "name": "onGridMouseMove",
+      "type": "function",
+      "summary": "Tracks mouse movement during grid drag, creates ghost, performs hit testing, and updates action badge."
+    },
+    "function:src/App.svelte:onGridMouseUp": {
+      "name": "onGridMouseUp",
+      "type": "function",
+      "summary": "Completes grid mouse drag: executes move/clone/swap if target valid, cleans up ghost and state."
+    },
+    "function:src/App.svelte:handleGridTouchStart": {
+      "name": "handleGridTouchStart",
+      "type": "function",
+      "summary": "Initiates custom touch-based grid drag with touch position capture."
+    },
+    "function:src/App.svelte:onGridTouchMove": {
+      "name": "onGridTouchMove",
+      "type": "function",
+      "summary": "Tracks touch movement during grid drag, creates ghost, performs hit testing, and updates badge."
+    },
+    "function:src/App.svelte:onGridTouchEnd": {
+      "name": "onGridTouchEnd",
+      "type": "function",
+      "summary": "Completes grid touch drag: executes move/clone/swap and cleans up."
+    },
+    "function:src/App.svelte:ensureActionBadge": {
+      "name": "ensureActionBadge",
+      "type": "function",
+      "summary": "Lazily creates and returns the floating action badge DOM element for drag feedback."
+    },
+    "function:src/App.svelte:updateActionBadge": {
+      "name": "updateActionBadge",
+      "type": "function",
+      "summary": "Updates the position and label of the floating action badge during drag."
+    },
+    "function:src/App.svelte:flashTapAction": {
+      "name": "flashTapAction",
+      "type": "function",
+      "summary": "Shows a brief action label (clone/move/swap) below a slot after a tap action."
+    },
+    "function:src/App.svelte:toggleCdrPerk": {
+      "name": "toggleCdrPerk",
+      "type": "function",
+      "summary": "Toggles a cooldown reduction perk on/off in the build state's cdrToggles map."
+    },
+    "function:src/App.svelte:computeArmorEffectiveBoost": {
+      "name": "computeArmorEffectiveBoost",
+      "type": "function",
+      "summary": "Calculates the effective stat boost contribution from armor based on weapon scalings, used for 'most-effective' sort mode."
+    },
+    "function:src/App.svelte:computeArmorBrawnyEffectiveBoost": {
+      "name": "computeArmorBrawnyEffectiveBoost",
+      "type": "function",
+      "summary": "Computes effective boost considering the Brawny perk's offensive-to-physical conversion rate."
+    },
+    "function:src/App.svelte:weaponMatchesFilter": {
+      "name": "weaponMatchesFilter",
+      "type": "function",
+      "summary": "Tests whether a weapon item matches the current weapon stat filter criteria (include/exclude by stat presence)."
+    },
+    "function:src/App.svelte:switchTab": {
+      "name": "switchTab",
+      "type": "function",
+      "summary": "Switches the active app tab between 'overview' and 'analyze'."
+    },
+    "function:src/App.svelte:handleClearBuild": {
+      "name": "handleClearBuild",
+      "type": "function",
+      "summary": "Clears the current build state with an undo window. Saves previous state for restoration and shows a toast notification."
+    },
+    "function:src/App.svelte:handleUndo": {
+      "name": "handleUndo",
+      "type": "function",
+      "summary": "Restores the previously cleared build state within the undo window."
+    },
+    "function:src/App.svelte:toggleUpgrade": {
+      "name": "toggleUpgrade",
+      "type": "function",
+      "summary": "Cycles the upgrade level (0 to UPGRADE_MAX) for a given equipment upgrade key."
+    },
+    "function:src/App.svelte:openModal": {
+      "name": "openModal",
+      "type": "function",
+      "summary": "Opens a specific modal type (race, guild, armor, ring, rune, blade, handle, glove, essence) and resets search/filter state."
+    },
+    "function:src/App.svelte:closeModal": {
+      "name": "closeModal",
+      "type": "function",
+      "summary": "Closes the active modal and resets search state."
+    },
+    "function:src/App.svelte:matchSearch": {
+      "name": "matchSearch",
+      "type": "function",
+      "summary": "Tests whether a modal item name matches the current search query, also checking associated perk names."
+    },
+    "function:src/App.svelte:toggleInlineEnchant": {
+      "name": "toggleInlineEnchant",
+      "type": "function",
+      "summary": "Toggles the inline enchantment editor visibility for a specific enchant slot."
+    },
+    "function:src/App.svelte:handleEnchantButtonClick": {
+      "name": "handleEnchantButtonClick",
+      "type": "function",
+      "summary": "Handles enchantment button clicks: sets or clears the selected enchant in the appropriate slot."
+    },
+    "function:src/App.svelte:handleSwapClick": {
+      "name": "handleSwapClick",
+      "type": "function",
+      "summary": "Executes enchantment swap between two slots during enchant swap mode."
+    },
+    "function:src/App.svelte:selectDraconicAbility": {
+      "name": "selectDraconicAbility",
+      "type": "function",
+      "summary": "Selects a specific draconic ability by ID in the build state."
+    },
+    "function:src/App.svelte:applyEnchantToAll": {
+      "name": "applyEnchantToAll",
+      "type": "function",
+      "summary": "Applies the currently selected enchantment to all applicable enchant slots of a given type."
+    },
+    "function:src/App.svelte:substringLevenshtein": {
+      "name": "substringLevenshtein",
+      "type": "function",
+      "summary": "Computes a Levenshtein distance score for fuzzy substring matching in search suggestions."
+    },
+    "function:src/App.svelte:filterAccessoryItems": {
+      "name": "filterAccessoryItems",
+      "type": "function",
+      "summary": "Filters accessory items (rings, runes) by search query and stat filter criteria."
+    },
+    "function:src/App.svelte:filterWeaponItems": {
+      "name": "filterWeaponItems",
+      "type": "function",
+      "summary": "Filters weapon parts (blades, handles, gloves, essences) by search query, stat filter, tags, and tier."
+    },
+    "function:src/App.svelte:itemMatchesStatFilter": {
+      "name": "itemMatchesStatFilter",
+      "type": "function",
+      "summary": "Checks if an item satisfies the stat filter include/exclude map for armor modal filtering."
+    },
+    "function:src/App.svelte:sortByStatFilter": {
+      "name": "sortByStatFilter",
+      "type": "function",
+      "summary": "Sorts items by stat filter mode (highest, lowest, alphabetical, most-effective, brawny)."
+    },
+    "function:src/App.svelte:getDamageTypes": {
+      "name": "getDamageTypes",
+      "type": "function",
+      "summary": "Extracts and returns the damage type breakdown from an item's stats or data object."
+    },
+    "function:src/App.svelte:formatCD": {
+      "name": "formatCD",
+      "type": "function",
+      "summary": "Formats a cooldown value string using the CDR result breakdown."
+    },
+    "function:src/App.svelte:buildSlotCard": {
+      "name": "buildSlotCard",
+      "type": "function",
+      "summary": "Constructs a DetailCard object for an equipment slot's stat/perk display with enchantment info."
+    },
+    "function:src/App.svelte:buildInfusionCard": {
+      "name": "buildInfusionCard",
+      "type": "function",
+      "summary": "Constructs a DetailCard for infusion slot stat/perk display."
+    },
+    "function:src/App.svelte:onKeydown": {
+      "name": "onKeydown",
+      "type": "function",
+      "summary": "Global keyboard handler: Escape closes modals, Ctrl+Z triggers undo, number keys quick-equip."
+    },
+    "function:src/App.svelte:splitWeaponStats": {
+      "name": "splitWeaponStats",
+      "type": "function",
+      "summary": "Separates a weapon's stat map into damage types, scalings, and boosts for display grouping."
+    },
+    "function:src/App.svelte:adjustStoredCorruption": {
+      "name": "adjustStoredCorruption",
+      "type": "function",
+      "summary": "Adjusts the stored corruption amount by a delta value, clamping to >= 0."
+    },
+    "function:src/BuffList.svelte:fmtPotency": {
+      "name": "fmtPotency",
+      "type": "function",
+      "summary": "Formats a buff potency value to 4 decimal places for display."
+    },
+    "function:src/BuildSaves.svelte:buildSearchIndexFromBuilds": {
+      "name": "buildSearchIndexFromBuilds",
+      "type": "function",
+      "summary": "Builds a search index from all saved build slots, extracting item names, perk names, enchantments, race, and guilds for fuzzy search."
+    },
+    "function:src/BuildSaves.svelte:fuzzyScore": {
+      "name": "fuzzyScore",
+      "type": "function",
+      "summary": "Computes a fuzzy match score for build search suggestions. Lower score = better match."
+    },
+    "function:src/BuildSaves.svelte:loadSlots": {
+      "name": "loadSlots",
+      "type": "function",
+      "summary": "Loads save slots from localStorage, parsing and filtering null/undefined entries."
+    },
+    "function:src/BuildSaves.svelte:persistSlots": {
+      "name": "persistSlots",
+      "type": "function",
+      "summary": "Saves the current slots array to localStorage as JSON."
+    },
+    "function:src/BuildSaves.svelte:startAutoScroll": {
+      "name": "startAutoScroll",
+      "type": "function",
+      "summary": "Starts auto-scrolling the saves list when dragging near edges using requestAnimationFrame."
+    },
+    "function:src/BuildSaves.svelte:moveSlot": {
+      "name": "moveSlot",
+      "type": "function",
+      "summary": "Moves a save slot from one index to another and persists the change."
+    },
+    "function:src/BuildSaves.svelte:createGhostEl": {
+      "name": "createGhostEl",
+      "type": "function",
+      "summary": "Creates a floating ghost element for drag visual feedback during save slot reorder."
+    },
+    "function:src/BuildSaves.svelte:handleMouseDown": {
+      "name": "handleMouseDown",
+      "type": "function",
+      "summary": "Initiates mouse-based drag for save slot reorder."
+    },
+    "function:src/BuildSaves.svelte:handleMouseMove": {
+      "name": "handleMouseMove",
+      "type": "function",
+      "summary": "Tracks mouse movement during save slot drag, updates ghost position and hit testing."
+    },
+    "function:src/BuildSaves.svelte:handleMouseUp": {
+      "name": "handleMouseUp",
+      "type": "function",
+      "summary": "Completes mouse drag: moves slot if valid target, cleans up ghost and state."
+    },
+    "function:src/BuildSaves.svelte:handleTouchStart": {
+      "name": "handleTouchStart",
+      "type": "function",
+      "summary": "Initiates touch-based drag for save slot reorder on mobile."
+    },
+    "function:src/BuildSaves.svelte:handleTouchMove": {
+      "name": "handleTouchMove",
+      "type": "function",
+      "summary": "Tracks touch movement during save slot drag, performs hit testing."
+    },
+    "function:src/BuildSaves.svelte:handleTouchEnd": {
+      "name": "handleTouchEnd",
+      "type": "function",
+      "summary": "Completes touch drag: moves slot if valid, cleans up."
+    },
+    "function:src/BuildSaves.svelte:saveBuild": {
+      "name": "saveBuild",
+      "type": "function",
+      "summary": "Saves the current build to a slot, checking for duplicates first and showing a modal if found."
+    },
+    "function:src/BuildSaves.svelte:doSave": {
+      "name": "doSave",
+      "type": "function",
+      "summary": "Actually persists the build to a slot using structuredClone and shows success toast."
+    },
+    "function:src/BuildSaves.svelte:loadBuild": {
+      "name": "loadBuild",
+      "type": "function",
+      "summary": "Loads a build from a slot with confirmation gate and timeout auto-dismiss."
+    },
+    "function:src/BuildSaves.svelte:deleteSlot": {
+      "name": "deleteSlot",
+      "type": "function",
+      "summary": "Deletes a save slot with confirmation gate and timeout auto-dismiss."
+    },
+    "function:src/BuildSaves.svelte:getBuildSummary": {
+      "name": "getBuildSummary",
+      "type": "function",
+      "summary": "Generates a human-readable summary string for a saved build's race, guild, weapon, armor, and perks."
+    },
+    "function:src/BuildSaves.svelte:compressToBase64": {
+      "name": "compressToBase64",
+      "type": "function",
+      "summary": "Compresses a string using deflate-raw via CompressionStream API and returns URL-safe base64."
+    },
+    "function:src/BuildSaves.svelte:decompressFromBase64": {
+      "name": "decompressFromBase64",
+      "type": "function",
+      "summary": "Decompresses URL-safe base64 to string using DecompressionStream API."
+    },
+    "function:src/BuildSaves.svelte:encodeState": {
+      "name": "encodeState",
+      "type": "function",
+      "summary": "Serializes a BuildState to a slim compressed base64 string using key mapping and removing defaults."
+    },
+    "function:src/BuildSaves.svelte:decodeState": {
+      "name": "decodeState",
+      "type": "function",
+      "summary": "Deserializes a compressed base64 code back to BuildState with field sanitization and validation."
+    },
+    "function:src/BuildSaves.svelte:sanitizeField": {
+      "name": "sanitizeField",
+      "type": "function",
+      "summary": "Validates and sanitizes a single field during import, rejecting dangerous keys and checking type ranges."
+    },
+    "function:src/BuildSaves.svelte:findAllDuplicates": {
+      "name": "findAllDuplicates",
+      "type": "function",
+      "summary": "Finds all save slots that contain an identical build state via JSON comparison."
+    },
+    "function:src/BuildSaves.svelte:exportSlot": {
+      "name": "exportSlot",
+      "type": "function",
+      "summary": "Exports a single save slot to a compressed base64 code and copies to clipboard."
+    },
+    "function:src/BuildSaves.svelte:importBuild": {
+      "name": "importBuild",
+      "type": "function",
+      "summary": "Prompts for a build code, decodes it, validates it, and saves to the next available slot."
+    },
+    "function:src/BuildSaves.svelte:readStream": {
+      "name": "readStream",
+      "type": "function",
+      "summary": "Reads all chunks from a ReadableStream into a single Uint8Array."
+    },
+    "function:src/DamageAnalyzer.svelte:computeActiveDefensivePerkSources": {
+      "name": "computeActiveDefensivePerkSources",
+      "type": "function",
+      "summary": "Computes the list of active defensive perk sources (damage reduction) considering build state, environment, and draconic potency multipliers."
+    },
+    "function:src/DamageAnalyzer.svelte:getEffectiveDotScalings": {
+      "name": "getEffectiveDotScalings",
+      "type": "function",
+      "summary": "Returns the effective stat scalings for a DoT type, incorporating perk bonuses (e.g. Gelid Lance adds water scaling to Bleed)."
+    },
+    "function:src/DamageAnalyzer.svelte:dotScalingMult": {
+      "name": "dotScalingMult",
+      "type": "function",
+      "summary": "Computes the total scaling multiplier for a DoT type based on the player's stat boosts."
+    },
+    "function:src/DamageAnalyzer.svelte:_isBuffDisabled": {
+      "name": "_isBuffDisabled",
+      "type": "function",
+      "summary": "Checks if a specific buff instance (by name+source) is toggled off in the disabled set."
+    },
+    "function:src/DamageAnalyzer.svelte:toggleBuffKey": {
+      "name": "toggleBuffKey",
+      "type": "function",
+      "summary": "Toggles a specific buff source on/off and cascades to related boosts (Smoldering, Perfection, Minion Absorption)."
+    },
+    "function:src/DamageAnalyzer.svelte:toggleBuffByName": {
+      "name": "toggleBuffByName",
+      "type": "function",
+      "summary": "Toggles all sources of a named buff on/off simultaneously."
+    },
+    "function:src/DamageAnalyzer.svelte:fmtSeq": {
+      "name": "fmtSeq",
+      "type": "function",
+      "summary": "Formats a hit sequence (array of numbers and repeat objects) into a human-readable string."
+    },
+    "function:src/DamageAnalyzer.svelte:fmtNum": {
+      "name": "fmtNum",
+      "type": "function",
+      "summary": "Formats a number for display with thousand separators."
+    },
+    "function:src/DamageAnalyzer.svelte:calcGroupMultiplier": {
+      "name": "calcGroupMultiplier",
+      "type": "function",
+      "summary": "Reduces an array of buff/boost entries to a single multiplier by multiplying all rawMultiplier values."
+    },
+    "function:src/DamageAnalyzer.svelte:_applyDmgBonuses": {
+      "name": "_applyDmgBonuses",
+      "type": "function",
+      "summary": "Applies additive damage bonus percentages to a base damage type distribution."
+    },
+    "function:src/DamageAnalyzer.svelte:_resolveHitDmgTypes": {
+      "name": "_resolveHitDmgTypes",
+      "type": "function",
+      "summary": "Resolves the final damage type distribution for a hit, incorporating damage type bonuses and conversion effects."
+    },
+    "function:src/DamageAnalyzer.svelte:_resolveHitDmgTypesBase": {
+      "name": "_resolveHitDmgTypesBase",
+      "type": "function",
+      "summary": "Resolves base damage type distribution before applying bonuses, handling weapon and WA type merging."
+    },
+    "function:src/DamageAnalyzer.svelte:fmtMult": {
+      "name": "fmtMult",
+      "type": "function",
+      "summary": "Formats a multiplier value as a percentage string (e.g. 1.2345 → '×1.23')."
+    },
+    "function:src/DamageAnalyzer.svelte:fmtCritMult": {
+      "name": "fmtCritMult",
+      "type": "function",
+      "summary": "Formats a crit multiplier value for display, stripping trailing zeros."
+    },
+    "function:src/DamageAnalyzer.svelte:isFinisher": {
+      "name": "isFinisher",
+      "type": "function",
+      "summary": "Determines whether a specific hit in a weapon row is a finisher hit."
+    },
+    "function:src/DamageAnalyzer.svelte:toggleBoost": {
+      "name": "toggleBoost",
+      "type": "function",
+      "summary": "Toggles a damage boost on/off in the disabledBoosts set, affecting final damage calculation."
+    },
+    "function:src/DamageAnalyzer.svelte:toggleEffect": {
+      "name": "toggleEffect",
+      "type": "function",
+      "summary": "Toggles a combat effect on/off for damage calculation."
+    },
+    "function:src/DamageAnalyzer.svelte:cycleLightningState": {
+      "name": "cycleLightningState",
+      "type": "function",
+      "summary": "Cycles through lightning cloak states for damage calculation variation."
+    },
+    "function:src/DamageAnalyzer.svelte:cycleStormRendState": {
+      "name": "cycleStormRendState",
+      "type": "function",
+      "summary": "Cycles through Storm Rend effect states."
+    },
+    "function:src/DamageAnalyzer.svelte:toggleHealBoost": {
+      "name": "toggleHealBoost",
+      "type": "function",
+      "summary": "Toggles a healing boost on/off affecting heal calculations."
+    },
+    "function:src/DamageAnalyzer.svelte:_categoryMult": {
+      "name": "_categoryMult",
+      "type": "function",
+      "summary": "Computes the combat multiplier for a specific attack category (m1, m2, wa, rune, perk) from active buff entries."
+    },
+    "function:src/DamageAnalyzer.svelte:buildScalingRows": {
+      "name": "buildScalingRows",
+      "type": "function",
+      "summary": "Transforms a scaling map into ScalingRow objects with boost values, colors, and formatted display values."
+    },
+    "function:src/DamageAnalyzer.svelte:parseWAHitsAll": {
+      "name": "parseWAHitsAll",
+      "type": "function",
+      "summary": "Parses weapon art hit count sequences from a baseDamage string, separating star and gun hits."
+    },
+    "function:src/DamageAnalyzer.svelte:cycleWildBoltElem": {
+      "name": "cycleWildBoltElem",
+      "type": "function",
+      "summary": "Cycles through Wild Bolt element types for damage variation."
+    },
+    "function:src/DamageAnalyzer.svelte:parseRangeDamage": {
+      "name": "parseRangeDamage",
+      "type": "function",
+      "summary": "Parses a damage range string (e.g. '5 (label) – 10 (label)') into min/max values with labels."
+    },
+    "function:src/DamageAnalyzer.svelte:applyWeaponCharge": {
+      "name": "applyWeaponCharge",
+      "type": "function",
+      "summary": "Applies M2 charge damage scaling formula based on weapon charge percentage."
+    },
+    "function:src/DamageAnalyzer.svelte:_computePerkScalingMult": {
+      "name": "_computePerkScalingMult",
+      "type": "function",
+      "summary": "Computes the total scaling multiplier for a perk damage definition based on player stats."
+    },
+    "function:src/DamageAnalyzer.svelte:_sumPreBoostHitDamage": {
+      "name": "_sumPreBoostHitDamage",
+      "type": "function",
+      "summary": "Sums total pre-boost hit damage for a specific group (WA/Rune/M1/M2/Perk) from BDC hits."
+    },
+    "function:src/lib/AppHeader.svelte:updateBubble": {
+      "name": "updateBubble",
+      "type": "function",
+      "summary": "Recalculates and animates the sliding tab indicator bubble position based on the active tab."
+    },
+    "function:src/lib/AppHeader.svelte:handleKeydown": {
+      "name": "handleKeydown",
+      "type": "function",
+      "summary": "Handles Tab key to switch between Overview and Analyze tabs, skipping when inside form inputs."
+    }
+  },
+  "totalNodes": 263,
+  "totalEdges": 336
+}
