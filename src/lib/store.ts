@@ -42,6 +42,8 @@ const DEFAULT_BUILD: BuildState = {
   draconicColor: "",
   draconicRuneInfusion: "",
   emotionalState: 'buffs',
+  propellingFunElement: 'air',
+  propellingFunBuffMode: 'both',
   level: DEFAULT_LEVEL,
   hpFill: DEFAULT_HP_FILL,
   enemyHpFill: DEFAULT_ENEMY_HP_FILL,

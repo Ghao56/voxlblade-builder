@@ -94,7 +94,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     const typedMultUsed = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
     const typeDebuffMult = _activeDebuffTypeDamageMult[k] ?? 1
     const defPct = defPctForType(k)
-    const defMult = calcArmorMult(defPct, penDecimal).mult
+    const defMult = calcArmorMult(defPct, penDecimal, k).mult
     return { info, applicableBoosts, typedMultUsed, typeDebuffMult, defPct, defMult }
   }
 
@@ -128,6 +128,8 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   }> = []
   export let typedBoostEntries: TypedDmgBoostEntry[] = []
   export let luminescentPct: number = 0
+  export let cloudpushPct: number = 0
+  export let cinderpullPct: number = 0
   export let appliedDebuffs: Array<{
     name: string; abbr: string; color: string
     potency?: number; effectLabel?: string | null; descLabel?: string | null
@@ -369,7 +371,8 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   }
   $: effectiveDefenses = calcEffectiveDefenses(resolvedDebuffs, disabledDebuffs, defenses)
 
-  function calcArmorMult(defPct: number, pen: number): { mult: number; branch: 'low'|'high' } {
+  function calcArmorMult(defPct: number, pen: number, dmgType?: string): { mult: number; branch: 'low'|'high' } {
+    if (dmgType === 'true' || dmgType === 'summon') return { mult: 1, branch: 'low' }
     const def = defPct / 100
     if (def <= pen + ARMOR_PEN_BRANCH_THRESHOLD) {
       const am = def - pen
@@ -419,7 +422,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     const defPct = defPctForType(dmgType)
     const totalPen = armorPen + globalArmorPenetration
     const crushPen = crushingPenForType(dmgType)
-    const { mult: defMult } = calcArmorMult(defPct, (totalPen + crushPen) / 100)
+    const { mult: defMult } = calcArmorMult(defPct, (totalPen + crushPen) / 100, dmgType)
 
     const typeDebuffMult = _activeDebuffTypeDamageMult[dmgType] ?? 1
     const debuffMult = _activeDebuffDamageMult
@@ -434,7 +437,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
         const bTypedMult = bApplicable.reduce((acc, b) => acc * b.mult, 1)
         const bDefPct = defPctForType(k)
         const bCrushPen = crushingPenForType(k)
-        const { mult: bDefMult } = calcArmorMult(bDefPct, (totalPen + bCrushPen) / 100)
+        const { mult: bDefMult } = calcArmorMult(bDefPct, (totalPen + bCrushPen) / 100, k)
         const bTypeDebuffMult = _activeDebuffTypeDamageMult[k] ?? 1
         const raw = preMitBase * sunburnMult * mult * bTypedMult * bDefMult * bTypeDebuffMult * debuffMult * selfDebuffDamageMult
         const info = DMG_TYPE_MAP.get(k) ?? { label: k, color: '#e8e4da' }
@@ -522,7 +525,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
         const debuffMult = _activeDebuffTypeDamageMult[k] ?? 1
         const defPct   = defPctForType(k)
         const crushPen = crushingPenForType(k)
-        const defMult  = calcArmorMult(defPct, basePenDecimal + crushPen / 100).mult
+        const defMult  = calcArmorMult(defPct, basePenDecimal + crushPen / 100, k).mult
         const typeBase = amount * mult
         const raw = typeBase * scalingMult * typedMultUsed * sunburnUniversalDmgMult * combatMult * defMult * debuffMult
         types.push({
@@ -560,12 +563,11 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       })()
       const typedMultUsed = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
 
-      const typeIsNoDef = typeIsHeal || k === 'true' || k === 'summon'
-      const enemyDefPct = typeIsNoDef ? 0 : defPctForType(k)
-      const crushPen = typeIsNoDef ? 0 : crushingPenForType(k)
+      const enemyDefPct = typeIsHeal ? 0 : defPctForType(k)
+      const crushPen = typeIsHeal ? 0 : crushingPenForType(k)
 
       const weaponBoostMult = hit.weaponBoostMult ?? 1
-      const defMult = typeIsNoDef ? 1 : calcArmorMult(enemyDefPct, hitPenDecimal + crushPen / 100).mult
+      const defMult = typeIsHeal ? 1 : calcArmorMult(enemyDefPct, hitPenDecimal + crushPen / 100, k).mult
       const typeBase = hit.base * mult
 
       const typeDebuffMult = _activeDebuffTypeDamageMult[k] ?? 1
@@ -635,6 +637,12 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     if (!isHeal && luminescentPct > 0 && canProc(hit.procCoefficient)) {
       if (_hitDebuffedPreMitBase > 0) addProcEffect(_hitDebuffedPreMitBase, luminescentPct, { holy: 1.0 }, 'Luminescent')
     }
+    if (!isHeal && cloudpushPct > 0 && canProc(hit.procCoefficient)) {
+      if (_hitDebuffedPreMitBase > 0) addProcEffect(_hitDebuffedPreMitBase, cloudpushPct, { air: 1.0 }, 'Cloudpush')
+    }
+    if (!isHeal && cinderpullPct > 0 && canProc(hit.procCoefficient)) {
+      if (_hitDebuffedPreMitBase > 0) addProcEffect(_hitDebuffedPreMitBase, cinderpullPct, { fire: 1.0 }, 'Cinderpull')
+    }
     
     if (!isHeal && lightningCloakPct > 0 && canProc(hit.procCoefficient)) {
       if (_hitDebuffedPreMitBase > 0) addProcEffect(_hitDebuffedPreMitBase, lightningCloakPct, { air: 0.5, magic: 0.5 }, 'Chain')
@@ -699,6 +707,12 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
           if (luminescentPct > 0) {
             if (_dsPreMitBase > 0) addProcEffect(_dsPreMitBase, luminescentPct, { holy: 1.0 }, 'Luminescent')
           }
+          if (cloudpushPct > 0) {
+            if (_dsPreMitBase > 0) addProcEffect(_dsPreMitBase, cloudpushPct, { air: 1.0 }, 'Cloudpush')
+          }
+          if (cinderpullPct > 0) {
+            if (_dsPreMitBase > 0) addProcEffect(_dsPreMitBase, cinderpullPct, { fire: 1.0 }, 'Cinderpull')
+          }
           if (lightningCloakPct > 0) {
             if (_dsPreMitBase > 0) addProcEffect(_dsPreMitBase, lightningCloakPct, { air: 0.5, magic: 0.5 }, 'Chain')
           }
@@ -743,7 +757,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
             const typeDebuffMult = _activeDebuffTypeDamageMult[k] ?? 1
             const defPct  = defPctForType(k)
             const crushPen = crushingPenForType(k)
-            const defMult = calcArmorMult(defPct, basePenDecimal + crushPen / 100).mult
+            const defMult = calcArmorMult(defPct, basePenDecimal + crushPen / 100, k).mult
             let baseForType: number
             if (ph.getFinisherHitBaseDmg) {
               baseForType = ph.getFinisherHitBaseDmg({ baseDmg: ph.baseDmg, hitIndex: hit.index })
@@ -778,6 +792,8 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
               addProcEffect(bombardierBaseDmg, 1, { magic: 0.5, holy: 0.5 }, 'Bombardier', bombardierScalingMult, ph.combatMult)
             }
             if (luminescentPct > 0) addProcEffect(preMitBase, luminescentPct, { holy: 1.0 }, 'Luminescent')
+            if (cloudpushPct > 0) addProcEffect(preMitBase, cloudpushPct, { air: 1.0 }, 'Cloudpush')
+            if (cinderpullPct > 0) addProcEffect(preMitBase, cinderpullPct, { fire: 1.0 }, 'Cinderpull')
             if (lightningCloakPct > 0) addProcEffect(preMitBase, lightningCloakPct, { air: 0.5, magic: 0.5 }, 'Chain')
             if (stormRendPct > 0) addProcEffect(preMitBase, stormRendPct, { air: 0.5, magic: 0.5 }, 'Chain')
             if (explosiveChargePct > 0 && hit.group === 'WA') addProcEffect(preMitBase, explosiveChargePct, { physical: 0.5, fire: 0.5 }, 'Explosive')

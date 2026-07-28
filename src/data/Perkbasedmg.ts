@@ -124,6 +124,9 @@ import {
   GNAWING_POISON_BASE_DMG,
   GNAWING_POISON_DMG_PER_STACK,
   GNAWING_POISON_COOLDOWN,
+  PROPELLING_FUN_BASE_DMG,
+  PROPELLING_FUN_DMG_PER_STACK,
+  PROPELLING_FUN_COOLDOWN,
 } from '../lib/constants'
 
 export interface PerkDmgCtx {
@@ -133,6 +136,7 @@ export interface PerkDmgCtx {
   statuses?: Record<string, number>
   draconicColor?: string
   missingHpPct?: number
+  propellingFunElement?: 'air' | 'fire'
 }
 export type SecondaryEffectTone = 'defense' | 'offense' | 'utility'
 
@@ -193,10 +197,10 @@ export interface PerkDmgDef {
   getHits?: (ctx: PerkDmgCtx) => number 
   dmgTypeMode: 'weapon' | 'fixed' | 'dynamic'
   dmgTypes?: Record<string, number>
-  getDmgTypes?: (ctx: { draconicColor: string }) => Record<string, number>
+  getDmgTypes?: (ctx: { draconicColor: string; propellingFunElement?: 'air' | 'fire' }) => Record<string, number>
   scalingMode: 'weapon' | 'fixed' | 'none' | 'dynamic'
   scalings?: Record<string, number>
-   getScalings?: (ctx: { draconicColor: string; perkAmount?: number }) => Record<string, number>
+   getScalings?: (ctx: { draconicColor: string; perkAmount?: number; propellingFunElement?: 'air' | 'fire' }) => Record<string, number>
   isM1?: boolean
   isM2?: boolean
   isFinisher?: boolean
@@ -1066,6 +1070,22 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
     requiredEnemyDebuff: 'Poison',
     note: `Bites all enemies you have Poisoned, dealing burst damage. ${GNAWING_POISON_COOLDOWN}s cooldown. Can proc other effects. You don't have to hit an opponent — just using your finisher after having inflicted a target with Poison activates it. Grants Poison Potency. Damage may increase depending on how many enemies you have Poisoned (unknown scaling).`,
+  },
+  // ── Propelling Fun ────────────────────────────────────────────────────────
+  {
+    perkName: 'Propelling Fun',
+    condition: 'On jump',
+    getBaseDamage: ({ perkAmount }) => PROPELLING_FUN_BASE_DMG + PROPELLING_FUN_DMG_PER_STACK * perkAmount,
+    dmgTypeMode: 'dynamic',
+    getDmgTypes: ({ propellingFunElement }) => ({ [propellingFunElement ?? 'air']: 1.0 }),
+    scalingMode: 'dynamic',
+    getScalings: ({ propellingFunElement }) => {
+      const s: Record<string, number> = { air: 1.0 }
+      if (propellingFunElement === 'fire') s.fire = 1.0
+      return s
+    },
+    procCoefficient: { type: 'hasCoeff', value: 1.0 },
+    note: `${PROPELLING_FUN_COOLDOWN}s cooldown. Jumping creates an air current. If burning, activates Cinderpull instead (Fire Damage Type). Cloudpush/Cinderpull grant bonus damage type to allies.`,
   },
 ]
 

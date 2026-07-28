@@ -74,6 +74,8 @@ import {
   HEAT_DRILL_SMALL_EXPLOSION_BASE, HEAT_DRILL_SMALL_EXPLOSION_PER_STACK,
   HEAT_DRILL_SMALL_EXPLOSION_HITS,
   ESSENCE_RAY_BASE, ESSENCE_RAY_PER_STACK, ESSENCE_RAY_HITS,
+  CLOUDPUSH_PCT_PER_POTENCY, CINDERPULL_PCT_PER_POTENCY,
+  CLOUDPUSH_PCT_PER_STACK, CINDERPULL_PCT_PER_STACK,
   getWADisplayName,
 } from './lib/constants'
 
@@ -682,6 +684,11 @@ import {
   $: stats = $result.stats
   $: perks = $result.perks
   $: _luminescentPct = (perks['Luminescent Fervor'] ?? 0) > 0 && _allActiveBuffs.some(b => b.buffName === 'Luminescent') ? LUMINESCENT_PCT_PER_STACK * (perks['Luminescent Fervor'] ?? 0) : 0
+  $: _propellingFunAmt = (perks['Propelling Fun'] ?? 0) > 0 && !disabledEffects.has('propellingFun') ? perks['Propelling Fun'] ?? 0 : 0
+  $: _cloudpushPct = _propellingFunAmt > 0 && (propellingFunBuffMode === 'air' || propellingFunBuffMode === 'both')
+    ? CLOUDPUSH_PCT_PER_STACK * _propellingFunAmt : 0
+  $: _cinderpullPct = _propellingFunAmt > 0 && (propellingFunBuffMode === 'fire' || propellingFunBuffMode === 'both')
+    ? CINDERPULL_PCT_PER_STACK * _propellingFunAmt : 0
   $: _phantomPainAmt = perks['Phantom Pain'] ?? 0
   $: _phantomPainPct = _phantomPainAmt > 0 ? PHANTOM_PAIN_BASE_PCT * _phantomPainAmt * (1 + PHANTOM_PAIN_PERK_MULT * _phantomPainAmt) : 0
   $: _dragonStateAmt = perks['Dragon State'] ?? 0
@@ -954,7 +961,7 @@ import {
       disabledBoosts = new Set(disabledBoosts)
     }
   }
-  const HANDLED_BUFF_NAMES = new Set(['Rage', 'Glyph Conduit', 'Extinguish', 'Lightning Cloak', 'Storm Rend'])
+  const HANDLED_BUFF_NAMES = new Set(['Rage', 'Glyph Conduit', 'Extinguish', 'Lightning Cloak', 'Storm Rend', 'Cloudpush', 'Cinderpull'])
   let extinguishDisabled = false
 
   let environmentTouched = false
@@ -1351,6 +1358,9 @@ import {
     else if (stormRendState === 'third') stormRendState = 'twoThirds'
     else stormRendState = 'off'
   }
+
+  $: propellingFunElement = $build.propellingFunElement ?? 'air'
+  $: propellingFunBuffMode = $build.propellingFunBuffMode ?? 'both'
 
   function toggleHealBoost(name: string) {
     if (disabledHealBoosts.has(name)) disabledHealBoosts.delete(name)
@@ -2181,7 +2191,7 @@ import {
       const baseDmgTypes = def.dmgTypeMode === 'weapon'
         ? _weaponDmgTypes
         : def.dmgTypeMode === 'dynamic'
-          ? (def.getDmgTypes?.({ draconicColor: _effDraconicColor }) ?? {})
+          ? (def.getDmgTypes?.({ draconicColor: _effDraconicColor, propellingFunElement }) ?? {})
           : (def.dmgTypes ?? {})
 
       // Apply Draconic Runes + Dragon Infusion bonuses to rune damage
@@ -2213,7 +2223,7 @@ import {
         : def.scalingMode === 'fixed'
           ? (def.scalings ?? {})
           : def.scalingMode === 'dynamic'
-            ? (def.getScalings?.({ draconicColor: _effDraconicColor, perkAmount }) ?? {})
+            ? (def.getScalings?.({ draconicColor: _effDraconicColor, perkAmount, propellingFunElement }) ?? {})
             : {}
 
       const scalingMult = Object.keys(resolvedScalings).length > 0
@@ -3057,6 +3067,8 @@ $: _groupedSelfDamageSources = (() => {
     perkDmgTypeBonusesDoT={_perkDmgTypeBonusesDoT}
     typedBoostEntries={_typedBoostEntries}
     luminescentPct={_luminescentPct}
+    cloudpushPct={_cloudpushPct}
+    cinderpullPct={_cinderpullPct}
     selfDebuffDamageMult={_selfDebuffDamageMult}
     selfDebuffNames={_selfDebuffNames}
     antiHealSelfMult={_antiHealSelfMult}
@@ -3459,6 +3471,27 @@ $: _groupedSelfDamageSources = (() => {
                 <span class="da-bc-toggle" style={stormRendState === 'off' ? '' : 'background:rgba(255,242,122,.15);color:#fff27a'}>{stormRendState === 'off' ? 'OFF' : stormRendState === 'twoThirds' ? '2/3' : '1/3'}</span>
                 <span class="da-buff-sources">Perk ({_stormRendAmt})</span>
               </button>
+            </span>
+          {/if}
+          {#if _propellingFunAmt > 0}
+            <span class="da-buff">
+              <span class="da-boost-chip"
+                style="background:rgba(170,255,219,.08);border-color:rgba(170,255,219,.2)"
+              >
+                <span class="da-bc-name">Propelling Fun</span>
+                <span class="da-bc-val" style="color:{propellingFunElement === 'air' ? '#AAFFDB' : '#f97316'}">{propellingFunElement === 'air' ? 'Air' : 'Fire'}</span>
+                <span class="da-bc-cond">Jump Element</span>
+                <span class="da-buff-sources">Perk ({_propellingFunAmt})</span>
+              </span>
+            </span>
+            <span class="da-buff">
+              <span class="da-boost-chip"
+                style="background:rgba(170,255,219,.08);border-color:rgba(170,255,219,.2)"
+              >
+                <span class="da-bc-name">Cloudpush/Cinderpull</span>
+                <span class="da-bc-val" style="color:#AAFFDB">{propellingFunBuffMode === 'both' ? 'Both' : propellingFunBuffMode === 'air' ? 'Air' : 'Fire'}</span>
+                <span class="da-bc-cond">Buff mode</span>
+              </span>
             </span>
           {/if}
           {#if _draconicInfusionDisplay}

@@ -207,6 +207,8 @@ export interface BuildState {
   draconicColor: string
   draconicRuneInfusion: string
   emotionalState: 'buffs' | 'debuffs' | 'both'
+  propellingFunElement: 'air' | 'fire'
+  propellingFunBuffMode: 'air' | 'fire' | 'both'
   level: number
   hpFill: number
   enemyHpFill: number

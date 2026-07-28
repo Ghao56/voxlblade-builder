@@ -57,6 +57,8 @@ import {
   MOD_FURY_DURATION, MOD_TAILWIND_POTENCY, MOD_WIND_WALKER_DURATION_DIVISOR, MOD_SLOW_LEAK_DURATION,
   ENDLESS_DESPAIR_POTENCY_PER_STACK, ENDLESS_DESPAIR_FLAT_BONUS,
   ENDLESS_DESPAIR_DURATION_PER_STACK, STORED_CORRUPTION_DURATION_PER_STACK,
+  PROPELLING_FUN_POTENCY_PER_AMOUNT, PROPELLING_FUN_DURATION_MULTIPLIER,
+  CLOUDPUSH_PCT_PER_POTENCY, CINDERPULL_PCT_PER_POTENCY,
   RAGE_POTION_POTENCY, RAGE_POTION_DURATION,
   POISON_POTION_POTENCY, POISON_POTION_DURATION,
   POTION_CHUGGER_POTENCY_MULT_PER_LEVEL,
@@ -216,6 +218,28 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
       return `Deal ${pct}% of your damage as bonus holy damage that counts as the applier's damage.`
     },
     effectPerTenthPotency: LUMINESCENT_PCT_PER_POTENCY,
+    effectUnit: '%',
+  },
+  Cloudpush: {
+    name: 'Cloudpush',
+    color: '#AAFFDB',
+    description: "Deal x% of your damage as bonus air damage that counts as the applier's damage.",
+    dynamicDescription: (_perks, potency) => {
+      const pct = +(potency * 75).toFixed(4)
+      return `Deal ${pct}% of your damage as bonus air damage that counts as the applier's damage.`
+    },
+    effectPerTenthPotency: CLOUDPUSH_PCT_PER_POTENCY,
+    effectUnit: '%',
+  },
+  Cinderpull: {
+    name: 'Cinderpull',
+    color: '#f97316',
+    description: "Deal x% of your damage as bonus fire damage that counts as the applier's damage.",
+    dynamicDescription: (_perks, potency) => {
+      const pct = +(potency * 75).toFixed(4)
+      return `Deal ${pct}% of your damage as bonus fire damage that counts as the applier's damage.`
+    },
+    effectPerTenthPotency: CINDERPULL_PCT_PER_POTENCY,
     effectUnit: '%',
   },
   'Draconic Infusion': {
@@ -902,6 +926,24 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       duration: LUMINESCENT_BUFF_DURATION,
       condition: 'On healing an Ally or self',
       sourceName: 'Luminescent Fervor',
+      sourceType: 'perk',
+    },
+  ],
+  'Propelling Fun': (amount) => [
+    {
+      buffName: 'Cloudpush',
+      potency: PROPELLING_FUN_POTENCY_PER_AMOUNT * amount,
+      duration: PROPELLING_FUN_DURATION_MULTIPLIER * amount,
+      condition: 'On jump',
+      sourceName: 'Propelling Fun',
+      sourceType: 'perk',
+    },
+    {
+      buffName: 'Cinderpull',
+      potency: PROPELLING_FUN_POTENCY_PER_AMOUNT * amount,
+      duration: PROPELLING_FUN_DURATION_MULTIPLIER * amount,
+      condition: 'On jump',
+      sourceName: 'Propelling Fun',
       sourceType: 'perk',
     },
   ],

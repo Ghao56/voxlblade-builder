@@ -181,3 +181,8 @@ export const RUNIC_BLADES_INNER_COOLDOWN = 0.075
 export const GNAWING_POISON_BASE_DMG = 0
 export const GNAWING_POISON_DMG_PER_STACK = 8
 export const GNAWING_POISON_COOLDOWN = 1.5
+
+// Propelling Fun
+export const PROPELLING_FUN_BASE_DMG = 5
+export const PROPELLING_FUN_DMG_PER_STACK = 4
+export const PROPELLING_FUN_COOLDOWN = 2

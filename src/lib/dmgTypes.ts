@@ -20,6 +20,8 @@ export const BADGE_CONFIG: Record<string, { color: string; label: string; title:
   'Lifesteal': { color: '#4ade80', label: '✦ Lifesteal', title: 'Lifesteal: heal 0.5% of damage dealt per stack + 0.1 flat HP per stack' },
   'Runic Blades': { color: '#43d8ff', label: '✦ Runic Blades', title: 'Runic Blades: magic proc on any hit vs Runic Blades target · Scales with weapon' },
   'Gnawing Poison': { color: '#22c55e', label: '✦ Gnawing Poison', title: 'Gnawing Poison: bites all Poisoned enemies on finisher · Burst of Hex+Physical · Grants Poison Potency' },
+  'Cloudpush': { color: '#AAFFDB', label: '✦ Cloudpush', title: 'Cloudpush: deal x% of your damage as bonus air damage that counts as the applier\'s damage' },
+  'Cinderpull': { color: '#f97316', label: '✦ Cinderpull', title: 'Cinderpull: deal x% of your damage as bonus fire damage that counts as the applier\'s damage' },
 }
 
 export interface ComputedType {

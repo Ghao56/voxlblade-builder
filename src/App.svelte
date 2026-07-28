@@ -39,6 +39,7 @@
   } from './data/Perkbasedmg'
   import { DRACONIC_COLOR_ATTACK_STATS } from './data/draconicColorEffects'
   import EmotionalTracker from './EmotionalTracker.svelte'
+  import PropellingFunTracker from './PropellingFunTracker.svelte'
   import LevelBar from './LevelBar.svelte'
   let DamageAnalyzer: typeof import('./DamageAnalyzer.svelte')['default'] | null = null
   import TagFilter from './TagFilter.svelte'
@@ -2310,6 +2311,9 @@ $: _appWaAvgTotal = (() => {
                     {/if}
                     {#if name === 'Emotional'}
                       <EmotionalTracker />
+                    {/if}
+                    {#if name === 'Propelling Fun'}
+                      <PropellingFunTracker />
                     {/if}
                     {#if name === 'Cursed'}
                        <div class="corruption-widget">

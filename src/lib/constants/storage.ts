@@ -13,7 +13,7 @@ export const BUILD_STATE_DEFAULTS: Record<string, any> = {
   shrineActive: false, upgradeHelmet: 0, upgradeChestplate: 0, upgradeLeggings: 0,
   upgradeRing: 0, upgradeRune: 0, upgradeInfusionHelmet: 0, upgradeInfusionChestplate: 0,
   upgradeInfusionLeggings: 0, upgradeInfusionRing: 0, selectedWeaponArt: 'Lunge', draconicColor: '',
-  draconicRuneInfusion: '', emotionalState: 'buffs',
+  draconicRuneInfusion: '', emotionalState: 'buffs', propellingFunElement: 'air', propellingFunBuffMode: 'both',
   level: DEFAULT_LEVEL, hpFill: DEFAULT_HP_FILL, summonCount: 0, buffsConsumed: 0, sporelingsSummoned: 0,
   inDarkness: true, cdrToggles: {},
   potion1: '', potion2: '',
@@ -27,7 +27,7 @@ export const SAVE_KEY_MAP: Record<string, string> = {
   shrineActive:'sh', upgradeHelmet:'uh', upgradeChestplate:'uc',
   upgradeLeggings:'ul', upgradeRing:'ur', upgradeRune:'uu', upgradeInfusionHelmet:'uih', upgradeInfusionChestplate:'uic',
   upgradeInfusionLeggings:'uil', upgradeInfusionRing:'uir', selectedWeaponArt:'wa', draconicColor:'dc',
-  draconicRuneInfusion:'dri', emotionalState: 'es',
+  draconicRuneInfusion:'dri', emotionalState: 'es', propellingFunElement:'pfe', propellingFunBuffMode:'pfb',
   potion1:'p1', potion2:'p2',
 }
 export const SAVE_KEY_UNMAP = Object.fromEntries(Object.entries(SAVE_KEY_MAP).map(([k,v])=>[v,k]))
