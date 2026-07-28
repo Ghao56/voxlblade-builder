@@ -1,6 +1,6 @@
 import { getDotPotencyMult } from './DoTDamage'
 import { getDraconicColorDmgMultiplier } from '../data/draconicColorEffects'
-import type { ProcCoefficient } from '../lib/types'
+import type { BuildState, ProcCoefficient } from '../lib/types'
 import {
   DRAGON_STATE_HP_BASE,
   DRAGON_STATE_HP_PER_STACK,
@@ -137,6 +137,15 @@ import {
   RULER_SANDS_CHANCE_PERK_MULT,
 } from '../lib/constants'
 
+export interface PerkSliderDef {
+  buildKey: keyof BuildState
+  label: string
+  min: number
+  max: number
+  step?: number
+  getMax?: (ctx: { perks: Record<string, number> }) => number
+}
+
 export interface PerkDmgCtx {
   perkAmount: number
   finisherHits?: number
@@ -145,6 +154,7 @@ export interface PerkDmgCtx {
   draconicColor?: string
   missingHpPct?: number
   propellingFunElement?: 'air' | 'fire'
+  sliderVal?: number
 }
 export type SecondaryEffectTone = 'defense' | 'offense' | 'utility'
 
@@ -228,6 +238,7 @@ export interface PerkDmgDef {
   activeIf?: (ctx: { draconicRuneInfusion: string; draconicColor: string; selectedWeaponArt?: string }) => boolean
   requiredBuff?: string
   requiredEnemyDebuff?: string
+  slider?: PerkSliderDef
 }
 
 export function calcSpringblastBaseDamage(perkAmount: number): number {
@@ -260,9 +271,10 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
   // ── Bastion Ballista ─────────────────────────────────────────────────────
   {
     perkName: 'Bastion Ballista',
-    label: 'Bastion Ballista Arrow',
+    label: 'Bastion Ballista',
     condition: 'On hit at range (Arrows resource)',
     getBaseDamage: ({ perkAmount }) => BASTION_BALLISTA_BASE_DMG + BASTION_BALLISTA_DMG_PER_STACK * perkAmount,
+    getHits: ({ sliderVal }) => sliderVal ?? 0,
     dmgTypeMode: 'fixed',
     dmgTypes: { earth: 1.0 },
     scalingMode: 'fixed',
@@ -273,6 +285,17 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
       { label: 'Fire Cooldown', getValue: () => BASTION_BALLISTA_FIRE_COOLDOWN, condition: 'Between arrow activations (per enemy)', tone: 'utility' },
       { label: 'Restore Delay', getValue: () => BASTION_BALLISTA_RESTORE_DELAY, format: (v) => `${v}s`, condition: 'Without firing to restore arrows', tone: 'utility' },
     ],
+    slider: {
+      buildKey: 'bastionBallistaArrows',
+      label: 'Arrows',
+      min: 0,
+      max: BASTION_BALLISTA_MAX_POTENCY_BASE,
+      step: 1,
+      getMax: ({ perks }) => {
+        const amt = perks['Bastion Ballista'] ?? 0
+        return BASTION_BALLISTA_MAX_POTENCY_BASE * amt
+      },
+    },
     note: 'Fires additional arrows the further from the target. Reduced proc chance (0.2). Arrows restore after 12s without firing.',
   },
   // ── Basic Spirit ───────────────────────────────────────────────────────────

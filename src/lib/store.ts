@@ -50,6 +50,7 @@ const DEFAULT_BUILD: BuildState = {
   summonCount: 0,
   buffsConsumed: 0,
   sporelingsSummoned: 0,
+  bastionBallistaArrows: 0,
   inDarkness: true,
   cdrToggles: {},
   potion1: "",

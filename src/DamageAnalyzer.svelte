@@ -2094,6 +2094,14 @@ import {
     build.update(s => ({ ...s, [sliderDef.buildKey]: _runeSliderMax }) as any)
   }
 
+  $: {
+    const _bbAmt = perks['Bastion Ballista'] ?? 0
+    if (_bbAmt > 0 && ($build as any).bastionBallistaArrows === 0) {
+      const mid = Math.floor(50 * _bbAmt / 2)
+      build.update(s => ({ ...s, bastionBallistaArrows: mid }) as any)
+    }
+  }
+
   // ── Mount Runes (override M1 + WA while riding) ──────────────────────────
   $: _activeMountRuneDef = MOUNT_RUNE_DEFS.find(d => d.runeName === $build.rune) ?? null
   let mountActive = true
@@ -2196,6 +2204,9 @@ import {
     forceCrit?: boolean
     secondaryEffects: Array<{ label: string; display: string; condition?: string; color: string; isActive: boolean }>
     triggerChain?: TriggerChainEntry[]
+    slider?: { buildKey: string; label: string; min: number; max: number; step?: number }
+    sliderVal?: number
+    sliderMax?: number
   }
 
   $: _activePerkDmgEntries = (void activeEntries, void disabledDebuffs, (() => {
@@ -2283,8 +2294,11 @@ import {
         waCooldown: _waCooldown,
         runeCooldown: _runeBaseCd,
       }
-      const baseDmg_m2  = def.getBaseDamage({ perkAmount, finisherHits: _fhM2,  draconicColor: _effDraconicColor, statuses: _perkCtxStatuses })
-      const baseDmg_m1f = def.getBaseDamage({ perkAmount, finisherHits: _fhM1f, draconicColor: _effDraconicColor, statuses: _perkCtxStatuses })
+      const _perkSliderMax = def.slider?.getMax ? def.slider.getMax({ perks }) : (def.slider?.max ?? 0)
+      const _rawSliderVal = def.slider ? Math.min(($build as any)[def.slider.buildKey] ?? 0, _perkSliderMax) : 0
+      const _perkSliderVal = (def.slider && disabledBuffKeys.has(`Arrows:${def.perkName}`)) ? 0 : _rawSliderVal
+      const baseDmg_m2  = def.getBaseDamage({ perkAmount, finisherHits: _fhM2,  draconicColor: _effDraconicColor, statuses: _perkCtxStatuses, sliderVal: _perkSliderVal })
+      const baseDmg_m1f = def.getBaseDamage({ perkAmount, finisherHits: _fhM1f, draconicColor: _effDraconicColor, statuses: _perkCtxStatuses, sliderVal: _perkSliderVal })
 
       const isSpringblast = def.perkName === 'Springblast'
       const baseDmg = isSpringblast
@@ -2296,7 +2310,7 @@ import {
       const halfActivations = hasHalfActivations || undefined
       const oncePerFinisher = isSpringblast ? false : (def.finisherOnly ? true : undefined)
 
-      const isActive = isHpGateActive(def.hpGate, _hpFillPct, perkAmount) && isHpGateActive(def.enemyHpGate, _enemyHpFillPct, perkAmount) && (!isSpringblast || _allActiveBuffs.some(b => b.buffName === 'Bounce')) && (!def.requiredBuff || _allActiveBuffs.some(b => b.buffName === def.requiredBuff)) && (!def.requiredEnemyDebuff || (_dummyDebuffs.some(d => d.name === def.requiredEnemyDebuff) && !disabledDebuffs.has(def.requiredEnemyDebuff!)))
+      const isActive = isHpGateActive(def.hpGate, _hpFillPct, perkAmount) && isHpGateActive(def.enemyHpGate, _enemyHpFillPct, perkAmount) && (!isSpringblast || _allActiveBuffs.some(b => b.buffName === 'Bounce')) && (!def.requiredBuff || _allActiveBuffs.some(b => b.buffName === def.requiredBuff)) && (!def.requiredEnemyDebuff || (_dummyDebuffs.some(d => d.name === def.requiredEnemyDebuff) && !disabledDebuffs.has(def.requiredEnemyDebuff!))) && !(def.slider && _perkSliderVal <= 0)
 
       const secondaryEffects = (def.secondaryEffects ?? []).filter(se => !se.showIf || se.showIf({ draconicColor: _effDraconicColor })).map(se => {
         let raw = Math.round(se.getValue({ perkAmount, draconicColor: _effDraconicColor, statuses: _perkCtxStatuses }) * 1000) / 1000
@@ -2320,7 +2334,7 @@ import {
         displayName: def.label ?? def.perkName,
         perkAmount,
         condition: def.condition,
-        hits: def.getHits ? def.getHits({ perkAmount, statuses: _perkCtxStatuses }) : def.hits,
+        hits: def.getHits ? def.getHits({ perkAmount, statuses: _perkCtxStatuses, sliderVal: _perkSliderVal }) : def.hits,
         isM1: def.isM1, isM2: def.isM2, isFinisher: def.isFinisher,
         isWA: def.isWA, isRune: def.isRune, isProcHit: def.isProcHit, finisherOnly: def.finisherOnly, guardbreak: def.guardbreak,
         procCoefficient: def.procCoefficient,
@@ -2342,6 +2356,7 @@ import {
         forceCrit: def.forceCrit,
         secondaryEffects,
         triggerChain: def.triggerChain,
+        ...(def.slider ? { slider: { buildKey: def.slider.buildKey, label: def.slider.label, min: def.slider.min, max: _perkSliderMax, step: def.slider.step }, sliderVal: _perkSliderVal, sliderMax: _perkSliderMax } : {}),
       })
     }
     return out
@@ -4409,6 +4424,28 @@ $: _groupedSelfDamageSources = (() => {
         <!-- Condition -->
         {#if entry.condition}
           <div class="da-pbd-condition">{entry.condition}</div>
+        {/if}
+        <!-- Slider -->
+        {#if entry.slider}
+          <div class="da-sb-slider-wrap" style="margin-bottom:6px">
+            <span class="da-sb-slider-label">{entry.slider.label}</span>
+            <input
+              type="range"
+              min={entry.slider.min}
+              max={entry.sliderMax}
+              step={entry.slider.step ?? 1}
+              value={entry.sliderVal}
+              on:input={(e) => {
+                const sliderDef = entry.slider
+                if (!sliderDef) return
+                const val = +(e.target as HTMLInputElement).value
+                build.update(s => ({ ...s, [sliderDef.buildKey]: val }) as any)
+              }}
+              class="da-sb-slider"
+              style="--tc:{DMG_TYPE_COLORS.earth ?? '#a3e635'}; --fill:{(((entry.sliderVal ?? 0) - entry.slider.min) / ((entry.sliderMax ?? 1) - entry.slider.min || 1)) * 100}%"
+            />
+            <span class="da-sb-slider-val" style="color:{DMG_TYPE_COLORS.earth ?? '#a3e635'}">{entry.sliderVal}</span>
+          </div>
         {/if}
         <!-- Typed damage: M2/main finisher -->
         <div class="da-pbd-dmg-row" class:da-pbd-dmg-row--inactive={!entry.isActive}>
@@ -7190,5 +7227,68 @@ $: _groupedSelfDamageSources = (() => {
 }
 .da-boost-chip--neutral {
   border-style: dotted;
+}
+
+/* ── Perk Slider (Bastion Ballista etc.) ─────────────────────────────── */
+.da-sb-slider-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+}
+.da-sb-slider-label {
+  font-size: .6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--ink-muted, #8a8d85);
+  flex-shrink: 0;
+  min-width: 48px;
+}
+.da-sb-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  flex: 1;
+  height: 5px;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--tc, #a78bfa) var(--fill, 50%), rgba(255,255,255,.06) var(--fill, 50%));
+  outline: none;
+  cursor: pointer;
+}
+.da-sb-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--tc, #a78bfa);
+  border: 2px solid rgba(0,0,0,.45);
+  box-shadow: 0 0 6px rgba(167,139,250,.35), 0 1px 4px rgba(0,0,0,.4);
+  cursor: grab;
+  transition: transform .1s, box-shadow .15s;
+}
+.da-sb-slider::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 10px rgba(167,139,250,.5), 0 2px 6px rgba(0,0,0,.5);
+}
+.da-sb-slider::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.15);
+}
+.da-sb-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--tc, #a78bfa);
+  border: 2px solid rgba(0,0,0,.45);
+  box-shadow: 0 0 6px rgba(167,139,250,.35);
+  cursor: grab;
+}
+.da-sb-slider-val {
+  font-size: .75rem;
+  font-weight: 900;
+  color: var(--tc, #a78bfa);
+  font-family: 'Courier New', monospace;
+  min-width: 24px;
+  text-align: right;
+  flex-shrink: 0;
 }
 </style>

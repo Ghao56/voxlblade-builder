@@ -1054,7 +1054,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
 
   <div class="bdc-cooldown-warning">
     <i class="fa fa-exclamation-triangle"></i>
-    Calculated damage does <strong>NOT RESPECT</strong> the <strong>COOLDOWN</strong> or <strong>PROC CHANCES</strong> of certain effects, and <strong>NOT BE ACCURATE</strong>
+    Calculated damage does <strong>NOT RESPECT</strong> the <strong>COOLDOWN</strong> or <strong>PROC CHANCES</strong> of certain effects, and <strong>MAY <span style="color: #ff0000;">NOT</span> BE ACCURATE</strong>
   </div>
 
   <div class="bdc-layout">
