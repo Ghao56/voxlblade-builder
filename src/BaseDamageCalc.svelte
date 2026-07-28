@@ -370,7 +370,6 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   $: effectiveDefenses = calcEffectiveDefenses(resolvedDebuffs, disabledDebuffs, defenses)
 
   function calcArmorMult(defPct: number, pen: number): { mult: number; branch: 'low'|'high' } {
-    if (defPct === 0) return { mult: 1, branch: 'low' }
     const def = defPct / 100
     if (def <= pen + ARMOR_PEN_BRANCH_THRESHOLD) {
       const am = def - pen
@@ -561,11 +560,12 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       })()
       const typedMultUsed = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
 
-      const enemyDefPct = typeIsHeal ? 0 : defPctForType(k)
-      const crushPen = typeIsHeal ? 0 : crushingPenForType(k)
+      const typeIsNoDef = typeIsHeal || k === 'true' || k === 'summon'
+      const enemyDefPct = typeIsNoDef ? 0 : defPctForType(k)
+      const crushPen = typeIsNoDef ? 0 : crushingPenForType(k)
 
       const weaponBoostMult = hit.weaponBoostMult ?? 1
-      const defMult = typeIsHeal ? 1 : calcArmorMult(enemyDefPct, hitPenDecimal + crushPen / 100).mult
+      const defMult = typeIsNoDef ? 1 : calcArmorMult(enemyDefPct, hitPenDecimal + crushPen / 100).mult
       const typeBase = hit.base * mult
 
       const typeDebuffMult = _activeDebuffTypeDamageMult[k] ?? 1
