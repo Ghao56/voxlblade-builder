@@ -88,3 +88,7 @@ export const HYPNOTIST_MAGIC_ARMOR_PER_POTENCY = 50
 // ── Phantom Pain ──────────────────────────────────
 export const PHANTOM_PAIN_BASE_PCT = 0.25
 export const PHANTOM_PAIN_PERK_MULT = 0.1
+
+// ── Pursuit ──────────────────────────────────────
+export const PURSUIT_BASE_MULT = 0.6
+export const PURSUIT_MULT_PER_RANK = 0.2

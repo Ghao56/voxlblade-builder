@@ -76,6 +76,7 @@ import {
   ESSENCE_RAY_BASE, ESSENCE_RAY_PER_STACK, ESSENCE_RAY_HITS,
   CLOUDPUSH_PCT_PER_POTENCY, CINDERPULL_PCT_PER_POTENCY,
   CLOUDPUSH_PCT_PER_STACK, CINDERPULL_PCT_PER_STACK,
+  PURSUIT_BASE_MULT, PURSUIT_MULT_PER_RANK,
   getWADisplayName,
 } from './lib/constants'
 
@@ -85,6 +86,8 @@ import {
   $: _m1FinisherWeaponBoost = disableWeaponBoost ? { mult: 1, labels: [] as string[] } : _m1FinisherWeaponBoostRaw
   $: _m2WeaponBoost         = disableWeaponBoost ? { mult: 1, labels: [] as string[] } : _m2WeaponBoostRaw
   $: _weaponBoostLabels = [...new Set([..._m1FinisherWeaponBoostRaw.labels, ..._m2WeaponBoostRaw.labels])]
+  $: _pursuitRank = disableWeaponBoost ? 0 : (perks['Pursuit'] ?? 0)
+  $: _pursuitActive = _pursuitRank > 0 && ((_displayRows[0] as any)?.m1Finisher ?? true)
 
   $: _activeRaceEffect = getActiveRaceEffect($build.race, _hpFillPct)
   const _DEF_TYPE_LIST = TRACKED_TYPES_WITH_TRUE
@@ -1251,6 +1254,7 @@ import {
     if (attackType === 'm2') return true
     const hasFinisher = (row as any).m1Finisher ?? true
     if (!hasFinisher) return false
+    if ((perks['Pursuit'] ?? 0) > 0) return false
     return row.m1 ? hitIndex === row.m1.length - 1 : false
   }
 
@@ -2408,7 +2412,12 @@ import {
       const m1Types = (gunLabel && !(row as any).m2Only)   ? _gunDmgTypes : _convertedWeaponDmgTypes
       const m2Types = (gunLabel && !(row as any).m2NoLock) ? _gunDmgTypes : _convertedWeaponDmgTypes
       if (row.m1 && !(_activeMountRuneDef && mountActive)) {
-        row.m1.forEach((h: any, i: number) => {
+        const m1Hits = row.m1
+        const _pursuitRank = disableWeaponBoost ? 0 : (perks['Pursuit'] ?? 0)
+        const _pursuitActive = _pursuitRank > 0 && ((row as any).m1Finisher ?? true)
+        const _pursuitMult = _pursuitActive ? PURSUIT_BASE_MULT + PURSUIT_MULT_PER_RANK * _pursuitRank : 1
+        m1Hits.forEach((h: any, i: number) => {
+          if (_pursuitActive && i === m1Hits.length - 1) return
           const base = typeof h === 'number' ? h : h.n
           const count = typeof h === 'number' ? 1 : h.count
           const finisherHit = isFinisher(row, 'm1', i)
@@ -2422,11 +2431,12 @@ import {
           const boostDmgTypes = piercerRank > 0 ? { ...hitDmgTypes } : undefined
           const sunburnMult = _sunburnActive && _sunburnEnemyBurning
             ? ((hitDmgTypes.holy ?? 0) > 0 ? _sunburnHolyDmgMult : _sunburnUniversalDmgMult) : 1
-          const combinedWbMult = roundMultiplier((wb?.mult ?? 1) * mwMult * sunburnMult)
+          const combinedWbMult = roundMultiplier((wb?.mult ?? 1) * mwMult * sunburnMult * _pursuitMult)
           const wbLabel = [
             wb && wb.mult !== 1 ? wb.labels.join(', ') : '',
             _mortalWillFinisherDmgMult !== 1 ? 'Mortal Will' : '',
             sunburnMult !== 1 ? 'Sunburn' : '',
+            _pursuitMult !== 1 ? 'Pursuit' : '',
           ].filter(Boolean).join(', ')
           result.push({
             group: 'M1', index: i, count, base, scalingMult: _scalingMult, combatMult: _m1CombatMult,
@@ -3579,17 +3589,18 @@ $: _groupedSelfDamageSources = (() => {
           </div>
         {/if}
         {/if}
-  {#if _m1FinisherWeaponBoostRaw.mult !== 1 || _m2WeaponBoostRaw.mult !== 1}
+  {#if _m1FinisherWeaponBoostRaw.mult !== 1 || _m2WeaponBoostRaw.mult !== 1 || _pursuitActive}
     {@const _wbM1 = _m1FinisherWeaponBoostRaw.mult !== 1}
     {@const _wbM2 = _m2WeaponBoostRaw.mult !== 1}
     {@const _wbSame = _m1FinisherWeaponBoostRaw.mult === _m2WeaponBoostRaw.mult}
+    {@const _pursuitMult = _pursuitActive ? PURSUIT_BASE_MULT + PURSUIT_MULT_PER_RANK * _pursuitRank : 1}
     <div class="da-boost-row" style="margin-top: 6px;">
       <button
         class="da-boost-chip"
         class:da-boost-chip--off={disableWeaponBoost}
         on:click={() => { disableWeaponBoost = !disableWeaponBoost }}
       >
-        <span class="da-bc-name">{_weaponBoostLabels.join(', ')}</span>
+        <span class="da-bc-name">{[_weaponBoostLabels.join(', '), _pursuitActive ? 'Pursuit' : ''].filter(Boolean).join(', ')}</span>
         <span class="da-bc-val">
           {#if _wbSame}
             ×{+_m1FinisherWeaponBoostRaw.mult.toFixed(4)}
@@ -3597,6 +3608,7 @@ $: _groupedSelfDamageSources = (() => {
             {#if _wbM1}M1×{+_m1FinisherWeaponBoostRaw.mult.toFixed(4)}{/if}
             {#if _wbM2}M2×{+_m2WeaponBoostRaw.mult.toFixed(4)}{/if}
           {/if}
+          {#if _pursuitActive}M1×{+_pursuitMult.toFixed(4)}{/if}
         </span>
         <span class="da-bc-cond">finisher</span>
         <span class="da-bc-toggle">{disableWeaponBoost ? 'OFF' : 'ON'}</span>
