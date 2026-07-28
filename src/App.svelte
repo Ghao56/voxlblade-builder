@@ -41,7 +41,7 @@
   import EmotionalTracker from './EmotionalTracker.svelte'
   import PropellingFunTracker from './PropellingFunTracker.svelte'
   import LevelBar from './LevelBar.svelte'
-  let DamageAnalyzer: typeof import('./DamageAnalyzer.svelte')['default'] | null = null
+  import DamageAnalyzer from './DamageAnalyzer.svelte'
   import TagFilter from './TagFilter.svelte'
   import StatFilter from './StatFilter.svelte'
   import WeaponStatFilter from './WeaponStatFilter.svelte'
@@ -577,7 +577,6 @@ function weaponMatchesFilter(item: any): boolean {
   onMount(async () => {
     await tick()
     waHydrated = true
-    import('./DamageAnalyzer.svelte').then(m => { DamageAnalyzer = m.default })
   })
 
   // ── Armor drag/tap helpers ────────────────────────────────────────────────
@@ -3126,9 +3125,7 @@ $: _appWaAvgTotal = (() => {
         <div class="analyze-hp-bar">
           <LevelBar protection={$result.stats.protection ?? 0} hpThreshold={_dragonStateThreshold} />
         </div>
-        {#if DamageAnalyzer}
-          <svelte:component this={DamageAnalyzer} />
-        {/if}
+        <DamageAnalyzer />
       </div>
     {/if}
 
