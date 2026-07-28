@@ -10,16 +10,16 @@
   const ELEM_DATA: Record<Element, {
     label: string; color: string; glow: string; border: string; bg: string; icon: string
   }> = {
-    air:  { label: 'Air',  color: '#AAFFDB', glow: 'rgba(170,255,219,0.4)', border: 'rgba(170,255,219,0.3)', bg: 'rgba(170,255,219,0.07)', icon: '🌀' },
-    fire: { label: 'Fire', color: '#f97316', glow: 'rgba(249,115,22,0.4)', border: 'rgba(249,115,22,0.3)', bg: 'rgba(249,115,22,0.07)', icon: '🔥' },
+    air:  { label: 'Air',  color: '#AAFFDB', glow: 'rgba(170,255,219,0.4)', border: 'rgba(170,255,219,0.3)', bg: 'rgba(170,255,219,0.07)', icon: 'fa-leaf' },
+    fire: { label: 'Fire', color: '#f97316', glow: 'rgba(249,115,22,0.4)', border: 'rgba(249,115,22,0.3)', bg: 'rgba(249,115,22,0.07)', icon: 'fa-fire' },
   }
 
   const BUFF_DATA: Record<BuffMode, {
     label: string; color: string; glow: string; border: string; bg: string; icon: string
   }> = {
-    air:  { label: 'Air Only',  color: '#AAFFDB', glow: 'rgba(170,255,219,0.4)', border: 'rgba(170,255,219,0.3)', bg: 'rgba(170,255,219,0.07)', icon: '🌀' },
-    fire: { label: 'Fire Only', color: '#f97316', glow: 'rgba(249,115,22,0.4)', border: 'rgba(249,115,22,0.3)', bg: 'rgba(249,115,22,0.07)', icon: '🔥' },
-    both: { label: 'Both',      color: '#a78bfa', glow: 'rgba(167,139,250,0.4)', border: 'rgba(167,139,250,0.3)', bg: 'rgba(167,139,250,0.07)', icon: '⟳' },
+    air:  { label: 'Air Only',  color: '#AAFFDB', glow: 'rgba(170,255,219,0.4)', border: 'rgba(170,255,219,0.3)', bg: 'rgba(170,255,219,0.07)', icon: 'fa-leaf' },
+    fire: { label: 'Fire Only', color: '#f97316', glow: 'rgba(249,115,22,0.4)', border: 'rgba(249,115,22,0.3)', bg: 'rgba(249,115,22,0.07)', icon: 'fa-fire' },
+    both: { label: 'Both',      color: '#a78bfa', glow: 'rgba(167,139,250,0.4)', border: 'rgba(167,139,250,0.3)', bg: 'rgba(167,139,250,0.07)', icon: 'fa-exchange' },
   }
 
   $: element = ($build.propellingFunElement ?? 'air') as Element
@@ -46,10 +46,9 @@
 
 <div class="pf" style="--c:{elemCur.color};--glow:{elemCur.glow};--border-c:{elemCur.border};--bg:{elemCur.bg}">
 
-  <!-- Element row -->
   <div class="pf-head">
     <span class="pf-title">Jump Element</span>
-    <span class="pf-badge" style="color:{elemCur.color}">{elemCur.icon} {elemCur.label}</span>
+    <span class="pf-badge" style="color:{elemCur.color}"><i class="fa {elemCur.icon}"></i> {elemCur.label}</span>
   </div>
 
   <div class="pf-btns">
@@ -60,7 +59,7 @@
         style="--btn-bg:{ELEM_DATA[e].bg}; --btn-border:{ELEM_DATA[e].border}; --btn-color:{ELEM_DATA[e].color}; --btn-glow:{ELEM_DATA[e].glow}"
         on:click={() => updateElement(e)}
       >
-        <span class="pf-btn-icon">{ELEM_DATA[e].icon}</span>
+        <span class="pf-btn-icon"><i class="fa {ELEM_DATA[e].icon}"></i></span>
         <span class="pf-btn-label">{ELEM_DATA[e].label}</span>
       </button>
     {/each}
@@ -84,10 +83,9 @@
     <span class="pf-tick-label" style="color:#f97316">Fire</span>
   </div>
 
-  <!-- Buff mode row -->
   <div class="pf-head" style="margin-top:6px">
     <span class="pf-title">Buff Mode</span>
-    <span class="pf-badge" style="color:{buffCur.color}">{buffCur.icon} {buffCur.label}</span>
+    <span class="pf-badge" style="color:{buffCur.color}"><i class="fa {buffCur.icon}"></i> {buffCur.label}</span>
   </div>
 
   <div class="pf-btns">
@@ -98,7 +96,7 @@
         style="--btn-bg:{BUFF_DATA[m].bg}; --btn-border:{BUFF_DATA[m].border}; --btn-color:{BUFF_DATA[m].color}; --btn-glow:{BUFF_DATA[m].glow}"
         on:click={() => updateBuffMode(m)}
       >
-        <span class="pf-btn-icon">{BUFF_DATA[m].icon}</span>
+        <span class="pf-btn-icon"><i class="fa {BUFF_DATA[m].icon}"></i></span>
         <span class="pf-btn-label">{BUFF_DATA[m].label}</span>
       </button>
     {/each}

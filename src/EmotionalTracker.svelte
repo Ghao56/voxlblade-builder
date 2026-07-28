@@ -25,7 +25,7 @@
       glow: 'rgba(74,222,128,0.4)',
       border: 'rgba(74,222,128,0.3)',
       bg: 'rgba(74,222,128,0.07)',
-      icon: '✦',
+      icon: 'fa-plus-circle',
     },
     debuff: {
       label: 'Only Debuffs',
@@ -33,7 +33,7 @@
       glow: 'rgba(248,113,113,0.4)',
       border: 'rgba(248,113,113,0.3)',
       bg: 'rgba(248,113,113,0.07)',
-      icon: '✕',
+      icon: 'fa-minus-circle',
     },
     both: {
       label: 'Both Buff & Debuff',
@@ -41,7 +41,7 @@
       glow: 'rgba(167,139,250,0.4)',
       border: 'rgba(167,139,250,0.3)',
       bg: 'rgba(167,139,250,0.07)',
-      icon: '⟳',
+      icon: 'fa-exchange',
     }
   }
 
@@ -75,7 +75,7 @@
         style="--btn-bg:{STATE_DATA[s].bg}; --btn-border:{STATE_DATA[s].border}; --btn-color:{STATE_DATA[s].color}; --btn-glow:{STATE_DATA[s].glow}"
         on:click={() => updateState(s)}
       >
-        <span class="et-btn-icon">{STATE_DATA[s].icon}</span>
+        <span class="et-btn-icon"><i class="fa {STATE_DATA[s].icon}"></i></span>
         <span class="et-btn-label">
           {s === 'buff' ? 'Buff' : s === 'debuff' ? 'Debuff' : 'Both'}
         </span>
