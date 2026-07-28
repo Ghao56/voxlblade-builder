@@ -1,0 +1,5 @@
+﻿package.json
+src/BaseDamageCalc.svelte
+src/DamageAnalyzer.svelte
+src/data/weaponConditionalBoosts.ts
+tests/piercer.test.ts

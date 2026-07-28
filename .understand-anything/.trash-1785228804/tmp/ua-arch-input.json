@@ -1,0 +1,3278 @@
+{
+  "fileNodes": [
+    {
+      "id": "file:src/data/BuffData.ts",
+      "type": "file",
+      "name": "BuffData.ts",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Defines buff and debuff system for the damage calculator, including buff definitions, potency calculations, duration modifiers, and active buff assembly logic.",
+      "tags": [
+        "data",
+        "buffs",
+        "debuffs",
+        "game-mechanics",
+        "damage-calculation"
+      ]
+    },
+    {
+      "id": "file:src/data/Perkbasedmg.ts",
+      "type": "file",
+      "name": "Perkbasedmg.ts",
+      "filePath": "src/data/Perkbasedmg.ts",
+      "summary": "Defines perk-based damage calculations including base damage definitions, perk damage multipliers, and special ability damage calculations for various game mechanics.",
+      "tags": [
+        "data",
+        "damage",
+        "perks",
+        "game-mechanics",
+        "calculations"
+      ]
+    },
+    {
+      "id": "file:src/data/perkAutoDebuffs.ts",
+      "type": "file",
+      "name": "perkAutoDebuffs.ts",
+      "filePath": "src/data/perkAutoDebuffs.ts",
+      "summary": "Defines automatic debuff application logic based on perk conditions, including HP threshold checks and debuff generation for various game mechanics.",
+      "tags": [
+        "data",
+        "debuffs",
+        "perks",
+        "game-mechanics",
+        "automation"
+      ]
+    },
+    {
+      "id": "file:src/lib/constants/perk-base-damage.ts",
+      "type": "file",
+      "name": "perk-base-damage.ts",
+      "filePath": "src/lib/constants/perk-base-damage.ts",
+      "summary": "Defines base damage constants for various perk abilities and special attacks in the game.",
+      "tags": [
+        "constants",
+        "damage",
+        "perks",
+        "configuration"
+      ]
+    },
+    {
+      "id": "file:src/lib/constants/storage.ts",
+      "type": "file",
+      "name": "storage.ts",
+      "filePath": "src/lib/constants/storage.ts",
+      "summary": "Defines storage keys and configuration for localStorage persistence of build data and user preferences.",
+      "tags": [
+        "constants",
+        "storage",
+        "configuration",
+        "persistence"
+      ]
+    },
+    {
+      "id": "file:src/lib/dmgTypes.ts",
+      "type": "file",
+      "name": "dmgTypes.ts",
+      "filePath": "src/lib/dmgTypes.ts",
+      "summary": "Defines damage type badge configurations and display constants for the damage analyzer UI.",
+      "tags": [
+        "ui",
+        "damage-types",
+        "display",
+        "configuration"
+      ]
+    },
+    {
+      "id": "file:src/data/weaponConditionalBoosts.ts",
+      "type": "file",
+      "filePath": "src/data/weaponConditionalBoosts.ts",
+      "tags": [
+        "code",
+        "data"
+      ]
+    },
+    {
+      "id": "file:src/lib/crit.ts",
+      "type": "file",
+      "filePath": "src/lib/crit.ts",
+      "tags": [
+        "code",
+        "engine"
+      ]
+    },
+    {
+      "id": "file:src/lib/defense.ts",
+      "type": "file",
+      "filePath": "src/lib/defense.ts",
+      "tags": [
+        "code",
+        "engine"
+      ]
+    },
+    {
+      "id": "file:src/lib/utils.ts",
+      "type": "file",
+      "filePath": "src/lib/utils.ts",
+      "tags": [
+        "code",
+        "utility"
+      ]
+    },
+    {
+      "id": "file:tests/piercer.test.ts",
+      "type": "file",
+      "filePath": "tests/piercer.test.ts",
+      "tags": [
+        "test"
+      ]
+    },
+    {
+      "id": "file:src/lib/store.ts",
+      "type": "file",
+      "name": "store.ts",
+      "filePath": "src/lib/store.ts",
+      "summary": "Svelte store module managing build state persistence, enchantment manipulation, guild/race configuration, and armor/ring slot reordering. Exports reactive stores and updater functions that form the central state management layer for the Voxel Blade damage calculator.",
+      "tags": [
+        "svelte-store",
+        "state-management",
+        "persistence",
+        "build-config",
+        "ui-state"
+      ]
+    },
+    {
+      "id": "config:.fallowrc.json",
+      "type": "config",
+      "summary": "Fallow (dead-code analyzer) configuration. Defines entry points (src/index.*, src/main.*), sets duplicate minimum occurrences to 3, enables unused-dependencies warnings, and suppresses exports from several Svelte components (AccessorySelectModal, GuildModal, WeaponPartModal, RaceModal, DidYouMean, ModalSearchHeader, TagFilter) and constants file."
+    },
+    {
+      "id": "document:AGENTS.md",
+      "type": "document",
+      "summary": "Agent context document for the voxlblade-builder project. Describes the project as a web-based damage calculator for Roblox game 'Voxel Blade'. Documents the tech stack (Svelte 5, Vite, TypeScript, Tailwind CSS v4, Vitest, ESLint, Prettier, pnpm), project structure, development workflow commands, AI agent interaction guidelines, file operations, testing procedures, and security policies."
+    },
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "summary": "Project README based on Svelte + TS + Vite template. Covers recommended IDE setup (VS Code + Svelte extension), explains why this uses plain Vite over SvelteKit, discusses TypeScript configuration choices (global.d.ts vs compilerOptions.types, allowJs, checkJs), and notes on HMR state preservation."
+    },
+    {
+      "id": "config:fallow-output.json",
+      "type": "config",
+      "summary": "Fallow v2.102.0 dead-code analysis report. Found 28 issues: 1 unused file (svelte.config.js), 23 unused exports across data modules (Boost.ts, Runebasedmg.ts, defensivePerks.ts, draconicColorEffects.ts, raceEffects.ts, weaponConditionalBoosts.ts, etc.), 2 unused types, and 2 duplicate exports. Entry points: 4 total (1 default index, 3 plugin)."
+    },
+    {
+      "id": "config:fallow-security.json",
+      "type": "config",
+      "summary": "Fallow v2.102.0 security analysis report. Identifies low-severity tainted-sink findings: dangerous-html (CWE-79) via template.innerHTML in DidYouMean.svelte:22, SuggestDrop.svelte:21, App.svelte:1319; dynamic-regex (CWE-1333) via RegExp in App.svelte:253. All findings are reachable from entry but not from untrusted sources, non-cross-boundary."
+    },
+    {
+      "id": "file:index.html",
+      "type": "file",
+      "summary": "Vite application entry HTML. Standard SPA shell with viewport meta, Font Awesome 4.7 CDN stylesheet, 'VoxlBlade Builder' title, favicon.svg link, and module script loading src/main.ts into a div#app."
+    },
+    {
+      "id": "config:package.json",
+      "type": "config",
+      "summary": "Project manifest for 'voxlblade' (private, v0.0.0, ESM). Scripts: dev/build/preview (vite), check (svelte-check + tsc), test (vitest). DevDependencies: @playwright/test, @sveltejs/vite-plugin-svelte v7, @tsconfig/svelte, svelte v5.55, svelte-check, svgo, typescript ~6.0, vite v8, vite-plugin-pwa, vitest v4, eslint v10, fallow v2.104, rollup-plugin-visualizer. Runtime dependency: @vercel/analytics v2."
+    },
+    {
+      "id": "config:stats-data.json",
+      "type": "config",
+      "summary": "Vite/Rollup bundle visualizer data (tree format). Contains the dependency tree of the built assets/index-uX8wi3fo.js bundle, including Svelte internal modules, Vite runtime, and application source modules. Used by stats.html for treemap visualization."
+    },
+    {
+      "id": "file:stats.html",
+      "type": "file",
+      "name": "stats.html",
+      "filePath": "stats.html",
+      "summary": "HTML page for displaying Vite bundle analysis and build statistics using rollup-plugin-visualizer.",
+      "tags": [
+        "build",
+        "analysis",
+        "visualization",
+        "development"
+      ]
+    },
+    {
+      "id": "document:ts-errors.txt",
+      "type": "document",
+      "summary": "Empty TypeScript errors log file. No current errors recorded."
+    },
+    {
+      "id": "config:tsconfig.app.json",
+      "type": "config",
+      "summary": "TypeScript config for the application source code. Extends @tsconfig/svelte, targets ES2023, uses ESNext modules, includes svelte and vite/client types, enables allowJs/checkJs, noEmit mode. Includes src/**/*.ts, src/**/*.js, src/**/*.svelte files."
+    },
+    {
+      "id": "config:tsconfig.json",
+      "type": "config",
+      "summary": "Root TypeScript configuration. Simply extends tsconfig.app.json, serving as the default tsconfig for IDE and tooling."
+    },
+    {
+      "id": "config:tsconfig.node.json",
+      "type": "config",
+      "summary": "TypeScript config for Node.js build tooling (vite.config.ts). Targets ES2023, uses ESNext modules with bundler resolution, node types, strict linting (noUnusedLocals, noUnusedParameters, noFallthroughCasesInSwitch), verbatimModuleSyntax, erasableSyntaxOnly. Includes only vite.config.ts."
+    },
+    {
+      "id": "config:vercel.json",
+      "type": "config",
+      "summary": "Vercel deployment configuration. Uses npm run build, outputs to dist/, framework: vite. Sets cache headers: immutable 1-year for /assets/*, must-revalidate for /sw.js and /index.html."
+    },
+    {
+      "id": "document:.slim/deepwork/ui-upgrade.md",
+      "type": "file",
+      "name": "ui-upgrade",
+      "summary": "Multi-phase UI upgrade plan for the voxlblade app — covers modal extraction, toast system, CSS consolidation, responsive improvements, accessibility, and build comparison.",
+      "tags": [
+        "docs",
+        "plan",
+        "ui",
+        "refactor",
+        "svelte"
+      ]
+    },
+    {
+      "id": "config:.understand-anything/.understandignore",
+      "type": "file",
+      "name": ".understandignore",
+      "summary": "Configuration file listing file patterns to exclude from the understand-anything analysis tool (intermediate artifacts, test files, etc.).",
+      "tags": [
+        "config",
+        "ignore",
+        "meta"
+      ]
+    },
+    {
+      "id": "file:analyze-mounticon.mjs",
+      "type": "file",
+      "name": "analyze-mounticon",
+      "summary": "One-off debug script that reads MountIcon.svelte and extracts/displays its SVG path data length and content.",
+      "tags": [
+        "script",
+        "debug",
+        "svg",
+        "utility"
+      ]
+    },
+    {
+      "id": "file:decode_full.mjs",
+      "type": "file",
+      "name": "decode_full",
+      "summary": "Standalone build decoder/debugging tool that reconstructs full character stats from equipment, enchantments, infusions, shrine, and perks using the same formulas as the main engine.",
+      "tags": [
+        "script",
+        "debug",
+        "decoder",
+        "engine",
+        "stats"
+      ]
+    },
+    {
+      "id": "document:docs/ONBOARDING.md",
+      "type": "file",
+      "name": "ONBOARDING",
+      "summary": "Comprehensive onboarding guide documenting project architecture across 9 layers (config, source root, data, library, constants, engine, modals, statistics, stores), key concepts, guided tour, and complexity hotspots.",
+      "tags": [
+        "docs",
+        "onboarding",
+        "architecture",
+        "guide"
+      ]
+    },
+    {
+      "id": "file:src/app.css",
+      "type": "file",
+      "name": "app.css",
+      "summary": "Global CSS file defining all design tokens (colors, spacing, typography, shadows, z-index, transitions, durations), base resets, scrollbar styling, and utility classes for weapon art boxes and wild bolt UI.",
+      "tags": [
+        "css",
+        "design-tokens",
+        "global-styles",
+        "theme"
+      ]
+    },
+    {
+      "id": "file:src/App.svelte",
+      "type": "file",
+      "name": "App.svelte",
+      "filePath": "src/App.svelte",
+      "summary": "Main application component that orchestrates the Voxel Blade damage calculator, managing build state, UI layout, and component composition.",
+      "tags": [
+        "component",
+        "entry-point",
+        "ui",
+        "application",
+        "svelte"
+      ]
+    },
+    {
+      "id": "file:src/BaseDamageCalc.svelte",
+      "type": "file",
+      "name": "BaseDamageCalc.svelte",
+      "filePath": "src/BaseDamageCalc.svelte",
+      "summary": "Component for calculating and displaying base damage values from weapon stats and modifiers.",
+      "tags": [
+        "component",
+        "damage",
+        "calculation",
+        "ui"
+      ]
+    },
+    {
+      "id": "file:src/BuffList.svelte",
+      "type": "file",
+      "name": "BuffList.svelte",
+      "filePath": "src/BuffList.svelte",
+      "summary": "Component for displaying and managing active buffs and debuffs in the damage calculator.",
+      "tags": [
+        "component",
+        "buffs",
+        "ui",
+        "display"
+      ]
+    },
+    {
+      "id": "file:src/BuildSaves.svelte",
+      "type": "file",
+      "name": "BuildSaves",
+      "summary": "Build save/load management component (~1100 lines) providing localStorage-based save slots with rename, drag-to-reorder, export/import (compressed base64), duplicate detection, fuzzy search across saved builds, and touch/mouse drag support.",
+      "tags": [
+        "svelte",
+        "component",
+        "persistence",
+        "save-load",
+        "search",
+        "drag-and-drop"
+      ]
+    },
+    {
+      "id": "file:src/CdrStepsCalc.svelte",
+      "type": "file",
+      "name": "CdrStepsCalc",
+      "summary": "Visual cooldown reduction step calculator showing sequential CDR application (multiplicative or divisive) with floor rounding and minimum cooldown cap.",
+      "tags": [
+        "svelte",
+        "component",
+        "cdr",
+        "cooldown",
+        "tooltip"
+      ]
+    },
+    {
+      "id": "file:src/CritIcon.svelte",
+      "type": "file",
+      "name": "CritIcon",
+      "summary": "Simple SVG icon component rendering a critical hit symbol with a red-to-orange gradient.",
+      "tags": [
+        "svelte",
+        "component",
+        "icon",
+        "svg",
+        "crit"
+      ]
+    },
+    {
+      "id": "file:src/DamageAnalyzer.svelte",
+      "type": "file",
+      "name": "DamageAnalyzer.svelte",
+      "filePath": "src/DamageAnalyzer.svelte",
+      "summary": "Component for analyzing and displaying detailed damage breakdowns by type, including defense calculations and damage multipliers.",
+      "tags": [
+        "component",
+        "analysis",
+        "damage",
+        "ui",
+        "breakdown"
+      ]
+    },
+    {
+      "id": "file:src/data/draconicRunes.ts",
+      "type": "file",
+      "name": "draconicRunes",
+      "summary": "Draconic rune and dragon infusion bonus calculation functions — applies color-based damage type bonuses from draconic rune stacks and dragon infusion buff potency.",
+      "tags": [
+        "typescript",
+        "data",
+        "draconic",
+        "damage-calc",
+        "buffs"
+      ]
+    },
+    {
+      "id": "file:src/data/selfDamagePerks.ts",
+      "type": "file",
+      "name": "selfDamagePerks",
+      "summary": "Defines self-damage perk definitions (Undead Might, Explosive Charge, Dark Magic, Bombardier) and a calculator function that computes self-damage with DR scaling, multi-target harmonic falloff, and per-type defense multipliers.",
+      "tags": [
+        "typescript",
+        "data",
+        "self-damage",
+        "perks",
+        "damage-calc"
+      ]
+    },
+    {
+      "id": "file:src/data/stanceOverlays.ts",
+      "type": "file",
+      "name": "stanceOverlays",
+      "summary": "Resolves weapon stance overlays (Blaster Ring, Locked And Loaded, Cosmic Ray, Mine) based on context like fist/weapon type, blaster count, and weapon perks.",
+      "tags": [
+        "typescript",
+        "data",
+        "weapon-stance",
+        "condition-resolver"
+      ]
+    },
+    {
+      "id": "file:src/DidYouMean.svelte",
+      "type": "file",
+      "name": "DidYouMean",
+      "summary": "Search suggestion component displaying 'Did you mean?' chips when no exact search results are found, with highlighted text matching and perk-type differentiation.",
+      "tags": [
+        "svelte",
+        "component",
+        "search",
+        "suggestion",
+        "ui"
+      ]
+    },
+    {
+      "id": "file:src/DmgTotalTooltip.svelte",
+      "type": "file",
+      "name": "DmgTotalTooltip",
+      "summary": "Damage total tooltip component showing a pie chart of damage type distribution with per-type breakdowns, percentages, and badge labels for a computed hit.",
+      "tags": [
+        "svelte",
+        "component",
+        "tooltip",
+        "damage-breakdown",
+        "pie-chart"
+      ]
+    },
+    {
+      "id": "file:src/DraconicAbilityStats.svelte",
+      "type": "file",
+      "name": "DraconicAbilityStats",
+      "summary": "Display component for draconic ability stats: damage type, scaling, poise damage, and optional holy/water healing values.",
+      "tags": [
+        "svelte",
+        "component",
+        "draconic",
+        "display"
+      ]
+    },
+    {
+      "id": "file:src/EmotionalTracker.svelte",
+      "type": "file",
+      "name": "EmotionalTracker",
+      "summary": "Interactive slider component for selecting emotional state (debuff/both/buff) with color-coded buttons, segmented track visualization, and build store integration.",
+      "tags": [
+        "svelte",
+        "component",
+        "emotional-state",
+        "slider",
+        "ui",
+        "settings"
+      ]
+    },
+    {
+      "id": "file:src/Highlight.svelte",
+      "type": "file",
+      "name": "Highlight",
+      "summary": "Simple text highlighting component that wraps matching substrings with a highlight mark element.",
+      "tags": [
+        "svelte",
+        "component",
+        "text",
+        "search",
+        "utility"
+      ]
+    },
+    {
+      "id": "file:src/LevelBar.svelte",
+      "type": "file",
+      "name": "LevelBar",
+      "summary": "Interactive level and HP bar component with inline level editing, draggable HP fill, shield overlay, damage threshold line, and protection display.",
+      "tags": [
+        "svelte",
+        "component",
+        "level",
+        "hp-bar",
+        "interactive",
+        "ui"
+      ]
+    },
+    {
+      "id": "file:src/lib/AppHeader.svelte",
+      "type": "file",
+      "name": "AppHeader",
+      "summary": "Application header component with title, animated tab switcher (Overview/Analyze), tab bubble transition, keyboard tab-switching shortcut, and integrated BuildSaves panel.",
+      "tags": [
+        "svelte",
+        "component",
+        "header",
+        "navigation",
+        "tabs"
+      ]
+    },
+    {
+      "id": "file:src/lib/constants/boosts.ts",
+      "type": "file",
+      "name": "boosts.ts",
+      "filePath": "src/lib/constants/boosts.ts",
+      "summary": "Defines boost constants and multipliers for various damage calculation mechanics.",
+      "tags": [
+        "constants",
+        "boosts",
+        "damage",
+        "configuration"
+      ]
+    },
+    {
+      "id": "file:src/lib/constants/cdr.ts",
+      "type": "file",
+      "name": "cdr",
+      "summary": "Cooldown reduction constant definitions for CDR-related perks (Caster, Channeled Weapon, Mage Rage, Poison Acceleration, Whirlwind, etc.).",
+      "tags": [
+        "typescript",
+        "constants",
+        "cdr",
+        "cooldown"
+      ]
+    },
+    {
+      "id": "file:src/lib/uiConstants.ts",
+      "type": "file",
+      "name": "uiConstants.ts",
+      "filePath": "src/lib/uiConstants.ts",
+      "summary": "Defines UI color constants and source labels for the damage analyzer display components.",
+      "tags": [
+        "constants",
+        "ui",
+        "colors",
+        "display"
+      ]
+    },
+    {
+      "id": "file:src/data/TypedDmgBoost.ts",
+      "type": "file",
+      "name": "TypedDmgBoost.ts",
+      "filePath": "src/data/TypedDmgBoost.ts",
+      "summary": "Calculates per-damage-type damage multipliers and heal multipliers from active buffs and perks (e.g., Glyph Conduit for magic, Rage for physical/magic/water, Photosynthesis for holy/earth in sunlight). Aggregates into a dmgMultByType map.",
+      "tags": [
+        "data",
+        "damage",
+        "boosts",
+        "buffs"
+      ]
+    },
+    {
+      "id": "file:src/data/Weaponartcheck.ts",
+      "type": "file",
+      "name": "Weaponartcheck.ts",
+      "filePath": "src/data/Weaponartcheck.ts",
+      "summary": "Validates whether a weapon art's requirements (scaling, stats, weapon type, guild, both-parts) are met by the current build, and produces human-readable lists of unmet requirements.",
+      "tags": [
+        "data",
+        "validation",
+        "weapon-arts"
+      ]
+    },
+    {
+      "id": "file:src/data/weaponArts.ts",
+      "type": "file",
+      "name": "weaponArts.ts",
+      "filePath": "src/data/weaponArts.ts",
+      "summary": "Defines the WeaponArt and WeaponArtRequirement interfaces and the WEAPON_ARTS data array containing all weapon art definitions with their names, descriptions, cooldowns, damage, scaling, hits, and requirements.",
+      "tags": [
+        "data",
+        "weapon-arts",
+        "definitions"
+      ]
+    },
+    {
+      "id": "file:src/lib/constants/damage-types.ts",
+      "type": "file",
+      "name": "damage-types.ts",
+      "filePath": "src/lib/constants/damage-types.ts",
+      "summary": "Defines all damage type metadata (labels, colors), defense inheritance mappings, type priority ordering, and exported constant arrays for the game's 11 damage types (physical, magic, fire, water, earth, air, hex, holy, true, summon, heal).",
+      "tags": [
+        "constants",
+        "damage-types",
+        "configuration"
+      ]
+    },
+    {
+      "id": "file:src/lib/damageTypeResolve.ts",
+      "type": "file",
+      "name": "damageTypeResolve.ts",
+      "filePath": "src/lib/damageTypeResolve.ts",
+      "summary": "Resolves weapon art damage types from string descriptions into numeric type maps, applies type bonuses, and performs damage type conversions (Fire<->Air via Echo Incineration, Air->Magic via Spirit Winds, Dark Magic hex bonus).",
+      "tags": [
+        "engine",
+        "damage-types",
+        "conversions"
+      ]
+    },
+    {
+      "id": "file:src/lib/engine/_utils.ts",
+      "type": "file",
+      "name": "_utils.ts",
+      "filePath": "src/lib/engine/_utils.ts",
+      "summary": "Minimal utility module exporting round2 and round4 functions for numeric rounding with epsilon correction, used throughout the engine layer.",
+      "tags": [
+        "engine",
+        "utility",
+        "rounding"
+      ]
+    },
+    {
+      "id": "file:src/lib/engine/build.ts",
+      "type": "file",
+      "name": "build.ts",
+      "filePath": "src/lib/engine/build.ts",
+      "summary": "Core build calculation engine: accumulates stats and perks from all equipment slots (race, guild, armor, ring, rune, weapon), applies enchantments and infusions, finalizes perks with effectiveness scaling, computes CDR, boosts, crit, and assembles active buffs. Exports calcBuild as the main entry point.",
+      "tags": [
+        "engine",
+        "build",
+        "core",
+        "calculation"
+      ]
+    },
+    {
+      "id": "file:src/lib/engine/data.ts",
+      "type": "file",
+      "name": "data.ts",
+      "filePath": "src/lib/engine/data.ts",
+      "summary": "Barrel re-export module that re-exports all symbols from character, equipment, and weapon data sub-modules, providing a single import point for game data accessors.",
+      "tags": [
+        "engine",
+        "barrel",
+        "re-export"
+      ]
+    },
+    {
+      "id": "file:src/lib/engine/enchant.ts",
+      "type": "file",
+      "name": "enchant.ts",
+      "filePath": "src/lib/engine/enchant.ts",
+      "summary": "Enchantment application engine: applies stat-selecting enchantments (Restored, Flawless), direct stat modifiers, perk modifiers, perk effectiveness scaling, infusion (50% stat halving), and exclusive enchant slot enforcement.",
+      "tags": [
+        "engine",
+        "enchantments",
+        "stats"
+      ]
+    },
+    {
+      "id": "file:src/lib/engine/format.ts",
+      "type": "file",
+      "name": "format.ts",
+      "filePath": "src/lib/engine/format.ts",
+      "summary": "Formatting utilities for stat display: formats numeric stat values with +/- signs, percentage suffixes for percent-type stats, and converts camelCase stat keys to readable labels.",
+      "tags": [
+        "engine",
+        "formatting",
+        "utility"
+      ]
+    },
+    {
+      "id": "file:src/lib/engine/shrine.ts",
+      "type": "file",
+      "name": "shrine.ts",
+      "filePath": "src/lib/engine/shrine.ts",
+      "summary": "Shrine multiplier system: defines tier-based stat multipliers (3.0x at tier 1 down to 1.0x at tier 5) and applies them to weapon stats and scalings when the shrine is active.",
+      "tags": [
+        "engine",
+        "shrine",
+        "multipliers"
+      ]
+    },
+    {
+      "id": "file:src/lib/engine/weapon.ts",
+      "type": "file",
+      "name": "weapon.ts",
+      "filePath": "src/lib/engine/weapon.ts",
+      "summary": "Weapon calculation engine: combines blade/handle (or glove/essence for monk) stats, scalings, damage types, and perks; resolves weapon type from handle+blade combo with perk overrides; detects hybrid bonus; applies shrine multipliers and monk rank bonuses. Exports calcWeapon and calcMonkWeapon.",
+      "tags": [
+        "engine",
+        "weapon",
+        "calculation",
+        "stats"
+      ]
+    },
+    {
+      "id": "file:src/data/Boost.ts",
+      "type": "file"
+    },
+    {
+      "id": "file:src/data/debuffCombatEffects.ts",
+      "type": "file"
+    },
+    {
+      "id": "file:src/data/enemyHpEffects.ts",
+      "type": "file"
+    },
+    {
+      "id": "file:src/lib/constants/debuff-effects.ts",
+      "type": "file"
+    },
+    {
+      "id": "file:src/lib/constants/game.ts",
+      "type": "file"
+    },
+    {
+      "id": "file:src/lib/constants/perks.ts",
+      "type": "file"
+    },
+    {
+      "id": "file:src/lib/engine/dmgTypeBonuses.ts",
+      "type": "file"
+    },
+    {
+      "id": "file::.github/workflows/static.yml",
+      "type": "file",
+      "filePath": ".github/workflows/static.yml"
+    },
+    {
+      "id": "pipeline::.github/workflows/static.yml::build",
+      "type": "pipeline",
+      "filePath": ".github/workflows/static.yml"
+    },
+    {
+      "id": "pipeline::.github/workflows/static.yml::deploy",
+      "type": "pipeline",
+      "filePath": ".github/workflows/static.yml"
+    },
+    {
+      "id": "file::.fallowrc.json",
+      "type": "file",
+      "filePath": ".fallowrc.json"
+    },
+    {
+      "id": "file::AGENTS.md",
+      "type": "file",
+      "filePath": "AGENTS.md"
+    },
+    {
+      "id": "file::README.md",
+      "type": "file",
+      "filePath": "README.md"
+    },
+    {
+      "id": "file::fallow-output.json",
+      "type": "file",
+      "filePath": "fallow-output.json"
+    },
+    {
+      "id": "file::fallow-security.json",
+      "type": "file",
+      "filePath": "fallow-security.json"
+    },
+    {
+      "id": "file::stats-data.json",
+      "type": "file",
+      "filePath": "stats-data.json"
+    },
+    {
+      "id": "file::ts-errors.txt",
+      "type": "file",
+      "filePath": "ts-errors.txt"
+    },
+    {
+      "id": "file::.understand-anything/config.json",
+      "type": "file",
+      "filePath": ".understand-anything/config.json"
+    },
+    {
+      "id": "file::.understand-anything/dashboard-errors.txt",
+      "type": "file",
+      "filePath": ".understand-anything/dashboard-errors.txt"
+    },
+    {
+      "id": "file::.understand-anything/dashboard-output.txt",
+      "type": "file",
+      "filePath": ".understand-anything/dashboard-output.txt"
+    },
+    {
+      "id": "config::.understand-anything/fingerprints.json",
+      "type": "config",
+      "filePath": ".understand-anything/fingerprints.json"
+    },
+    {
+      "id": "file::.understand-anything/knowledge-graph.json",
+      "type": "file",
+      "filePath": ".understand-anything/knowledge-graph.json"
+    },
+    {
+      "id": "config::.understand-anything/meta.json",
+      "type": "config",
+      "filePath": ".understand-anything/meta.json"
+    },
+    {
+      "id": "schema::src/data/armors.json",
+      "type": "schema",
+      "filePath": "src/data/armors.json"
+    },
+    {
+      "id": "schema::src/data/blades.json",
+      "type": "schema",
+      "filePath": "src/data/blades.json"
+    },
+    {
+      "id": "schema::src/data/enchantments.json",
+      "type": "schema",
+      "filePath": "src/data/enchantments.json"
+    },
+    {
+      "id": "schema::src/data/essences.json",
+      "type": "schema",
+      "filePath": "src/data/essences.json"
+    },
+    {
+      "id": "schema::src/data/gloves.json",
+      "type": "schema",
+      "filePath": "src/data/gloves.json"
+    },
+    {
+      "id": "schema::src/data/guilds.json",
+      "type": "schema",
+      "filePath": "src/data/guilds.json"
+    },
+    {
+      "id": "schema::src/data/handles.json",
+      "type": "schema",
+      "filePath": "src/data/handles.json"
+    },
+    {
+      "id": "schema::src/data/perks.json",
+      "type": "schema",
+      "filePath": "src/data/perks.json"
+    },
+    {
+      "id": "schema::src/data/races.json",
+      "type": "schema",
+      "filePath": "src/data/races.json"
+    },
+    {
+      "id": "schema::src/data/rings.json",
+      "type": "schema",
+      "filePath": "src/data/rings.json"
+    },
+    {
+      "id": "schema::src/data/runes.json",
+      "type": "schema",
+      "filePath": "src/data/runes.json"
+    },
+    {
+      "id": "file::.understand-anything/.understandignore",
+      "type": "file",
+      "filePath": ".understand-anything/.understandignore"
+    },
+    {
+      "id": "file::src/lib/constants/defensive.ts",
+      "type": "file",
+      "filePath": "src/lib/constants/defensive.ts"
+    },
+    {
+      "id": "file::src/lib/constants/draconic-colors.ts",
+      "type": "file",
+      "filePath": "src/lib/constants/draconic-colors.ts"
+    },
+    {
+      "id": "file::src/lib/constants/draconic.ts",
+      "type": "file",
+      "filePath": "src/lib/constants/draconic.ts"
+    },
+    {
+      "id": "file::src/lib/constants/heals.ts",
+      "type": "file",
+      "filePath": "src/lib/constants/heals.ts"
+    },
+    {
+      "id": "file::src/lib/constants/index.ts",
+      "type": "file",
+      "filePath": "src/lib/constants/index.ts"
+    },
+    {
+      "id": "file::src/lib/constants/thresholds.ts",
+      "type": "file",
+      "filePath": "src/lib/constants/thresholds.ts"
+    },
+    {
+      "id": "file::src/lib/EnchantSelect.svelte",
+      "type": "file",
+      "filePath": "src/lib/EnchantSelect.svelte"
+    },
+    {
+      "id": "file::src/lib/engine/engine.ts",
+      "type": "file",
+      "filePath": "src/lib/engine/engine.ts"
+    },
+    {
+      "id": "file::src/lib/Modal.svelte",
+      "type": "file",
+      "filePath": "src/lib/Modal.svelte"
+    },
+    {
+      "id": "file::src/lib/modals/AccessorySelectModal.svelte",
+      "type": "file",
+      "filePath": "src/lib/modals/AccessorySelectModal.svelte"
+    },
+    {
+      "id": "file::src/lib/modals/GuildModal.svelte",
+      "type": "file",
+      "filePath": "src/lib/modals/GuildModal.svelte"
+    },
+    {
+      "id": "file::src/lib/modals/index.ts",
+      "type": "file",
+      "filePath": "src/lib/modals/index.ts"
+    },
+    {
+      "id": "file::src/lib/modals/RaceModal.svelte",
+      "type": "file",
+      "filePath": "src/lib/modals/RaceModal.svelte"
+    },
+    {
+      "id": "file::src/lib/modals/WeaponPartModal.svelte",
+      "type": "file",
+      "filePath": "src/lib/modals/WeaponPartModal.svelte"
+    },
+    {
+      "id": "file::src/lib/StatFilterShared.svelte",
+      "type": "file",
+      "filePath": "src/lib/StatFilterShared.svelte"
+    },
+    {
+      "id": "file::src/lib/stats/elementalBoosts.ts",
+      "type": "file",
+      "filePath": "src/lib/stats/elementalBoosts.ts"
+    },
+    {
+      "id": "file::src/lib/stats/filterActions.ts",
+      "type": "file",
+      "filePath": "src/lib/stats/filterActions.ts"
+    },
+    {
+      "id": "file::src/lib/Toast.svelte",
+      "type": "file",
+      "filePath": "src/lib/Toast.svelte"
+    },
+    {
+      "id": "file::src/lib/ui/Badge.svelte",
+      "type": "file",
+      "filePath": "src/lib/ui/Badge.svelte"
+    },
+    {
+      "id": "file::src/lib/ui/Button.svelte",
+      "type": "file",
+      "filePath": "src/lib/ui/Button.svelte"
+    },
+    {
+      "id": "file::src/lib/ui/Card.svelte",
+      "type": "file",
+      "filePath": "src/lib/ui/Card.svelte"
+    },
+    {
+      "id": "file::src/lib/ui/Divider.svelte",
+      "type": "file",
+      "filePath": "src/lib/ui/Divider.svelte"
+    },
+    {
+      "id": "file::src/lib/ui/index.ts",
+      "type": "file",
+      "filePath": "src/lib/ui/index.ts"
+    },
+    {
+      "id": "file::src/lib/ui/Panel.svelte",
+      "type": "file",
+      "filePath": "src/lib/ui/Panel.svelte"
+    },
+    {
+      "id": "file::src/lib/ui/Section.svelte",
+      "type": "file",
+      "filePath": "src/lib/ui/Section.svelte"
+    },
+    {
+      "id": "file::src/lib/ui/Stat.svelte",
+      "type": "file",
+      "filePath": "src/lib/ui/Stat.svelte"
+    },
+    {
+      "id": "file::src/main.ts",
+      "type": "file",
+      "filePath": "src/main.ts"
+    },
+    {
+      "id": "file::src/ModalSearchHeader.svelte",
+      "type": "file",
+      "filePath": "src/ModalSearchHeader.svelte"
+    },
+    {
+      "id": "file::src/MountIcon.svelte",
+      "type": "file",
+      "filePath": "src/MountIcon.svelte"
+    },
+    {
+      "id": "file::src/ScalingBreakdownRow.svelte",
+      "type": "file",
+      "filePath": "src/ScalingBreakdownRow.svelte"
+    },
+    {
+      "id": "file::src/StatFilter.svelte",
+      "type": "file",
+      "filePath": "src/StatFilter.svelte"
+    },
+    {
+      "id": "file::src/SuggestDrop.svelte",
+      "type": "file",
+      "filePath": "src/SuggestDrop.svelte"
+    },
+    {
+      "id": "file::src/TagFilter.svelte",
+      "type": "file",
+      "filePath": "src/TagFilter.svelte"
+    },
+    {
+      "id": "file::src/WeaponStatFilter.svelte",
+      "type": "file",
+      "filePath": "src/WeaponStatFilter.svelte"
+    },
+    {
+      "id": "file::src/WeaponStatsDisplay.svelte",
+      "type": "file",
+      "filePath": "src/WeaponStatsDisplay.svelte"
+    },
+    {
+      "id": "file::vite.config.ts",
+      "type": "file",
+      "filePath": "vite.config.ts"
+    },
+    {
+      "id": "file:src/lib/constants.ts",
+      "type": "file",
+      "name": "constants.ts",
+      "filePath": "src/lib/constants.ts",
+      "summary": "Barrel re-export file for all game constants. Re-exports all sub-modules from the constants directory providing a single import point.",
+      "tags": [
+        "constants",
+        "barrel",
+        "re-export",
+        "configuration"
+      ]
+    },
+    {
+      "id": "file:src/lib/constants/buffs.ts",
+      "type": "file",
+      "name": "buffs.ts",
+      "filePath": "src/lib/constants/buffs.ts",
+      "summary": "Defines buff-related constants including buff potency calculations, duration modifiers, and stacking rules.",
+      "tags": [
+        "constants",
+        "buffs",
+        "configuration"
+      ]
+    },
+    {
+      "id": "file:src/data/DoTDamage.ts",
+      "type": "file",
+      "name": "DoTDamage.ts",
+      "filePath": "src/data/DoTDamage.ts",
+      "summary": "Defines damage-over-time (DoT) calculation constants and functions for bleed, poison, and fire DoT effects.",
+      "tags": [
+        "data",
+        "dot",
+        "damage",
+        "game-mechanics"
+      ]
+    },
+    {
+      "id": "file:src/data/draconicColorEffects.ts",
+      "type": "file",
+      "name": "draconicColorEffects.ts",
+      "filePath": "src/data/draconicColorEffects.ts",
+      "summary": "Defines draconic color-based effects including elemental damage bonuses and status effects tied to draconic color selection.",
+      "tags": [
+        "data",
+        "draconic",
+        "color",
+        "effects"
+      ]
+    },
+    {
+      "id": "file:src/lib/types.ts",
+      "type": "file",
+      "name": "types.ts",
+      "filePath": "src/lib/types.ts",
+      "summary": "Core TypeScript type definitions for the damage calculator. Defines interfaces for BuildState, equipment stats, perks, enchantments, damage types, and all game data structures.",
+      "tags": [
+        "types",
+        "interfaces",
+        "typescript",
+        "core"
+      ]
+    },
+    {
+      "id": "file:src/lib/engine.ts",
+      "type": "file",
+      "name": "engine.ts",
+      "filePath": "src/lib/engine.ts",
+      "summary": "Barrel re-export file for the engine module. Re-exports all engine sub-modules: data, shrine, enchant, weapon, build, and format.",
+      "tags": [
+        "engine",
+        "barrel",
+        "re-export",
+        "core"
+      ]
+    }
+  ],
+  "importEdges": [
+    {
+      "target": "file:src/lib/utils.ts",
+      "direction": "forward",
+      "source": "file:src/data/BuffData.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "target": "file:src/data/Boost.ts",
+      "direction": "forward",
+      "source": "file:src/data/perkAutoDebuffs.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "target": "file:src/data/BuffData.ts",
+      "direction": "forward",
+      "source": "file:src/data/perkAutoDebuffs.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "target": "file:src/data/enemyHpEffects.ts",
+      "direction": "forward",
+      "source": "file:src/data/perkAutoDebuffs.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "target": "file:src/lib/constants/game.ts",
+      "direction": "forward",
+      "source": "file:src/data/perkAutoDebuffs.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "target": "file:src/lib/constants/perk-base-damage.ts",
+      "direction": "forward",
+      "source": "file:src/data/perkAutoDebuffs.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "target": "file:src/lib/constants/perks.ts",
+      "direction": "forward",
+      "source": "file:src/data/perkAutoDebuffs.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "target": "file:src/lib/constants/game.ts",
+      "direction": "forward",
+      "source": "file:src/lib/constants/storage.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/weaponConditionalBoosts.ts",
+      "target": "file:src/lib/utils.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/crit.ts",
+      "target": "file:src/lib/utils.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/defense.ts",
+      "target": "file:src/lib/utils.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:tests/piercer.test.ts",
+      "target": "file:src/data/weaponConditionalBoosts.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:tests/piercer.test.ts",
+      "target": "file:src/lib/utils.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/DamageAnalyzer.svelte",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/BuffList.svelte",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/EmotionalTracker.svelte",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/LevelBar.svelte",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/CdrStepsCalc.svelte",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/DraconicAbilityStats.svelte",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/lib/AppHeader.svelte",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/BaseDamageCalc.svelte",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/CritIcon.svelte",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/data/draconicRunes.ts",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/data/selfDamagePerks.ts",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/data/stanceOverlays.ts",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/BaseDamageCalc.svelte",
+      "target": "file:src/CritIcon.svelte",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/BaseDamageCalc.svelte",
+      "target": "file:src/DmgTotalTooltip.svelte",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/AppHeader.svelte",
+      "target": "file:src/BuildSaves.svelte",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/lib/constants/boosts.ts",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/BuildSaves.svelte",
+      "target": "file:src/EmotionalTracker.svelte",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/data/TypedDmgBoost.ts",
+      "target": "file:src/lib/constants/damage-types.ts",
+      "type": "imports",
+      "weight": 0.8,
+      "description": "TypedDmgBoost.ts imports ALL_DMG_TYPES from damage-types constants",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/data/Weaponartcheck.ts",
+      "target": "file:src/data/weaponArts.ts",
+      "type": "imports",
+      "weight": 1,
+      "description": "Weaponartcheck.ts imports WeaponArt and WeaponArtRequirement types from weaponArts",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/damageTypeResolve.ts",
+      "target": "file:src/lib/engine/_utils.ts",
+      "type": "imports",
+      "weight": 0.6,
+      "description": "damageTypeResolve.ts imports round4 from engine utilities",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/damageTypeResolve.ts",
+      "target": "file:src/lib/constants/damage-types.ts",
+      "type": "imports",
+      "weight": 0.9,
+      "description": "damageTypeResolve.ts imports DMG_TYPE_PRIORITY from damage-types constants",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/data/weaponArts.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "description": "build.ts imports WEAPON_ARTS array to look up selected weapon art for damage type resolution",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/engine/data.ts",
+      "type": "imports",
+      "weight": 1,
+      "description": "build.ts imports data accessors (getRace, getGuild, getBlade, getHandle, etc.) from the data barrel",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/engine/enchant.ts",
+      "type": "imports",
+      "weight": 0.9,
+      "description": "build.ts imports applyEnchantmentsToSlot, applyPerkEffectiveness, applyInfusion from enchant engine",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/engine/shrine.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "description": "build.ts imports applyShrineToStats and SHRINE_MULTIPLIERS from shrine engine",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/engine/weapon.ts",
+      "type": "imports",
+      "weight": 1,
+      "description": "build.ts imports MONK_RANK_MULTIPLIER, calcWeapon, calcMonkWeapon from weapon engine",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/damageTypeResolve.ts",
+      "type": "imports",
+      "weight": 0.6,
+      "description": "build.ts imports getFinalWaDmgTypes for weapon art damage type resolution",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/enchant.ts",
+      "target": "file:src/lib/engine/data.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "description": "enchant.ts imports getEnchant and enchantmentsRaw from the data barrel",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/enchant.ts",
+      "target": "file:src/lib/engine/_utils.ts",
+      "type": "imports",
+      "weight": 0.4,
+      "description": "enchant.ts imports round2 from engine utilities",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/format.ts",
+      "target": "file:src/lib/engine/_utils.ts",
+      "type": "imports",
+      "weight": 0.6,
+      "description": "format.ts imports round2 from engine utilities",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/shrine.ts",
+      "target": "file:src/lib/engine/_utils.ts",
+      "type": "imports",
+      "weight": 0.5,
+      "description": "shrine.ts imports round2 from engine utilities",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/weapon.ts",
+      "target": "file:src/lib/engine/data.ts",
+      "type": "imports",
+      "weight": 0.9,
+      "description": "weapon.ts imports getBlade, getHandle, getGlove, getEssence from the data barrel",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/weapon.ts",
+      "target": "file:src/lib/engine/shrine.ts",
+      "type": "imports",
+      "weight": 0.9,
+      "description": "weapon.ts imports applyShrineToScalings, applyShrineToStats, SHRINE_MULTIPLIERS from shrine",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/weapon.ts",
+      "target": "file:src/lib/engine/_utils.ts",
+      "type": "imports",
+      "weight": 0.5,
+      "description": "weapon.ts imports round2 and round4 from engine utilities",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/data/Boost.ts",
+      "target": "file:src/lib/constants/game.ts",
+      "type": "imports",
+      "label": "imports game constants",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/data/Boost.ts",
+      "target": "file:src/lib/constants/perks.ts",
+      "type": "imports",
+      "label": "imports perk multiplier constants",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/data/debuffCombatEffects.ts",
+      "target": "file:src/lib/constants/debuff-effects.ts",
+      "type": "imports",
+      "label": "imports debuff effect constants",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/data/enemyHpEffects.ts",
+      "target": "file:src/lib/constants/perks.ts",
+      "type": "imports",
+      "label": "imports HYPNOTIST_MAGIC_ARMOR_PER_POTENCY",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/dmgTypeBonuses.ts",
+      "target": "file:src/lib/constants/perks.ts",
+      "type": "imports",
+      "label": "imports Void Rage, Channeled Weapon, Emotional, Draconic Blood constants",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/main.ts::imports::file::src/app.css",
+      "source": "file::src/main.ts",
+      "target": "file:src/app.css",
+      "type": "imports",
+      "label": "imports global CSS styles",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/CdrStepsCalc.svelte::imports::file::src/lib/constants/cdr.ts",
+      "source": "file:src/CdrStepsCalc.svelte",
+      "target": "file:src/lib/constants/cdr.ts",
+      "type": "imports",
+      "label": "references CD_MINIMUM constant",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/lib/EnchantSelect.svelte::imports::file::src/lib/constants/index.ts",
+      "source": "file::src/lib/EnchantSelect.svelte",
+      "target": "file::src/lib/constants/index.ts",
+      "type": "imports",
+      "label": "imports FOCUS_DELAY_MS constant",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/lib/modals/AccessorySelectModal.svelte::imports::file::src/lib/Modal.svelte",
+      "source": "file::src/lib/modals/AccessorySelectModal.svelte",
+      "target": "file::src/lib/Modal.svelte",
+      "type": "imports",
+      "label": "wraps content in Modal",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/lib/modals/GuildModal.svelte::imports::file::src/lib/Modal.svelte",
+      "source": "file::src/lib/modals/GuildModal.svelte",
+      "target": "file::src/lib/Modal.svelte",
+      "type": "imports",
+      "label": "wraps content in Modal",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/lib/modals/WeaponPartModal.svelte::imports::file::src/lib/Modal.svelte",
+      "source": "file::src/lib/modals/WeaponPartModal.svelte",
+      "target": "file::src/lib/Modal.svelte",
+      "type": "imports",
+      "label": "wraps content in Modal",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/lib/modals/RaceModal.svelte::imports::file::src/lib/Modal.svelte",
+      "source": "file::src/lib/modals/RaceModal.svelte",
+      "target": "file::src/lib/Modal.svelte",
+      "type": "imports",
+      "label": "wraps content in Modal",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/lib/StatFilterShared.svelte::imports::file::src/lib/ui/Badge.svelte",
+      "source": "file::src/lib/StatFilterShared.svelte",
+      "target": "file::src/lib/ui/Badge.svelte",
+      "type": "imports",
+      "label": "renders stat filter chips as badges",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/ModalSearchHeader.svelte::imports::file::src/SuggestDrop.svelte",
+      "source": "file::src/ModalSearchHeader.svelte",
+      "target": "file::src/SuggestDrop.svelte",
+      "type": "imports",
+      "label": "renders search suggestions dropdown",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/ModalSearchHeader.svelte::imports::file::src/TagFilter.svelte",
+      "source": "file::src/ModalSearchHeader.svelte",
+      "target": "file::src/TagFilter.svelte",
+      "type": "imports",
+      "label": "renders tag filter chips",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/ModalSearchHeader.svelte::imports::file::src/StatFilter.svelte",
+      "source": "file::src/ModalSearchHeader.svelte",
+      "target": "file::src/StatFilter.svelte",
+      "type": "imports",
+      "label": "renders standard stat filter",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/ModalSearchHeader.svelte::imports::file::src/WeaponStatFilter.svelte",
+      "source": "file::src/ModalSearchHeader.svelte",
+      "target": "file::src/WeaponStatFilter.svelte",
+      "type": "imports",
+      "label": "renders weapon stat filter",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/StatFilter.svelte::imports::file::src/lib/StatFilterShared.svelte",
+      "source": "file::src/StatFilter.svelte",
+      "target": "file::src/lib/StatFilterShared.svelte",
+      "type": "imports",
+      "label": "uses shared StatChip component",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/StatFilter.svelte::imports::file::src/lib/stats/elementalBoosts.ts",
+      "source": "file::src/StatFilter.svelte",
+      "target": "file::src/lib/stats/elementalBoosts.ts",
+      "type": "imports",
+      "label": "reads elemental boost stat definitions",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/StatFilter.svelte::imports::file::src/lib/stats/filterActions.ts",
+      "source": "file::src/StatFilter.svelte",
+      "target": "file::src/lib/stats/filterActions.ts",
+      "type": "imports",
+      "label": "creates filter action handlers",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/StatFilter.svelte::imports::file::src/lib/uiConstants.ts",
+      "source": "file::src/StatFilter.svelte",
+      "target": "file:src/lib/uiConstants.ts",
+      "type": "imports",
+      "label": "reads UI color constants",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/TagFilter.svelte::imports::file::src/lib/uiConstants.ts",
+      "source": "file::src/TagFilter.svelte",
+      "target": "file:src/lib/uiConstants.ts",
+      "type": "imports",
+      "label": "reads UI color constants",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/WeaponStatsDisplay.svelte::imports::file::src/ScalingBreakdownRow.svelte",
+      "source": "file::src/WeaponStatsDisplay.svelte",
+      "target": "file::src/ScalingBreakdownRow.svelte",
+      "type": "imports",
+      "label": "renders per-stat scaling breakdown rows",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/SuggestDrop.svelte::imports::file::src/lib/utils.ts",
+      "source": "file::src/SuggestDrop.svelte",
+      "target": "file:src/lib/utils.ts",
+      "type": "imports",
+      "label": "uses highlightTextParts utility",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/DidYouMean.svelte::imports::file::src/lib/utils.ts",
+      "source": "file:src/DidYouMean.svelte",
+      "target": "file:src/lib/utils.ts",
+      "type": "imports",
+      "label": "uses highlightTextParts utility",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/data/debuffCombatEffects.ts",
+      "target": "file:src/lib/constants/perks.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/data/Boost.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/engine/dmgTypeBonuses.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/data/TypedDmgBoost.ts",
+      "target": "file:src/data/BuffData.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/data/BuffData.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/data/Boost.ts",
+      "target": "file:src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/crit.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "file:src/lib/constants.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "file:src/lib/constants/buffs.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "file:src/data/DoTDamage.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "file:src/data/draconicColorEffects.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "file:src/lib/constants.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/perkAutoDebuffs.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/dmgTypes.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/crit.ts",
+      "target": "file:src/lib/constants.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/crit.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/utils.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "file:src/lib/constants.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "file:src/lib/engine.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/Boost.ts",
+      "target": "file:src/lib/constants.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/Boost.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/draconicColorEffects.ts",
+      "target": "file:src/lib/constants.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/constants.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/constants/buffs.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine/enchant.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine/format.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine/shrine.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine/weapon.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    }
+  ],
+  "allEdges": [
+    {
+      "target": "file:src/lib/utils.ts",
+      "direction": "forward",
+      "source": "file:src/data/BuffData.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "target": "file:src/data/Boost.ts",
+      "direction": "forward",
+      "source": "file:src/data/perkAutoDebuffs.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "target": "file:src/data/BuffData.ts",
+      "direction": "forward",
+      "source": "file:src/data/perkAutoDebuffs.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "target": "file:src/data/enemyHpEffects.ts",
+      "direction": "forward",
+      "source": "file:src/data/perkAutoDebuffs.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "target": "file:src/lib/constants/game.ts",
+      "direction": "forward",
+      "source": "file:src/data/perkAutoDebuffs.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "target": "file:src/lib/constants/perk-base-damage.ts",
+      "direction": "forward",
+      "source": "file:src/data/perkAutoDebuffs.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "target": "file:src/lib/constants/perks.ts",
+      "direction": "forward",
+      "source": "file:src/data/perkAutoDebuffs.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "target": "file:src/lib/constants/game.ts",
+      "direction": "forward",
+      "source": "file:src/lib/constants/storage.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/weaponConditionalBoosts.ts",
+      "target": "file:src/lib/utils.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/crit.ts",
+      "target": "file:src/lib/utils.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/defense.ts",
+      "target": "file:src/lib/utils.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:tests/piercer.test.ts",
+      "target": "file:src/data/weaponConditionalBoosts.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:tests/piercer.test.ts",
+      "target": "file:src/lib/utils.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "config:tsconfig.json",
+      "target": "config:tsconfig.app.json",
+      "type": "configures",
+      "label": "extends",
+      "direction": "forward"
+    },
+    {
+      "source": "config:tsconfig.app.json",
+      "target": "config:package.json",
+      "type": "configures",
+      "label": "applies to project source (src/**)",
+      "direction": "forward"
+    },
+    {
+      "source": "config:tsconfig.node.json",
+      "target": "config:package.json",
+      "type": "configures",
+      "label": "applies to build tooling (vite.config.ts)",
+      "direction": "forward"
+    },
+    {
+      "source": "document:AGENTS.md",
+      "target": "config:package.json",
+      "type": "documents",
+      "label": "documents project structure and workflows",
+      "direction": "forward"
+    },
+    {
+      "source": "document:README.md",
+      "target": "config:package.json",
+      "type": "documents",
+      "label": "documents Svelte+TS+Vite setup",
+      "direction": "forward"
+    },
+    {
+      "source": "config:.fallowrc.json",
+      "target": "config:fallow-output.json",
+      "type": "configures",
+      "label": "configures fallow analysis that produces",
+      "direction": "forward"
+    },
+    {
+      "source": "config:.fallowrc.json",
+      "target": "config:fallow-security.json",
+      "type": "configures",
+      "label": "configures fallow security analysis",
+      "direction": "forward"
+    },
+    {
+      "source": "config:fallow-output.json",
+      "target": "config:package.json",
+      "type": "depends_on",
+      "label": "reports on project source dead code",
+      "direction": "forward"
+    },
+    {
+      "source": "config:fallow-security.json",
+      "target": "config:package.json",
+      "type": "depends_on",
+      "label": "reports on project source security",
+      "direction": "forward"
+    },
+    {
+      "source": "file:index.html",
+      "target": "config:package.json",
+      "type": "depends_on",
+      "label": "Vite entry HTML, loads src/main.ts",
+      "direction": "forward"
+    },
+    {
+      "source": "file:stats.html",
+      "target": "config:stats-data.json",
+      "type": "depends_on",
+      "label": "visualizes bundle data from",
+      "direction": "forward"
+    },
+    {
+      "source": "config:stats-data.json",
+      "target": "config:package.json",
+      "type": "depends_on",
+      "label": "production build artifact data",
+      "direction": "forward"
+    },
+    {
+      "source": "config:vercel.json",
+      "target": "config:package.json",
+      "type": "configures",
+      "label": "deployment config for Vercel hosting",
+      "direction": "forward"
+    },
+    {
+      "source": "config:.fallowrc.json",
+      "target": "config:package.json",
+      "type": "depends_on",
+      "label": "fallow tool configured for this project",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/DamageAnalyzer.svelte",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/BuffList.svelte",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/EmotionalTracker.svelte",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/LevelBar.svelte",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/CdrStepsCalc.svelte",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/DraconicAbilityStats.svelte",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/lib/AppHeader.svelte",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/BaseDamageCalc.svelte",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/CritIcon.svelte",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/data/draconicRunes.ts",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/data/selfDamagePerks.ts",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/data/stanceOverlays.ts",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/BaseDamageCalc.svelte",
+      "target": "file:src/CritIcon.svelte",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/BaseDamageCalc.svelte",
+      "target": "file:src/DmgTotalTooltip.svelte",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/AppHeader.svelte",
+      "target": "file:src/BuildSaves.svelte",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/DidYouMean.svelte",
+      "target": "file:src/Highlight.svelte",
+      "type": "related",
+      "direction": "forward"
+    },
+    {
+      "source": "document:.slim/deepwork/ui-upgrade.md",
+      "target": "file:src/App.svelte",
+      "type": "documents",
+      "direction": "forward"
+    },
+    {
+      "source": "document:.slim/deepwork/ui-upgrade.md",
+      "target": "file:src/DamageAnalyzer.svelte",
+      "type": "documents",
+      "direction": "forward"
+    },
+    {
+      "source": "document:.slim/deepwork/ui-upgrade.md",
+      "target": "file:src/app.css",
+      "type": "documents",
+      "direction": "forward"
+    },
+    {
+      "source": "document:.slim/deepwork/ui-upgrade.md",
+      "target": "file:src/BuildSaves.svelte",
+      "type": "documents",
+      "direction": "forward"
+    },
+    {
+      "source": "document:.slim/deepwork/ui-upgrade.md",
+      "target": "file:src/BuffList.svelte",
+      "type": "documents",
+      "direction": "forward"
+    },
+    {
+      "source": "document:.slim/deepwork/ui-upgrade.md",
+      "target": "file:src/lib/AppHeader.svelte",
+      "type": "documents",
+      "direction": "forward"
+    },
+    {
+      "source": "document:docs/ONBOARDING.md",
+      "target": "file:src/App.svelte",
+      "type": "documents",
+      "direction": "forward"
+    },
+    {
+      "source": "document:docs/ONBOARDING.md",
+      "target": "file:src/DamageAnalyzer.svelte",
+      "type": "documents",
+      "direction": "forward"
+    },
+    {
+      "source": "document:docs/ONBOARDING.md",
+      "target": "file:src/BaseDamageCalc.svelte",
+      "type": "documents",
+      "direction": "forward"
+    },
+    {
+      "source": "document:docs/ONBOARDING.md",
+      "target": "file:src/BuffList.svelte",
+      "type": "documents",
+      "direction": "forward"
+    },
+    {
+      "source": "document:docs/ONBOARDING.md",
+      "target": "file:src/BuildSaves.svelte",
+      "type": "documents",
+      "direction": "forward"
+    },
+    {
+      "source": "document:docs/ONBOARDING.md",
+      "target": "file:src/data/draconicRunes.ts",
+      "type": "documents",
+      "direction": "forward"
+    },
+    {
+      "source": "document:docs/ONBOARDING.md",
+      "target": "file:src/data/selfDamagePerks.ts",
+      "type": "documents",
+      "direction": "forward"
+    },
+    {
+      "source": "document:docs/ONBOARDING.md",
+      "target": "file:src/data/stanceOverlays.ts",
+      "type": "documents",
+      "direction": "forward"
+    },
+    {
+      "source": "document:docs/ONBOARDING.md",
+      "target": "file:src/lib/constants/boosts.ts",
+      "type": "documents",
+      "direction": "forward"
+    },
+    {
+      "source": "document:docs/ONBOARDING.md",
+      "target": "file:src/lib/constants/cdr.ts",
+      "type": "documents",
+      "direction": "forward"
+    },
+    {
+      "source": "document:docs/ONBOARDING.md",
+      "target": "file:src/LevelBar.svelte",
+      "type": "documents",
+      "direction": "forward"
+    },
+    {
+      "source": "document:docs/ONBOARDING.md",
+      "target": "file:src/lib/AppHeader.svelte",
+      "type": "documents",
+      "direction": "forward"
+    },
+    {
+      "source": "document:docs/ONBOARDING.md",
+      "target": "file:src/app.css",
+      "type": "documents",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/LevelBar.svelte",
+      "type": "related",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/EmotionalTracker.svelte",
+      "type": "related",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/app.css",
+      "type": "related",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/lib/constants/boosts.ts",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/BuffList.svelte",
+      "type": "related",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/DmgTotalTooltip.svelte",
+      "type": "related",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/DraconicAbilityStats.svelte",
+      "type": "related",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/data/selfDamagePerks.ts",
+      "target": "file:src/lib/constants/boosts.ts",
+      "type": "related",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/constants/cdr.ts",
+      "target": "file:src/lib/constants/boosts.ts",
+      "type": "related",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/CdrStepsCalc.svelte",
+      "target": "file:src/lib/constants/cdr.ts",
+      "type": "related",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/EmotionalTracker.svelte",
+      "target": "file:src/BuffList.svelte",
+      "type": "related",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/BuildSaves.svelte",
+      "target": "file:src/EmotionalTracker.svelte",
+      "type": "imports",
+      "direction": "forward"
+    },
+    {
+      "source": "file:decode_full.mjs",
+      "target": "file:src/lib/constants/boosts.ts",
+      "type": "related",
+      "direction": "forward"
+    },
+    {
+      "source": "file:analyze-mounticon.mjs",
+      "target": "file:src/App.svelte",
+      "type": "related",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/data/TypedDmgBoost.ts",
+      "target": "file:src/lib/constants/damage-types.ts",
+      "type": "imports",
+      "weight": 0.8,
+      "description": "TypedDmgBoost.ts imports ALL_DMG_TYPES from damage-types constants",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/data/Weaponartcheck.ts",
+      "target": "file:src/data/weaponArts.ts",
+      "type": "imports",
+      "weight": 1,
+      "description": "Weaponartcheck.ts imports WeaponArt and WeaponArtRequirement types from weaponArts",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/damageTypeResolve.ts",
+      "target": "file:src/lib/engine/_utils.ts",
+      "type": "imports",
+      "weight": 0.6,
+      "description": "damageTypeResolve.ts imports round4 from engine utilities",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/damageTypeResolve.ts",
+      "target": "file:src/lib/constants/damage-types.ts",
+      "type": "imports",
+      "weight": 0.9,
+      "description": "damageTypeResolve.ts imports DMG_TYPE_PRIORITY from damage-types constants",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/data/weaponArts.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "description": "build.ts imports WEAPON_ARTS array to look up selected weapon art for damage type resolution",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/engine/data.ts",
+      "type": "imports",
+      "weight": 1,
+      "description": "build.ts imports data accessors (getRace, getGuild, getBlade, getHandle, etc.) from the data barrel",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/engine/enchant.ts",
+      "type": "imports",
+      "weight": 0.9,
+      "description": "build.ts imports applyEnchantmentsToSlot, applyPerkEffectiveness, applyInfusion from enchant engine",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/engine/shrine.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "description": "build.ts imports applyShrineToStats and SHRINE_MULTIPLIERS from shrine engine",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/engine/weapon.ts",
+      "type": "imports",
+      "weight": 1,
+      "description": "build.ts imports MONK_RANK_MULTIPLIER, calcWeapon, calcMonkWeapon from weapon engine",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/damageTypeResolve.ts",
+      "type": "imports",
+      "weight": 0.6,
+      "description": "build.ts imports getFinalWaDmgTypes for weapon art damage type resolution",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/enchant.ts",
+      "target": "file:src/lib/engine/data.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "description": "enchant.ts imports getEnchant and enchantmentsRaw from the data barrel",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/enchant.ts",
+      "target": "file:src/lib/engine/_utils.ts",
+      "type": "imports",
+      "weight": 0.4,
+      "description": "enchant.ts imports round2 from engine utilities",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/format.ts",
+      "target": "file:src/lib/engine/_utils.ts",
+      "type": "imports",
+      "weight": 0.6,
+      "description": "format.ts imports round2 from engine utilities",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/shrine.ts",
+      "target": "file:src/lib/engine/_utils.ts",
+      "type": "imports",
+      "weight": 0.5,
+      "description": "shrine.ts imports round2 from engine utilities",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/weapon.ts",
+      "target": "file:src/lib/engine/data.ts",
+      "type": "imports",
+      "weight": 0.9,
+      "description": "weapon.ts imports getBlade, getHandle, getGlove, getEssence from the data barrel",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/weapon.ts",
+      "target": "file:src/lib/engine/shrine.ts",
+      "type": "imports",
+      "weight": 0.9,
+      "description": "weapon.ts imports applyShrineToScalings, applyShrineToStats, SHRINE_MULTIPLIERS from shrine",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/weapon.ts",
+      "target": "file:src/lib/engine/_utils.ts",
+      "type": "imports",
+      "weight": 0.5,
+      "description": "weapon.ts imports round2 and round4 from engine utilities",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/data/weaponArts.ts",
+      "type": "depends_on",
+      "weight": 0.8,
+      "description": "build.ts depends on weaponArts data to look up the selected weapon art for WA damage type resolution and boost calculations",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/damageTypeResolve.ts",
+      "type": "depends_on",
+      "weight": 0.6,
+      "description": "build.ts depends on damageTypeResolve to resolve weapon art damage types for boost condition checks (hasMagicDmg, hasMagicOrPhysicalDmg)",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/weapon.ts",
+      "target": "file:src/lib/engine/shrine.ts",
+      "type": "depends_on",
+      "weight": 0.9,
+      "description": "weapon.ts depends on shrine for applying tier multipliers to weapon stats and scalings",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/weapon.ts",
+      "target": "file:src/lib/engine/data.ts",
+      "type": "depends_on",
+      "weight": 0.9,
+      "description": "weapon.ts depends on data barrel for weapon part lookups (getBlade, getHandle, getGlove, getEssence)",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/enchant.ts",
+      "target": "file:src/lib/engine/data.ts",
+      "type": "depends_on",
+      "weight": 0.7,
+      "description": "enchant.ts depends on data barrel for enchantment definitions (getEnchant, enchantmentsRaw)",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/format.ts",
+      "target": "file:src/lib/engine/_utils.ts",
+      "type": "depends_on",
+      "weight": 0.5,
+      "description": "format.ts depends on _utils for round2 numeric rounding",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/shrine.ts",
+      "target": "file:src/lib/engine/_utils.ts",
+      "type": "depends_on",
+      "weight": 0.4,
+      "description": "shrine.ts depends on _utils for round2 numeric rounding",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/enchant.ts",
+      "target": "file:src/lib/engine/_utils.ts",
+      "type": "depends_on",
+      "weight": 0.4,
+      "description": "enchant.ts depends on _utils for round2 numeric rounding",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/damageTypeResolve.ts",
+      "target": "file:src/lib/engine/_utils.ts",
+      "type": "depends_on",
+      "weight": 0.5,
+      "description": "damageTypeResolve.ts depends on _utils for round4 numeric rounding",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/data/Boost.ts",
+      "target": "file:src/lib/constants/game.ts",
+      "type": "imports",
+      "label": "imports game constants",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/data/Boost.ts",
+      "target": "file:src/lib/constants/perks.ts",
+      "type": "imports",
+      "label": "imports perk multiplier constants",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/data/debuffCombatEffects.ts",
+      "target": "file:src/lib/constants/debuff-effects.ts",
+      "type": "imports",
+      "label": "imports debuff effect constants",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/data/enemyHpEffects.ts",
+      "target": "file:src/lib/constants/perks.ts",
+      "type": "imports",
+      "label": "imports HYPNOTIST_MAGIC_ARMOR_PER_POTENCY",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/lib/engine/dmgTypeBonuses.ts",
+      "target": "file:src/lib/constants/perks.ts",
+      "type": "imports",
+      "label": "imports Void Rage, Channeled Weapon, Emotional, Draconic Blood constants",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::src/lib/crit.ts::imports::src/lib/utils.ts",
+      "source": "file:src/lib/crit.ts",
+      "target": "file:src/lib/utils.ts",
+      "type": "import",
+      "label": "imports calcProcChance",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::src/lib/defense.ts::imports::src/lib/utils.ts",
+      "source": "file:src/lib/defense.ts",
+      "target": "file:src/lib/utils.ts",
+      "type": "import",
+      "label": "imports roundMultiplier",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::src/lib/defense.ts::imports::src/lib/constants/defensive.ts",
+      "source": "file:src/lib/defense.ts",
+      "target": "file::src/lib/constants/defensive.ts",
+      "type": "import",
+      "label": "imports defense constants",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::pipeline::deploy::depends-on::pipeline::build",
+      "source": "pipeline::.github/workflows/static.yml::deploy",
+      "target": "pipeline::.github/workflows/static.yml::build",
+      "type": "depends-on",
+      "label": "deploy requires build to complete first",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::static.yml::defines::pipeline::build",
+      "source": "file::.github/workflows/static.yml",
+      "target": "pipeline::.github/workflows/static.yml::build",
+      "type": "defines",
+      "label": "defines the build CI pipeline",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::static.yml::defines::pipeline::deploy",
+      "source": "file::.github/workflows/static.yml",
+      "target": "pipeline::.github/workflows/static.yml::deploy",
+      "type": "defines",
+      "label": "defines the deploy CI pipeline",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::config::tsconfig.json::extends::config::tsconfig.app.json",
+      "source": "config:tsconfig.json",
+      "target": "config:tsconfig.app.json",
+      "type": "extends",
+      "label": "root tsconfig inherits from app config",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::fallow-output.json::generated-by::file::.fallowrc.json",
+      "source": "file::fallow-output.json",
+      "target": "file::.fallowrc.json",
+      "type": "generated-by",
+      "label": "Fallow output generated from fallowrc config",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::fallow-security.json::generated-by::file::.fallowrc.json",
+      "source": "file::fallow-security.json",
+      "target": "file::.fallowrc.json",
+      "type": "generated-by",
+      "label": "Fallow security report generated from fallowrc config",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::config::meta.json::references::config::fingerprints.json",
+      "source": "config::.understand-anything/meta.json",
+      "target": "config::.understand-anything/fingerprints.json",
+      "type": "references",
+      "label": "metadata references the fingerprint cache for incremental analysis",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::knowledge-graph.json::produced-by::config::meta.json",
+      "source": "file::.understand-anything/knowledge-graph.json",
+      "target": "config::.understand-anything/meta.json",
+      "type": "produced-by",
+      "label": "knowledge graph generated alongside metadata",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::dashboard-output.txt::generated-by::file::knowledge-graph.json",
+      "source": "file::.understand-anything/dashboard-output.txt",
+      "target": "file::.understand-anything/knowledge-graph.json",
+      "type": "generated-by",
+      "label": "dashboard reads from the knowledge graph for visualization",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::dashboard-errors.txt::generated-by::file::knowledge-graph.json",
+      "source": "file::.understand-anything/dashboard-errors.txt",
+      "target": "file::.understand-anything/knowledge-graph.json",
+      "type": "generated-by",
+      "label": "dashboard errors logged during knowledge graph generation",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/main.ts::imports::file::src/app.css",
+      "source": "file::src/main.ts",
+      "target": "file:src/app.css",
+      "type": "imports",
+      "label": "imports global CSS styles",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/CdrStepsCalc.svelte::imports::file::src/lib/constants/cdr.ts",
+      "source": "file:src/CdrStepsCalc.svelte",
+      "target": "file:src/lib/constants/cdr.ts",
+      "type": "imports",
+      "label": "references CD_MINIMUM constant",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/DmgTotalTooltip.svelte::imports::file::src/CritIcon.svelte",
+      "source": "file:src/DmgTotalTooltip.svelte",
+      "target": "file:src/CritIcon.svelte",
+      "type": "unused-reference",
+      "label": "CritIcon is available but not directly used in DmgTotalTooltip",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/EmotionalTracker.svelte::imports::file::src/lib/constants/boosts.ts",
+      "source": "file:src/EmotionalTracker.svelte",
+      "target": "file:src/lib/constants/boosts.ts",
+      "type": "unused-reference",
+      "label": "boosts module available but not directly imported",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/lib/constants/index.ts::re-exports::file::src/lib/constants/defensive.ts",
+      "source": "file::src/lib/constants/index.ts",
+      "target": "file::src/lib/constants/defensive.ts",
+      "type": "re-exports",
+      "label": "re-exports defensive constants",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/lib/constants/index.ts::re-exports::file::src/lib/constants/draconic-colors.ts",
+      "source": "file::src/lib/constants/index.ts",
+      "target": "file::src/lib/constants/draconic-colors.ts",
+      "type": "re-exports",
+      "label": "re-exports draconic color constants",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/lib/constants/index.ts::re-exports::file::src/lib/constants/draconic.ts",
+      "source": "file::src/lib/constants/index.ts",
+      "target": "file::src/lib/constants/draconic.ts",
+      "type": "re-exports",
+      "label": "re-exports draconic constants",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/lib/constants/index.ts::re-exports::file::src/lib/constants/heals.ts",
+      "source": "file::src/lib/constants/index.ts",
+      "target": "file::src/lib/constants/heals.ts",
+      "type": "re-exports",
+      "label": "re-exports heal constants",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/lib/constants/index.ts::re-exports::file::src/lib/constants/thresholds.ts",
+      "source": "file::src/lib/constants/index.ts",
+      "target": "file::src/lib/constants/thresholds.ts",
+      "type": "re-exports",
+      "label": "re-exports threshold constants",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/lib/modals/index.ts::re-exports::file::src/lib/modals/RaceModal.svelte",
+      "source": "file::src/lib/modals/index.ts",
+      "target": "file::src/lib/modals/RaceModal.svelte",
+      "type": "re-exports",
+      "label": "re-exports RaceModal",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/lib/modals/index.ts::re-exports::file::src/lib/modals/GuildModal.svelte",
+      "source": "file::src/lib/modals/index.ts",
+      "target": "file::src/lib/modals/GuildModal.svelte",
+      "type": "re-exports",
+      "label": "re-exports GuildModal",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/lib/modals/index.ts::re-exports::file::src/lib/modals/AccessorySelectModal.svelte",
+      "source": "file::src/lib/modals/index.ts",
+      "target": "file::src/lib/modals/AccessorySelectModal.svelte",
+      "type": "re-exports",
+      "label": "re-exports AccessorySelectModal",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/lib/modals/index.ts::re-exports::file::src/lib/modals/WeaponPartModal.svelte",
+      "source": "file::src/lib/modals/index.ts",
+      "target": "file::src/lib/modals/WeaponPartModal.svelte",
+      "type": "re-exports",
+      "label": "re-exports WeaponPartModal",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/lib/ui/index.ts::re-exports::file::src/lib/ui/Card.svelte",
+      "source": "file::src/lib/ui/index.ts",
+      "target": "file::src/lib/ui/Card.svelte",
+      "type": "re-exports",
+      "label": "re-exports Card",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/lib/ui/index.ts::re-exports::file::src/lib/ui/Badge.svelte",
+      "source": "file::src/lib/ui/index.ts",
+      "target": "file::src/lib/ui/Badge.svelte",
+      "type": "re-exports",
+      "label": "re-exports Badge",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/lib/ui/index.ts::re-exports::file::src/lib/ui/Button.svelte",
+      "source": "file::src/lib/ui/index.ts",
+      "target": "file::src/lib/ui/Button.svelte",
+      "type": "re-exports",
+      "label": "re-exports Button",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/lib/ui/index.ts::re-exports::file::src/lib/ui/Panel.svelte",
+      "source": "file::src/lib/ui/index.ts",
+      "target": "file::src/lib/ui/Panel.svelte",
+      "type": "re-exports",
+      "label": "re-exports Panel",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/lib/ui/index.ts::re-exports::file::src/lib/ui/Section.svelte",
+      "source": "file::src/lib/ui/index.ts",
+      "target": "file::src/lib/ui/Section.svelte",
+      "type": "re-exports",
+      "label": "re-exports Section",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/lib/ui/index.ts::re-exports::file::src/lib/ui/Divider.svelte",
+      "source": "file::src/lib/ui/index.ts",
+      "target": "file::src/lib/ui/Divider.svelte",
+      "type": "re-exports",
+      "label": "re-exports Divider",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/lib/EnchantSelect.svelte::imports::file::src/lib/constants/index.ts",
+      "source": "file::src/lib/EnchantSelect.svelte",
+      "target": "file::src/lib/constants/index.ts",
+      "type": "imports",
+      "label": "imports FOCUS_DELAY_MS constant",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/lib/modals/AccessorySelectModal.svelte::imports::file::src/lib/Modal.svelte",
+      "source": "file::src/lib/modals/AccessorySelectModal.svelte",
+      "target": "file::src/lib/Modal.svelte",
+      "type": "imports",
+      "label": "wraps content in Modal",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/lib/modals/GuildModal.svelte::imports::file::src/lib/Modal.svelte",
+      "source": "file::src/lib/modals/GuildModal.svelte",
+      "target": "file::src/lib/Modal.svelte",
+      "type": "imports",
+      "label": "wraps content in Modal",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/lib/modals/WeaponPartModal.svelte::imports::file::src/lib/Modal.svelte",
+      "source": "file::src/lib/modals/WeaponPartModal.svelte",
+      "target": "file::src/lib/Modal.svelte",
+      "type": "imports",
+      "label": "wraps content in Modal",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/lib/modals/RaceModal.svelte::imports::file::src/lib/Modal.svelte",
+      "source": "file::src/lib/modals/RaceModal.svelte",
+      "target": "file::src/lib/Modal.svelte",
+      "type": "imports",
+      "label": "wraps content in Modal",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/lib/StatFilterShared.svelte::imports::file::src/lib/ui/Badge.svelte",
+      "source": "file::src/lib/StatFilterShared.svelte",
+      "target": "file::src/lib/ui/Badge.svelte",
+      "type": "imports",
+      "label": "renders stat filter chips as badges",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/lib/EnchantSelect.svelte::imports::file::src/lib/constants/cdr.ts",
+      "source": "file::src/lib/EnchantSelect.svelte",
+      "target": "file:src/lib/constants/cdr.ts",
+      "type": "unused-reference",
+      "label": "constants/index.ts barrel includes cdr.ts",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/lib/Modal.svelte::imports::file::src/lib/constants/defensive.ts",
+      "source": "file::src/lib/Modal.svelte",
+      "target": "file::src/lib/constants/defensive.ts",
+      "type": "unused-reference",
+      "label": "no direct import, but part of constants barrel",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/ModalSearchHeader.svelte::imports::file::src/SuggestDrop.svelte",
+      "source": "file::src/ModalSearchHeader.svelte",
+      "target": "file::src/SuggestDrop.svelte",
+      "type": "imports",
+      "label": "renders search suggestions dropdown",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/ModalSearchHeader.svelte::imports::file::src/TagFilter.svelte",
+      "source": "file::src/ModalSearchHeader.svelte",
+      "target": "file::src/TagFilter.svelte",
+      "type": "imports",
+      "label": "renders tag filter chips",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/ModalSearchHeader.svelte::imports::file::src/StatFilter.svelte",
+      "source": "file::src/ModalSearchHeader.svelte",
+      "target": "file::src/StatFilter.svelte",
+      "type": "imports",
+      "label": "renders standard stat filter",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/ModalSearchHeader.svelte::imports::file::src/WeaponStatFilter.svelte",
+      "source": "file::src/ModalSearchHeader.svelte",
+      "target": "file::src/WeaponStatFilter.svelte",
+      "type": "imports",
+      "label": "renders weapon stat filter",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/StatFilter.svelte::imports::file::src/lib/StatFilterShared.svelte",
+      "source": "file::src/StatFilter.svelte",
+      "target": "file::src/lib/StatFilterShared.svelte",
+      "type": "imports",
+      "label": "uses shared StatChip component",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/StatFilter.svelte::imports::file::src/lib/stats/elementalBoosts.ts",
+      "source": "file::src/StatFilter.svelte",
+      "target": "file::src/lib/stats/elementalBoosts.ts",
+      "type": "imports",
+      "label": "reads elemental boost stat definitions",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/StatFilter.svelte::imports::file::src/lib/stats/filterActions.ts",
+      "source": "file::src/StatFilter.svelte",
+      "target": "file::src/lib/stats/filterActions.ts",
+      "type": "imports",
+      "label": "creates filter action handlers",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/StatFilter.svelte::imports::file::src/lib/uiConstants.ts",
+      "source": "file::src/StatFilter.svelte",
+      "target": "file:src/lib/uiConstants.ts",
+      "type": "imports",
+      "label": "reads UI color constants",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/TagFilter.svelte::imports::file::src/lib/uiConstants.ts",
+      "source": "file::src/TagFilter.svelte",
+      "target": "file:src/lib/uiConstants.ts",
+      "type": "imports",
+      "label": "reads UI color constants",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/WeaponStatsDisplay.svelte::imports::file::src/ScalingBreakdownRow.svelte",
+      "source": "file::src/WeaponStatsDisplay.svelte",
+      "target": "file::src/ScalingBreakdownRow.svelte",
+      "type": "imports",
+      "label": "renders per-stat scaling breakdown rows",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/SuggestDrop.svelte::imports::file::src/lib/utils.ts",
+      "source": "file::src/SuggestDrop.svelte",
+      "target": "file:src/lib/utils.ts",
+      "type": "imports",
+      "label": "uses highlightTextParts utility",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/DidYouMean.svelte::imports::file::src/lib/utils.ts",
+      "source": "file:src/DidYouMean.svelte",
+      "target": "file:src/lib/utils.ts",
+      "type": "imports",
+      "label": "uses highlightTextParts utility",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::vite.config.ts::imports::file::src/main.ts",
+      "source": "file::vite.config.ts",
+      "target": "file::src/main.ts",
+      "type": "entry-point-for",
+      "label": "Vite serves main.ts as the entry point",
+      "direction": "forward"
+    },
+    {
+      "id": "edge::file::src/lib/ui/Stat.svelte::imports::file::src/lib/ui/index.ts",
+      "source": "file::src/lib/ui/Stat.svelte",
+      "target": "file::src/lib/ui/index.ts",
+      "type": "re-exported-by",
+      "label": "exported via ui barrel",
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/data/debuffCombatEffects.ts",
+      "target": "file:src/lib/constants/perks.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/data/Boost.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/engine/dmgTypeBonuses.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/data/TypedDmgBoost.ts",
+      "target": "file:src/data/BuffData.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/data/BuffData.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/data/Boost.ts",
+      "target": "file:src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/crit.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "file:src/lib/constants.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "file:src/lib/constants/buffs.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "file:src/data/DoTDamage.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "file:src/data/draconicColorEffects.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "file:src/lib/constants.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/perkAutoDebuffs.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/dmgTypes.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/crit.ts",
+      "target": "file:src/lib/constants.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/crit.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/utils.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "file:src/lib/constants.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "file:src/lib/engine.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/Boost.ts",
+      "target": "file:src/lib/constants.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/Boost.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/draconicColorEffects.ts",
+      "target": "file:src/lib/constants.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/constants.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/constants/buffs.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine/enchant.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine/format.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine/shrine.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine/weapon.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    }
+  ]
+}

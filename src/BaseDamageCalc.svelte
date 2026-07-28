@@ -370,7 +370,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   $: effectiveDefenses = calcEffectiveDefenses(resolvedDebuffs, disabledDebuffs, defenses)
 
   function calcArmorMult(defPct: number, pen: number): { mult: number; branch: 'low'|'high' } {
-    if (defPct === 0 && pen <= 0) return { mult: 1, branch: 'low' }
+    if (defPct === 0) return { mult: 1, branch: 'low' }
     const def = defPct / 100
     if (def <= pen + ARMOR_PEN_BRANCH_THRESHOLD) {
       const am = def - pen

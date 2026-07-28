@@ -1,11 +1,11 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "735fe673e43edde5ffb04a7bcfbb655a9a1e08c2",
-  "generatedAt": "2026-07-27T14:00:02.834Z",
+  "gitCommitHash": "de2d616ecab24bebd24cbcfb433926747825d706",
+  "generatedAt": "2026-07-28T01:52:56.685Z",
   "files": {
     ".fallowrc.json": {
       "filePath": ".fallowrc.json",
-      "contentHash": "4feb921c9e532377b46d28959f2f61ce61e1c4e4f2140e1fbc9bd4db149d3ca2",
+      "contentHash": "d8a996b2c6b9386f790d1836bdc09ae6ae4031f1f312f6422c6fba5bff1afb24",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -25,7 +25,7 @@
     },
     ".slim/deepwork/ui-upgrade.md": {
       "filePath": ".slim/deepwork/ui-upgrade.md",
-      "contentHash": "687bd6aa651be75af40512bf91fe76892378a43002aee97524c7ffc664efbc2a",
+      "contentHash": "7c24a4c157fc97a84cf11ff2194c75d9994c49f728072f7241bc438eaf100df7",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -75,37 +75,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "18ba5e481a3af007321c3e2ac969aa6c56a74cc51040888154ee4fc73e495036",
+      "contentHash": "ccbcca8433232e2e61e941204d2aca9e1b83dac0a17b271e54ba62b9b653aaa0",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3807,
+      "totalLines": 5491,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "acadfe01383c65c512711e51f5579cdac156725456ed4765f4f2a4a9cb387ed5",
+      "contentHash": "934a7344d246fd4dda2fd171e9a34f19b17b1b195ac51ae5fb6c6f3fb176efe1",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 8294,
+      "totalLines": 4907,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "9142e5387449f7dc8c02c092f8e7289775be95dde821e6299eb577155f62b550",
+      "contentHash": "65abcd3cdae14a8dba7ccf5606e325dd34cf80c6ae50fa89285c7c6eeae00fe4",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 7,
+      "totalLines": 6,
       "hasStructuralAnalysis": true
     },
     "AGENTS.md": {
       "filePath": "AGENTS.md",
-      "contentHash": "f1deb1766ec56f1f0ffd3291590c6d09c5545b131047f13e76ddcb4fca431793",
+      "contentHash": "3a4398aae2e08643414080f42bf870da0b3ce8ac50ffa1b3c120cf7d77067676",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -115,7 +115,7 @@
     },
     "analyze-mounticon.mjs": {
       "filePath": "analyze-mounticon.mjs",
-      "contentHash": "f30d97d3b7f45121783a7e7981225c39552e701d4c44e389271b3a0a5e055d00",
+      "contentHash": "df33de5c4809f2e2e3deebfae4cb88bd3843b8e07aef21762b91c6ea086a3794",
       "functions": [],
       "classes": [],
       "imports": [
@@ -132,7 +132,7 @@
     },
     "decode_full.mjs": {
       "filePath": "decode_full.mjs",
-      "contentHash": "292dd333e2cd77f5da49d18febe45af43ef5c82aebae9862e5635e00d6aff7e0",
+      "contentHash": "a15fbee50ad9b9e23801d631b45532bae57fb6d8e5e797ecc45cb0d083fbf7a8",
       "functions": [
         {
           "name": "getPerk",
@@ -229,7 +229,7 @@
     },
     "docs/ONBOARDING.md": {
       "filePath": "docs/ONBOARDING.md",
-      "contentHash": "87d58b40f64180783ca9f34324537fe75ca740a209c4315364cc65e003b34bc0",
+      "contentHash": "45cc139a5cb333d5603d04121d2d2e8606aea0ee00179ae48e107731ec0d32ed",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -269,12 +269,12 @@
     },
     "package.json": {
       "filePath": "package.json",
-      "contentHash": "9697bba9563459f2c4d1916bee5cf226f8a264172f691610436be3488be1d478",
+      "contentHash": "0f40640129e571a7489b823f34f0937fb4fe463bbf4a91e6f6505ac08cad276e",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 31,
+      "totalLines": 33,
       "hasStructuralAnalysis": true
     },
     "README.md": {
@@ -289,7 +289,7 @@
     },
     "src/app.css": {
       "filePath": "src/app.css",
-      "contentHash": "7c03fb9d5a522f27a9a02e6dee9c6e0601e6870778c51cd08535a089c2bd1012",
+      "contentHash": "01a4be74950a3ea13b8580caa8c2e8f5ad97e500883c57b2757bd00de01c9ff5",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -309,12 +309,12 @@
     },
     "src/BaseDamageCalc.svelte": {
       "filePath": "src/BaseDamageCalc.svelte",
-      "contentHash": "bbd67f95e74920cfcee9f719177128d691c0475f119e1f503a60b8965f8751c6",
+      "contentHash": "ddf161b35b091d9d7a55bf2408d25ce86480994bb177d4be9053b34d2df14992",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 2702,
+      "totalLines": 2741,
       "hasStructuralAnalysis": false
     },
     "src/BuffList.svelte": {
@@ -339,7 +339,7 @@
     },
     "src/CdrStepsCalc.svelte": {
       "filePath": "src/CdrStepsCalc.svelte",
-      "contentHash": "ed6e233a4e172ba829a8a9c706404c65ad3cf680bd893f46b4ece3a72c14e621",
+      "contentHash": "a38f19495a2d53caae3ca647153702e33ff74c192b8778555afa89a00c1d12bc",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -359,12 +359,12 @@
     },
     "src/DamageAnalyzer.svelte": {
       "filePath": "src/DamageAnalyzer.svelte",
-      "contentHash": "fe916b94d8fa78667384d08abeacc63b0ac2479db2528de884798c85f9413c3b",
+      "contentHash": "8ba51f390c58f00f8bc3617e388d3801019514d2be5f298507aa5894f73514ee",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 7116,
+      "totalLines": 7129,
       "hasStructuralAnalysis": false
     },
     "src/data/armors.json": {
@@ -1304,7 +1304,7 @@
     },
     "src/data/enemyHpEffects.ts": {
       "filePath": "src/data/enemyHpEffects.ts",
-      "contentHash": "a24334cb0fe3020eb5482dae430eaba0ad34a24dd874dfc2755dca5ebb8faccd",
+      "contentHash": "f357a356dd4c2f207b5248796b8ef1299aa68e1c117d4e7f47cfa2e6b579a96c",
       "functions": [
         {
           "name": "isEnemyHpGateActive",
@@ -1790,7 +1790,7 @@
     },
     "src/data/procCoefficients.ts": {
       "filePath": "src/data/procCoefficients.ts",
-      "contentHash": "ae8a5de85420541d477b754646e4c23c9513a456fc5e75160a0c77998e4cd498",
+      "contentHash": "c2e27de9935e34f146db2339dd93cb1ff5292e8161c3269ec9a475086184d85a",
       "functions": [],
       "classes": [],
       "imports": [
@@ -2005,7 +2005,7 @@
     },
     "src/data/stanceOverlays.ts": {
       "filePath": "src/data/stanceOverlays.ts",
-      "contentHash": "d5244f05c8380fec9e747c86eb8b75a04a0f034d5fa4bc88a821f6252e469bb3",
+      "contentHash": "1b1cd566aaceadcca378b837f380595a1ee8b2275e421be4d6e32434dc017e58",
       "functions": [
         {
           "name": "resolveStanceOverlay",
@@ -2388,7 +2388,7 @@
     },
     "src/data/weaponConditionalBoosts.ts": {
       "filePath": "src/data/weaponConditionalBoosts.ts",
-      "contentHash": "705a7e7752da01eb886340def7630422102f3b90a6fc5109cf6aab3a358e2890",
+      "contentHash": "7b2e6d61ecb52de46f931605d57a731ec46533499150f1a580a817db4364c222",
       "functions": [
         {
           "name": "getWeaponConditionalBoost",
@@ -2399,7 +2399,7 @@
           ],
           "returnType": "{ mult: number; labels: string[] }",
           "exported": true,
-          "lineCount": 17
+          "lineCount": 19
         }
       ],
       "classes": [],
@@ -2414,7 +2414,7 @@
       "exports": [
         "getWeaponConditionalBoost"
       ],
-      "totalLines": 46,
+      "totalLines": 79,
       "hasStructuralAnalysis": true
     },
     "src/DidYouMean.svelte": {
@@ -2714,7 +2714,7 @@
     },
     "src/lib/constants/cdr.ts": {
       "filePath": "src/lib/constants/cdr.ts",
-      "contentHash": "a2f904d953024a9ce3f5ec8f59ec4eba5a6f5a5feff39492f9cb13339550f77c",
+      "contentHash": "fce4da83b20c52d5f05adfe277a6a2603b2af861f799d2ec97fb77501a30e128",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2738,7 +2738,7 @@
     },
     "src/lib/constants/damage-types.ts": {
       "filePath": "src/lib/constants/damage-types.ts",
-      "contentHash": "f81f97c0b3b58dc49320c439c2d9f86403fc2cb9fd1ac975989be0cb1ec8e76e",
+      "contentHash": "71f31712974cec7405fe2bb69e115943a13eaefcf04ae03cd1e4baa13f3d6be7",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2760,7 +2760,7 @@
     },
     "src/lib/constants/debuff-effects.ts": {
       "filePath": "src/lib/constants/debuff-effects.ts",
-      "contentHash": "ec5d91b5f548d4ea48fbcb476cb31b918b02ad994bf38d6432a904a1bc5c6ab1",
+      "contentHash": "7411f93bdd22bdfc892d1ce689be62b5f54196f91230bec64262612d64332f3c",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2775,7 +2775,7 @@
     },
     "src/lib/constants/defensive.ts": {
       "filePath": "src/lib/constants/defensive.ts",
-      "contentHash": "976518b1ee699d062f3d7f9bba2a52cb08f4f2d26ae21a35820be3f1d471e8c4",
+      "contentHash": "aaa6d57a349240b5c816a42cc922521c124e1be9096e28b1ad9542df84e76dbe",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2820,7 +2820,7 @@
     },
     "src/lib/constants/draconic-colors.ts": {
       "filePath": "src/lib/constants/draconic-colors.ts",
-      "contentHash": "d6efde4ce487f1e23a89fcedf646dcb62bcf1fddf851799fc2c1347cba19f8a5",
+      "contentHash": "1b2e6b83623a0d71a9576f2156cdf999e5b0d22bfd52211d48e47a8259f663dc",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2843,7 +2843,7 @@
     },
     "src/lib/constants/draconic.ts": {
       "filePath": "src/lib/constants/draconic.ts",
-      "contentHash": "af91f85f60c05f3cf5edca6406b9bce2db897d7ff73c6a3ffd5773e097745557",
+      "contentHash": "25dfd044b5f011636e617d83b5bc86fb1a1cdc06c374dcfd7b93f93cd6d3b061",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2861,7 +2861,7 @@
     },
     "src/lib/constants/game.ts": {
       "filePath": "src/lib/constants/game.ts",
-      "contentHash": "21a721cf93c57c8519bf6c9c0be504ca526219d4a5fc70dd04d8ddc534501ede",
+      "contentHash": "5dcec7a84b53846572891fd1d1284547b92cdef30f7cb117c66b6b848b0c6a2a",
       "functions": [
         {
           "name": "calcBaseMaxHP",
@@ -2895,7 +2895,7 @@
     },
     "src/lib/constants/heals.ts": {
       "filePath": "src/lib/constants/heals.ts",
-      "contentHash": "438ba180cd14c53eb64cdcd105a3af299a154725919484b2d10bbd43f39db25c",
+      "contentHash": "cdd8e3c3d722035dae5c870a5904aec5a507519afa7e2c5747b59cb85e0e6c62",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3109,7 +3109,7 @@
     },
     "src/lib/constants/rune-base-damage.ts": {
       "filePath": "src/lib/constants/rune-base-damage.ts",
-      "contentHash": "abf13ef3c3be6cecc9dc5394e308df5147ec7aa329afaa54b8cb9a82e5c4ba7c",
+      "contentHash": "5ead5902ed310529fd8fe7f1a22fd3a2de0a7ac3c9a4d2f240296d1715cad465",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3149,7 +3149,7 @@
     },
     "src/lib/constants/stat-conversions.ts": {
       "filePath": "src/lib/constants/stat-conversions.ts",
-      "contentHash": "a9405994837536618b5f1188a06f726cae49fcf669d2d150452d1bee91ea188e",
+      "contentHash": "ceecb58878ca31c7a95ec50bbd6048cf809572386cde94f7a6fff41a56bc9e7b",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3214,7 +3214,7 @@
     },
     "src/lib/constants/thresholds.ts": {
       "filePath": "src/lib/constants/thresholds.ts",
-      "contentHash": "641964b510bf927bc2c52b62d44bb3be504d6090f78fc18409bf8ae56dcf9800",
+      "contentHash": "e6808bd6dacda684fafa64aff0c0eeaf38b910bc79171fe951908d92a3f0abba",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3334,7 +3334,7 @@
     },
     "src/lib/damageTypeResolve.ts": {
       "filePath": "src/lib/damageTypeResolve.ts",
-      "contentHash": "b3c4ead4bb8edd239ee2ad5c4e1e33ed5bff53b5f111c8710d399cbe86bb2e82",
+      "contentHash": "763b7232612088e3f2cf1f1d00189d91dc37c55e508d889e9c58866a3b145f6e",
       "functions": [
         {
           "name": "resolveDamageTypes",
@@ -4206,7 +4206,7 @@
     },
     "src/lib/engine/dmgTypeBonuses.ts": {
       "filePath": "src/lib/engine/dmgTypeBonuses.ts",
-      "contentHash": "e7a65f62d384ae0be0d861a98a56cc2b7300928c7b7d7edbc1fe5dd4a0dfd11d",
+      "contentHash": "b42f7ee451e577f520be2ef192b228a1dab82b50e18a31dc0a73fcc5f1a54369",
       "functions": [
         {
           "name": "buildDmgTypeBonuses",
@@ -4744,7 +4744,7 @@
     },
     "src/lib/modals/GuildModal.svelte": {
       "filePath": "src/lib/modals/GuildModal.svelte",
-      "contentHash": "1eceeb66abdbbbaf1c31964917989fcb43f412de2bee2b27c03a241fd4bbd9a8",
+      "contentHash": "eb594dfd7a93ad66309b1080b43f275065739423da06256d2754c8fb7e19d98f",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -4754,7 +4754,7 @@
     },
     "src/lib/modals/index.ts": {
       "filePath": "src/lib/modals/index.ts",
-      "contentHash": "3d990b2111d2f43f7475b10b510e8b58d58cf19b5d08b3eb2b5c96bf40e1cc7b",
+      "contentHash": "faef13c11c80c23affea85fa974d851e2808743897a1d4b31bd71b243841280b",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -4769,7 +4769,7 @@
     },
     "src/lib/modals/RaceModal.svelte": {
       "filePath": "src/lib/modals/RaceModal.svelte",
-      "contentHash": "86343a935ddc41bc1954ab1b4ebd7cbd710ea0b09db5bdf642cf415c4a8f21d0",
+      "contentHash": "e0d54bcf902fc132a5b36deba4439bd8c389a565993ca3789cea1d73f7cb25b5",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -4789,7 +4789,7 @@
     },
     "src/lib/StatFilterShared.svelte": {
       "filePath": "src/lib/StatFilterShared.svelte",
-      "contentHash": "701db34f08217c9ed852d493db5e9552b9b3b533f9ebb8377b3f583329dc61cf",
+      "contentHash": "59e8363f82cac109a191e80ece7a27697974a477a8d82abb375bca19e647216f",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5011,7 +5011,7 @@
     },
     "src/lib/Toast.svelte": {
       "filePath": "src/lib/Toast.svelte",
-      "contentHash": "fdc9f974dfa32ccd4c8d775368bb2cef1518075d55ca28c3e337e1628079d366",
+      "contentHash": "48024628407aa8adeba1b86803a39ae6560840d4e45187434be2fa6b89988109",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5070,7 +5070,7 @@
     },
     "src/lib/ui/Badge.svelte": {
       "filePath": "src/lib/ui/Badge.svelte",
-      "contentHash": "7694dee4588f4f5fb30513ac05b62595cd04e3594639fb390c4341f3651e9dcf",
+      "contentHash": "bc778df9d3fb6405fd8a3d0eba70d6d64e8172e56cd776d0c3feb5bf8d1e00ed",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5080,7 +5080,7 @@
     },
     "src/lib/ui/Button.svelte": {
       "filePath": "src/lib/ui/Button.svelte",
-      "contentHash": "8198470171f8719081f37c75008bb11a9c4dfd123aeec862d2a53346272a9f12",
+      "contentHash": "426bfba88965430dc71b533da743ddbd16fb09df8106e008ccf596c54a4acf3c",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5090,7 +5090,7 @@
     },
     "src/lib/ui/Card.svelte": {
       "filePath": "src/lib/ui/Card.svelte",
-      "contentHash": "432794580332c77fa7aa15b51739a9a08fcdd3f465a97adf582c5f4fc5952a31",
+      "contentHash": "88bf87adc8a0e06a0333a59e6d030a37f03a2fb2fb1f5ab789eeb42c59af4668",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5100,7 +5100,7 @@
     },
     "src/lib/ui/Divider.svelte": {
       "filePath": "src/lib/ui/Divider.svelte",
-      "contentHash": "8f34baf1c60f1e653cafd43cdfd9357dd6833a0f4ce8a1b8eb9180b545cddf10",
+      "contentHash": "ca7063c28fb28b4081b1890879501fbd5653d6a423d97d0bae00311d9f8db38b",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5110,7 +5110,7 @@
     },
     "src/lib/ui/index.ts": {
       "filePath": "src/lib/ui/index.ts",
-      "contentHash": "09b135f454842b4d57ecdbcc4abe514123267737f07c37c74cde4fec3af643ff",
+      "contentHash": "bee57675517b7561ab4d8f37a371f6b8ed1356b7de8ee15aa0b3039d126b412e",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5128,7 +5128,7 @@
     },
     "src/lib/ui/Panel.svelte": {
       "filePath": "src/lib/ui/Panel.svelte",
-      "contentHash": "8da5b772aaafa5682d0bae981b36fb8ca05f037d2428ec92a2bbe4f8cb65413c",
+      "contentHash": "94bcd36c78c3c15288add2890d003b1492aec24265260fe27a41580416bbe6dd",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5138,7 +5138,7 @@
     },
     "src/lib/ui/Section.svelte": {
       "filePath": "src/lib/ui/Section.svelte",
-      "contentHash": "f8eac59a894ec30b788ab023ca13bbe184f2d56c7980a6fac41395667c65306c",
+      "contentHash": "e5b498c251d8d349d5d62728889345854836d801830c53870ca7c8438fe1f5bd",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5148,7 +5148,7 @@
     },
     "src/lib/ui/Stat.svelte": {
       "filePath": "src/lib/ui/Stat.svelte",
-      "contentHash": "3899437f48babd3ca1da0466434f26b44daef0918fd98439ad2b667261e734c8",
+      "contentHash": "ecf7fa1cb4ee383ebf46db8a88ba15293d5a3f80eb0fc05ab0c930ad76000e34",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5314,7 +5314,7 @@
     },
     "src/MountIcon.svelte": {
       "filePath": "src/MountIcon.svelte",
-      "contentHash": "c29a97b472ff37863452ed62c13ba0d5a636841db33c6b5aec01080519bdcf06",
+      "contentHash": "1a7cbfcc6d3ff9d83baef17fbf69d1809b55b72e82a3ed8ab5b07f8b77cbaaf0",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5394,7 +5394,7 @@
     },
     "stats.html": {
       "filePath": "stats.html",
-      "contentHash": "a36d48171ad861481d9353259fc1d8107541ee3d5a8b1fed29e261439813a68f",
+      "contentHash": "f793b87d3315cc45a1998c73f31efe3c68a0c68794bc921ee12f406d9b1f482f",
       "functions": [],
       "classes": [],
       "imports": [],
