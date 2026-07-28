@@ -1370,6 +1370,16 @@ import {
     }
     return false
   }
+  $: _condDisabledSources = (() => {
+    const s = new Set<string>()
+    if (_effectiveTailwindPotency <= 0) s.add('Spirit Winds')
+    if (!showCritValues || !_dummyHasPoisonActive) s.add('Venom Eater')
+    if (!showCritValues) s.add('Golden Crits')
+    if (!_dummyHasBleedActive) { s.add('Blood Thirsty'); s.add('Gelid Lance'); s.add('Gorecast') }
+    if (!_dummyHasPoisonActive) s.add('Venom Spitter')
+    if (!_dummyHasSlowActive && !_dummyHasFrostbiteActive) s.add('Frostbite')
+    return s
+  })()
   type LightningCloakState = 'off' | 'third' | 'twoThirds'
   let lightningCloakState: LightningCloakState = 'third'
   let stormRendState: LightningCloakState = 'third'
@@ -1458,13 +1468,13 @@ import {
 
     return entries
   })()
-  $: activeEntries = [...boosts.dmgEntries.filter(e => !disabledBoosts.has(e.sourceName) && !_isBoostCondDisabled(e.sourceName) && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance' && e.sourceName !== 'Frenzy' && e.sourceName !== 'Dark One'), ..._syntheticDmgBoostEntries.filter(e => {
+  $: activeEntries = [...boosts.dmgEntries.filter(e => !disabledBoosts.has(e.sourceName) && !_condDisabledSources.has(e.sourceName) && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance' && e.sourceName !== 'Frenzy' && e.sourceName !== 'Dark One'), ..._syntheticDmgBoostEntries.filter(e => {
     if (e.sourceName === 'Curse Rip' && disableCurseRip) return false
     if (e.sourceName === 'Reaper' && disableReaper) return false
     if (disabledBoosts.has(e.sourceName)) return false
     return true
   })]
-  $: hasDisabledVisible = boosts.dmgEntries.some(e => disabledBoosts.has(e.sourceName) || _isBoostCondDisabled(e.sourceName)) || (_curseRipPerkAmount > 0 && disableCurseRip) || (_reaperPerkAmount > 0 && disableReaper) || ((perks['True Balance'] ?? 0) > 0 && disabledBoosts.has('True Balance')) || ((perks['Frenzy'] ?? 0) > 0 && disabledBoosts.has('Frenzy')) || (_sunburnAmt > 0 && disabledEffects.has('sunburn')) || (_mortalWillAmt > 0 && disabledEffects.has('mortalWill')) || ((perks['Ruler Of The Sands'] ?? 0) > 0 && disabledEffects.has('rulerOfTheSands'))
+  $: hasDisabledVisible = boosts.dmgEntries.some(e => disabledBoosts.has(e.sourceName) || _condDisabledSources.has(e.sourceName)) || (_curseRipPerkAmount > 0 && disableCurseRip) || (_reaperPerkAmount > 0 && disableReaper) || ((perks['True Balance'] ?? 0) > 0 && disabledBoosts.has('True Balance')) || ((perks['Frenzy'] ?? 0) > 0 && disabledBoosts.has('Frenzy')) || (_sunburnAmt > 0 && disabledEffects.has('sunburn')) || (_mortalWillAmt > 0 && disabledEffects.has('mortalWill')) || ((perks['Ruler Of The Sands'] ?? 0) > 0 && disabledEffects.has('rulerOfTheSands'))
 
   $: _levelMult = (() => {
     const levelEntry = boosts.dmgEntries.find(e => e.sourceName === 'Level Damage')
@@ -2117,7 +2127,7 @@ import {
     }
   }
   $: _visibleDmgEntries = boosts.dmgEntries.filter(e =>
-    (e.sourceName !== 'Rider' || mountActive) && e.sourceName !== 'Frenzy' && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance' && e.sourceName !== 'Dark One' && !_isBoostCondDisabled(e.sourceName)
+    (e.sourceName !== 'Rider' || mountActive) && e.sourceName !== 'Frenzy' && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance' && e.sourceName !== 'Dark One' && !_condDisabledSources.has(e.sourceName)
   ).map(e => {
     if (e.sourceName === 'Primal' && _critDisabledPerkNames.size > 0) {
       const stacks = perks['Primal'] ?? 0
