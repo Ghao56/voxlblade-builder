@@ -1054,7 +1054,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
 
   <div class="bdc-cooldown-warning">
     <i class="fa fa-exclamation-triangle"></i>
-    Calculated damage does not respect the cooldown of <strong>[EFFECT]</strong>, and may not be accurate
+    Calculated damage does <strong>NOT RESPECT</strong> the <strong>COOLDOWN</strong> or <strong>PROC CHANCES</strong> of certain effects, and <strong>NOT BE ACCURATE</strong>
   </div>
 
   <div class="bdc-layout">
