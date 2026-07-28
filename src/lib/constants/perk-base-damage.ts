@@ -192,3 +192,9 @@ export const QUAKE_BASE_DMG = 2.5
 export const QUAKE_DMG_PER_STACK = 2.5
 export const QUAKE_CHANCE_BASE = 30
 export const QUAKE_CHANCE_PER_STACK = 5
+
+// Ruler Of The Sands
+export const RULER_SANDS_BASE_DMG_PER_HIT = 0.3
+export const RULER_SANDS_HITS = 25
+export const RULER_SANDS_CHANCE_CD_MULT = 1.0
+export const RULER_SANDS_CHANCE_PERK_MULT = 0.5

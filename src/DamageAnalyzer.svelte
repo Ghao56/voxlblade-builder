@@ -18,6 +18,7 @@
   import { getActiveDefensivePerkSources, calcDefensivePotencyMult } from './data/defensivePerks'
   import { getWeaponConditionalBoost } from './data/weaponConditionalBoosts'
   import { getRace } from './lib/engine/data/character'
+  import { getRune } from './lib/engine/data/equipment'
   import { RUNE_DMG_DEFS } from './data/Runebasedmg'
   import { MOUNT_RUNE_DEFS } from './data/mountRunes'
   import { getDraconicColorDmgMultiplier } from './data/draconicColorEffects'
@@ -77,6 +78,7 @@ import {
   CLOUDPUSH_PCT_PER_POTENCY, CINDERPULL_PCT_PER_POTENCY,
   CLOUDPUSH_PCT_PER_STACK, CINDERPULL_PCT_PER_STACK,
   PURSUIT_BASE_MULT, PURSUIT_MULT_PER_RANK,
+  RULER_SANDS_BASE_DMG_PER_HIT, RULER_SANDS_HITS, RULER_SANDS_CHANCE_CD_MULT, RULER_SANDS_CHANCE_PERK_MULT,
   getWADisplayName,
 } from './lib/constants'
 
@@ -882,6 +884,18 @@ import {
         cond: disabledEffects.has('mortalWill') ? 'disabled' : `finishers · +${holyBonus} Holy`,
       })
     }
+    if ((perks['Ruler Of The Sands'] ?? 0) > 0) {
+      const amt = perks['Ruler Of The Sands'] ?? 0
+      const waChance = _waCooldown * (RULER_SANDS_CHANCE_CD_MULT + RULER_SANDS_CHANCE_PERK_MULT * amt)
+      const runeChance = _runeBaseCd * (RULER_SANDS_CHANCE_CD_MULT + RULER_SANDS_CHANCE_PERK_MULT * amt)
+      const totalDmg = (RULER_SANDS_BASE_DMG_PER_HIT * amt * RULER_SANDS_HITS).toFixed(1)
+      chips.push({
+        key: 'rulerOfTheSands', name: 'Ruler Of The Sands',
+        title: `Ruler Of The Sands (${amt}): sandnado on WA/Rune · Earth+Air · ${RULER_SANDS_HITS} hits · Reduced proc`,
+        val: disabledEffects.has('rulerOfTheSands') ? '—' : `${totalDmg}`,
+        cond: disabledEffects.has('rulerOfTheSands') ? 'disabled' : `WA ${waChance.toFixed(1)}% · Rune ${runeChance.toFixed(1)}%`,
+      })
+    }
     return chips
   })()
 
@@ -1254,7 +1268,7 @@ import {
     if (attackType === 'm2') return true
     const hasFinisher = (row as any).m1Finisher ?? true
     if (!hasFinisher) return false
-    if ((perks['Pursuit'] ?? 0) > 0) return false
+    if (!disableWeaponBoost && (perks['Pursuit'] ?? 0) > 0) return false
     return row.m1 ? hitIndex === row.m1.length - 1 : false
   }
 
@@ -1450,7 +1464,7 @@ import {
     if (disabledBoosts.has(e.sourceName)) return false
     return true
   })]
-  $: hasDisabledVisible = boosts.dmgEntries.some(e => disabledBoosts.has(e.sourceName) || _isBoostCondDisabled(e.sourceName)) || (_curseRipPerkAmount > 0 && disableCurseRip) || (_reaperPerkAmount > 0 && disableReaper) || ((perks['True Balance'] ?? 0) > 0 && disabledBoosts.has('True Balance')) || ((perks['Frenzy'] ?? 0) > 0 && disabledBoosts.has('Frenzy')) || (_sunburnAmt > 0 && disabledEffects.has('sunburn')) || (_mortalWillAmt > 0 && disabledEffects.has('mortalWill'))
+  $: hasDisabledVisible = boosts.dmgEntries.some(e => disabledBoosts.has(e.sourceName) || _isBoostCondDisabled(e.sourceName)) || (_curseRipPerkAmount > 0 && disableCurseRip) || (_reaperPerkAmount > 0 && disableReaper) || ((perks['True Balance'] ?? 0) > 0 && disabledBoosts.has('True Balance')) || ((perks['Frenzy'] ?? 0) > 0 && disabledBoosts.has('Frenzy')) || (_sunburnAmt > 0 && disabledEffects.has('sunburn')) || (_mortalWillAmt > 0 && disabledEffects.has('mortalWill')) || ((perks['Ruler Of The Sands'] ?? 0) > 0 && disabledEffects.has('rulerOfTheSands'))
 
   $: _levelMult = (() => {
     const levelEntry = boosts.dmgEntries.find(e => e.sourceName === 'Level Damage')
@@ -1734,6 +1748,7 @@ import {
   $: selectedWA = WEAPON_ARTS.find(wa => wa.name === $build.selectedWeaponArt) ?? WEAPON_ARTS[0]
   $: _waDisplayName = getWADisplayName(selectedWA.name, perks)
   $: _waCooldown = (_heatDrillActive) ? HEAT_DRILL_COOLDOWN : selectedWA.cooldown
+  $: _runeBaseCd = getRune($build.rune)?.cooldown ?? 10
 
   function parseWAHitsAll(baseDamage: string | undefined): {
     dmg: Array<{ n: number; count: number }>
@@ -2190,6 +2205,7 @@ import {
       if (perkAmount <= 0) continue
       if (def.activeIf && !def.activeIf({ draconicRuneInfusion: $build.draconicRuneInfusion, draconicColor: _effDraconicColor, selectedWeaponArt: $build.selectedWeaponArt })) continue
       if (def.perkName === 'Bomber Charge' && selectedWA.name === 'Retaliate') continue
+      if (def.perkName === 'Ruler Of The Sands' && disabledEffects.has('rulerOfTheSands')) continue
 
       const hitType: BoostAttackType = def.isWA   ? 'wa'
                       : def.isRune ? 'rune'
@@ -2265,6 +2281,7 @@ import {
         burnPotency: _perkCtxBurnPotency,
         missingHpPct: Math.min(50, Math.max(0, 100 - (_hpFillPct ?? 100))),
         waCooldown: _waCooldown,
+        runeCooldown: _runeBaseCd,
       }
       const baseDmg_m2  = def.getBaseDamage({ perkAmount, finisherHits: _fhM2,  draconicColor: _effDraconicColor, statuses: _perkCtxStatuses })
       const baseDmg_m1f = def.getBaseDamage({ perkAmount, finisherHits: _fhM1f, draconicColor: _effDraconicColor, statuses: _perkCtxStatuses })
@@ -3589,18 +3606,20 @@ $: _groupedSelfDamageSources = (() => {
           </div>
         {/if}
         {/if}
-  {#if _m1FinisherWeaponBoostRaw.mult !== 1 || _m2WeaponBoostRaw.mult !== 1 || _pursuitActive}
+  {#if _m1FinisherWeaponBoostRaw.mult !== 1 || _m2WeaponBoostRaw.mult !== 1 || _pursuitActive || disableWeaponBoost}
     {@const _wbM1 = _m1FinisherWeaponBoostRaw.mult !== 1}
     {@const _wbM2 = _m2WeaponBoostRaw.mult !== 1}
     {@const _wbSame = _m1FinisherWeaponBoostRaw.mult === _m2WeaponBoostRaw.mult}
     {@const _pursuitMult = _pursuitActive ? PURSUIT_BASE_MULT + PURSUIT_MULT_PER_RANK * _pursuitRank : 1}
+    {@const _rawPursuitRank = perks['Pursuit'] ?? 0}
+    {@const _rawPursuitMult = _rawPursuitRank > 0 ? PURSUIT_BASE_MULT + PURSUIT_MULT_PER_RANK * _rawPursuitRank : 0}
     <div class="da-boost-row" style="margin-top: 6px;">
       <button
         class="da-boost-chip"
         class:da-boost-chip--off={disableWeaponBoost}
         on:click={() => { disableWeaponBoost = !disableWeaponBoost }}
       >
-        <span class="da-bc-name">{[_weaponBoostLabels.join(', '), _pursuitActive ? 'Pursuit' : ''].filter(Boolean).join(', ')}</span>
+        <span class="da-bc-name">{[_weaponBoostLabels.join(', '), _rawPursuitRank > 0 ? 'Pursuit' : ''].filter(Boolean).join(', ')}</span>
         <span class="da-bc-val">
           {#if _wbSame}
             ×{+_m1FinisherWeaponBoostRaw.mult.toFixed(4)}
@@ -3608,7 +3627,7 @@ $: _groupedSelfDamageSources = (() => {
             {#if _wbM1}M1×{+_m1FinisherWeaponBoostRaw.mult.toFixed(4)}{/if}
             {#if _wbM2}M2×{+_m2WeaponBoostRaw.mult.toFixed(4)}{/if}
           {/if}
-          {#if _pursuitActive}M1×{+_pursuitMult.toFixed(4)}{/if}
+          {#if _rawPursuitRank > 0}M1×{+_rawPursuitMult.toFixed(4)}{/if}
         </span>
         <span class="da-bc-cond">finisher</span>
         <span class="da-bc-toggle">{disableWeaponBoost ? 'OFF' : 'ON'}</span>

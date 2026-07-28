@@ -131,6 +131,10 @@ import {
   QUAKE_DMG_PER_STACK,
   QUAKE_CHANCE_BASE,
   QUAKE_CHANCE_PER_STACK,
+  RULER_SANDS_BASE_DMG_PER_HIT,
+  RULER_SANDS_HITS,
+  RULER_SANDS_CHANCE_CD_MULT,
+  RULER_SANDS_CHANCE_PERK_MULT,
 } from '../lib/constants'
 
 export interface PerkDmgCtx {
@@ -1104,6 +1108,45 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     isProcHit: true,
     procCoefficient: { type: 'noProc' },
     note: 'Cannot proc other effects. Deals Stun and Knockback (not modeled).',
+  },
+
+  // ── Ruler Of The Sands ─────────────────────────────────────────────────────
+  {
+    perkName: 'Ruler Of The Sands',
+    condition: 'On Weapon Art or Rune use — summon a sandnado',
+    getBaseDamage: ({ perkAmount }) => RULER_SANDS_BASE_DMG_PER_HIT * perkAmount,
+    hits: RULER_SANDS_HITS,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { earth: 0.5, air: 0.5 },
+    scalingMode: 'fixed',
+    scalings: { earth: 1.0, air: 1.0 },
+    procCoefficient: { type: 'hasCoeff', value: 0.2 },
+    secondaryEffects: [
+      {
+        label: 'WA Chance',
+        getValue: ({ perkAmount, statuses }) =>
+          (statuses?.waCooldown ?? 10) * (RULER_SANDS_CHANCE_CD_MULT + RULER_SANDS_CHANCE_PERK_MULT * perkAmount),
+        format: v => `${v.toFixed(1)}%`,
+        condition: 'cd × (1 + 0.5 × perkAmount)',
+        tone: 'offense',
+      },
+      {
+        label: 'Rune Chance',
+        getValue: ({ perkAmount, statuses }) =>
+          (statuses?.runeCooldown ?? 10) * (RULER_SANDS_CHANCE_CD_MULT + RULER_SANDS_CHANCE_PERK_MULT * perkAmount),
+        format: v => `${v.toFixed(1)}%`,
+        condition: 'cd × (1 + 0.5 × perkAmount)',
+        tone: 'offense',
+      },
+      {
+        label: 'Total Damage',
+        getValue: ({ perkAmount }) => RULER_SANDS_BASE_DMG_PER_HIT * perkAmount * RULER_SANDS_HITS,
+        format: v => v.toFixed(2),
+        condition: `${RULER_SANDS_HITS} hits`,
+        tone: 'offense',
+      },
+    ],
+    note: 'Chance scales on base cooldown. Reduced proc coefficient. Lasts ~5s.',
   },
 ]
 
