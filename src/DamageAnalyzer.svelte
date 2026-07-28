@@ -749,6 +749,14 @@ import {
   $: _bombardierScalings = _bombardierDef?.scalings ?? {}
   $: _bombardierScalingMult = _bombardierAmt > 0 ? _computePerkScalingMult(_bombardierScalings) : 1
 
+  $: _quakeAmt = perks['Quake'] ?? 0
+  $: _quakeDef = _quakeAmt > 0 ? findPerkDmgDef('Quake') : undefined
+  $: _quakeBaseDmg = (_quakeAmt > 0 && !disabledEffects.has('quake') && _quakeDef)
+    ? _quakeDef.getBaseDamage({ perkAmount: _quakeAmt })
+    : 0
+  $: _quakeScalings = _quakeDef?.scalings ?? {}
+  $: _quakeScalingMult = _quakeAmt > 0 ? _computePerkScalingMult(_quakeScalings) : 1
+
   $: _runicBladesAmt = perks['Runic Blades'] ?? 0
   $: _runicBladesDef = _runicBladesAmt > 0 ? findPerkDmgDef('Runic Blades') : undefined
   $: _runicBladesBaseDmg = (_runicBladesAmt > 0 && !disabledEffects.has('runicBlades') && _runicBladesDef)
@@ -2330,7 +2338,7 @@ import {
     for (const e of _activePerkDmgEntries) {
       if (!e.isActive) continue
       if (!e.isProcHit && e.perkName !== 'Springblast') continue
-      if (e.perkName === 'Echo Incineration' || e.perkName === 'Bombardier' || e.perkName === 'Runic Blades') continue
+      if (e.perkName === 'Echo Incineration' || e.perkName === 'Bombardier' || e.perkName === 'Runic Blades' || e.perkName === 'Quake') continue
       const perkDef = findPerkDmgDef(e.perkName)
 
       const perkSunburnMult = _sunburnActive && _sunburnEnemyBurning
@@ -3089,6 +3097,8 @@ $: _groupedSelfDamageSources = (() => {
     echoIncinerationScalingMult={_echoIncinerationScalingMult}
     bombardierBaseDmg={_bombardierBaseDmg}
     bombardierScalingMult={_bombardierScalingMult}
+    quakeBaseDmg={_quakeBaseDmg}
+    quakeScalingMult={_quakeScalingMult}
     cauterizeBaseDmg={_cauterizeBaseDmg}
     cauterizeScalingMult={_cauterizeScalingMult}
     runicBladesBaseDmg={_runicBladesBaseDmg}

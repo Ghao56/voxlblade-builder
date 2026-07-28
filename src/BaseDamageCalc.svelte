@@ -61,6 +61,8 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   export let echoIncinerationScalingMult: number = 1
   export let bombardierBaseDmg: number = 0
   export let bombardierScalingMult: number = 1
+  export let quakeBaseDmg: number = 0
+  export let quakeScalingMult: number = 1
   export let cauterizeBaseDmg: number = 0
   export let cauterizeScalingMult: number = 1
   export let runicBladesBaseDmg: number = 0
@@ -627,6 +629,10 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       addProcEffect(bombardierBaseDmg, 1, { magic: 0.5, holy: 0.5 }, 'Bombardier', bombardierScalingMult, hit.combatMult)
     }
 
+    if (!isHeal && quakeBaseDmg > 0 && canProc(hit.procCoefficient)) {
+      addProcEffect(quakeBaseDmg, 1, { earth: 1.0 }, 'Quake', quakeScalingMult, hit.combatMult)
+    }
+
     if (!isHeal && runicBladesBaseDmg > 0 && canProc(hit.procCoefficient)) {
       const rbDebuffActive = appliedDebuffs.some(d => d.name === 'Runic Blades' && !disabledDebuffs.has(d.name))
       if (rbDebuffActive) {
@@ -718,6 +724,9 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
         }
         if (bombardierBaseDmg > 0) {
           addProcEffect(bombardierBaseDmg, 1, { magic: 0.5, holy: 0.5 }, 'Bombardier', bombardierScalingMult, dragonStateCombatMult)
+        }
+        if (quakeBaseDmg > 0) {
+          addProcEffect(quakeBaseDmg, 1, { earth: 1.0 }, 'Quake', quakeScalingMult, dragonStateCombatMult)
         }
         if (_bloodThirstyActive) {
           const btHeal = 0.3 * bloodThirstyStacks

@@ -22,6 +22,7 @@ export const BADGE_CONFIG: Record<string, { color: string; label: string; title:
   'Gnawing Poison': { color: '#22c55e', label: '✦ Gnawing Poison', title: 'Gnawing Poison: bites all Poisoned enemies on finisher · Burst of Hex+Physical · Grants Poison Potency' },
   'Cloudpush': { color: '#AAFFDB', label: '✦ Cloudpush', title: 'Cloudpush: deal x% of your damage as bonus air damage that counts as the applier\'s damage' },
   'Cinderpull': { color: '#f97316', label: '✦ Cinderpull', title: 'Cinderpull: deal x% of your damage as bonus fire damage that counts as the applier\'s damage' },
+  'Quake': { color: '#a3722a', label: '✦ Quake', title: 'Quake: Earth shockwave on hit · RNG chance · Guardbreak · Cannot proc other effects' },
 }
 
 export interface ComputedType {

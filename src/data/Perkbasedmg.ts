@@ -127,6 +127,10 @@ import {
   PROPELLING_FUN_BASE_DMG,
   PROPELLING_FUN_DMG_PER_STACK,
   PROPELLING_FUN_COOLDOWN,
+  QUAKE_BASE_DMG,
+  QUAKE_DMG_PER_STACK,
+  QUAKE_CHANCE_BASE,
+  QUAKE_CHANCE_PER_STACK,
 } from '../lib/constants'
 
 export interface PerkDmgCtx {
@@ -1086,6 +1090,20 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     },
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
     note: `${PROPELLING_FUN_COOLDOWN}s cooldown. Jumping creates an air current. If burning, activates Cinderpull instead (Fire Damage Type). Cloudpush/Cinderpull grant bonus damage type to allies.`,
+  },
+  // ── Quake ─────────────────────────────────────────────────────────
+  {
+    perkName: 'Quake',
+    condition: `On hit · (${QUAKE_CHANCE_BASE} + ${QUAKE_CHANCE_PER_STACK} × perkAmount)% chance`,
+    getBaseDamage: ({ perkAmount }) => QUAKE_BASE_DMG + QUAKE_DMG_PER_STACK * perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { earth: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { earth: 1.0 },
+    guardbreak: true,
+    isProcHit: true,
+    procCoefficient: { type: 'noProc' },
+    note: 'Cannot proc other effects. Deals Stun and Knockback (not modeled).',
   },
 ]
 

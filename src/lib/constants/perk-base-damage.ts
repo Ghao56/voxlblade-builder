@@ -186,3 +186,9 @@ export const GNAWING_POISON_COOLDOWN = 1.5
 export const PROPELLING_FUN_BASE_DMG = 5
 export const PROPELLING_FUN_DMG_PER_STACK = 4
 export const PROPELLING_FUN_COOLDOWN = 2
+
+// Quake
+export const QUAKE_BASE_DMG = 2.5
+export const QUAKE_DMG_PER_STACK = 2.5
+export const QUAKE_CHANCE_BASE = 30
+export const QUAKE_CHANCE_PER_STACK = 5
