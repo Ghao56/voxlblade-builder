@@ -637,13 +637,6 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     if (!isHeal && luminescentPct > 0 && canProc(hit.procCoefficient)) {
       if (_hitDebuffedPreMitBase > 0) addProcEffect(_hitDebuffedPreMitBase, luminescentPct, { holy: 1.0 }, 'Luminescent')
     }
-    if (!isHeal && cloudpushPct > 0 && canProc(hit.procCoefficient)) {
-      if (_hitDebuffedPreMitBase > 0) addProcEffect(_hitDebuffedPreMitBase, cloudpushPct, { air: 1.0 }, 'Cloudpush')
-    }
-    if (!isHeal && cinderpullPct > 0 && canProc(hit.procCoefficient)) {
-      if (_hitDebuffedPreMitBase > 0) addProcEffect(_hitDebuffedPreMitBase, cinderpullPct, { fire: 1.0 }, 'Cinderpull')
-    }
-    
     if (!isHeal && lightningCloakPct > 0 && canProc(hit.procCoefficient)) {
       if (_hitDebuffedPreMitBase > 0) addProcEffect(_hitDebuffedPreMitBase, lightningCloakPct, { air: 0.5, magic: 0.5 }, 'Chain')
     }
@@ -792,8 +785,6 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
               addProcEffect(bombardierBaseDmg, 1, { magic: 0.5, holy: 0.5 }, 'Bombardier', bombardierScalingMult, ph.combatMult)
             }
             if (luminescentPct > 0) addProcEffect(preMitBase, luminescentPct, { holy: 1.0 }, 'Luminescent')
-            if (cloudpushPct > 0) addProcEffect(preMitBase, cloudpushPct, { air: 1.0 }, 'Cloudpush')
-            if (cinderpullPct > 0) addProcEffect(preMitBase, cinderpullPct, { fire: 1.0 }, 'Cinderpull')
             if (lightningCloakPct > 0) addProcEffect(preMitBase, lightningCloakPct, { air: 0.5, magic: 0.5 }, 'Chain')
             if (stormRendPct > 0) addProcEffect(preMitBase, stormRendPct, { air: 0.5, magic: 0.5 }, 'Chain')
             if (explosiveChargePct > 0 && hit.group === 'WA') addProcEffect(preMitBase, explosiveChargePct, { physical: 0.5, fire: 0.5 }, 'Explosive')

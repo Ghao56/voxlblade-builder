@@ -961,7 +961,7 @@ import {
       disabledBoosts = new Set(disabledBoosts)
     }
   }
-  const HANDLED_BUFF_NAMES = new Set(['Rage', 'Glyph Conduit', 'Extinguish', 'Lightning Cloak', 'Storm Rend', 'Cloudpush', 'Cinderpull'])
+  const HANDLED_BUFF_NAMES = new Set(['Rage', 'Glyph Conduit', 'Extinguish', 'Lightning Cloak', 'Storm Rend'])
   let extinguishDisabled = false
 
   let environmentTouched = false
@@ -3482,15 +3482,6 @@ $: _groupedSelfDamageSources = (() => {
                 <span class="da-bc-val" style="color:{propellingFunElement === 'air' ? '#AAFFDB' : '#f97316'}">{propellingFunElement === 'air' ? 'Air' : 'Fire'}</span>
                 <span class="da-bc-cond">Jump Element</span>
                 <span class="da-buff-sources">Perk ({_propellingFunAmt})</span>
-              </span>
-            </span>
-            <span class="da-buff">
-              <span class="da-boost-chip"
-                style="background:rgba(170,255,219,.08);border-color:rgba(170,255,219,.2)"
-              >
-                <span class="da-bc-name">Cloudpush/Cinderpull</span>
-                <span class="da-bc-val" style="color:#AAFFDB">{propellingFunBuffMode === 'both' ? 'Both' : propellingFunBuffMode === 'air' ? 'Air' : 'Fire'}</span>
-                <span class="da-bc-cond">Buff mode</span>
               </span>
             </span>
           {/if}
