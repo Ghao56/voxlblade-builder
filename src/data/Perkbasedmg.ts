@@ -1244,6 +1244,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     dmgTypeMode: 'weapon',
     scalingMode: 'fixed',
     scalings: { physical: 1.0, air: 1.0 },
+    isM2: true,
     isFinisher: true,
     guardbreak: true,
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
