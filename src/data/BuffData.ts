@@ -50,6 +50,7 @@ import {
   GROUNDED_DESPAIR_POTENCY_PER_AMOUNT, GROUNDED_DESPAIR_DURATION_PER_AMOUNT,
   QUEENS_POWER_ATK_SPD_BASE, QUEENS_POWER_ATK_SPD_PER_TENTH_POTENCY,
   QUEENS_POWER_SUMMON_SCALING_PER_TENTH_POTENCY, QUEENS_POWER_POTENCY_PER_AMOUNT, QUEENS_POWER_DURATION,
+  ICESTORM_POTENCY_PER_AMOUNT, ICESTORM_DURATION,
   BOUNCE_DURATION_BASE, BOUNCE_DURATION_PER_STACK,
   MOD_GLADIATORIAL_POTENCY, MOD_MAGE_RAGE_POTENCY, MOD_OCEANS_RAGE_POTENCY,
   MOD_SLAYER_RAGE_POTENCY, MOD_SLAYER_WEAKNESS_POTENCY,
@@ -1379,13 +1380,23 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       sourceType: 'perk',
     },
   ],
-    'Frozen Waste': (amount) => [
+    'Frozen Waste': () => [
     {
       buffName: 'Slowness',
       potency: 1,
       duration: 15,
       condition: 'Upon blocking an attack',
       sourceName: 'Frozen Waste',
+      sourceType: 'perk',
+    },
+  ],
+      'Icestorm': (amount) => [
+    {
+      buffName: 'Slowness',
+      potency: ICESTORM_POTENCY_PER_AMOUNT * amount,
+      duration: ICESTORM_DURATION,
+      condition: 'on Icestorm hit',
+      sourceName: 'Icestorm',
       sourceType: 'perk',
     },
   ],
