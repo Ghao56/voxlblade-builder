@@ -1169,6 +1169,43 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     ],
     note: 'Chance scales on base cooldown. Reduced proc coefficient. Lasts ~5s.',
   },
+  // ── Vile Presence ─────────────────────────────────────────────────────
+  {
+    perkName: 'Vile Presence',
+    condition: 'Passively deals damage in an AoE',
+    getBaseDamage: ({ perkAmount }) => 1.2 * perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { hex: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { hex: 1.0 },
+    procCoefficient: { type: 'noProc' },
+    note: 'Size increases with perk amount',
+  },
+  // ── Magic Guard ─────────────────────────────────────────────────────
+  {
+    perkName: 'Magic Guard',
+    condition: 'When Blocking an attack',
+    getBaseDamage: ({ perkAmount }) => 15 * perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { magic: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { magic: 1.0 },
+    procCoefficient: { type: 'hasCoeff', value: 1.0 },
+    note: '8 second cooldown',
+  },
+  // ── Icestorm ─────────────────────────────────────────────────────
+  {
+    perkName: 'Icestorm',
+    condition: 'Land 10 hits in a short timeframe',
+    getBaseDamage: ({ perkAmount }) => 3 + perkAmount,
+    hits: 10,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { magic: 0.5, water: 0.5 },
+    scalingMode: 'fixed',
+    scalings: { magic: 1.0, water: 1.0 },
+    procCoefficient: { type: 'noProc' },
+    note: 'Duration extends if the user keeps hitting enemies',
+  },
 ]
 
 const _perkDmgDefMap = new Map<string, PerkDmgDef[]>()
