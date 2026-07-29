@@ -1,0 +1,460 @@
+{
+  "batchIndex": 4,
+  "fileCount": 20,
+  "nodes": [
+    {
+      "id": "src/data/races.json",
+      "type": "config",
+      "path": "src/data/races.json",
+      "language": "JSON",
+      "summary": "Defines 11 playable races (HUMAN, HALF-ORK, ELF, DARK ELF, DRAGON BLOODED, ORK, HIGH ELF, ARBORIAN, KITSUNE, BUNIKIN) with passive abilities, stat modifiers, and cooldown modifiers.",
+      "tags": ["game-data", "races", "config"]
+    },
+    {
+      "id": "src/data/rings.json",
+      "type": "config",
+      "path": "src/data/rings.json",
+      "language": "JSON",
+      "summary": "Defines 35 equippable rings with stat boosts, perk assignments, and in-game descriptions for ring items.",
+      "tags": ["game-data", "rings", "config"]
+    },
+    {
+      "id": "src/data/Runebasedmg.ts",
+      "type": "file",
+      "path": "src/data/Runebasedmg.ts",
+      "language": "TypeScript",
+      "summary": "Defines rune damage context and interface types (RuneDmgCtx, RuneSliderDef, RuneShieldDef, RuneDmgDef) and exports the RUNE_DMG_DEFS array containing damage definitions for 15 runes including Ancient Cleric, Beenade, Boostshroom, Thunderous Charge, Sporeling Toss, Foot Dive, Caci, Cacitrops, Hex Web, Brainblast, Fireball, Rocky Tail, False Sun, and Snoeball.",
+      "tags": ["game-data", "runes", "damage-definitions"],
+      "exports": ["RuneDmgCtx", "RuneSliderDef", "RuneShieldDef", "RuneDmgDef", "RUNE_DMG_DEFS"]
+    },
+    {
+      "id": "src/data/runes.json",
+      "type": "config",
+      "path": "src/data/runes.json",
+      "language": "JSON",
+      "summary": "Defines 42 equippable runes with descriptions, stat boosts, cooldowns, and optional perk assignments for the Voxel Blade game.",
+      "tags": ["game-data", "runes", "config"]
+    },
+    {
+      "id": "src/data/selfDamagePerks.ts",
+      "type": "file",
+      "path": "src/data/selfDamagePerks.ts",
+      "language": "TypeScript",
+      "summary": "Defines self-damage perk definitions (Undead Might, Explosive Charge, Dark Magic, Bombardier, Steam Powered) and exports the SELF_DAMAGE_PERK_DEFS array and calcSelfDamage function that calculates self-inflicted damage from perks per hit type.",
+      "tags": ["game-data", "perks", "self-damage"],
+      "exports": ["UNDEAD_MIGHT_SELF_DMG_FRACTION", "UNDEAD_MIGHT_DR_PCT_PER_STACK", "SelfDamagePerkDef", "SELF_DAMAGE_PERK_DEFS", "calcSelfDamage"]
+    },
+    {
+      "id": "src/data/stanceOverlays.ts",
+      "type": "file",
+      "path": "src/data/stanceOverlays.ts",
+      "language": "TypeScript",
+      "summary": "Defines stance overlay conditions for weapon/ring combinations (Blaster Ring, Locked And Loaded, Cosmic Ray, Mine) and exports the resolveStanceOverlay function that determines which overlay weapon stance should be active.",
+      "tags": ["game-data", "stances", "overlays"],
+      "exports": ["StanceOverlayResult", "StanceOverlayCtx", "resolveStanceOverlay"]
+    },
+    {
+      "id": "src/data/statboost.ts",
+      "type": "file",
+      "path": "src/data/statboost.ts",
+      "language": "TypeScript",
+      "summary": "Implements stat-boosting perk effects through a registry of 16 perk handlers (Quick Witted, Whirl Foot, Carapace, Extra Layers, Frozen Heart, Immovable, Righted Wrongs, Rocky Body, Spellshield, Strong Tides, Swift Guard, True Balance, Brawny, Weight Distribution, etc.) with ordered execution and rounding. Exports OFFENSIVE_BOOSTS constant and applyStatBoostPerks function.",
+      "tags": ["game-data", "perks", "stat-boosts"],
+      "exports": ["OFFENSIVE_BOOSTS", "applyStatBoostPerks"]
+    },
+    {
+      "id": "src/data/SummonData.ts",
+      "type": "file",
+      "path": "src/data/SummonData.ts",
+      "language": "TypeScript",
+      "summary": "Defines summon data structures and constants including summon stat calculation, max summon count with Swarm perk, summon definitions (Mage Bomber, Blessedling), summon maps, and summon perk definitions. Exports calcSummonStat, calcMaxSummonCount, SUMMON_MAP, and WA_SUMMON_MAP.",
+      "tags": ["game-data", "summons", "summon-data"],
+      "exports": ["calcSummonStat", "calcMaxSummonCount", "SUMMON_MAP", "WA_SUMMON_MAP"]
+    },
+    {
+      "id": "src/data/TypedDmgBoost.ts",
+      "type": "file",
+      "path": "src/data/TypedDmgBoost.ts",
+      "language": "TypeScript",
+      "summary": "Defines typed damage boost perks (Glyph Conduit, Rage, Photosynthesis, Hex Shield) with per-type damage multipliers based on buff potency or perk amount. Exports calcTypedDmgBoosts which computes combined damage multipliers by damage type from active buff-based and perk-based boosts.",
+      "tags": ["game-data", "perks", "damage-boosts", "damage-types"],
+      "exports": ["TypedDmgBoostCtx", "TypedDmgBoostEntry", "TypedDmgBoostResult", "calcTypedDmgBoosts"]
+    },
+    {
+      "id": "src/data/weapon base dmg.ts",
+      "type": "file",
+      "path": "src/data/weapon base dmg.ts",
+      "language": "TypeScript",
+      "summary": "Exports WEAPON_BASE_DMG array defining base M1 and M2 damage values for 27 weapon types including Fists, Swords, Daggers, Spears, Mallets, Scythes, and mage/gun weapons.",
+      "tags": ["game-data", "weapons", "base-damage"],
+      "exports": ["WEAPON_BASE_DMG"]
+    },
+    {
+      "id": "src/data/Weaponartcheck.ts",
+      "type": "file",
+      "path": "src/data/Weaponartcheck.ts",
+      "language": "TypeScript",
+      "summary": "Implements weapon art requirement checking logic including weapon type matching with equivalents, scaling requirements, stat requirements, and guild restrictions. Exports checkWA to determine if a weapon art is available and getUnmetReqs to list unsatisfied requirements.",
+      "tags": ["game-data", "weapon-arts", "requirement-checking"],
+      "exports": ["checkWA", "getUnmetReqs"]
+    },
+    {
+      "id": "src/data/weaponArts.ts",
+      "type": "file",
+      "path": "src/data/weaponArts.ts",
+      "language": "TypeScript",
+      "summary": "Defines WeaponArt and WeaponArtRequirement interfaces and exports the WEAPON_ARTS array containing definitions for 40+ weapon arts with damage values, scaling info, cooldowns, and requirement conditions.",
+      "tags": ["game-data", "weapon-arts", "definitions"],
+      "exports": ["WAIndividualHit", "WeaponArtRequirement", "WeaponArt", "WEAPON_ARTS"]
+    },
+    {
+      "id": "src/data/weaponConditionalBoosts.ts",
+      "type": "file",
+      "path": "src/data/weaponConditionalBoosts.ts",
+      "language": "TypeScript",
+      "summary": "Defines conditional weapon-specific damage boosts for perks like Aggressive Personality and Piercer that apply to specific weapon types and hit scopes (M1 finisher or M2). Exports getWeaponConditionalBoost function.",
+      "tags": ["game-data", "weapons", "conditional-boosts", "perks"],
+      "exports": ["WeaponHitScope", "getWeaponConditionalBoost"]
+    },
+    {
+      "id": "src/DmgTotalTooltip.svelte",
+      "type": "file",
+      "path": "src/DmgTotalTooltip.svelte",
+      "language": "Svelte",
+      "summary": "A damage breakdown tooltip component that renders a pie chart and grouped hit entries from a ComputedHit object, showing per-type damage values, crit variants, and badge tags.",
+      "tags": ["component", "ui", "damage-tooltip"]
+    },
+    {
+      "id": "src/DraconicAbilityStats.svelte",
+      "type": "file",
+      "path": "src/DraconicAbilityStats.svelte",
+      "language": "Svelte",
+      "summary": "A stats display component for draconic abilities showing damage type, scaling value, poise damage, and optional holy/water healing values.",
+      "tags": ["component", "ui", "draconic", "stats"]
+    },
+    {
+      "id": "src/EmotionalTracker.svelte",
+      "type": "file",
+      "path": "src/EmotionalTracker.svelte",
+      "language": "Svelte",
+      "summary": "A UI component that lets users toggle between three emotional states (Buff Only, Debuff Only, Both) using buttons and a segmented slider, updating the build store.",
+      "tags": ["component", "ui", "emotion-tracker", "build-state"]
+    },
+    {
+      "id": "src/Highlight.svelte",
+      "type": "file",
+      "path": "src/Highlight.svelte",
+      "language": "Svelte",
+      "summary": "A simple text-highlighting component that splits text by a query string and wraps matching portions in <mark> elements.",
+      "tags": ["component", "ui", "highlight"]
+    },
+    {
+      "id": "src/LevelBar.svelte",
+      "type": "file",
+      "path": "src/LevelBar.svelte",
+      "language": "Svelte",
+      "summary": "A comprehensive level and HP bar component that allows editing player level, displays current/max HP with colored fill bar, shield overlay, negative protection visualization, and draggable HP fill percentage.",
+      "tags": ["component", "ui", "level", "hp-bar", "build-state"]
+    },
+    {
+      "id": "src/ScalingBreakdownRow.svelte",
+      "type": "file",
+      "path": "src/ScalingBreakdownRow.svelte",
+      "language": "Svelte",
+      "summary": "A table row component for displaying a single stat scaling breakdown with scaling value, boost percentage, and contribution amount using monospace number formatting and color coding.",
+      "tags": ["component", "ui", "scaling", "breakdown"]
+    },
+    {
+      "id": "src/StatFilter.svelte",
+      "type": "file",
+      "path": "src/StatFilter.svelte",
+      "language": "Svelte",
+      "summary": "A stat filtering and sorting UI component with expandable panel, positive/negative stat tabs, chip-based include/exclude toggling, and sort modes (highest/lowest/alphabetical).",
+      "tags": ["component", "ui", "stat-filter", "sorting"]
+    },
+    {
+      "id": "src/data/selfDamagePerks.ts::calcSelfDamage",
+      "type": "function",
+      "path": "src/data/selfDamagePerks.ts",
+      "language": "TypeScript",
+      "summary": "Calculates self-inflicted damage for a given perk definition, including flat damage (with proc chance) and percentage-based damage with DR stacks and multi-target falloff.",
+      "tags": ["function", "self-damage"],
+      "parentFile": "src/data/selfDamagePerks.ts"
+    },
+    {
+      "id": "src/data/stanceOverlays.ts::resolveStanceOverlay",
+      "type": "function",
+      "path": "src/data/stanceOverlays.ts",
+      "language": "TypeScript",
+      "summary": "Iterates through stance overlay definitions and returns the first matching overlay result (weapon type, m2-only flag) for the given context, or null if none match.",
+      "tags": ["function", "stance-overlay"],
+      "parentFile": "src/data/stanceOverlays.ts"
+    },
+    {
+      "id": "src/data/statboost.ts::applyStatBoostPerks",
+      "type": "function",
+      "path": "src/data/statboost.ts",
+      "language": "TypeScript",
+      "summary": "Applies all stat-boosting perks in order (PERK_EXECUTION_ORDER) to a copy of the input StatMap, running each perk's handler function, then finalizes with rounding.",
+      "tags": ["function", "stat-boosts", "perks"],
+      "parentFile": "src/data/statboost.ts"
+    },
+    {
+      "id": "src/data/SummonData.ts::calcSummonStat",
+      "type": "function",
+      "path": "src/data/SummonData.ts",
+      "language": "TypeScript",
+      "summary": "Calculates a summon's effective stat (damage/HP) based on base value, summon boost percentage, and player level using a proportional scaling formula.",
+      "tags": ["function", "summon", "stat-calculation"],
+      "parentFile": "src/data/SummonData.ts"
+    },
+    {
+      "id": "src/data/SummonData.ts::calcMaxSummonCount",
+      "type": "function",
+      "path": "src/data/SummonData.ts",
+      "language": "TypeScript",
+      "summary": "Returns the maximum summon count based on base cap (15) plus the Swarm perk amount floored.",
+      "tags": ["function", "summon", "count"],
+      "parentFile": "src/data/SummonData.ts"
+    },
+    {
+      "id": "src/data/TypedDmgBoost.ts::calcTypedDmgBoosts",
+      "type": "function",
+      "path": "src/data/TypedDmgBoost.ts",
+      "language": "TypeScript",
+      "summary": "Evaluates all typed damage boost perk definitions against active perks and buff state, returning a combined per-type damage multiplier map, heal multiplier, and list of active boost entries.",
+      "tags": ["function", "damage-boosts", "calculation"],
+      "parentFile": "src/data/TypedDmgBoost.ts"
+    },
+    {
+      "id": "src/data/Weaponartcheck.ts::checkWA",
+      "type": "function",
+      "path": "src/data/Weaponartcheck.ts",
+      "language": "TypeScript",
+      "summary": "Determines if a weapon art is available by checking guild restrictions, required parts, scaling minimums, stat thresholds, and weapon type compatibility.",
+      "tags": ["function", "weapon-art", "requirement-check"],
+      "parentFile": "src/data/Weaponartcheck.ts"
+    },
+    {
+      "id": "src/data/Weaponartcheck.ts::getUnmetReqs",
+      "type": "function",
+      "path": "src/data/Weaponartcheck.ts",
+      "language": "TypeScript",
+      "summary": "Returns a human-readable list of unmet requirements for a weapon art, including guild, weapon type, part, scaling, and stat requirements.",
+      "tags": ["function", "weapon-art", "unmet-requirements"],
+      "parentFile": "src/data/Weaponartcheck.ts"
+    },
+    {
+      "id": "src/data/weaponConditionalBoosts.ts::getWeaponConditionalBoost",
+      "type": "function",
+      "path": "src/data/weaponConditionalBoosts.ts",
+      "language": "TypeScript",
+      "summary": "Looks up conditional weapon boosts for a given weapon type and hit scope, computing the cumulative multiplier and collecting active perk labels.",
+      "tags": ["function", "weapon", "conditional-boost"],
+      "parentFile": "src/data/weaponConditionalBoosts.ts"
+    }
+  ],
+  "edges": [
+    {
+      "source": "src/data/selfDamagePerks.ts",
+      "target": "src/data/selfDamagePerks.ts::calcSelfDamage",
+      "type": "contains"
+    },
+    {
+      "source": "src/data/stanceOverlays.ts",
+      "target": "src/data/stanceOverlays.ts::resolveStanceOverlay",
+      "type": "contains"
+    },
+    {
+      "source": "src/data/statboost.ts",
+      "target": "src/data/statboost.ts::applyStatBoostPerks",
+      "type": "contains"
+    },
+    {
+      "source": "src/data/SummonData.ts",
+      "target": "src/data/SummonData.ts::calcSummonStat",
+      "type": "contains"
+    },
+    {
+      "source": "src/data/SummonData.ts",
+      "target": "src/data/SummonData.ts::calcMaxSummonCount",
+      "type": "contains"
+    },
+    {
+      "source": "src/data/TypedDmgBoost.ts",
+      "target": "src/data/TypedDmgBoost.ts::calcTypedDmgBoosts",
+      "type": "contains"
+    },
+    {
+      "source": "src/data/Weaponartcheck.ts",
+      "target": "src/data/Weaponartcheck.ts::checkWA",
+      "type": "contains"
+    },
+    {
+      "source": "src/data/Weaponartcheck.ts",
+      "target": "src/data/Weaponartcheck.ts::getUnmetReqs",
+      "type": "contains"
+    },
+    {
+      "source": "src/data/weaponConditionalBoosts.ts",
+      "target": "src/data/weaponConditionalBoosts.ts::getWeaponConditionalBoost",
+      "type": "contains"
+    },
+    {
+      "source": "src/data/Runebasedmg.ts",
+      "target": "src/data/SummonData.ts",
+      "type": "imports",
+      "label": "./SummonData"
+    },
+    {
+      "source": "src/data/Runebasedmg.ts",
+      "target": "src/lib/constants/rune-base-damage.ts",
+      "type": "imports",
+      "label": "../lib/constants/rune-base-damage"
+    },
+    {
+      "source": "src/data/Runebasedmg.ts",
+      "target": "src/lib/types.ts",
+      "type": "imports",
+      "label": "../lib/types"
+    },
+    {
+      "source": "src/data/SummonData.ts",
+      "target": "src/lib/constants/index.ts",
+      "type": "imports",
+      "label": "../lib/constants"
+    },
+    {
+      "source": "src/data/TypedDmgBoost.ts",
+      "target": "src/data/BuffData.ts",
+      "type": "imports",
+      "label": "./BuffData"
+    },
+    {
+      "source": "src/data/TypedDmgBoost.ts",
+      "target": "src/lib/constants/damage-types.ts",
+      "type": "imports",
+      "label": "../lib/constants/damage-types"
+    },
+    {
+      "source": "src/data/statboost.ts",
+      "target": "src/lib/types.ts",
+      "type": "imports",
+      "label": "../lib/types"
+    },
+    {
+      "source": "src/data/statboost.ts",
+      "target": "src/lib/constants/stat-conversions.ts",
+      "type": "imports",
+      "label": "../lib/constants/stat-conversions"
+    },
+    {
+      "source": "src/data/weaponConditionalBoosts.ts",
+      "target": "src/lib/utils.ts",
+      "type": "imports",
+      "label": "../lib/utils"
+    },
+    {
+      "source": "src/data/Weaponartcheck.ts",
+      "target": "src/data/weaponArts.ts",
+      "type": "imports",
+      "label": "../data/weaponArts"
+    },
+    {
+      "source": "src/DmgTotalTooltip.svelte",
+      "target": "src/lib/dmgTypes.ts",
+      "type": "imports",
+      "label": "./lib/dmgTypes"
+    },
+    {
+      "source": "src/DmgTotalTooltip.svelte",
+      "target": "src/lib/ui/Badge.svelte",
+      "type": "imports",
+      "label": "./lib/ui/Badge.svelte"
+    },
+    {
+      "source": "src/EmotionalTracker.svelte",
+      "target": "src/lib/store.ts",
+      "type": "imports",
+      "label": "./lib/store"
+    },
+    {
+      "source": "src/EmotionalTracker.svelte",
+      "target": "src/lib/ui/Badge.svelte",
+      "type": "imports",
+      "label": "./lib/ui/Badge.svelte"
+    },
+    {
+      "source": "src/Highlight.svelte",
+      "target": "src/lib/utils.ts",
+      "type": "imports",
+      "label": "./lib/utils"
+    },
+    {
+      "source": "src/LevelBar.svelte",
+      "target": "src/lib/store.ts",
+      "type": "imports",
+      "label": "./lib/store"
+    },
+    {
+      "source": "src/LevelBar.svelte",
+      "target": "src/lib/constants/index.ts",
+      "type": "imports",
+      "label": "./lib/constants"
+    },
+    {
+      "source": "src/LevelBar.svelte",
+      "target": "src/lib/ui/Badge.svelte",
+      "type": "imports",
+      "label": "./lib/ui/Badge.svelte"
+    },
+    {
+      "source": "src/ScalingBreakdownRow.svelte",
+      "target": "src/lib/utils.ts",
+      "type": "imports",
+      "label": "./lib/utils"
+    },
+    {
+      "source": "src/ScalingBreakdownRow.svelte",
+      "target": "src/lib/types.ts",
+      "type": "imports",
+      "label": "./lib/types"
+    },
+    {
+      "source": "src/StatFilter.svelte",
+      "target": "src/lib/stats/elementalBoosts.ts",
+      "type": "imports",
+      "label": "./lib/stats/elementalBoosts"
+    },
+    {
+      "source": "src/StatFilter.svelte",
+      "target": "src/lib/stats/filterActions.ts",
+      "type": "imports",
+      "label": "./lib/stats/filterActions"
+    },
+    {
+      "source": "src/StatFilter.svelte",
+      "target": "src/lib/uiConstants.ts",
+      "type": "imports",
+      "label": "./lib/uiConstants"
+    },
+    {
+      "source": "src/StatFilter.svelte",
+      "target": "src/lib/StatFilterShared.svelte",
+      "type": "imports",
+      "label": "./lib/StatFilterShared.svelte"
+    },
+    {
+      "source": "src/StatFilter.svelte",
+      "target": "src/lib/ui/Badge.svelte",
+      "type": "imports",
+      "label": "./lib/ui/Badge.svelte"
+    },
+    {
+      "source": "src/StatFilter.svelte",
+      "target": "src/lib/ui/Button.svelte",
+      "type": "imports",
+      "label": "./lib/ui/Button.svelte"
+    }
+  ]
+}

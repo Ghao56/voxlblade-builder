@@ -927,7 +927,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     getHits: ({ perkAmount, statuses }) => {
       const cd = statuses?.waCooldown ?? 10
       const amt = Math.floor(perkAmount)
-      return Math.max(PYRE_BLOOM_AMMO_MIN, Math.min(PYRE_BLOOM_AMMO_MAX, Math.floor((PYRE_BLOOM_AMMO_BASE + PYRE_BLOOM_AMMO_PER_STACK * amt) * ((cd / PYRE_BLOOM_AMMO_CD_DIVISOR) - PYRE_BLOOM_AMMO_CD_SUBTRACT))))
+      return Math.floor((PYRE_BLOOM_AMMO_BASE + PYRE_BLOOM_AMMO_PER_STACK * amt) * Math.min((cd / PYRE_BLOOM_AMMO_CD_DIVISOR) - PYRE_BLOOM_AMMO_CD_SUBTRACT, PYRE_BLOOM_AMMO_MAX))
     },
     dmgTypeMode: 'fixed',
     dmgTypes: { fire: 1.0 },
@@ -941,7 +941,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
         getValue: ({ perkAmount, statuses }) => {
           const cd = statuses?.waCooldown ?? 10
           const amt = Math.floor(perkAmount)
-          return Math.max(PYRE_BLOOM_AMMO_MIN, Math.min(PYRE_BLOOM_AMMO_MAX, Math.floor((PYRE_BLOOM_AMMO_BASE + PYRE_BLOOM_AMMO_PER_STACK * amt) * ((cd / PYRE_BLOOM_AMMO_CD_DIVISOR) - PYRE_BLOOM_AMMO_CD_SUBTRACT))))
+          return Math.floor((PYRE_BLOOM_AMMO_BASE + PYRE_BLOOM_AMMO_PER_STACK * amt) * Math.min((cd / PYRE_BLOOM_AMMO_CD_DIVISOR) - PYRE_BLOOM_AMMO_CD_SUBTRACT, PYRE_BLOOM_AMMO_MAX))
         },
         format: v => `${v}`,
         condition: 'Min 1 · Max 10',
@@ -953,8 +953,8 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
           const cd = statuses?.waCooldown ?? 10
           return 1 + cd / PYRE_BLOOM_FIRERATE_DIVISOR
         },
-        format: v => `${Math.round(v * 100) / 100}s`,
-        condition: 'Interval between fireballs',
+        format: v => `${Math.round(v * 100) / 100}`,
+        condition: 'Shots per second',
         tone: 'offense',
       },
       {
@@ -963,7 +963,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
           const cd = statuses?.waCooldown ?? 10
           const amt = Math.floor(perkAmount)
           const firerate = 1 + cd / PYRE_BLOOM_FIRERATE_DIVISOR
-          const hits = Math.max(PYRE_BLOOM_AMMO_MIN, Math.min(PYRE_BLOOM_AMMO_MAX, Math.floor((PYRE_BLOOM_AMMO_BASE + PYRE_BLOOM_AMMO_PER_STACK * amt) * ((cd / PYRE_BLOOM_AMMO_CD_DIVISOR) - PYRE_BLOOM_AMMO_CD_SUBTRACT))))
+          const hits = Math.floor((PYRE_BLOOM_AMMO_BASE + PYRE_BLOOM_AMMO_PER_STACK * amt) * Math.min((cd / PYRE_BLOOM_AMMO_CD_DIVISOR) - PYRE_BLOOM_AMMO_CD_SUBTRACT, PYRE_BLOOM_AMMO_MAX))
           return firerate * hits
         },
         format: v => `${Math.round(v * 100) / 100}s`,

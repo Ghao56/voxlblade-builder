@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "71df73c19251b8d827e8a7d0db1b68e9960bd4b1",
-  "generatedAt": "2026-07-29T07:46:59.613Z",
+  "gitCommitHash": "44d24084cfae73716283a438f0e6498605a06256",
+  "generatedAt": "2026-07-29T09:54:05.149Z",
   "files": {
     ".fallowrc.json": {
       "filePath": ".fallowrc.json",
@@ -11,16 +11,6 @@
       "imports": [],
       "exports": [],
       "totalLines": 57,
-      "hasStructuralAnalysis": true
-    },
-    ".github/workflows/static.yml": {
-      "filePath": ".github/workflows/static.yml",
-      "contentHash": "b2885dcaf88293064330f138bb99982625f33442195a525b52dd5c7f7565ba1b",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 54,
       "hasStructuralAnalysis": true
     },
     ".slim/deepwork/ui-upgrade.md": {
@@ -33,19 +23,9 @@
       "totalLines": 100,
       "hasStructuralAnalysis": true
     },
-    ".understand-anything/.understandignore": {
-      "filePath": ".understand-anything/.understandignore",
-      "contentHash": "885273c2c1c38bdad501e5e1dd10a978788442c0062367ac23d0f4f7df78c88a",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 63,
-      "hasStructuralAnalysis": false
-    },
-    ".understand-anything/config.json": {
-      "filePath": ".understand-anything/config.json",
-      "contentHash": "334948f84ef994171e4f694c704a66744bbcf3f85f9d076da9f77563aaa0cb8d",
+    ".vscode/extensions.json": {
+      "filePath": ".vscode/extensions.json",
+      "contentHash": "6eb28f68b30b20686435f69fa4863acecc10e221661ce344e0a6052f51a91f0e",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -53,59 +33,9 @@
       "totalLines": 4,
       "hasStructuralAnalysis": true
     },
-    ".understand-anything/dashboard-errors.txt": {
-      "filePath": ".understand-anything/dashboard-errors.txt",
-      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 1,
-      "hasStructuralAnalysis": false
-    },
-    ".understand-anything/dashboard-output.txt": {
-      "filePath": ".understand-anything/dashboard-output.txt",
-      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 1,
-      "hasStructuralAnalysis": false
-    },
-    ".understand-anything/fingerprints.json": {
-      "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "4e7a43825fada1f5a463299fa0cde23ba28acac3bffc21c0fcf7c420eebc604e",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 5542,
-      "hasStructuralAnalysis": true
-    },
-    ".understand-anything/knowledge-graph.json": {
-      "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "9b0a0fdcee4e6efc8ef5898fe8359ea90786a42c4694311c5699bbf3cbbb0561",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 9806,
-      "hasStructuralAnalysis": true
-    },
-    ".understand-anything/meta.json": {
-      "filePath": ".understand-anything/meta.json",
-      "contentHash": "1f91d0de3b4a4d8b8a7b3426e60afdaaa6c9d2ad91ff5fcfe3a781a94cd1dc51",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 7,
-      "hasStructuralAnalysis": true
-    },
     "AGENTS.md": {
       "filePath": "AGENTS.md",
-      "contentHash": "f1deb1766ec56f1f0ffd3291590c6d09c5545b131047f13e76ddcb4fca431793",
+      "contentHash": "3a4398aae2e08643414080f42bf870da0b3ce8ac50ffa1b3c120cf7d77067676",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -115,7 +45,7 @@
     },
     "analyze-mounticon.mjs": {
       "filePath": "analyze-mounticon.mjs",
-      "contentHash": "f30d97d3b7f45121783a7e7981225c39552e701d4c44e389271b3a0a5e055d00",
+      "contentHash": "df33de5c4809f2e2e3deebfae4cb88bd3843b8e07aef21762b91c6ea086a3794",
       "functions": [],
       "classes": [],
       "imports": [
@@ -130,9 +60,29 @@
       "totalLines": 12,
       "hasStructuralAnalysis": true
     },
+    "build-decode.txt": {
+      "filePath": "build-decode.txt",
+      "contentHash": "3a7779c53097d89021ee3ac9ecb349287eb35d8c54fa82739a16ad458bf92861",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3,
+      "hasStructuralAnalysis": false
+    },
+    "build-decode2.json": {
+      "filePath": "build-decode2.json",
+      "contentHash": "a3d8de85527c66826b7c4c2ad33b3f5d76d2a572e11a708c15e62a3801bdf35b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
     "decode_full.mjs": {
       "filePath": "decode_full.mjs",
-      "contentHash": "292dd333e2cd77f5da49d18febe45af43ef5c82aebae9862e5635e00d6aff7e0",
+      "contentHash": "a15fbee50ad9b9e23801d631b45532bae57fb6d8e5e797ecc45cb0d083fbf7a8",
       "functions": [
         {
           "name": "getPerk",
@@ -229,7 +179,7 @@
     },
     "docs/ONBOARDING.md": {
       "filePath": "docs/ONBOARDING.md",
-      "contentHash": "87d58b40f64180783ca9f34324537fe75ca740a209c4315364cc65e003b34bc0",
+      "contentHash": "45cc139a5cb333d5603d04121d2d2e8606aea0ee00179ae48e107731ec0d32ed",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -269,7 +219,7 @@
     },
     "package.json": {
       "filePath": "package.json",
-      "contentHash": "95c892ca46763a2c6048fda3aae10fddf81ee3fdcccf7d81dd51165c5a127b78",
+      "contentHash": "0f40640129e571a7489b823f34f0937fb4fe463bbf4a91e6f6505ac08cad276e",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -289,7 +239,7 @@
     },
     "src/app.css": {
       "filePath": "src/app.css",
-      "contentHash": "7c03fb9d5a522f27a9a02e6dee9c6e0601e6870778c51cd08535a089c2bd1012",
+      "contentHash": "01a4be74950a3ea13b8580caa8c2e8f5ad97e500883c57b2757bd00de01c9ff5",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -299,12 +249,12 @@
     },
     "src/App.svelte": {
       "filePath": "src/App.svelte",
-      "contentHash": "43344d6edb825f33fea35d779928524a061edfb4d5e5cabed20f5db6938ab135",
+      "contentHash": "28fe5459a6394c00ca2a20e6d2a65d02b4f62d1e102c96ad83af378a662c2829",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 4435,
+      "totalLines": 4431,
       "hasStructuralAnalysis": false
     },
     "src/BaseDamageCalc.svelte": {
@@ -319,12 +269,12 @@
     },
     "src/BuffList.svelte": {
       "filePath": "src/BuffList.svelte",
-      "contentHash": "b17436ae03dc0280708cf5d4f3d2ce657eb297198d31ddd76bfd5cb091542203",
+      "contentHash": "5d96656f36ca383ce8b73e5fb0a188bc706757fd8de510a52bba48f231af5e20",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 790,
+      "totalLines": 849,
       "hasStructuralAnalysis": false
     },
     "src/BuildSaves.svelte": {
@@ -359,12 +309,12 @@
     },
     "src/DamageAnalyzer.svelte": {
       "filePath": "src/DamageAnalyzer.svelte",
-      "contentHash": "7ea9d673aeecb61011d912598ef37b40cc7ef3ecf39758dc1331ce6a711bd2fe",
+      "contentHash": "63ae00e85e9f8f70c395202f8f060ed6faf00417d0557279446abb89db616c65",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 7316,
+      "totalLines": 7385,
       "hasStructuralAnalysis": false
     },
     "src/data/armors.json": {
@@ -489,7 +439,7 @@
     },
     "src/data/BuffData.ts": {
       "filePath": "src/data/BuffData.ts",
-      "contentHash": "b59ddfd74f9ef8397a472a340d7ae2bbc705d17f74a28e0029eca4473b743c23",
+      "contentHash": "68a91373bc3825d8f18e20d982f44e8b343903fb4cae126a57cf8c29b041d27e",
       "functions": [
         {
           "name": "formatDamageTypes",
@@ -860,6 +810,14 @@
             "POISON_POTION_DURATION",
             "POTION_CHUGGER_POTENCY_MULT_PER_LEVEL"
           ]
+        },
+        {
+          "source": "../lib/constants/perks",
+          "specifiers": [
+            "CRYO_ENGINE_TAILWIND_BASE_POTENCY",
+            "CRYO_ENGINE_TAILWIND_POTENCY_PER_AMOUNT",
+            "CRYO_ENGINE_TAILWIND_DURATION_PER_AMOUNT"
+          ]
         }
       ],
       "exports": [
@@ -879,7 +837,7 @@
         "calcBuffEffect",
         "formatPerkDescription"
       ],
-      "totalLines": 2073,
+      "totalLines": 2087,
       "hasStructuralAnalysis": true
     },
     "src/data/cdr.ts": {
@@ -1315,7 +1273,7 @@
     },
     "src/data/enemyHpEffects.ts": {
       "filePath": "src/data/enemyHpEffects.ts",
-      "contentHash": "a24334cb0fe3020eb5482dae430eaba0ad34a24dd874dfc2755dca5ebb8faccd",
+      "contentHash": "f357a356dd4c2f207b5248796b8ef1299aa68e1c117d4e7f47cfa2e6b579a96c",
       "functions": [
         {
           "name": "isEnemyHpGateActive",
@@ -1486,7 +1444,7 @@
     },
     "src/data/perkAutoDebuffs.ts": {
       "filePath": "src/data/perkAutoDebuffs.ts",
-      "contentHash": "1166858a4f9c0c0b06a5ff14fed25cf710a92cc3afa3c82b9d32c75db52a5e86",
+      "contentHash": "e3eacf4fa49649c3a121de0898c211acd0a71ac78518d8241a4544ea2efaa049",
       "functions": [
         {
           "name": "calcActualHpFillPct",
@@ -1506,7 +1464,7 @@
           ],
           "returnType": "GrantedBuff[]",
           "exported": true,
-          "lineCount": 242
+          "lineCount": 262
         }
       ],
       "classes": [],
@@ -1529,7 +1487,8 @@
             "SUNBURN_BURN_BASE_CHANCE",
             "SUNBURN_BURN_CHANCE_PER_STACK",
             "FROSTBITE_SLOW_POTENCY_PER_STACK",
-            "FROSTBITE_CHANCE_PER_STACK"
+            "FROSTBITE_CHANCE_PER_STACK",
+            "CRYO_ENGINE_PROC_CHANCE_PER_AMOUNT"
           ]
         },
         {
@@ -1571,7 +1530,7 @@
         "calcActualHpFillPct",
         "getAutoDebuffs"
       ],
-      "totalLines": 275,
+      "totalLines": 295,
       "hasStructuralAnalysis": true
     },
     "src/data/Perkbasedmg.ts": {
@@ -1811,9 +1770,22 @@
       "totalLines": 3689,
       "hasStructuralAnalysis": true
     },
+    "src/data/potions.ts": {
+      "filePath": "src/data/potions.ts",
+      "contentHash": "e7cbba311b7314412259c79918b852800e453d4e65d374186cf569fb0ee22f7f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "POTIONS",
+        "POTION_MAP"
+      ],
+      "totalLines": 23,
+      "hasStructuralAnalysis": true
+    },
     "src/data/procCoefficients.ts": {
       "filePath": "src/data/procCoefficients.ts",
-      "contentHash": "ae8a5de85420541d477b754646e4c23c9513a456fc5e75160a0c77998e4cd498",
+      "contentHash": "c2e27de9935e34f146db2339dd93cb1ff5292e8161c3269ec9a475086184d85a",
       "functions": [],
       "classes": [],
       "imports": [
@@ -2513,7 +2485,7 @@
     },
     "src/lib/constants.ts": {
       "filePath": "src/lib/constants.ts",
-      "contentHash": "3ecc13c5de9d047e6b2c367641cbf4829543abdc5d41e3b955dfa084b040821b",
+      "contentHash": "ec0d35043eff999eaa174623a6ba75ebe08a9f6c894e1330fe5c33a2deff8545",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2797,7 +2769,7 @@
     },
     "src/lib/constants/debuff-effects.ts": {
       "filePath": "src/lib/constants/debuff-effects.ts",
-      "contentHash": "ec5d91b5f548d4ea48fbcb476cb31b918b02ad994bf38d6432a904a1bc5c6ab1",
+      "contentHash": "7411f93bdd22bdfc892d1ce689be62b5f54196f91230bec64262612d64332f3c",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2898,7 +2870,7 @@
     },
     "src/lib/constants/game.ts": {
       "filePath": "src/lib/constants/game.ts",
-      "contentHash": "21a721cf93c57c8519bf6c9c0be504ca526219d4a5fc70dd04d8ddc534501ede",
+      "contentHash": "5dcec7a84b53846572891fd1d1284547b92cdef30f7cb117c66b6b848b0c6a2a",
       "functions": [
         {
           "name": "calcBaseMaxHP",
@@ -3091,7 +3063,7 @@
     },
     "src/lib/constants/perks.ts": {
       "filePath": "src/lib/constants/perks.ts",
-      "contentHash": "b1da3ab59964ae1aaa46f85942511a0ceb1f4bd82ff79209f07b60d45ee70484",
+      "contentHash": "a4922dd152c115e693561f71a5d4140551de366284d77a9f4732a4db06321bb2",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3142,6 +3114,10 @@
         "SUNBURN_BURN_CHANCE_PER_STACK",
         "FROSTBITE_SLOW_POTENCY_PER_STACK",
         "FROSTBITE_CHANCE_PER_STACK",
+        "CRYO_ENGINE_PROC_CHANCE_PER_AMOUNT",
+        "CRYO_ENGINE_TAILWIND_BASE_POTENCY",
+        "CRYO_ENGINE_TAILWIND_POTENCY_PER_AMOUNT",
+        "CRYO_ENGINE_TAILWIND_DURATION_PER_AMOUNT",
         "FIERY_PURSUIT_BASE_DMG",
         "FIERY_PURSUIT_DMG_PER_STACK",
         "FIERY_PURSUIT_BURN_DURATION",
@@ -3154,7 +3130,7 @@
         "PURSUIT_BASE_MULT",
         "PURSUIT_MULT_PER_RANK"
       ],
-      "totalLines": 95,
+      "totalLines": 101,
       "hasStructuralAnalysis": true
     },
     "src/lib/constants/rune-base-damage.ts": {
@@ -3274,6 +3250,30 @@
         "BASE_CRIT_DMG_PCT"
       ],
       "totalLines": 6,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/constants/wa-display.ts": {
+      "filePath": "src/lib/constants/wa-display.ts",
+      "contentHash": "23f55226ced71a4a7253ec94f3700c8241266fc541d0d061696383492f232009",
+      "functions": [
+        {
+          "name": "getWADisplayName",
+          "params": [
+            "baseName",
+            "perks"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 9
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "WA_PERK_DISPLAY_NAMES",
+        "getWADisplayName"
+      ],
+      "totalLines": 18,
       "hasStructuralAnalysis": true
     },
     "src/lib/crit.ts": {
@@ -4886,7 +4886,7 @@
     },
     "src/lib/store.ts": {
       "filePath": "src/lib/store.ts",
-      "contentHash": "1d4a1b829b765c102050ea7f165e7984ea7f3fc40be8bbda0f89dbee0f7b6b9f",
+      "contentHash": "73fab1f0d68b33b537de6cd474d6d3a374607973cfb6b8269c46d36cecc27d61",
       "functions": [
         {
           "name": "loadBuild",
@@ -5005,13 +5005,14 @@
         "result",
         "setEnchantment",
         "swapEnchantments",
+        "orkBuffTenacity",
         "clearBuild",
         "setGuild",
         "moveArmorSlot",
         "canArmorMoveToSlot",
         "moveRingSlot"
       ],
-      "totalLines": 213,
+      "totalLines": 215,
       "hasStructuralAnalysis": true
     },
     "src/lib/stores/toast.ts": {
@@ -5062,7 +5063,7 @@
     },
     "src/lib/Toast.svelte": {
       "filePath": "src/lib/Toast.svelte",
-      "contentHash": "fdc9f974dfa32ccd4c8d775368bb2cef1518075d55ca28c3e337e1628079d366",
+      "contentHash": "48024628407aa8adeba1b86803a39ae6560840d4e45187434be2fa6b89988109",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5121,7 +5122,7 @@
     },
     "src/lib/ui/Badge.svelte": {
       "filePath": "src/lib/ui/Badge.svelte",
-      "contentHash": "7694dee4588f4f5fb30513ac05b62595cd04e3594639fb390c4341f3651e9dcf",
+      "contentHash": "bc778df9d3fb6405fd8a3d0eba70d6d64e8172e56cd776d0c3feb5bf8d1e00ed",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5131,7 +5132,7 @@
     },
     "src/lib/ui/Button.svelte": {
       "filePath": "src/lib/ui/Button.svelte",
-      "contentHash": "8198470171f8719081f37c75008bb11a9c4dfd123aeec862d2a53346272a9f12",
+      "contentHash": "426bfba88965430dc71b533da743ddbd16fb09df8106e008ccf596c54a4acf3c",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5141,7 +5142,7 @@
     },
     "src/lib/ui/Card.svelte": {
       "filePath": "src/lib/ui/Card.svelte",
-      "contentHash": "432794580332c77fa7aa15b51739a9a08fcdd3f465a97adf582c5f4fc5952a31",
+      "contentHash": "88bf87adc8a0e06a0333a59e6d030a37f03a2fb2fb1f5ab789eeb42c59af4668",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5151,7 +5152,7 @@
     },
     "src/lib/ui/Divider.svelte": {
       "filePath": "src/lib/ui/Divider.svelte",
-      "contentHash": "8f34baf1c60f1e653cafd43cdfd9357dd6833a0f4ce8a1b8eb9180b545cddf10",
+      "contentHash": "ca7063c28fb28b4081b1890879501fbd5653d6a423d97d0bae00311d9f8db38b",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5161,7 +5162,7 @@
     },
     "src/lib/ui/index.ts": {
       "filePath": "src/lib/ui/index.ts",
-      "contentHash": "09b135f454842b4d57ecdbcc4abe514123267737f07c37c74cde4fec3af643ff",
+      "contentHash": "bee57675517b7561ab4d8f37a371f6b8ed1356b7de8ee15aa0b3039d126b412e",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5179,7 +5180,7 @@
     },
     "src/lib/ui/Panel.svelte": {
       "filePath": "src/lib/ui/Panel.svelte",
-      "contentHash": "8da5b772aaafa5682d0bae981b36fb8ca05f037d2428ec92a2bbe4f8cb65413c",
+      "contentHash": "94bcd36c78c3c15288add2890d003b1492aec24265260fe27a41580416bbe6dd",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5187,9 +5188,19 @@
       "totalLines": 95,
       "hasStructuralAnalysis": false
     },
+    "src/lib/ui/RollValue.svelte": {
+      "filePath": "src/lib/ui/RollValue.svelte",
+      "contentHash": "d3af0614ab20055df279f33001184cf4563a15933ad6d2cf1e9137ecd4771949",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 66,
+      "hasStructuralAnalysis": false
+    },
     "src/lib/ui/Section.svelte": {
       "filePath": "src/lib/ui/Section.svelte",
-      "contentHash": "f8eac59a894ec30b788ab023ca13bbe184f2d56c7980a6fac41395667c65306c",
+      "contentHash": "e5b498c251d8d349d5d62728889345854836d801830c53870ca7c8438fe1f5bd",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5199,7 +5210,7 @@
     },
     "src/lib/ui/Stat.svelte": {
       "filePath": "src/lib/ui/Stat.svelte",
-      "contentHash": "3899437f48babd3ca1da0466434f26b44daef0918fd98439ad2b667261e734c8",
+      "contentHash": "ecf7fa1cb4ee383ebf46db8a88ba15293d5a3f80eb0fc05ab0c930ad76000e34",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5365,12 +5376,22 @@
     },
     "src/MountIcon.svelte": {
       "filePath": "src/MountIcon.svelte",
-      "contentHash": "c29a97b472ff37863452ed62c13ba0d5a636841db33c6b5aec01080519bdcf06",
+      "contentHash": "1a7cbfcc6d3ff9d83baef17fbf69d1809b55b72e82a3ed8ab5b07f8b77cbaaf0",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
       "totalLines": 64,
+      "hasStructuralAnalysis": false
+    },
+    "src/PropellingFunTracker.svelte": {
+      "filePath": "src/PropellingFunTracker.svelte",
+      "contentHash": "b69ab693bfeedff331e42cf682cd579a6248d546b54908fb2fe1382100648a94",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 193,
       "hasStructuralAnalysis": false
     },
     "src/ScalingBreakdownRow.svelte": {
@@ -5445,13 +5466,55 @@
     },
     "stats.html": {
       "filePath": "stats.html",
-      "contentHash": "9b980b3c1feb21f44a355e473af2e231956dbe07e12e66ab56dd320f3b3733c5",
+      "contentHash": "eea41ccc407009f3ae535fdefc8d3bea14c0a25d0403d6e58aec0f26ddf99ac7",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
       "totalLines": 4951,
       "hasStructuralAnalysis": false
+    },
+    "tests/piercer.test.ts": {
+      "filePath": "tests/piercer.test.ts",
+      "contentHash": "054a6161ff380bc69a0ebc9f229f204e6a5c0ea95fd8a889436f90011f267d7a",
+      "functions": [
+        {
+          "name": "applyPiercerTrueConversion",
+          "params": [
+            "types",
+            "piercerRank"
+          ],
+          "returnType": "Record<string, number>",
+          "exported": false,
+          "lineCount": 4
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "vitest",
+          "specifiers": [
+            "describe",
+            "it",
+            "expect"
+          ]
+        },
+        {
+          "source": "../src/data/weaponConditionalBoosts",
+          "specifiers": [
+            "getWeaponConditionalBoost"
+          ]
+        },
+        {
+          "source": "../src/lib/utils",
+          "specifiers": [
+            "roundMultiplier"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 186,
+      "hasStructuralAnalysis": true
     },
     "ts-errors.txt": {
       "filePath": "ts-errors.txt",

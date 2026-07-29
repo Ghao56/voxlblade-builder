@@ -1,0 +1,595 @@
+{
+  "batchIndex": 1,
+  "batchTotal": 7,
+  "fileCount": 21,
+  "nodes": [
+    {
+      "id": "config:.fallowrc.json",
+      "type": "config",
+      "name": ".fallowrc.json",
+      "filePath": ".fallowrc.json",
+      "summary": "Fallow linter configuration with dead-code and duplicate analysis rules, entry points, and export ignore rules for Svelte components",
+      "tags": ["config", "linting", "fallow"],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "document:AGENTS.md",
+      "type": "document",
+      "name": "AGENTS.md",
+      "filePath": "AGENTS.md",
+      "summary": "Agent context file describing the voxlblade-builder project overview, tech stack (Svelte 5, Vite, TypeScript, Tailwind CSS v4, Vitest), project structure, and AI agent interaction guidelines",
+      "tags": ["documentation", "agent-context", "onboarding"],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "Project README with Svelte + TypeScript + Vite template explanation, HMR considerations, and code example using svelte/store",
+      "tags": ["documentation", "readme"],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:analyze-mounticon.mjs",
+      "type": "file",
+      "name": "analyze-mounticon.mjs",
+      "filePath": "analyze-mounticon.mjs",
+      "summary": "Standalone script that reads MountIcon.svelte and extracts SVG path data attribute length for analysis",
+      "tags": ["script", "svg", "analysis"],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "config:build-decode.txt",
+      "type": "config",
+      "name": "build-decode.txt",
+      "filePath": "build-decode.txt",
+      "summary": "Debug output file containing a decoded build string with race, guild, equipment, and enchantment data from the game build decoder",
+      "tags": ["debug", "build-data", "decode"],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "config:build-decode2.json",
+      "type": "config",
+      "name": "build-decode2.json",
+      "filePath": "build-decode2.json",
+      "summary": "Corrupted JSON file containing encoded build data for race, guild, equipment, and enchantments with truncated string content",
+      "tags": ["debug", "build-data", "decode", "corrupted"],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:decode_full.mjs",
+      "type": "file",
+      "name": "decode_full.mjs",
+      "filePath": "decode_full.mjs",
+      "summary": "Standalone build decoder that simulates the full damage calculation pipeline: loads game data JSON files, applies enchantments, upgrades, shrines, infusions, and perk effectiveness to compute accumulated stats and final perks for a hardcoded character build",
+      "tags": ["script", "decoder", "damage-calculation", "debug"],
+      "complexity": "complex",
+      "languageNotes": ""
+    },
+    {
+      "id": "constant:decode_full.mjs:STAT_KEYS",
+      "type": "function",
+      "name": "STAT_KEYS",
+      "filePath": "decode_full.mjs",
+      "summary": "Array of 27 stat key strings used throughout the decoder for stat iteration",
+      "tags": ["constant", "stat-keys"],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "constant:decode_full.mjs:PERCENT_STATS",
+      "type": "function",
+      "name": "PERCENT_STATS",
+      "filePath": "decode_full.mjs",
+      "summary": "Set of stat keys that represent percentage-based stats for rounding",
+      "tags": ["constant", "percent-stats"],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "function:decode_full.mjs:getPerk",
+      "type": "function",
+      "name": "getPerk",
+      "filePath": "decode_full.mjs",
+      "summary": "Looks up a perk definition by name from the perks data map",
+      "tags": ["function", "perk-lookup"],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "function:decode_full.mjs:getArmorPart",
+      "type": "function",
+      "name": "getArmorPart",
+      "filePath": "decode_full.mjs",
+      "summary": "Retrieves a specific armor part by armor set name and part type",
+      "tags": ["function", "armor-lookup"],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "function:decode_full.mjs:applyUpgrade",
+      "type": "function",
+      "name": "applyUpgrade",
+      "filePath": "decode_full.mjs",
+      "summary": "Applies upgrade level multiplier (1 + level * 0.1) to positive stats and divisor to negative stats",
+      "tags": ["function", "upgrade", "stat-calculation"],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "function:decode_full.mjs:applyEnchantmentsToSlot",
+      "type": "function",
+      "name": "applyEnchantmentsToSlot",
+      "filePath": "decode_full.mjs",
+      "summary": "Applies enchantment modifiers to base stats and perks for a single equipment slot, handling stat selectors, multipliers, additive modifiers, and perk effects",
+      "tags": ["function", "enchantment", "stat-calculation"],
+      "complexity": "complex",
+      "languageNotes": ""
+    },
+    {
+      "id": "constant:decode_full.mjs:SHRINE_MULTIPLIERS",
+      "type": "function",
+      "name": "SHRINE_MULTIPLIERS",
+      "filePath": "decode_full.mjs",
+      "summary": "Map of shrine tier to stat multiplier values",
+      "tags": ["constant", "shrine", "multiplier"],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "function:decode_full.mjs:applyShrine",
+      "type": "function",
+      "name": "applyShrine",
+      "filePath": "decode_full.mjs",
+      "summary": "Applies shrine tier multiplier to all stats",
+      "tags": ["function", "shrine", "stat-calculation"],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "function:decode_full.mjs:applyInfusion",
+      "type": "function",
+      "name": "applyInfusion",
+      "filePath": "decode_full.mjs",
+      "summary": "Applies infusion modifier (0.5x multiplier) to all base stats",
+      "tags": ["function", "infusion", "stat-calculation"],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "function:decode_full.mjs:finalizePerks",
+      "type": "function",
+      "name": "finalizePerks",
+      "filePath": "decode_full.mjs",
+      "summary": "Finalizes perk values by applying Perk Effectiveness and Cursed multipliers, handling Buckler-to-Parry conversion, and propagating potency tags",
+      "tags": ["function", "perk", "finalization"],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "document:docs/ONBOARDING.md",
+      "type": "document",
+      "name": "ONBOARDING.md",
+      "filePath": "docs/ONBOARDING.md",
+      "summary": "Comprehensive onboarding guide with architecture layers, file map, guided tour steps, and complexity hotspots for the voxlblade project",
+      "tags": ["documentation", "onboarding", "architecture"],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "config:fallow-output.json",
+      "type": "config",
+      "name": "fallow-output.json",
+      "filePath": "fallow-output.json",
+      "summary": "Fallow dead-code analysis report identifying 28 issues: 1 unused file, 23 unused exports, 2 unused types, and 2 duplicate exports across the project",
+      "tags": ["config", "linting", "fallow", "analysis"],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "config:fallow-security.json",
+      "type": "config",
+      "name": "fallow-security.json",
+      "filePath": "fallow-security.json",
+      "summary": "Fallow security analysis report with tainted-sink findings: dangerous innerHTML assignments in DidYouMean.svelte, SuggestDrop.svelte, and App.svelte, and a dynamic regex in App.svelte",
+      "tags": ["config", "security", "fallow", "analysis"],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:index.html",
+      "type": "file",
+      "name": "index.html",
+      "filePath": "index.html",
+      "summary": "HTML entry point for the VoxlBlade Builder SPA with app div mount point and module script reference to src/main.ts",
+      "tags": ["html", "entry-point"],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "config:package.json",
+      "type": "config",
+      "name": "package.json",
+      "filePath": "package.json",
+      "summary": "Project manifest for voxlblade with dev/build scripts, Svelte 5, Vite 8, TypeScript 6, and key devDependencies including fallow and @vercel/analytics",
+      "tags": ["config", "package", "dependencies"],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "config:pnpm-lock.yaml",
+      "type": "config",
+      "name": "pnpm-lock.yaml",
+      "filePath": "pnpm-lock.yaml",
+      "summary": "pnpm lockfile with resolved dependency tree for all project packages",
+      "tags": ["config", "lockfile", "dependencies"],
+      "complexity": "complex",
+      "languageNotes": ""
+    },
+    {
+      "id": "config:stats-data.json",
+      "type": "config",
+      "name": "stats-data.json",
+      "filePath": "stats-data.json",
+      "summary": "Rollup visualizer bundle analysis data showing module tree and size distribution for the built application",
+      "tags": ["config", "bundle-analysis", "build-artifact"],
+      "complexity": "complex",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:stats.html",
+      "type": "file",
+      "name": "stats.html",
+      "filePath": "stats.html",
+      "summary": "Rollup visualizer HTML report showing interactive treemap of bundle size distribution (generated build artifact)",
+      "tags": ["html", "bundle-analysis", "build-artifact"],
+      "complexity": "complex",
+      "languageNotes": ""
+    },
+    {
+      "id": "config:ts-errors.txt",
+      "type": "config",
+      "name": "ts-errors.txt",
+      "filePath": "ts-errors.txt",
+      "summary": "Empty placeholder file for TypeScript compilation errors",
+      "tags": ["config", "placeholder"],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "config:tsconfig.app.json",
+      "type": "config",
+      "name": "tsconfig.app.json",
+      "filePath": "tsconfig.app.json",
+      "summary": "TypeScript configuration for the application source extending @tsconfig/svelte with ES2023 target, ESNext modules, Svelte/Vite types, and strict checking",
+      "tags": ["config", "typescript", "compiler"],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "config:tsconfig.json",
+      "type": "config",
+      "name": "tsconfig.json",
+      "filePath": "tsconfig.json",
+      "summary": "Root TypeScript configuration that extends tsconfig.app.json",
+      "tags": ["config", "typescript", "compiler"],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "config:tsconfig.node.json",
+      "type": "config",
+      "name": "tsconfig.node.json",
+      "filePath": "tsconfig.node.json",
+      "summary": "TypeScript configuration for Node scripts (vite.config.ts) with ES2023 target, bundler module resolution, and strict linting rules",
+      "tags": ["config", "typescript", "compiler", "node"],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "config:vercel.json",
+      "type": "config",
+      "name": "vercel.json",
+      "filePath": "vercel.json",
+      "summary": "Vercel deployment configuration with Vite framework, output to dist/, and cache-control headers for assets, sw.js, and index.html",
+      "tags": ["config", "deployment", "vercel"],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:vite.config.ts",
+      "type": "file",
+      "name": "vite.config.ts",
+      "filePath": "vite.config.ts",
+      "summary": "Vite build configuration with Svelte plugin, PWA support (auto-update service worker with runtime caching), and rollup bundle visualizer",
+      "tags": ["config", "vite", "build", "pwa"],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "function:vite.config.ts:defineConfig",
+      "type": "function",
+      "name": "defineConfig",
+      "filePath": "vite.config.ts",
+      "summary": "Exported Vite configuration defining base path, Svelte plugin, PWA manifest with workbox caching, and bundle visualizer output",
+      "tags": ["function", "vite-config", "export"],
+      "complexity": "moderate",
+      "languageNotes": ""
+    }
+  ],
+  "edges": [
+    {
+      "source": "config:tsconfig.json",
+      "target": "config:tsconfig.app.json",
+      "type": "configures",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "config:tsconfig.app.json",
+      "target": "file:index.html",
+      "type": "configures",
+      "weight": 0.6,
+      "metadata": {}
+    },
+    {
+      "source": "config:tsconfig.node.json",
+      "target": "file:vite.config.ts",
+      "type": "configures",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "config:vercel.json",
+      "target": "file:index.html",
+      "type": "configures",
+      "weight": 0.6,
+      "metadata": {}
+    },
+    {
+      "source": "config:package.json",
+      "target": "file:vite.config.ts",
+      "type": "configures",
+      "weight": 0.5,
+      "metadata": {}
+    },
+    {
+      "source": "file:vite.config.ts",
+      "target": "file:index.html",
+      "type": "depends_on",
+      "weight": 0.7,
+      "metadata": {}
+    },
+    {
+      "source": "file:vite.config.ts",
+      "target": "config:stats-data.json",
+      "type": "depends_on",
+      "weight": 0.3,
+      "metadata": {}
+    },
+    {
+      "source": "file:vite.config.ts",
+      "target": "file:stats.html",
+      "type": "depends_on",
+      "weight": 0.3,
+      "metadata": {}
+    },
+    {
+      "source": "file:decode_full.mjs",
+      "target": "config:build-decode.txt",
+      "type": "documents",
+      "weight": 0.4,
+      "metadata": {}
+    },
+    {
+      "source": "file:decode_full.mjs",
+      "target": "config:build-decode2.json",
+      "type": "documents",
+      "weight": 0.4,
+      "metadata": {}
+    },
+    {
+      "source": "config:.fallowrc.json",
+      "target": "config:fallow-output.json",
+      "type": "depends_on",
+      "weight": 0.5,
+      "metadata": {}
+    },
+    {
+      "source": "config:.fallowrc.json",
+      "target": "config:fallow-security.json",
+      "type": "depends_on",
+      "weight": 0.5,
+      "metadata": {}
+    },
+    {
+      "source": "document:docs/ONBOARDING.md",
+      "target": "document:README.md",
+      "type": "documents",
+      "weight": 0.5,
+      "metadata": {}
+    },
+    {
+      "source": "document:docs/ONBOARDING.md",
+      "target": "config:package.json",
+      "type": "documents",
+      "weight": 0.4,
+      "metadata": {}
+    },
+    {
+      "source": "document:docs/ONBOARDING.md",
+      "target": "file:vite.config.ts",
+      "type": "documents",
+      "weight": 0.4,
+      "metadata": {}
+    },
+    {
+      "source": "document:docs/ONBOARDING.md",
+      "target": "config:tsconfig.json",
+      "type": "documents",
+      "weight": 0.4,
+      "metadata": {}
+    },
+    {
+      "source": "document:docs/ONBOARDING.md",
+      "target": "config:tsconfig.app.json",
+      "type": "documents",
+      "weight": 0.4,
+      "metadata": {}
+    },
+    {
+      "source": "document:docs/ONBOARDING.md",
+      "target": "config:tsconfig.node.json",
+      "type": "documents",
+      "weight": 0.4,
+      "metadata": {}
+    },
+    {
+      "source": "document:docs/ONBOARDING.md",
+      "target": "config:vercel.json",
+      "type": "documents",
+      "weight": 0.4,
+      "metadata": {}
+    },
+    {
+      "source": "document:docs/ONBOARDING.md",
+      "target": "file:index.html",
+      "type": "documents",
+      "weight": 0.4,
+      "metadata": {}
+    },
+    {
+      "source": "document:docs/ONBOARDING.md",
+      "target": "document:AGENTS.md",
+      "type": "documents",
+      "weight": 0.3,
+      "metadata": {}
+    },
+    {
+      "source": "document:AGENTS.md",
+      "target": "document:README.md",
+      "type": "documents",
+      "weight": 0.4,
+      "metadata": {}
+    },
+    {
+      "source": "document:AGENTS.md",
+      "target": "config:package.json",
+      "type": "documents",
+      "weight": 0.4,
+      "metadata": {}
+    },
+    {
+      "source": "document:AGENTS.md",
+      "target": "file:vite.config.ts",
+      "type": "documents",
+      "weight": 0.4,
+      "metadata": {}
+    },
+    {
+      "source": "file:index.html",
+      "target": "file:analyze-mounticon.mjs",
+      "type": "depends_on",
+      "weight": 0.1,
+      "metadata": {}
+    },
+    {
+      "source": "config:package.json",
+      "target": "file:analyze-mounticon.mjs",
+      "type": "depends_on",
+      "weight": 0.1,
+      "metadata": {}
+    },
+    {
+      "source": "config:package.json",
+      "target": "file:decode_full.mjs",
+      "type": "depends_on",
+      "weight": 0.1,
+      "metadata": {}
+    },
+    {
+      "source": "file:decode_full.mjs",
+      "target": "constant:decode_full.mjs:STAT_KEYS",
+      "type": "contains",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "file:decode_full.mjs",
+      "target": "constant:decode_full.mjs:PERCENT_STATS",
+      "type": "contains",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "file:decode_full.mjs",
+      "target": "function:decode_full.mjs:getPerk",
+      "type": "contains",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "file:decode_full.mjs",
+      "target": "function:decode_full.mjs:getArmorPart",
+      "type": "contains",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "file:decode_full.mjs",
+      "target": "function:decode_full.mjs:applyUpgrade",
+      "type": "contains",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "file:decode_full.mjs",
+      "target": "function:decode_full.mjs:applyEnchantmentsToSlot",
+      "type": "contains",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "file:decode_full.mjs",
+      "target": "constant:decode_full.mjs:SHRINE_MULTIPLIERS",
+      "type": "contains",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "file:decode_full.mjs",
+      "target": "function:decode_full.mjs:applyShrine",
+      "type": "contains",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "file:decode_full.mjs",
+      "target": "function:decode_full.mjs:applyInfusion",
+      "type": "contains",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "file:decode_full.mjs",
+      "target": "function:decode_full.mjs:finalizePerks",
+      "type": "contains",
+      "weight": 1.0,
+      "metadata": {}
+    },
+    {
+      "source": "file:vite.config.ts",
+      "target": "function:vite.config.ts:defineConfig",
+      "type": "contains",
+      "weight": 1.0,
+      "metadata": {}
+    }
+  ]
+}
