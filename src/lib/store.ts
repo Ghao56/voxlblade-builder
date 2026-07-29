@@ -117,6 +117,8 @@ export function swapEnchantments(slotA: EnchantSlot, slotB: EnchantSlot) {
   })
 }
 
+export const orkBuffTenacity = writable(0)
+
 export function clearBuild() {
   build.set({ ...DEFAULT_BUILD })
 }

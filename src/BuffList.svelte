@@ -3,7 +3,8 @@
   import { build, result } from './lib/store'
   import { calcWardingDebuffMultiplier, roundMultiplier } from './lib/utils'
   import { calcDotDisplayPotency } from './data/DoTDamage'
-  import { calcWeapon } from './lib/engine/weapon'
+  import { calcWeapon, calcMonkWeapon } from './lib/engine/weapon'
+import { isMonkGuild } from './lib/engine/data/character'
   import Badge from './lib/ui/Badge.svelte'
   import {
     BUFF_DEFS,
@@ -25,7 +26,9 @@
   import { POTION_MAP } from './data/potions'
   import { UI_COLORS, SOURCE_LABELS } from './lib/uiConstants'
 import { getAutoDebuffs } from './data/perkAutoDebuffs'
+import { RUNE_DMG_DEFS } from './data/Runebasedmg'
 import { WA_PROC_COEFFS, DEFAULT_PROC_COEFF } from './data/procCoefficients'
+import { canProc } from './lib/types'
 import { resolveWaDamageTypeKeys } from './lib/damageTypeResolve'
 
 
@@ -117,21 +120,77 @@ import { resolveWaDamageTypeKeys } from './lib/damageTypeResolve'
       selectedWAProcCoefficient: WA_PROC_COEFFS[$build.selectedWeaponArt] ?? DEFAULT_PROC_COEFF,
       enemyHpFillPct: $build.enemyHpFill ?? 100,
       hasMagicDmg: (() => {
-        const w = ($build.weaponBlade || $build.weaponHandle) ? calcWeapon($build.weaponBlade, $build.weaponHandle, $build.shrineActive) : null
+        const w = isMonkGuild($build.guild)
+          ? ($build.monkGlove && $build.monkEssence)
+            ? calcMonkWeapon($build.monkGlove, $build.monkEssence, $build.shrineActive)
+            : null
+          : ($build.weaponBlade || $build.weaponHandle)
+            ? calcWeapon($build.weaponBlade, $build.weaponHandle, $build.shrineActive)
+            : null
         if (!w) return false
         const wa = WEAPON_ARTS.find(a => a.name === $build.selectedWeaponArt)
         const waDmgTypes = resolveWaDamageTypeKeys(wa?.damageType, w.damageTypes)
         return Object.entries(waDmgTypes).some(([dt, mult]) => dt === 'magic' && mult > 0)
       })(),
       hasMagicOrPhysicalDmg: (() => {
-        const w = ($build.weaponBlade || $build.weaponHandle) ? calcWeapon($build.weaponBlade, $build.weaponHandle, $build.shrineActive) : null
+        const w = isMonkGuild($build.guild)
+          ? ($build.monkGlove && $build.monkEssence)
+            ? calcMonkWeapon($build.monkGlove, $build.monkEssence, $build.shrineActive)
+            : null
+          : ($build.weaponBlade || $build.weaponHandle)
+            ? calcWeapon($build.weaponBlade, $build.weaponHandle, $build.shrineActive)
+            : null
         if (!w) return false
         const wa = WEAPON_ARTS.find(a => a.name === $build.selectedWeaponArt)
         const waDmgTypes = resolveWaDamageTypeKeys(wa?.damageType, w.damageTypes)
         return Object.entries(waDmgTypes).some(([dt, mult]) => (dt === 'magic' || dt === 'physical') && mult > 0)
       })(),
+
     })
     modified.push(...applyBuffPerkModifiers(autoDebuffs, $result.perks, $build.rune || undefined, wardingDebuffMult))
+
+    const _ffAmt = $result.perks['Fragrant Flesh'] ?? 0
+    if (_ffAmt > 0) {
+      const _pc = WA_PROC_COEFFS[$build.selectedWeaponArt] ?? DEFAULT_PROC_COEFF
+      if (canProc(_pc)) {
+        const _w = isMonkGuild($build.guild)
+          ? ($build.monkGlove && $build.monkEssence)
+            ? calcMonkWeapon($build.monkGlove, $build.monkEssence, $build.shrineActive)
+            : null
+          : ($build.weaponBlade || $build.weaponHandle)
+            ? calcWeapon($build.weaponBlade, $build.weaponHandle, $build.shrineActive)
+            : null
+        let _hasWaterDmg = _w
+          ? Object.entries(resolveWaDamageTypeKeys(
+              (WEAPON_ARTS.find(a => a.name === $build.selectedWeaponArt))?.damageType,
+              _w.damageTypes
+            )).some(([dt, mult]) => dt === 'water' && mult > 0)
+          : false
+        if (!_hasWaterDmg && $build.rune && $build.rune !== 'None') {
+          const rd = RUNE_DMG_DEFS.find(d => d.runeName === $build.rune)
+          _hasWaterDmg = rd ? (rd.dmgTypes['water'] ?? 0) > 0 : false
+        }
+        if (_hasWaterDmg) {
+          modified.push({
+            buffName: 'Bleed',
+            potency: 0.5,
+            duration: 8,
+            condition: 'Fragrant Flesh · High chance on Water hit',
+            sourceName: 'Fragrant Flesh',
+            sourceType: 'perk',
+            isSelfDebuff: true,
+          })
+          modified.push({
+            buffName: 'Regen',
+            potency: 0.5 + 0.5 * _ffAmt,
+            duration: 8,
+            condition: 'Fragrant Flesh · If already Bleeding, gain Regen',
+            sourceName: 'Fragrant Flesh',
+            sourceType: 'perk',
+          })
+        }
+      }
+    }
 
     return applyCauterizeConversion(modified, $result.perks)
   })()

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fade } from 'svelte/transition'
-  import { build, result, clearBuild } from './lib/store'
+  import { build, result, clearBuild, orkBuffTenacity } from './lib/store'
   import DraconicAbilityStats from './DraconicAbilityStats.svelte'
   import {
     races, guilds, armors, rings, runes, blades, handles, gloves, essences,
@@ -48,8 +48,7 @@
   import BuffList from './BuffList.svelte'
   import { checkWA, getUnmetReqs } from './data/Weaponartcheck'
   import { getEffectiveDraconicInfusionPotency } from './data/draconicBuffs'
-  import { BUFF_DEFS, getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, convertTailwindToWhirlwind, assembleActiveBuffs, formatPerkDescription } from './data/BuffData'
-  import { calcOrkTenacityBonus } from './data/raceEffects'
+  import { getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, convertTailwindToWhirlwind, formatPerkDescription } from './data/BuffData'
   import { CDR_PERK_DATA } from './data/cdr'
   import { calcMaxSummonCount } from './data/SummonData'
   import { POTIONS } from './data/potions'
@@ -674,10 +673,7 @@ $: gladRageArmorPen = (() => {
   return highestBoost / 15
 })()
 
-$: _orkTenacityBonus = $build.race === 'ORK'
-  ? calcOrkTenacityBonus(assembleActiveBuffs($build, $result.perks), BUFF_DEFS)
-  : 0
-$: _effectiveTenacity = ($result.stats.tenacity ?? 0) + _orkTenacityBonus
+$: _effectiveTenacity = ($result.stats.tenacity ?? 0) + $orkBuffTenacity
 
 $: statRows = Object.entries($result.stats).filter(([k, v]) => {
     if (k === 'armorPenetration') {

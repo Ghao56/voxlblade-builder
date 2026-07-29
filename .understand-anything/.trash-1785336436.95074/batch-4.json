@@ -1,0 +1,1093 @@
+{
+  "nodes": [
+    {
+      "type": "source-file",
+      "id": "src/lib/types.ts",
+      "label": "types.ts",
+      "properties": {
+        "path": "src/lib/types.ts",
+        "language": "typescript",
+        "description": "Core type definitions for the voxlblade-builder damage calculator. Defines all shared interfaces, type aliases, constants, and utility functions used across the engine, data layer, and UI.",
+        "exportCount": 36
+      }
+    },
+    {
+      "type": "source-file",
+      "id": "src/lib/dmgTypes.ts",
+      "label": "dmgTypes.ts",
+      "properties": {
+        "path": "src/lib/dmgTypes.ts",
+        "language": "typescript",
+        "description": "Damage computation types. Defines interfaces for computed damage output (ComputedType, ComputedHit, PerkOnHitDmg) and the BADGE_CONFIG map for UI badge rendering.",
+        "exportCount": 4
+      }
+    },
+    {
+      "type": "const",
+      "id": "src/lib/types.ts:STAT_CONFIG",
+      "label": "STAT_CONFIG",
+      "properties": {
+        "kind": "const",
+        "valueType": "Record<string, 'percent' | 'flat'>",
+        "description": "Maps every stat key to its scaling type (percent or flat). Serves as the single source of truth for enumerating valid stats."
+      }
+    },
+    {
+      "type": "type-alias",
+      "id": "src/lib/types.ts:StatKey",
+      "label": "StatKey",
+      "properties": {
+        "kind": "type-alias",
+        "definition": "keyof typeof STAT_CONFIG",
+        "description": "Union of all valid stat key strings (e.g. 'physicalBoost', 'warding', 'tenacity')."
+      }
+    },
+    {
+      "type": "type-alias",
+      "id": "src/lib/types.ts:StatMap",
+      "label": "StatMap",
+      "properties": {
+        "kind": "type-alias",
+        "definition": "Partial<Record<StatKey, number>>",
+        "description": "Partial mapping from StatKey to numeric value, used everywhere for stat blocks."
+      }
+    },
+    {
+      "type": "const",
+      "id": "src/lib/types.ts:PERCENT_STATS",
+      "label": "PERCENT_STATS",
+      "properties": {
+        "kind": "const",
+        "valueType": "Set<string>",
+        "description": "Set of StatKey names whose values are percentages, derived from STAT_CONFIG."
+      }
+    },
+    {
+      "type": "const",
+      "id": "src/lib/types.ts:STAT_KEYS",
+      "label": "STAT_KEYS",
+      "properties": {
+        "kind": "const",
+        "valueType": "StatKey[]",
+        "description": "Ordered array of all StatKey values, derived from STAT_CONFIG."
+      }
+    },
+    {
+      "type": "interface",
+      "id": "src/lib/types.ts:Race",
+      "label": "Race",
+      "properties": {
+        "kind": "interface",
+        "description": "Player race with passive ability, stat modifiers, cooldown modifiers, and armor penetration."
+      }
+    },
+    {
+      "type": "interface",
+      "id": "src/lib/types.ts:Guild",
+      "label": "Guild",
+      "properties": {
+        "kind": "interface",
+        "description": "Player guild with name and ranked progression of stats/perks."
+      }
+    },
+    {
+      "type": "interface",
+      "id": "src/lib/types.ts:GuildRank",
+      "label": "GuildRank",
+      "properties": {
+        "kind": "interface",
+        "description": "A single rank within a guild, providing optional stats and perks."
+      }
+    },
+    {
+      "type": "interface",
+      "id": "src/lib/types.ts:GuildPerk",
+      "label": "GuildPerk",
+      "properties": {
+        "kind": "interface",
+        "description": "A named perk with an amount, granted by a guild rank."
+      }
+    },
+    {
+      "type": "interface",
+      "id": "src/lib/types.ts:ArmorPart",
+      "label": "ArmorPart",
+      "properties": {
+        "kind": "interface",
+        "description": "A single armor piece (Helmet/Chestplate/Leggings) with upgrade level, stats, and perk."
+      }
+    },
+    {
+      "type": "interface",
+      "id": "src/lib/types.ts:Armor",
+      "label": "Armor",
+      "properties": {
+        "kind": "interface",
+        "description": "A named armor set composed of up to three ArmorParts with optional tags."
+      }
+    },
+    {
+      "type": "interface",
+      "id": "src/lib/types.ts:Ring",
+      "label": "Ring",
+      "properties": {
+        "kind": "interface",
+        "description": "A ring equipment item with upgrade level, stats, and optional perk."
+      }
+    },
+    {
+      "type": "interface",
+      "id": "src/lib/types.ts:Rune",
+      "label": "Rune",
+      "properties": {
+        "kind": "interface",
+        "description": "A rune equipment item with upgrade level, stats, cooldown, and optional perk."
+      }
+    },
+    {
+      "type": "interface",
+      "id": "src/lib/types.ts:Enchantment",
+      "label": "Enchantment",
+      "properties": {
+        "kind": "interface",
+        "description": "An enchantment with stacking behavior ('multi' or 'exclusive'), stat modifications, and effects."
+      }
+    },
+    {
+      "type": "interface",
+      "id": "src/lib/types.ts:StatModifier",
+      "label": "StatModifier",
+      "properties": {
+        "kind": "interface",
+        "description": "A stat modification as either a multiplier or addition."
+      }
+    },
+    {
+      "type": "interface",
+      "id": "src/lib/types.ts:EnchantmentEffect",
+      "label": "EnchantmentEffect",
+      "properties": {
+        "kind": "interface",
+        "description": "A named enchantment effect with a numeric value."
+      }
+    },
+    {
+      "type": "interface",
+      "id": "src/lib/types.ts:Perk",
+      "label": "Perk",
+      "properties": {
+        "kind": "interface",
+        "description": "A named perk with description and tags for categorization."
+      }
+    },
+    {
+      "type": "type-alias",
+      "id": "src/lib/types.ts:EnchantSlot",
+      "label": "EnchantSlot",
+      "properties": {
+        "kind": "type-alias",
+        "definition": "'helmet' | 'chestplate' | 'leggings' | 'ring' | 'rune'",
+        "description": "Union of equipment slots that can hold enchantments."
+      }
+    },
+    {
+      "type": "const",
+      "id": "src/lib/types.ts:UPGRADE_MAX",
+      "label": "UPGRADE_MAX",
+      "properties": {
+        "kind": "const",
+        "valueType": "number",
+        "description": "Maximum upgrade level (5)."
+      }
+    },
+    {
+      "type": "function",
+      "id": "src/lib/types.ts:applyUpgrade",
+      "label": "applyUpgrade",
+      "properties": {
+        "kind": "function",
+        "signature": "(stats: StatMap, level: number) => StatMap",
+        "description": "Scales a StatMap by upgrade level using a 10% multiplier per level (1.1^level). Negative stats are divided rather than multiplied."
+      }
+    },
+    {
+      "type": "type-alias",
+      "id": "src/lib/types.ts:BladeType",
+      "label": "BladeType",
+      "properties": {
+        "kind": "type-alias",
+        "definition": "'Small Blade' | 'Medium Blade' | 'Heavy Blade' | 'Hammer Head'",
+        "description": "Union of weapon blade types."
+      }
+    },
+    {
+      "type": "type-alias",
+      "id": "src/lib/types.ts:HandleType",
+      "label": "HandleType",
+      "properties": {
+        "kind": "type-alias",
+        "definition": "'Medium Handle' | 'Long Handle' | 'Pole'",
+        "description": "Union of weapon handle types."
+      }
+    },
+    {
+      "type": "type-alias",
+      "id": "src/lib/types.ts:StatPrefix",
+      "label": "StatPrefix",
+      "properties": {
+        "kind": "type-alias",
+        "definition": "'physical' | 'magic' | 'fire' | 'water' | 'air' | 'hex' | 'holy' | 'earth' | 'summon' | 'dexterity'",
+        "description": "Union of stat damage type prefixes used to construct ScalingKey."
+      }
+    },
+    {
+      "type": "type-alias",
+      "id": "src/lib/types.ts:ScalingKey",
+      "label": "ScalingKey",
+      "properties": {
+        "kind": "type-alias",
+        "definition": "`${StatPrefix}Scaling`",
+        "description": "Template literal type for scaling keys like 'physicalScaling', 'fireScaling', etc."
+      }
+    },
+    {
+      "type": "type-alias",
+      "id": "src/lib/types.ts:WeaponBlade",
+      "label": "WeaponBlade",
+      "properties": {
+        "kind": "type-alias",
+        "description": "Weapon blade definition with tier, blade type, stats, attack speed, perks, and scaling values."
+      }
+    },
+    {
+      "type": "type-alias",
+      "id": "src/lib/types.ts:WeaponHandle",
+      "label": "WeaponHandle",
+      "properties": {
+        "kind": "type-alias",
+        "description": "Weapon handle definition with tier, handle type, stats, attack speed, perks, and scaling values."
+      }
+    },
+    {
+      "type": "interface",
+      "id": "src/lib/types.ts:MonkGlove",
+      "label": "MonkGlove",
+      "properties": {
+        "kind": "interface",
+        "description": "Monk weapon glove with tier, type, stats, attack speed, scaling values for each damage type, and optional perk."
+      }
+    },
+    {
+      "type": "interface",
+      "id": "src/lib/types.ts:MonkEssence",
+      "label": "MonkEssence",
+      "properties": {
+        "kind": "interface",
+        "description": "Monk weapon essence with tier, stats, attack speed, scaling values for each damage type, and optional perk."
+      }
+    },
+    {
+      "type": "interface",
+      "id": "src/lib/types.ts:BuildState",
+      "label": "BuildState",
+      "properties": {
+        "kind": "interface",
+        "description": "Complete player build configuration: race, guild, equipment, enchantments, weapon, shrine, potions, toggles, and various state flags. Central input to the damage calculation engine."
+      }
+    },
+    {
+      "type": "type-alias",
+      "id": "src/lib/types.ts:ProcCoefficient",
+      "label": "ProcCoefficient",
+      "properties": {
+        "kind": "discriminated-union",
+        "definition": "{ type: 'noProc' } | { type: 'hasCoeff'; value: number }",
+        "description": "Discriminated union representing whether an effect can proc and its coefficient."
+      }
+    },
+    {
+      "type": "function",
+      "id": "src/lib/types.ts:getProcCoeffValue",
+      "label": "getProcCoeffValue",
+      "properties": {
+        "kind": "function",
+        "signature": "(pc: ProcCoefficient | undefined) => number",
+        "description": "Extracts the numeric proc coefficient from a ProcCoefficient (returns 0 for noProc, 1 for undefined)."
+      }
+    },
+    {
+      "type": "function",
+      "id": "src/lib/types.ts:canProc",
+      "label": "canProc",
+      "properties": {
+        "kind": "function",
+        "signature": "(pc: ProcCoefficient | undefined) => boolean",
+        "description": "Returns true if the proc coefficient is > 0 (i.e., the effect can proc)."
+      }
+    },
+    {
+      "type": "type-alias",
+      "id": "src/lib/types.ts:BoostAttackType",
+      "label": "BoostAttackType",
+      "properties": {
+        "kind": "type-alias",
+        "definition": "'m1' | 'm2' | 'wa' | 'rune' | 'perk'",
+        "description": "Union of attack types that a boost entry can apply to."
+      }
+    },
+    {
+      "type": "type-alias",
+      "id": "src/lib/types.ts:ProcScalingType",
+      "label": "ProcScalingType",
+      "properties": {
+        "kind": "type-alias",
+        "definition": "'normal' | 'ignore' | 'positiveOnly'",
+        "description": "Controls how proc coefficient scaling is applied to a boost entry."
+      }
+    },
+    {
+      "type": "interface",
+      "id": "src/lib/types.ts:BoostEntry",
+      "label": "BoostEntry",
+      "properties": {
+        "kind": "interface",
+        "description": "A single boost entry with source name, multiplier, condition, type (dmg/heal), applicability, and proc scaling config."
+      }
+    },
+    {
+      "type": "interface",
+      "id": "src/lib/types.ts:BoostResult",
+      "label": "BoostResult",
+      "properties": {
+        "kind": "interface",
+        "description": "Result of boost calculations containing individual entries and final multiplier."
+      }
+    },
+    {
+      "type": "const",
+      "id": "src/lib/types.ts:SCALING_TO_BOOST",
+      "label": "SCALING_TO_BOOST",
+      "properties": {
+        "kind": "const",
+        "valueType": "Record<string, string>",
+        "description": "Maps scaling stat names to their corresponding boost stat names (e.g. 'physical' -> 'physicalBoost')."
+      }
+    },
+    {
+      "type": "interface",
+      "id": "src/lib/types.ts:WeaponHitObject",
+      "label": "WeaponHitObject",
+      "properties": {
+        "kind": "interface",
+        "description": "A weapon hit defined as an object with hit count (n) and total count."
+      }
+    },
+    {
+      "type": "type-alias",
+      "id": "src/lib/types.ts:WeaponHit",
+      "label": "WeaponHit",
+      "properties": {
+        "kind": "type-alias",
+        "definition": "number | WeaponHitObject",
+        "description": "A weapon hit can be either a plain number or a WeaponHitObject."
+      }
+    },
+    {
+      "type": "interface",
+      "id": "src/lib/types.ts:WeaponBaseDmg",
+      "label": "WeaponBaseDmg",
+      "properties": {
+        "kind": "interface",
+        "description": "Base damage definition for a weapon type with m1, m2 hits, optional finisher, and optional charge mechanic."
+      }
+    },
+    {
+      "type": "const",
+      "id": "src/lib/types.ts:DMG_TYPE_COLORS",
+      "label": "DMG_TYPE_COLORS",
+      "properties": {
+        "kind": "re-export",
+        "source": "./constants/damage-types",
+        "description": "Re-exported mapping of damage type names to hex color strings."
+      }
+    },
+    {
+      "type": "const",
+      "id": "src/lib/types.ts:DMG_TYPE_PRIORITY",
+      "label": "DMG_TYPE_PRIORITY",
+      "properties": {
+        "kind": "re-export",
+        "source": "./constants/damage-types",
+        "description": "Re-exported array defining display/sort priority for damage types."
+      }
+    },
+    {
+      "type": "const",
+      "id": "src/lib/dmgTypes.ts:BADGE_CONFIG",
+      "label": "BADGE_CONFIG",
+      "properties": {
+        "kind": "const",
+        "valueType": "Record<string, { color: string; label: string; title: string }>",
+        "description": "Maps badge/proc names to display configuration (color hex, short label, tooltip title). Covers 30 proc effects including Dragon State, Spore Burst, Chain, Explosive, etc."
+      }
+    },
+    {
+      "type": "interface",
+      "id": "src/lib/dmgTypes.ts:ComputedType",
+      "label": "ComputedType",
+      "properties": {
+        "kind": "interface",
+        "description": "A single computed damage type for a hit. Contains type identity, base/scaling/combat multipliers, applicable boosts, weapon boost, debuff/defense multipliers, raw and crit values, proc coefficient, and various flags for special behavior (heal, forceCrit, curseRip, phantomPain, etc.)."
+      }
+    },
+    {
+      "type": "interface",
+      "id": "src/lib/dmgTypes.ts:PerkOnHitDmg",
+      "label": "PerkOnHitDmg",
+      "properties": {
+        "kind": "interface",
+        "description": "On-hit damage contribution from a perk. Contains base damage, scaling/combat multipliers, total damage, per-type damage breakdown, proc coefficient, and conditions (finisherOnly, alwaysOnHit, oncePerFinisher, etc.)."
+      }
+    },
+    {
+      "type": "interface",
+      "id": "src/lib/dmgTypes.ts:ComputedHit",
+      "label": "ComputedHit",
+      "properties": {
+        "kind": "interface",
+        "description": "A single computed hit within a weapon combo. Contains its group, index, count, finisher flag, heal flag, array of ComputedType entries, optional proc coefficient/count, and finisher group hit count."
+      }
+    }
+  ],
+  "edges": [
+    {
+      "type": "import",
+      "sourceId": "src/lib/dmgTypes.ts",
+      "targetId": "src/lib/types.ts",
+      "properties": {
+        "importedSymbols": ["ProcCoefficient"],
+        "isTypeImport": true
+      }
+    },
+    {
+      "type": "re-exports",
+      "sourceId": "src/lib/types.ts",
+      "targetId": "src/lib/constants/damage-types",
+      "properties": {
+        "symbols": ["DMG_TYPE_COLORS", "DMG_TYPE_PRIORITY"]
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/dmgTypes.ts:ComputedType",
+      "targetId": "src/lib/types.ts:ProcCoefficient",
+      "properties": {
+        "usage": "property-type",
+        "property": "procCoefficient?: ProcCoefficient"
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/dmgTypes.ts:PerkOnHitDmg",
+      "targetId": "src/lib/types.ts:ProcCoefficient",
+      "properties": {
+        "usage": "property-type",
+        "property": "procCoefficient?: ProcCoefficient"
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:PERCENT_STATS",
+      "targetId": "src/lib/types.ts:STAT_CONFIG",
+      "properties": {
+        "usage": "derived-from",
+        "description": "PERCENT_STATS is derived by filtering STAT_CONFIG entries where value is 'percent'."
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:STAT_KEYS",
+      "targetId": "src/lib/types.ts:STAT_CONFIG",
+      "properties": {
+        "usage": "derived-from",
+        "description": "STAT_KEYS is derived from Object.keys(STAT_CONFIG)."
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:StatKey",
+      "targetId": "src/lib/types.ts:STAT_CONFIG",
+      "properties": {
+        "usage": "derived-from",
+        "description": "StatKey is defined as keyof typeof STAT_CONFIG."
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:StatMap",
+      "targetId": "src/lib/types.ts:StatKey",
+      "properties": {
+        "usage": "type-reference",
+        "description": "StatMap is Partial<Record<StatKey, number>>."
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:applyUpgrade",
+      "targetId": "src/lib/types.ts:StatMap",
+      "properties": {
+        "usage": "parameter-and-return-type",
+        "description": "applyUpgrade takes and returns StatMap."
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:applyUpgrade",
+      "targetId": "src/lib/types.ts:STAT_KEYS",
+      "properties": {
+        "usage": "implementation-reference",
+        "description": "applyUpgrade iterates STAT_KEYS to apply upgrade multiplier."
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:ArmorPart",
+      "targetId": "src/lib/types.ts:StatMap",
+      "properties": {
+        "usage": "property-type",
+        "description": "ArmorPart.stats is typed as ArmorStats (which is Record<string, number>) rather than StatMap."
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:Ring",
+      "targetId": "src/lib/types.ts:StatMap",
+      "properties": {
+        "usage": "property-type",
+        "property": "stats: StatMap"
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:Rune",
+      "targetId": "src/lib/types.ts:StatMap",
+      "properties": {
+        "usage": "property-type",
+        "property": "stats: StatMap"
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:Race",
+      "targetId": "src/lib/types.ts:StatMap",
+      "properties": {
+        "usage": "property-type",
+        "property": "statModifiers?: StatMap"
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:GuildRank",
+      "targetId": "src/lib/types.ts:StatMap",
+      "properties": {
+        "usage": "property-type",
+        "property": "stats?: StatMap"
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:GuildRank",
+      "targetId": "src/lib/types.ts:GuildPerk",
+      "properties": {
+        "usage": "property-type",
+        "property": "perks?: GuildPerk[]"
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:Guild",
+      "targetId": "src/lib/types.ts:GuildRank",
+      "properties": {
+        "usage": "property-type",
+        "property": "ranks: GuildRank[]"
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:Armor",
+      "targetId": "src/lib/types.ts:ArmorPart",
+      "properties": {
+        "usage": "property-type",
+        "property": "parts: ArmorPart[]"
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:Enchantment",
+      "targetId": "src/lib/types.ts:StatModifier",
+      "properties": {
+        "usage": "property-type",
+        "property": "stats: Record<string, StatModifier | StatModifier[]>"
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:Enchantment",
+      "targetId": "src/lib/types.ts:EnchantmentEffect",
+      "properties": {
+        "usage": "property-type",
+        "property": "effects: EnchantmentEffect[]"
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:BuildState",
+      "targetId": "src/lib/types.ts:EnchantSlot",
+      "properties": {
+        "usage": "property-type",
+        "property": "enchantments: Record<EnchantSlot, [string, string, string]>"
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:BoostResult",
+      "targetId": "src/lib/types.ts:BoostEntry",
+      "properties": {
+        "usage": "property-type",
+        "property": "dmgEntries: BoostEntry[]"
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:getProcCoeffValue",
+      "targetId": "src/lib/types.ts:ProcCoefficient",
+      "properties": {
+        "usage": "parameter-type",
+        "description": "getProcCoeffValue takes ProcCoefficient | undefined."
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:canProc",
+      "targetId": "src/lib/types.ts:ProcCoefficient",
+      "properties": {
+        "usage": "parameter-type",
+        "description": "canProc takes ProcCoefficient | undefined."
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:WeaponBlade",
+      "targetId": "src/lib/types.ts:BladeType",
+      "properties": {
+        "usage": "property-type",
+        "property": "bladeType: BladeType"
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:WeaponBlade",
+      "targetId": "src/lib/types.ts:StatMap",
+      "properties": {
+        "usage": "property-type",
+        "property": "stats: StatMap"
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:WeaponBlade",
+      "targetId": "src/lib/types.ts:ScalingKey",
+      "properties": {
+        "usage": "intersection-type",
+        "description": "WeaponBlade intersects with Partial<Record<ScalingKey, number>>."
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:WeaponHandle",
+      "targetId": "src/lib/types.ts:HandleType",
+      "properties": {
+        "usage": "property-type",
+        "property": "handleType: HandleType"
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:WeaponHandle",
+      "targetId": "src/lib/types.ts:StatMap",
+      "properties": {
+        "usage": "property-type",
+        "property": "stats: StatMap"
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:WeaponHandle",
+      "targetId": "src/lib/types.ts:ScalingKey",
+      "properties": {
+        "usage": "intersection-type",
+        "description": "WeaponHandle intersects with Partial<Record<ScalingKey, number>>."
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:MonkGlove",
+      "targetId": "src/lib/types.ts:GloveType",
+      "properties": {
+        "usage": "property-type",
+        "property": "gloveType: GloveType"
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:MonkGlove",
+      "targetId": "src/lib/types.ts:StatMap",
+      "properties": {
+        "usage": "property-type",
+        "property": "stats: StatMap"
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:MonkEssence",
+      "targetId": "src/lib/types.ts:EssenceType",
+      "properties": {
+        "usage": "property-type",
+        "property": "essenceType: EssenceType"
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:MonkEssence",
+      "targetId": "src/lib/types.ts:StatMap",
+      "properties": {
+        "usage": "property-type",
+        "property": "stats: StatMap"
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:ScalingKey",
+      "targetId": "src/lib/types.ts:StatPrefix",
+      "properties": {
+        "usage": "template-literal-reference",
+        "description": "ScalingKey is defined as `${StatPrefix}Scaling`."
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:SCALING_TO_BOOST",
+      "targetId": "src/lib/types.ts:StatPrefix",
+      "properties": {
+        "usage": "implementation-reference",
+        "description": "SCALING_TO_BOOST maps scaling/stat prefix names to boost stat names."
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:WeaponHit",
+      "targetId": "src/lib/types.ts:WeaponHitObject",
+      "properties": {
+        "usage": "union-member",
+        "description": "WeaponHit is number | WeaponHitObject."
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:WeaponBaseDmg",
+      "targetId": "src/lib/types.ts:WeaponHit",
+      "properties": {
+        "usage": "property-type",
+        "description": "WeaponBaseDmg.m1 and .m2 are WeaponHit[] | null."
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:BoostEntry",
+      "targetId": "src/lib/types.ts:BoostAttackType",
+      "properties": {
+        "usage": "property-type",
+        "property": "appliesTo?: BoostAttackType[]"
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:BoostEntry",
+      "targetId": "src/lib/types.ts:ProcScalingType",
+      "properties": {
+        "usage": "property-type",
+        "property": "procScaling?: ProcScalingType"
+      }
+    },
+    {
+      "type": "grouped-with",
+      "sourceId": "src/lib/types.ts:PERCENT_STATS",
+      "targetId": "src/lib/types.ts:STAT_KEYS",
+      "properties": {
+        "functionalCategory": "stat-enumeration",
+        "description": "Both are derived from STAT_CONFIG for stat enumeration."
+      }
+    },
+    {
+      "type": "grouped-with",
+      "sourceId": "src/lib/types.ts:BladeType",
+      "targetId": "src/lib/types.ts:HandleType",
+      "properties": {
+        "functionalCategory": "weapon-shape-types",
+        "description": "Both define weapon shape categories for the blade/handle system."
+      }
+    },
+    {
+      "type": "grouped-with",
+      "sourceId": "src/lib/types.ts:MonkGlove",
+      "targetId": "src/lib/types.ts:MonkEssence",
+      "properties": {
+        "functionalCategory": "monk-weapon-types",
+        "description": "Both define monk weapon equipment types (gloves and essences)."
+      }
+    },
+    {
+      "type": "grouped-with",
+      "sourceId": "src/lib/types.ts:StatPrefix",
+      "targetId": "src/lib/types.ts:ScalingKey",
+      "properties": {
+        "functionalCategory": "scaling-naming",
+        "description": "StatPrefix is the base for ScalingKey template literal types."
+      }
+    },
+    {
+      "type": "grouped-with",
+      "sourceId": "src/lib/types.ts:getProcCoeffValue",
+      "targetId": "src/lib/types.ts:canProc",
+      "properties": {
+        "functionalCategory": "proc-utilities",
+        "description": "Both are utility functions operating on ProcCoefficient."
+      }
+    },
+    {
+      "type": "grouped-with",
+      "sourceId": "src/lib/types.ts:BoostEntry",
+      "targetId": "src/lib/types.ts:BoostResult",
+      "properties": {
+        "functionalCategory": "boost-system",
+        "description": "BoostEntry and BoostResult define the input and output of boost calculations."
+      }
+    },
+    {
+      "type": "grouped-with",
+      "sourceId": "src/lib/dmgTypes.ts:ComputedType",
+      "targetId": "src/lib/dmgTypes.ts:PerkOnHitDmg",
+      "properties": {
+        "functionalCategory": "damage-computation",
+        "description": "Both represent intermediate/calculated damage values in the computation pipeline."
+      }
+    },
+    {
+      "type": "grouped-with",
+      "sourceId": "src/lib/dmgTypes.ts:ComputedHit",
+      "targetId": "src/lib/dmgTypes.ts:ComputedType",
+      "properties": {
+        "functionalCategory": "hit-composition",
+        "description": "ComputedHit is composed of multiple ComputedType entries."
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/dmgTypes.ts:ComputedHit",
+      "targetId": "src/lib/dmgTypes.ts:ComputedType",
+      "properties": {
+        "usage": "property-type",
+        "property": "types: ComputedType[]"
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/dmgTypes.ts:ComputedHit",
+      "targetId": "src/lib/types.ts:ProcCoefficient",
+      "properties": {
+        "usage": "property-type",
+        "property": "procCoefficient?: ProcCoefficient"
+      }
+    },
+    {
+      "type": "references",
+      "sourceId": "src/lib/types.ts:WeaponBlade",
+      "targetId": "src/lib/types.ts:StatPrefix",
+      "properties": {
+        "usage": "implementation-reference",
+        "description": "WeaponBlade uses StatPrefix-derived scaling keys via ScalingKey."
+      }
+    },
+    {
+      "type": "cross-batch-import",
+      "sourceId": "src/lib/engine/enchant.ts",
+      "targetId": "src/lib/types.ts",
+      "properties": {
+        "batchIndex": 1,
+        "symbols": ["applyEnchantmentsToSlot", "applyPerkEffectiveness", "applyInfusion", "isExclusiveEnchant", "enforceEnchantSlot"]
+      }
+    },
+    {
+      "type": "cross-batch-import",
+      "sourceId": "src/lib/engine/format.ts",
+      "targetId": "src/lib/types.ts",
+      "properties": {
+        "batchIndex": 1,
+        "symbols": ["formatStat", "formatLabel"]
+      }
+    },
+    {
+      "type": "cross-batch-import",
+      "sourceId": "src/lib/engine/shrine.ts",
+      "targetId": "src/lib/types.ts",
+      "properties": {
+        "batchIndex": 1,
+        "symbols": ["SHRINE_MULTIPLIERS", "applyShrineToScalings", "applyShrineToStats"]
+      }
+    },
+    {
+      "type": "cross-batch-import",
+      "sourceId": "src/lib/engine/weapon.ts",
+      "targetId": "src/lib/types.ts",
+      "properties": {
+        "batchIndex": 1,
+        "symbols": ["MONK_RANK_MULTIPLIER", "calcWeapon", "calcMonkWeapon"]
+      }
+    },
+    {
+      "type": "cross-batch-import",
+      "sourceId": "src/lib/engine/build.ts",
+      "targetId": "src/lib/types.ts",
+      "properties": {
+        "batchIndex": 1,
+        "symbols": ["calcBuild"]
+      }
+    },
+    {
+      "type": "cross-batch-import",
+      "sourceId": "src/lib/crit.ts",
+      "targetId": "src/lib/types.ts",
+      "properties": {
+        "batchIndex": 2,
+        "symbols": ["calcCrit"]
+      }
+    },
+    {
+      "type": "cross-batch-import",
+      "sourceId": "src/lib/utils.ts",
+      "targetId": "src/lib/types.ts",
+      "properties": {
+        "batchIndex": 2,
+        "symbols": ["roundMultiplier", "calcWardingDebuffMultiplier", "highlightTextParts", "calcProcChance"]
+      }
+    },
+    {
+      "type": "cross-batch-import",
+      "sourceId": "src/data/Runebasedmg.ts",
+      "targetId": "src/lib/types.ts",
+      "properties": {
+        "batchIndex": 2,
+        "symbols": ["RUNE_DMG_DEFS"]
+      }
+    },
+    {
+      "type": "cross-batch-import",
+      "sourceId": "src/data/Boost.ts",
+      "targetId": "src/lib/types.ts",
+      "properties": {
+        "batchIndex": 3,
+        "symbols": ["calcMinionAbsorptionPotency", "calcFrenzyPct", "PENANCE_HP_THRESHOLD", "PENANCE_MAX_BOOST", "PENANCE_BLEED_POTENCY", "PENANCE_BLEED_DURATION", "BOOST_DEFS", "BOOST_DEF_MAP"]
+      }
+    },
+    {
+      "type": "cross-batch-import",
+      "sourceId": "src/data/perkAutoDebuffs.ts",
+      "targetId": "src/lib/types.ts",
+      "properties": {
+        "batchIndex": 3,
+        "symbols": ["calcActualHpFillPct", "getAutoDebuffs"]
+      }
+    },
+    {
+      "type": "cross-batch-import",
+      "sourceId": "src/data/mountRunes.ts",
+      "targetId": "src/lib/types.ts",
+      "properties": {
+        "batchIndex": 4,
+        "symbols": ["MOUNT_RUNE_DEFS"]
+      }
+    },
+    {
+      "type": "cross-batch-import",
+      "sourceId": "src/data/procCoefficients.ts",
+      "targetId": "src/lib/types.ts",
+      "properties": {
+        "batchIndex": 4,
+        "symbols": ["WEAPON_PROC_COEFFS", "WA_PROC_COEFFS", "DEFAULT_PROC_COEFF"]
+      }
+    },
+    {
+      "type": "cross-batch-import",
+      "sourceId": "src/data/statboost.ts",
+      "targetId": "src/lib/types.ts",
+      "properties": {
+        "batchIndex": 4,
+        "symbols": ["OFFENSIVE_BOOSTS", "applyStatBoostPerks"]
+      }
+    },
+    {
+      "type": "cross-batch-import",
+      "sourceId": "src/data/weapon base dmg.ts",
+      "targetId": "src/lib/types.ts",
+      "properties": {
+        "batchIndex": 4,
+        "symbols": ["WEAPON_BASE_DMG"]
+      }
+    },
+    {
+      "type": "cross-batch-import",
+      "sourceId": "src/lib/engine/data/character.ts",
+      "targetId": "src/lib/types.ts",
+      "properties": {
+        "batchIndex": 4,
+        "symbols": ["races", "guilds", "getRace", "getGuild", "getPerk", "getGuildRank", "isMonkGuild"]
+      }
+    },
+    {
+      "type": "cross-batch-import",
+      "sourceId": "src/lib/engine/data/equipment.ts",
+      "targetId": "src/lib/types.ts",
+      "properties": {
+        "batchIndex": 4,
+        "symbols": ["rings", "runes", "enchantments", "enchantmentsRaw", "armors", "getEnchant", "getRing", "getRune", "getArmorPart", "getArmorSlotTypes", "armorSupportsSlot"]
+      }
+    },
+    {
+      "type": "cross-batch-import",
+      "sourceId": "src/lib/engine/data/weapons.ts",
+      "targetId": "src/lib/types.ts",
+      "properties": {
+        "batchIndex": 4,
+        "symbols": ["blades", "handles", "gloves", "essences", "getBlade", "getHandle", "getGlove", "getEssence"]
+      }
+    },
+    {
+      "type": "cross-batch-import",
+      "sourceId": "src/data/Perkbasedmg.ts",
+      "targetId": "src/lib/types.ts",
+      "properties": {
+        "batchIndex": 5,
+        "symbols": ["gateThreshold", "isHpGateActive", "DRAGON_STATE_HP_GATE", "SECONDARY_TONE_COLORS", "calcSpringblastBaseDamage", "calcBomberChargeBaseDamage", "PERK_DMG_DEFS", "findPerkDmgDef"]
+      }
+    },
+    {
+      "type": "cross-batch-import",
+      "sourceId": "src/lib/store.ts",
+      "targetId": "src/lib/types.ts",
+      "properties": {
+        "batchIndex": 6,
+        "symbols": ["build", "effectiveDarknessOverride", "result", "setEnchantment", "swapEnchantments", "clearBuild", "setGuild", "moveArmorSlot", "canArmorMoveToSlot", "moveRingSlot"]
+      }
+    }
+  ]
+}

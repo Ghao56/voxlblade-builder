@@ -162,7 +162,7 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
       buffName: 'Slowness',
       potency: FROSTBITE_SLOW_POTENCY_PER_STACK * frostbiteAmt,
       duration: 0,
-      condition: `${FROSTBITE_CHANCE_PER_STACK * 100 * frostbiteAmt}% chance per hit · Potency = ${FROSTBITE_SLOW_POTENCY_PER_STACK} × ${frostbiteAmt}`,
+      condition: `${Math.round(FROSTBITE_CHANCE_PER_STACK * 100 * frostbiteAmt * 100) / 100}% chance per hit · Potency = ${FROSTBITE_SLOW_POTENCY_PER_STACK} × ${frostbiteAmt}`,
       sourceName: 'Frostbite',
       sourceType: 'perk',
     })
@@ -203,7 +203,7 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
       buffName: 'Burn',
       potency: 0,
       duration: 5,
-      condition: `${burnChance}% chance on Holy attacks`,
+      condition: `${Math.round(burnChance * 100) / 100}% chance on Holy attacks`,
       sourceName: 'Sunburn',
       sourceType: 'perk',
     })

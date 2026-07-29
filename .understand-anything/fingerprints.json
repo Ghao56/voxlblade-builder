@@ -1,11 +1,11 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "de2d616ecab24bebd24cbcfb433926747825d706",
-  "generatedAt": "2026-07-28T01:52:56.685Z",
+  "gitCommitHash": "71df73c19251b8d827e8a7d0db1b68e9960bd4b1",
+  "generatedAt": "2026-07-29T07:46:59.613Z",
   "files": {
     ".fallowrc.json": {
       "filePath": ".fallowrc.json",
-      "contentHash": "d8a996b2c6b9386f790d1836bdc09ae6ae4031f1f312f6422c6fba5bff1afb24",
+      "contentHash": "4feb921c9e532377b46d28959f2f61ce61e1c4e4f2140e1fbc9bd4db149d3ca2",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -25,7 +25,7 @@
     },
     ".slim/deepwork/ui-upgrade.md": {
       "filePath": ".slim/deepwork/ui-upgrade.md",
-      "contentHash": "7c24a4c157fc97a84cf11ff2194c75d9994c49f728072f7241bc438eaf100df7",
+      "contentHash": "687bd6aa651be75af40512bf91fe76892378a43002aee97524c7ffc664efbc2a",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -75,37 +75,37 @@
     },
     ".understand-anything/fingerprints.json": {
       "filePath": ".understand-anything/fingerprints.json",
-      "contentHash": "ccbcca8433232e2e61e941204d2aca9e1b83dac0a17b271e54ba62b9b653aaa0",
+      "contentHash": "4e7a43825fada1f5a463299fa0cde23ba28acac3bffc21c0fcf7c420eebc604e",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 5491,
+      "totalLines": 5542,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/knowledge-graph.json": {
       "filePath": ".understand-anything/knowledge-graph.json",
-      "contentHash": "934a7344d246fd4dda2fd171e9a34f19b17b1b195ac51ae5fb6c6f3fb176efe1",
+      "contentHash": "9b0a0fdcee4e6efc8ef5898fe8359ea90786a42c4694311c5699bbf3cbbb0561",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 4907,
+      "totalLines": 9806,
       "hasStructuralAnalysis": true
     },
     ".understand-anything/meta.json": {
       "filePath": ".understand-anything/meta.json",
-      "contentHash": "65abcd3cdae14a8dba7ccf5606e325dd34cf80c6ae50fa89285c7c6eeae00fe4",
+      "contentHash": "1f91d0de3b4a4d8b8a7b3426e60afdaaa6c9d2ad91ff5fcfe3a781a94cd1dc51",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 6,
+      "totalLines": 7,
       "hasStructuralAnalysis": true
     },
     "AGENTS.md": {
       "filePath": "AGENTS.md",
-      "contentHash": "3a4398aae2e08643414080f42bf870da0b3ce8ac50ffa1b3c120cf7d77067676",
+      "contentHash": "f1deb1766ec56f1f0ffd3291590c6d09c5545b131047f13e76ddcb4fca431793",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -115,7 +115,7 @@
     },
     "analyze-mounticon.mjs": {
       "filePath": "analyze-mounticon.mjs",
-      "contentHash": "df33de5c4809f2e2e3deebfae4cb88bd3843b8e07aef21762b91c6ea086a3794",
+      "contentHash": "f30d97d3b7f45121783a7e7981225c39552e701d4c44e389271b3a0a5e055d00",
       "functions": [],
       "classes": [],
       "imports": [
@@ -132,7 +132,7 @@
     },
     "decode_full.mjs": {
       "filePath": "decode_full.mjs",
-      "contentHash": "a15fbee50ad9b9e23801d631b45532bae57fb6d8e5e797ecc45cb0d083fbf7a8",
+      "contentHash": "292dd333e2cd77f5da49d18febe45af43ef5c82aebae9862e5635e00d6aff7e0",
       "functions": [
         {
           "name": "getPerk",
@@ -229,7 +229,7 @@
     },
     "docs/ONBOARDING.md": {
       "filePath": "docs/ONBOARDING.md",
-      "contentHash": "45cc139a5cb333d5603d04121d2d2e8606aea0ee00179ae48e107731ec0d32ed",
+      "contentHash": "87d58b40f64180783ca9f34324537fe75ca740a209c4315364cc65e003b34bc0",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -259,17 +259,17 @@
     },
     "index.html": {
       "filePath": "index.html",
-      "contentHash": "d97cdaa1842e13e63fe9e64955eed9f686efb76cde49ce8f1ad75188c11c8d72",
+      "contentHash": "f14bcbca60df874522c299d8aa397b1d19008b6419eeaa7da21d1194ec601e9e",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 15,
+      "totalLines": 14,
       "hasStructuralAnalysis": false
     },
     "package.json": {
       "filePath": "package.json",
-      "contentHash": "0f40640129e571a7489b823f34f0937fb4fe463bbf4a91e6f6505ac08cad276e",
+      "contentHash": "95c892ca46763a2c6048fda3aae10fddf81ee3fdcccf7d81dd51165c5a127b78",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -289,7 +289,7 @@
     },
     "src/app.css": {
       "filePath": "src/app.css",
-      "contentHash": "01a4be74950a3ea13b8580caa8c2e8f5ad97e500883c57b2757bd00de01c9ff5",
+      "contentHash": "7c03fb9d5a522f27a9a02e6dee9c6e0601e6870778c51cd08535a089c2bd1012",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -299,22 +299,22 @@
     },
     "src/App.svelte": {
       "filePath": "src/App.svelte",
-      "contentHash": "1fd4cd0d17c5f02b8665e56f214a85037b58dbf1d31f07edc2b2f7d84b24bc46",
+      "contentHash": "43344d6edb825f33fea35d779928524a061edfb4d5e5cabed20f5db6938ab135",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 4434,
+      "totalLines": 4435,
       "hasStructuralAnalysis": false
     },
     "src/BaseDamageCalc.svelte": {
       "filePath": "src/BaseDamageCalc.svelte",
-      "contentHash": "ddf161b35b091d9d7a55bf2408d25ce86480994bb177d4be9053b34d2df14992",
+      "contentHash": "84d3fe44e74343102ec03cc4ec5d142145c497361acf4e9f48e0a963bb572f71",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 2741,
+      "totalLines": 2732,
       "hasStructuralAnalysis": false
     },
     "src/BuffList.svelte": {
@@ -339,7 +339,7 @@
     },
     "src/CdrStepsCalc.svelte": {
       "filePath": "src/CdrStepsCalc.svelte",
-      "contentHash": "a38f19495a2d53caae3ca647153702e33ff74c192b8778555afa89a00c1d12bc",
+      "contentHash": "ed6e233a4e172ba829a8a9c706404c65ad3cf680bd893f46b4ece3a72c14e621",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -359,12 +359,12 @@
     },
     "src/DamageAnalyzer.svelte": {
       "filePath": "src/DamageAnalyzer.svelte",
-      "contentHash": "8ba51f390c58f00f8bc3617e388d3801019514d2be5f298507aa5894f73514ee",
+      "contentHash": "7ea9d673aeecb61011d912598ef37b40cc7ef3ecf39758dc1331ce6a711bd2fe",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 7129,
+      "totalLines": 7316,
       "hasStructuralAnalysis": false
     },
     "src/data/armors.json": {
@@ -389,7 +389,7 @@
     },
     "src/data/Boost.ts": {
       "filePath": "src/data/Boost.ts",
-      "contentHash": "0114c1ca875fc74b75fc03f5037a15cd4742c3772001115973b85eb2aa8b2599",
+      "contentHash": "142f96049c70a71f586f2fcf99ed94bacd89176ec835ede67dcdee1b847d2f75",
       "functions": [
         {
           "name": "calcMinionAbsorptionPotency",
@@ -445,6 +445,7 @@
             "FEROCITY_TENACITY_MULT",
             "SPIRIT_WINDS_TAILWIND_MULT",
             "SPIRIT_WINDS_PER_STACK",
+            "STEAM_POWERED_MULT_PER_AIR_BOOST",
             "GUARDIAN_SPIN_BASE",
             "GUARDIAN_SPIN_MULT_PER_STACK",
             "WILD_BOLT_MULT_PER_STACK",
@@ -483,12 +484,12 @@
         "BOOST_DEFS",
         "BOOST_DEF_MAP"
       ],
-      "totalLines": 426,
+      "totalLines": 428,
       "hasStructuralAnalysis": true
     },
     "src/data/BuffData.ts": {
       "filePath": "src/data/BuffData.ts",
-      "contentHash": "663e2863af2fda88694bebcd617bed83758d90924e25fc41e356ac0748829891",
+      "contentHash": "b59ddfd74f9ef8397a472a340d7ae2bbc705d17f74a28e0029eca4473b743c23",
       "functions": [
         {
           "name": "formatDamageTypes",
@@ -826,6 +827,12 @@
             "QUEENS_POWER_SUMMON_SCALING_PER_TENTH_POTENCY",
             "QUEENS_POWER_POTENCY_PER_AMOUNT",
             "QUEENS_POWER_DURATION",
+            "ICESTORM_POTENCY_PER_AMOUNT",
+            "ICESTORM_DURATION",
+            "SWIFT_GUARD_POTENCY_PER_AMOUNT",
+            "SWIFT_GUARD_DURATION",
+            "RUNIC_WINDS_POTENCY_PER_AMOUNT",
+            "RUNIC_WINDS_DURATION",
             "BOUNCE_DURATION_BASE",
             "BOUNCE_DURATION_PER_STACK",
             "MOD_GLADIATORIAL_POTENCY",
@@ -843,6 +850,10 @@
             "ENDLESS_DESPAIR_FLAT_BONUS",
             "ENDLESS_DESPAIR_DURATION_PER_STACK",
             "STORED_CORRUPTION_DURATION_PER_STACK",
+            "PROPELLING_FUN_POTENCY_PER_AMOUNT",
+            "PROPELLING_FUN_DURATION_MULTIPLIER",
+            "CLOUDPUSH_PCT_PER_POTENCY",
+            "CINDERPULL_PCT_PER_POTENCY",
             "RAGE_POTION_POTENCY",
             "RAGE_POTION_DURATION",
             "POISON_POTION_POTENCY",
@@ -868,7 +879,7 @@
         "calcBuffEffect",
         "formatPerkDescription"
       ],
-      "totalLines": 1977,
+      "totalLines": 2073,
       "hasStructuralAnalysis": true
     },
     "src/data/cdr.ts": {
@@ -1304,7 +1315,7 @@
     },
     "src/data/enemyHpEffects.ts": {
       "filePath": "src/data/enemyHpEffects.ts",
-      "contentHash": "f357a356dd4c2f207b5248796b8ef1299aa68e1c117d4e7f47cfa2e6b579a96c",
+      "contentHash": "a24334cb0fe3020eb5482dae430eaba0ad34a24dd874dfc2755dca5ebb8faccd",
       "functions": [
         {
           "name": "isEnemyHpGateActive",
@@ -1475,7 +1486,7 @@
     },
     "src/data/perkAutoDebuffs.ts": {
       "filePath": "src/data/perkAutoDebuffs.ts",
-      "contentHash": "ef30dfc9a040ed716de077c55f067631f242f35612d82ad9c9d03c11bd3b770b",
+      "contentHash": "1166858a4f9c0c0b06a5ff14fed25cf710a92cc3afa3c82b9d32c75db52a5e86",
       "functions": [
         {
           "name": "calcActualHpFillPct",
@@ -1565,7 +1576,7 @@
     },
     "src/data/Perkbasedmg.ts": {
       "filePath": "src/data/Perkbasedmg.ts",
-      "contentHash": "8341c411395f7445ff5523429e652839d1c32a67e957272d47d7746eefb4e087",
+      "contentHash": "ca0a187dc8b08f39ccb8e3585a8f75dc4f783bf595f88a72451ea0f46e0abe97",
       "functions": [
         {
           "name": "gateThreshold",
@@ -1635,6 +1646,7 @@
         {
           "source": "../lib/types",
           "specifiers": [
+            "BuildState",
             "ProcCoefficient"
           ]
         },
@@ -1761,7 +1773,18 @@
             "RUNIC_BLADES_INNER_COOLDOWN",
             "GNAWING_POISON_BASE_DMG",
             "GNAWING_POISON_DMG_PER_STACK",
-            "GNAWING_POISON_COOLDOWN"
+            "GNAWING_POISON_COOLDOWN",
+            "PROPELLING_FUN_BASE_DMG",
+            "PROPELLING_FUN_DMG_PER_STACK",
+            "PROPELLING_FUN_COOLDOWN",
+            "QUAKE_BASE_DMG",
+            "QUAKE_DMG_PER_STACK",
+            "QUAKE_CHANCE_BASE",
+            "QUAKE_CHANCE_PER_STACK",
+            "RULER_SANDS_BASE_DMG_PER_HIT",
+            "RULER_SANDS_HITS",
+            "RULER_SANDS_CHANCE_CD_MULT",
+            "RULER_SANDS_CHANCE_PERK_MULT"
           ]
         }
       ],
@@ -1775,7 +1798,7 @@
         "PERK_DMG_DEFS",
         "findPerkDmgDef"
       ],
-      "totalLines": 1084,
+      "totalLines": 1223,
       "hasStructuralAnalysis": true
     },
     "src/data/perks.json": {
@@ -1790,7 +1813,7 @@
     },
     "src/data/procCoefficients.ts": {
       "filePath": "src/data/procCoefficients.ts",
-      "contentHash": "c2e27de9935e34f146db2339dd93cb1ff5292e8161c3269ec9a475086184d85a",
+      "contentHash": "ae8a5de85420541d477b754646e4c23c9513a456fc5e75160a0c77998e4cd498",
       "functions": [],
       "classes": [],
       "imports": [
@@ -1976,7 +1999,7 @@
     },
     "src/data/selfDamagePerks.ts": {
       "filePath": "src/data/selfDamagePerks.ts",
-      "contentHash": "75f4e6904fcc5e151e13c361667a960c9dda06927fd35cab0863cfd4299b4133",
+      "contentHash": "a3d6520f0584770489d099576b4f34a164b8bf8720214a749dc68213d0a5cc35",
       "functions": [
         {
           "name": "calcSelfDamage",
@@ -1985,11 +2008,12 @@
             "perkAmount",
             "preBoostDamageDealt",
             "enemiesHit",
-            "defenseMultipliers"
+            "defenseMultipliers",
+            "hitCount"
           ],
           "returnType": "{ total: number; byType: Record<string, number> }",
           "exported": true,
-          "lineCount": 31
+          "lineCount": 41
         }
       ],
       "classes": [],
@@ -2000,12 +2024,12 @@
         "SELF_DAMAGE_PERK_DEFS",
         "calcSelfDamage"
       ],
-      "totalLines": 83,
+      "totalLines": 106,
       "hasStructuralAnalysis": true
     },
     "src/data/stanceOverlays.ts": {
       "filePath": "src/data/stanceOverlays.ts",
-      "contentHash": "1b1cd566aaceadcca378b837f380595a1ee8b2275e421be4d6e32434dc017e58",
+      "contentHash": "d5244f05c8380fec9e747c86eb8b75a04a0f034d5fa4bc88a821f6252e469bb3",
       "functions": [
         {
           "name": "resolveStanceOverlay",
@@ -2449,7 +2473,7 @@
     },
     "src/EmotionalTracker.svelte": {
       "filePath": "src/EmotionalTracker.svelte",
-      "contentHash": "1946ba9a1ca6fbac30497adea5c5e97c8671be73add9df12a999fd532233a350",
+      "contentHash": "bcd92589b1b19fbf6e7b1e171744ba1ee0affd825041f064ba6fec4242561034",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2499,7 +2523,7 @@
     },
     "src/lib/constants/boosts.ts": {
       "filePath": "src/lib/constants/boosts.ts",
-      "contentHash": "4709740335c7f2f3c0f45087c60cc3ad3b2e6f9b783be462f647a3528a1daf19",
+      "contentHash": "6118789e5efbb1810e1a35d18c41b6f44796e008caa73c1de3522231a728d64c",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2564,14 +2588,15 @@
         "HEAT_DRILL_SMALL_EXPLOSION_HITS",
         "ESSENCE_RAY_BASE",
         "ESSENCE_RAY_PER_STACK",
-        "ESSENCE_RAY_HITS"
+        "ESSENCE_RAY_HITS",
+        "STEAM_POWERED_MULT_PER_AIR_BOOST"
       ],
-      "totalLines": 74,
+      "totalLines": 76,
       "hasStructuralAnalysis": true
     },
     "src/lib/constants/buffs.ts": {
       "filePath": "src/lib/constants/buffs.ts",
-      "contentHash": "89aea90d1c8275dfcabce81820eaaa497b8c6fa92110d1f394b6f9dda61d6eb5",
+      "contentHash": "ff5c6aec35426d94b525622071b94ffd250631d8416753d1dade30198f57a6b7",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2691,6 +2716,12 @@
         "QUEENS_POWER_ATK_SPD_BASE",
         "QUEENS_POWER_ATK_SPD_PER_TENTH_POTENCY",
         "QUEENS_POWER_SUMMON_SCALING_PER_TENTH_POTENCY",
+        "ICESTORM_POTENCY_PER_AMOUNT",
+        "ICESTORM_DURATION",
+        "SWIFT_GUARD_POTENCY_PER_AMOUNT",
+        "SWIFT_GUARD_DURATION",
+        "RUNIC_WINDS_POTENCY_PER_AMOUNT",
+        "RUNIC_WINDS_DURATION",
         "BOUNCE_DURATION_BASE",
         "BOUNCE_DURATION_PER_STACK",
         "MOD_GLADIATORIAL_POTENCY",
@@ -2707,14 +2738,20 @@
         "ENDLESS_DESPAIR_POTENCY_PER_STACK",
         "ENDLESS_DESPAIR_FLAT_BONUS",
         "ENDLESS_DESPAIR_DURATION_PER_STACK",
-        "STORED_CORRUPTION_DURATION_PER_STACK"
+        "STORED_CORRUPTION_DURATION_PER_STACK",
+        "PROPELLING_FUN_POTENCY_PER_AMOUNT",
+        "PROPELLING_FUN_DURATION_MULTIPLIER",
+        "CLOUDPUSH_PCT_PER_POTENCY",
+        "CINDERPULL_PCT_PER_POTENCY",
+        "CLOUDPUSH_PCT_PER_STACK",
+        "CINDERPULL_PCT_PER_STACK"
       ],
-      "totalLines": 162,
+      "totalLines": 176,
       "hasStructuralAnalysis": true
     },
     "src/lib/constants/cdr.ts": {
       "filePath": "src/lib/constants/cdr.ts",
-      "contentHash": "fce4da83b20c52d5f05adfe277a6a2603b2af861f799d2ec97fb77501a30e128",
+      "contentHash": "a2f904d953024a9ce3f5ec8f59ec4eba5a6f5a5feff39492f9cb13339550f77c",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2738,7 +2775,7 @@
     },
     "src/lib/constants/damage-types.ts": {
       "filePath": "src/lib/constants/damage-types.ts",
-      "contentHash": "71f31712974cec7405fe2bb69e115943a13eaefcf04ae03cd1e4baa13f3d6be7",
+      "contentHash": "f81f97c0b3b58dc49320c439c2d9f86403fc2cb9fd1ac975989be0cb1ec8e76e",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2760,7 +2797,7 @@
     },
     "src/lib/constants/debuff-effects.ts": {
       "filePath": "src/lib/constants/debuff-effects.ts",
-      "contentHash": "7411f93bdd22bdfc892d1ce689be62b5f54196f91230bec64262612d64332f3c",
+      "contentHash": "ec5d91b5f548d4ea48fbcb476cb31b918b02ad994bf38d6432a904a1bc5c6ab1",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2775,7 +2812,7 @@
     },
     "src/lib/constants/defensive.ts": {
       "filePath": "src/lib/constants/defensive.ts",
-      "contentHash": "aaa6d57a349240b5c816a42cc922521c124e1be9096e28b1ad9542df84e76dbe",
+      "contentHash": "976518b1ee699d062f3d7f9bba2a52cb08f4f2d26ae21a35820be3f1d471e8c4",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2820,7 +2857,7 @@
     },
     "src/lib/constants/draconic-colors.ts": {
       "filePath": "src/lib/constants/draconic-colors.ts",
-      "contentHash": "1b2e6b83623a0d71a9576f2156cdf999e5b0d22bfd52211d48e47a8259f663dc",
+      "contentHash": "d6efde4ce487f1e23a89fcedf646dcb62bcf1fddf851799fc2c1347cba19f8a5",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2843,7 +2880,7 @@
     },
     "src/lib/constants/draconic.ts": {
       "filePath": "src/lib/constants/draconic.ts",
-      "contentHash": "25dfd044b5f011636e617d83b5bc86fb1a1cdc06c374dcfd7b93f93cd6d3b061",
+      "contentHash": "af91f85f60c05f3cf5edca6406b9bce2db897d7ff73c6a3ffd5773e097745557",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2861,7 +2898,7 @@
     },
     "src/lib/constants/game.ts": {
       "filePath": "src/lib/constants/game.ts",
-      "contentHash": "5dcec7a84b53846572891fd1d1284547b92cdef30f7cb117c66b6b848b0c6a2a",
+      "contentHash": "21a721cf93c57c8519bf6c9c0be504ca526219d4a5fc70dd04d8ddc534501ede",
       "functions": [
         {
           "name": "calcBaseMaxHP",
@@ -2895,7 +2932,7 @@
     },
     "src/lib/constants/heals.ts": {
       "filePath": "src/lib/constants/heals.ts",
-      "contentHash": "cdd8e3c3d722035dae5c870a5904aec5a507519afa7e2c5747b59cb85e0e6c62",
+      "contentHash": "438ba180cd14c53eb64cdcd105a3af299a154725919484b2d10bbd43f39db25c",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2920,7 +2957,7 @@
     },
     "src/lib/constants/perk-base-damage.ts": {
       "filePath": "src/lib/constants/perk-base-damage.ts",
-      "contentHash": "65f270b3c321e13af5c24beb4026fd399ff9d09842314264edfecb93ab0cde30",
+      "contentHash": "5aafd24ad445396aa341417ec33617ca025360981cfc81035eb191a3cf8f45b6",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3036,14 +3073,25 @@
         "RUNIC_BLADES_INNER_COOLDOWN",
         "GNAWING_POISON_BASE_DMG",
         "GNAWING_POISON_DMG_PER_STACK",
-        "GNAWING_POISON_COOLDOWN"
+        "GNAWING_POISON_COOLDOWN",
+        "PROPELLING_FUN_BASE_DMG",
+        "PROPELLING_FUN_DMG_PER_STACK",
+        "PROPELLING_FUN_COOLDOWN",
+        "QUAKE_BASE_DMG",
+        "QUAKE_DMG_PER_STACK",
+        "QUAKE_CHANCE_BASE",
+        "QUAKE_CHANCE_PER_STACK",
+        "RULER_SANDS_BASE_DMG_PER_HIT",
+        "RULER_SANDS_HITS",
+        "RULER_SANDS_CHANCE_CD_MULT",
+        "RULER_SANDS_CHANCE_PERK_MULT"
       ],
-      "totalLines": 184,
+      "totalLines": 201,
       "hasStructuralAnalysis": true
     },
     "src/lib/constants/perks.ts": {
       "filePath": "src/lib/constants/perks.ts",
-      "contentHash": "fa488f222e4590ffb002a08d666cf658fe6469845d9a8386c94f3696168d648e",
+      "contentHash": "b1da3ab59964ae1aaa46f85942511a0ceb1f4bd82ff79209f07b60d45ee70484",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3102,14 +3150,16 @@
         "HYPNOTIST_DURATION_PER_PERK",
         "HYPNOTIST_MAGIC_ARMOR_PER_POTENCY",
         "PHANTOM_PAIN_BASE_PCT",
-        "PHANTOM_PAIN_PERK_MULT"
+        "PHANTOM_PAIN_PERK_MULT",
+        "PURSUIT_BASE_MULT",
+        "PURSUIT_MULT_PER_RANK"
       ],
-      "totalLines": 91,
+      "totalLines": 95,
       "hasStructuralAnalysis": true
     },
     "src/lib/constants/rune-base-damage.ts": {
       "filePath": "src/lib/constants/rune-base-damage.ts",
-      "contentHash": "5ead5902ed310529fd8fe7f1a22fd3a2de0a7ac3c9a4d2f240296d1715cad465",
+      "contentHash": "abf13ef3c3be6cecc9dc5394e308df5147ec7aa329afaa54b8cb9a82e5c4ba7c",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3149,7 +3199,7 @@
     },
     "src/lib/constants/stat-conversions.ts": {
       "filePath": "src/lib/constants/stat-conversions.ts",
-      "contentHash": "ceecb58878ca31c7a95ec50bbd6048cf809572386cde94f7a6fff41a56bc9e7b",
+      "contentHash": "a9405994837536618b5f1188a06f726cae49fcf669d2d150452d1bee91ea188e",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3183,7 +3233,7 @@
     },
     "src/lib/constants/storage.ts": {
       "filePath": "src/lib/constants/storage.ts",
-      "contentHash": "6954321372c12d1706170c8148e7cc5c5c3c4b8a7ff546019ed23fd628c38c47",
+      "contentHash": "7e2cdeeca8f67946ba759b99946f9d341800248f31306c75744881ddcd650219",
       "functions": [],
       "classes": [],
       "imports": [
@@ -3209,12 +3259,12 @@
         "MAX_BUILD_SLOTS",
         "CONFIRM_TIMEOUT_MS"
       ],
-      "totalLines": 42,
+      "totalLines": 43,
       "hasStructuralAnalysis": true
     },
     "src/lib/constants/thresholds.ts": {
       "filePath": "src/lib/constants/thresholds.ts",
-      "contentHash": "e6808bd6dacda684fafa64aff0c0eeaf38b910bc79171fe951908d92a3f0abba",
+      "contentHash": "641964b510bf927bc2c52b62d44bb3be504d6090f78fc18409bf8ae56dcf9800",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3334,7 +3384,7 @@
     },
     "src/lib/damageTypeResolve.ts": {
       "filePath": "src/lib/damageTypeResolve.ts",
-      "contentHash": "763b7232612088e3f2cf1f1d00189d91dc37c55e508d889e9c58866a3b145f6e",
+      "contentHash": "b3c4ead4bb8edd239ee2ad5c4e1e33ed5bff53b5f111c8710d399cbe86bb2e82",
       "functions": [
         {
           "name": "resolveDamageTypes",
@@ -3475,7 +3525,7 @@
     },
     "src/lib/dmgTypes.ts": {
       "filePath": "src/lib/dmgTypes.ts",
-      "contentHash": "dd5e00545af38a95d8ea1fb96b98df2c2c86bb005e469ff2dd7e52915381d40c",
+      "contentHash": "582ab046c47ffc565e39a9feb62d56f48eb623d7cd1658095487acd80efe380e",
       "functions": [],
       "classes": [],
       "imports": [
@@ -3489,7 +3539,7 @@
       "exports": [
         "BADGE_CONFIG"
       ],
-      "totalLines": 75,
+      "totalLines": 79,
       "hasStructuralAnalysis": true
     },
     "src/lib/EnchantSelect.svelte": {
@@ -3574,7 +3624,7 @@
     },
     "src/lib/engine/build.ts": {
       "filePath": "src/lib/engine/build.ts",
-      "contentHash": "1b540d76494cf031bad38434c05b19919113399b39e5ea65d32235cf6f831eee",
+      "contentHash": "0fa7c7db92d24b39911217a85f0733b19aa3bcad75413a9f0638a6c27e1c54a5",
       "functions": [
         {
           "name": "calcCDR",
@@ -3602,6 +3652,7 @@
             "ragePotency",
             "bouncePotency",
             "tailwindPotency",
+            "airBoost",
             "speedBoost",
             "attackSpeed",
             "tenacity",
@@ -3621,7 +3672,7 @@
           ],
           "returnType": "BoostResult",
           "exported": false,
-          "lineCount": 106
+          "lineCount": 107
         },
         {
           "name": "accumulateMonkWeapon",
@@ -3903,7 +3954,7 @@
       "exports": [
         "calcBuild"
       ],
-      "totalLines": 565,
+      "totalLines": 566,
       "hasStructuralAnalysis": true
     },
     "src/lib/engine/data.ts": {
@@ -4206,7 +4257,7 @@
     },
     "src/lib/engine/dmgTypeBonuses.ts": {
       "filePath": "src/lib/engine/dmgTypeBonuses.ts",
-      "contentHash": "b42f7ee451e577f520be2ef192b228a1dab82b50e18a31dc0a73fcc5f1a54369",
+      "contentHash": "e7a65f62d384ae0be0d861a98a56cc2b7300928c7b7d7edbc1fe5dd4a0dfd11d",
       "functions": [
         {
           "name": "buildDmgTypeBonuses",
@@ -4744,7 +4795,7 @@
     },
     "src/lib/modals/GuildModal.svelte": {
       "filePath": "src/lib/modals/GuildModal.svelte",
-      "contentHash": "eb594dfd7a93ad66309b1080b43f275065739423da06256d2754c8fb7e19d98f",
+      "contentHash": "1eceeb66abdbbbaf1c31964917989fcb43f412de2bee2b27c03a241fd4bbd9a8",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -4754,7 +4805,7 @@
     },
     "src/lib/modals/index.ts": {
       "filePath": "src/lib/modals/index.ts",
-      "contentHash": "faef13c11c80c23affea85fa974d851e2808743897a1d4b31bd71b243841280b",
+      "contentHash": "3d990b2111d2f43f7475b10b510e8b58d58cf19b5d08b3eb2b5c96bf40e1cc7b",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -4769,7 +4820,7 @@
     },
     "src/lib/modals/RaceModal.svelte": {
       "filePath": "src/lib/modals/RaceModal.svelte",
-      "contentHash": "e0d54bcf902fc132a5b36deba4439bd8c389a565993ca3789cea1d73f7cb25b5",
+      "contentHash": "86343a935ddc41bc1954ab1b4ebd7cbd710ea0b09db5bdf642cf415c4a8f21d0",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -4789,7 +4840,7 @@
     },
     "src/lib/StatFilterShared.svelte": {
       "filePath": "src/lib/StatFilterShared.svelte",
-      "contentHash": "59e8363f82cac109a191e80ece7a27697974a477a8d82abb375bca19e647216f",
+      "contentHash": "701db34f08217c9ed852d493db5e9552b9b3b533f9ebb8377b3f583329dc61cf",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -4835,7 +4886,7 @@
     },
     "src/lib/store.ts": {
       "filePath": "src/lib/store.ts",
-      "contentHash": "061ddb93f5b96d6259042eb11aeca0c52877cd189336b55da52da688ba5d09ba",
+      "contentHash": "1d4a1b829b765c102050ea7f165e7984ea7f3fc40be8bbda0f89dbee0f7b6b9f",
       "functions": [
         {
           "name": "loadBuild",
@@ -4960,7 +5011,7 @@
         "canArmorMoveToSlot",
         "moveRingSlot"
       ],
-      "totalLines": 210,
+      "totalLines": 213,
       "hasStructuralAnalysis": true
     },
     "src/lib/stores/toast.ts": {
@@ -5011,7 +5062,7 @@
     },
     "src/lib/Toast.svelte": {
       "filePath": "src/lib/Toast.svelte",
-      "contentHash": "48024628407aa8adeba1b86803a39ae6560840d4e45187434be2fa6b89988109",
+      "contentHash": "fdc9f974dfa32ccd4c8d775368bb2cef1518075d55ca28c3e337e1628079d366",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5021,7 +5072,7 @@
     },
     "src/lib/types.ts": {
       "filePath": "src/lib/types.ts",
-      "contentHash": "94744585b61b9ab8f0d14d672d99d7f7115f729288480992eb809fc255aad054",
+      "contentHash": "7186a6681bc6fd556b6555fa4ebbb036f51b1bc40d9d95dc39549b2f0ef94f03",
       "functions": [
         {
           "name": "applyUpgrade",
@@ -5065,12 +5116,12 @@
         "DMG_TYPE_PRIORITY",
         "SCALING_TO_BOOST"
       ],
-      "totalLines": 292,
+      "totalLines": 295,
       "hasStructuralAnalysis": true
     },
     "src/lib/ui/Badge.svelte": {
       "filePath": "src/lib/ui/Badge.svelte",
-      "contentHash": "bc778df9d3fb6405fd8a3d0eba70d6d64e8172e56cd776d0c3feb5bf8d1e00ed",
+      "contentHash": "7694dee4588f4f5fb30513ac05b62595cd04e3594639fb390c4341f3651e9dcf",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5080,7 +5131,7 @@
     },
     "src/lib/ui/Button.svelte": {
       "filePath": "src/lib/ui/Button.svelte",
-      "contentHash": "426bfba88965430dc71b533da743ddbd16fb09df8106e008ccf596c54a4acf3c",
+      "contentHash": "8198470171f8719081f37c75008bb11a9c4dfd123aeec862d2a53346272a9f12",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5090,7 +5141,7 @@
     },
     "src/lib/ui/Card.svelte": {
       "filePath": "src/lib/ui/Card.svelte",
-      "contentHash": "88bf87adc8a0e06a0333a59e6d030a37f03a2fb2fb1f5ab789eeb42c59af4668",
+      "contentHash": "432794580332c77fa7aa15b51739a9a08fcdd3f465a97adf582c5f4fc5952a31",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5100,7 +5151,7 @@
     },
     "src/lib/ui/Divider.svelte": {
       "filePath": "src/lib/ui/Divider.svelte",
-      "contentHash": "ca7063c28fb28b4081b1890879501fbd5653d6a423d97d0bae00311d9f8db38b",
+      "contentHash": "8f34baf1c60f1e653cafd43cdfd9357dd6833a0f4ce8a1b8eb9180b545cddf10",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5110,7 +5161,7 @@
     },
     "src/lib/ui/index.ts": {
       "filePath": "src/lib/ui/index.ts",
-      "contentHash": "bee57675517b7561ab4d8f37a371f6b8ed1356b7de8ee15aa0b3039d126b412e",
+      "contentHash": "09b135f454842b4d57ecdbcc4abe514123267737f07c37c74cde4fec3af643ff",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5128,7 +5179,7 @@
     },
     "src/lib/ui/Panel.svelte": {
       "filePath": "src/lib/ui/Panel.svelte",
-      "contentHash": "94bcd36c78c3c15288add2890d003b1492aec24265260fe27a41580416bbe6dd",
+      "contentHash": "8da5b772aaafa5682d0bae981b36fb8ca05f037d2428ec92a2bbe4f8cb65413c",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5138,7 +5189,7 @@
     },
     "src/lib/ui/Section.svelte": {
       "filePath": "src/lib/ui/Section.svelte",
-      "contentHash": "e5b498c251d8d349d5d62728889345854836d801830c53870ca7c8438fe1f5bd",
+      "contentHash": "f8eac59a894ec30b788ab023ca13bbe184f2d56c7980a6fac41395667c65306c",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5148,7 +5199,7 @@
     },
     "src/lib/ui/Stat.svelte": {
       "filePath": "src/lib/ui/Stat.svelte",
-      "contentHash": "ecf7fa1cb4ee383ebf46db8a88ba15293d5a3f80eb0fc05ab0c930ad76000e34",
+      "contentHash": "3899437f48babd3ca1da0466434f26b44daef0918fd98439ad2b667261e734c8",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5314,7 +5365,7 @@
     },
     "src/MountIcon.svelte": {
       "filePath": "src/MountIcon.svelte",
-      "contentHash": "1a7cbfcc6d3ff9d83baef17fbf69d1809b55b72e82a3ed8ab5b07f8b77cbaaf0",
+      "contentHash": "c29a97b472ff37863452ed62c13ba0d5a636841db33c6b5aec01080519bdcf06",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5394,7 +5445,7 @@
     },
     "stats.html": {
       "filePath": "stats.html",
-      "contentHash": "f793b87d3315cc45a1998c73f31efe3c68a0c68794bc921ee12f406d9b1f482f",
+      "contentHash": "9b980b3c1feb21f44a355e473af2e231956dbe07e12e66ab56dd320f3b3733c5",
       "functions": [],
       "classes": [],
       "imports": [],

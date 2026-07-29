@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fade } from 'svelte/transition'
-  import { build, result, effectiveDarknessOverride } from './lib/store'
+  import { build, result, effectiveDarknessOverride, orkBuffTenacity } from './lib/store'
   import { calcWeapon, calcMonkWeapon, isMonkGuild } from './lib/engine'
   import BaseDamageCalc from './BaseDamageCalc.svelte'
   import ScalingBreakdownRow from './ScalingBreakdownRow.svelte'
@@ -26,8 +26,9 @@
   import { calculateHealBoost, type HealSource } from './data/HealBoost'
   import { roundMultiplier, calcWardingDebuffMultiplier, calcProcChance } from './lib/utils'
   import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage, UNDEAD_MIGHT_SELF_DMG_FRACTION, UNDEAD_MIGHT_DR_PCT_PER_STACK, type SelfDamagePerkDef } from './data/selfDamagePerks'
-  import { resolveDamageTypes, applyAirToMagicConversion } from './lib/damageTypeResolve'
+  import { resolveDamageTypes, resolveWaDamageTypeKeys, applyAirToMagicConversion } from './lib/damageTypeResolve'
   import { buildDmgTypeBonuses, type PerkDmgTypeBonusDef } from './lib/engine/dmgTypeBonuses'
+import { FEROCITY_TENACITY_MULT } from './lib/constants'
 import { calcTypedDmgBoosts } from './data/TypedDmgBoost'
 import { TRACKED_TYPES_WITH_TRUE } from './lib/constants/damage-types'
 import { resolveStanceOverlay } from './data/stanceOverlays'
@@ -329,6 +330,46 @@ import {
       }
     }
 
+    const _ffAmt = $result.perks['Fragrant Flesh'] ?? 0
+    if (_ffAmt > 0) {
+      const _pc = WA_PROC_COEFFS[$build.selectedWeaponArt] ?? DEFAULT_PROC_COEFF
+      if (canProc(_pc)) {
+        const _w = isMonkGuild($build.guild)
+          ? (($build.monkGlove || $build.monkEssence) ? calcMonkWeapon($build.monkGlove, $build.monkEssence, $build.shrineActive, $build.guildRank) : null)
+          : (($build.weaponBlade || $build.weaponHandle) ? calcWeapon($build.weaponBlade, $build.weaponHandle, $build.shrineActive) : null)
+        let _hasWaterDmg = _w
+          ? Object.entries(resolveWaDamageTypeKeys(
+              (WEAPON_ARTS.find(a => a.name === $build.selectedWeaponArt))?.damageType,
+              _w.damageTypes
+            )).some(([dt, mult]) => dt === 'water' && mult > 0)
+          : false
+        if (!_hasWaterDmg && $build.rune && $build.rune !== 'None') {
+          const rd = RUNE_DMG_DEFS.find(d => d.runeName === $build.rune)
+          _hasWaterDmg = rd ? (rd.dmgTypes['water'] ?? 0) > 0 : false
+        }
+        if (_hasWaterDmg) {
+          const _alreadyBleeding = baseBuffs.some(b => b.buffName === 'Bleed' && b.isSelfDebuff)
+          baseBuffs.push({
+            buffName: 'Bleed',
+            potency: 0.5,
+            duration: 8,
+            condition: 'Fragrant Flesh · High chance on Water hit',
+            sourceName: 'Fragrant Flesh',
+            sourceType: 'perk',
+            isSelfDebuff: true,
+          })
+          baseBuffs.push({
+            buffName: 'Regen',
+            potency: 0.5 + 0.5 * _ffAmt,
+            duration: 8,
+            condition: 'Fragrant Flesh · If already Bleeding, gain Regen',
+            sourceName: 'Fragrant Flesh',
+            sourceType: 'perk',
+          })
+        }
+      }
+    }
+
     const tbAmt = $result.perks['True Balance'] ?? 0
     if (tbAmt > 0) {
       const enemyDebuffs = baseBuffs.filter(b => {
@@ -491,6 +532,7 @@ import {
       enemyHpFillPct: _enemyHpFillPct,
       hasMagicDmg: Object.entries(_waDmgTypes).some(([dt, mult]) => dt === 'magic' && mult > 0),
       hasMagicOrPhysicalDmg: Object.entries(_waDmgTypes).some(([dt, mult]) => (dt === 'magic' || dt === 'physical') && mult > 0),
+
     }), perks, $build.rune || undefined, wardingDebuffMult)
     for (const d of autoDebuffs) {
       if (!groups.has(d.buffName)) groups.set(d.buffName, new Map())
@@ -717,8 +759,8 @@ import {
   $: _weightySlamAmt = perks['Weighty Slam'] ?? 0
   $: _heatDrillAmt = perks['Heat Drill'] ?? 0
   $: _essenceRayAmt = perks['Essence Ray'] ?? 0
-  $: _lightningCloakActive = _allActiveBuffs.some(b => b.buffName === 'Lightning Cloak')
-  $: _activeLightningCloakBuffs = _allActiveBuffs.filter(b => b.buffName === 'Lightning Cloak')
+  $: _lightningCloakActive = _allActiveBuffsRaw.some(b => b.buffName === 'Lightning Cloak')
+  $: _activeLightningCloakBuffs = _allActiveBuffsRaw.filter(b => b.buffName === 'Lightning Cloak')
   $: _stormRendAmt = perks['Storm Rend'] ?? 0
   $: _lightningCloakPct = _lightningCloakActive && lightningCloakState !== 'off'
     ? (lightningCloakState === 'twoThirds' ? 2 * LIGHTNING_CLOAK_FRACTION : LIGHTNING_CLOAK_FRACTION) : 0
@@ -902,6 +944,7 @@ import {
   // ── Ork race: +0.1 tenacity per active buff (excludes debuffs & self-debuffs) ──
   $: _orkBuffs = $build.race === 'ORK' ? getOrkTenacityBuffs(_allActiveBuffs, BUFF_DEFS) : []
   $: _orkBuffTenacity = $build.race === 'ORK' ? calcOrkTenacityBonus(_allActiveBuffs, BUFF_DEFS) : 0
+  $: orkBuffTenacity.set(_orkBuffTenacity)
   $: _effectiveTenacity = (stats.tenacity ?? 0) + _orkBuffTenacity
 
   let disabledDebuffs = new Set<string>()
@@ -944,7 +987,7 @@ import {
   function toggleBuffKey(key: string) {
     if (disabledBuffKeys.has(key)) disabledBuffKeys.delete(key)
     else disabledBuffKeys.add(key)
-    disabledBuffKeys = disabledBuffKeys // trigger reactivity
+    disabledBuffKeys = new Set(disabledBuffKeys) // trigger reactivity
 
     if (key === 'Burn:Smoldering') {
       if (disabledBuffKeys.has(key)) disabledBoosts.add('Smoldering')
@@ -972,7 +1015,7 @@ import {
       if (allDisabled) disabledBuffKeys.delete(`${name}:${s}`)
       else disabledBuffKeys.add(`${name}:${s}`)
     }
-    disabledBuffKeys = disabledBuffKeys
+    disabledBuffKeys = new Set(disabledBuffKeys)
 
     if (name === 'Perfection') {
       if (allDisabled) disabledBoosts.delete('Perfection')
@@ -1331,7 +1374,7 @@ import {
       const burnKey = 'Burn:Smoldering'
       if (disabledBoosts.has(name)) disabledBuffKeys.add(burnKey)
       else disabledBuffKeys.delete(burnKey)
-      disabledBuffKeys = disabledBuffKeys
+      disabledBuffKeys = new Set(disabledBuffKeys)
     }
   }
 
@@ -1385,9 +1428,15 @@ import {
   let stormRendState: LightningCloakState = 'third'
 
   function cycleLightningState() {
-    if (lightningCloakState === 'off') lightningCloakState = 'third'
-    else if (lightningCloakState === 'third') lightningCloakState = 'twoThirds'
-    else lightningCloakState = 'off'
+    const next: LightningCloakState = lightningCloakState === 'off' ? 'third' : lightningCloakState === 'third' ? 'twoThirds' : 'off'
+    lightningCloakState = next
+    const lcBuffs = _allActiveBuffsRaw.filter(b => b.buffName === 'Lightning Cloak')
+    for (const b of lcBuffs) {
+      const key = `Lightning Cloak:${b.sourceName}`
+      if (next === 'off') disabledBuffKeys.add(key)
+      else disabledBuffKeys.delete(key)
+    }
+    disabledBuffKeys = new Set(disabledBuffKeys)
   }
   function cycleStormRendState() {
     if (stormRendState === 'off') stormRendState = 'third'
@@ -1456,6 +1505,12 @@ import {
       }
     }
 
+    const ferocityAmt = perks['Ferocity'] ?? 0
+    if (ferocityAmt > 0 && _effectiveTenacity > 0) {
+      const pct = _effectiveTenacity * FEROCITY_TENACITY_MULT * ferocityAmt
+      entries.push({ sourceName: 'Ferocity', rawMultiplier: roundMultiplier(1 + pct / 100), condition: `based on your Tenacity`, type: 'dmg' })
+    }
+
     const convertedEnergyEntry = _typedBoostResult.activeEntries.find(e => e.perkName === 'Hex Shield')
     if (convertedEnergyEntry && convertedEnergyEntry.dmgMult !== 1) {
       entries.push({
@@ -1468,7 +1523,7 @@ import {
 
     return entries
   })()
-  $: activeEntries = [...boosts.dmgEntries.filter(e => !disabledBoosts.has(e.sourceName) && !_condDisabledSources.has(e.sourceName) && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance' && e.sourceName !== 'Frenzy' && e.sourceName !== 'Dark One'), ..._syntheticDmgBoostEntries.filter(e => {
+  $: activeEntries = [...boosts.dmgEntries.filter(e => !disabledBoosts.has(e.sourceName) && !_condDisabledSources.has(e.sourceName) && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance' && e.sourceName !== 'Frenzy' && e.sourceName !== 'Dark One' && e.sourceName !== 'Ferocity'), ..._syntheticDmgBoostEntries.filter(e => {
     if (e.sourceName === 'Curse Rip' && disableCurseRip) return false
     if (e.sourceName === 'Reaper' && disableReaper) return false
     if (disabledBoosts.has(e.sourceName)) return false
@@ -2127,7 +2182,7 @@ import {
     }
   }
   $: _visibleDmgEntries = boosts.dmgEntries.filter(e =>
-    (e.sourceName !== 'Rider' || mountActive) && e.sourceName !== 'Frenzy' && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance' && e.sourceName !== 'Dark One' && !_condDisabledSources.has(e.sourceName)
+    (e.sourceName !== 'Rider' || mountActive) && e.sourceName !== 'Frenzy' && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance' && e.sourceName !== 'Dark One' && e.sourceName !== 'Ferocity' && !_condDisabledSources.has(e.sourceName)
   ).map(e => {
     if (e.sourceName === 'Primal' && _critDisabledPerkNames.size > 0) {
       const stacks = perks['Primal'] ?? 0
@@ -5538,7 +5593,7 @@ $: _groupedSelfDamageSources = (() => {
   .da-bc-name { font-size: .68rem; font-weight: 700; color: var(--ink, #e8e4da); }
   .da-bc-val  { font-size: .82rem; font-weight: 800; color: #fb923c; }
   .da-boost-chip--lvl .da-bc-val { color: #fbbf24; }
-  .da-bc-cond { font-size: .55rem; color: var(--ink-muted, #8a8d85); opacity: .6; font-style: italic; text-align: center; max-width: 80px; }
+  .da-bc-cond { font-size: .55rem; color: var(--ink, #e8e4da); opacity: .75; font-style: italic; text-align: center; max-width: 80px; }
   .da-chain-op { font-size: .8rem; color: var(--ink-muted, #8a8d85); opacity: .5; font-weight: 700; transition: opacity var(--duration-fast) var(--ease-out); }
   .da-chain-result { font-size: 1rem; font-weight: 900; color: #fb923c; background: rgba(251,146,60,.1); padding: 4px 10px; border-radius: 8px; transition: color var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out); }
   .da-heal-label { font-size: .62rem; font-weight: 700; color: #4ade80; text-transform: uppercase; letter-spacing: .1em; padding: 4px 8px; background: rgba(74,222,128,.08); border-radius: 6px; border: 1px solid rgba(74,222,128,.2); flex-shrink: 0; }

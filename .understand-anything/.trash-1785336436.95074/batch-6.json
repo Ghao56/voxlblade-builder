@@ -1,0 +1,441 @@
+{
+  "nodes": [
+    {
+      "id": "src/lib/store.ts::Module",
+      "kind": "Module",
+      "label": "store.ts",
+      "filePath": "src/lib/store.ts",
+      "batchIndex": 6,
+      "metadata": {
+        "language": "typescript",
+        "fileCategory": "code",
+        "description": "Svelte store-based state management for the build calculator. Defines the reactive build state, derived damage result, and all mutation functions."
+      }
+    },
+    {
+      "id": "src/lib/store.ts::DEFAULT_BUILD",
+      "kind": "Constant",
+      "label": "DEFAULT_BUILD",
+      "filePath": "src/lib/store.ts",
+      "line": 6,
+      "batchIndex": 6,
+      "metadata": {
+        "visibility": "private",
+        "type": "BuildState",
+        "description": "Default build state used to initialize and reset the build store."
+      }
+    },
+    {
+      "id": "src/lib/store.ts::loadBuild",
+      "kind": "Function",
+      "label": "loadBuild",
+      "filePath": "src/lib/store.ts",
+      "line": 60,
+      "batchIndex": 6,
+      "metadata": {
+        "visibility": "private",
+        "returns": "BuildState",
+        "description": "Loads build from localStorage, merging with DEFAULT_BUILD. Falls back to defaults on error."
+      }
+    },
+    {
+      "id": "src/lib/store.ts::build",
+      "kind": "Variable",
+      "label": "build",
+      "filePath": "src/lib/store.ts",
+      "line": 71,
+      "batchIndex": 6,
+      "metadata": {
+        "visibility": "public",
+        "type": "Writable<BuildState>",
+        "description": "Reactive Svelte writable store holding the current build configuration. Auto-saves to localStorage on change."
+      }
+    },
+    {
+      "id": "src/lib/store.ts::effectiveDarknessOverride",
+      "kind": "Variable",
+      "label": "effectiveDarknessOverride",
+      "filePath": "src/lib/store.ts",
+      "line": 83,
+      "batchIndex": 6,
+      "metadata": {
+        "visibility": "public",
+        "type": "Writable<boolean | null>",
+        "description": "Svelte writable store for overriding the inDarkness flag. Null means use the build's own value."
+      }
+    },
+    {
+      "id": "src/lib/store.ts::result",
+      "kind": "Variable",
+      "label": "result",
+      "filePath": "src/lib/store.ts",
+      "line": 85,
+      "batchIndex": 6,
+      "metadata": {
+        "visibility": "public",
+        "type": "Derived<CalcResult>",
+        "description": "Derived store that recomputes calcBuild() whenever build or effectiveDarknessOverride changes."
+      }
+    },
+    {
+      "id": "src/lib/store.ts::setEnchantment",
+      "kind": "Function",
+      "label": "setEnchantment",
+      "filePath": "src/lib/store.ts",
+      "line": 90,
+      "batchIndex": 6,
+      "metadata": {
+        "visibility": "public",
+        "parameters": ["slot: EnchantSlot", "index: 0|1|2", "value: string"],
+        "description": "Sets an enchantment in a given armor slot at the given index, applying enforceEnchantSlot validation."
+      }
+    },
+    {
+      "id": "src/lib/store.ts::swapEnchantments",
+      "kind": "Function",
+      "label": "swapEnchantments",
+      "filePath": "src/lib/store.ts",
+      "line": 104,
+      "batchIndex": 6,
+      "metadata": {
+        "visibility": "public",
+        "parameters": ["slotA: EnchantSlot", "slotB: EnchantSlot"],
+        "description": "Swaps all three enchantment slots between two armor pieces."
+      }
+    },
+    {
+      "id": "src/lib/store.ts::clearBuild",
+      "kind": "Function",
+      "label": "clearBuild",
+      "filePath": "src/lib/store.ts",
+      "line": 120,
+      "batchIndex": 6,
+      "metadata": {
+        "visibility": "public",
+        "description": "Resets the build store to DEFAULT_BUILD."
+      }
+    },
+    {
+      "id": "src/lib/store.ts::setGuild",
+      "kind": "Function",
+      "label": "setGuild",
+      "filePath": "src/lib/store.ts",
+      "line": 124,
+      "batchIndex": 6,
+      "metadata": {
+        "visibility": "public",
+        "parameters": ["guildName: string", "guildRank: number"],
+        "description": "Sets the guild and rank; for Draconic guild, forces race to DRAGON BLOODED and clears rune infusion."
+      }
+    },
+    {
+      "id": "src/lib/store.ts::ArmorSlotKey",
+      "kind": "Type",
+      "label": "ArmorSlotKey",
+      "filePath": "src/lib/store.ts",
+      "line": 138,
+      "batchIndex": 6,
+      "metadata": {
+        "visibility": "public",
+        "typeDefinition": "'helmet' | 'chestplate' | 'leggings'"
+      }
+    },
+    {
+      "id": "src/lib/store.ts::InfusionArmorSlotKey",
+      "kind": "Type",
+      "label": "InfusionArmorSlotKey",
+      "filePath": "src/lib/store.ts",
+      "line": 139,
+      "batchIndex": 6,
+      "metadata": {
+        "visibility": "public",
+        "typeDefinition": "'infusionHelmet' | 'infusionChestplate' | 'infusionLeggings'"
+      }
+    },
+    {
+      "id": "src/lib/store.ts::AnyArmorSlotKey",
+      "kind": "Type",
+      "label": "AnyArmorSlotKey",
+      "filePath": "src/lib/store.ts",
+      "line": 140,
+      "batchIndex": 6,
+      "metadata": {
+        "visibility": "public",
+        "typeDefinition": "ArmorSlotKey | InfusionArmorSlotKey"
+      }
+    },
+    {
+      "id": "src/lib/store.ts::ARMOR_SLOT_TYPE_MAP",
+      "kind": "Constant",
+      "label": "ARMOR_SLOT_TYPE_MAP",
+      "filePath": "src/lib/store.ts",
+      "line": 142,
+      "batchIndex": 6,
+      "metadata": {
+        "visibility": "private",
+        "type": "Record<AnyArmorSlotKey, 'Helmet' | 'Chestplate' | 'Leggings'>",
+        "description": "Maps armor slot keys to their armor type string for validation."
+      }
+    },
+    {
+      "id": "src/lib/store.ts::UPGRADE_KEY_MAP",
+      "kind": "Constant",
+      "label": "UPGRADE_KEY_MAP",
+      "filePath": "src/lib/store.ts",
+      "line": 147,
+      "batchIndex": 6,
+      "metadata": {
+        "visibility": "private",
+        "type": "Record<AnyArmorSlotKey, upgradeKey>",
+        "description": "Maps armor slot keys to their corresponding upgrade level keys in BuildState."
+      }
+    },
+    {
+      "id": "src/lib/store.ts::moveArmorSlot",
+      "kind": "Function",
+      "label": "moveArmorSlot",
+      "filePath": "src/lib/store.ts",
+      "line": 152,
+      "batchIndex": 6,
+      "metadata": {
+        "visibility": "public",
+        "parameters": ["from: AnyArmorSlotKey", "to: AnyArmorSlotKey", "clone: boolean"],
+        "description": "Moves or copies an armor piece between slots with validation via armorSupportsSlot. Preserves upgrade levels."
+      }
+    },
+    {
+      "id": "src/lib/store.ts::canArmorMoveToSlot",
+      "kind": "Function",
+      "label": "canArmorMoveToSlot",
+      "filePath": "src/lib/store.ts",
+      "line": 179,
+      "batchIndex": 6,
+      "metadata": {
+        "visibility": "public",
+        "parameters": ["armorName: string", "to: AnyArmorSlotKey"],
+        "description": "Checks whether a given armor name can be placed in the target slot."
+      }
+    },
+    {
+      "id": "src/lib/store.ts::RingSlotKey",
+      "kind": "Type",
+      "label": "RingSlotKey",
+      "filePath": "src/lib/store.ts",
+      "line": 183,
+      "batchIndex": 6,
+      "metadata": {
+        "visibility": "public",
+        "typeDefinition": "'ring' | 'infusionRing'"
+      }
+    },
+    {
+      "id": "src/lib/store.ts::RING_UPGRADE_KEY",
+      "kind": "Constant",
+      "label": "RING_UPGRADE_KEY",
+      "filePath": "src/lib/store.ts",
+      "line": 185,
+      "batchIndex": 6,
+      "metadata": {
+        "visibility": "private",
+        "type": "Record<RingSlotKey, upgradeKey>",
+        "description": "Maps ring slot keys to their corresponding upgrade level keys in BuildState."
+      }
+    },
+    {
+      "id": "src/lib/store.ts::moveRingSlot",
+      "kind": "Function",
+      "label": "moveRingSlot",
+      "filePath": "src/lib/store.ts",
+      "line": 190,
+      "batchIndex": 6,
+      "metadata": {
+        "visibility": "public",
+        "parameters": ["from: RingSlotKey", "to: RingSlotKey", "clone: boolean"],
+        "description": "Moves or copies a ring between ring and infusion ring slots, preserving upgrade levels."
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "src/lib/store.ts::import::svelte_store",
+      "kind": "Import",
+      "sourceId": "src/lib/store.ts::Module",
+      "targetId": "svelte/store",
+      "metadata": {
+        "symbols": ["writable", "derived", "get"]
+      }
+    },
+    {
+      "id": "src/lib/store.ts::import::types",
+      "kind": "Import",
+      "sourceId": "src/lib/store.ts::Module",
+      "targetId": "src/lib/types.ts::Module",
+      "metadata": {
+        "symbols": ["BuildState", "EnchantSlot"],
+        "isTypeOnly": true
+      }
+    },
+    {
+      "id": "src/lib/store.ts::import::engine",
+      "kind": "Import",
+      "sourceId": "src/lib/store.ts::Module",
+      "targetId": "src/lib/engine.ts::Module",
+      "metadata": {
+        "symbols": ["calcBuild", "races", "enforceEnchantSlot", "armorSupportsSlot"]
+      }
+    },
+    {
+      "id": "src/lib/store.ts::import::constants",
+      "kind": "Import",
+      "sourceId": "src/lib/store.ts::Module",
+      "targetId": "src/lib/constants.ts::Module",
+      "metadata": {
+        "symbols": ["STORAGE_KEY_BUILD", "DEFAULT_LEVEL", "DEFAULT_HP_FILL", "DEFAULT_ENEMY_HP_FILL", "SAVE_DEBOUNCE_MS"]
+      }
+    },
+    {
+      "id": "src/lib/store.ts::loadBuild::uses::DEFAULT_BUILD",
+      "kind": "Uses",
+      "sourceId": "src/lib/store.ts::loadBuild",
+      "targetId": "src/lib/store.ts::DEFAULT_BUILD"
+    },
+    {
+      "id": "src/lib/store.ts::build::calls::loadBuild",
+      "kind": "Calls",
+      "sourceId": "src/lib/store.ts::build",
+      "targetId": "src/lib/store.ts::loadBuild"
+    },
+    {
+      "id": "src/lib/store.ts::build::uses::DEFAULT_BUILD",
+      "kind": "Uses",
+      "sourceId": "src/lib/store.ts::build",
+      "targetId": "src/lib/store.ts::DEFAULT_BUILD",
+      "metadata": {
+        "description": "build.subscribe saves state to localStorage using STORAGE_KEY_BUILD and SAVE_DEBOUNCE_MS"
+      }
+    },
+    {
+      "id": "src/lib/store.ts::result::derivedFrom::build",
+      "kind": "DerivedFrom",
+      "sourceId": "src/lib/store.ts::result",
+      "targetId": "src/lib/store.ts::build"
+    },
+    {
+      "id": "src/lib/store.ts::result::derivedFrom::effectiveDarknessOverride",
+      "kind": "DerivedFrom",
+      "sourceId": "src/lib/store.ts::result",
+      "targetId": "src/lib/store.ts::effectiveDarknessOverride"
+    },
+    {
+      "id": "src/lib/store.ts::result::calls::calcBuild",
+      "kind": "Calls",
+      "sourceId": "src/lib/store.ts::result",
+      "targetId": "src/lib/engine.ts::calcBuild"
+    },
+    {
+      "id": "src/lib/store.ts::setEnchantment::calls::enforceEnchantSlot",
+      "kind": "Calls",
+      "sourceId": "src/lib/store.ts::setEnchantment",
+      "targetId": "src/lib/engine.ts::enforceEnchantSlot"
+    },
+    {
+      "id": "src/lib/store.ts::setEnchantment::uses::EnchantSlot",
+      "kind": "References",
+      "sourceId": "src/lib/store.ts::setEnchantment",
+      "targetId": "src/lib/types.ts::EnchantSlot"
+    },
+    {
+      "id": "src/lib/store.ts::swapEnchantments::uses::EnchantSlot",
+      "kind": "References",
+      "sourceId": "src/lib/store.ts::swapEnchantments",
+      "targetId": "src/lib/types.ts::EnchantSlot"
+    },
+    {
+      "id": "src/lib/store.ts::clearBuild::uses::DEFAULT_BUILD",
+      "kind": "Uses",
+      "sourceId": "src/lib/store.ts::clearBuild",
+      "targetId": "src/lib/store.ts::DEFAULT_BUILD"
+    },
+    {
+      "id": "src/lib/store.ts::setGuild::uses::DEFAULT_BUILD",
+      "kind": "Uses",
+      "sourceId": "src/lib/store.ts::setGuild",
+      "targetId": "src/lib/store.ts::DEFAULT_BUILD",
+      "metadata": {
+        "description": "References DEFAULT_BUILD structure for field reset logic"
+      }
+    },
+    {
+      "id": "src/lib/store.ts::AnyArmorSlotKey::composedOf::ArmorSlotKey",
+      "kind": "ComposedOf",
+      "sourceId": "src/lib/store.ts::AnyArmorSlotKey",
+      "targetId": "src/lib/store.ts::ArmorSlotKey"
+    },
+    {
+      "id": "src/lib/store.ts::AnyArmorSlotKey::composedOf::InfusionArmorSlotKey",
+      "kind": "ComposedOf",
+      "sourceId": "src/lib/store.ts::AnyArmorSlotKey",
+      "targetId": "src/lib/store.ts::InfusionArmorSlotKey"
+    },
+    {
+      "id": "src/lib/store.ts::ARMOR_SLOT_TYPE_MAP::typedWith::AnyArmorSlotKey",
+      "kind": "References",
+      "sourceId": "src/lib/store.ts::ARMOR_SLOT_TYPE_MAP",
+      "targetId": "src/lib/store.ts::AnyArmorSlotKey"
+    },
+    {
+      "id": "src/lib/store.ts::UPGRADE_KEY_MAP::typedWith::AnyArmorSlotKey",
+      "kind": "References",
+      "sourceId": "src/lib/store.ts::UPGRADE_KEY_MAP",
+      "targetId": "src/lib/store.ts::AnyArmorSlotKey"
+    },
+    {
+      "id": "src/lib/store.ts::RING_UPGRADE_KEY::typedWith::RingSlotKey",
+      "kind": "References",
+      "sourceId": "src/lib/store.ts::RING_UPGRADE_KEY",
+      "targetId": "src/lib/store.ts::RingSlotKey"
+    },
+    {
+      "id": "src/lib/store.ts::moveArmorSlot::uses::ARMOR_SLOT_TYPE_MAP",
+      "kind": "Uses",
+      "sourceId": "src/lib/store.ts::moveArmorSlot",
+      "targetId": "src/lib/store.ts::ARMOR_SLOT_TYPE_MAP"
+    },
+    {
+      "id": "src/lib/store.ts::moveArmorSlot::uses::UPGRADE_KEY_MAP",
+      "kind": "Uses",
+      "sourceId": "src/lib/store.ts::moveArmorSlot",
+      "targetId": "src/lib/store.ts::UPGRADE_KEY_MAP"
+    },
+    {
+      "id": "src/lib/store.ts::moveArmorSlot::calls::armorSupportsSlot",
+      "kind": "Calls",
+      "sourceId": "src/lib/store.ts::moveArmorSlot",
+      "targetId": "src/lib/engine.ts::armorSupportsSlot"
+    },
+    {
+      "id": "src/lib/store.ts::canArmorMoveToSlot::uses::ARMOR_SLOT_TYPE_MAP",
+      "kind": "Uses",
+      "sourceId": "src/lib/store.ts::canArmorMoveToSlot",
+      "targetId": "src/lib/store.ts::ARMOR_SLOT_TYPE_MAP"
+    },
+    {
+      "id": "src/lib/store.ts::canArmorMoveToSlot::calls::armorSupportsSlot",
+      "kind": "Calls",
+      "sourceId": "src/lib/store.ts::canArmorMoveToSlot",
+      "targetId": "src/lib/engine.ts::armorSupportsSlot"
+    },
+    {
+      "id": "src/lib/store.ts::moveRingSlot::uses::RING_UPGRADE_KEY",
+      "kind": "Uses",
+      "sourceId": "src/lib/store.ts::moveRingSlot",
+      "targetId": "src/lib/store.ts::RING_UPGRADE_KEY"
+    },
+    {
+      "id": "src/lib/store.ts::moveRingSlot::uses::RingSlotKey",
+      "kind": "References",
+      "sourceId": "src/lib/store.ts::moveRingSlot",
+      "targetId": "src/lib/store.ts::RingSlotKey"
+    }
+  ]
+}

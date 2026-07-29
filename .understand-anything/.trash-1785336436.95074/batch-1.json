@@ -1,0 +1,842 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/lib/constants/buffs.ts",
+      "kind": "file",
+      "type": "file",
+      "properties": {
+        "path": "src/lib/constants/buffs.ts",
+        "language": "typescript",
+        "languageLesson": "constants module exporting numeric buff/debuff potency and duration values",
+        "fileCategory": "code",
+        "summary": "Defines all buff/debuff potency and duration constants used throughout the damage calculation engine. Categorized into potion constants, rune-granted buffs, basic debuff pool, weapon-art-granted buffs, True Balance conversions, PERK_BUFFS factory constants, BUFF_POTENCY_MODIFIERS, GENERIC_DEBUFF_MODIFIERS, and Propelling Fun constants.",
+        "title": "Buff/Debuff Constants",
+        "tags": ["buff", "debuff", "potency", "duration", "constants", "stat-data"],
+        "exports": [
+          "RAGE_POTION_POTENCY", "RAGE_POTION_DURATION", "POISON_POTION_POTENCY", "POISON_POTION_DURATION", "POTION_CHUGGER_POTENCY_MULT_PER_LEVEL",
+          "BUFF_EFFECT_PER_TENTH",
+          "WHIRLWIND_EFFECT_PER_TENTH", "GLYPH_CONDUIT_EFFECT_PER_TENTH", "DESPAIR_EFFECT_PER_TENTH",
+          "LUMINESCENT_PCT_PER_POTENCY",
+          "RAGE_RUNE_BUFF_POTENCY", "RAGE_RUNE_BUFF_DURATION", "TOAD_SLAM_RAGE_POTENCY", "TOAD_SLAM_RAGE_DURATION", "BOUNCE_RUNE_POTENCY", "BOUNCE_RUNE_DURATION", "BEENADE_RUNE_POTENCY", "ANCIENT_CLERIC_SHIELD_POTENCY", "ANCIENT_CLERIC_SHIELD_DURATION", "BOOSTSHROOM_POISON_DURATION", "SPORELING_POISON_DURATION", "THUNDEROUS_CLOAK_POTENCY", "THUNDEROUS_CLOAK_DURATION", "WINTER_WOOF_SHATTER_POTENCY", "WINTER_WOOF_SHATTER_DURATION", "GLACIAL_SNAPPER_SLOWNESS_POTENCY", "GLACIAL_SNAPPER_SLOWNESS_DURATION", "GLACIAL_SNAPPER_BLEED_DURATION", "CACITROPS_BLEED_DURATION", "BRAINBLAST_BURN_DURATION", "BRAINBLAST_STICKY_POTENCY", "BRAINBLAST_STICKY_DURATION", "HEX_WEB_STICKY_POTENCY", "HEX_WEB_STICKY_DURATION", "SNOEBALL_FROSTBITE_POTENCY", "SNOEBALL_FROSTBITE_DURATION",
+          "BASIC_DEBUFF_POTENCY", "BASIC_DEBUFF_DURATION", "BASIC_SHATTER_POTENCY", "BASIC_SLOWNESS_POTENCY", "BASIC_WEAKNESS_POTENCY",
+          "WARRIOR_STOMP_RAGE_POTENCY", "WARRIOR_STOMP_RAGE_DURATION", "WARRIOR_STOMP_TAUNT_POTENCY", "WARRIOR_STOMP_TAUNT_DURATION", "JAVELIN_SLOWNESS_DURATION", "LIGHTNING_CLOAK_DURATION_WA", "CURSED_GROUND_WEAKNESS_POTENCY", "CURSED_GROUND_WEAKNESS_DURATION",
+          "TRUE_BALANCE_POTENCY_COEFF", "TRUE_BALANCE_REGEN_DURATION_BASE", "TRUE_BALANCE_TAILWIND_DURATION_BASE", "TRUE_BALANCE_REINFORCE_POTENCY_BASE", "TRUE_BALANCE_RAGE_DURATION_BASE", "TRUE_BALANCE_INSPIRED_DURATION_BASE",
+          "PERFECTION_POTENCY_PER_AMOUNT", "BOUNCE_MOMENTUM_BUFF_POTENCY", "BOUNCE_MOMENTUM_DURATION_PER_AMOUNT", "TOADZERKER_BUFF_POTENCY", "TOADZERKER_BUFF_DURATION", "IRON_BOUNCE_DURATION_BASE", "IRON_BOUNCE_DURATION_PER_AMOUNT", "SPRINGBLAST_BUFF_POTENCY_PER_AMOUNT", "SPRINGBLAST_BUFF_DURATION_BASE", "SPRINGBLAST_BUFF_DURATION_PER_AMOUNT", "WRATHFUL_CRITS_POTENCY_PER_AMOUNT", "WRATHFUL_CRITS_DURATION_BASE", "WRATHFUL_CRITS_DURATION_PER_AMOUNT", "BLOOD_LUST_POTENCY_PER_AMOUNT", "BLOOD_LUST_DURATION_PER_AMOUNT", "LUMINESCENT_BUFF_POTENCY_PER_AMOUNT", "LUMINESCENT_BUFF_DURATION", "BEASTIAL_RAGE_POTENCY_PER_AMOUNT", "BEASTIAL_RAGE_DURATION", "VASSALS_CROAK_MAX_SUMMONS_BASE", "VASSALS_CROAK_RAGE_DURATION", "IRON_SLAYER_POTENCY_PER_AMOUNT", "IRON_SLAYER_DURATION", "BASTION_REGEN_POTENCY", "BASTION_REINFORCE_POTENCY", "BASTION_RATE_PER_AMOUNT", "BASTION_BUFF_DURATION", "AIR_PRESSURE_BUFF_POTENCY_PER_AMOUNT", "AIR_PRESSURE_BUFF_DURATION", "APOLLO_TAUNT_POTENCY", "APOLLO_TAUNT_DURATION", "VALOR_TAUNT_POTENCY", "VALOR_TAUNT_DURATION", "CHANNELED_REINFORCE_POTENCY", "CHANNELED_REINFORCE_DURATION", "GLADIATORIAL_RAGE_POTENCY", "GLADIATORIAL_RAGE_DURATION", "GLYPH_CONDUIT_POTENCY_PER_AMOUNT", "GLYPH_CONDUIT_DURATION_MULT", "ROARING_WEAKNESS_POTENCY", "ROARING_SHATTER_POTENCY", "ROARING_ANTI_HEAL_POTENCY", "ROARING_DEBUFF_DURATION", "STORM_REND_POTENCY_PER_AMOUNT", "STORM_REND_DURATION", "EROSION_POTENCY_BASE", "EROSION_POTENCY_PER_AMOUNT", "EROSION_DURATION", "QUICKDRAW_POTENCY_PER_AMOUNT", "QUICKDRAW_DURATION", "TAILWIND_BUFF_POTENCY", "TAILWIND_BUFF_DURATION", "TOXIN_TRANSFER_DURATION_EXTRA", "GROUNDED_DESPAIR_POTENCY_PER_AMOUNT", "GROUNDED_DESPAIR_DURATION_PER_AMOUNT", "QUEENS_POWER_POTENCY_PER_AMOUNT", "QUEENS_POWER_DURATION", "QUEENS_POWER_ATK_SPD_BASE", "QUEENS_POWER_ATK_SPD_PER_TENTH_POTENCY", "QUEENS_POWER_SUMMON_SCALING_PER_TENTH_POTENCY", "ICESTORM_POTENCY_PER_AMOUNT", "ICESTORM_DURATION", "SWIFT_GUARD_POTENCY_PER_AMOUNT", "SWIFT_GUARD_DURATION", "RUNIC_WINDS_POTENCY_PER_AMOUNT", "RUNIC_WINDS_DURATION",
+          "BOUNCE_DURATION_BASE", "BOUNCE_DURATION_PER_STACK", "MOD_GLADIATORIAL_POTENCY", "MOD_MAGE_RAGE_POTENCY", "MOD_OCEANS_RAGE_POTENCY", "MOD_SLAYER_RAGE_POTENCY", "MOD_SLAYER_WEAKNESS_POTENCY", "MOD_IRON_SLAYER_POTENCY", "MOD_IRON_SLAYER_DURATION", "MOD_FURY_DURATION", "MOD_TAILWIND_POTENCY", "MOD_WIND_WALKER_DURATION_DIVISOR", "MOD_SLOW_LEAK_DURATION",
+          "ENDLESS_DESPAIR_POTENCY_PER_STACK", "ENDLESS_DESPAIR_FLAT_BONUS", "ENDLESS_DESPAIR_DURATION_PER_STACK", "STORED_CORRUPTION_DURATION_PER_STACK",
+          "PROPELLING_FUN_POTENCY_PER_AMOUNT", "PROPELLING_FUN_DURATION_MULTIPLIER", "CLOUDPUSH_PCT_PER_POTENCY", "CINDERPULL_PCT_PER_POTENCY", "CLOUDPUSH_PCT_PER_STACK", "CINDERPULL_PCT_PER_STACK"
+        ],
+        "imports": [],
+        "lineCount": 175
+      }
+    },
+    {
+      "id": "file:src/lib/engine/build.ts",
+      "kind": "file",
+      "type": "file",
+      "properties": {
+        "path": "src/lib/engine/build.ts",
+        "language": "typescript",
+        "languageLesson": "core build engine that accumulates equipment stats, calculates cooldowns, damage boosts, buffs, and crit to produce a complete BuildResult",
+        "fileCategory": "code",
+        "summary": "Core build calculation engine. Accumulates stats from equipment (armor, weapons, rings, runes, infusions), applies upgrades and shrines, processes enchantments, calculates cooldown reduction (CDR), damage boosts (via perk definitions and race effects), buff assembly, and crit calculations. Entry point: calcBuild() takes a BuildState and returns a complete BuildResult.",
+        "title": "Build Calculation Engine",
+        "tags": ["build", "engine", "damage-calculation", "cdr", "boosts", "buffs", "equipment", "perks"],
+        "exports": ["calcBuild", "BuildResult", "CDRStep", "CDRResult"],
+        "imports": [
+          "src/lib/types.ts",
+          "src/data/cdr.ts",
+          "src/data/statboost.ts",
+          "src/data/BuffData.ts",
+          "src/data/raceEffects.ts",
+          "src/data/Boost.ts",
+          "src/lib/crit.ts",
+          "src/lib/utils.ts",
+          "src/lib/constants.ts",
+          "src/lib/constants/buffs.ts",
+          "src/lib/engine/data.ts",
+          "src/lib/engine/enchant.ts",
+          "src/lib/engine/shrine.ts",
+          "src/lib/engine/weapon.ts",
+          "src/data/weaponArts.ts",
+          "src/lib/damageTypeResolve.ts",
+          "src/lib/engine/dmgTypeBonuses.ts"
+        ],
+        "lineCount": 566
+      }
+    },
+    {
+      "id": "interface:src/lib/engine/build.ts:CDRStep",
+      "kind": "interface",
+      "type": "interface",
+      "properties": {
+        "name": "CDRStep",
+        "summary": "Represents a single step in the cooldown reduction calculation chain with source name, percentage, multiplier, and optional multiply flag.",
+        "tags": ["cdr", "type", "cooldown"],
+        "fields": ["source: string", "pct: number", "multiplier: number", "isMultiply?: boolean"]
+      }
+    },
+    {
+      "id": "interface:src/lib/engine/build.ts:CDRResult",
+      "kind": "interface",
+      "type": "interface",
+      "properties": {
+        "name": "CDRResult",
+        "summary": "Aggregated cooldown reduction result for rune and weapon art CDR with breakdowns.",
+        "tags": ["cdr", "type", "cooldown"],
+        "fields": ["runeCDR: number", "waCDR: number", "runeSetCD?: number", "runeBreakdown: CDRStep[]", "waBreakdown: CDRStep[]"]
+      }
+    },
+    {
+      "id": "function:src/lib/engine/build.ts:calcCDR",
+      "kind": "function",
+      "type": "function",
+      "properties": {
+        "name": "calcCDR",
+        "visibility": "private",
+        "summary": "Calculates rune and weapon art cooldown reduction from perks, race modifiers, and emotional state. Supports toggleable perks and rune filters.",
+        "tags": ["cdr", "cooldown", "calculation"],
+        "parameters": ["perks: Record<string, number>", "raceCooldownModifiers?: Record<string, number>", "activeRuneName?: string", "activeRaceName?: string", "emotionalState?: 'buffs' | 'debuffs' | 'both'", "cdrToggles?: Record<string, boolean>"],
+        "returnType": "CDRResult"
+      }
+    },
+    {
+      "id": "function:src/lib/engine/build.ts:calcBoosts",
+      "kind": "function",
+      "type": "function",
+      "properties": {
+        "name": "calcBoosts",
+        "visibility": "private",
+        "summary": "Computes all damage boost multipliers from perk definitions (BOOST_DEFS), race effects, and level scaling. Returns a final combined multiplier and per-source breakdown.",
+        "tags": ["boosts", "damage", "calculation"],
+        "parameters": ["perks: Record<string, number>", "emotionalState?: string", "level: number", "naturalCritChance: number", "jumpBoost: number", "summonCount: number", "ragePotency: number", "bouncePotency: number", "tailwindPotency: number", "airBoost: number", "speedBoost: number", "attackSpeed: number", "tenacity: number", "raceName?: string", "hpFillPct?: number", "inDarkness: boolean", "mountActive: boolean", "summonBoostPct: number", "quickdrawPotency: number", "selectedWeaponArt?: string", "burnPotency: number", "hasBurn: boolean", "selfDebuffCount: number", "hasMagicDmg: boolean", "hasMagicOrPhysicalDmg: boolean", "enemyHpFillPct: number"],
+        "returnType": "BoostResult"
+      }
+    },
+    {
+      "id": "interface:src/lib/engine/build.ts:BuildResult",
+      "kind": "interface",
+      "type": "interface",
+      "properties": {
+        "name": "BuildResult",
+        "exported": true,
+        "summary": "Top-level result of a build calculation, containing final stats, perks, CDR, damage boosts, and crit info.",
+        "tags": ["build", "result", "type"],
+        "fields": ["stats: StatMap", "perks: Record<string, number>", "cdr: CDRResult", "boosts: BoostResult", "crit: CritResult"]
+      }
+    },
+    {
+      "id": "function:src/lib/engine/build.ts:accumulateMonkWeapon",
+      "kind": "function",
+      "type": "function",
+      "properties": {
+        "name": "accumulateMonkWeapon",
+        "visibility": "private",
+        "summary": "Accumulates stats and perks from monk glove and essence, applying shrine multipliers and monk rank bonus.",
+        "tags": ["monk", "weapon", "equipment", "accumulation"],
+        "parameters": ["state: BuildState", "perks: Record<string, number>", "addStats: Function", "addPerks: Function"],
+        "returnType": "void"
+      }
+    },
+    {
+      "id": "function:src/lib/engine/build.ts:accumulateStandardWeapon",
+      "kind": "function",
+      "type": "function",
+      "properties": {
+        "name": "accumulateStandardWeapon",
+        "visibility": "private",
+        "summary": "Accumulates stats and perks from standard weapon blade and handle, applying shrine multipliers.",
+        "tags": ["weapon", "equipment", "accumulation"],
+        "parameters": ["state: BuildState", "perks: Record<string, number>", "addStats: Function", "addPerks: Function"],
+        "returnType": "void"
+      }
+    },
+    {
+      "id": "function:src/lib/engine/build.ts:processEnchantedSlot",
+      "kind": "function",
+      "type": "function",
+      "properties": {
+        "name": "processEnchantedSlot",
+        "visibility": "private",
+        "summary": "Processes a single enchanted equipment slot (ring/rune), applying enchantments to its stats and perks.",
+        "tags": ["enchant", "equipment", "slot"],
+        "parameters": ["itemName: string", "getItem: Function", "upgrade: number", "enchants: [string, string, string]", "addStats: Function", "addPerkMap: Function"],
+        "returnType": "void"
+      }
+    },
+    {
+      "id": "function:src/lib/engine/build.ts:accumulateEquipment",
+      "kind": "function",
+      "type": "function",
+      "properties": {
+        "name": "accumulateEquipment",
+        "visibility": "private",
+        "summary": "Main equipment accumulation function. Gathers stats and perks from race, guild, armor (helmet/chestplate/leggings), ring, rune, weapon (monk or standard), and infusions. Applies enchantments and upgrades.",
+        "tags": ["equipment", "accumulation", "stats", "perks"],
+        "parameters": ["state: BuildState"],
+        "returnType": "{ stats: StatMap; perks: Record<string, number> }"
+      }
+    },
+    {
+      "id": "function:src/lib/engine/build.ts:finalizePerks",
+      "kind": "function",
+      "type": "function",
+      "properties": {
+        "name": "finalizePerks",
+        "visibility": "private",
+        "summary": "Finalizes perk amounts: filters zero entries, applies Perk Effectiveness/Cursed adjustments, resolves Buckler->Parry grant, and aggregates grantor perks (e.g. Ignition, Trickster) into Potency perks.",
+        "tags": ["perks", "finalization", "transformation"],
+        "parameters": ["rawPerks: Record<string, number>"],
+        "returnType": "Record<string, number>"
+      }
+    },
+    {
+      "id": "function:src/lib/engine/build.ts:applyEmotionalAttackSpeed",
+      "kind": "function",
+      "type": "function",
+      "properties": {
+        "name": "applyEmotionalAttackSpeed",
+        "visibility": "private",
+        "summary": "Applies attack speed bonus from Emotional perk when in debuffs emotional state.",
+        "tags": ["emotional", "attack-speed", "perk"],
+        "parameters": ["boostedStats: StatMap", "finalPerks: Record<string, number>", "emotionalState?: string"],
+        "returnType": "void"
+      }
+    },
+    {
+      "id": "function:src/lib/engine/build.ts:applyGladiatorialRage",
+      "kind": "function",
+      "type": "function",
+      "properties": {
+        "name": "applyGladiatorialRage",
+        "visibility": "private",
+        "summary": "Converts the highest offensive stat boost into armor penetration based on Gladiatorial Rage perk.",
+        "tags": ["gladiatorial", "rage", "armor-penetration", "perk"],
+        "parameters": ["boostedStats: StatMap", "finalPerks: Record<string, number>"],
+        "returnType": "void"
+      }
+    },
+    {
+      "id": "function:src/lib/engine/build.ts:computeBuffs",
+      "kind": "function",
+      "type": "function",
+      "properties": {
+        "name": "computeBuffs",
+        "visibility": "private",
+        "summary": "Assembles all active buffs from the build state and perks, then calculates Ork tenacity bonus from buffs.",
+        "tags": ["buffs", "tenacity", "ork"],
+        "parameters": ["state: BuildState", "finalPerks: Record<string, number>", "wardingDebuffMult: number"],
+        "returnType": "{ allBuffs: any[]; orkBuffTenacity: number }"
+      }
+    },
+    {
+      "id": "function:src/lib/engine/build.ts:maxBuffPotency",
+      "kind": "function",
+      "type": "function",
+      "properties": {
+        "name": "maxBuffPotency",
+        "visibility": "private",
+        "summary": "Finds the maximum potency among active buffs matching a given buff name (or array of names).",
+        "tags": ["buffs", "potency", "utility"],
+        "parameters": ["allBuffs: any[]", "buffName: string | string[]"],
+        "returnType": "number"
+      }
+    },
+    {
+      "id": "function:src/lib/engine/build.ts:deriveResults",
+      "kind": "function",
+      "type": "function",
+      "properties": {
+        "name": "deriveResults",
+        "visibility": "private",
+        "summary": "Derives the final BuildResult from raw accumulated stats and finalized perks. Rounds stats, computes CDR, applies stat boost perks, emotional attack speed, gladiatorial rage, crit, warding debuff, buff assembly, Queens Power attack speed, HP fill adjustment, weapon damage types, and final damage boost multiplier.",
+        "tags": ["derivation", "results", "final-calculation"],
+        "parameters": ["rawStats: StatMap", "finalPerks: Record<string, number>", "state: BuildState"],
+        "returnType": "BuildResult"
+      }
+    },
+    {
+      "id": "function:src/lib/engine/build.ts:calcBuild",
+      "kind": "function",
+      "type": "function",
+      "properties": {
+        "name": "calcBuild",
+        "exported": true,
+        "visibility": "public",
+        "summary": "Entry point for build calculation. Accumulates equipment, finalizes perks, and derives the complete BuildResult.",
+        "tags": ["build", "entry-point", "calculation"],
+        "parameters": ["state: BuildState"],
+        "returnType": "BuildResult"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-import-buffs-0",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/constants/buffs.ts",
+      "kind": "imports",
+      "label": "imports QUEENS_POWER_POTENCY_PER_AMOUNT, QUEENS_POWER_ATK_SPD_BASE, QUEENS_POWER_ATK_SPD_PER_TENTH_POTENCY"
+    },
+    {
+      "id": "edge-import-build-0",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/types.ts",
+      "kind": "imports",
+      "label": "imports StatKey, StatMap, ArmorPart, EnchantSlot, BuildState, STAT_KEYS, applyUpgrade, BoostEntry, BoostResult"
+    },
+    {
+      "id": "edge-import-build-1",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/data/cdr.ts",
+      "kind": "imports",
+      "label": "imports CDR_PERK_DATA"
+    },
+    {
+      "id": "edge-import-build-2",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/data/statboost.ts",
+      "kind": "imports",
+      "label": "imports applyStatBoostPerks, OFFENSIVE_BOOSTS"
+    },
+    {
+      "id": "edge-import-build-3",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/constants.ts",
+      "kind": "imports",
+      "label": "imports MAX_LEVEL, calcBaseMaxHP"
+    },
+    {
+      "id": "edge-import-build-4",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/crit.ts",
+      "kind": "imports",
+      "label": "imports calcCrit, CritResult"
+    },
+    {
+      "id": "edge-import-build-5",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/utils.ts",
+      "kind": "imports",
+      "label": "imports roundMultiplier, calcWardingDebuffMultiplier"
+    },
+    {
+      "id": "edge-import-build-6",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/data/BuffData.ts",
+      "kind": "imports",
+      "label": "imports getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, convertTailwindToWhirlwind, assembleActiveBuffs, BUFF_DEFS"
+    },
+    {
+      "id": "edge-import-build-7",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/data/raceEffects.ts",
+      "kind": "imports",
+      "label": "imports getActiveRaceEffect, calcOrkTenacityBonus"
+    },
+    {
+      "id": "edge-import-build-8",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/data/Boost.ts",
+      "kind": "imports",
+      "label": "imports BOOST_DEFS, BoostContext"
+    },
+    {
+      "id": "edge-import-build-9",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/engine/data.ts",
+      "kind": "imports",
+      "label": "imports getRace, getGuild, getGuildRank, getArmorPart, getRing, getRune, getBlade, getHandle, getGlove, getEssence, isMonkGuild, getPerk"
+    },
+    {
+      "id": "edge-import-build-10",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/engine/enchant.ts",
+      "kind": "imports",
+      "label": "imports applyEnchantmentsToSlot, applyPerkEffectiveness, applyInfusion"
+    },
+    {
+      "id": "edge-import-build-11",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/engine/shrine.ts",
+      "kind": "imports",
+      "label": "imports applyShrineToStats, SHRINE_MULTIPLIERS"
+    },
+    {
+      "id": "edge-import-build-12",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/engine/weapon.ts",
+      "kind": "imports",
+      "label": "imports MONK_RANK_MULTIPLIER, calcWeapon, calcMonkWeapon"
+    },
+    {
+      "id": "edge-import-build-13",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/data/weaponArts.ts",
+      "kind": "imports",
+      "label": "imports WEAPON_ARTS"
+    },
+    {
+      "id": "edge-import-build-14",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/damageTypeResolve.ts",
+      "kind": "imports",
+      "label": "imports getFinalWaDmgTypes"
+    },
+    {
+      "id": "edge-import-build-15",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/engine/dmgTypeBonuses.ts",
+      "kind": "imports",
+      "label": "imports buildDmgTypeBonuses"
+    },
+    {
+      "id": "edge-contains-cdrstep",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "interface:src/lib/engine/build.ts:CDRStep",
+      "kind": "contains",
+      "label": "contains CDRStep interface"
+    },
+    {
+      "id": "edge-contains-cdrresult",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "interface:src/lib/engine/build.ts:CDRResult",
+      "kind": "contains",
+      "label": "contains CDRResult interface"
+    },
+    {
+      "id": "edge-contains-buildresult",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "interface:src/lib/engine/build.ts:BuildResult",
+      "kind": "contains",
+      "label": "contains BuildResult interface"
+    },
+    {
+      "id": "edge-contains-calcCDR",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "function:src/lib/engine/build.ts:calcCDR",
+      "kind": "contains",
+      "label": "contains calcCDR function"
+    },
+    {
+      "id": "edge-contains-calcBoosts",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "function:src/lib/engine/build.ts:calcBoosts",
+      "kind": "contains",
+      "label": "contains calcBoosts function"
+    },
+    {
+      "id": "edge-contains-accumulateMonkWeapon",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "function:src/lib/engine/build.ts:accumulateMonkWeapon",
+      "kind": "contains",
+      "label": "contains accumulateMonkWeapon function"
+    },
+    {
+      "id": "edge-contains-accumulateStandardWeapon",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "function:src/lib/engine/build.ts:accumulateStandardWeapon",
+      "kind": "contains",
+      "label": "contains accumulateStandardWeapon function"
+    },
+    {
+      "id": "edge-contains-processEnchantedSlot",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "function:src/lib/engine/build.ts:processEnchantedSlot",
+      "kind": "contains",
+      "label": "contains processEnchantedSlot function"
+    },
+    {
+      "id": "edge-contains-accumulateEquipment",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "function:src/lib/engine/build.ts:accumulateEquipment",
+      "kind": "contains",
+      "label": "contains accumulateEquipment function"
+    },
+    {
+      "id": "edge-contains-finalizePerks",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "function:src/lib/engine/build.ts:finalizePerks",
+      "kind": "contains",
+      "label": "contains finalizePerks function"
+    },
+    {
+      "id": "edge-contains-applyEmotionalAttackSpeed",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "function:src/lib/engine/build.ts:applyEmotionalAttackSpeed",
+      "kind": "contains",
+      "label": "contains applyEmotionalAttackSpeed function"
+    },
+    {
+      "id": "edge-contains-applyGladiatorialRage",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "function:src/lib/engine/build.ts:applyGladiatorialRage",
+      "kind": "contains",
+      "label": "contains applyGladiatorialRage function"
+    },
+    {
+      "id": "edge-contains-computeBuffs",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "function:src/lib/engine/build.ts:computeBuffs",
+      "kind": "contains",
+      "label": "contains computeBuffs function"
+    },
+    {
+      "id": "edge-contains-maxBuffPotency",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "function:src/lib/engine/build.ts:maxBuffPotency",
+      "kind": "contains",
+      "label": "contains maxBuffPotency function"
+    },
+    {
+      "id": "edge-contains-deriveResults",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "function:src/lib/engine/build.ts:deriveResults",
+      "kind": "contains",
+      "label": "contains deriveResults function"
+    },
+    {
+      "id": "edge-contains-calcBuild",
+      "source": "file:src/lib/engine/build.ts",
+      "target": "function:src/lib/engine/build.ts:calcBuild",
+      "kind": "contains",
+      "label": "contains calcBuild function"
+    },
+    {
+      "id": "edge-calls-calcBuild-accumulateEquipment",
+      "source": "function:src/lib/engine/build.ts:calcBuild",
+      "target": "function:src/lib/engine/build.ts:accumulateEquipment",
+      "kind": "calls",
+      "label": "calls accumulateEquipment"
+    },
+    {
+      "id": "edge-calls-calcBuild-finalizePerks",
+      "source": "function:src/lib/engine/build.ts:calcBuild",
+      "target": "function:src/lib/engine/build.ts:finalizePerks",
+      "kind": "calls",
+      "label": "calls finalizePerks"
+    },
+    {
+      "id": "edge-calls-calcBuild-deriveResults",
+      "source": "function:src/lib/engine/build.ts:calcBuild",
+      "target": "function:src/lib/engine/build.ts:deriveResults",
+      "kind": "calls",
+      "label": "calls deriveResults"
+    },
+    {
+      "id": "edge-calls-deriveResults-calcCDR",
+      "source": "function:src/lib/engine/build.ts:deriveResults",
+      "target": "function:src/lib/engine/build.ts:calcCDR",
+      "kind": "calls",
+      "label": "calls calcCDR"
+    },
+    {
+      "id": "edge-calls-deriveResults-applyEmotionalAttackSpeed",
+      "source": "function:src/lib/engine/build.ts:deriveResults",
+      "target": "function:src/lib/engine/build.ts:applyEmotionalAttackSpeed",
+      "kind": "calls",
+      "label": "calls applyEmotionalAttackSpeed"
+    },
+    {
+      "id": "edge-calls-deriveResults-applyGladiatorialRage",
+      "source": "function:src/lib/engine/build.ts:deriveResults",
+      "target": "function:src/lib/engine/build.ts:applyGladiatorialRage",
+      "kind": "calls",
+      "label": "calls applyGladiatorialRage"
+    },
+    {
+      "id": "edge-calls-deriveResults-computeBuffs",
+      "source": "function:src/lib/engine/build.ts:deriveResults",
+      "target": "function:src/lib/engine/build.ts:computeBuffs",
+      "kind": "calls",
+      "label": "calls computeBuffs"
+    },
+    {
+      "id": "edge-calls-deriveResults-maxBuffPotency-rage",
+      "source": "function:src/lib/engine/build.ts:deriveResults",
+      "target": "function:src/lib/engine/build.ts:maxBuffPotency",
+      "kind": "calls",
+      "label": "calls maxBuffPotency (Rage, Bounce, Quickdraw, Tailwind/Whirlwind, Burn)"
+    },
+    {
+      "id": "edge-calls-deriveResults-calcBoosts",
+      "source": "function:src/lib/engine/build.ts:deriveResults",
+      "target": "function:src/lib/engine/build.ts:calcBoosts",
+      "kind": "calls",
+      "label": "calls calcBoosts"
+    },
+    {
+      "id": "edge-calls-accumulateEquipment-processEnchantedSlot",
+      "source": "function:src/lib/engine/build.ts:accumulateEquipment",
+      "target": "function:src/lib/engine/build.ts:processEnchantedSlot",
+      "kind": "calls",
+      "label": "calls processEnchantedSlot (ring & rune)"
+    },
+    {
+      "id": "edge-calls-accumulateEquipment-accumulateMonkWeapon",
+      "source": "function:src/lib/engine/build.ts:accumulateEquipment",
+      "target": "function:src/lib/engine/build.ts:accumulateMonkWeapon",
+      "kind": "calls",
+      "label": "calls accumulateMonkWeapon (conditional on monk guild)"
+    },
+    {
+      "id": "edge-calls-accumulateEquipment-accumulateStandardWeapon",
+      "source": "function:src/lib/engine/build.ts:accumulateEquipment",
+      "target": "function:src/lib/engine/build.ts:accumulateStandardWeapon",
+      "kind": "calls",
+      "label": "calls accumulateStandardWeapon (conditional on non-monk guild)"
+    },
+    {
+      "id": "edge-calls-calcBoosts-getActiveRaceEffect",
+      "source": "function:src/lib/engine/build.ts:calcBoosts",
+      "target": "file:src/data/raceEffects.ts",
+      "kind": "calls",
+      "label": "calls getActiveRaceEffect (imported)"
+    },
+    {
+      "id": "edge-calls-computeBuffs-assembleActiveBuffs",
+      "source": "function:src/lib/engine/build.ts:computeBuffs",
+      "target": "file:src/data/BuffData.ts",
+      "kind": "calls",
+      "label": "calls assembleActiveBuffs and calcOrkTenacityBonus (imported)"
+    },
+    {
+      "id": "edge-calls-finalizePerks-applyPerkEffectiveness",
+      "source": "function:src/lib/engine/build.ts:finalizePerks",
+      "target": "file:src/lib/engine/enchant.ts",
+      "kind": "calls",
+      "label": "calls applyPerkEffectiveness (imported)"
+    },
+    {
+      "id": "edge-calls-finalizePerks-getPerk",
+      "source": "function:src/lib/engine/build.ts:finalizePerks",
+      "target": "file:src/lib/engine/data.ts",
+      "kind": "calls",
+      "label": "calls getPerk (imported)"
+    },
+    {
+      "id": "edge-calls-accumulateEquipment-applyEnchantmentsToSlot",
+      "source": "function:src/lib/engine/build.ts:accumulateEquipment",
+      "target": "file:src/lib/engine/enchant.ts",
+      "kind": "calls",
+      "label": "calls applyEnchantmentsToSlot (imported, for armor slots)"
+    },
+    {
+      "id": "edge-calls-accumulateEquipment-applyInfusion",
+      "source": "function:src/lib/engine/build.ts:accumulateEquipment",
+      "target": "file:src/lib/engine/enchant.ts",
+      "kind": "calls",
+      "label": "calls applyInfusion (imported)"
+    },
+    {
+      "id": "edge-calls-processEnchantedSlot-applyEnchantmentsToSlot",
+      "source": "function:src/lib/engine/build.ts:processEnchantedSlot",
+      "target": "file:src/lib/engine/enchant.ts",
+      "kind": "calls",
+      "label": "calls applyEnchantmentsToSlot (imported)"
+    },
+    {
+      "id": "edge-calls-accumulateMonkWeapon-applyShrineToStats",
+      "source": "function:src/lib/engine/build.ts:accumulateMonkWeapon",
+      "target": "file:src/lib/engine/shrine.ts",
+      "kind": "calls",
+      "label": "calls applyShrineToStats (imported)"
+    },
+    {
+      "id": "edge-calls-accumulateStandardWeapon-applyShrineToStats",
+      "source": "function:src/lib/engine/build.ts:accumulateStandardWeapon",
+      "target": "file:src/lib/engine/shrine.ts",
+      "kind": "calls",
+      "label": "calls applyShrineToStats (imported)"
+    },
+    {
+      "id": "edge-calls-deriveResults-calcWeapon",
+      "source": "function:src/lib/engine/build.ts:deriveResults",
+      "target": "file:src/lib/engine/weapon.ts",
+      "kind": "calls",
+      "label": "calls calcWeapon or calcMonkWeapon (imported)"
+    },
+    {
+      "id": "edge-calls-deriveResults-buildDmgTypeBonuses",
+      "source": "function:src/lib/engine/build.ts:deriveResults",
+      "target": "file:src/lib/engine/dmgTypeBonuses.ts",
+      "kind": "calls",
+      "label": "calls buildDmgTypeBonuses (imported)"
+    },
+    {
+      "id": "edge-calls-deriveResults-getFinalWaDmgTypes",
+      "source": "function:src/lib/engine/build.ts:deriveResults",
+      "target": "file:src/lib/damageTypeResolve.ts",
+      "kind": "calls",
+      "label": "calls getFinalWaDmgTypes (imported)"
+    },
+    {
+      "id": "edge-calls-deriveResults-calcCrit",
+      "source": "function:src/lib/engine/build.ts:deriveResults",
+      "target": "file:src/lib/crit.ts",
+      "kind": "calls",
+      "label": "calls calcCrit (imported)"
+    },
+    {
+      "id": "edge-calls-deriveResults-calcWardingDebuffMultiplier",
+      "source": "function:src/lib/engine/build.ts:deriveResults",
+      "target": "file:src/lib/utils.ts",
+      "kind": "calls",
+      "label": "calls calcWardingDebuffMultiplier (imported)"
+    },
+    {
+      "id": "edge-calls-deriveResults-calcBaseMaxHP",
+      "source": "function:src/lib/engine/build.ts:deriveResults",
+      "target": "file:src/lib/constants.ts",
+      "kind": "calls",
+      "label": "calls calcBaseMaxHP (imported)"
+    },
+    {
+      "id": "edge-calls-calcBoosts-roundMultiplier",
+      "source": "function:src/lib/engine/build.ts:calcBoosts",
+      "target": "file:src/lib/utils.ts",
+      "kind": "calls",
+      "label": "calls roundMultiplier (imported)"
+    },
+    {
+      "id": "edge-calls-deriveResults-applyStatBoostPerks",
+      "source": "function:src/lib/engine/build.ts:deriveResults",
+      "target": "file:src/data/statboost.ts",
+      "kind": "calls",
+      "label": "calls applyStatBoostPerks (imported)"
+    },
+    {
+      "id": "edge-calls-deriveResults-getRace",
+      "source": "function:src/lib/engine/build.ts:deriveResults",
+      "target": "file:src/lib/engine/data.ts",
+      "kind": "calls",
+      "label": "calls getRace (imported)"
+    },
+    {
+      "id": "edge-calls-accumulateEquipment-getRace",
+      "source": "function:src/lib/engine/build.ts:accumulateEquipment",
+      "target": "file:src/lib/engine/data.ts",
+      "kind": "calls",
+      "label": "calls getRace (imported)"
+    },
+    {
+      "id": "edge-calls-accumulateEquipment-getGuild",
+      "source": "function:src/lib/engine/build.ts:accumulateEquipment",
+      "target": "file:src/lib/engine/data.ts",
+      "kind": "calls",
+      "label": "calls getGuild, getGuildRank (imported)"
+    },
+    {
+      "id": "edge-calls-accumulateEquipment-getArmorPart",
+      "source": "function:src/lib/engine/build.ts:accumulateEquipment",
+      "target": "file:src/lib/engine/data.ts",
+      "kind": "calls",
+      "label": "calls getArmorPart (imported)"
+    },
+    {
+      "id": "edge-calls-accumulateEquipment-isMonkGuild",
+      "source": "function:src/lib/engine/build.ts:accumulateEquipment",
+      "target": "file:src/lib/engine/data.ts",
+      "kind": "calls",
+      "label": "calls isMonkGuild (imported)"
+    },
+    {
+      "id": "edge-calls-accumulateMonkWeapon-getGlove",
+      "source": "function:src/lib/engine/build.ts:accumulateMonkWeapon",
+      "target": "file:src/lib/engine/data.ts",
+      "kind": "calls",
+      "label": "calls getGlove (imported)"
+    },
+    {
+      "id": "edge-calls-accumulateMonkWeapon-getEssence",
+      "source": "function:src/lib/engine/build.ts:accumulateMonkWeapon",
+      "target": "file:src/lib/engine/data.ts",
+      "kind": "calls",
+      "label": "calls getEssence (imported)"
+    },
+    {
+      "id": "edge-calls-accumulateStandardWeapon-getBlade",
+      "source": "function:src/lib/engine/build.ts:accumulateStandardWeapon",
+      "target": "file:src/lib/engine/data.ts",
+      "kind": "calls",
+      "label": "calls getBlade (imported)"
+    },
+    {
+      "id": "edge-calls-accumulateStandardWeapon-getHandle",
+      "source": "function:src/lib/engine/build.ts:accumulateStandardWeapon",
+      "target": "file:src/lib/engine/data.ts",
+      "kind": "calls",
+      "label": "calls getHandle (imported)"
+    },
+    {
+      "id": "edge-calls-accumulateEquipment-getRing",
+      "source": "function:src/lib/engine/build.ts:accumulateEquipment",
+      "target": "file:src/lib/engine/data.ts",
+      "kind": "calls",
+      "label": "calls getRing (imported, via processEnchantedSlot)"
+    },
+    {
+      "id": "edge-calls-accumulateEquipment-getRune",
+      "source": "function:src/lib/engine/build.ts:accumulateEquipment",
+      "target": "file:src/lib/engine/data.ts",
+      "kind": "calls",
+      "label": "calls getRune (imported, via processEnchantedSlot)"
+    },
+    {
+      "id": "edge-refs-calcCDR-CDR_PERK_DATA",
+      "source": "function:src/lib/engine/build.ts:calcCDR",
+      "target": "file:src/data/cdr.ts",
+      "kind": "references",
+      "label": "references CDR_PERK_DATA (imported)"
+    },
+    {
+      "id": "edge-refs-calcBoosts-BOOST_DEFS",
+      "source": "function:src/lib/engine/build.ts:calcBoosts",
+      "target": "file:src/data/Boost.ts",
+      "kind": "references",
+      "label": "references BOOST_DEFS (imported)"
+    },
+    {
+      "id": "edge-refs-applyGladiatorialRage-OFFENSIVE_BOOSTS",
+      "source": "function:src/lib/engine/build.ts:applyGladiatorialRage",
+      "target": "file:src/data/statboost.ts",
+      "kind": "references",
+      "label": "references OFFENSIVE_BOOSTS (imported)"
+    },
+    {
+      "id": "edge-refs-deriveResults-QUEENS_POWER",
+      "source": "function:src/lib/engine/build.ts:deriveResults",
+      "target": "file:src/lib/constants/buffs.ts",
+      "kind": "references",
+      "label": "references QUEENS_POWER_ATK_SPD_BASE, QUEENS_POWER_ATK_SPD_PER_TENTH_POTENCY (imported)"
+    },
+    {
+      "id": "edge-refs-deriveResults-SHRINE_MULTIPLIERS",
+      "source": "function:src/lib/engine/build.ts:deriveResults",
+      "target": "file:src/lib/engine/shrine.ts",
+      "kind": "references",
+      "label": "references SHRINE_MULTIPLIERS (imported, via calcMonkWeapon/calcWeapon)"
+    },
+    {
+      "id": "edge-refs-deriveResults-WEAPON_ARTS",
+      "source": "function:src/lib/engine/build.ts:deriveResults",
+      "target": "file:src/data/weaponArts.ts",
+      "kind": "references",
+      "label": "references WEAPON_ARTS (imported)"
+    },
+    {
+      "id": "edge-refs-computeBuffs-BUFF_DEFS",
+      "source": "function:src/lib/engine/build.ts:computeBuffs",
+      "target": "file:src/data/BuffData.ts",
+      "kind": "references",
+      "label": "references BUFF_DEFS (imported)"
+    },
+    {
+      "id": "edge-refs-accumulateMonkWeapon-MONK_RANK_MULTIPLIER",
+      "source": "function:src/lib/engine/build.ts:accumulateMonkWeapon",
+      "target": "file:src/lib/engine/weapon.ts",
+      "kind": "references",
+      "label": "references MONK_RANK_MULTIPLIER (imported)"
+    }
+  ]
+}

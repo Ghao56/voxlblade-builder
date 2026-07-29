@@ -1,0 +1,1738 @@
+[
+    {
+        "id":  "file:src/data/perkAutoDebuffs.ts",
+        "name":  "perkAutoDebuffs.ts",
+        "filePath":  "src/data/perkAutoDebuffs.ts",
+        "type":  "file",
+        "summary":  "Defines automatic debuff application logic based on perk conditions, including H"
+    },
+    {
+        "id":  "file:src/data/weaponConditionalBoosts.ts",
+        "name":  "weaponConditionalBoosts.ts",
+        "filePath":  "src/data/weaponConditionalBoosts.ts",
+        "type":  "file",
+        "summary":  "weaponConditionalBoosts.ts — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/crit.ts",
+        "name":  "crit.ts",
+        "filePath":  "src/lib/crit.ts",
+        "type":  "file",
+        "summary":  "crit.ts — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/defense.ts",
+        "name":  "defense.ts",
+        "filePath":  "src/lib/defense.ts",
+        "type":  "file",
+        "summary":  "defense.ts — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/utils.ts",
+        "name":  "utils.ts",
+        "filePath":  "src/lib/utils.ts",
+        "type":  "file",
+        "summary":  "utils.ts — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:tests/piercer.test.ts",
+        "name":  "piercer.test.ts",
+        "filePath":  "tests/piercer.test.ts",
+        "type":  "file",
+        "summary":  "piercer.test.ts — file in the VoxelBlade project."
+    },
+    {
+        "id":  "config:.fallowrc.json",
+        "name":  ".fallowrc.json",
+        "filePath":  null,
+        "type":  "config",
+        "summary":  "Fallow (dead-code analyzer) configuration. Defines entry points (src/index.*, sr"
+    },
+    {
+        "id":  "document:AGENTS.md",
+        "name":  "AGENTS.md",
+        "filePath":  null,
+        "type":  "document",
+        "summary":  "Agent context document for the voxlblade-builder project. Describes the project "
+    },
+    {
+        "id":  "document:README.md",
+        "name":  "README.md",
+        "filePath":  null,
+        "type":  "document",
+        "summary":  "Project README based on Svelte + TS + Vite template. Covers recommended IDE setu"
+    },
+    {
+        "id":  "config:fallow-output.json",
+        "name":  "fallow-output.json",
+        "filePath":  null,
+        "type":  "config",
+        "summary":  "Fallow v2.102.0 dead-code analysis report. Found 28 issues: 1 unused file (svelt"
+    },
+    {
+        "id":  "config:fallow-security.json",
+        "name":  "fallow-security.json",
+        "filePath":  null,
+        "type":  "config",
+        "summary":  "Fallow v2.102.0 security analysis report. Identifies low-severity tainted-sink f"
+    },
+    {
+        "id":  "file:index.html",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "config:package.json",
+        "name":  "package.json",
+        "filePath":  null,
+        "type":  "config",
+        "summary":  "Project manifest for \u0027voxlblade\u0027 (private, v0.0.0, ESM). Scripts: dev/build/prev"
+    },
+    {
+        "id":  "config:stats-data.json",
+        "name":  "stats-data.json",
+        "filePath":  null,
+        "type":  "config",
+        "summary":  "Vite/Rollup bundle visualizer data (tree format). Contains the dependency tree o"
+    },
+    {
+        "id":  "document:ts-errors.txt",
+        "name":  "ts-errors.txt",
+        "filePath":  null,
+        "type":  "document",
+        "summary":  "Empty TypeScript errors log file. No current errors recorded."
+    },
+    {
+        "id":  "config:tsconfig.app.json",
+        "name":  "tsconfig.app.json",
+        "filePath":  null,
+        "type":  "config",
+        "summary":  "TypeScript config for the application source code. Extends @tsconfig/svelte, tar"
+    },
+    {
+        "id":  "config:tsconfig.json",
+        "name":  "tsconfig.json",
+        "filePath":  null,
+        "type":  "config",
+        "summary":  "Root TypeScript configuration. Simply extends tsconfig.app.json, serving as the "
+    },
+    {
+        "id":  "config:tsconfig.node.json",
+        "name":  "tsconfig.node.json",
+        "filePath":  null,
+        "type":  "config",
+        "summary":  "TypeScript config for Node.js build tooling (vite.config.ts). Targets ES2023, us"
+    },
+    {
+        "id":  "config:vercel.json",
+        "name":  "vercel.json",
+        "filePath":  null,
+        "type":  "config",
+        "summary":  "Vercel deployment configuration. Uses npm run build, outputs to dist/, framework"
+    },
+    {
+        "id":  "document:.slim/deepwork/ui-upgrade.md",
+        "name":  "ui-upgrade",
+        "filePath":  null,
+        "type":  "file",
+        "summary":  "Multi-phase UI upgrade plan for the voxlblade app — covers modal extraction, t"
+    },
+    {
+        "id":  "config:.understand-anything/.understandignore",
+        "name":  ".understandignore",
+        "filePath":  null,
+        "type":  "file",
+        "summary":  "Configuration file listing file patterns to exclude from the understand-anything"
+    },
+    {
+        "id":  "file:analyze-mounticon.mjs",
+        "name":  "analyze-mounticon",
+        "filePath":  null,
+        "type":  "file",
+        "summary":  "One-off debug script that reads MountIcon.svelte and extracts/displays its SVG p"
+    },
+    {
+        "id":  "file:decode_full.mjs",
+        "name":  "decode_full",
+        "filePath":  null,
+        "type":  "file",
+        "summary":  "Standalone build decoder/debugging tool that reconstructs full character stats f"
+    },
+    {
+        "id":  "document:docs/ONBOARDING.md",
+        "name":  "ONBOARDING",
+        "filePath":  null,
+        "type":  "file",
+        "summary":  "Comprehensive onboarding guide documenting project architecture across 9 layers "
+    },
+    {
+        "id":  "file:src/app.css",
+        "name":  "app.css",
+        "filePath":  null,
+        "type":  "file",
+        "summary":  "Global CSS file defining all design tokens (colors, spacing, typography, shadows"
+    },
+    {
+        "id":  "file:src/BuffList.svelte",
+        "name":  "BuffList.svelte",
+        "filePath":  "src/BuffList.svelte",
+        "type":  "file",
+        "summary":  "Component for displaying and managing active buffs and debuffs in the damage cal"
+    },
+    {
+        "id":  "file:src/BuildSaves.svelte",
+        "name":  "BuildSaves",
+        "filePath":  null,
+        "type":  "file",
+        "summary":  "Build save/load management component (~1100 lines) providing localStorage-based "
+    },
+    {
+        "id":  "file:src/CdrStepsCalc.svelte",
+        "name":  "CdrStepsCalc",
+        "filePath":  null,
+        "type":  "file",
+        "summary":  "Visual cooldown reduction step calculator showing sequential CDR application (mu"
+    },
+    {
+        "id":  "file:src/CritIcon.svelte",
+        "name":  "CritIcon",
+        "filePath":  null,
+        "type":  "file",
+        "summary":  "Simple SVG icon component rendering a critical hit symbol with a red-to-orange g"
+    },
+    {
+        "id":  "file:src/data/draconicRunes.ts",
+        "name":  "draconicRunes",
+        "filePath":  null,
+        "type":  "file",
+        "summary":  "Draconic rune and dragon infusion bonus calculation functions — applies color-"
+    },
+    {
+        "id":  "file:src/data/selfDamagePerks.ts",
+        "name":  "selfDamagePerks.ts",
+        "filePath":  "src/data/selfDamagePerks.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:src/data/stanceOverlays.ts",
+        "name":  "stanceOverlays",
+        "filePath":  null,
+        "type":  "file",
+        "summary":  "Resolves weapon stance overlays (Blaster Ring, Locked And Loaded, Cosmic Ray, Mi"
+    },
+    {
+        "id":  "file:src/DidYouMean.svelte",
+        "name":  "DidYouMean",
+        "filePath":  null,
+        "type":  "file",
+        "summary":  "Search suggestion component displaying \u0027Did you mean?\u0027 chips when no exact searc"
+    },
+    {
+        "id":  "file:src/DmgTotalTooltip.svelte",
+        "name":  "DmgTotalTooltip",
+        "filePath":  null,
+        "type":  "file",
+        "summary":  "Damage total tooltip component showing a pie chart of damage type distribution w"
+    },
+    {
+        "id":  "file:src/DraconicAbilityStats.svelte",
+        "name":  "DraconicAbilityStats",
+        "filePath":  null,
+        "type":  "file",
+        "summary":  "Display component for draconic ability stats: damage type, scaling, poise damage"
+    },
+    {
+        "id":  "file:src/EmotionalTracker.svelte",
+        "name":  "EmotionalTracker.svelte",
+        "filePath":  "src/EmotionalTracker.svelte",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:src/Highlight.svelte",
+        "name":  "Highlight",
+        "filePath":  null,
+        "type":  "file",
+        "summary":  "Simple text highlighting component that wraps matching substrings with a highlig"
+    },
+    {
+        "id":  "file:src/LevelBar.svelte",
+        "name":  "LevelBar",
+        "filePath":  null,
+        "type":  "file",
+        "summary":  "Interactive level and HP bar component with inline level editing, draggable HP f"
+    },
+    {
+        "id":  "file:src/lib/AppHeader.svelte",
+        "name":  "AppHeader",
+        "filePath":  null,
+        "type":  "file",
+        "summary":  "Application header component with title, animated tab switcher (Overview/Analyze"
+    },
+    {
+        "id":  "file:src/lib/constants/cdr.ts",
+        "name":  "cdr",
+        "filePath":  null,
+        "type":  "file",
+        "summary":  "Cooldown reduction constant definitions for CDR-related perks (Caster, Channeled"
+    },
+    {
+        "id":  "file:src/lib/uiConstants.ts",
+        "name":  "uiConstants.ts",
+        "filePath":  "src/lib/uiConstants.ts",
+        "type":  "file",
+        "summary":  "Defines UI color constants and source labels for the damage analyzer display com"
+    },
+    {
+        "id":  "file:src/data/TypedDmgBoost.ts",
+        "name":  "TypedDmgBoost.ts",
+        "filePath":  "src/data/TypedDmgBoost.ts",
+        "type":  "file",
+        "summary":  "Calculates per-damage-type damage multipliers and heal multipliers from active b"
+    },
+    {
+        "id":  "file:src/data/Weaponartcheck.ts",
+        "name":  "Weaponartcheck.ts",
+        "filePath":  "src/data/Weaponartcheck.ts",
+        "type":  "file",
+        "summary":  "Validates whether a weapon art\u0027s requirements (scaling, stats, weapon type, guil"
+    },
+    {
+        "id":  "file:src/data/weaponArts.ts",
+        "name":  "weaponArts.ts",
+        "filePath":  "src/data/weaponArts.ts",
+        "type":  "file",
+        "summary":  "Defines the WeaponArt and WeaponArtRequirement interfaces and the WEAPON_ARTS da"
+    },
+    {
+        "id":  "file:src/lib/constants/damage-types.ts",
+        "name":  "damage-types.ts",
+        "filePath":  "src/lib/constants/damage-types.ts",
+        "type":  "file",
+        "summary":  "Defines all damage type metadata (labels, colors), defense inheritance mappings,"
+    },
+    {
+        "id":  "file:src/lib/damageTypeResolve.ts",
+        "name":  "damageTypeResolve.ts",
+        "filePath":  "src/lib/damageTypeResolve.ts",
+        "type":  "file",
+        "summary":  "Resolves weapon art damage types from string descriptions into numeric type maps"
+    },
+    {
+        "id":  "file:src/lib/engine/_utils.ts",
+        "name":  "_utils.ts",
+        "filePath":  "src/lib/engine/_utils.ts",
+        "type":  "file",
+        "summary":  "Minimal utility module exporting round2 and round4 functions for numeric roundin"
+    },
+    {
+        "id":  "file:src/lib/engine/data.ts",
+        "name":  "data.ts",
+        "filePath":  "src/lib/engine/data.ts",
+        "type":  "file",
+        "summary":  "Barrel re-export module that re-exports all symbols from character, equipment, a"
+    },
+    {
+        "id":  "file:src/lib/engine/enchant.ts",
+        "name":  "enchant.ts",
+        "filePath":  "src/lib/engine/enchant.ts",
+        "type":  "file",
+        "summary":  "Enchantment application engine: applies stat-selecting enchantments (Restored, F"
+    },
+    {
+        "id":  "file:src/lib/engine/format.ts",
+        "name":  "format.ts",
+        "filePath":  "src/lib/engine/format.ts",
+        "type":  "file",
+        "summary":  "Formatting utilities for stat display: formats numeric stat values with +/- sign"
+    },
+    {
+        "id":  "file:src/lib/engine/shrine.ts",
+        "name":  "shrine.ts",
+        "filePath":  "src/lib/engine/shrine.ts",
+        "type":  "file",
+        "summary":  "Shrine multiplier system: defines tier-based stat multipliers (3.0x at tier 1 do"
+    },
+    {
+        "id":  "file:src/lib/engine/weapon.ts",
+        "name":  "weapon.ts",
+        "filePath":  "src/lib/engine/weapon.ts",
+        "type":  "file",
+        "summary":  "Weapon calculation engine: combines blade/handle (or glove/essence for monk) sta"
+    },
+    {
+        "id":  "file:src/data/Boost.ts",
+        "name":  "Boost.ts",
+        "filePath":  "src/data/Boost.ts",
+        "type":  "file",
+        "summary":  "Defines the per-perk damage boost system for the damage calculator. Includes Boo"
+    },
+    {
+        "id":  "file:src/data/debuffCombatEffects.ts",
+        "name":  "src/data/debuffCombatEffects.ts",
+        "filePath":  null,
+        "type":  "file",
+        "summary":  "src/data/debuffCombatEffects.ts — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/data/enemyHpEffects.ts",
+        "name":  "src/data/enemyHpEffects.ts",
+        "filePath":  null,
+        "type":  "file",
+        "summary":  "src/data/enemyHpEffects.ts — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/constants/debuff-effects.ts",
+        "name":  "src/lib/constants/debuff-effects.ts",
+        "filePath":  null,
+        "type":  "file",
+        "summary":  "src/lib/constants/debuff-effects.ts — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/constants/game.ts",
+        "name":  "src/lib/constants/game.ts",
+        "filePath":  null,
+        "type":  "file",
+        "summary":  "src/lib/constants/game.ts — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/constants/perks.ts",
+        "name":  "perks.ts",
+        "filePath":  "src/lib/constants/perks.ts",
+        "type":  "file",
+        "summary":  "Defines perk-related gameplay constants including potion/damage scaling percenta"
+    },
+    {
+        "id":  "file:src/lib/engine/dmgTypeBonuses.ts",
+        "name":  "src/lib/engine/dmgTypeBonuses.ts",
+        "filePath":  null,
+        "type":  "file",
+        "summary":  "src/lib/engine/dmgTypeBonuses.ts — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:.github/workflows/static.yml",
+        "name":  "static.yml",
+        "filePath":  ".github/workflows/static.yml",
+        "type":  "file",
+        "summary":  "static.yml — file in the VoxelBlade project."
+    },
+    {
+        "id":  "pipeline:.github/workflows/static.yml::build",
+        "name":  "static.yml",
+        "filePath":  ".github/workflows/static.yml",
+        "type":  "pipeline",
+        "summary":  "static.yml — pipeline in the VoxelBlade project."
+    },
+    {
+        "id":  "pipeline:.github/workflows/static.yml::deploy",
+        "name":  "static.yml",
+        "filePath":  ".github/workflows/static.yml",
+        "type":  "pipeline",
+        "summary":  "static.yml — pipeline in the VoxelBlade project."
+    },
+    {
+        "id":  "file:.fallowrc.json",
+        "name":  ".fallowrc.json",
+        "filePath":  ".fallowrc.json",
+        "type":  "file",
+        "summary":  ".fallowrc.json — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:AGENTS.md",
+        "name":  "AGENTS.md",
+        "filePath":  "AGENTS.md",
+        "type":  "file",
+        "summary":  "AGENTS.md — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:README.md",
+        "name":  "README.md",
+        "filePath":  "README.md",
+        "type":  "file",
+        "summary":  "README.md — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:fallow-output.json",
+        "name":  "fallow-output.json",
+        "filePath":  "fallow-output.json",
+        "type":  "file",
+        "summary":  "fallow-output.json — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:fallow-security.json",
+        "name":  "fallow-security.json",
+        "filePath":  "fallow-security.json",
+        "type":  "file",
+        "summary":  "fallow-security.json — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:stats-data.json",
+        "name":  "stats-data.json",
+        "filePath":  "stats-data.json",
+        "type":  "file",
+        "summary":  "stats-data.json — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:ts-errors.txt",
+        "name":  "ts-errors.txt",
+        "filePath":  "ts-errors.txt",
+        "type":  "file",
+        "summary":  "ts-errors.txt — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:.understand-anything/config.json",
+        "name":  "config.json",
+        "filePath":  ".understand-anything/config.json",
+        "type":  "file",
+        "summary":  "config.json — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:.understand-anything/dashboard-errors.txt",
+        "name":  "dashboard-errors.txt",
+        "filePath":  ".understand-anything/dashboard-errors.txt",
+        "type":  "file",
+        "summary":  "dashboard-errors.txt — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:.understand-anything/dashboard-output.txt",
+        "name":  "dashboard-output.txt",
+        "filePath":  ".understand-anything/dashboard-output.txt",
+        "type":  "file",
+        "summary":  "dashboard-output.txt — file in the VoxelBlade project."
+    },
+    {
+        "id":  "config:.understand-anything/fingerprints.json",
+        "name":  "fingerprints.json",
+        "filePath":  ".understand-anything/fingerprints.json",
+        "type":  "config",
+        "summary":  "fingerprints.json — config in the VoxelBlade project."
+    },
+    {
+        "id":  "file:.understand-anything/knowledge-graph.json",
+        "name":  "knowledge-graph.json",
+        "filePath":  ".understand-anything/knowledge-graph.json",
+        "type":  "file",
+        "summary":  "knowledge-graph.json — file in the VoxelBlade project."
+    },
+    {
+        "id":  "config:.understand-anything/meta.json",
+        "name":  "meta.json",
+        "filePath":  ".understand-anything/meta.json",
+        "type":  "config",
+        "summary":  "meta.json — config in the VoxelBlade project."
+    },
+    {
+        "id":  "schema:src/data/armors.json",
+        "name":  "armors.json",
+        "filePath":  "src/data/armors.json",
+        "type":  "schema",
+        "summary":  "armors.json — schema in the VoxelBlade project."
+    },
+    {
+        "id":  "schema:src/data/blades.json",
+        "name":  "blades.json",
+        "filePath":  "src/data/blades.json",
+        "type":  "schema",
+        "summary":  "blades.json — schema in the VoxelBlade project."
+    },
+    {
+        "id":  "schema:src/data/enchantments.json",
+        "name":  "enchantments.json",
+        "filePath":  "src/data/enchantments.json",
+        "type":  "schema",
+        "summary":  "enchantments.json — schema in the VoxelBlade project."
+    },
+    {
+        "id":  "schema:src/data/essences.json",
+        "name":  "essences.json",
+        "filePath":  "src/data/essences.json",
+        "type":  "schema",
+        "summary":  "essences.json — schema in the VoxelBlade project."
+    },
+    {
+        "id":  "schema:src/data/gloves.json",
+        "name":  "gloves.json",
+        "filePath":  "src/data/gloves.json",
+        "type":  "schema",
+        "summary":  "gloves.json — schema in the VoxelBlade project."
+    },
+    {
+        "id":  "schema:src/data/guilds.json",
+        "name":  "guilds.json",
+        "filePath":  "src/data/guilds.json",
+        "type":  "schema",
+        "summary":  "guilds.json — schema in the VoxelBlade project."
+    },
+    {
+        "id":  "schema:src/data/handles.json",
+        "name":  "handles.json",
+        "filePath":  "src/data/handles.json",
+        "type":  "schema",
+        "summary":  "handles.json — schema in the VoxelBlade project."
+    },
+    {
+        "id":  "schema:src/data/perks.json",
+        "name":  "perks.json",
+        "filePath":  "src/data/perks.json",
+        "type":  "schema",
+        "summary":  "perks.json — schema in the VoxelBlade project."
+    },
+    {
+        "id":  "schema:src/data/races.json",
+        "name":  "races.json",
+        "filePath":  "src/data/races.json",
+        "type":  "schema",
+        "summary":  "races.json — schema in the VoxelBlade project."
+    },
+    {
+        "id":  "schema:src/data/rings.json",
+        "name":  "rings.json",
+        "filePath":  "src/data/rings.json",
+        "type":  "schema",
+        "summary":  "rings.json — schema in the VoxelBlade project."
+    },
+    {
+        "id":  "schema:src/data/runes.json",
+        "name":  "runes.json",
+        "filePath":  "src/data/runes.json",
+        "type":  "schema",
+        "summary":  "runes.json — schema in the VoxelBlade project."
+    },
+    {
+        "id":  "file:.understand-anything/.understandignore",
+        "name":  ".understandignore",
+        "filePath":  ".understand-anything/.understandignore",
+        "type":  "file",
+        "summary":  ".understandignore — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/constants/defensive.ts",
+        "name":  "defensive.ts",
+        "filePath":  "src/lib/constants/defensive.ts",
+        "type":  "file",
+        "summary":  "defensive.ts — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/constants/draconic-colors.ts",
+        "name":  "draconic-colors.ts",
+        "filePath":  "src/lib/constants/draconic-colors.ts",
+        "type":  "file",
+        "summary":  "draconic-colors.ts — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/constants/draconic.ts",
+        "name":  "draconic.ts",
+        "filePath":  "src/lib/constants/draconic.ts",
+        "type":  "file",
+        "summary":  "draconic.ts — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/constants/heals.ts",
+        "name":  "heals.ts",
+        "filePath":  "src/lib/constants/heals.ts",
+        "type":  "file",
+        "summary":  "heals.ts — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/constants/index.ts",
+        "name":  "index.ts",
+        "filePath":  "src/lib/constants/index.ts",
+        "type":  "file",
+        "summary":  "index.ts — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/constants/thresholds.ts",
+        "name":  "thresholds.ts",
+        "filePath":  "src/lib/constants/thresholds.ts",
+        "type":  "file",
+        "summary":  "thresholds.ts — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/EnchantSelect.svelte",
+        "name":  "EnchantSelect.svelte",
+        "filePath":  "src/lib/EnchantSelect.svelte",
+        "type":  "file",
+        "summary":  "EnchantSelect.svelte — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/engine/engine.ts",
+        "name":  "engine.ts",
+        "filePath":  "src/lib/engine/engine.ts",
+        "type":  "file",
+        "summary":  "engine.ts — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/Modal.svelte",
+        "name":  "Modal.svelte",
+        "filePath":  "src/lib/Modal.svelte",
+        "type":  "file",
+        "summary":  "Modal.svelte — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/modals/AccessorySelectModal.svelte",
+        "name":  "AccessorySelectModal.svelte",
+        "filePath":  "src/lib/modals/AccessorySelectModal.svelte",
+        "type":  "file",
+        "summary":  "AccessorySelectModal.svelte — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/modals/GuildModal.svelte",
+        "name":  "GuildModal.svelte",
+        "filePath":  "src/lib/modals/GuildModal.svelte",
+        "type":  "file",
+        "summary":  "GuildModal.svelte — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/modals/index.ts",
+        "name":  "index.ts",
+        "filePath":  "src/lib/modals/index.ts",
+        "type":  "file",
+        "summary":  "index.ts — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/modals/RaceModal.svelte",
+        "name":  "RaceModal.svelte",
+        "filePath":  "src/lib/modals/RaceModal.svelte",
+        "type":  "file",
+        "summary":  "RaceModal.svelte — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/modals/WeaponPartModal.svelte",
+        "name":  "WeaponPartModal.svelte",
+        "filePath":  "src/lib/modals/WeaponPartModal.svelte",
+        "type":  "file",
+        "summary":  "WeaponPartModal.svelte — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/StatFilterShared.svelte",
+        "name":  "StatFilterShared.svelte",
+        "filePath":  "src/lib/StatFilterShared.svelte",
+        "type":  "file",
+        "summary":  "StatFilterShared.svelte — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/stats/elementalBoosts.ts",
+        "name":  "elementalBoosts.ts",
+        "filePath":  "src/lib/stats/elementalBoosts.ts",
+        "type":  "file",
+        "summary":  "elementalBoosts.ts — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/stats/filterActions.ts",
+        "name":  "filterActions.ts",
+        "filePath":  "src/lib/stats/filterActions.ts",
+        "type":  "file",
+        "summary":  "filterActions.ts — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/Toast.svelte",
+        "name":  "Toast.svelte",
+        "filePath":  "src/lib/Toast.svelte",
+        "type":  "file",
+        "summary":  "Toast.svelte — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/ui/Badge.svelte",
+        "name":  "Badge.svelte",
+        "filePath":  "src/lib/ui/Badge.svelte",
+        "type":  "file",
+        "summary":  "Badge.svelte — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/ui/Button.svelte",
+        "name":  "Button.svelte",
+        "filePath":  "src/lib/ui/Button.svelte",
+        "type":  "file",
+        "summary":  "Button.svelte — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/ui/Card.svelte",
+        "name":  "Card.svelte",
+        "filePath":  "src/lib/ui/Card.svelte",
+        "type":  "file",
+        "summary":  "Card.svelte — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/ui/Divider.svelte",
+        "name":  "Divider.svelte",
+        "filePath":  "src/lib/ui/Divider.svelte",
+        "type":  "file",
+        "summary":  "Divider.svelte — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/ui/index.ts",
+        "name":  "index.ts",
+        "filePath":  "src/lib/ui/index.ts",
+        "type":  "file",
+        "summary":  "index.ts — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/ui/Panel.svelte",
+        "name":  "Panel.svelte",
+        "filePath":  "src/lib/ui/Panel.svelte",
+        "type":  "file",
+        "summary":  "Panel.svelte — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/ui/Section.svelte",
+        "name":  "Section.svelte",
+        "filePath":  "src/lib/ui/Section.svelte",
+        "type":  "file",
+        "summary":  "Section.svelte — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/ui/Stat.svelte",
+        "name":  "Stat.svelte",
+        "filePath":  "src/lib/ui/Stat.svelte",
+        "type":  "file",
+        "summary":  "Stat.svelte — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/main.ts",
+        "name":  "main.ts",
+        "filePath":  "src/main.ts",
+        "type":  "file",
+        "summary":  "main.ts — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/ModalSearchHeader.svelte",
+        "name":  "ModalSearchHeader.svelte",
+        "filePath":  "src/ModalSearchHeader.svelte",
+        "type":  "file",
+        "summary":  "ModalSearchHeader.svelte — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/MountIcon.svelte",
+        "name":  "MountIcon.svelte",
+        "filePath":  "src/MountIcon.svelte",
+        "type":  "file",
+        "summary":  "MountIcon.svelte — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/ScalingBreakdownRow.svelte",
+        "name":  "ScalingBreakdownRow.svelte",
+        "filePath":  "src/ScalingBreakdownRow.svelte",
+        "type":  "file",
+        "summary":  "ScalingBreakdownRow.svelte — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/StatFilter.svelte",
+        "name":  "StatFilter.svelte",
+        "filePath":  "src/StatFilter.svelte",
+        "type":  "file",
+        "summary":  "StatFilter.svelte — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/SuggestDrop.svelte",
+        "name":  "SuggestDrop.svelte",
+        "filePath":  "src/SuggestDrop.svelte",
+        "type":  "file",
+        "summary":  "SuggestDrop.svelte — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/TagFilter.svelte",
+        "name":  "TagFilter.svelte",
+        "filePath":  "src/TagFilter.svelte",
+        "type":  "file",
+        "summary":  "TagFilter.svelte — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/WeaponStatFilter.svelte",
+        "name":  "WeaponStatFilter.svelte",
+        "filePath":  "src/WeaponStatFilter.svelte",
+        "type":  "file",
+        "summary":  "WeaponStatFilter.svelte — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/WeaponStatsDisplay.svelte",
+        "name":  "WeaponStatsDisplay.svelte",
+        "filePath":  "src/WeaponStatsDisplay.svelte",
+        "type":  "file",
+        "summary":  "WeaponStatsDisplay.svelte — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:vite.config.ts",
+        "name":  "vite.config.ts",
+        "filePath":  "vite.config.ts",
+        "type":  "file",
+        "summary":  "vite.config.ts — file in the VoxelBlade project."
+    },
+    {
+        "id":  "file:src/lib/constants.ts",
+        "name":  "constants.ts",
+        "filePath":  "src/lib/constants.ts",
+        "type":  "file",
+        "summary":  "Barrel re-export file for all game constants. Re-exports all sub-modules from th"
+    },
+    {
+        "id":  "file:src/data/DoTDamage.ts",
+        "name":  "DoTDamage.ts",
+        "filePath":  "src/data/DoTDamage.ts",
+        "type":  "file",
+        "summary":  "Defines damage-over-time (DoT) calculation constants and functions for bleed, po"
+    },
+    {
+        "id":  "file:src/data/draconicColorEffects.ts",
+        "name":  "draconicColorEffects.ts",
+        "filePath":  "src/data/draconicColorEffects.ts",
+        "type":  "file",
+        "summary":  "Defines draconic color-based effects including elemental damage bonuses and stat"
+    },
+    {
+        "id":  "file:src/lib/engine.ts",
+        "name":  "engine.ts",
+        "filePath":  "src/lib/engine.ts",
+        "type":  "file",
+        "summary":  "Barrel re-export file for the engine module. Re-exports all engine sub-modules: "
+    },
+    {
+        "id":  "file:src/lib/constants/buffs.ts",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:src/lib/engine/build.ts",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:src/data/BuffData.ts",
+        "name":  null,
+        "filePath":  "src/data/BuffData.ts",
+        "type":  "file",
+        "summary":  "Central buff/debuff definition system for Voxel Blade. Defines all buff types (R"
+    },
+    {
+        "id":  "file:src/lib/constants/perk-base-damage.ts",
+        "name":  "perk-base-damage.ts",
+        "filePath":  "src/lib/constants/perk-base-damage.ts",
+        "type":  "file",
+        "summary":  "Defines base damage constants for 30+ perk abilities and special attacks includi"
+    },
+    {
+        "id":  "file:src/lib/constants/storage.ts",
+        "name":  "storage.ts",
+        "filePath":  "src/lib/constants/storage.ts",
+        "type":  "file",
+        "summary":  "Defines localStorage persistence keys (build, defenses, level, HP fill, saves), "
+    },
+    {
+        "id":  "file:src/data/Perkbasedmg.ts",
+        "name":  "Perkbasedmg.ts",
+        "filePath":  "src/data/Perkbasedmg.ts",
+        "type":  "file",
+        "summary":  "Defines the perk damage calculation system for Voxel Blade, including interfaces"
+    },
+    {
+        "id":  "file:src/lib/store.ts::Module",
+        "name":  null,
+        "filePath":  "src/lib/store.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:src/lib/store.ts::DEFAULT_BUILD",
+        "name":  null,
+        "filePath":  "src/lib/store.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:src/lib/store.ts::loadBuild",
+        "name":  null,
+        "filePath":  "src/lib/store.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:src/lib/store.ts::build",
+        "name":  null,
+        "filePath":  "src/lib/store.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:src/lib/store.ts::effectiveDarknessOverride",
+        "name":  null,
+        "filePath":  "src/lib/store.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:src/lib/store.ts::result",
+        "name":  null,
+        "filePath":  "src/lib/store.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:src/lib/store.ts::setEnchantment",
+        "name":  null,
+        "filePath":  "src/lib/store.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:src/lib/store.ts::swapEnchantments",
+        "name":  null,
+        "filePath":  "src/lib/store.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:src/lib/store.ts::clearBuild",
+        "name":  null,
+        "filePath":  "src/lib/store.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:src/lib/store.ts::setGuild",
+        "name":  null,
+        "filePath":  "src/lib/store.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:src/lib/store.ts::ArmorSlotKey",
+        "name":  null,
+        "filePath":  "src/lib/store.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:src/lib/store.ts::InfusionArmorSlotKey",
+        "name":  null,
+        "filePath":  "src/lib/store.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:src/lib/store.ts::AnyArmorSlotKey",
+        "name":  null,
+        "filePath":  "src/lib/store.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:src/lib/store.ts::ARMOR_SLOT_TYPE_MAP",
+        "name":  null,
+        "filePath":  "src/lib/store.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:src/lib/store.ts::UPGRADE_KEY_MAP",
+        "name":  null,
+        "filePath":  "src/lib/store.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:src/lib/store.ts::moveArmorSlot",
+        "name":  null,
+        "filePath":  "src/lib/store.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:src/lib/store.ts::canArmorMoveToSlot",
+        "name":  null,
+        "filePath":  "src/lib/store.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:src/lib/store.ts::RingSlotKey",
+        "name":  null,
+        "filePath":  "src/lib/store.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:src/lib/store.ts::RING_UPGRADE_KEY",
+        "name":  null,
+        "filePath":  "src/lib/store.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:src/lib/store.ts::moveRingSlot",
+        "name":  null,
+        "filePath":  "src/lib/store.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:index.html:font-awesome-cdn",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:index.html:app-mount",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:index.html:main-ts-entry",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:stats.html",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:rollup-visualizer",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:treemap",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:sidebar-component",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:tooltip-component",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:chart-component",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:node-component",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:main-component",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:filter-system",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:rainbow-color-scale",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:d3-hierarchy",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:d3-interpolate-color",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:preact",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:bundle-data",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:bundle-main-bundle",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:bytes-lib",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:picomatch",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-main-ts",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-app-svelte",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-engine-ts",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-engine-build-ts",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-engine-data-ts",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-store-ts",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-constants-index-ts",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-damageanalyzer-svelte",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-basedamagecalc-svelte",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-bufflist-svelte",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-lib-constants-ts",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-lib-types-ts",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-lib-crit-ts",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-lib-defense-ts",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-lib-utils-ts",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-datacharacter-ts",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-dataequipment-ts",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-dataweapons-ts",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-lib-dmgTypeResolve-ts",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-lib-dmgTypes-ts",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-data-buffdata-ts",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-data-perkbasedmg-ts",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-data-boost-ts",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-data-draconicbuffs-ts",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-data-raceeffects-ts",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-lib-dmgTypeBonuses-ts",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-data-json-races",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-data-json-guilds",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-data-json-perks",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-data-json-armors",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-data-json-rings",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-data-json-runes",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-data-json-enchantments",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-data-json-blades",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-data-json-handles",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-data-json-gloves",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-data-json-essences",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:svelte-lib",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:svelte-store-client",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:dependency-esm-env",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:dependency-clsx",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:dependency-vercel-analytics",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:dependency-rolldown-runtime",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:dependency-vite-polyfill",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:module-modals",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:module-racmodal",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:module-guildmodal",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:module-accessorymodal",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:module-weaponpartmodal",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:src-app-css",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "entity:stats.html:drawchart-function",
+        "name":  null,
+        "filePath":  null,
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:src/App.svelte",
+        "name":  "App.svelte",
+        "filePath":  "src/App.svelte",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:src/BaseDamageCalc.svelte",
+        "name":  "BaseDamageCalc.svelte",
+        "filePath":  "src/BaseDamageCalc.svelte",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:src/DamageAnalyzer.svelte",
+        "name":  "DamageAnalyzer.svelte",
+        "filePath":  "src/DamageAnalyzer.svelte",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:src/lib/constants/boosts.ts",
+        "name":  "boosts.ts",
+        "filePath":  "src/lib/constants/boosts.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:component:App",
+        "name":  "App",
+        "filePath":  "src/App.svelte",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:component:BaseDamageCalc",
+        "name":  "BaseDamageCalc",
+        "filePath":  "src/BaseDamageCalc.svelte",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:component:DamageAnalyzer",
+        "name":  "DamageAnalyzer",
+        "filePath":  "src/DamageAnalyzer.svelte",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:component:EmotionalTracker",
+        "name":  "EmotionalTracker",
+        "filePath":  "src/EmotionalTracker.svelte",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:type:SelfDamagePerkDef",
+        "name":  "SelfDamagePerkDef",
+        "filePath":  "src/data/selfDamagePerks.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:type:EmotionalState",
+        "name":  "EmotionalState",
+        "filePath":  "src/EmotionalTracker.svelte",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:type:AnyArmorSlotKey",
+        "name":  "AnyArmorSlotKey",
+        "filePath":  "src/App.svelte",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:type:ModalType",
+        "name":  "ModalType",
+        "filePath":  "src/App.svelte",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:type:PerkDmgComputedEntry",
+        "name":  "PerkDmgComputedEntry",
+        "filePath":  "src/DamageAnalyzer.svelte",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:type:SelfDamagePerkDefImpl",
+        "name":  "SelfDamagePerkDefImpl",
+        "filePath":  "src/data/selfDamagePerks.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:data:SELF_DAMAGE_PERK_DEFS",
+        "name":  "SELF_DAMAGE_PERK_DEFS",
+        "filePath":  "src/data/selfDamagePerks.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:const:BLOOD_THIRSTY_MULT_PER_STACK",
+        "name":  "BLOOD_THIRSTY_MULT_PER_STACK",
+        "filePath":  "src/lib/constants/boosts.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:const:HEAT_DRILL_COOLDOWN",
+        "name":  "HEAT_DRILL_COOLDOWN",
+        "filePath":  "src/lib/constants/boosts.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:const:VENOM_EATER_HEAL_PER_STACK",
+        "name":  "VENOM_EATER_HEAL_PER_STACK",
+        "filePath":  "src/lib/constants/boosts.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:const:FRENZY_BASE",
+        "name":  "FRENZY_BASE",
+        "filePath":  "src/lib/constants/boosts.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:const:ESSENCE_RAY_BASE",
+        "name":  "ESSENCE_RAY_BASE",
+        "filePath":  "src/lib/constants/boosts.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:const:UNDEAD_MIGHT_SELF_DMG_FRACTION",
+        "name":  "UNDEAD_MIGHT_SELF_DMG_FRACTION",
+        "filePath":  "src/data/selfDamagePerks.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:const:UNDEAD_MIGHT_DR_PCT_PER_STACK",
+        "name":  "UNDEAD_MIGHT_DR_PCT_PER_STACK",
+        "filePath":  "src/data/selfDamagePerks.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:const:LIFESTEAL_HEAL_PCT_PER_STACK",
+        "name":  "LIFESTEAL_HEAL_PCT_PER_STACK",
+        "filePath":  "src/lib/constants/boosts.ts",
+        "type":  "file",
+        "summary":  ""
+    },
+    {
+        "id":  "file:const:STEAM_POWERED_MULT_PER_AIR_BOOST",
+        "name":  "STEAM_POWERED_MULT_PER_AIR_BOOST",
+        "filePath":  "src/lib/constants/boosts.ts",
+        "type":  "file",
+        "summary":  ""
+    }
+]

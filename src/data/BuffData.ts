@@ -312,7 +312,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
   },
   Despair: {
     name: 'Despair',
-    color: '#54425d',
+    color: '#a78bfa',
     description: 'Deal x% more damage.',
     effectPerTenthPotency: DESPAIR_EFFECT_PER_TENTH,
     effectUnit: 'flat',
@@ -320,7 +320,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
   },
   Weakness: {
     name: 'Weakness',
-    color: '#8b11e9',
+    color: '#c084fc',
     description: 'Deal x% less damage.',
     effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
     effectUnit: 'flat',
