@@ -703,6 +703,10 @@
     if (expectedType === 'string') {
       return typeof value === 'string' ? { ok: true, value } : { ok: false }
     }
+    if (Array.isArray(defaultVal)) {
+      if (!Array.isArray(value)) return { ok: false }
+      return { ok: true, value: (value as unknown[]).filter((x): x is string => typeof x === 'string') }
+    }
     if (expectedType === 'object' && defaultVal !== null) {
       if (typeof value !== 'object' || value === null || Array.isArray(value)) return { ok: false }
       const clean: Record<string, unknown> = {}

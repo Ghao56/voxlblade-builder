@@ -142,7 +142,7 @@ import {
   ICHOR_SPARK_CHARGE_DMG_MULT,
   ICHOR_SPARK_CHARGE_TIME_BASE,
   ICHOR_SPARK_CHARGE_TIME_PER_STACK,
-  ICHOR_SPARK_SLASH_HEAL_BASE,
+  ICHOR_SPARK_SLASH_HEAL_AT_MIN,
   ICHOR_SPARK_SLASH_CHARGE_THRESHOLD,
   ICHOR_SPARK_BLEED_DURATION,
 } from '../lib/constants'
@@ -1277,7 +1277,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
   {
     perkName: 'Ichor Spark',
     label: 'Ranged Slash',
-    condition: `On RMB charge release at ≥${Math.round(ICHOR_SPARK_SLASH_CHARGE_THRESHOLD * 100)}% charge (shares charge slider with Charged RMB)`,
+    condition: `On RMB charge release at ≥${ICHOR_SPARK_SLASH_CHARGE_THRESHOLD * 100}% charge (shares charge slider with Charged RMB)`,
     getBaseDamage: ({ perkAmount, sliderVal = 100 }) =>
       calcIchorSparkSlashBase(perkAmount, sliderVal),
     dmgTypeMode: 'weapon',
@@ -1287,8 +1287,13 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     secondaryEffects: [
       {
         label: 'Slash Heal',
-        getValue: ({ perkAmount, sliderVal = 100 }) =>
-          ICHOR_SPARK_SLASH_HEAL_BASE * calcIchorSparkChargeMult(sliderVal) * perkAmount,
+        getValue: ({ perkAmount, sliderVal = 100 }) => {
+          const thresholdPct = ICHOR_SPARK_SLASH_CHARGE_THRESHOLD * 100
+          if (sliderVal < thresholdPct) return 0
+          const range = 100 - thresholdPct
+          const t = (sliderVal - thresholdPct) / range
+          return ICHOR_SPARK_SLASH_HEAL_AT_MIN * (1 + t) * perkAmount
+        },
         format: v => `${v.toFixed(3)} HP`,
         condition: 'Lifesteals, scales with charge',
         tone: 'defense',
@@ -1301,7 +1306,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
         tone: 'offense',
       },
     ],
-    note: 'Guardbreak, no knockback. Applies Bleed 5s, lifesteals. Only activates at ≥30% charge bonus.',
+    note: 'Guardbreak, no knockback. Applies Bleed 5s, lifesteals. Only activates at ≥37.5% charge bonus.',
   },
 ]
 

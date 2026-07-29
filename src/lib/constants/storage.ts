@@ -1,4 +1,4 @@
-import { DEFAULT_LEVEL, DEFAULT_HP_FILL } from './game'
+import { DEFAULT_LEVEL, DEFAULT_HP_FILL, DEFAULT_ENEMY_HP_FILL } from './game'
 
 export const STORAGE_KEY_BUILD = 'voxlbuilder_build_v1'
 export const STORAGE_KEY_DEFENSES = 'voxlbuilder_defenses_v1'
@@ -14,9 +14,17 @@ export const BUILD_STATE_DEFAULTS: Record<string, any> = {
   upgradeRing: 0, upgradeRune: 0, upgradeInfusionHelmet: 0, upgradeInfusionChestplate: 0,
   upgradeInfusionLeggings: 0, upgradeInfusionRing: 0, selectedWeaponArt: 'Lunge', draconicColor: '',
   draconicRuneInfusion: '', emotionalState: 'buffs', propellingFunElement: 'air', propellingFunBuffMode: 'both',
-  level: DEFAULT_LEVEL, hpFill: DEFAULT_HP_FILL, summonCount: 0, buffsConsumed: 0, sporelingsSummoned: 0, bastionBallistaArrows: 0, ichorSparkCharge: 100,
+  level: DEFAULT_LEVEL, hpFill: DEFAULT_HP_FILL, enemyHpFill: DEFAULT_ENEMY_HP_FILL, summonCount: 0, buffsConsumed: 0, sporelingsSummoned: 0, bastionBallistaArrows: 0, ichorSparkCharge: 100,
   inDarkness: true, cdrToggles: {},
   potion1: '', potion2: '',
+  storedCorruptionAmount: 0,
+  emotionalDisabled: false, rageDisabled: false, glyphConduitDisabled: false, extinguishDisabled: false,
+  draconicInfusionDisabled: false, disableCurseRip: false, disableReaper: false,
+  disableWeaponBoost: false, mycoticBloomDotDisabled: false, showCritValues: false,
+  lightningCloakState: 'third', stormRendState: 'third',
+  disabledBoosts: [],
+  disabledEffects: [], disabledBuffKeys: [], disabledHealBoosts: [],
+  enemiesHit: 1, weaponCharge: 100,
 }
 
 export const SAVE_KEY_MAP: Record<string, string> = {
@@ -30,6 +38,13 @@ export const SAVE_KEY_MAP: Record<string, string> = {
   draconicRuneInfusion:'dri', emotionalState: 'es', propellingFunElement:'pfe', propellingFunBuffMode:'pfb',
   bastionBallistaArrows:'bba', ichorSparkCharge:'isc',
   potion1:'p1', potion2:'p2',
+  storedCorruptionAmount:'sca', enemyHpFill:'ehf',
+  emotionalDisabled:'ed', rageDisabled:'rd', glyphConduitDisabled:'gcd', extinguishDisabled:'exd',
+  draconicInfusionDisabled:'did', disableCurseRip:'dcr', disableReaper:'drp',
+  disableWeaponBoost:'dwb', mycoticBloomDotDisabled:'mbd', showCritValues:'scv',
+  lightningCloakState:'lcs', stormRendState:'srs',
+  disabledBoosts:'dbo', disabledEffects:'def', disabledBuffKeys:'dbk', disabledHealBoosts:'dhb',
+  enemiesHit:'eh', weaponCharge:'wc',
 }
 export const SAVE_KEY_UNMAP = Object.fromEntries(Object.entries(SAVE_KEY_MAP).map(([k,v])=>[v,k]))
 

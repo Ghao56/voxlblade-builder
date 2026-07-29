@@ -13,6 +13,7 @@ export type HealSource = 'perk' | 'rune' | 'weaponArt' | 'passive'
 export interface HealBoostContext {
   perks: Record<string, number>
   emotionalState?: 'buffs' | 'debuffs' | 'both'
+  emotionalDisabled?: boolean
   inDarkness: boolean
   level?: number
   draconicColor?: string

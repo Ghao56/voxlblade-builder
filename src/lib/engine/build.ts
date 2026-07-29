@@ -33,13 +33,14 @@ function calcCDR(
   activeRuneName?:        string,
   activeRaceName?:        string,
   emotionalState?:        'buffs' | 'debuffs' | 'both',
+  emotionalDisabled?:     boolean,
   cdrToggles?:            Record<string, boolean>,
 ): CDRResult {
   const runeSteps: CDRStep[] = []
   const waSteps:   CDRStep[] = []
 
   const emotionalAmt = perks["Emotional"] ?? 0
-  if (emotionalAmt > 0 && emotionalState === 'buffs') {
+  if (emotionalAmt > 0 && emotionalState === 'buffs' && !emotionalDisabled) {
     const totalPct = 0.5 * emotionalAmt
     waSteps.push({ source: "Emotional (Only Buffs)", pct: Math.round(totalPct * 100), multiplier: 1 / (1 + totalPct) })
   }
@@ -105,6 +106,7 @@ function calcCDR(
 function calcBoosts(
   perks:             Record<string, number>,
   emotionalState?:   string,
+  emotionalDisabled?: boolean,
   level:             number = MAX_LEVEL,
   naturalCritChance: number = 0,
   jumpBoost:         number = 0,
@@ -427,9 +429,9 @@ function finalizePerks(rawPerks: Record<string, number>): Record<string, number>
   return finalPerks
 }
 
-function applyEmotionalAttackSpeed(boostedStats: StatMap, finalPerks: Record<string, number>, emotionalState?: string): void {
+function applyEmotionalAttackSpeed(boostedStats: StatMap, finalPerks: Record<string, number>, emotionalState?: string, emotionalDisabled?: boolean): void {
   const emotionalAmt = finalPerks['Emotional'] ?? 0
-  if (emotionalAmt > 0 && emotionalState === 'debuffs') {
+  if (emotionalAmt > 0 && emotionalState === 'debuffs' && !emotionalDisabled) {
     boostedStats.attackSpeed = (boostedStats.attackSpeed ?? 0) + 0.2 * emotionalAmt
   }
 }
@@ -477,11 +479,12 @@ function deriveResults(
     state.rune || undefined,
     state.race || undefined,
     state.emotionalState,
+    state.emotionalDisabled,
     state.cdrToggles,
   )
 
   const boostedStats = applyStatBoostPerks(finalStats, finalPerks)
-  applyEmotionalAttackSpeed(boostedStats, finalPerks, state.emotionalState)
+  applyEmotionalAttackSpeed(boostedStats, finalPerks, state.emotionalState, state.emotionalDisabled)
   applyGladiatorialRage(boostedStats, finalPerks)
 
   for (let i = 0; i < STAT_KEYS.length; i++) {
@@ -531,7 +534,7 @@ function deriveResults(
     perks: finalPerks, ragePotency, draconicRuneInfusion: state.draconicRuneInfusion,
     emotionalState: state.emotionalState, draconicColor: state.draconicColor,
     guild: state.guild, draconicInfusionDisabled: false, toxinTransferHexBonus: 0,
-    rageDisabled: false,
+    rageDisabled: false, emotionalDisabled: state.emotionalDisabled ?? false,
   })
   const _waDmgTypesForBoost = (() => {
     if (!_weaponResult) return {} as Record<string, number>
@@ -541,7 +544,7 @@ function deriveResults(
   const hasMagicDmg = Object.entries(_waDmgTypesForBoost).some(([dt, mult]) => dt === 'magic' && mult > 0)
   const hasMagicOrPhysicalDmg = Object.entries(_waDmgTypesForBoost).some(([dt, mult]) => (dt === 'magic' || dt === 'physical') && mult > 0)
   const boosts = calcBoosts(
-    finalPerks, state.emotionalState, state.level ?? MAX_LEVEL,
+    finalPerks, state.emotionalState, state.emotionalDisabled, state.level ?? MAX_LEVEL,
     crit.naturalCritChance, boostedStats.jumpBoost ?? 0,
     state.summonCount ?? 0, ragePotency, bouncePotency,
     tailwindPotency, boostedStats.airBoost ?? 0, boostedStats.speedBoost ?? 0, boostedStats.attackSpeed ?? 0, (finalStats.tenacity ?? 0) + orkBuffTenacity,

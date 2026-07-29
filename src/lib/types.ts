@@ -207,6 +207,7 @@ export interface BuildState {
   draconicColor: string
   draconicRuneInfusion: string
   emotionalState: 'buffs' | 'debuffs' | 'both'
+  emotionalDisabled: boolean
   propellingFunElement: 'air' | 'fire'
   propellingFunBuffMode: 'air' | 'fire' | 'both'
   level: number
@@ -222,6 +223,24 @@ export interface BuildState {
   // Potion slots
   potion1: string
   potion2: string
+  // Toggle state (ON/OFF for buffs, boosts, effects)
+  disabledBoosts: string[]
+  disabledEffects: string[]
+  disabledBuffKeys: string[]
+  disabledHealBoosts: string[]
+  rageDisabled: boolean
+  glyphConduitDisabled: boolean
+  extinguishDisabled: boolean
+  lightningCloakState: 'off' | 'third' | 'twoThirds'
+  stormRendState: 'off' | 'third' | 'twoThirds'
+  draconicInfusionDisabled: boolean
+  disableCurseRip: boolean
+  disableReaper: boolean
+  disableWeaponBoost: boolean
+  mycoticBloomDotDisabled: boolean
+  showCritValues: boolean
+  enemiesHit: number
+  weaponCharge: number
 }
 
 export type ProcCoefficient =

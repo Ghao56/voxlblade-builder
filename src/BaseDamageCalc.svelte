@@ -146,6 +146,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   export let curseRipPerkAmount: number = 0
   export let curseRipActiveDebuffCount: number = 0
   export let curseRipHealMult: number = 1
+  export let lifestealHealMult: number = 1
   export let healCritDmgMult: number = 0
   export let venomEaterStacks: number = 0
   export let bloodThirstyStacks: number = 0
@@ -943,14 +944,17 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
         const healAmount = LIFESTEAL_HEAL_PCT_PER_STACK * lifestealStacks * damageDealt + LIFESTEAL_FLAT_HEAL_PER_STACK * lifestealStacks
         const critHealAmount = LIFESTEAL_HEAL_PCT_PER_STACK * lifestealStacks * critDamageDealt + LIFESTEAL_FLAT_HEAL_PER_STACK * lifestealStacks
         if (healAmount > 0) {
+          const healRaw = healAmount * lifestealHealMult * antiHealSelfMult
+          const critHealRaw = critHealAmount * lifestealHealMult * antiHealSelfMult
           types.push({
             key: 'heal', label: 'Heal', color: '#4ade80',
             typeBase: healAmount, scalingMult: 1, combatMult: 1,
             applicableBoosts: [], weaponBoostMult: 1, typeDebuffMult: 1,
             defMult: 1, enemyDefPct: 0,
-            raw: healAmount, critVal: critHealAmount,
+            raw: healRaw, critVal: critHealRaw,
             isHeal: true, isCritExempt: true, forceCrit: false,
             tag: 'Lifesteal',
+            healBoostMult: lifestealHealMult !== 1 ? lifestealHealMult : undefined,
           })
         }
       }

@@ -82,6 +82,7 @@ import {
   RULER_SANDS_BASE_DMG_PER_HIT, RULER_SANDS_HITS, RULER_SANDS_CHANCE_CD_MULT, RULER_SANDS_CHANCE_PERK_MULT,
   getWADisplayName,
   ICHOR_SPARK_CHAIN_DMG_PCT,
+  ICHOR_SPARK_SLASH_CHARGE_THRESHOLD,
 } from './lib/constants'
 
 
@@ -152,6 +153,7 @@ import {
   $: _healScalingCtx = {
     perks,
     emotionalState: $build.emotionalState,
+    emotionalDisabled,
     inDarkness: _effectiveInDarkness,
     level: $build.level,
     draconicColor: _effDraconicColor,
@@ -641,7 +643,6 @@ import {
   $: _mycoticBloomAmt = perks['Mycotic Bloom'] ?? 0
   $: _mycoticBloomBelow50Active = _mycoticBloomAmt > 0 && _enemyHpFillPct <= 50 && _dummyHasPoisonActive
   $: _mycoticBloomDotMult = _mycoticBloomBelow50Active ? 1 + 0.25 * _mycoticBloomAmt : 1
-  let mycoticBloomDotDisabled = false
   $: _slowActive = _allActiveBuffsRaw.filter(b => b.buffName === 'Slowness' && !b.isSelfDebuff)
   $: _slowPotency = Math.max(0, ..._slowActive.map(b => b.potency ?? 0))
   $: _slowDuration = Math.max(0, ..._slowActive.map(b => b.duration ?? 0))
@@ -739,7 +740,6 @@ import {
   })()
   $: _showCrit = _filteredEffCritChance > 0 || _hasCritBoostBuff || crit.hasCritRelevantPerks || _venomEaterCanShow
   $: _critMult = _filteredCritDmgMult / 100  
-  let showCritValues = false
 
   $: crit = $result.crit
   $: boosts = $result.boosts
@@ -997,56 +997,60 @@ import {
   $: _activeMagicReinforcePotency = (_disabledKeysArr.length,
     _allActiveBuffs.reduce((m, b) => b.buffName === 'Magic Reinforce' ? Math.max(m, b.potency) : m, 0))
 
-  let rageDisabled = false
-  let glyphConduitDisabled = false
-  let disabledBuffKeys = new Set<string>()
+
   function toggleBuffKey(key: string) {
-    if (disabledBuffKeys.has(key)) disabledBuffKeys.delete(key)
-    else disabledBuffKeys.add(key)
-    disabledBuffKeys = new Set(disabledBuffKeys) // trigger reactivity
+    const nextKeys = new Set(disabledBuffKeys)
+    if (nextKeys.has(key)) nextKeys.delete(key)
+    else nextKeys.add(key)
+    disabledBuffKeys = nextKeys
 
     if (key === 'Burn:Smoldering') {
-      if (disabledBuffKeys.has(key)) disabledBoosts.add('Smoldering')
-      else disabledBoosts.delete('Smoldering')
-      disabledBoosts = new Set(disabledBoosts)
+      const nextBoosts = new Set(disabledBoosts)
+      if (nextKeys.has(key)) nextBoosts.add('Smoldering')
+      else nextBoosts.delete('Smoldering')
+      disabledBoosts = nextBoosts
     }
 
     const buffName = key.split(':')[0]
     if (buffName === 'Perfection') {
-      if (disabledBuffKeys.has(key)) disabledBoosts.add('Perfection')
-      else disabledBoosts.delete('Perfection')
-      disabledBoosts = new Set(disabledBoosts)
+      const nextBoosts = new Set(disabledBoosts)
+      if (nextKeys.has(key)) nextBoosts.add('Perfection')
+      else nextBoosts.delete('Perfection')
+      disabledBoosts = nextBoosts
     }
     if (buffName === 'Minion Absorbed') {
-      if (disabledBuffKeys.has(key)) disabledBoosts.add('Minion Absorption')
-      else disabledBoosts.delete('Minion Absorption')
-      disabledBoosts = new Set(disabledBoosts)
+      const nextBoosts = new Set(disabledBoosts)
+      if (nextKeys.has(key)) nextBoosts.add('Minion Absorption')
+      else nextBoosts.delete('Minion Absorption')
+      disabledBoosts = nextBoosts
     }
   }
   function toggleBuffByName(name: string) {
     const sources = _dedupedActiveBuffs.find(b => b.buffName === name)?._allSources ?? _allActiveBuffsRaw.filter(b => b.buffName === name).map(b => b.sourceName)
     if (!sources.length) return
     const allDisabled = sources.every(s => disabledBuffKeys.has(`${name}:${s}`))
+    const nextKeys = new Set(disabledBuffKeys)
     for (const s of sources) {
-      if (allDisabled) disabledBuffKeys.delete(`${name}:${s}`)
-      else disabledBuffKeys.add(`${name}:${s}`)
+      if (allDisabled) nextKeys.delete(`${name}:${s}`)
+      else nextKeys.add(`${name}:${s}`)
     }
-    disabledBuffKeys = new Set(disabledBuffKeys)
+    disabledBuffKeys = nextKeys
 
     if (name === 'Perfection') {
-      if (allDisabled) disabledBoosts.delete('Perfection')
-      else disabledBoosts.add('Perfection')
-      disabledBoosts = new Set(disabledBoosts)
+      const nextBoosts = new Set(disabledBoosts)
+      if (allDisabled) nextBoosts.delete('Perfection')
+      else nextBoosts.add('Perfection')
+      disabledBoosts = nextBoosts
     }
 
     if (name === 'Minion Absorbed') {
-      if (allDisabled) disabledBoosts.delete('Minion Absorption')
-      else disabledBoosts.add('Minion Absorption')
-      disabledBoosts = new Set(disabledBoosts)
+      const nextBoosts = new Set(disabledBoosts)
+      if (allDisabled) nextBoosts.delete('Minion Absorption')
+      else nextBoosts.add('Minion Absorption')
+      disabledBoosts = nextBoosts
     }
   }
   const HANDLED_BUFF_NAMES = new Set(['Rage', 'Glyph Conduit', 'Extinguish', 'Lightning Cloak', 'Storm Rend'])
-  let extinguishDisabled = false
 
   let environmentTouched = false
   let prevPhotosynthesis = 0
@@ -1189,25 +1193,25 @@ import {
     perks, ragePotency: _ragePotency, draconicRuneInfusion: $build.draconicRuneInfusion,
     emotionalState: $build.emotionalState, draconicColor: _effDraconicColor,
     guild: $build.guild, draconicInfusionDisabled, toxinTransferHexBonus: _toxinTransferHexBonus,
-    rageDisabled,
+    rageDisabled, emotionalDisabled,
   })
   $: _perkDmgTypeBonusesNoProc = buildDmgTypeBonuses(false, {
     perks, ragePotency: _ragePotency, draconicRuneInfusion: $build.draconicRuneInfusion,
     emotionalState: $build.emotionalState, draconicColor: _effDraconicColor,
     guild: $build.guild, draconicInfusionDisabled, toxinTransferHexBonus: _toxinTransferHexBonus,
-    rageDisabled,
+    rageDisabled, emotionalDisabled,
   })
   $: _perkDmgTypeBonusesDoT = buildDmgTypeBonuses(false, {
     perks, ragePotency: _ragePotency, draconicRuneInfusion: $build.draconicRuneInfusion,
     emotionalState: $build.emotionalState, draconicColor: _effDraconicColor,
     guild: $build.guild, draconicInfusionDisabled, toxinTransferHexBonus: _toxinTransferHexBonus,
-    rageDisabled,
-  }, new Set(['Channeled Weapon']))
+    rageDisabled, emotionalDisabled,
+  })
 
   $: _emotionalHexBonus = (() => {
     const amt = perks['Emotional'] ?? 0
     if (amt <= 0) return 0
-    if ($build.emotionalState !== 'buffs') return 0
+    if (emotionalDisabled || $build.emotionalState !== 'buffs') return 0
     return Math.round(amt * EMOTIONAL_PCT_PER_STACK * 10000) / 10000
   })()
 
@@ -1222,7 +1226,7 @@ import {
   $: _emotionalFireBonus = (() => {
     const amt = perks['Emotional'] ?? 0
     if (amt <= 0) return 0
-    if ($build.emotionalState !== 'debuffs') return 0
+    if (emotionalDisabled || $build.emotionalState !== 'debuffs') return 0
     return Math.round(amt * EMOTIONAL_PCT_PER_STACK * 10000) / 10000
   })()
 
@@ -1377,41 +1381,149 @@ import {
     return Math.round(sum * 100) / 100
   })()
 
-  let disabledBoosts = new Set<string>([
-    'Thief Training (would-crit bonus)'
-  ])
-
-  function toggleBoost(name: string) {
-    if (disabledBoosts.has(name)) disabledBoosts.delete(name)
-    else disabledBoosts.add(name)
-    disabledBoosts = new Set(disabledBoosts)
-
-    if (name === 'Smoldering') {
-      const burnKey = 'Burn:Smoldering'
-      if (disabledBoosts.has(name)) disabledBuffKeys.add(burnKey)
-      else disabledBuffKeys.delete(burnKey)
-      disabledBuffKeys = new Set(disabledBuffKeys)
-    }
-  }
-
-  /**
-   * Toggle set for chance-based optional effects.
-   * Each key corresponds to an effect's toggle identifier.
-   * When disabled, the effect's contribution is completely excluded.
-   */
+  let disabledBoosts = new Set<string>(['Thief Training (would-crit bonus)'])
   let disabledEffects = new Set<string>()
-
-  function toggleEffect(name: string) {
-    if (disabledEffects.has(name)) disabledEffects.delete(name)
-    else disabledEffects.add(name)
-    disabledEffects = new Set(disabledEffects)
-  }
-
   let disabledHealBoosts = new Set<string>(['Extinguish'])
+  let disabledBuffKeys = new Set<string>()
   let draconicInfusionDisabled = false
   let disableCurseRip = false
   let disableReaper = false
   let disableWeaponBoost = false
+  let rageDisabled = false
+  let glyphConduitDisabled = false
+  let extinguishDisabled = false
+  let lightningCloakState: LightningCloakState = 'third'
+  let stormRendState: LightningCloakState = 'third'
+  let mycoticBloomDotDisabled = false
+  let showCritValues = false
+  let emotionalDisabled = false
+  let weaponCharge = 100
+  let enemiesHit = 1
+  function arraysEqual(a: string[], b: string[]): boolean {
+    if (a.length !== b.length) return false
+    const sa = new Set(a)
+    for (const v of b) if (!sa.has(v)) return false
+    return true
+  }
+  let _togglesInited = false
+  let _prevEmotionalDisabled = false
+
+  $: if ($build && !_togglesInited) {
+    disabledBoosts = new Set($build.disabledBoosts ?? ['Thief Training (would-crit bonus)'])
+    disabledEffects = new Set($build.disabledEffects ?? [])
+    disabledHealBoosts = new Set($build.disabledHealBoosts ?? ['Extinguish'])
+    disabledBuffKeys = new Set($build.disabledBuffKeys ?? [])
+    draconicInfusionDisabled = $build.draconicInfusionDisabled ?? false
+    disableCurseRip = $build.disableCurseRip ?? false
+    disableReaper = $build.disableReaper ?? false
+    disableWeaponBoost = $build.disableWeaponBoost ?? false
+    rageDisabled = $build.rageDisabled ?? false
+    glyphConduitDisabled = $build.glyphConduitDisabled ?? false
+    extinguishDisabled = $build.extinguishDisabled ?? false
+    lightningCloakState = ($build.lightningCloakState ?? 'third') as LightningCloakState
+    stormRendState = ($build.stormRendState ?? 'third') as LightningCloakState
+    mycoticBloomDotDisabled = $build.mycoticBloomDotDisabled ?? false
+    showCritValues = $build.showCritValues ?? false
+    emotionalDisabled = $build.emotionalDisabled ?? false
+    weaponCharge = $build.weaponCharge ?? 100
+    enemiesHit = Math.max(1, $build.enemiesHit ?? 1)
+    _togglesInited = true
+  }
+
+  $: if (_togglesInited && $build) {
+    const s = $build
+    const needsUpdate =
+      s.disabledBoosts && !arraysEqual(s.disabledBoosts, [...disabledBoosts]) ||
+      s.disabledEffects && !arraysEqual(s.disabledEffects, [...disabledEffects]) ||
+      s.disabledHealBoosts && !arraysEqual(s.disabledHealBoosts, [...disabledHealBoosts]) ||
+      s.disabledBuffKeys && !arraysEqual(s.disabledBuffKeys, [...disabledBuffKeys]) ||
+      s.showCritValues !== undefined && s.showCritValues !== showCritValues ||
+      s.emotionalDisabled !== undefined && s.emotionalDisabled !== emotionalDisabled ||
+      s.rageDisabled !== undefined && s.rageDisabled !== rageDisabled ||
+      s.glyphConduitDisabled !== undefined && s.glyphConduitDisabled !== glyphConduitDisabled ||
+      s.extinguishDisabled !== undefined && s.extinguishDisabled !== extinguishDisabled ||
+      s.draconicInfusionDisabled !== undefined && s.draconicInfusionDisabled !== draconicInfusionDisabled ||
+      s.disableCurseRip !== undefined && s.disableCurseRip !== disableCurseRip ||
+      s.disableReaper !== undefined && s.disableReaper !== disableReaper ||
+      s.disableWeaponBoost !== undefined && s.disableWeaponBoost !== disableWeaponBoost ||
+      s.mycoticBloomDotDisabled !== undefined && s.mycoticBloomDotDisabled !== mycoticBloomDotDisabled ||
+      s.lightningCloakState !== undefined && s.lightningCloakState !== lightningCloakState ||
+      s.stormRendState !== undefined && s.stormRendState !== stormRendState ||
+      s.weaponCharge !== undefined && s.weaponCharge !== weaponCharge ||
+      s.enemiesHit !== undefined && s.enemiesHit !== enemiesHit
+    if (needsUpdate) {
+      disabledBoosts = new Set(s.disabledBoosts ?? [])
+      disabledEffects = new Set(s.disabledEffects ?? [])
+      disabledHealBoosts = new Set(s.disabledHealBoosts ?? ['Extinguish'])
+      disabledBuffKeys = new Set(s.disabledBuffKeys ?? [])
+      showCritValues = s.showCritValues ?? false
+      emotionalDisabled = s.emotionalDisabled ?? false
+      rageDisabled = s.rageDisabled ?? false
+      glyphConduitDisabled = s.glyphConduitDisabled ?? false
+      extinguishDisabled = s.extinguishDisabled ?? false
+      draconicInfusionDisabled = s.draconicInfusionDisabled ?? false
+      disableCurseRip = s.disableCurseRip ?? false
+      disableReaper = s.disableReaper ?? false
+      disableWeaponBoost = s.disableWeaponBoost ?? false
+      mycoticBloomDotDisabled = s.mycoticBloomDotDisabled ?? false
+      lightningCloakState = (s.lightningCloakState ?? 'third') as LightningCloakState
+      stormRendState = (s.stormRendState ?? 'third') as LightningCloakState
+      weaponCharge = s.weaponCharge ?? 100
+      enemiesHit = Math.max(1, s.enemiesHit ?? 1)
+    }
+    build.update(s2 => {
+      let next = s2
+      if (s.showCritValues !== showCritValues) next = { ...next, showCritValues }
+      if (s.emotionalDisabled !== emotionalDisabled) next = { ...next, emotionalDisabled }
+      if (s.enemiesHit !== enemiesHit) next = { ...next, enemiesHit }
+      if (s.weaponCharge !== weaponCharge) next = { ...next, weaponCharge }
+      if (s.mycoticBloomDotDisabled !== mycoticBloomDotDisabled) next = { ...next, mycoticBloomDotDisabled }
+      if (s.rageDisabled !== rageDisabled) next = { ...next, rageDisabled }
+      if (s.glyphConduitDisabled !== glyphConduitDisabled) next = { ...next, glyphConduitDisabled }
+      if (s.extinguishDisabled !== extinguishDisabled) next = { ...next, extinguishDisabled }
+      if (s.draconicInfusionDisabled !== draconicInfusionDisabled) next = { ...next, draconicInfusionDisabled }
+      if (s.disableCurseRip !== disableCurseRip) next = { ...next, disableCurseRip }
+      if (s.disableReaper !== disableReaper) next = { ...next, disableReaper }
+      if (s.disableWeaponBoost !== disableWeaponBoost) next = { ...next, disableWeaponBoost }
+      if (s.lightningCloakState !== lightningCloakState) next = { ...next, lightningCloakState }
+      if (s.stormRendState !== stormRendState) next = { ...next, stormRendState }
+      if (s.disabledBoosts && !arraysEqual(s.disabledBoosts, [...disabledBoosts])) next = { ...next, disabledBoosts: [...disabledBoosts] }
+      if (s.disabledEffects && !arraysEqual(s.disabledEffects, [...disabledEffects])) next = { ...next, disabledEffects: [...disabledEffects] }
+      if (s.disabledHealBoosts && !arraysEqual(s.disabledHealBoosts, [...disabledHealBoosts])) next = { ...next, disabledHealBoosts: [...disabledHealBoosts] }
+      if (s.disabledBuffKeys && !arraysEqual(s.disabledBuffKeys, [...disabledBuffKeys])) next = { ...next, disabledBuffKeys: [...disabledBuffKeys] }
+      return next
+    })
+  }
+
+  $: if (_togglesInited && emotionalDisabled !== _prevEmotionalDisabled) {
+    _prevEmotionalDisabled = emotionalDisabled
+    const next = new Set(disabledHealBoosts)
+    if (emotionalDisabled) next.add('Emotional')
+    else next.delete('Emotional')
+    disabledHealBoosts = next
+  }
+
+  function toggleBoost(name: string) {
+    const next = new Set(disabledBoosts)
+    if (next.has(name)) next.delete(name)
+    else next.add(name)
+    disabledBoosts = next
+
+    if (name === 'Smoldering') {
+      const burnKey = 'Burn:Smoldering'
+      const nextKeys = new Set(disabledBuffKeys)
+      if (next.has(name)) nextKeys.add(burnKey)
+      else nextKeys.delete(burnKey)
+      disabledBuffKeys = nextKeys
+    }
+  }
+
+  function toggleEffect(name: string) {
+    const next = new Set(disabledEffects)
+    if (next.has(name)) next.delete(name)
+    else next.add(name)
+    disabledEffects = next
+  }
 
   const _boostCondDisableRules: Array<{ sourceName: string; test: () => boolean }> = [
     { sourceName: 'Spirit Winds',   test: () => _effectiveTailwindPotency <= 0 },
@@ -1440,33 +1552,35 @@ import {
     return s
   })()
   type LightningCloakState = 'off' | 'third' | 'twoThirds'
-  let lightningCloakState: LightningCloakState = 'third'
-  let stormRendState: LightningCloakState = 'third'
-
   function cycleLightningState() {
     const next: LightningCloakState = lightningCloakState === 'off' ? 'third' : lightningCloakState === 'third' ? 'twoThirds' : 'off'
     lightningCloakState = next
     const lcBuffs = _allActiveBuffsRaw.filter(b => b.buffName === 'Lightning Cloak')
+    const nextKeys = new Set(disabledBuffKeys)
     for (const b of lcBuffs) {
       const key = `Lightning Cloak:${b.sourceName}`
-      if (next === 'off') disabledBuffKeys.add(key)
-      else disabledBuffKeys.delete(key)
+      if (next === 'off') nextKeys.add(key)
+      else nextKeys.delete(key)
     }
-    disabledBuffKeys = new Set(disabledBuffKeys)
+    disabledBuffKeys = nextKeys
   }
   function cycleStormRendState() {
-    if (stormRendState === 'off') stormRendState = 'third'
-    else if (stormRendState === 'third') stormRendState = 'twoThirds'
-    else stormRendState = 'off'
+    let next: LightningCloakState
+    if (stormRendState === 'off') next = 'third'
+    else if (stormRendState === 'third') next = 'twoThirds'
+    else next = 'off'
+    stormRendState = next
   }
 
   $: propellingFunElement = $build.propellingFunElement ?? 'air'
   $: propellingFunBuffMode = $build.propellingFunBuffMode ?? 'both'
 
   function toggleHealBoost(name: string) {
-    if (disabledHealBoosts.has(name)) disabledHealBoosts.delete(name)
-    else disabledHealBoosts.add(name)
-    disabledHealBoosts = new Set(disabledHealBoosts)
+    const next = new Set(disabledHealBoosts)
+    if (next.has(name)) next.delete(name)
+    else next.add(name)
+    disabledHealBoosts = next
+    if (name === 'Emotional') emotionalDisabled = next.has('Emotional')
   }
   type BoostAttackType = 'm1' | 'm2' | 'perk' | 'rune' | 'wa';
   $: _syntheticDmgBoostEntries = (() => {
@@ -2148,8 +2262,6 @@ import {
     return { minEnds: toEnds(min), minLabel, maxEnds: toEnds(max), maxLabel }
   })()
 
-  let weaponCharge = 100
-
   $: selectedWeaponData = WEAPON_BASE_DMG.find(w => w.type === (_gunOverlay?.type ?? _baseWeaponType))
 
   function applyWeaponCharge(dmg: number) {
@@ -2392,7 +2504,7 @@ import {
       const halfActivations = hasHalfActivations || undefined
       const oncePerFinisher = isSpringblast ? false : (def.finisherOnly ? true : undefined)
 
-      const isActive = isHpGateActive(def.hpGate, _hpFillPct, perkAmount) && isHpGateActive(def.enemyHpGate, _enemyHpFillPct, perkAmount) && (!isSpringblast || _allActiveBuffs.some(b => b.buffName === 'Bounce')) && (!def.requiredBuff || _allActiveBuffs.some(b => b.buffName === def.requiredBuff)) && (!def.requiredEnemyDebuff || (_dummyDebuffs.some(d => d.name === def.requiredEnemyDebuff) && !disabledDebuffs.has(def.requiredEnemyDebuff!))) && !(_sliderDef && _perkSliderVal <= 0)
+      const isActive = isHpGateActive(def.hpGate, _hpFillPct, perkAmount) && isHpGateActive(def.enemyHpGate, _enemyHpFillPct, perkAmount) && (!isSpringblast || _allActiveBuffs.some(b => b.buffName === 'Bounce')) && (!def.requiredBuff || _allActiveBuffs.some(b => b.buffName === def.requiredBuff)) && (!def.requiredEnemyDebuff || (_dummyDebuffs.some(d => d.name === def.requiredEnemyDebuff) && !disabledDebuffs.has(def.requiredEnemyDebuff!))) && !(_sliderDef && _perkSliderVal <= 0) && !(def.label === 'Ranged Slash' && _sliderDef && _perkSliderVal < ICHOR_SPARK_SLASH_CHARGE_THRESHOLD * 100)
 
       const secondaryEffects = (def.secondaryEffects ?? []).filter(se => !se.showIf || se.showIf({ draconicColor: _effDraconicColor })).map(se => {
         let raw = Math.round(se.getValue({ perkAmount, draconicColor: _effDraconicColor, statuses: _perkCtxStatuses, sliderVal: _perkSliderVal }) * 1000) / 1000
@@ -2992,9 +3104,7 @@ import {
 
   const SELF_DAMAGE_APPLIES_TO_GROUP: Record<string, 'WA' | 'Rune' | 'M1' | 'M2' | 'Perk'> = { wa: 'WA', rune: 'Rune', m1: 'M1', m2: 'M2', perk: 'Perk' }
 
-  let enemiesHit = 1
   let _selfDmgTab: Record<string, string> = {}
-  $: if (!Number.isFinite(enemiesHit) || enemiesHit < 1) enemiesHit = 1
 
   function _countHitsForLabel(hits: BDCHit[], group: 'WA' | 'Rune' | 'M1' | 'M2' | 'Perk', label?: string): number {
     return hits
@@ -3009,6 +3119,26 @@ import {
         const dmgTypesForCalc = h.baseDmgTypes ?? h.dmgTypes
         const typeMultSum = Object.values(dmgTypesForCalc).reduce((s, m) => s + m, 0)
         return sum + h.base * typeMultSum * h.scalingMult * _levelMult * h.count
+      }, 0)
+  }
+
+  function _sumPreMitigationHitDamage(hits: BDCHit[], group: 'WA' | 'Rune' | 'M1' | 'M2' | 'Perk', label?: string): number {
+    return hits
+      .filter(h => h.group === group && !h.isHeal && (label === undefined || h.label === label))
+      .reduce((sum, h) => {
+        const dmgTypesForCalc = h.baseDmgTypes ?? h.dmgTypes
+        const typeMultSum = Object.values(dmgTypesForCalc).reduce((s, m) => s + m, 0)
+        return sum + h.base * typeMultSum * h.scalingMult * _levelMult * h.combatMult * h.count
+      }, 0)
+  }
+
+  function _sumPreMitNoLevelHitDamage(hits: BDCHit[], group: 'WA' | 'Rune' | 'M1' | 'M2' | 'Perk', label?: string): number {
+    return hits
+      .filter(h => h.group === group && !h.isHeal && (label === undefined || h.label === label))
+      .reduce((sum, h) => {
+        const dmgTypesForCalc = h.baseDmgTypes ?? h.dmgTypes
+        const typeMultSum = Object.values(dmgTypesForCalc).reduce((s, m) => s + m, 0)
+        return sum + h.base * typeMultSum * h.scalingMult * h.combatMult * h.count
       }, 0)
   }
 
@@ -3096,6 +3226,7 @@ import {
           ]
           for (const label of waLabels) {
             const preBoostDmg = def.perkName === 'Bombardier' ? _bombardierSelfDmgBase
+              : def.perkName === 'Explosive Charge' ? _sumPreMitNoLevelHitDamage(_bdcWeaponHits, 'WA', label)
               : _sumPreBoostHitDamage(_bdcWeaponHits, 'WA', label)
             if (preBoostDmg <= 0) continue
             const _hc = def.flatSelfDmg ? _countHitsForLabel(_bdcWeaponHits, 'WA', label) : 1
@@ -3261,6 +3392,7 @@ $: _groupedSelfDamageSources = (() => {
     lifeDrinkerAmt={perks['Life Drinker'] ?? 0}
     siphoningRotAmt={perks['Siphoning Rot'] ?? 0}
     lifestealStacks={perks['Lifesteal'] ?? 0}
+    lifestealHealMult={_curseRipHealMult}
     sunburnUniversalDmgMult={_sunburnEnemyBurning ? _sunburnUniversalDmgMult : 1}
     phantomPainPct={_phantomPainPct}
     dotTicks={_dotTicks}
@@ -3765,6 +3897,23 @@ $: _groupedSelfDamageSources = (() => {
       <span class="da-chain-result" style="color:#4ade80">= ×{+_healFinalMultiplier.toFixed(4)}</span>
     </div>
 
+  {/if}
+  {#if (perks['Emotional'] ?? 0) > 0}
+    {@const _emColor = emotionalDisabled ? '#666' : $build.emotionalState === 'buffs' ? '#4ade80' : $build.emotionalState === 'debuffs' ? '#f87171' : '#a78bfa'}
+    <div class="da-boost-row" style="margin-top:8px">
+      <span class="da-heal-label" style="color:var(--c)">✦ Emotional</span>
+      <button
+        class="da-boost-chip"
+        class:da-boost-chip--off={emotionalDisabled}
+        style={emotionalDisabled ? '' : `border-color:color-mix(in srgb,${_emColor} 35%,transparent);background:color-mix(in srgb,${_emColor} 10%,transparent)`}
+        on:click={() => emotionalDisabled = !emotionalDisabled}
+      >
+        <span class="da-bc-name">Emotional</span>
+        <span class="da-bc-val" style="color:{_emColor}">{emotionalDisabled ? '—' : $build.emotionalState === 'buffs' ? 'Buffs' : $build.emotionalState === 'debuffs' ? 'Debuffs' : 'Both'}</span>
+
+        <span class="da-bc-toggle">{emotionalDisabled ? 'OFF' : 'ON'}</span>
+      </button>
+    </div>
   {/if}
 </div>
 

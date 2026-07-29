@@ -46,6 +46,7 @@
   }
 
   $: state = MAPPING.fromStore[$build.emotionalState] ?? 'buff'
+  $: disabled = $build.emotionalDisabled ?? false
   $: cur = STATE_DATA[state]
   $: sliderVal = SLIDER_MAP.indexOf(state)
 
@@ -59,12 +60,14 @@
   }
 </script>
 
-<div class="et"
+<div class="et" class:et--disabled={disabled}
   style="--c:{cur.color};--glow:{cur.glow};--border-c:{cur.border};--bg:{cur.bg}">
 
   <div class="et-head">
     <span class="et-title">Emotional State</span>
-    <Badge color={cur.color} size="sm">{cur.label}</Badge>
+    <div class="et-head-right">
+      <Badge color={cur.color} size="sm">{disabled ? 'Disabled' : cur.label}</Badge>
+    </div>
   </div>
 
   <div class="et-btns">
@@ -132,6 +135,8 @@
 
   /* Header */
   .et-head { display:flex; align-items:center; justify-content:space-between; gap:6px; }
+  .et-head-right { display:flex; align-items:center; gap:6px; }
+  .et--disabled { opacity:.45; }
   .et-title {
     font-size:.6rem; text-transform:uppercase; letter-spacing:.16em;
     font-weight:700; color:var(--c); opacity:.7;
