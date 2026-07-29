@@ -51,6 +51,7 @@ const DEFAULT_BUILD: BuildState = {
   buffsConsumed: 0,
   sporelingsSummoned: 0,
   bastionBallistaArrows: 0,
+  ichorSparkCharge: 100,
   inDarkness: true,
   cdrToggles: {},
   potion1: "",

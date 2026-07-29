@@ -1878,7 +1878,8 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
 .bdc-cooldown-warning {
   display: flex;
   align-items: center;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 6px;
   background: rgba(245, 158, 11, 0.14);
   border: 2px solid rgba(245, 158, 11, 0.45);
   border-radius: 8px;
@@ -1887,7 +1888,8 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   color: #fbbf24;
   font-size: 0.9rem;
   font-weight: 800;
-  line-height: 1.4;
+  line-height: 1.5;
+  word-break: break-word;
 }
 .bdc-cooldown-warning i.fa {
   font-size: 1.3rem;

@@ -2373,9 +2373,10 @@ import {
         waCooldown: _waCooldown,
         runeCooldown: _runeBaseCd,
       }
-      const _perkSliderMax = def.slider?.getMax ? def.slider.getMax({ perks }) : (def.slider?.max ?? 0)
-      const _rawSliderVal = def.slider ? Math.min(($build as any)[def.slider.buildKey] ?? 0, _perkSliderMax) : 0
-      const _perkSliderVal = (def.slider && disabledBuffKeys.has(`Arrows:${def.perkName}`)) ? 0 : _rawSliderVal
+      const _sliderDef = def.slider ?? PERK_DMG_DEFS.find(d => d.perkName === def.perkName && d.slider)?.slider
+      const _perkSliderMax = _sliderDef?.getMax ? _sliderDef.getMax({ perks }) : (_sliderDef?.max ?? 0)
+      const _rawSliderVal = _sliderDef ? Math.min(($build as any)[_sliderDef.buildKey] ?? 0, _perkSliderMax) : 0
+      const _perkSliderVal = (_sliderDef && disabledBuffKeys.has(`Arrows:${def.perkName}`)) ? 0 : _rawSliderVal
       const baseDmg_m2  = def.getBaseDamage({ perkAmount, finisherHits: _fhM2,  draconicColor: _effDraconicColor, statuses: _perkCtxStatuses, sliderVal: _perkSliderVal })
       const baseDmg_m1f = def.getBaseDamage({ perkAmount, finisherHits: _fhM1f, draconicColor: _effDraconicColor, statuses: _perkCtxStatuses, sliderVal: _perkSliderVal })
 
@@ -2389,10 +2390,10 @@ import {
       const halfActivations = hasHalfActivations || undefined
       const oncePerFinisher = isSpringblast ? false : (def.finisherOnly ? true : undefined)
 
-      const isActive = isHpGateActive(def.hpGate, _hpFillPct, perkAmount) && isHpGateActive(def.enemyHpGate, _enemyHpFillPct, perkAmount) && (!isSpringblast || _allActiveBuffs.some(b => b.buffName === 'Bounce')) && (!def.requiredBuff || _allActiveBuffs.some(b => b.buffName === def.requiredBuff)) && (!def.requiredEnemyDebuff || (_dummyDebuffs.some(d => d.name === def.requiredEnemyDebuff) && !disabledDebuffs.has(def.requiredEnemyDebuff!))) && !(def.slider && _perkSliderVal <= 0)
+      const isActive = isHpGateActive(def.hpGate, _hpFillPct, perkAmount) && isHpGateActive(def.enemyHpGate, _enemyHpFillPct, perkAmount) && (!isSpringblast || _allActiveBuffs.some(b => b.buffName === 'Bounce')) && (!def.requiredBuff || _allActiveBuffs.some(b => b.buffName === def.requiredBuff)) && (!def.requiredEnemyDebuff || (_dummyDebuffs.some(d => d.name === def.requiredEnemyDebuff) && !disabledDebuffs.has(def.requiredEnemyDebuff!))) && !(_sliderDef && _perkSliderVal <= 0)
 
       const secondaryEffects = (def.secondaryEffects ?? []).filter(se => !se.showIf || se.showIf({ draconicColor: _effDraconicColor })).map(se => {
-        let raw = Math.round(se.getValue({ perkAmount, draconicColor: _effDraconicColor, statuses: _perkCtxStatuses }) * 1000) / 1000
+        let raw = Math.round(se.getValue({ perkAmount, draconicColor: _effDraconicColor, statuses: _perkCtxStatuses, sliderVal: _perkSliderVal }) * 1000) / 1000
         
         if (se.tone === 'defense') {
           const potMult = calcDefensivePotencyMult(perks, $build.draconicRuneInfusion, _effDraconicColor)
@@ -4511,6 +4512,7 @@ $: _groupedSelfDamageSources = (() => {
           {#if entry.isRune}<Badge color="#38bdf8" square size="xs">Rune</Badge>{/if}
           {#if entry.guardbreak}<Badge color="#f87171" square size="xs">Guardbreak</Badge>{/if}
           {#if entry.dmgTypeMode === 'weapon'}<Badge color="#34d399" square size="xs">Weapon Type</Badge>{/if}
+          {#if entry.isProcHit}<Badge color="#f472b6" square size="xs">Proc Hit</Badge>{/if}
         </div>
         <!-- Condition -->
         {#if entry.condition}

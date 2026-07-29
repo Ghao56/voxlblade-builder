@@ -135,6 +135,21 @@ import {
   RULER_SANDS_HITS,
   RULER_SANDS_CHANCE_CD_MULT,
   RULER_SANDS_CHANCE_PERK_MULT,
+  ICHOR_SPARK_SWIPE_MIN_A,
+  ICHOR_SPARK_SWIPE_MIN_B,
+  ICHOR_SPARK_SWIPE_MAX_A,
+  ICHOR_SPARK_SWIPE_MAX_B,
+  ICHOR_SPARK_SLASH_MIN_A,
+  ICHOR_SPARK_SLASH_MIN_B,
+  ICHOR_SPARK_SLASH_MAX_A,
+  ICHOR_SPARK_SLASH_MAX_B,
+  ICHOR_SPARK_CHARGE_TIME_BASE,
+  ICHOR_SPARK_CHARGE_TIME_PER_STACK,
+  ICHOR_SPARK_CHAIN_DMG_PCT,
+  ICHOR_SPARK_CHAIN_HEAL_FLAT,
+  ICHOR_SPARK_SLASH_HEAL_PER_STACK,
+  ICHOR_SPARK_CHAIN_PROC_CHANCE,
+  ICHOR_SPARK_BLEED_DURATION,
 } from '../lib/constants'
 
 export interface PerkSliderDef {
@@ -249,6 +264,22 @@ export function calcBomberChargeBaseDamage(perkAmount: number, missingHpPct: num
   const missingPct = Math.min(BOMBER_CHARGE_MISSING_HP_CAP, missingHpPct / 100)
   const base = BOMBER_CHARGE_BASE * (1 + BOMBER_CHARGE_PCT_PER_STACK * perkAmount) * (1 + BOMBER_CHARGE_MISSING_HP_MULT * missingPct)
   return Math.round(base * 1000) / 1000
+}
+
+export function calcIchorSparkSwipeBase(perkAmount: number, chargePct: number): number {
+  const minBase = ICHOR_SPARK_SWIPE_MIN_A + ICHOR_SPARK_SWIPE_MIN_B * perkAmount
+  const maxBase = ICHOR_SPARK_SWIPE_MAX_A + ICHOR_SPARK_SWIPE_MAX_B * perkAmount
+  return minBase + (maxBase - minBase) * chargePct / 100
+}
+
+export function calcIchorSparkSlashBase(perkAmount: number, chargePct: number): number {
+  const minBase = ICHOR_SPARK_SLASH_MIN_A + ICHOR_SPARK_SLASH_MIN_B * perkAmount
+  const maxBase = ICHOR_SPARK_SLASH_MAX_A + ICHOR_SPARK_SLASH_MAX_B * perkAmount
+  return minBase + (maxBase - minBase) * chargePct / 100
+}
+
+export function calcIchorSparkChargeTime(perkAmount: number): number {
+  return ICHOR_SPARK_CHARGE_TIME_BASE - ICHOR_SPARK_CHARGE_TIME_PER_STACK * perkAmount
 }
 
 export const PERK_DMG_DEFS: PerkDmgDef[] = [
@@ -1205,6 +1236,88 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     scalings: { magic: 1.0, water: 1.0 },
     procCoefficient: { type: 'noProc' },
     note: 'Duration extends if the user keeps hitting enemies',
+  },
+  // ── Ichor Spark: Charged RMB ────────────────────────────────────────────────
+  {
+    perkName: 'Ichor Spark',
+    label: 'Charged RMB',
+    condition: 'On RMB charge release',
+    getBaseDamage: ({ perkAmount, sliderVal = 100 }) =>
+      calcIchorSparkSwipeBase(perkAmount, sliderVal),
+    dmgTypeMode: 'weapon',
+    scalingMode: 'weapon',
+    isFinisher: true,
+    guardbreak: true,
+    procCoefficient: { type: 'hasCoeff', value: 1.0 },
+    secondaryEffects: [
+      {
+        label: 'Charge Time',
+        getValue: ({ perkAmount }) => calcIchorSparkChargeTime(perkAmount),
+        format: v => `${v.toFixed(1)}s`,
+        condition: 'Time to reach max charge',
+        tone: 'utility',
+      },
+    ],
+    slider: {
+      buildKey: 'ichorSparkCharge',
+      label: 'Charge',
+      min: 0,
+      max: 100,
+      step: 1,
+    },
+    note: 'Swipe: finisher, guardbreak, high knockback. Ranged slash: guardbreak, no knockback, Bleed 5s, lifesteals. Charge rate affected by attack speed.',
+  },
+  // ── Ichor Spark: Ranged Slash ────────────────────────────────────────────────
+  {
+    perkName: 'Ichor Spark',
+    label: 'Ranged Slash',
+    condition: 'On RMB charge release (shares charge slider with Charged RMB)',
+    getBaseDamage: ({ perkAmount, sliderVal = 100 }) =>
+      calcIchorSparkSlashBase(perkAmount, sliderVal),
+    dmgTypeMode: 'weapon',
+    scalingMode: 'fixed',
+    scalings: { physical: 1.0, air: 1.0 },
+    guardbreak: true,
+    secondaryEffects: [
+      {
+        label: 'Slash Heal',
+        getValue: ({ perkAmount }) => ICHOR_SPARK_SLASH_HEAL_PER_STACK * perkAmount,
+        format: v => `${v.toFixed(3)} HP`,
+        condition: 'Lifesteals',
+        tone: 'defense',
+      },
+      {
+        label: 'Bleed Duration',
+        getValue: () => ICHOR_SPARK_BLEED_DURATION,
+        format: v => `${v}s`,
+        condition: 'Ranged slash applies Bleed at 1+ perk',
+        tone: 'offense',
+      },
+    ],
+    note: 'Guardbreak, no knockback. Applies Bleed 5s, lifesteals.',
+  },
+  // ── Ichor Spark: Chain Lightning ────────────────────────────────────────────
+  {
+    perkName: 'Ichor Spark',
+    label: 'Chain Lightning',
+    condition: `On hit (${Math.round(ICHOR_SPARK_CHAIN_PROC_CHANCE * 100)}% chance)`,
+    getBaseDamage: ({ perkAmount }) => ICHOR_SPARK_CHAIN_DMG_PCT * perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { air: 0.5, physical: 0.5 },
+    scalingMode: 'fixed',
+    scalings: { air: 1.0, physical: 1.0 },
+    isProcHit: true,
+    procCoefficient: { type: 'noProc' },
+    secondaryEffects: [
+      {
+        label: 'Heal per proc',
+        getValue: ({ perkAmount }) => ICHOR_SPARK_CHAIN_HEAL_FLAT * perkAmount,
+        format: v => `${v.toFixed(1)} HP`,
+        condition: 'Lifesteals',
+        tone: 'defense',
+      },
+    ],
+    note: 'Chains to furthest target. Can chain to original target. Not affected by output/post-output multipliers of the triggering attack, but its own damage can be affected by post-output multipliers.',
   },
 ]
 

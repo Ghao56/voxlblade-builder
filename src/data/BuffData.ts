@@ -1,5 +1,5 @@
 import { roundMultiplier } from '../lib/utils'
-import { BASTION_BLESS_MULT } from '../lib/constants'
+import { BASTION_BLESS_MULT, ICHOR_SPARK_BLEED_DURATION } from '../lib/constants'
 import {
   BUFF_EFFECT_PER_TENTH, WHIRLWIND_EFFECT_PER_TENTH, GLYPH_CONDUIT_EFFECT_PER_TENTH,
   DESPAIR_EFFECT_PER_TENTH, LUMINESCENT_PCT_PER_POTENCY,
@@ -1443,6 +1443,16 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       duration: 20,
       condition: 'on Spirit activation',
       sourceName: 'Croakernaut Spirit',
+      sourceType: 'perk',
+    },
+  ],
+  'Ichor Spark': (amount) => [
+    {
+      buffName: 'Bleed',
+      potency: 0,
+      duration: ICHOR_SPARK_BLEED_DURATION,
+      condition: `Charged ranged slash applies Bleed for ${ICHOR_SPARK_BLEED_DURATION}s`,
+      sourceName: 'Ichor Spark',
       sourceType: 'perk',
     },
   ],
