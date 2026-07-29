@@ -1347,6 +1347,17 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       sourceType: 'perk',
     },
   ],
+  'Steam Powered': (amount) => [
+    {
+      buffName: 'Burn',
+      potency: 0.1,
+      duration: 5,
+      condition: '≈30% chance per hit',
+      sourceName: 'Steam Powered',
+      sourceType: 'perk',
+      isSelfDebuff: true,
+    },
+  ],
   'Queen Bumblz Spirit': () => [
     {
       buffName: 'Sticky',

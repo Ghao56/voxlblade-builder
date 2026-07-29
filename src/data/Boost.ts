@@ -11,7 +11,7 @@ import {
   QUEENS_POWER_POTENCY_PER_AMOUNT, QUEENS_POWER_SUMMON_SCALING_PER_TENTH_POTENCY,
   
   VENOM_EATER_DMG_MULT_PER_STACK, FEROCITY_TENACITY_MULT,
-  SPIRIT_WINDS_TAILWIND_MULT, SPIRIT_WINDS_PER_STACK,
+  SPIRIT_WINDS_TAILWIND_MULT, SPIRIT_WINDS_PER_STACK, STEAM_POWERED_MULT_PER_AIR_BOOST,
   GUARDIAN_SPIN_BASE, GUARDIAN_SPIN_MULT_PER_STACK,
   WILD_BOLT_MULT_PER_STACK, WEIGHTY_SLAM_MULT_PER_STACK,
   RIDER_MULT_PER_STACK, QUICKDRAW_MULT,
@@ -46,9 +46,10 @@ export interface BoostContext {
   ragePotency: number
   bouncePotency: number
   quickdrawPotency: number
-  tailwindPotency: number
-  tenacity: number
-  speedBoost: number
+   tailwindPotency: number
+   airBoost: number
+   tenacity: number
+   speedBoost: number
   attackSpeed: number
   inDarkness: boolean
   emotionalState?: string
@@ -106,6 +107,7 @@ export const BOOST_DEFS: BoostDef[] = [
   { sourceName: 'Venom Eater', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Venom Eater'] ?? 0; if (a <= 0) return null; return { multiplier: 1 + VENOM_EATER_DMG_MULT_PER_STACK * a, condition: `on Crit against Poisoned opponents` } }, needsProcCoeff: true },
   { sourceName: 'Ferocity', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Ferocity'] ?? 0; if (a <= 0 || ctx.tenacity <= 0) return null; const pct = ctx.tenacity * FEROCITY_TENACITY_MULT * a; return { multiplier: 1 + pct / 100, condition: `based on your Tenacity` } } },
   { sourceName: 'Spirit Winds', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Spirit Winds'] ?? 0; if (a <= 0 || ctx.tailwindPotency <= 0) return null; const pct = (SPIRIT_WINDS_TAILWIND_MULT * ctx.tailwindPotency + SPIRIT_WINDS_PER_STACK * a) * 100; return { multiplier: 1 + pct / 100, condition: `while you have Tailwind` } } },
+  { sourceName: 'Steam Powered', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Steam Powered'] ?? 0; if (a <= 0 || ctx.airBoost <= 0) return null; const pct = STEAM_POWERED_MULT_PER_AIR_BOOST * a * ctx.airBoost; return { multiplier: 1 + pct / 100, condition: `based on Air Boost` } } },
   { sourceName: 'Valor', multiplierPerPerk: VALOR_MULT_PER_STACK, type: 'dmg', condition: 'against Taunted opponents' },
   { sourceName: 'Gorecast', multiplierPerPerk: GORECAST_MULT_PER_STACK, type: 'dmg', condition: 'on Weapon Art against Bleeding opponents', appliesTo: ['wa'] },
   { sourceName: 'Guardian Spin', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Guardian Spin'] ?? 0; if (a <= 0 || ctx.selectedWeaponArt !== 'Spin') return null; return { multiplier: 1 + GUARDIAN_SPIN_BASE + GUARDIAN_SPIN_MULT_PER_STACK * a, condition: 'for Spin Weapon Art' } }, appliesTo: ['wa'] },

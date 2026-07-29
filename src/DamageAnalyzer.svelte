@@ -2924,6 +2924,12 @@ import {
   let _selfDmgTab: Record<string, string> = {}
   $: if (!Number.isFinite(enemiesHit) || enemiesHit < 1) enemiesHit = 1
 
+  function _countHitsForLabel(hits: BDCHit[], group: 'WA' | 'Rune' | 'M1' | 'M2' | 'Perk', label?: string): number {
+    return hits
+      .filter(h => h.group === group && !h.isHeal && (label === undefined || h.label === label))
+      .reduce((sum, h) => sum + Math.max(1, h.count ?? 1), 0)
+  }
+
   function _sumPreBoostHitDamage(hits: BDCHit[], group: 'WA' | 'Rune' | 'M1' | 'M2' | 'Perk', label?: string): number {
     return hits
       .filter(h => h.group === group && !h.isHeal && (label === undefined || h.label === label))
@@ -3020,7 +3026,8 @@ import {
             const preBoostDmg = def.perkName === 'Bombardier' ? _bombardierSelfDmgBase
               : _sumPreBoostHitDamage(_bdcWeaponHits, 'WA', label)
             if (preBoostDmg <= 0) continue
-            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark)
+            const _hc = def.flatSelfDmg ? _countHitsForLabel(_bdcWeaponHits, 'WA', label) : 1
+            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark, _hc)
             sources.push({ def, amount, group, label, preBoostDmg, result })
           }
         } else if (group === 'Rune') {
@@ -3036,7 +3043,8 @@ import {
           if (mountM1Dmg > 0) {
             const preBoostDmg = def.perkName === 'Bombardier' ? _bombardierSelfDmgBase
               : mountM1Dmg
-            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark)
+            const _hc = def.flatSelfDmg ? _bdcWeaponHits.filter(h => h.group === 'M1' && !h.isHeal).reduce((s, h) => s + (h.count ?? 1), 0) : 1
+            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark, _hc)
             sources.push({ def, amount, group, label: `${_activeMountRuneDef!.mountLabel} M1 (Mounted)`, preBoostDmg, result })
           }
           const runeLabels = [...new Set(_bdcWeaponHits.filter(h => h.group === 'Rune' && !h.isHeal).map(h => h.label))]
@@ -3044,7 +3052,8 @@ import {
             const preBoostDmg = def.perkName === 'Bombardier' ? _bombardierSelfDmgBase
               : _sumPreBoostHitDamage(_bdcWeaponHits, 'Rune', label)
             if (preBoostDmg <= 0) continue
-            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark)
+            const _hc = def.flatSelfDmg ? _countHitsForLabel(_bdcWeaponHits, 'Rune', label) : 1
+            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark, _hc)
             sources.push({ def, amount, group, label: label ?? 'Rune', preBoostDmg, result })
           }
         } else if (group === 'M1') {
@@ -3053,7 +3062,8 @@ import {
             const preBoostDmg = def.perkName === 'Bombardier' ? _bombardierSelfDmgBase
               : _sumPreBoostHitDamage(_bdcWeaponHits, 'M1', label === 'M1' ? undefined : label)
             if (preBoostDmg <= 0) continue
-            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark)
+            const _hc = def.flatSelfDmg ? _countHitsForLabel(_bdcWeaponHits, 'M1', label === 'M1' ? undefined : label) : 1
+            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark, _hc)
             sources.push({ def, amount, group, label, preBoostDmg, result })
           }
         } else if (group === 'M2') {
@@ -3062,7 +3072,8 @@ import {
             const preBoostDmg = def.perkName === 'Bombardier' ? _bombardierSelfDmgBase
               : _sumPreBoostHitDamage(_bdcWeaponHits, 'M2', label === 'M2' ? undefined : label)
             if (preBoostDmg <= 0) continue
-            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark)
+            const _hc = def.flatSelfDmg ? _countHitsForLabel(_bdcWeaponHits, 'M2', label === 'M2' ? undefined : label) : 1
+            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark, _hc)
             sources.push({ def, amount, group, label, preBoostDmg, result })
           }
         } else if (group === 'Perk') {
@@ -3071,7 +3082,8 @@ import {
             const preBoostDmg = def.perkName === 'Bombardier' ? _bombardierSelfDmgBase
               : _sumPreBoostHitDamage(_bdcWeaponHits, 'Perk', label === 'Perk' ? undefined : label)
             if (preBoostDmg <= 0) continue
-            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark)
+            const _hc = def.flatSelfDmg ? _countHitsForLabel(_bdcWeaponHits, 'Perk', label === 'Perk' ? undefined : label) : 1
+            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark, _hc)
             sources.push({ def, amount, group, label, preBoostDmg, result })
           }
         }

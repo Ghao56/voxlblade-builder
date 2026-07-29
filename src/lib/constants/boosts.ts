@@ -71,3 +71,5 @@ export const HEAT_DRILL_SMALL_EXPLOSION_HITS = 6
 export const ESSENCE_RAY_BASE = 1.1
 export const ESSENCE_RAY_PER_STACK = 0.275
 export const ESSENCE_RAY_HITS = 23
+
+export const STEAM_POWERED_MULT_PER_AIR_BOOST = 2 / 15

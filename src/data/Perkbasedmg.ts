@@ -657,9 +657,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     dmgTypes: { air: 1.0 },
     scalingMode: 'fixed',
     scalings: { air: 1.0 },
-    isWA: true,
-    isRune: true,
-    note: 'AoE wind slash. Applies Bleed for 5s. Can proc other effects.',
+    note: 'AoE wind slash triggered by WA/Rune use. Applies Bleed for 5s. Can proc other effects.',
   },
   // ── Dragon State ──────────────────────────────────────────────────────────
   {
