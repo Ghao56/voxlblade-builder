@@ -542,6 +542,20 @@ import {
       }
     }
 
+    // Cryo Engine converts all Slowness inflicted to Frostbite
+    if ((perks['Cryo Engine'] ?? 0) > 0 && groups.has('Slowness')) {
+      const slownessMap = groups.get('Slowness')!
+      if (!groups.has('Frostbite')) groups.set('Frostbite', new Map())
+      const frostbiteMap = groups.get('Frostbite')!
+      for (const [key, potency] of slownessMap) {
+        const newKey = key === 'Slowness' ? 'Frostbite' : key
+        if (!frostbiteMap.has(newKey) || potency > (frostbiteMap.get(newKey) ?? 0)) {
+          frostbiteMap.set(newKey, potency)
+        }
+      }
+      groups.delete('Slowness')
+    }
+
     // Melting Slime overrides every sticky into Melting Slime Sticky
     if ((perks['Melting Slime'] ?? 0) > 0) {
       for (const inner of groups.values()) {

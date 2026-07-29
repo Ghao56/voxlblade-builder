@@ -66,6 +66,10 @@ import {
   POISON_POTION_POTENCY, POISON_POTION_DURATION,
   POTION_CHUGGER_POTENCY_MULT_PER_LEVEL,
 } from '../lib/constants/buffs'
+import {
+  CRYO_ENGINE_TAILWIND_BASE_POTENCY, CRYO_ENGINE_TAILWIND_POTENCY_PER_AMOUNT,
+  CRYO_ENGINE_TAILWIND_DURATION_PER_AMOUNT,
+} from '../lib/constants/perks'
 
 export interface BuffDefinition {
   name: string
@@ -1063,6 +1067,16 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
     sourceName: 'Cursed Bark',
     sourceType: 'perk',
   })),
+  'Cryo Engine': (amount) => [
+    {
+      buffName: 'Tailwind',
+      potency: CRYO_ENGINE_TAILWIND_BASE_POTENCY + CRYO_ENGINE_TAILWIND_POTENCY_PER_AMOUNT * amount,
+      duration: CRYO_ENGINE_TAILWIND_DURATION_PER_AMOUNT * amount,
+      condition: 'When applying Slowness or Frostbite',
+      sourceName: 'Cryo Engine',
+      sourceType: 'perk',
+    },
+  ],
   'Aggressive Personality': (amount) => [
     {
       buffName: 'Taunt',

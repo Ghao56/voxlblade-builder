@@ -1,5 +1,5 @@
 import { PENANCE_HP_THRESHOLD, PENANCE_BLEED_POTENCY, PENANCE_BLEED_DURATION } from './Boost'
-import { HYPNOTIST_POTENCY_PER_PERK, HYPNOTIST_DURATION_BASE, HYPNOTIST_DURATION_PER_PERK, FIERY_PURSUIT_BURN_DURATION, SUNBURN_BURN_BASE_CHANCE, SUNBURN_BURN_CHANCE_PER_STACK, FROSTBITE_SLOW_POTENCY_PER_STACK, FROSTBITE_CHANCE_PER_STACK } from '../lib/constants/perks'
+import { HYPNOTIST_POTENCY_PER_PERK, HYPNOTIST_DURATION_BASE, HYPNOTIST_DURATION_PER_PERK, FIERY_PURSUIT_BURN_DURATION, SUNBURN_BURN_BASE_CHANCE, SUNBURN_BURN_CHANCE_PER_STACK, FROSTBITE_SLOW_POTENCY_PER_STACK, FROSTBITE_CHANCE_PER_STACK, CRYO_ENGINE_PROC_CHANCE_PER_AMOUNT } from '../lib/constants/perks'
 import type { GrantedBuff } from './BuffData'
 import { canProc, type ProcCoefficient } from '../lib/types'
 import { calcBaseMaxHP } from '../lib/constants/game'
@@ -268,6 +268,26 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
       sourceName: d.sourceName,
       sourceType: 'perk',
     })
+  }
+
+  const cryoEngineAmt = perks['Cryo Engine'] ?? 0
+  if (cryoEngineAmt > 0) {
+    for (let i = 0; i < debuffs.length; i++) {
+      if (debuffs[i].buffName === 'Slowness') {
+        debuffs[i] = { ...debuffs[i], buffName: 'Frostbite' }
+      }
+    }
+    const hasFrostbite = existingBuffNames.includes('Frostbite') || debuffs.some(d => d.buffName === 'Frostbite')
+    if (!hasFrostbite) {
+      debuffs.push({
+        buffName: 'Frostbite',
+        potency: 0,
+        duration: 0,
+        condition: `${Math.round(CRYO_ENGINE_PROC_CHANCE_PER_AMOUNT * 100 * cryoEngineAmt * 100) / 100}% chance per hit`,
+        sourceName: 'Cryo Engine',
+        sourceType: 'perk',
+      })
+    }
   }
 
   return debuffs
