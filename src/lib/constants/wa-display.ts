@@ -1,4 +1,4 @@
-export const WA_PERK_DISPLAY_NAMES: Record<string, Record<string, string>> = {
+const WA_PERK_DISPLAY_NAMES: Record<string, Record<string, string>> = {
   'Weighty Slam': { 'Slam': 'Weighty Slam' },
   'Guardian Spin': { 'Spin': 'Guardian Spin' },
   'Wild Bolt': { 'Laser': 'Wild Bolt' },

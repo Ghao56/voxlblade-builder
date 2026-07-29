@@ -1,3 +1,4 @@
+// fallow-ignore-file unused-file
 import { readFileSync } from 'fs';
 const c = readFileSync('src/MountIcon.svelte', 'utf8');
 const m = c.match(/d="([^"]+)"/);

@@ -33,7 +33,7 @@ export const DMG_TYPE_COLORS: Record<string, string> = Object.fromEntries(
 
 export const DMG_TYPE_PRIORITY = ['hex','water','air','true','earth','magic','fire','physical','holy'] as const
 
-export const DEFAULT_DMG_TYPE = 'physical'
+const DEFAULT_DMG_TYPE = 'physical'
 
 export const FALLBACK_DMG_COLOR = '#e8e4da'
 

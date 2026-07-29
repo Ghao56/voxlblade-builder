@@ -7,8 +7,8 @@ export const DEFAULT_LEVEL = 80
 export const DEFAULT_HP_FILL = 100
 export const DEFAULT_ENEMY_HP_FILL = 100
 
-export const BASE_HP = 120
-export const HP_PER_LEVEL = 0.0125
+const BASE_HP = 120
+const HP_PER_LEVEL = 0.0125
 
 export function calcBaseMaxHP(level: number): number {
   return Math.round(BASE_HP * (1 + level * HP_PER_LEVEL))

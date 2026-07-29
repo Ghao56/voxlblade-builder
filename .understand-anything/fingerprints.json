@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "44d24084cfae73716283a438f0e6498605a06256",
-  "generatedAt": "2026-07-29T09:54:05.149Z",
+  "gitCommitHash": "68cd8f50821881ccdf039c873330ff08f017d2a9",
+  "generatedAt": "2026-07-29T13:18:26.487Z",
   "files": {
     ".fallowrc.json": {
       "filePath": ".fallowrc.json",
@@ -11,6 +11,16 @@
       "imports": [],
       "exports": [],
       "totalLines": 57,
+      "hasStructuralAnalysis": true
+    },
+    ".github/workflows/static.yml": {
+      "filePath": ".github/workflows/static.yml",
+      "contentHash": "b2885dcaf88293064330f138bb99982625f33442195a525b52dd5c7f7565ba1b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 54,
       "hasStructuralAnalysis": true
     },
     ".slim/deepwork/ui-upgrade.md": {
@@ -23,19 +33,9 @@
       "totalLines": 100,
       "hasStructuralAnalysis": true
     },
-    ".vscode/extensions.json": {
-      "filePath": ".vscode/extensions.json",
-      "contentHash": "6eb28f68b30b20686435f69fa4863acecc10e221661ce344e0a6052f51a91f0e",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 4,
-      "hasStructuralAnalysis": true
-    },
     "AGENTS.md": {
       "filePath": "AGENTS.md",
-      "contentHash": "3a4398aae2e08643414080f42bf870da0b3ce8ac50ffa1b3c120cf7d77067676",
+      "contentHash": "f1deb1766ec56f1f0ffd3291590c6d09c5545b131047f13e76ddcb4fca431793",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -45,7 +45,7 @@
     },
     "analyze-mounticon.mjs": {
       "filePath": "analyze-mounticon.mjs",
-      "contentHash": "df33de5c4809f2e2e3deebfae4cb88bd3843b8e07aef21762b91c6ea086a3794",
+      "contentHash": "f30d97d3b7f45121783a7e7981225c39552e701d4c44e389271b3a0a5e055d00",
       "functions": [],
       "classes": [],
       "imports": [
@@ -82,7 +82,7 @@
     },
     "decode_full.mjs": {
       "filePath": "decode_full.mjs",
-      "contentHash": "a15fbee50ad9b9e23801d631b45532bae57fb6d8e5e797ecc45cb0d083fbf7a8",
+      "contentHash": "292dd333e2cd77f5da49d18febe45af43ef5c82aebae9862e5635e00d6aff7e0",
       "functions": [
         {
           "name": "getPerk",
@@ -179,7 +179,7 @@
     },
     "docs/ONBOARDING.md": {
       "filePath": "docs/ONBOARDING.md",
-      "contentHash": "45cc139a5cb333d5603d04121d2d2e8606aea0ee00179ae48e107731ec0d32ed",
+      "contentHash": "87d58b40f64180783ca9f34324537fe75ca740a209c4315364cc65e003b34bc0",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -219,7 +219,7 @@
     },
     "package.json": {
       "filePath": "package.json",
-      "contentHash": "0f40640129e571a7489b823f34f0937fb4fe463bbf4a91e6f6505ac08cad276e",
+      "contentHash": "95c892ca46763a2c6048fda3aae10fddf81ee3fdcccf7d81dd51165c5a127b78",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -239,7 +239,7 @@
     },
     "src/app.css": {
       "filePath": "src/app.css",
-      "contentHash": "01a4be74950a3ea13b8580caa8c2e8f5ad97e500883c57b2757bd00de01c9ff5",
+      "contentHash": "7c03fb9d5a522f27a9a02e6dee9c6e0601e6870778c51cd08535a089c2bd1012",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -259,12 +259,12 @@
     },
     "src/BaseDamageCalc.svelte": {
       "filePath": "src/BaseDamageCalc.svelte",
-      "contentHash": "84d3fe44e74343102ec03cc4ec5d142145c497361acf4e9f48e0a963bb572f71",
+      "contentHash": "adcffd62df9808c6241e520ab717aab4ba1ffee2520993dd29f8c9afbd812968",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 2732,
+      "totalLines": 2734,
       "hasStructuralAnalysis": false
     },
     "src/BuffList.svelte": {
@@ -309,12 +309,12 @@
     },
     "src/DamageAnalyzer.svelte": {
       "filePath": "src/DamageAnalyzer.svelte",
-      "contentHash": "63ae00e85e9f8f70c395202f8f060ed6faf00417d0557279446abb89db616c65",
+      "contentHash": "658e20d9a571e6b0e2ef322098e81969a0e0528afd05653a38d96461c52a2a76",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 7385,
+      "totalLines": 7387,
       "hasStructuralAnalysis": false
     },
     "src/data/armors.json": {
@@ -439,7 +439,7 @@
     },
     "src/data/BuffData.ts": {
       "filePath": "src/data/BuffData.ts",
-      "contentHash": "68a91373bc3825d8f18e20d982f44e8b343903fb4cae126a57cf8c29b041d27e",
+      "contentHash": "e935ca4fcbceb32df67d9450d6b5a550b858ae1c2ee0026ff8ec5f45197da14e",
       "functions": [
         {
           "name": "formatDamageTypes",
@@ -661,7 +661,8 @@
         {
           "source": "../lib/constants",
           "specifiers": [
-            "BASTION_BLESS_MULT"
+            "BASTION_BLESS_MULT",
+            "ICHOR_SPARK_BLEED_DURATION"
           ]
         },
         {
@@ -837,7 +838,7 @@
         "calcBuffEffect",
         "formatPerkDescription"
       ],
-      "totalLines": 2087,
+      "totalLines": 2097,
       "hasStructuralAnalysis": true
     },
     "src/data/cdr.ts": {
@@ -1273,7 +1274,7 @@
     },
     "src/data/enemyHpEffects.ts": {
       "filePath": "src/data/enemyHpEffects.ts",
-      "contentHash": "f357a356dd4c2f207b5248796b8ef1299aa68e1c117d4e7f47cfa2e6b579a96c",
+      "contentHash": "a24334cb0fe3020eb5482dae430eaba0ad34a24dd874dfc2755dca5ebb8faccd",
       "functions": [
         {
           "name": "isEnemyHpGateActive",
@@ -1535,7 +1536,7 @@
     },
     "src/data/Perkbasedmg.ts": {
       "filePath": "src/data/Perkbasedmg.ts",
-      "contentHash": "ca0a187dc8b08f39ccb8e3585a8f75dc4f783bf595f88a72451ea0f46e0abe97",
+      "contentHash": "e1b2d475c39892386c0b634eb29a37f255a84ef8b83ba60f2d19266426b457f2",
       "functions": [
         {
           "name": "gateThreshold",
@@ -1576,6 +1577,35 @@
           "returnType": "number",
           "exported": true,
           "lineCount": 5
+        },
+        {
+          "name": "calcIchorSparkSwipeBase",
+          "params": [
+            "perkAmount",
+            "chargePct"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "calcIchorSparkSlashBase",
+          "params": [
+            "perkAmount",
+            "chargePct"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "calcIchorSparkChargeTime",
+          "params": [
+            "perkAmount"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 3
         },
         {
           "name": "findPerkDmgDef",
@@ -1743,7 +1773,22 @@
             "RULER_SANDS_BASE_DMG_PER_HIT",
             "RULER_SANDS_HITS",
             "RULER_SANDS_CHANCE_CD_MULT",
-            "RULER_SANDS_CHANCE_PERK_MULT"
+            "RULER_SANDS_CHANCE_PERK_MULT",
+            "ICHOR_SPARK_SWIPE_MIN_A",
+            "ICHOR_SPARK_SWIPE_MIN_B",
+            "ICHOR_SPARK_SWIPE_MAX_A",
+            "ICHOR_SPARK_SWIPE_MAX_B",
+            "ICHOR_SPARK_SLASH_MIN_A",
+            "ICHOR_SPARK_SLASH_MIN_B",
+            "ICHOR_SPARK_SLASH_MAX_A",
+            "ICHOR_SPARK_SLASH_MAX_B",
+            "ICHOR_SPARK_CHARGE_TIME_BASE",
+            "ICHOR_SPARK_CHARGE_TIME_PER_STACK",
+            "ICHOR_SPARK_CHAIN_DMG_PCT",
+            "ICHOR_SPARK_CHAIN_HEAL_FLAT",
+            "ICHOR_SPARK_SLASH_HEAL_PER_STACK",
+            "ICHOR_SPARK_CHAIN_PROC_CHANCE",
+            "ICHOR_SPARK_BLEED_DURATION"
           ]
         }
       ],
@@ -1754,15 +1799,18 @@
         "SECONDARY_TONE_COLORS",
         "calcSpringblastBaseDamage",
         "calcBomberChargeBaseDamage",
+        "calcIchorSparkSwipeBase",
+        "calcIchorSparkSlashBase",
+        "calcIchorSparkChargeTime",
         "PERK_DMG_DEFS",
         "findPerkDmgDef"
       ],
-      "totalLines": 1223,
+      "totalLines": 1336,
       "hasStructuralAnalysis": true
     },
     "src/data/perks.json": {
       "filePath": "src/data/perks.json",
-      "contentHash": "2d1b486e50f1fafa76bee1537769db9affd9d4be64248ad2dc20ec64e9a84ed7",
+      "contentHash": "586191a3a5d45a01107149c76c6b676e2a177625edebc3b44a6702dab1b6060b",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -1785,7 +1833,7 @@
     },
     "src/data/procCoefficients.ts": {
       "filePath": "src/data/procCoefficients.ts",
-      "contentHash": "c2e27de9935e34f146db2339dd93cb1ff5292e8161c3269ec9a475086184d85a",
+      "contentHash": "ae8a5de85420541d477b754646e4c23c9513a456fc5e75160a0c77998e4cd498",
       "functions": [],
       "classes": [],
       "imports": [
@@ -2485,7 +2533,7 @@
     },
     "src/lib/constants.ts": {
       "filePath": "src/lib/constants.ts",
-      "contentHash": "ec0d35043eff999eaa174623a6ba75ebe08a9f6c894e1330fe5c33a2deff8545",
+      "contentHash": "3ecc13c5de9d047e6b2c367641cbf4829543abdc5d41e3b955dfa084b040821b",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2769,7 +2817,7 @@
     },
     "src/lib/constants/debuff-effects.ts": {
       "filePath": "src/lib/constants/debuff-effects.ts",
-      "contentHash": "7411f93bdd22bdfc892d1ce689be62b5f54196f91230bec64262612d64332f3c",
+      "contentHash": "ec5d91b5f548d4ea48fbcb476cb31b918b02ad994bf38d6432a904a1bc5c6ab1",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2870,7 +2918,7 @@
     },
     "src/lib/constants/game.ts": {
       "filePath": "src/lib/constants/game.ts",
-      "contentHash": "5dcec7a84b53846572891fd1d1284547b92cdef30f7cb117c66b6b848b0c6a2a",
+      "contentHash": "21a721cf93c57c8519bf6c9c0be504ca526219d4a5fc70dd04d8ddc534501ede",
       "functions": [
         {
           "name": "calcBaseMaxHP",
@@ -2929,7 +2977,7 @@
     },
     "src/lib/constants/perk-base-damage.ts": {
       "filePath": "src/lib/constants/perk-base-damage.ts",
-      "contentHash": "5aafd24ad445396aa341417ec33617ca025360981cfc81035eb191a3cf8f45b6",
+      "contentHash": "ea65d89ae3e5f9ae188369f20ae81d78e9a54fff56f3fdc5c58842fc2abfb3de",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3056,9 +3104,24 @@
         "RULER_SANDS_BASE_DMG_PER_HIT",
         "RULER_SANDS_HITS",
         "RULER_SANDS_CHANCE_CD_MULT",
-        "RULER_SANDS_CHANCE_PERK_MULT"
+        "RULER_SANDS_CHANCE_PERK_MULT",
+        "ICHOR_SPARK_SWIPE_MIN_A",
+        "ICHOR_SPARK_SWIPE_MIN_B",
+        "ICHOR_SPARK_SWIPE_MAX_A",
+        "ICHOR_SPARK_SWIPE_MAX_B",
+        "ICHOR_SPARK_SLASH_MIN_A",
+        "ICHOR_SPARK_SLASH_MIN_B",
+        "ICHOR_SPARK_SLASH_MAX_A",
+        "ICHOR_SPARK_SLASH_MAX_B",
+        "ICHOR_SPARK_CHARGE_TIME_BASE",
+        "ICHOR_SPARK_CHARGE_TIME_PER_STACK",
+        "ICHOR_SPARK_CHAIN_DMG_PCT",
+        "ICHOR_SPARK_CHAIN_HEAL_FLAT",
+        "ICHOR_SPARK_SLASH_HEAL_PER_STACK",
+        "ICHOR_SPARK_CHAIN_PROC_CHANCE",
+        "ICHOR_SPARK_BLEED_DURATION"
       ],
-      "totalLines": 201,
+      "totalLines": 218,
       "hasStructuralAnalysis": true
     },
     "src/lib/constants/perks.ts": {
@@ -3209,7 +3272,7 @@
     },
     "src/lib/constants/storage.ts": {
       "filePath": "src/lib/constants/storage.ts",
-      "contentHash": "7e2cdeeca8f67946ba759b99946f9d341800248f31306c75744881ddcd650219",
+      "contentHash": "3262c172bbce7ae7c290c07e57660b5a57f14f4493e1c3090dbf90410e056803",
       "functions": [],
       "classes": [],
       "imports": [
@@ -4886,7 +4949,7 @@
     },
     "src/lib/store.ts": {
       "filePath": "src/lib/store.ts",
-      "contentHash": "73fab1f0d68b33b537de6cd474d6d3a374607973cfb6b8269c46d36cecc27d61",
+      "contentHash": "21ae74809f9a9dddd0683ea13d55b573752b3254a6b573f3bc944cdec76cb5f9",
       "functions": [
         {
           "name": "loadBuild",
@@ -5012,7 +5075,7 @@
         "canArmorMoveToSlot",
         "moveRingSlot"
       ],
-      "totalLines": 215,
+      "totalLines": 216,
       "hasStructuralAnalysis": true
     },
     "src/lib/stores/toast.ts": {
@@ -5063,7 +5126,7 @@
     },
     "src/lib/Toast.svelte": {
       "filePath": "src/lib/Toast.svelte",
-      "contentHash": "48024628407aa8adeba1b86803a39ae6560840d4e45187434be2fa6b89988109",
+      "contentHash": "fdc9f974dfa32ccd4c8d775368bb2cef1518075d55ca28c3e337e1628079d366",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5073,7 +5136,7 @@
     },
     "src/lib/types.ts": {
       "filePath": "src/lib/types.ts",
-      "contentHash": "7186a6681bc6fd556b6555fa4ebbb036f51b1bc40d9d95dc39549b2f0ef94f03",
+      "contentHash": "169fb8a28b2751bc7cc950bb3a44c8e977af632b924fbf0983361bc3fa43e1b8",
       "functions": [
         {
           "name": "applyUpgrade",
@@ -5117,12 +5180,12 @@
         "DMG_TYPE_PRIORITY",
         "SCALING_TO_BOOST"
       ],
-      "totalLines": 295,
+      "totalLines": 296,
       "hasStructuralAnalysis": true
     },
     "src/lib/ui/Badge.svelte": {
       "filePath": "src/lib/ui/Badge.svelte",
-      "contentHash": "bc778df9d3fb6405fd8a3d0eba70d6d64e8172e56cd776d0c3feb5bf8d1e00ed",
+      "contentHash": "7694dee4588f4f5fb30513ac05b62595cd04e3594639fb390c4341f3651e9dcf",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5132,7 +5195,7 @@
     },
     "src/lib/ui/Button.svelte": {
       "filePath": "src/lib/ui/Button.svelte",
-      "contentHash": "426bfba88965430dc71b533da743ddbd16fb09df8106e008ccf596c54a4acf3c",
+      "contentHash": "8198470171f8719081f37c75008bb11a9c4dfd123aeec862d2a53346272a9f12",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5142,7 +5205,7 @@
     },
     "src/lib/ui/Card.svelte": {
       "filePath": "src/lib/ui/Card.svelte",
-      "contentHash": "88bf87adc8a0e06a0333a59e6d030a37f03a2fb2fb1f5ab789eeb42c59af4668",
+      "contentHash": "432794580332c77fa7aa15b51739a9a08fcdd3f465a97adf582c5f4fc5952a31",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5152,7 +5215,7 @@
     },
     "src/lib/ui/Divider.svelte": {
       "filePath": "src/lib/ui/Divider.svelte",
-      "contentHash": "ca7063c28fb28b4081b1890879501fbd5653d6a423d97d0bae00311d9f8db38b",
+      "contentHash": "8f34baf1c60f1e653cafd43cdfd9357dd6833a0f4ce8a1b8eb9180b545cddf10",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5162,7 +5225,7 @@
     },
     "src/lib/ui/index.ts": {
       "filePath": "src/lib/ui/index.ts",
-      "contentHash": "bee57675517b7561ab4d8f37a371f6b8ed1356b7de8ee15aa0b3039d126b412e",
+      "contentHash": "09b135f454842b4d57ecdbcc4abe514123267737f07c37c74cde4fec3af643ff",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5180,7 +5243,7 @@
     },
     "src/lib/ui/Panel.svelte": {
       "filePath": "src/lib/ui/Panel.svelte",
-      "contentHash": "94bcd36c78c3c15288add2890d003b1492aec24265260fe27a41580416bbe6dd",
+      "contentHash": "8da5b772aaafa5682d0bae981b36fb8ca05f037d2428ec92a2bbe4f8cb65413c",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5200,7 +5263,7 @@
     },
     "src/lib/ui/Section.svelte": {
       "filePath": "src/lib/ui/Section.svelte",
-      "contentHash": "e5b498c251d8d349d5d62728889345854836d801830c53870ca7c8438fe1f5bd",
+      "contentHash": "f8eac59a894ec30b788ab023ca13bbe184f2d56c7980a6fac41395667c65306c",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5210,7 +5273,7 @@
     },
     "src/lib/ui/Stat.svelte": {
       "filePath": "src/lib/ui/Stat.svelte",
-      "contentHash": "ecf7fa1cb4ee383ebf46db8a88ba15293d5a3f80eb0fc05ab0c930ad76000e34",
+      "contentHash": "3899437f48babd3ca1da0466434f26b44daef0918fd98439ad2b667261e734c8",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5376,7 +5439,7 @@
     },
     "src/MountIcon.svelte": {
       "filePath": "src/MountIcon.svelte",
-      "contentHash": "1a7cbfcc6d3ff9d83baef17fbf69d1809b55b72e82a3ed8ab5b07f8b77cbaaf0",
+      "contentHash": "c29a97b472ff37863452ed62c13ba0d5a636841db33c6b5aec01080519bdcf06",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5466,7 +5529,7 @@
     },
     "stats.html": {
       "filePath": "stats.html",
-      "contentHash": "eea41ccc407009f3ae535fdefc8d3bea14c0a25d0403d6e58aec0f26ddf99ac7",
+      "contentHash": "c351c38e731e9c748a20b1047e7b857373eaa417931757e9a816cb4ecbbc15e2",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -5476,7 +5539,7 @@
     },
     "tests/piercer.test.ts": {
       "filePath": "tests/piercer.test.ts",
-      "contentHash": "054a6161ff380bc69a0ebc9f229f204e6a5c0ea95fd8a889436f90011f267d7a",
+      "contentHash": "2310e93cb4e1674d4a869b319bdc3f72f27ee40780658c7a6713c83915ce5a2b",
       "functions": [
         {
           "name": "applyPiercerTrueConversion",

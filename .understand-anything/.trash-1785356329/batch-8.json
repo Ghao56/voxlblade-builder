@@ -1,0 +1,512 @@
+{
+  "batchIndex": 8,
+  "batchTotal": 8,
+  "fileCount": 21,
+  "nodes": [
+    {
+      "id": "file:src/lib/ui/Card.svelte",
+      "type": "file",
+      "name": "Card.svelte",
+      "filePath": "src/lib/ui/Card.svelte",
+      "summary": "Source code `Card.svelte` in src/lib/ui (svelte), 103 lines",
+      "tags": [
+        "source",
+        "svelte",
+        "src/lib/ui"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/ui/Divider.svelte",
+      "type": "file",
+      "name": "Divider.svelte",
+      "filePath": "src/lib/ui/Divider.svelte",
+      "summary": "Source code `Divider.svelte` in src/lib/ui (svelte), 42 lines",
+      "tags": [
+        "source",
+        "svelte",
+        "src/lib/ui"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/ui/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "src/lib/ui/index.ts",
+      "summary": "Source code `index.ts` in src/lib/ui (typescript), 7 exports, 7 lines",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/lib/ui"
+      ],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/ui/Panel.svelte",
+      "type": "file",
+      "name": "Panel.svelte",
+      "filePath": "src/lib/ui/Panel.svelte",
+      "summary": "Source code `Panel.svelte` in src/lib/ui (svelte), 94 lines",
+      "tags": [
+        "source",
+        "svelte",
+        "src/lib/ui"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/ui/RollValue.svelte",
+      "type": "file",
+      "name": "RollValue.svelte",
+      "filePath": "src/lib/ui/RollValue.svelte",
+      "summary": "Source code `RollValue.svelte` in src/lib/ui (svelte), 65 lines",
+      "tags": [
+        "source",
+        "svelte",
+        "src/lib/ui"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/ui/Section.svelte",
+      "type": "file",
+      "name": "Section.svelte",
+      "filePath": "src/lib/ui/Section.svelte",
+      "summary": "Source code `Section.svelte` in src/lib/ui (svelte), 129 lines",
+      "tags": [
+        "source",
+        "svelte",
+        "src/lib/ui"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/ui/Stat.svelte",
+      "type": "file",
+      "name": "Stat.svelte",
+      "filePath": "src/lib/ui/Stat.svelte",
+      "summary": "Source code `Stat.svelte` in src/lib/ui (svelte), 90 lines",
+      "tags": [
+        "source",
+        "svelte",
+        "src/lib/ui"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/uiConstants.ts",
+      "type": "file",
+      "name": "uiConstants.ts",
+      "filePath": "src/lib/uiConstants.ts",
+      "summary": "Source code `uiConstants.ts` in src/lib (typescript), 2 exports, 80 lines",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/lib"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/utils.ts",
+      "type": "file",
+      "name": "utils.ts",
+      "filePath": "src/lib/utils.ts",
+      "summary": "Source code `utils.ts` in src/lib (typescript) with 8 functions, 4 exports, 113 lines",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/lib"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/main.ts",
+      "type": "file",
+      "name": "main.ts",
+      "filePath": "src/main.ts",
+      "summary": "Source code `main.ts` in src (typescript), 8 lines",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src"
+      ],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/ModalSearchHeader.svelte",
+      "type": "file",
+      "name": "ModalSearchHeader.svelte",
+      "filePath": "src/ModalSearchHeader.svelte",
+      "summary": "Source code `ModalSearchHeader.svelte` in src (svelte), 200 lines",
+      "tags": [
+        "source",
+        "svelte",
+        "src"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/MountIcon.svelte",
+      "type": "file",
+      "name": "MountIcon.svelte",
+      "filePath": "src/MountIcon.svelte",
+      "summary": "Source code `MountIcon.svelte` in src (svelte), 64 lines",
+      "tags": [
+        "source",
+        "svelte",
+        "src"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/PropellingFunTracker.svelte",
+      "type": "file",
+      "name": "PropellingFunTracker.svelte",
+      "filePath": "src/PropellingFunTracker.svelte",
+      "summary": "Source code `PropellingFunTracker.svelte` in src (svelte), 192 lines",
+      "tags": [
+        "source",
+        "svelte",
+        "src"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/ScalingBreakdownRow.svelte",
+      "type": "file",
+      "name": "ScalingBreakdownRow.svelte",
+      "filePath": "src/ScalingBreakdownRow.svelte",
+      "summary": "Source code `ScalingBreakdownRow.svelte` in src (svelte), 102 lines",
+      "tags": [
+        "source",
+        "svelte",
+        "src"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/StatFilter.svelte",
+      "type": "file",
+      "name": "StatFilter.svelte",
+      "filePath": "src/StatFilter.svelte",
+      "summary": "Source code `StatFilter.svelte` in src (svelte), 335 lines",
+      "tags": [
+        "source",
+        "svelte",
+        "src"
+      ],
+      "complexity": "complex",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/SuggestDrop.svelte",
+      "type": "file",
+      "name": "SuggestDrop.svelte",
+      "filePath": "src/SuggestDrop.svelte",
+      "summary": "Source code `SuggestDrop.svelte` in src (svelte), 68 lines",
+      "tags": [
+        "source",
+        "svelte",
+        "src"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/TagFilter.svelte",
+      "type": "file",
+      "name": "TagFilter.svelte",
+      "filePath": "src/TagFilter.svelte",
+      "summary": "Source code `TagFilter.svelte` in src (svelte), 331 lines",
+      "tags": [
+        "source",
+        "svelte",
+        "src"
+      ],
+      "complexity": "complex",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/WeaponStatFilter.svelte",
+      "type": "file",
+      "name": "WeaponStatFilter.svelte",
+      "filePath": "src/WeaponStatFilter.svelte",
+      "summary": "Source code `WeaponStatFilter.svelte` in src (svelte), 241 lines",
+      "tags": [
+        "source",
+        "svelte",
+        "src"
+      ],
+      "complexity": "complex",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/WeaponStatsDisplay.svelte",
+      "type": "file",
+      "name": "WeaponStatsDisplay.svelte",
+      "filePath": "src/WeaponStatsDisplay.svelte",
+      "summary": "Source code `WeaponStatsDisplay.svelte` in src (svelte), 121 lines",
+      "tags": [
+        "source",
+        "svelte",
+        "src"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:tests/piercer.test.ts",
+      "type": "file",
+      "name": "piercer.test.ts",
+      "filePath": "tests/piercer.test.ts",
+      "summary": "Source code `piercer.test.ts` in tests (typescript) with 1 function, 185 lines",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "tests"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:vite.config.ts",
+      "type": "file",
+      "name": "vite.config.ts",
+      "filePath": "vite.config.ts",
+      "summary": "Source code `vite.config.ts` (typescript), 59 lines",
+      "tags": [
+        "source",
+        "typescript",
+        "ts"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/lib/ui/index.ts",
+      "target": "file:src/lib/ui/Card.svelte",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/ui/index.ts",
+      "target": "file:src/lib/ui/Badge.svelte",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/ui/index.ts",
+      "target": "file:src/lib/ui/Button.svelte",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/ui/index.ts",
+      "target": "file:src/lib/ui/Stat.svelte",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/ui/index.ts",
+      "target": "file:src/lib/ui/Section.svelte",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/ui/index.ts",
+      "target": "file:src/lib/ui/Divider.svelte",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/ui/index.ts",
+      "target": "file:src/lib/ui/Panel.svelte",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/utils.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main.ts",
+      "target": "file:src/App.svelte",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main.ts",
+      "target": "file:src/app.css",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/ModalSearchHeader.svelte",
+      "target": "file:src/SuggestDrop.svelte",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/ModalSearchHeader.svelte",
+      "target": "file:src/TagFilter.svelte",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/ModalSearchHeader.svelte",
+      "target": "file:src/StatFilter.svelte",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/ModalSearchHeader.svelte",
+      "target": "file:src/WeaponStatFilter.svelte",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/PropellingFunTracker.svelte",
+      "target": "file:src/lib/store.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/ScalingBreakdownRow.svelte",
+      "target": "file:src/lib/utils.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/ScalingBreakdownRow.svelte",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/StatFilter.svelte",
+      "target": "file:src/lib/stats/elementalBoosts.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/StatFilter.svelte",
+      "target": "file:src/lib/stats/filterActions.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/StatFilter.svelte",
+      "target": "file:src/lib/uiConstants.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/StatFilter.svelte",
+      "target": "file:src/lib/StatFilterShared.svelte",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/StatFilter.svelte",
+      "target": "file:src/lib/ui/Badge.svelte",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/StatFilter.svelte",
+      "target": "file:src/lib/ui/Button.svelte",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/SuggestDrop.svelte",
+      "target": "file:src/lib/utils.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/TagFilter.svelte",
+      "target": "file:src/lib/uiConstants.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/TagFilter.svelte",
+      "target": "file:src/lib/ui/Badge.svelte",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/WeaponStatFilter.svelte",
+      "target": "file:src/lib/stats/elementalBoosts.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/WeaponStatFilter.svelte",
+      "target": "file:src/lib/stats/filterActions.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/WeaponStatFilter.svelte",
+      "target": "file:src/lib/uiConstants.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/WeaponStatFilter.svelte",
+      "target": "file:src/lib/StatFilterShared.svelte",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/WeaponStatFilter.svelte",
+      "target": "file:src/lib/ui/Badge.svelte",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/WeaponStatFilter.svelte",
+      "target": "file:src/lib/ui/Button.svelte",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/piercer.test.ts",
+      "target": "file:src/data/weaponConditionalBoosts.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:tests/piercer.test.ts",
+      "target": "file:src/lib/utils.ts",
+      "type": "imports",
+      "weight": 0.7
+    }
+  ]
+}

@@ -60,3 +60,7 @@
 # **/*_browsertest.cc
 # **/*_benchmark.cc
 # **/*Benchmark.cpp
+
+
+# Exclude understand-anything artifacts
+.understand-anything/

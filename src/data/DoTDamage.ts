@@ -43,7 +43,7 @@ export function getDotPotencyMult(dotPotency: number): number {
  * InflictionPotency starts equal to DoTPotency but can be modified
  * externally (e.g. by Darkening Hex).  Pass the modified value here.
  */
-export function calcDotTick(
+function calcDotTick(
   dotPotency: number,
   inflictionPotency: number,
 ): number {

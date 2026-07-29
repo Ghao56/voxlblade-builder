@@ -1,0 +1,543 @@
+{
+  "batchIndex": 5,
+  "batchTotal": 8,
+  "fileCount": 25,
+  "nodes": [
+    {
+      "id": "file:src/data/Perkbasedmg.ts",
+      "type": "file",
+      "name": "Perkbasedmg.ts",
+      "filePath": "src/data/Perkbasedmg.ts",
+      "summary": "Looks up a PerkDmgDef by perk name and optional label.",
+      "tags": [
+        "exported"
+      ],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/data/potions.ts",
+      "type": "file",
+      "name": "potions.ts",
+      "filePath": "src/data/potions.ts",
+      "summary": "Potion definitions for Rage Potion and Poison Potion with name, description, and color properties. Provides POTIONS array and POTION_MAP lookup.",
+      "tags": [
+        "potions",
+        "items",
+        "consumables"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/data/procCoefficients.ts",
+      "type": "file",
+      "name": "procCoefficients.ts",
+      "filePath": "src/data/procCoefficients.ts",
+      "summary": "Proc coefficient data for weapon types and weapon arts. Maps weapon style names to M1/M2 proc coefficients and weapon art names to their proc coefficients. Used for determining which attacks can proc on-hit effects.",
+      "tags": [
+        "proc-coefficient",
+        "weapons",
+        "weapon-arts",
+        "calculation"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/data/raceEffects.ts",
+      "type": "file",
+      "name": "raceEffects.ts",
+      "filePath": "src/data/raceEffects.ts",
+      "summary": "Calculates Ork tenacity bonus from the count of unique active buffs.",
+      "tags": [
+        "exported"
+      ],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/data/Runebasedmg.ts",
+      "type": "file",
+      "name": "Runebasedmg.ts",
+      "filePath": "src/data/Runebasedmg.ts",
+      "summary": "Source code `Runebasedmg.ts` in src/data (typescript) with 1 function, 1 export, 217 lines",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/data"
+      ],
+      "complexity": "complex",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/data/selfDamagePerks.ts",
+      "type": "file",
+      "name": "selfDamagePerks.ts",
+      "filePath": "src/data/selfDamagePerks.ts",
+      "summary": "Source code `selfDamagePerks.ts` in src/data (typescript) with 1 function, 4 exports, 106 lines",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/data"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/data/stanceOverlays.ts",
+      "type": "file",
+      "name": "stanceOverlays.ts",
+      "filePath": "src/data/stanceOverlays.ts",
+      "summary": "Source code `stanceOverlays.ts` in src/data (typescript) with 1 function, 1 export, 59 lines",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/data"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/data/statboost.ts",
+      "type": "file",
+      "name": "statboost.ts",
+      "filePath": "src/data/statboost.ts",
+      "summary": "Source code `statboost.ts` in src/data (typescript) with 8 functions, 2 exports, 243 lines",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/data"
+      ],
+      "complexity": "complex",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/data/SummonData.ts",
+      "type": "file",
+      "name": "SummonData.ts",
+      "filePath": "src/data/SummonData.ts",
+      "summary": "Source code `SummonData.ts` in src/data (typescript) with 2 functions, 4 exports, 84 lines",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/data"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/data/TypedDmgBoost.ts",
+      "type": "file",
+      "name": "TypedDmgBoost.ts",
+      "filePath": "src/data/TypedDmgBoost.ts",
+      "summary": "Source code `TypedDmgBoost.ts` in src/data (typescript) with 2 functions, 1 export, 138 lines",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/data"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/data/weapon base dmg.ts",
+      "type": "file",
+      "name": "weapon base dmg.ts",
+      "filePath": "src/data/weapon base dmg.ts",
+      "summary": "Source code `weapon base dmg.ts` in src/data (typescript), 1 export, 42 lines",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/data"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/data/Weaponartcheck.ts",
+      "type": "file",
+      "name": "Weaponartcheck.ts",
+      "filePath": "src/data/Weaponartcheck.ts",
+      "summary": "Source code `Weaponartcheck.ts` in src/data (typescript) with 8 functions, 2 exports, 153 lines",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/data"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/data/weaponArts.ts",
+      "type": "file",
+      "name": "weaponArts.ts",
+      "filePath": "src/data/weaponArts.ts",
+      "summary": "Source code `weaponArts.ts` in src/data (typescript), 1 export, 511 lines",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/data"
+      ],
+      "complexity": "complex",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/data/weaponConditionalBoosts.ts",
+      "type": "file",
+      "name": "weaponConditionalBoosts.ts",
+      "filePath": "src/data/weaponConditionalBoosts.ts",
+      "summary": "Source code `weaponConditionalBoosts.ts` in src/data (typescript) with 1 function, 1 export, 79 lines",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/data"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/DidYouMean.svelte",
+      "type": "file",
+      "name": "DidYouMean.svelte",
+      "filePath": "src/DidYouMean.svelte",
+      "summary": "Delegates to highlightTextParts utility to split a label into highlighted/non-highlighted segments for the query.",
+      "tags": [
+        "formatting",
+        "search"
+      ],
+      "complexity": "low",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/DmgTotalTooltip.svelte",
+      "type": "file",
+      "name": "DmgTotalTooltip.svelte",
+      "filePath": "src/DmgTotalTooltip.svelte",
+      "summary": "Source code `DmgTotalTooltip.svelte` in src (svelte), 169 lines",
+      "tags": [
+        "source",
+        "svelte",
+        "src"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/DraconicAbilityStats.svelte",
+      "type": "file",
+      "name": "DraconicAbilityStats.svelte",
+      "filePath": "src/DraconicAbilityStats.svelte",
+      "summary": "Source code `DraconicAbilityStats.svelte` in src (svelte), 42 lines",
+      "tags": [
+        "source",
+        "svelte",
+        "src"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/EmotionalTracker.svelte",
+      "type": "file",
+      "name": "EmotionalTracker.svelte",
+      "filePath": "src/EmotionalTracker.svelte",
+      "summary": "Source code `EmotionalTracker.svelte` in src (svelte), 232 lines",
+      "tags": [
+        "source",
+        "svelte",
+        "src"
+      ],
+      "complexity": "complex",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/Highlight.svelte",
+      "type": "file",
+      "name": "Highlight.svelte",
+      "filePath": "src/Highlight.svelte",
+      "summary": "Source code `Highlight.svelte` in src (svelte), 16 lines",
+      "tags": [
+        "source",
+        "svelte",
+        "src"
+      ],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/LevelBar.svelte",
+      "type": "file",
+      "name": "LevelBar.svelte",
+      "filePath": "src/LevelBar.svelte",
+      "summary": "Source code `LevelBar.svelte` in src (svelte), 398 lines",
+      "tags": [
+        "source",
+        "svelte",
+        "src"
+      ],
+      "complexity": "complex",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/AppHeader.svelte",
+      "type": "file",
+      "name": "AppHeader.svelte",
+      "filePath": "src/lib/AppHeader.svelte",
+      "summary": "Header component with animated tab navigation (Overview/Analyze) and bubble indicator. Uses Svelte event dispatching, keyboard Tab support for switching, and responsive CSS layout.",
+      "tags": [
+        "source",
+        "svelte",
+        "src/lib"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/constants.ts",
+      "type": "file",
+      "name": "constants.ts",
+      "filePath": "src/lib/constants.ts",
+      "summary": "Barrel file that re-exports all constant modules from src/lib/constants/.",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/lib"
+      ],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/constants/boosts.ts",
+      "type": "file",
+      "name": "boosts.ts",
+      "filePath": "src/lib/constants/boosts.ts",
+      "summary": "Boost/perk damage multiplier constants including Frenzy, Minion, Venom Eater, Lifesteal, Holy Infusion, Bellowing Ember, and ~40 per-stack multipliers for perks like Blood Thirsty, Venom Spitter, Perfection, Golden Crits, etc.",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/lib/constants"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/constants/buffs.ts",
+      "type": "file",
+      "name": "buffs.ts",
+      "filePath": "src/lib/constants/buffs.ts",
+      "summary": "Buff/debuff potency and duration constants for potions, rune-granted buffs, basic debuffs, weapon art buffs, True Balance conversions, PERK_BUFFS factory values, and BUFF_POTENCY_MODIFIERS.",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/lib/constants"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/constants/cdr.ts",
+      "type": "file",
+      "name": "cdr.ts",
+      "filePath": "src/lib/constants/cdr.ts",
+      "summary": "Cooldown reduction constants for perks and weapon arts: Caster, Channeled Weapon, Mage Rage, Poison Accel, Runic Winds, Wave Rider, Whirlwind, Gladiatorial Set, and Voltaic Body.",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/lib/constants"
+      ],
+      "complexity": "simple",
+      "languageNotes": ""
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "file:src/data/DoTDamage.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "file:src/data/draconicColorEffects.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "file:src/lib/constants.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/procCoefficients.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/raceEffects.ts",
+      "target": "file:src/data/Perkbasedmg.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/Runebasedmg.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/Runebasedmg.ts",
+      "target": "file:src/data/HealBoost.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/Runebasedmg.ts",
+      "target": "file:src/data/SummonData.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/Runebasedmg.ts",
+      "target": "file:src/lib/constants/rune-base-damage.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/statboost.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/statboost.ts",
+      "target": "file:src/lib/constants/stat-conversions.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/SummonData.ts",
+      "target": "file:src/lib/constants.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/TypedDmgBoost.ts",
+      "target": "file:src/data/BuffData.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/TypedDmgBoost.ts",
+      "target": "file:src/lib/constants/damage-types.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/weapon base dmg.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/Weaponartcheck.ts",
+      "target": "file:src/data/weaponArts.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/weaponConditionalBoosts.ts",
+      "target": "file:src/lib/utils.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/DidYouMean.svelte",
+      "target": "file:src/lib/utils.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/DmgTotalTooltip.svelte",
+      "target": "file:src/lib/dmgTypes.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/DmgTotalTooltip.svelte",
+      "target": "file:src/lib/ui/Badge.svelte",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/EmotionalTracker.svelte",
+      "target": "file:src/lib/store.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/EmotionalTracker.svelte",
+      "target": "file:src/lib/ui/Badge.svelte",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/Highlight.svelte",
+      "target": "file:src/lib/utils.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/LevelBar.svelte",
+      "target": "file:src/lib/store.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/LevelBar.svelte",
+      "target": "file:src/lib/constants.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/LevelBar.svelte",
+      "target": "file:src/lib/ui/Badge.svelte",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/AppHeader.svelte",
+      "target": "file:src/BuildSaves.svelte",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/constants.ts",
+      "target": "file:src/lib/constants/index.ts",
+      "type": "imports",
+      "weight": 0.7
+    }
+  ]
+}

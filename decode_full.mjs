@@ -1,3 +1,4 @@
+// fallow-ignore-file unused-file
 import { readFileSync } from 'fs';
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -58,9 +59,10 @@ const STAT_SELECTORS = [
   { key: 'defenseStats', pred: (v, k) => k.endsWith('Defense') && v > 0 },
 ];
 
-function applyEnchantmentsToSlot(baseStats, basePerks, enchantNames, upgradeLevel) {
+function computeSelectorBaseMult(baseStats, enchantNames) {
   const ordered = [...enchantNames].reverse();
-  const baseMult = {}; const add = {}; const perks = { ...basePerks };
+  const baseMult = {};
+  const add = {};
   for (const name of ordered) {
     if (!name) continue;
     const e = ENCHANT_MAP[name]; if (!e) continue;
@@ -79,13 +81,12 @@ function applyEnchantmentsToSlot(baseStats, basePerks, enchantNames, upgradeLeve
       }
     }
   }
-  let currentStats = {};
-  for (const k of STAT_KEYS) { const r = (baseStats[k] ?? 0) * (baseMult[k] ?? 1); if (r !== 0) currentStats[k] = r; }
-  if (upgradeLevel > 0) {
-    const pre = currentStats.armorPenetration;
-    currentStats = applyUpgrade(currentStats, upgradeLevel);
-    if (currentStats.armorPenetration !== pre) currentStats.armorPenetration = pre;
-  }
+  return baseMult;
+}
+
+function applyDirectEnchantModifiers(currentStats, enchantNames, basePerks) {
+  const ordered = [...enchantNames].reverse();
+  const perks = { ...basePerks };
   const bonusMult = {}; const bonusAdd = {};
   for (const name of ordered) {
     if (!name) continue;
@@ -108,6 +109,18 @@ function applyEnchantmentsToSlot(baseStats, basePerks, enchantNames, upgradeLeve
   const stats = {};
   for (const k of STAT_KEYS) { const r = (currentStats[k] ?? 0) * (bonusMult[k] ?? 1) + (bonusAdd[k] ?? 0); if (r !== 0) stats[k] = r; }
   return { stats, perks };
+}
+
+function applyEnchantmentsToSlot(baseStats, basePerks, enchantNames, upgradeLevel) {
+  const baseMult = computeSelectorBaseMult(baseStats, enchantNames);
+  let currentStats = {};
+  for (const k of STAT_KEYS) { const r = (baseStats[k] ?? 0) * (baseMult[k] ?? 1); if (r !== 0) currentStats[k] = r; }
+  if (upgradeLevel > 0) {
+    const pre = currentStats.armorPenetration;
+    currentStats = applyUpgrade(currentStats, upgradeLevel);
+    if (currentStats.armorPenetration !== pre) currentStats.armorPenetration = pre;
+  }
+  return applyDirectEnchantModifiers(currentStats, enchantNames, basePerks);
 }
 
 const SHRINE_MULTIPLIERS = { 1: 3.0, 2: 1.7, 3: 1.4, 4: 1.1, 5: 1.0 };

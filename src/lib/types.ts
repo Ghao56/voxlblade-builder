@@ -228,7 +228,7 @@ export type ProcCoefficient =
   | { type: 'noProc' }
   | { type: 'hasCoeff'; value: number }
 
-export function getProcCoeffValue(pc: ProcCoefficient | undefined): number {
+function getProcCoeffValue(pc: ProcCoefficient | undefined): number {
   if (!pc) return 1
   if (pc.type === 'noProc') return 0
   return pc.value

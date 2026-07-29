@@ -10,7 +10,7 @@
     calcWeapon, calcMonkWeapon, isMonkGuild, MONK_RANK_MULTIPLIER,
     type CDRResult
   } from './lib/engine'
-  import { setEnchantment, setGuild, moveArmorSlot, canArmorMoveToSlot, moveRingSlot, swapEnchantments } from './lib/store'
+  import { setEnchantment, setGuild, moveArmorSlot, canArmorMoveToSlot, moveRingSlot } from './lib/store'
   import type { EnchantSlot, StatMap, StatPrefix, ScalingKey } from './lib/types'
   import { DMG_TYPE_PRIORITY, SCALING_TO_BOOST } from './lib/types'
   import { OFFENSIVE_BOOSTS } from './data/statboost'
@@ -32,7 +32,7 @@
     HEAT_DRILL_COOLDOWN,
     getWADisplayName,
   } from './lib/constants'
-  import { DEFAULT_DMG_TYPE } from './lib/constants/damage-types'
+
   import {
     DRAGON_STATE_HP_GATE,
     gateThreshold

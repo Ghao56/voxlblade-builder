@@ -27,7 +27,7 @@
   import { roundMultiplier, calcWardingDebuffMultiplier, calcProcChance } from './lib/utils'
   import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage, UNDEAD_MIGHT_SELF_DMG_FRACTION, UNDEAD_MIGHT_DR_PCT_PER_STACK, type SelfDamagePerkDef } from './data/selfDamagePerks'
   import { resolveDamageTypes, resolveWaDamageTypeKeys, applyAirToMagicConversion } from './lib/damageTypeResolve'
-  import { buildDmgTypeBonuses, type PerkDmgTypeBonusDef } from './lib/engine/dmgTypeBonuses'
+  import { buildDmgTypeBonuses } from './lib/engine/dmgTypeBonuses'
 import { FEROCITY_TENACITY_MULT } from './lib/constants'
 import { calcTypedDmgBoosts } from './data/TypedDmgBoost'
 import { TRACKED_TYPES_WITH_TRUE } from './lib/constants/damage-types'
@@ -35,7 +35,7 @@ import { resolveStanceOverlay } from './data/stanceOverlays'
 import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
 import Badge from './lib/ui/Badge.svelte'
 import { getEnemyHpDotMultiplier } from './data/enemyHpEffects'
-import { calcDotTick, getDotBase, getDotPotencyMult, toGamePotency, calcDotDisplayPotency, DOT_TYPE_LIST, DOT_SCALINGS } from './data/DoTDamage'
+import { getDotBase, getDotPotencyMult, toGamePotency, calcDotDisplayPotency, DOT_TYPE_LIST, DOT_SCALINGS } from './data/DoTDamage'
 import { WEAPON_PROC_COEFFS, DEFAULT_PROC_COEFF, WA_PROC_COEFFS } from './data/procCoefficients'
 import { BOOST_DEF_MAP, calcFrenzyPct, calcMinionAbsorptionPotency } from './data/Boost'
 import {
@@ -81,6 +81,7 @@ import {
   PURSUIT_BASE_MULT, PURSUIT_MULT_PER_RANK,
   RULER_SANDS_BASE_DMG_PER_HIT, RULER_SANDS_HITS, RULER_SANDS_CHANCE_CD_MULT, RULER_SANDS_CHANCE_PERK_MULT,
   getWADisplayName,
+  ICHOR_SPARK_CHAIN_DMG_PCT,
 } from './lib/constants'
 
 
@@ -792,6 +793,7 @@ import {
   $: _stormRendPct = _stormRendAmt > 0 && stormRendState !== 'off'
     ? (stormRendState === 'twoThirds' ? 2 * LIGHTNING_CLOAK_FRACTION : LIGHTNING_CLOAK_FRACTION) : 0
   $: _explosiveChargePct = (perks['Explosive Charge'] ?? 0) > 0 ? EXPLOSIVE_CHARGE_PCT : 0
+  $: _ichorSparkChainPct = ICHOR_SPARK_CHAIN_DMG_PCT * (perks['Ichor Spark'] ?? 0)
   $: _blubBlubAmt = (perks['Blub Blub'] ?? 0) && !disabledEffects.has('blubBlub') ? perks['Blub Blub'] ?? 0 : 0
   $: _crushingPressureAmt = perks['Crushing Pressure'] ?? 0
   $: _echoIncinerationAmt = perks['Echo Incineration'] ?? 0
@@ -3215,6 +3217,7 @@ $: _groupedSelfDamageSources = (() => {
     selfDebuffNames={_selfDebuffNames}
     antiHealSelfMult={_antiHealSelfMult}
     lightningCloakPct={_lightningCloakPct}
+    ichorSparkChainPct={_ichorSparkChainPct}
     stormRendPct={_stormRendPct}
     explosiveChargePct={_explosiveChargePct}
     blubBlubAmt={_blubBlubAmt}

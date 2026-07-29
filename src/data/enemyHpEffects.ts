@@ -1,4 +1,4 @@
-export interface EnemyHpGate {
+interface EnemyHpGate {
   hpThreshold: number
   aboveThreshold: boolean
 }
@@ -7,18 +7,18 @@ function isEnemyHpGateActive(gate: EnemyHpGate, enemyHpFillPct: number): boolean
   return gate.aboveThreshold ? enemyHpFillPct > gate.hpThreshold : enemyHpFillPct <= gate.hpThreshold
 }
 
-export interface EnemyHpDebuffEffect {
+interface EnemyHpDebuffEffect {
   buffName: string
   getPotency: (perkAmount: number) => number
   duration: number
 }
 
-export interface EnemyHpDotBoost {
+interface EnemyHpDotBoost {
   dotType: string
   getMultiplier: (perkAmount: number) => number
 }
 
-export interface EnemyHpEffectDef {
+interface EnemyHpEffectDef {
   perkName: string
   condition: string
   hpGate: EnemyHpGate

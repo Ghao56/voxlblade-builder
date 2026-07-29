@@ -1,0 +1,557 @@
+{
+  "batchIndex": 6,
+  "batchTotal": 8,
+  "fileCount": 25,
+  "nodes": [
+    {
+      "id": "file:src/lib/constants/damage-types.ts",
+      "type": "file",
+      "name": "damage-types.ts",
+      "filePath": "src/lib/constants/damage-types.ts",
+      "summary": "Damage type metadata (labels, colors), defense inheritance tree, type priority for tie-breaking, and tracked type sets for the damage calculation engine.",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/lib/constants"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/constants/debuff-effects.ts",
+      "type": "file",
+      "name": "debuff-effects.ts",
+      "filePath": "src/lib/constants/debuff-effects.ts",
+      "summary": "Debuff combat effect multipliers: Sticky damage mult, Despair display divisor/mult/damage coefficient.",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/lib/constants"
+      ],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/constants/defensive.ts",
+      "type": "file",
+      "name": "defensive.ts",
+      "filePath": "src/lib/constants/defensive.ts",
+      "summary": "Defensive perk damage reduction constants: Barb Skin, Stone Skin, Adaptive Plate, Protector Spirit, Air Pressure, Valor, Vampire, Frenzy, Stored Corruption, Mounted Defense, Carapace, Cursed Bark.",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/lib/constants"
+      ],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/constants/dot-damage.ts",
+      "type": "file",
+      "name": "dot-damage.ts",
+      "filePath": "src/lib/constants/dot-damage.ts",
+      "summary": "Damage-over-time constants: base damage, infliction divisor, potency cap, rounding factor, and builder-to-game conversion rate.",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/lib/constants"
+      ],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/constants/draconic-colors.ts",
+      "type": "file",
+      "name": "draconic-colors.ts",
+      "filePath": "src/lib/constants/draconic-colors.ts",
+      "summary": "Draconic color-specific combat multipliers for Fire, Air, Earth, Water, and Hex draconic colors (speed, damage, knockback, cooldown, stun).",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/lib/constants"
+      ],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/constants/draconic.ts",
+      "type": "file",
+      "name": "draconic.ts",
+      "filePath": "src/lib/constants/draconic.ts",
+      "summary": "Draconic infusion and Dragon State constants: potency/duration multipliers, HP thresholds, base damage, per-stack scaling, and Bastion Bless multiplier.",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/lib/constants"
+      ],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/constants/game.ts",
+      "type": "file",
+      "name": "game.ts",
+      "filePath": "src/lib/constants/game.ts",
+      "summary": "Core game constants: max/default level, base HP calculation with level scaling, HP fill defaults, and timing constants for save debounce, undo window, and UI delays.",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/lib/constants"
+      ],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/constants/heals.ts",
+      "type": "file",
+      "name": "heals.ts",
+      "filePath": "src/lib/constants/heals.ts",
+      "summary": "Healing-related constants: crit healing base and per-stack values, holy boost divisor, and Ocean Song per-stack multiplier.",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/lib/constants"
+      ],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/constants/index.ts",
+      "type": "file",
+      "name": "index.ts",
+      "filePath": "src/lib/constants/index.ts",
+      "summary": "Central barrel file aggregating and re-exporting all constants sub-modules (damage-types, game, storage, thresholds, perks, boosts, heals, draconic, perk-base-damage, rune-base-damage, buffs, stat-conversions, defensive, dot-damage, draconic-colors, cdr, debuff-effects, wa-display).",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/lib/constants"
+      ],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/constants/perk-base-damage.ts",
+      "type": "file",
+      "name": "perk-base-damage.ts",
+      "filePath": "src/lib/constants/perk-base-damage.ts",
+      "summary": "Perk base damage values for ~30 perks including Dragon Claw, Springblast, spirit summons, Bounce Momentum, Air Pressure, Roaring Heads, Barbed Flurry, Volatile Shell, Dark Harvest, Pyre Bloom, Bastion Ballista, Runic Blades, and more.",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/lib/constants"
+      ],
+      "complexity": "complex",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/constants/perks.ts",
+      "type": "file",
+      "name": "perks.ts",
+      "filePath": "src/lib/constants/perks.ts",
+      "summary": "Perk-related combat constants: crit base values, crit-rate/ crit-damage multipliers, elemental crit conversions, Mortal Will, Sunburn, Frostbite, Cryo Engine, Fiery Pursuit, Hypnotist, Phantom Pain, and Pursuit.",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/lib/constants"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/constants/rune-base-damage.ts",
+      "type": "file",
+      "name": "rune-base-damage.ts",
+      "filePath": "src/lib/constants/rune-base-damage.ts",
+      "summary": "Rune base damage values for Ancient Cleric, Beenade, Boostshroom, Thunderous Charge, Sporeling Toss, Foot Dive, Caci, Cacitrops, Hex Web, Brainblast, and Rocky Tail.",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/lib/constants"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/constants/stat-conversions.ts",
+      "type": "file",
+      "name": "stat-conversions.ts",
+      "filePath": "src/lib/constants/stat-conversions.ts",
+      "summary": "Stat boost conversion rates for weight distribution, Quick Witted, Whirl Foot, Carapace, Extra Layers, Frozen Heart, Immovable, Righted Wrongs, Rocky Body, Spellshield, Strong Tides, Swift Guard, True Balance, Rawnwy, and subtraction modifiers.",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/lib/constants"
+      ],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/constants/storage.ts",
+      "type": "file",
+      "name": "storage.ts",
+      "filePath": "src/lib/constants/storage.ts",
+      "summary": "LocalStorage key constants, build state defaults (empty/initial build), save key mappings for compression, enchantment slot mappings, and build slot limits.",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/lib/constants"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/constants/thresholds.ts",
+      "type": "file",
+      "name": "thresholds.ts",
+      "filePath": "src/lib/constants/thresholds.ts",
+      "summary": "Game mechanic threshold constants: armor pen branch threshold, cooldown minimum, and base crit damage percentage.",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/lib/constants"
+      ],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/constants/wa-display.ts",
+      "type": "file",
+      "name": "wa-display.ts",
+      "filePath": "src/lib/constants/wa-display.ts",
+      "summary": "Weapon Art display name mappings and getWADisplayName function for resolving WA names based on equipped perks.",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/lib/constants"
+      ],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/crit.ts",
+      "type": "file",
+      "name": "crit.ts",
+      "filePath": "src/lib/crit.ts",
+      "summary": "Critical hit calculation engine: combines natural, elemental, and extra crit sources with proc coefficient scaling, Primal divisor handling, and comprehensive crit damage multiplier breakdown.",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/lib"
+      ],
+      "complexity": "complex",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/damageTypeResolve.ts",
+      "type": "file",
+      "name": "damageTypeResolve.ts",
+      "filePath": "src/lib/damageTypeResolve.ts",
+      "summary": "Damage type resolution utilities: resolves weapon art damage types from string descriptions, applies Fire-Air conversion (Echo Incineration), Air-to-Magic conversion (Spirit Winds), and merges base types with bonuses.",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/lib"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/defense.ts",
+      "type": "file",
+      "name": "defense.ts",
+      "filePath": "src/lib/defense.ts",
+      "summary": "Defense calculation engine: resolves percent and flat defense sources, computes effective multipliers, and maps damage types to their defense stat keys via DEF_GROUP.",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/lib"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/dmgTypes.ts",
+      "type": "file",
+      "name": "dmgTypes.ts",
+      "filePath": "src/lib/dmgTypes.ts",
+      "summary": "Damage type type definitions and badge configuration: BADGE_CONFIG for in-game effect badges, ComputedType, PerkOnHitDmg, and ComputedHit interfaces for the damage computation pipeline.",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/lib"
+      ],
+      "complexity": "moderate",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/EnchantSelect.svelte",
+      "type": "file",
+      "name": "EnchantSelect.svelte",
+      "filePath": "src/lib/EnchantSelect.svelte",
+      "summary": "Svelte component: searchable dropdown for selecting enchantments with color dots, keyboard nav, and scroll-aware positioning.",
+      "tags": [
+        "source",
+        "svelte",
+        "src/lib"
+      ],
+      "complexity": "complex",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/enchantTooltip.ts",
+      "type": "file",
+      "name": "enchantTooltip.ts",
+      "filePath": "src/lib/enchantTooltip.ts",
+      "summary": "Builds a multi-line tooltip string for a given enchantment name with description, stat modifiers, effects, and additional notes.",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/lib"
+      ],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/engine.ts",
+      "type": "file",
+      "name": "engine.ts",
+      "filePath": "src/lib/engine.ts",
+      "summary": "Barrel re-export file aggregating engine submodules: data, shrine, enchant, weapon, build, format.",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/lib"
+      ],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/engine/_utils.ts",
+      "type": "file",
+      "name": "_utils.ts",
+      "filePath": "src/lib/engine/_utils.ts",
+      "summary": "Rounds a number to 4 decimal places.",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/lib/engine"
+      ],
+      "complexity": "simple",
+      "languageNotes": ""
+    },
+    {
+      "id": "file:src/lib/engine/build.ts",
+      "type": "file",
+      "name": "build.ts",
+      "filePath": "src/lib/engine/build.ts",
+      "summary": "Main entry point: takes BuildState, accumulates equipment, finalizes perks, and derives BuildResult.",
+      "tags": [
+        "source",
+        "typescript",
+        "ts",
+        "src/lib/engine"
+      ],
+      "complexity": "complex",
+      "languageNotes": ""
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/wa-display.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/constants/storage.ts",
+      "target": "file:src/lib/constants/game.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/crit.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/crit.ts",
+      "target": "file:src/lib/utils.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/crit.ts",
+      "target": "file:src/lib/constants.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/damageTypeResolve.ts",
+      "target": "file:src/lib/engine/_utils.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/damageTypeResolve.ts",
+      "target": "file:src/lib/constants/damage-types.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/defense.ts",
+      "target": "file:src/lib/utils.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/dmgTypes.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/EnchantSelect.svelte",
+      "target": "file:src/lib/constants.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/enchantTooltip.ts",
+      "target": "file:src/lib/engine.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine.ts",
+      "target": "file:src/lib/engine/format.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/data/cdr.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/data/statboost.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/data/BuffData.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/data/raceEffects.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/data/Boost.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/crit.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/utils.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/constants.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/constants/buffs.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/engine/data.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/engine/enchant.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/engine/shrine.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/engine/weapon.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/data/weaponArts.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/damageTypeResolve.ts",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/engine/build.ts",
+      "target": "file:src/lib/engine/dmgTypeBonuses.ts",
+      "type": "imports",
+      "weight": 0.7
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 import { VOID_RAGE_PCT_PER_STACK, CHANNELED_WEAPON_PCT_PER_STACK, EMOTIONAL_PCT_PER_STACK, DRACONIC_BLOOD_PCT_PER_STACK } from '../constants/perks'
 import { getEffectiveDraconicInfusionPotency } from '../../data/draconicBuffs'
 
-export interface PerkDmgTypeBonusDef {
+interface PerkDmgTypeBonusDef {
   perkName: string
   type?: string
   getType?: (ctx: { draconicColor: string }) => string
@@ -11,7 +11,7 @@ export interface PerkDmgTypeBonusDef {
   appliesWithoutProc?: boolean
 }
 
-export const PERK_DMG_TYPE_BONUS_DEFS: PerkDmgTypeBonusDef[] = [
+const PERK_DMG_TYPE_BONUS_DEFS: PerkDmgTypeBonusDef[] = [
   { perkName: 'Void Rage', type: 'hex', amountPerStack: VOID_RAGE_PCT_PER_STACK, condition: ctx => !ctx.rageDisabled && ctx.ragePotency > 0 },
   { perkName: 'Channeled Weapon', type: 'magic', amountPerStack: CHANNELED_WEAPON_PCT_PER_STACK },
   { perkName: 'Emotional', type: 'fire', amountPerStack: EMOTIONAL_PCT_PER_STACK, condition: ctx => ctx.emotionalState === 'debuffs' },

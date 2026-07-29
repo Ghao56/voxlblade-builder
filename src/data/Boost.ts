@@ -34,7 +34,7 @@ export function calcFrenzyPct(ragePotency: number): number {
 
 /** Penance: damage boost scales with missing HP. Bleed procs at ≤35% HP. */
 export const PENANCE_HP_THRESHOLD = 35       // percent (≤35% HP → max boost + bleed proc)
-export const PENANCE_MAX_BOOST = 0.25        // +25% dmg cap
+const PENANCE_MAX_BOOST = 0.25
 export const PENANCE_BLEED_POTENCY = 0       // status-only bleed, no damage
 export const PENANCE_BLEED_DURATION = 5      // seconds
 

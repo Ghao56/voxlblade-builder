@@ -898,9 +898,13 @@
           class:drag-over={dragOverIdx === i}
           class:dragging-source={draggingFrom === i}
           data-slot-idx={i}
+          role="button"
+          tabindex="0"
           onmousedown={(e) => handleMouseDown(e, i)}
         >
           <div class="slot-left"
+            role="button"
+            tabindex="-1"
             ontouchstart={canDrag ? (e) => handleTouchStart(e, i) : undefined}
           >
             <div class="slot-num">{i + 1}</div>

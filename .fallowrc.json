@@ -51,6 +51,22 @@
     {
       "file": "src/TagFilter.svelte",
       "exports": ["*"]
+    },
+    {
+      "file": "src/CritIcon.svelte",
+      "exports": ["*"]
+    },
+    {
+      "file": "src/MountIcon.svelte",
+      "exports": ["*"]
+    },
+    {
+      "file": "src/lib/EnchantSelect.svelte",
+      "exports": ["*"]
+    },
+    {
+      "file": "src/lib/ui/RollValue.svelte",
+      "exports": ["*"]
     }
   ]
 }

@@ -1,0 +1,242 @@
+[
+  {
+    "id": "layer:configuration",
+    "name": "Configuration",
+    "description": "Project-level configuration files including build tooling, TypeScript compiler settings, deployment config, and linter/analysis outputs",
+    "nodeIds": [
+      "config:.fallowrc.json",
+      "config:build-decode2.json",
+      "config:fallow-output.json",
+      "config:fallow-security.json",
+      "config:package.json",
+      "config:stats-data.json",
+      "config:tsconfig.app.json",
+      "config:tsconfig.json",
+      "config:tsconfig.node.json",
+      "config:vercel.json",
+      "file:vite.config.ts"
+    ]
+  },
+  {
+    "id": "layer:documentation",
+    "name": "Documentation",
+    "description": "Project documentation files including README, agent context, onboarding guide, debug logs, and error tracking",
+    "nodeIds": [
+      "document:.slim/deepwork/ui-upgrade.md",
+      "document:AGENTS.md",
+      "document:README.md",
+      "document:build-decode.txt",
+      "document:docs/ONBOARDING.md",
+      "document:ts-errors.txt"
+    ]
+  },
+  {
+    "id": "layer:infrastructure",
+    "name": "Infrastructure",
+    "description": "CI/CD pipeline and deployment configuration (GitHub Actions)",
+    "nodeIds": [
+      "service:.github/workflows/static.yml"
+    ]
+  },
+  {
+    "id": "layer:entry-and-assets",
+    "name": "Entry & Assets",
+    "description": "Application entry point, HTML shell, and global CSS styles",
+    "nodeIds": [
+      "file:index.html",
+      "file:src/app.css",
+      "file:src/main.ts"
+    ]
+  },
+  {
+    "id": "layer:ui-components",
+    "name": "UI Components",
+    "description": "Main page-level Svelte components in src/ forming the application views, including calculators, stat displays, filters, and tracking panels",
+    "nodeIds": [
+      "file:src/App.svelte",
+      "file:src/BaseDamageCalc.svelte",
+      "file:src/BuffList.svelte",
+      "file:src/BuildSaves.svelte",
+      "file:src/CdrStepsCalc.svelte",
+      "file:src/CritIcon.svelte",
+      "file:src/DamageAnalyzer.svelte",
+      "file:src/DidYouMean.svelte",
+      "file:src/DmgTotalTooltip.svelte",
+      "file:src/DraconicAbilityStats.svelte",
+      "file:src/EmotionalTracker.svelte",
+      "file:src/Highlight.svelte",
+      "file:src/LevelBar.svelte",
+      "file:src/ModalSearchHeader.svelte",
+      "file:src/MountIcon.svelte",
+      "file:src/PropellingFunTracker.svelte",
+      "file:src/ScalingBreakdownRow.svelte",
+      "file:src/StatFilter.svelte",
+      "file:src/SuggestDrop.svelte",
+      "file:src/TagFilter.svelte",
+      "file:src/WeaponStatFilter.svelte",
+      "file:src/WeaponStatsDisplay.svelte"
+    ]
+  },
+  {
+    "id": "layer:ui-library",
+    "name": "UI Library",
+    "description": "Reusable Svelte UI primitives and compound components in src/lib/, including modals, badges, buttons, cards, panels, and shared UI patterns",
+    "nodeIds": [
+      "file:src/lib/AppHeader.svelte",
+      "file:src/lib/EnchantSelect.svelte",
+      "file:src/lib/Modal.svelte",
+      "file:src/lib/StatFilterShared.svelte",
+      "file:src/lib/Toast.svelte",
+      "file:src/lib/modals/AccessorySelectModal.svelte",
+      "file:src/lib/modals/GuildModal.svelte",
+      "file:src/lib/modals/index.ts",
+      "file:src/lib/modals/RaceModal.svelte",
+      "file:src/lib/modals/WeaponPartModal.svelte",
+      "file:src/lib/ui/Badge.svelte",
+      "file:src/lib/ui/Button.svelte",
+      "file:src/lib/ui/Card.svelte",
+      "file:src/lib/ui/Divider.svelte",
+      "file:src/lib/ui/index.ts",
+      "file:src/lib/ui/Panel.svelte",
+      "file:src/lib/ui/RollValue.svelte",
+      "file:src/lib/ui/Section.svelte",
+      "file:src/lib/ui/Stat.svelte"
+    ]
+  },
+  {
+    "id": "layer:game-data",
+    "name": "Game Data",
+    "description": "JSON data files defining game items, equipment, enchantments, perks, races, guilds, and other static game content for Voxel Blade",
+    "nodeIds": [
+      "config:src/data/armors.json",
+      "config:src/data/blades.json",
+      "config:src/data/enchantments.json",
+      "config:src/data/essences.json",
+      "config:src/data/gloves.json",
+      "config:src/data/guilds.json",
+      "config:src/data/handles.json",
+      "config:src/data/perks.json",
+      "config:src/data/races.json",
+      "config:src/data/rings.json",
+      "config:src/data/runes.json"
+    ]
+  },
+  {
+    "id": "layer:data-logic",
+    "name": "Data Logic",
+    "description": "TypeScript modules in src/data/ that implement game mechanics, damage formulas, buff/debuff effects, proc coefficients, and conditional boost logic",
+    "nodeIds": [
+      "file:src/data/Boost.ts",
+      "file:src/data/BuffData.ts",
+      "file:src/data/cdr.ts",
+      "file:src/data/debuffCombatEffects.ts",
+      "file:src/data/defensivePerks.ts",
+      "file:src/data/DoTDamage.ts",
+      "file:src/data/draconicBuffs.ts",
+      "file:src/data/draconicColorEffects.ts",
+      "file:src/data/draconicRunes.ts",
+      "file:src/data/enemyHpEffects.ts",
+      "file:src/data/HealBoost.ts",
+      "file:src/data/mountRunes.ts",
+      "file:src/data/perkAutoDebuffs.ts",
+      "file:src/data/Perkbasedmg.ts",
+      "file:src/data/potions.ts",
+      "file:src/data/procCoefficients.ts",
+      "file:src/data/raceEffects.ts",
+      "file:src/data/Runebasedmg.ts",
+      "file:src/data/selfDamagePerks.ts",
+      "file:src/data/stanceOverlays.ts",
+      "file:src/data/statboost.ts",
+      "file:src/data/SummonData.ts",
+      "file:src/data/TypedDmgBoost.ts",
+      "file:src/data/weapon base dmg.ts",
+      "file:src/data/Weaponartcheck.ts",
+      "file:src/data/weaponArts.ts",
+      "file:src/data/weaponConditionalBoosts.ts"
+    ]
+  },
+  {
+    "id": "layer:constants",
+    "name": "Constants",
+    "description": "Game constant definitions in src/lib/constants/ including damage types, buff IDs, thresholds, stat conversions, and other shared numeric/label constants",
+    "nodeIds": [
+      "file:src/lib/constants.ts",
+      "file:src/lib/constants/boosts.ts",
+      "file:src/lib/constants/buffs.ts",
+      "file:src/lib/constants/cdr.ts",
+      "file:src/lib/constants/damage-types.ts",
+      "file:src/lib/constants/debuff-effects.ts",
+      "file:src/lib/constants/defensive.ts",
+      "file:src/lib/constants/dot-damage.ts",
+      "file:src/lib/constants/draconic-colors.ts",
+      "file:src/lib/constants/draconic.ts",
+      "file:src/lib/constants/game.ts",
+      "file:src/lib/constants/heals.ts",
+      "file:src/lib/constants/index.ts",
+      "file:src/lib/constants/perk-base-damage.ts",
+      "file:src/lib/constants/perks.ts",
+      "file:src/lib/constants/rune-base-damage.ts",
+      "file:src/lib/constants/stat-conversions.ts",
+      "file:src/lib/constants/storage.ts",
+      "file:src/lib/constants/thresholds.ts",
+      "file:src/lib/constants/wa-display.ts"
+    ]
+  },
+  {
+    "id": "layer:engine-core",
+    "name": "Engine / Core",
+    "description": "Core damage calculation engine in src/lib/engine/ handling build resolution, weapon stats, enchantment effects, damage type bonuses, and shrine computations",
+    "nodeIds": [
+      "file:src/lib/engine.ts",
+      "file:src/lib/engine/_utils.ts",
+      "file:src/lib/engine/build.ts",
+      "file:src/lib/engine/data.ts",
+      "file:src/lib/engine/data/character.ts",
+      "file:src/lib/engine/data/equipment.ts",
+      "file:src/lib/engine/data/weapons.ts",
+      "file:src/lib/engine/dmgTypeBonuses.ts",
+      "file:src/lib/engine/enchant.ts",
+      "file:src/lib/engine/engine.ts",
+      "file:src/lib/engine/format.ts",
+      "file:src/lib/engine/shrine.ts",
+      "file:src/lib/engine/weapon.ts"
+    ]
+  },
+  {
+    "id": "layer:utilities-and-stores",
+    "name": "Utilities & Stores",
+    "description": "Shared TypeScript utilities, type definitions, Svelte stores for state management, and stat filter helpers used across the application",
+    "nodeIds": [
+      "file:src/lib/crit.ts",
+      "file:src/lib/damageTypeResolve.ts",
+      "file:src/lib/defense.ts",
+      "file:src/lib/dmgTypes.ts",
+      "file:src/lib/enchantTooltip.ts",
+      "file:src/lib/stats/elementalBoosts.ts",
+      "file:src/lib/stats/filterActions.ts",
+      "file:src/lib/store.ts",
+      "file:src/lib/stores/toast.ts",
+      "file:src/lib/types.ts",
+      "file:src/lib/uiConstants.ts",
+      "file:src/lib/utils.ts"
+    ]
+  },
+  {
+    "id": "layer:tests",
+    "name": "Tests",
+    "description": "Unit test files validating game mechanic calculations and engine logic",
+    "nodeIds": [
+      "file:tests/piercer.test.ts"
+    ]
+  },
+  {
+    "id": "layer:scripts-and-artifacts",
+    "name": "Scripts & Artifacts",
+    "description": "Standalone utility scripts and generated build analysis artifacts",
+    "nodeIds": [
+      "file:analyze-mounticon.mjs",
+      "file:decode_full.mjs",
+      "file:stats.html"
+    ]
+  }
+]

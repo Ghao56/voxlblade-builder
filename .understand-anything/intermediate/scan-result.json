@@ -1,2475 +1,1461 @@
 {
-    "projectName":  "voxlblade-builder",
-    "projectDescription":  "A web-based damage calculator and build optimizer for the Roblox game Voxel Blade",
-    "frameworks":  [
-                       "Svelte 5",
-                       "Vite",
-                       "Tailwind CSS"
-                   ],
-    "languages":  [
-                      "JSON",
-                      "Markdown",
-                      "TypeScript/JavaScript",
-                      "Other",
-                      "HTML",
-                      "CSS",
-                      "Svelte"
-                  ],
-    "fileCount":  149,
-    "totalLines":  45735,
-    "files":  [
-                  {
-                      "rel":  ".fallowrc.json",
-                      "lang":  "JSON",
-                      "category":  "config",
-                      "sizeLines":  57,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  ".fallowrc.json",
-                      "fileCategory":  "config"
-                  },
-                  {
-                      "rel":  ".slim/deepwork/ui-upgrade.md",
-                      "lang":  "Markdown",
-                      "category":  "doc",
-                      "sizeLines":  100,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  ".slim/deepwork/ui-upgrade.md",
-                      "fileCategory":  "doc"
-                  },
-                  {
-                      "rel":  ".vscode/extensions.json",
-                      "lang":  "JSON",
-                      "category":  "config",
-                      "sizeLines":  4,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  ".vscode/extensions.json",
-                      "fileCategory":  "config"
-                  },
-                  {
-                      "rel":  "AGENTS.md",
-                      "lang":  "Markdown",
-                      "category":  "config",
-                      "sizeLines":  60,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "AGENTS.md",
-                      "fileCategory":  "config"
-                  },
-                  {
-                      "rel":  "analyze-mounticon.mjs",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "config",
-                      "sizeLines":  12,
-                      "complexity":  "low",
-                      "imports":  [
-                                      "fs"
-                                  ],
-                      "path":  "analyze-mounticon.mjs",
-                      "fileCategory":  "config"
-                  },
-                  {
-                      "rel":  "build-decode.txt",
-                      "lang":  "Other",
-                      "category":  "config",
-                      "sizeLines":  3,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "build-decode.txt",
-                      "fileCategory":  "config"
-                  },
-                  {
-                      "rel":  "build-decode2.json",
-                      "lang":  "JSON",
-                      "category":  "config",
-                      "sizeLines":  1,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "build-decode2.json",
-                      "fileCategory":  "config"
-                  },
-                  {
-                      "rel":  "decode_full.mjs",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "config",
-                      "sizeLines":  264,
-                      "complexity":  "medium",
-                      "imports":  [
-                                      "fs"
-                                  ],
-                      "path":  "decode_full.mjs",
-                      "fileCategory":  "config"
-                  },
-                  {
-                      "rel":  "docs/ONBOARDING.md",
-                      "lang":  "Markdown",
-                      "category":  "doc",
-                      "sizeLines":  406,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "docs/ONBOARDING.md",
-                      "fileCategory":  "doc"
-                  },
-                  {
-                      "rel":  "fallow-output.json",
-                      "lang":  "JSON",
-                      "category":  "config",
-                      "sizeLines":  783,
-                      "complexity":  "high",
-                      "imports":  [
-
-                                  ],
-                      "path":  "fallow-output.json",
-                      "fileCategory":  "config"
-                  },
-                  {
-                      "rel":  "fallow-security.json",
-                      "lang":  "JSON",
-                      "category":  "config",
-                      "sizeLines":  1392,
-                      "complexity":  "high",
-                      "imports":  [
-
-                                  ],
-                      "path":  "fallow-security.json",
-                      "fileCategory":  "config"
-                  },
-                  {
-                      "rel":  "index.html",
-                      "lang":  "HTML",
-                      "category":  "config",
-                      "sizeLines":  14,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "index.html",
-                      "fileCategory":  "config"
-                  },
-                  {
-                      "rel":  "package.json",
-                      "lang":  "JSON",
-                      "category":  "config",
-                      "sizeLines":  33,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "package.json",
-                      "fileCategory":  "config"
-                  },
-                  {
-                      "rel":  "README.md",
-                      "lang":  "Markdown",
-                      "category":  "config",
-                      "sizeLines":  48,
-                      "complexity":  "low",
-                      "imports":  [
-                                      "svelte/store"
-                                  ],
-                      "path":  "README.md",
-                      "fileCategory":  "config"
-                  },
-                  {
-                      "rel":  "src/app.css",
-                      "lang":  "CSS",
-                      "category":  "page",
-                      "sizeLines":  343,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/app.css",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/App.svelte",
-                      "lang":  "Svelte",
-                      "category":  "page",
-                      "sizeLines":  4431,
-                      "complexity":  "high",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/App.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/BaseDamageCalc.svelte",
-                      "lang":  "Svelte",
-                      "category":  "page",
-                      "sizeLines":  2732,
-                      "complexity":  "high",
-                      "imports":  [
-                                      "./data/DoTDamage"
-                                  ],
-                      "path":  "src/BaseDamageCalc.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/BuffList.svelte",
-                      "lang":  "Svelte",
-                      "category":  "page",
-                      "sizeLines":  849,
-                      "complexity":  "high",
-                      "imports":  [
-                                      "./lib/engine/data/character",
-                                      "./data/perkAutoDebuffs",
-                                      "./data/Runebasedmg",
-                                      "./data/procCoefficients",
-                                      "./lib/types",
-                                      "./lib/damageTypeResolve"
-                                  ],
-                      "path":  "src/BuffList.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/BuildSaves.svelte",
-                      "lang":  "Svelte",
-                      "category":  "page",
-                      "sizeLines":  1288,
-                      "complexity":  "high",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/BuildSaves.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/CdrStepsCalc.svelte",
-                      "lang":  "Svelte",
-                      "category":  "page",
-                      "sizeLines":  93,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/CdrStepsCalc.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/CritIcon.svelte",
-                      "lang":  "Svelte",
-                      "category":  "page",
-                      "sizeLines":  14,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/CritIcon.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/DamageAnalyzer.svelte",
-                      "lang":  "Svelte",
-                      "category":  "page",
-                      "sizeLines":  7385,
-                      "complexity":  "high",
-                      "imports":  [
-                                      "./lib/constants",
-                                      "./data/TypedDmgBoost",
-                                      "./lib/constants/damage-types",
-                                      "./data/stanceOverlays",
-                                      "./data/perkAutoDebuffs",
-                                      "./lib/ui/Badge.svelte",
-                                      "./data/enemyHpEffects",
-                                      "./data/DoTDamage",
-                                      "./data/procCoefficients",
-                                      "./data/Boost",
-                                      "./lib/constants"
-                                  ],
-                      "path":  "src/DamageAnalyzer.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/armors.json",
-                      "lang":  "JSON",
-                      "category":  "game-data",
-                      "sizeLines":  174,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/data/armors.json",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/blades.json",
-                      "lang":  "JSON",
-                      "category":  "game-data",
-                      "sizeLines":  108,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/data/blades.json",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/Boost.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "game-data",
-                      "sizeLines":  428,
-                      "complexity":  "medium",
-                      "imports":  [
-                                      "../lib/utils",
-                                      "../lib/constants"
-                                  ],
-                      "path":  "src/data/Boost.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/BuffData.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "game-data",
-                      "sizeLines":  2087,
-                      "complexity":  "high",
-                      "imports":  [
-                                      "../lib/utils",
-                                      "../lib/constants",
-                                      "../lib/constants/buffs",
-                                      "../lib/constants/perks"
-                                  ],
-                      "path":  "src/data/BuffData.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/cdr.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "game-data",
-                      "sizeLines":  64,
-                      "complexity":  "low",
-                      "imports":  [
-                                      "../lib/constants"
-                                  ],
-                      "path":  "src/data/cdr.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/debuffCombatEffects.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "game-data",
-                      "sizeLines":  99,
-                      "complexity":  "low",
-                      "imports":  [
-                                      "../lib/constants/debuff-effects",
-                                      "../lib/constants/perks"
-                                  ],
-                      "path":  "src/data/debuffCombatEffects.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/defensivePerks.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "game-data",
-                      "sizeLines":  207,
-                      "complexity":  "medium",
-                      "imports":  [
-                                      "../lib/constants",
-                                      "./draconicBuffs"
-                                  ],
-                      "path":  "src/data/defensivePerks.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/DoTDamage.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "game-data",
-                      "sizeLines":  75,
-                      "complexity":  "low",
-                      "imports":  [
-                                      "../lib/constants/dot-damage"
-                                  ],
-                      "path":  "src/data/DoTDamage.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/draconicBuffs.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "game-data",
-                      "sizeLines":  112,
-                      "complexity":  "medium",
-                      "imports":  [
-                                      "../lib/constants",
-                                      "./BuffData"
-                                  ],
-                      "path":  "src/data/draconicBuffs.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/draconicColorEffects.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "game-data",
-                      "sizeLines":  50,
-                      "complexity":  "low",
-                      "imports":  [
-                                      "../lib/constants"
-                                  ],
-                      "path":  "src/data/draconicColorEffects.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/draconicRunes.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "game-data",
-                      "sizeLines":  105,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/data/draconicRunes.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/enchantments.json",
-                      "lang":  "JSON",
-                      "category":  "game-data",
-                      "sizeLines":  53,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/data/enchantments.json",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/enemyHpEffects.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "game-data",
-                      "sizeLines":  91,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/data/enemyHpEffects.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/essences.json",
-                      "lang":  "JSON",
-                      "category":  "game-data",
-                      "sizeLines":  107,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/data/essences.json",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/gloves.json",
-                      "lang":  "JSON",
-                      "category":  "game-data",
-                      "sizeLines":  24,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/data/gloves.json",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/guilds.json",
-                      "lang":  "JSON",
-                      "category":  "game-data",
-                      "sizeLines":  57,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/data/guilds.json",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/handles.json",
-                      "lang":  "JSON",
-                      "category":  "game-data",
-                      "sizeLines":  105,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/data/handles.json",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/HealBoost.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "game-data",
-                      "sizeLines":  217,
-                      "complexity":  "medium",
-                      "imports":  [
-                                      "../lib/utils",
-                                      "../lib/constants",
-                                      "./draconicBuffs"
-                                  ],
-                      "path":  "src/data/HealBoost.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/mountRunes.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "game-data",
-                      "sizeLines":  89,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/data/mountRunes.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/perkAutoDebuffs.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "game-data",
-                      "sizeLines":  295,
-                      "complexity":  "medium",
-                      "imports":  [
-                                      "./Boost",
-                                      "../lib/constants/perks",
-                                      "../lib/types",
-                                      "../lib/constants/game",
-                                      "../lib/constants/perk-base-damage",
-                                      "./enemyHpEffects"
-                                  ],
-                      "path":  "src/data/perkAutoDebuffs.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/Perkbasedmg.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "game-data",
-                      "sizeLines":  1223,
-                      "complexity":  "high",
-                      "imports":  [
-                                      "./DoTDamage",
-                                      "../data/draconicColorEffects",
-                                      "../lib/constants"
-                                  ],
-                      "path":  "src/data/Perkbasedmg.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/perks.json",
-                      "lang":  "JSON",
-                      "category":  "game-data",
-                      "sizeLines":  3689,
-                      "complexity":  "high",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/data/perks.json",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/potions.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "game-data",
-                      "sizeLines":  23,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/data/potions.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/procCoefficients.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "game-data",
-                      "sizeLines":  53,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/data/procCoefficients.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/raceEffects.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "game-data",
-                      "sizeLines":  49,
-                      "complexity":  "low",
-                      "imports":  [
-                                      "./Perkbasedmg"
-                                  ],
-                      "path":  "src/data/raceEffects.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/races.json",
-                      "lang":  "JSON",
-                      "category":  "game-data",
-                      "sizeLines":  13,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/data/races.json",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/rings.json",
-                      "lang":  "JSON",
-                      "category":  "game-data",
-                      "sizeLines":  37,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/data/rings.json",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/Runebasedmg.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "game-data",
-                      "sizeLines":  218,
-                      "complexity":  "medium",
-                      "imports":  [
-                                      "./HealBoost",
-                                      "./SummonData",
-                                      "../lib/constants/rune-base-damage"
-                                  ],
-                      "path":  "src/data/Runebasedmg.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/runes.json",
-                      "lang":  "JSON",
-                      "category":  "game-data",
-                      "sizeLines":  43,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/data/runes.json",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/selfDamagePerks.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "game-data",
-                      "sizeLines":  106,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/data/selfDamagePerks.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/stanceOverlays.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "game-data",
-                      "sizeLines":  60,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/data/stanceOverlays.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/statboost.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "game-data",
-                      "sizeLines":  243,
-                      "complexity":  "medium",
-                      "imports":  [
-                                      "../lib/types",
-                                      "../lib/constants/stat-conversions"
-                                  ],
-                      "path":  "src/data/statboost.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/SummonData.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "game-data",
-                      "sizeLines":  84,
-                      "complexity":  "low",
-                      "imports":  [
-                                      "../lib/constants"
-                                  ],
-                      "path":  "src/data/SummonData.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/TypedDmgBoost.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "game-data",
-                      "sizeLines":  138,
-                      "complexity":  "medium",
-                      "imports":  [
-                                      "../lib/constants/damage-types"
-                                  ],
-                      "path":  "src/data/TypedDmgBoost.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/weapon base dmg.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "game-data",
-                      "sizeLines":  42,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/data/weapon base dmg.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/Weaponartcheck.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "game-data",
-                      "sizeLines":  153,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/data/Weaponartcheck.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/weaponArts.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "game-data",
-                      "sizeLines":  511,
-                      "complexity":  "high",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/data/weaponArts.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/data/weaponConditionalBoosts.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "game-data",
-                      "sizeLines":  79,
-                      "complexity":  "low",
-                      "imports":  [
-                                      "../lib/utils"
-                                  ],
-                      "path":  "src/data/weaponConditionalBoosts.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/DidYouMean.svelte",
-                      "lang":  "Svelte",
-                      "category":  "page",
-                      "sizeLines":  111,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/DidYouMean.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/DmgTotalTooltip.svelte",
-                      "lang":  "Svelte",
-                      "category":  "page",
-                      "sizeLines":  170,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/DmgTotalTooltip.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/DraconicAbilityStats.svelte",
-                      "lang":  "Svelte",
-                      "category":  "page",
-                      "sizeLines":  43,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/DraconicAbilityStats.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/EmotionalTracker.svelte",
-                      "lang":  "Svelte",
-                      "category":  "page",
-                      "sizeLines":  232,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/EmotionalTracker.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/Highlight.svelte",
-                      "lang":  "Svelte",
-                      "category":  "page",
-                      "sizeLines":  17,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/Highlight.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/LevelBar.svelte",
-                      "lang":  "Svelte",
-                      "category":  "page",
-                      "sizeLines":  398,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/LevelBar.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/AppHeader.svelte",
-                      "lang":  "Svelte",
-                      "category":  "lib",
-                      "sizeLines":  188,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/AppHeader.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/constants.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "constants",
-                      "sizeLines":  2,
-                      "complexity":  "low",
-                      "imports":  [
-                                      "./constants/index"
-                                  ],
-                      "path":  "src/lib/constants.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/constants/boosts.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "constants",
-                      "sizeLines":  76,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/constants/boosts.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/constants/buffs.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "constants",
-                      "sizeLines":  176,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/constants/buffs.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/constants/cdr.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "constants",
-                      "sizeLines":  26,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/constants/cdr.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/constants/damage-types.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "constants",
-                      "sizeLines":  42,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/constants/damage-types.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/constants/debuff-effects.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "constants",
-                      "sizeLines":  10,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/constants/debuff-effects.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/constants/defensive.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "constants",
-                      "sizeLines":  23,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/constants/defensive.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/constants/dot-damage.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "constants",
-                      "sizeLines":  11,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/constants/dot-damage.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/constants/draconic-colors.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "constants",
-                      "sizeLines":  21,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/constants/draconic-colors.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/constants/draconic.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "constants",
-                      "sizeLines":  11,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/constants/draconic.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/constants/game.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "constants",
-                      "sizeLines":  27,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/constants/game.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/constants/heals.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "constants",
-                      "sizeLines":  6,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/constants/heals.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/constants/index.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "constants",
-                      "sizeLines":  19,
-                      "complexity":  "low",
-                      "imports":  [
-                                      "./damage-types",
-                                      "./game",
-                                      "./storage",
-                                      "./thresholds",
-                                      "./perks",
-                                      "./boosts",
-                                      "./heals",
-                                      "./draconic",
-                                      "./perk-base-damage",
-                                      "./rune-base-damage",
-                                      "./buffs",
-                                      "./stat-conversions",
-                                      "./defensive",
-                                      "./dot-damage",
-                                      "./draconic-colors",
-                                      "./cdr",
-                                      "./debuff-effects",
-                                      "./wa-display"
-                                  ],
-                      "path":  "src/lib/constants/index.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/constants/perk-base-damage.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "constants",
-                      "sizeLines":  201,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/constants/perk-base-damage.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/constants/perks.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "constants",
-                      "sizeLines":  101,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/constants/perks.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/constants/rune-base-damage.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "constants",
-                      "sizeLines":  55,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/constants/rune-base-damage.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/constants/stat-conversions.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "constants",
-                      "sizeLines":  31,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/constants/stat-conversions.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/constants/storage.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "constants",
-                      "sizeLines":  43,
-                      "complexity":  "low",
-                      "imports":  [
-                                      "./game"
-                                  ],
-                      "path":  "src/lib/constants/storage.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/constants/thresholds.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "constants",
-                      "sizeLines":  6,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/constants/thresholds.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/constants/wa-display.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "constants",
-                      "sizeLines":  18,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/constants/wa-display.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/crit.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "lib",
-                      "sizeLines":  341,
-                      "complexity":  "medium",
-                      "imports":  [
-                                      "./utils",
-                                      "./constants"
-                                  ],
-                      "path":  "src/lib/crit.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/damageTypeResolve.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "lib",
-                      "sizeLines":  99,
-                      "complexity":  "low",
-                      "imports":  [
-                                      "./engine/_utils",
-                                      "./constants/damage-types"
-                                  ],
-                      "path":  "src/lib/damageTypeResolve.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/defense.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "lib",
-                      "sizeLines":  82,
-                      "complexity":  "low",
-                      "imports":  [
-                                      "./utils"
-                                  ],
-                      "path":  "src/lib/defense.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/dmgTypes.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "lib",
-                      "sizeLines":  79,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/dmgTypes.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/EnchantSelect.svelte",
-                      "lang":  "Svelte",
-                      "category":  "lib",
-                      "sizeLines":  465,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/EnchantSelect.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/enchantTooltip.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "lib",
-                      "sizeLines":  27,
-                      "complexity":  "low",
-                      "imports":  [
-                                      "./engine"
-                                  ],
-                      "path":  "src/lib/enchantTooltip.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/engine.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "engine",
-                      "sizeLines":  6,
-                      "complexity":  "low",
-                      "imports":  [
-                                      "./engine/data",
-                                      "./engine/shrine",
-                                      "./engine/enchant",
-                                      "./engine/weapon",
-                                      "./engine/build",
-                                      "./engine/format"
-                                  ],
-                      "path":  "src/lib/engine.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/engine/_utils.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "engine",
-                      "sizeLines":  3,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/engine/_utils.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/engine/build.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "engine",
-                      "sizeLines":  566,
-                      "complexity":  "high",
-                      "imports":  [
-                                      "../types",
-                                      "../../data/cdr",
-                                      "../../data/statboost",
-                                      "../../data/BuffData",
-                                      "../../data/raceEffects",
-                                      "../../data/Boost",
-                                      "../crit",
-                                      "../utils",
-                                      "../constants",
-                                      "../constants/buffs",
-                                      "./data",
-                                      "./enchant",
-                                      "./shrine",
-                                      "./weapon",
-                                      "../../data/weaponArts",
-                                      "../damageTypeResolve",
-                                      "./dmgTypeBonuses"
-                                  ],
-                      "path":  "src/lib/engine/build.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/engine/data.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "engine",
-                      "sizeLines":  3,
-                      "complexity":  "low",
-                      "imports":  [
-                                      "./data/character",
-                                      "./data/equipment",
-                                      "./data/weapons"
-                                  ],
-                      "path":  "src/lib/engine/data.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/engine/data/character.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "engine",
-                      "sizeLines":  29,
-                      "complexity":  "low",
-                      "imports":  [
-                                      "../../../data/races.json",
-                                      "../../../data/guilds.json",
-                                      "../../../data/perks.json"
-                                  ],
-                      "path":  "src/lib/engine/data/character.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/engine/data/equipment.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "engine",
-                      "sizeLines":  58,
-                      "complexity":  "low",
-                      "imports":  [
-                                      "../../../data/armors.json",
-                                      "../../../data/rings.json",
-                                      "../../../data/runes.json",
-                                      "../../../data/enchantments.json"
-                                  ],
-                      "path":  "src/lib/engine/data/equipment.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/engine/data/weapons.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "engine",
-                      "sizeLines":  21,
-                      "complexity":  "low",
-                      "imports":  [
-                                      "../../../data/blades.json",
-                                      "../../../data/handles.json",
-                                      "../../../data/gloves.json",
-                                      "../../../data/essences.json"
-                                  ],
-                      "path":  "src/lib/engine/data/weapons.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/engine/dmgTypeBonuses.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "engine",
-                      "sizeLines":  57,
-                      "complexity":  "low",
-                      "imports":  [
-                                      "../constants/perks",
-                                      "../../data/draconicBuffs"
-                                  ],
-                      "path":  "src/lib/engine/dmgTypeBonuses.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/engine/enchant.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "engine",
-                      "sizeLines":  223,
-                      "complexity":  "medium",
-                      "imports":  [
-                                      "../types",
-                                      "./data",
-                                      "./_utils"
-                                  ],
-                      "path":  "src/lib/engine/enchant.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/engine/engine.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "engine",
-                      "sizeLines":  6,
-                      "complexity":  "low",
-                      "imports":  [
-                                      "./data",
-                                      "./shrine",
-                                      "./enchant",
-                                      "./weapon",
-                                      "./build",
-                                      "./format"
-                                  ],
-                      "path":  "src/lib/engine/engine.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/engine/format.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "engine",
-                      "sizeLines":  15,
-                      "complexity":  "low",
-                      "imports":  [
-                                      "../types",
-                                      "./_utils"
-                                  ],
-                      "path":  "src/lib/engine/format.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/engine/shrine.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "engine",
-                      "sizeLines":  34,
-                      "complexity":  "low",
-                      "imports":  [
-                                      "../types",
-                                      "./_utils"
-                                  ],
-                      "path":  "src/lib/engine/shrine.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/engine/weapon.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "engine",
-                      "sizeLines":  444,
-                      "complexity":  "medium",
-                      "imports":  [
-                                      "../types",
-                                      "./data",
-                                      "./shrine",
-                                      "./_utils"
-                                  ],
-                      "path":  "src/lib/engine/weapon.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/Modal.svelte",
-                      "lang":  "Svelte",
-                      "category":  "lib",
-                      "sizeLines":  213,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/Modal.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/modals/AccessorySelectModal.svelte",
-                      "lang":  "Svelte",
-                      "category":  "modals",
-                      "sizeLines":  203,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/modals/AccessorySelectModal.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/modals/GuildModal.svelte",
-                      "lang":  "Svelte",
-                      "category":  "modals",
-                      "sizeLines":  99,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/modals/GuildModal.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/modals/index.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "modals",
-                      "sizeLines":  5,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/modals/index.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/modals/RaceModal.svelte",
-                      "lang":  "Svelte",
-                      "category":  "modals",
-                      "sizeLines":  61,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/modals/RaceModal.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/modals/WeaponPartModal.svelte",
-                      "lang":  "Svelte",
-                      "category":  "modals",
-                      "sizeLines":  138,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/modals/WeaponPartModal.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/StatFilterShared.svelte",
-                      "lang":  "Svelte",
-                      "category":  "lib",
-                      "sizeLines":  98,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/StatFilterShared.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/stats/elementalBoosts.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "stats",
-                      "sizeLines":  22,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/stats/elementalBoosts.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/stats/filterActions.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "stats",
-                      "sizeLines":  41,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/stats/filterActions.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/store.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "lib",
-                      "sizeLines":  215,
-                      "complexity":  "medium",
-                      "imports":  [
-                                      "svelte/store",
-                                      "./engine",
-                                      "./constants"
-                                  ],
-                      "path":  "src/lib/store.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/stores/toast.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "store",
-                      "sizeLines":  29,
-                      "complexity":  "low",
-                      "imports":  [
-                                      "svelte/store",
-                                      "../constants"
-                                  ],
-                      "path":  "src/lib/stores/toast.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/Toast.svelte",
-                      "lang":  "Svelte",
-                      "category":  "lib",
-                      "sizeLines":  100,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/Toast.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/types.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "lib",
-                      "sizeLines":  295,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/types.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/ui/Badge.svelte",
-                      "lang":  "Svelte",
-                      "category":  "ui",
-                      "sizeLines":  149,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/ui/Badge.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/ui/Button.svelte",
-                      "lang":  "Svelte",
-                      "category":  "ui",
-                      "sizeLines":  144,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/ui/Button.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/ui/Card.svelte",
-                      "lang":  "Svelte",
-                      "category":  "ui",
-                      "sizeLines":  104,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/ui/Card.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/ui/Divider.svelte",
-                      "lang":  "Svelte",
-                      "category":  "ui",
-                      "sizeLines":  43,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/ui/Divider.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/ui/index.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "ui",
-                      "sizeLines":  8,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/ui/index.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/ui/Panel.svelte",
-                      "lang":  "Svelte",
-                      "category":  "ui",
-                      "sizeLines":  95,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/ui/Panel.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/ui/RollValue.svelte",
-                      "lang":  "Svelte",
-                      "category":  "ui",
-                      "sizeLines":  66,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/ui/RollValue.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/ui/Section.svelte",
-                      "lang":  "Svelte",
-                      "category":  "ui",
-                      "sizeLines":  130,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/ui/Section.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/ui/Stat.svelte",
-                      "lang":  "Svelte",
-                      "category":  "ui",
-                      "sizeLines":  91,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/ui/Stat.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/uiConstants.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "ui",
-                      "sizeLines":  81,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/uiConstants.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/lib/utils.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "lib",
-                      "sizeLines":  113,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/lib/utils.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/main.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "page",
-                      "sizeLines":  8,
-                      "complexity":  "low",
-                      "imports":  [
-                                      "svelte",
-                                      "./App.svelte",
-                                      "./app.css",
-                                      "@vercel/analytics"
-                                  ],
-                      "path":  "src/main.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/ModalSearchHeader.svelte",
-                      "lang":  "Svelte",
-                      "category":  "page",
-                      "sizeLines":  200,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/ModalSearchHeader.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/MountIcon.svelte",
-                      "lang":  "Svelte",
-                      "category":  "page",
-                      "sizeLines":  64,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/MountIcon.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/PropellingFunTracker.svelte",
-                      "lang":  "Svelte",
-                      "category":  "page",
-                      "sizeLines":  193,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/PropellingFunTracker.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/ScalingBreakdownRow.svelte",
-                      "lang":  "Svelte",
-                      "category":  "page",
-                      "sizeLines":  103,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/ScalingBreakdownRow.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/StatFilter.svelte",
-                      "lang":  "Svelte",
-                      "category":  "page",
-                      "sizeLines":  335,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/StatFilter.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/SuggestDrop.svelte",
-                      "lang":  "Svelte",
-                      "category":  "page",
-                      "sizeLines":  68,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/SuggestDrop.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/TagFilter.svelte",
-                      "lang":  "Svelte",
-                      "category":  "page",
-                      "sizeLines":  331,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/TagFilter.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/WeaponStatFilter.svelte",
-                      "lang":  "Svelte",
-                      "category":  "page",
-                      "sizeLines":  241,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/WeaponStatFilter.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "src/WeaponStatsDisplay.svelte",
-                      "lang":  "Svelte",
-                      "category":  "page",
-                      "sizeLines":  122,
-                      "complexity":  "medium",
-                      "imports":  [
-
-                                  ],
-                      "path":  "src/WeaponStatsDisplay.svelte",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "stats-data.json",
-                      "lang":  "JSON",
-                      "category":  "config",
-                      "sizeLines":  2,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "stats-data.json",
-                      "fileCategory":  "config"
-                  },
-                  {
-                      "rel":  "stats.html",
-                      "lang":  "HTML",
-                      "category":  "config",
-                      "sizeLines":  4951,
-                      "complexity":  "high",
-                      "imports":  [
-
-                                  ],
-                      "path":  "stats.html",
-                      "fileCategory":  "config"
-                  },
-                  {
-                      "rel":  "tests/piercer.test.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "test",
-                      "sizeLines":  186,
-                      "complexity":  "medium",
-                      "imports":  [
-                                      "vitest",
-                                      "../src/data/weaponConditionalBoosts",
-                                      "../src/lib/utils"
-                                  ],
-                      "path":  "tests/piercer.test.ts",
-                      "fileCategory":  "code"
-                  },
-                  {
-                      "rel":  "ts-errors.txt",
-                      "lang":  "Other",
-                      "category":  "config",
-                      "sizeLines":  1,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "ts-errors.txt",
-                      "fileCategory":  "config"
-                  },
-                  {
-                      "rel":  "tsconfig.app.json",
-                      "lang":  "JSON",
-                      "category":  "config",
-                      "sizeLines":  21,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "tsconfig.app.json",
-                      "fileCategory":  "config"
-                  },
-                  {
-                      "rel":  "tsconfig.json",
-                      "lang":  "JSON",
-                      "category":  "config",
-                      "sizeLines":  3,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "tsconfig.json",
-                      "fileCategory":  "config"
-                  },
-                  {
-                      "rel":  "tsconfig.node.json",
-                      "lang":  "JSON",
-                      "category":  "config",
-                      "sizeLines":  25,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "tsconfig.node.json",
-                      "fileCategory":  "config"
-                  },
-                  {
-                      "rel":  "vercel.json",
-                      "lang":  "JSON",
-                      "category":  "config",
-                      "sizeLines":  34,
-                      "complexity":  "low",
-                      "imports":  [
-
-                                  ],
-                      "path":  "vercel.json",
-                      "fileCategory":  "config"
-                  },
-                  {
-                      "rel":  "vite.config.ts",
-                      "lang":  "TypeScript/JavaScript",
-                      "category":  "config",
-                      "sizeLines":  59,
-                      "complexity":  "low",
-                      "imports":  [
-                                      "vite",
-                                      "@sveltejs/vite-plugin-svelte",
-                                      "vite-plugin-pwa",
-                                      "rollup-plugin-visualizer"
-                                  ],
-                      "path":  "vite.config.ts",
-                      "fileCategory":  "config"
-                  }
-              ],
-    "importMap":  {
-                      "src/BaseDamageCalc.svelte":  [
-                                                        "./data/DoTDamage"
-                                                    ],
-                      "src/lib/constants/perks.ts":  [
-
-                                                     ],
-                      "stats-data.json":  [
-
-                                          ],
-                      "src/lib/constants/game.ts":  [
-
-                                                    ],
-                      "src/lib/StatFilterShared.svelte":  [
-
-                                                          ],
-                      "src/lib/ui/Badge.svelte":  [
-
-                                                  ],
-                      "tsconfig.node.json":  [
-
-                                             ],
-                      "src/MountIcon.svelte":  [
-
-                                               ],
-                      "src/data/handles.json":  [
-
-                                                ],
-                      "src/lib/engine/build.ts":  [
-                                                      "../types",
-                                                      "../../data/cdr",
-                                                      "../../data/statboost",
-                                                      "../../data/BuffData",
-                                                      "../../data/raceEffects",
-                                                      "../../data/Boost",
-                                                      "../crit",
-                                                      "../utils",
-                                                      "../constants",
-                                                      "../constants/buffs",
-                                                      "./data",
-                                                      "./enchant",
-                                                      "./shrine",
-                                                      "./weapon",
-                                                      "../../data/weaponArts",
-                                                      "../damageTypeResolve",
-                                                      "./dmgTypeBonuses"
-                                                  ],
-                      "src/BuffList.svelte":  [
-                                                  "./lib/engine/data/character",
-                                                  "./data/perkAutoDebuffs",
-                                                  "./data/Runebasedmg",
-                                                  "./data/procCoefficients",
-                                                  "./lib/types",
-                                                  "./lib/damageTypeResolve"
-                                              ],
-                      "src/lib/AppHeader.svelte":  [
-
-                                                   ],
-                      "src/lib/constants/draconic-colors.ts":  [
-
-                                                               ],
-                      "src/lib/ui/index.ts":  [
-
-                                              ],
-                      "src/lib/uiConstants.ts":  [
-
-                                                 ],
-                      "src/lib/engine/data/character.ts":  [
-                                                               "../../../data/races.json",
-                                                               "../../../data/guilds.json",
-                                                               "../../../data/perks.json"
-                                                           ],
-                      "src/lib/ui/Card.svelte":  [
-
-                                                 ],
-                      "src/BuildSaves.svelte":  [
-
-                                                ],
-                      "src/data/races.json":  [
-
-                                              ],
-                      "build-decode.txt":  [
-
-                                           ],
-                      "src/Highlight.svelte":  [
-
-                                               ],
-                      "src/CdrStepsCalc.svelte":  [
-
-                                                  ],
-                      "src/DraconicAbilityStats.svelte":  [
-
-                                                          ],
-                      "src/data/potions.ts":  [
-
-                                              ],
-                      "src/lib/engine/enchant.ts":  [
-                                                        "../types",
-                                                        "./data",
-                                                        "./_utils"
-                                                    ],
-                      "src/data/guilds.json":  [
-
-                                               ],
-                      "src/data/defensivePerks.ts":  [
-                                                         "../lib/constants",
-                                                         "./draconicBuffs"
-                                                     ],
-                      "ts-errors.txt":  [
-
-                                        ],
-                      "src/data/procCoefficients.ts":  [
-
-                                                       ],
-                      "src/data/armors.json":  [
-
-                                               ],
-                      "src/LevelBar.svelte":  [
-
-                                              ],
-                      "src/lib/ui/Stat.svelte":  [
-
-                                                 ],
-                      "src/data/draconicRunes.ts":  [
-
-                                                    ],
-                      "src/lib/constants/buffs.ts":  [
-
-                                                     ],
-                      "src/lib/modals/index.ts":  [
-
-                                                  ],
-                      "src/lib/defense.ts":  [
-                                                 "./utils"
-                                             ],
-                      "src/lib/ui/RollValue.svelte":  [
-
-                                                      ],
-                      "src/lib/constants/thresholds.ts":  [
-
-                                                          ],
-                      "tsconfig.json":  [
-
-                                        ],
-                      "src/lib/constants.ts":  [
-                                                   "./constants/index"
-                                               ],
-                      "src/main.ts":  [
-                                          "svelte",
-                                          "./App.svelte",
-                                          "./app.css",
-                                          "@vercel/analytics"
-                                      ],
-                      "src/lib/stats/filterActions.ts":  [
-
-                                                         ],
-                      "src/lib/constants/debuff-effects.ts":  [
-
-                                                              ],
-                      "src/data/weaponArts.ts":  [
-
-                                                 ],
-                      "src/lib/constants/damage-types.ts":  [
-
-                                                            ],
-                      "src/DamageAnalyzer.svelte":  [
-                                                        "./lib/constants",
-                                                        "./data/TypedDmgBoost",
-                                                        "./lib/constants/damage-types",
-                                                        "./data/stanceOverlays",
-                                                        "./data/perkAutoDebuffs",
-                                                        "./lib/ui/Badge.svelte",
-                                                        "./data/enemyHpEffects",
-                                                        "./data/DoTDamage",
-                                                        "./data/procCoefficients",
-                                                        "./data/Boost",
-                                                        "./lib/constants"
-                                                    ],
-                      "src/data/perks.json":  [
-
-                                              ],
-                      "src/lib/constants/rune-base-damage.ts":  [
-
-                                                                ],
-                      "src/data/essences.json":  [
-
-                                                 ],
-                      "src/data/statboost.ts":  [
-                                                    "../lib/types",
-                                                    "../lib/constants/stat-conversions"
-                                                ],
-                      "src/lib/engine/data/equipment.ts":  [
-                                                               "../../../data/armors.json",
-                                                               "../../../data/rings.json",
-                                                               "../../../data/runes.json",
-                                                               "../../../data/enchantments.json"
-                                                           ],
-                      "src/lib/types.ts":  [
-
-                                           ],
-                      "tests/piercer.test.ts":  [
-                                                    "vitest",
-                                                    "../src/data/weaponConditionalBoosts",
-                                                    "../src/lib/utils"
-                                                ],
-                      "src/data/gloves.json":  [
-
-                                               ],
-                      "fallow-security.json":  [
-
-                                               ],
-                      "src/lib/ui/Divider.svelte":  [
-
-                                                    ],
-                      "src/lib/utils.ts":  [
-
-                                           ],
-                      "fallow-output.json":  [
-
-                                             ],
-                      "src/DmgTotalTooltip.svelte":  [
-
-                                                     ],
-                      "src/SuggestDrop.svelte":  [
-
-                                                 ],
-                      "src/data/selfDamagePerks.ts":  [
-
-                                                      ],
-                      "src/data/blades.json":  [
-
-                                               ],
-                      "src/app.css":  [
-
-                                      ],
-                      "src/data/rings.json":  [
-
-                                              ],
-                      "tsconfig.app.json":  [
-
-                                            ],
-                      "vercel.json":  [
-
-                                      ],
-                      "vite.config.ts":  [
-                                             "vite",
-                                             "@sveltejs/vite-plugin-svelte",
-                                             "vite-plugin-pwa",
-                                             "rollup-plugin-visualizer"
-                                         ],
-                      "src/lib/constants/heals.ts":  [
-
-                                                     ],
-                      "src/lib/stores/toast.ts":  [
-                                                      "svelte/store",
-                                                      "../constants"
-                                                  ],
-                      "src/WeaponStatsDisplay.svelte":  [
-
-                                                        ],
-                      "src/lib/modals/RaceModal.svelte":  [
-
-                                                          ],
-                      "src/PropellingFunTracker.svelte":  [
-
-                                                          ],
-                      "decode_full.mjs":  [
-                                              "fs"
-                                          ],
-                      ".vscode/extensions.json":  [
-
-                                                  ],
-                      "src/lib/crit.ts":  [
-                                              "./utils",
-                                              "./constants"
-                                          ],
-                      "src/lib/engine/weapon.ts":  [
-                                                       "../types",
-                                                       "./data",
-                                                       "./shrine",
-                                                       "./_utils"
-                                                   ],
-                      "src/lib/constants/storage.ts":  [
-                                                           "./game"
-                                                       ],
-                      "src/data/draconicColorEffects.ts":  [
-                                                               "../lib/constants"
-                                                           ],
-                      "src/lib/Modal.svelte":  [
-
-                                               ],
-                      "docs/ONBOARDING.md":  [
-
-                                             ],
-                      "src/lib/constants/defensive.ts":  [
-
-                                                         ],
-                      "src/data/Perkbasedmg.ts":  [
-                                                      "./DoTDamage",
-                                                      "../data/draconicColorEffects",
-                                                      "../lib/constants"
-                                                  ],
-                      "src/lib/constants/cdr.ts":  [
-
-                                                   ],
-                      "src/lib/constants/wa-display.ts":  [
-
-                                                          ],
-                      "src/data/SummonData.ts":  [
-                                                     "../lib/constants"
-                                                 ],
-                      "src/data/mountRunes.ts":  [
-
-                                                 ],
-                      "src/lib/engine.ts":  [
-                                                "./engine/data",
-                                                "./engine/shrine",
-                                                "./engine/enchant",
-                                                "./engine/weapon",
-                                                "./engine/build",
-                                                "./engine/format"
-                                            ],
-                      "src/lib/engine/shrine.ts":  [
-                                                       "../types",
-                                                       "./_utils"
-                                                   ],
-                      "src/lib/constants/index.ts":  [
-                                                         "./damage-types",
-                                                         "./game",
-                                                         "./storage",
-                                                         "./thresholds",
-                                                         "./perks",
-                                                         "./boosts",
-                                                         "./heals",
-                                                         "./draconic",
-                                                         "./perk-base-damage",
-                                                         "./rune-base-damage",
-                                                         "./buffs",
-                                                         "./stat-conversions",
-                                                         "./defensive",
-                                                         "./dot-damage",
-                                                         "./draconic-colors",
-                                                         "./cdr",
-                                                         "./debuff-effects",
-                                                         "./wa-display"
-                                                     ],
-                      "src/data/weapon base dmg.ts":  [
-
-                                                      ],
-                      "src/data/perkAutoDebuffs.ts":  [
-                                                          "./Boost",
-                                                          "../lib/constants/perks",
-                                                          "../lib/types",
-                                                          "../lib/constants/game",
-                                                          "../lib/constants/perk-base-damage",
-                                                          "./enemyHpEffects"
-                                                      ],
-                      "src/lib/modals/GuildModal.svelte":  [
-
-                                                           ],
-                      "src/data/TypedDmgBoost.ts":  [
-                                                        "../lib/constants/damage-types"
-                                                    ],
-                      "analyze-mounticon.mjs":  [
-                                                    "fs"
-                                                ],
-                      "src/lib/modals/AccessorySelectModal.svelte":  [
-
-                                                                     ],
-                      "src/data/DoTDamage.ts":  [
-                                                    "../lib/constants/dot-damage"
-                                                ],
-                      "src/data/Runebasedmg.ts":  [
-                                                      "./HealBoost",
-                                                      "./SummonData",
-                                                      "../lib/constants/rune-base-damage"
-                                                  ],
-                      "src/data/weaponConditionalBoosts.ts":  [
-                                                                  "../lib/utils"
-                                                              ],
-                      "src/data/runes.json":  [
-
-                                              ],
-                      "src/TagFilter.svelte":  [
-
-                                               ],
-                      "src/data/cdr.ts":  [
-                                              "../lib/constants"
-                                          ],
-                      "build-decode2.json":  [
-
-                                             ],
-                      "src/lib/Toast.svelte":  [
-
-                                               ],
-                      "src/lib/damageTypeResolve.ts":  [
-                                                           "./engine/_utils",
-                                                           "./constants/damage-types"
-                                                       ],
-                      "src/lib/dmgTypes.ts":  [
-
-                                              ],
-                      "src/lib/stats/elementalBoosts.ts":  [
-
-                                                           ],
-                      "src/lib/engine/_utils.ts":  [
-
-                                                   ],
-                      "src/CritIcon.svelte":  [
-
-                                              ],
-                      "src/data/raceEffects.ts":  [
-                                                      "./Perkbasedmg"
-                                                  ],
-                      "src/WeaponStatFilter.svelte":  [
-
-                                                      ],
-                      "README.md":  [
-                                        "svelte/store"
-                                    ],
-                      "src/lib/constants/perk-base-damage.ts":  [
-
-                                                                ],
-                      "src/lib/engine/dmgTypeBonuses.ts":  [
-                                                               "../constants/perks",
-                                                               "../../data/draconicBuffs"
-                                                           ],
-                      "src/data/enemyHpEffects.ts":  [
-
-                                                     ],
-                      "src/data/Weaponartcheck.ts":  [
-
-                                                     ],
-                      "src/data/stanceOverlays.ts":  [
-
-                                                     ],
-                      "src/lib/ui/Section.svelte":  [
-
-                                                    ],
-                      "src/data/debuffCombatEffects.ts":  [
-                                                              "../lib/constants/debuff-effects",
-                                                              "../lib/constants/perks"
-                                                          ],
-                      "index.html":  [
-
-                                     ],
-                      "src/lib/engine/data.ts":  [
-                                                     "./data/character",
-                                                     "./data/equipment",
-                                                     "./data/weapons"
-                                                 ],
-                      "src/lib/modals/WeaponPartModal.svelte":  [
-
-                                                                ],
-                      "src/lib/constants/stat-conversions.ts":  [
-
-                                                                ],
-                      "src/data/HealBoost.ts":  [
-                                                    "../lib/utils",
-                                                    "../lib/constants",
-                                                    "./draconicBuffs"
-                                                ],
-                      "src/App.svelte":  [
-
-                                         ],
-                      ".slim/deepwork/ui-upgrade.md":  [
-
-                                                       ],
-                      "src/lib/constants/dot-damage.ts":  [
-
-                                                          ],
-                      "src/lib/engine/engine.ts":  [
-                                                       "./data",
-                                                       "./shrine",
-                                                       "./enchant",
-                                                       "./weapon",
-                                                       "./build",
-                                                       "./format"
-                                                   ],
-                      "src/DidYouMean.svelte":  [
-
-                                                ],
-                      "src/lib/constants/draconic.ts":  [
-
-                                                        ],
-                      "src/lib/EnchantSelect.svelte":  [
-
-                                                       ],
-                      "stats.html":  [
-
-                                     ],
-                      "src/ModalSearchHeader.svelte":  [
-
-                                                       ],
-                      "src/lib/ui/Button.svelte":  [
-
-                                                   ],
-                      "src/lib/ui/Panel.svelte":  [
-
-                                                  ],
-                      "src/data/BuffData.ts":  [
-                                                   "../lib/utils",
-                                                   "../lib/constants",
-                                                   "../lib/constants/buffs",
-                                                   "../lib/constants/perks"
-                                               ],
-                      "src/StatFilter.svelte":  [
-
-                                                ],
-                      "src/lib/enchantTooltip.ts":  [
-                                                        "./engine"
-                                                    ],
-                      "src/EmotionalTracker.svelte":  [
-
-                                                      ],
-                      ".fallowrc.json":  [
-
-                                         ],
-                      "src/lib/constants/boosts.ts":  [
-
-                                                      ],
-                      "src/lib/engine/data/weapons.ts":  [
-                                                             "../../../data/blades.json",
-                                                             "../../../data/handles.json",
-                                                             "../../../data/gloves.json",
-                                                             "../../../data/essences.json"
-                                                         ],
-                      "src/data/Boost.ts":  [
-                                                "../lib/utils",
-                                                "../lib/constants"
-                                            ],
-                      "AGENTS.md":  [
-
-                                    ],
-                      "src/lib/engine/format.ts":  [
-                                                       "../types",
-                                                       "./_utils"
-                                                   ],
-                      "src/lib/store.ts":  [
-                                               "svelte/store",
-                                               "./engine",
-                                               "./constants"
-                                           ],
-                      "src/data/draconicBuffs.ts":  [
-                                                        "../lib/constants",
-                                                        "./BuffData"
-                                                    ],
-                      "src/ScalingBreakdownRow.svelte":  [
-
-                                                         ],
-                      "src/data/enchantments.json":  [
-
-                                                     ],
-                      "package.json":  [
-
-                                       ]
-                  }
+  "scriptCompleted": true,
+  "name": "voxlblade-builder",
+  "description": "A web-based damage calculator and build optimizer for the Roblox game Voxel Blade. Simulates weapon stats, enchantments, perks, and other game mechanics to calculate damage output and compare different builds.",
+  "languages": [
+    "JSON",
+    "Markdown",
+    "TypeScript/JavaScript",
+    "HTML",
+    "CSS",
+    "Svelte",
+    "YAML"
+  ],
+  "frameworks": [
+    "Svelte 5",
+    "Vite"
+  ],
+  "files": [
+    {
+      "path": ".fallowrc.json",
+      "language": "json",
+      "sizeLines": 56,
+      "fileCategory": "config"
+    },
+    {
+      "path": ".github/workflows/static.yml",
+      "language": "yaml",
+      "sizeLines": 53,
+      "fileCategory": "infra"
+    },
+    {
+      "path": ".slim/deepwork/ui-upgrade.md",
+      "language": "markdown",
+      "sizeLines": 99,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "AGENTS.md",
+      "language": "markdown",
+      "sizeLines": 59,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "analyze-mounticon.mjs",
+      "language": "javascript",
+      "sizeLines": 11,
+      "fileCategory": "code"
+    },
+    {
+      "path": "build-decode.txt",
+      "language": "txt",
+      "sizeLines": 2,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "build-decode2.json",
+      "language": "json",
+      "sizeLines": 0,
+      "fileCategory": "config"
+    },
+    {
+      "path": "decode_full.mjs",
+      "language": "javascript",
+      "sizeLines": 263,
+      "fileCategory": "code"
+    },
+    {
+      "path": "docs/ONBOARDING.md",
+      "language": "markdown",
+      "sizeLines": 405,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "fallow-output.json",
+      "language": "json",
+      "sizeLines": 782,
+      "fileCategory": "config"
+    },
+    {
+      "path": "fallow-security.json",
+      "language": "json",
+      "sizeLines": 1391,
+      "fileCategory": "config"
+    },
+    {
+      "path": "index.html",
+      "language": "html",
+      "sizeLines": 13,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "package.json",
+      "language": "json",
+      "sizeLines": 32,
+      "fileCategory": "config"
+    },
+    {
+      "path": "README.md",
+      "language": "markdown",
+      "sizeLines": 47,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "src/app.css",
+      "language": "css",
+      "sizeLines": 342,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "src/App.svelte",
+      "language": "svelte",
+      "sizeLines": 4430,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/BaseDamageCalc.svelte",
+      "language": "svelte",
+      "sizeLines": 2733,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/BuffList.svelte",
+      "language": "svelte",
+      "sizeLines": 848,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/BuildSaves.svelte",
+      "language": "svelte",
+      "sizeLines": 1287,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/CdrStepsCalc.svelte",
+      "language": "svelte",
+      "sizeLines": 92,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/CritIcon.svelte",
+      "language": "svelte",
+      "sizeLines": 13,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/DamageAnalyzer.svelte",
+      "language": "svelte",
+      "sizeLines": 7386,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/armors.json",
+      "language": "json",
+      "sizeLines": 173,
+      "fileCategory": "config"
+    },
+    {
+      "path": "src/data/blades.json",
+      "language": "json",
+      "sizeLines": 107,
+      "fileCategory": "config"
+    },
+    {
+      "path": "src/data/Boost.ts",
+      "language": "typescript",
+      "sizeLines": 427,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/BuffData.ts",
+      "language": "typescript",
+      "sizeLines": 2096,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/cdr.ts",
+      "language": "typescript",
+      "sizeLines": 63,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/debuffCombatEffects.ts",
+      "language": "typescript",
+      "sizeLines": 98,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/defensivePerks.ts",
+      "language": "typescript",
+      "sizeLines": 206,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/DoTDamage.ts",
+      "language": "typescript",
+      "sizeLines": 74,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/draconicBuffs.ts",
+      "language": "typescript",
+      "sizeLines": 111,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/draconicColorEffects.ts",
+      "language": "typescript",
+      "sizeLines": 49,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/draconicRunes.ts",
+      "language": "typescript",
+      "sizeLines": 104,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/enchantments.json",
+      "language": "json",
+      "sizeLines": 52,
+      "fileCategory": "config"
+    },
+    {
+      "path": "src/data/enemyHpEffects.ts",
+      "language": "typescript",
+      "sizeLines": 90,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/essences.json",
+      "language": "json",
+      "sizeLines": 106,
+      "fileCategory": "config"
+    },
+    {
+      "path": "src/data/gloves.json",
+      "language": "json",
+      "sizeLines": 23,
+      "fileCategory": "config"
+    },
+    {
+      "path": "src/data/guilds.json",
+      "language": "json",
+      "sizeLines": 56,
+      "fileCategory": "config"
+    },
+    {
+      "path": "src/data/handles.json",
+      "language": "json",
+      "sizeLines": 104,
+      "fileCategory": "config"
+    },
+    {
+      "path": "src/data/HealBoost.ts",
+      "language": "typescript",
+      "sizeLines": 216,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/mountRunes.ts",
+      "language": "typescript",
+      "sizeLines": 88,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/perkAutoDebuffs.ts",
+      "language": "typescript",
+      "sizeLines": 294,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/Perkbasedmg.ts",
+      "language": "typescript",
+      "sizeLines": 1335,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/perks.json",
+      "language": "json",
+      "sizeLines": 3688,
+      "fileCategory": "config"
+    },
+    {
+      "path": "src/data/potions.ts",
+      "language": "typescript",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/procCoefficients.ts",
+      "language": "typescript",
+      "sizeLines": 52,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/raceEffects.ts",
+      "language": "typescript",
+      "sizeLines": 48,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/races.json",
+      "language": "json",
+      "sizeLines": 12,
+      "fileCategory": "config"
+    },
+    {
+      "path": "src/data/rings.json",
+      "language": "json",
+      "sizeLines": 36,
+      "fileCategory": "config"
+    },
+    {
+      "path": "src/data/Runebasedmg.ts",
+      "language": "typescript",
+      "sizeLines": 217,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/runes.json",
+      "language": "json",
+      "sizeLines": 42,
+      "fileCategory": "config"
+    },
+    {
+      "path": "src/data/selfDamagePerks.ts",
+      "language": "typescript",
+      "sizeLines": 105,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/stanceOverlays.ts",
+      "language": "typescript",
+      "sizeLines": 59,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/statboost.ts",
+      "language": "typescript",
+      "sizeLines": 242,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/SummonData.ts",
+      "language": "typescript",
+      "sizeLines": 83,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/TypedDmgBoost.ts",
+      "language": "typescript",
+      "sizeLines": 137,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/weapon base dmg.ts",
+      "language": "typescript",
+      "sizeLines": 41,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/Weaponartcheck.ts",
+      "language": "typescript",
+      "sizeLines": 152,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/weaponArts.ts",
+      "language": "typescript",
+      "sizeLines": 510,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/data/weaponConditionalBoosts.ts",
+      "language": "typescript",
+      "sizeLines": 78,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/DidYouMean.svelte",
+      "language": "svelte",
+      "sizeLines": 110,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/DmgTotalTooltip.svelte",
+      "language": "svelte",
+      "sizeLines": 169,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/DraconicAbilityStats.svelte",
+      "language": "svelte",
+      "sizeLines": 42,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/EmotionalTracker.svelte",
+      "language": "svelte",
+      "sizeLines": 231,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/Highlight.svelte",
+      "language": "svelte",
+      "sizeLines": 16,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/LevelBar.svelte",
+      "language": "svelte",
+      "sizeLines": 397,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/AppHeader.svelte",
+      "language": "svelte",
+      "sizeLines": 187,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants.ts",
+      "language": "typescript",
+      "sizeLines": 1,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/boosts.ts",
+      "language": "typescript",
+      "sizeLines": 75,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/buffs.ts",
+      "language": "typescript",
+      "sizeLines": 175,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/cdr.ts",
+      "language": "typescript",
+      "sizeLines": 25,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/damage-types.ts",
+      "language": "typescript",
+      "sizeLines": 41,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/debuff-effects.ts",
+      "language": "typescript",
+      "sizeLines": 9,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/defensive.ts",
+      "language": "typescript",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/dot-damage.ts",
+      "language": "typescript",
+      "sizeLines": 10,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/draconic-colors.ts",
+      "language": "typescript",
+      "sizeLines": 20,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/draconic.ts",
+      "language": "typescript",
+      "sizeLines": 10,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/game.ts",
+      "language": "typescript",
+      "sizeLines": 26,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/heals.ts",
+      "language": "typescript",
+      "sizeLines": 5,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/index.ts",
+      "language": "typescript",
+      "sizeLines": 18,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/perk-base-damage.ts",
+      "language": "typescript",
+      "sizeLines": 217,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/perks.ts",
+      "language": "typescript",
+      "sizeLines": 100,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/rune-base-damage.ts",
+      "language": "typescript",
+      "sizeLines": 54,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/stat-conversions.ts",
+      "language": "typescript",
+      "sizeLines": 30,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/storage.ts",
+      "language": "typescript",
+      "sizeLines": 42,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/thresholds.ts",
+      "language": "typescript",
+      "sizeLines": 5,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/wa-display.ts",
+      "language": "typescript",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/crit.ts",
+      "language": "typescript",
+      "sizeLines": 340,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/damageTypeResolve.ts",
+      "language": "typescript",
+      "sizeLines": 98,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/defense.ts",
+      "language": "typescript",
+      "sizeLines": 81,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/dmgTypes.ts",
+      "language": "typescript",
+      "sizeLines": 78,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/EnchantSelect.svelte",
+      "language": "svelte",
+      "sizeLines": 464,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/enchantTooltip.ts",
+      "language": "typescript",
+      "sizeLines": 26,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/engine.ts",
+      "language": "typescript",
+      "sizeLines": 5,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/engine/_utils.ts",
+      "language": "typescript",
+      "sizeLines": 2,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/engine/build.ts",
+      "language": "typescript",
+      "sizeLines": 565,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/engine/data.ts",
+      "language": "typescript",
+      "sizeLines": 2,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/engine/data/character.ts",
+      "language": "typescript",
+      "sizeLines": 28,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/engine/data/equipment.ts",
+      "language": "typescript",
+      "sizeLines": 57,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/engine/data/weapons.ts",
+      "language": "typescript",
+      "sizeLines": 20,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/engine/dmgTypeBonuses.ts",
+      "language": "typescript",
+      "sizeLines": 56,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/engine/enchant.ts",
+      "language": "typescript",
+      "sizeLines": 222,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/engine/engine.ts",
+      "language": "typescript",
+      "sizeLines": 5,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/engine/format.ts",
+      "language": "typescript",
+      "sizeLines": 14,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/engine/shrine.ts",
+      "language": "typescript",
+      "sizeLines": 33,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/engine/weapon.ts",
+      "language": "typescript",
+      "sizeLines": 443,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/Modal.svelte",
+      "language": "svelte",
+      "sizeLines": 212,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/modals/AccessorySelectModal.svelte",
+      "language": "svelte",
+      "sizeLines": 202,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/modals/GuildModal.svelte",
+      "language": "svelte",
+      "sizeLines": 98,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/modals/index.ts",
+      "language": "typescript",
+      "sizeLines": 4,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/modals/RaceModal.svelte",
+      "language": "svelte",
+      "sizeLines": 60,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/modals/WeaponPartModal.svelte",
+      "language": "svelte",
+      "sizeLines": 137,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/StatFilterShared.svelte",
+      "language": "svelte",
+      "sizeLines": 97,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/stats/elementalBoosts.ts",
+      "language": "typescript",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/stats/filterActions.ts",
+      "language": "typescript",
+      "sizeLines": 40,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/store.ts",
+      "language": "typescript",
+      "sizeLines": 215,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/stores/toast.ts",
+      "language": "typescript",
+      "sizeLines": 28,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/Toast.svelte",
+      "language": "svelte",
+      "sizeLines": 99,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/types.ts",
+      "language": "typescript",
+      "sizeLines": 295,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/ui/Badge.svelte",
+      "language": "svelte",
+      "sizeLines": 148,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/ui/Button.svelte",
+      "language": "svelte",
+      "sizeLines": 143,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/ui/Card.svelte",
+      "language": "svelte",
+      "sizeLines": 103,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/ui/Divider.svelte",
+      "language": "svelte",
+      "sizeLines": 42,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/ui/index.ts",
+      "language": "typescript",
+      "sizeLines": 7,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/ui/Panel.svelte",
+      "language": "svelte",
+      "sizeLines": 94,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/ui/RollValue.svelte",
+      "language": "svelte",
+      "sizeLines": 65,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/ui/Section.svelte",
+      "language": "svelte",
+      "sizeLines": 129,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/ui/Stat.svelte",
+      "language": "svelte",
+      "sizeLines": 90,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/uiConstants.ts",
+      "language": "typescript",
+      "sizeLines": 80,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/utils.ts",
+      "language": "typescript",
+      "sizeLines": 112,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main.ts",
+      "language": "typescript",
+      "sizeLines": 7,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/ModalSearchHeader.svelte",
+      "language": "svelte",
+      "sizeLines": 199,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/MountIcon.svelte",
+      "language": "svelte",
+      "sizeLines": 63,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/PropellingFunTracker.svelte",
+      "language": "svelte",
+      "sizeLines": 192,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/ScalingBreakdownRow.svelte",
+      "language": "svelte",
+      "sizeLines": 102,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/StatFilter.svelte",
+      "language": "svelte",
+      "sizeLines": 334,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/SuggestDrop.svelte",
+      "language": "svelte",
+      "sizeLines": 67,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/TagFilter.svelte",
+      "language": "svelte",
+      "sizeLines": 330,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/WeaponStatFilter.svelte",
+      "language": "svelte",
+      "sizeLines": 240,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/WeaponStatsDisplay.svelte",
+      "language": "svelte",
+      "sizeLines": 121,
+      "fileCategory": "code"
+    },
+    {
+      "path": "stats-data.json",
+      "language": "json",
+      "sizeLines": 1,
+      "fileCategory": "config"
+    },
+    {
+      "path": "stats.html",
+      "language": "html",
+      "sizeLines": 4950,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "tests/piercer.test.ts",
+      "language": "typescript",
+      "sizeLines": 185,
+      "fileCategory": "code"
+    },
+    {
+      "path": "ts-errors.txt",
+      "language": "txt",
+      "sizeLines": 0,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "tsconfig.app.json",
+      "language": "json",
+      "sizeLines": 20,
+      "fileCategory": "config"
+    },
+    {
+      "path": "tsconfig.json",
+      "language": "json",
+      "sizeLines": 2,
+      "fileCategory": "config"
+    },
+    {
+      "path": "tsconfig.node.json",
+      "language": "json",
+      "sizeLines": 24,
+      "fileCategory": "config"
+    },
+    {
+      "path": "vercel.json",
+      "language": "json",
+      "sizeLines": 33,
+      "fileCategory": "config"
+    },
+    {
+      "path": "vite.config.ts",
+      "language": "typescript",
+      "sizeLines": 58,
+      "fileCategory": "code"
+    }
+  ],
+  "totalFiles": 149,
+  "filteredByIgnore": 21,
+  "estimatedComplexity": "moderate",
+  "stats": {
+    "filesScanned": 149,
+    "byCategory": {
+      "config": 21,
+      "infra": 1,
+      "docs": 6,
+      "code": 118,
+      "markup": 3
+    },
+    "byLanguage": {
+      "json": 21,
+      "yaml": 1,
+      "markdown": 4,
+      "javascript": 2,
+      "txt": 2,
+      "html": 2,
+      "css": 1,
+      "svelte": 39,
+      "typescript": 77
+    }
+  },
+  "importMap": {
+    ".fallowrc.json": [],
+    ".github/workflows/static.yml": [],
+    ".slim/deepwork/ui-upgrade.md": [],
+    "AGENTS.md": [],
+    "analyze-mounticon.mjs": [],
+    "build-decode.txt": [],
+    "build-decode2.json": [],
+    "decode_full.mjs": [],
+    "docs/ONBOARDING.md": [],
+    "fallow-output.json": [],
+    "fallow-security.json": [],
+    "index.html": [],
+    "package.json": [],
+    "README.md": [],
+    "src/app.css": [],
+    "src/App.svelte": [
+      "src/lib/store.ts",
+      "src/DraconicAbilityStats.svelte",
+      "src/lib/engine.ts",
+      "src/lib/types.ts",
+      "src/data/statboost.ts",
+      "src/lib/EnchantSelect.svelte",
+      "src/lib/ui/RollValue.svelte",
+      "src/lib/enchantTooltip.ts",
+      "src/data/weaponArts.ts",
+      "src/lib/constants.ts",
+      "src/lib/constants/damage-types.ts",
+      "src/data/Perkbasedmg.ts",
+      "src/data/draconicColorEffects.ts",
+      "src/EmotionalTracker.svelte",
+      "src/PropellingFunTracker.svelte",
+      "src/LevelBar.svelte",
+      "src/DamageAnalyzer.svelte",
+      "src/TagFilter.svelte",
+      "src/StatFilter.svelte",
+      "src/WeaponStatFilter.svelte",
+      "src/BuffList.svelte",
+      "src/data/Weaponartcheck.ts",
+      "src/data/draconicBuffs.ts",
+      "src/data/BuffData.ts",
+      "src/data/cdr.ts",
+      "src/data/SummonData.ts",
+      "src/data/potions.ts",
+      "src/CdrStepsCalc.svelte",
+      "src/lib/modals/index.ts",
+      "src/lib/AppHeader.svelte",
+      "src/lib/Toast.svelte",
+      "src/lib/ui/Badge.svelte",
+      "src/lib/ui/Button.svelte",
+      "src/lib/stores/toast.ts"
+    ],
+    "src/BaseDamageCalc.svelte": [
+      "src/CritIcon.svelte",
+      "src/MountIcon.svelte",
+      "src/DmgTotalTooltip.svelte",
+      "src/lib/damageTypeResolve.ts",
+      "src/data/TypedDmgBoost.ts",
+      "src/lib/dmgTypes.ts",
+      "src/lib/ui/Badge.svelte",
+      "src/lib/types.ts",
+      "src/data/DoTDamage.ts",
+      "src/lib/constants.ts"
+    ],
+    "src/BuffList.svelte": [
+      "src/lib/store.ts",
+      "src/lib/utils.ts",
+      "src/data/DoTDamage.ts",
+      "src/lib/engine/weapon.ts",
+      "src/lib/engine/data/character.ts",
+      "src/lib/ui/Badge.svelte",
+      "src/data/BuffData.ts",
+      "src/data/draconicBuffs.ts",
+      "src/data/Boost.ts",
+      "src/data/weaponArts.ts",
+      "src/data/potions.ts",
+      "src/lib/uiConstants.ts",
+      "src/data/perkAutoDebuffs.ts",
+      "src/data/Runebasedmg.ts",
+      "src/data/procCoefficients.ts",
+      "src/lib/types.ts",
+      "src/lib/damageTypeResolve.ts"
+    ],
+    "src/BuildSaves.svelte": [
+      "src/lib/utils.ts",
+      "src/EmotionalTracker.svelte",
+      "src/lib/Modal.svelte",
+      "src/lib/store.ts",
+      "src/lib/stores/toast.ts",
+      "src/lib/ui/Button.svelte",
+      "src/lib/types.ts",
+      "src/lib/constants.ts",
+      "src/lib/engine/data/character.ts",
+      "src/lib/engine/data/weapons.ts",
+      "src/lib/engine/data/equipment.ts"
+    ],
+    "src/CdrStepsCalc.svelte": [
+      "src/lib/constants.ts"
+    ],
+    "src/CritIcon.svelte": [],
+    "src/DamageAnalyzer.svelte": [
+      "src/lib/store.ts",
+      "src/lib/engine.ts",
+      "src/BaseDamageCalc.svelte",
+      "src/ScalingBreakdownRow.svelte",
+      "src/data/weaponArts.ts",
+      "src/data/weapon base dmg.ts",
+      "src/lib/types.ts",
+      "src/data/BuffData.ts",
+      "src/data/debuffCombatEffects.ts",
+      "src/data/draconicBuffs.ts",
+      "src/data/SummonData.ts",
+      "src/CritIcon.svelte",
+      "src/data/Perkbasedmg.ts",
+      "src/lib/defense.ts",
+      "src/data/raceEffects.ts",
+      "src/data/defensivePerks.ts",
+      "src/data/weaponConditionalBoosts.ts",
+      "src/lib/engine/data/character.ts",
+      "src/lib/engine/data/equipment.ts",
+      "src/data/Runebasedmg.ts",
+      "src/data/mountRunes.ts",
+      "src/data/draconicColorEffects.ts",
+      "src/data/draconicRunes.ts",
+      "src/data/HealBoost.ts",
+      "src/lib/utils.ts",
+      "src/data/selfDamagePerks.ts",
+      "src/lib/damageTypeResolve.ts",
+      "src/lib/engine/dmgTypeBonuses.ts",
+      "src/lib/constants.ts",
+      "src/data/TypedDmgBoost.ts",
+      "src/lib/constants/damage-types.ts",
+      "src/data/stanceOverlays.ts",
+      "src/data/perkAutoDebuffs.ts",
+      "src/lib/ui/Badge.svelte",
+      "src/data/enemyHpEffects.ts",
+      "src/data/DoTDamage.ts",
+      "src/data/procCoefficients.ts",
+      "src/data/Boost.ts"
+    ],
+    "src/data/armors.json": [],
+    "src/data/blades.json": [],
+    "src/data/Boost.ts": [
+      "src/lib/utils.ts",
+      "src/lib/constants.ts",
+      "src/lib/types.ts"
+    ],
+    "src/data/BuffData.ts": [
+      "src/lib/utils.ts",
+      "src/lib/constants.ts",
+      "src/lib/constants/buffs.ts",
+      "src/lib/constants/perks.ts"
+    ],
+    "src/data/cdr.ts": [
+      "src/lib/constants.ts"
+    ],
+    "src/data/debuffCombatEffects.ts": [
+      "src/lib/constants/debuff-effects.ts",
+      "src/lib/constants/perks.ts"
+    ],
+    "src/data/defensivePerks.ts": [
+      "src/lib/constants.ts",
+      "src/data/draconicBuffs.ts"
+    ],
+    "src/data/DoTDamage.ts": [
+      "src/lib/constants/dot-damage.ts"
+    ],
+    "src/data/draconicBuffs.ts": [
+      "src/lib/constants.ts",
+      "src/data/BuffData.ts"
+    ],
+    "src/data/draconicColorEffects.ts": [
+      "src/lib/constants.ts"
+    ],
+    "src/data/draconicRunes.ts": [],
+    "src/data/enchantments.json": [],
+    "src/data/enemyHpEffects.ts": [],
+    "src/data/essences.json": [],
+    "src/data/gloves.json": [],
+    "src/data/guilds.json": [],
+    "src/data/handles.json": [],
+    "src/data/HealBoost.ts": [
+      "src/lib/utils.ts",
+      "src/lib/constants.ts",
+      "src/data/draconicBuffs.ts"
+    ],
+    "src/data/mountRunes.ts": [
+      "src/lib/types.ts"
+    ],
+    "src/data/perkAutoDebuffs.ts": [
+      "src/data/Boost.ts",
+      "src/lib/constants/perks.ts",
+      "src/data/BuffData.ts",
+      "src/lib/types.ts",
+      "src/lib/constants/game.ts",
+      "src/lib/constants/perk-base-damage.ts",
+      "src/data/enemyHpEffects.ts"
+    ],
+    "src/data/Perkbasedmg.ts": [
+      "src/data/DoTDamage.ts",
+      "src/data/draconicColorEffects.ts",
+      "src/lib/types.ts",
+      "src/lib/constants.ts"
+    ],
+    "src/data/perks.json": [],
+    "src/data/potions.ts": [],
+    "src/data/procCoefficients.ts": [
+      "src/lib/types.ts"
+    ],
+    "src/data/raceEffects.ts": [
+      "src/data/Perkbasedmg.ts"
+    ],
+    "src/data/races.json": [],
+    "src/data/rings.json": [],
+    "src/data/Runebasedmg.ts": [
+      "src/lib/types.ts",
+      "src/data/HealBoost.ts",
+      "src/data/SummonData.ts",
+      "src/lib/constants/rune-base-damage.ts"
+    ],
+    "src/data/runes.json": [],
+    "src/data/selfDamagePerks.ts": [],
+    "src/data/stanceOverlays.ts": [],
+    "src/data/statboost.ts": [
+      "src/lib/types.ts",
+      "src/lib/constants/stat-conversions.ts"
+    ],
+    "src/data/SummonData.ts": [
+      "src/lib/constants.ts"
+    ],
+    "src/data/TypedDmgBoost.ts": [
+      "src/data/BuffData.ts",
+      "src/lib/constants/damage-types.ts"
+    ],
+    "src/data/weapon base dmg.ts": [
+      "src/lib/types.ts"
+    ],
+    "src/data/Weaponartcheck.ts": [
+      "src/data/weaponArts.ts"
+    ],
+    "src/data/weaponArts.ts": [],
+    "src/data/weaponConditionalBoosts.ts": [
+      "src/lib/utils.ts"
+    ],
+    "src/DidYouMean.svelte": [
+      "src/lib/utils.ts"
+    ],
+    "src/DmgTotalTooltip.svelte": [
+      "src/lib/dmgTypes.ts",
+      "src/lib/ui/Badge.svelte"
+    ],
+    "src/DraconicAbilityStats.svelte": [],
+    "src/EmotionalTracker.svelte": [
+      "src/lib/store.ts",
+      "src/lib/ui/Badge.svelte"
+    ],
+    "src/Highlight.svelte": [
+      "src/lib/utils.ts"
+    ],
+    "src/LevelBar.svelte": [
+      "src/lib/store.ts",
+      "src/lib/constants.ts",
+      "src/lib/ui/Badge.svelte"
+    ],
+    "src/lib/AppHeader.svelte": [
+      "src/BuildSaves.svelte"
+    ],
+    "src/lib/constants.ts": [
+      "src/lib/constants/index.ts"
+    ],
+    "src/lib/constants/boosts.ts": [],
+    "src/lib/constants/buffs.ts": [],
+    "src/lib/constants/cdr.ts": [],
+    "src/lib/constants/damage-types.ts": [],
+    "src/lib/constants/debuff-effects.ts": [],
+    "src/lib/constants/defensive.ts": [],
+    "src/lib/constants/dot-damage.ts": [],
+    "src/lib/constants/draconic-colors.ts": [],
+    "src/lib/constants/draconic.ts": [],
+    "src/lib/constants/game.ts": [],
+    "src/lib/constants/heals.ts": [],
+    "src/lib/constants/index.ts": [
+      "src/lib/constants/wa-display.ts"
+    ],
+    "src/lib/constants/perk-base-damage.ts": [],
+    "src/lib/constants/perks.ts": [],
+    "src/lib/constants/rune-base-damage.ts": [],
+    "src/lib/constants/stat-conversions.ts": [],
+    "src/lib/constants/storage.ts": [
+      "src/lib/constants/game.ts"
+    ],
+    "src/lib/constants/thresholds.ts": [],
+    "src/lib/constants/wa-display.ts": [],
+    "src/lib/crit.ts": [
+      "src/lib/types.ts",
+      "src/lib/utils.ts",
+      "src/lib/constants.ts"
+    ],
+    "src/lib/damageTypeResolve.ts": [
+      "src/lib/engine/_utils.ts",
+      "src/lib/constants/damage-types.ts"
+    ],
+    "src/lib/defense.ts": [
+      "src/lib/utils.ts"
+    ],
+    "src/lib/dmgTypes.ts": [
+      "src/lib/types.ts"
+    ],
+    "src/lib/EnchantSelect.svelte": [
+      "src/lib/constants.ts"
+    ],
+    "src/lib/enchantTooltip.ts": [
+      "src/lib/engine.ts"
+    ],
+    "src/lib/engine.ts": [
+      "src/lib/engine/format.ts"
+    ],
+    "src/lib/engine/_utils.ts": [],
+    "src/lib/engine/build.ts": [
+      "src/lib/types.ts",
+      "src/data/cdr.ts",
+      "src/data/statboost.ts",
+      "src/data/BuffData.ts",
+      "src/data/raceEffects.ts",
+      "src/data/Boost.ts",
+      "src/lib/crit.ts",
+      "src/lib/utils.ts",
+      "src/lib/constants.ts",
+      "src/lib/constants/buffs.ts",
+      "src/lib/engine/data.ts",
+      "src/lib/engine/enchant.ts",
+      "src/lib/engine/shrine.ts",
+      "src/lib/engine/weapon.ts",
+      "src/data/weaponArts.ts",
+      "src/lib/damageTypeResolve.ts",
+      "src/lib/engine/dmgTypeBonuses.ts"
+    ],
+    "src/lib/engine/data.ts": [
+      "src/lib/engine/data/weapons.ts"
+    ],
+    "src/lib/engine/data/character.ts": [
+      "src/lib/types.ts",
+      "src/data/races.json",
+      "src/data/guilds.json",
+      "src/data/perks.json"
+    ],
+    "src/lib/engine/data/equipment.ts": [
+      "src/lib/types.ts",
+      "src/data/armors.json",
+      "src/data/rings.json",
+      "src/data/runes.json",
+      "src/data/enchantments.json"
+    ],
+    "src/lib/engine/data/weapons.ts": [
+      "src/lib/types.ts",
+      "src/data/blades.json",
+      "src/data/handles.json",
+      "src/data/gloves.json",
+      "src/data/essences.json"
+    ],
+    "src/lib/engine/dmgTypeBonuses.ts": [
+      "src/lib/constants/perks.ts",
+      "src/data/draconicBuffs.ts"
+    ],
+    "src/lib/engine/enchant.ts": [
+      "src/lib/types.ts",
+      "src/lib/engine/data.ts",
+      "src/lib/engine/_utils.ts"
+    ],
+    "src/lib/engine/engine.ts": [
+      "src/lib/engine/format.ts"
+    ],
+    "src/lib/engine/format.ts": [
+      "src/lib/types.ts",
+      "src/lib/engine/_utils.ts"
+    ],
+    "src/lib/engine/shrine.ts": [
+      "src/lib/types.ts",
+      "src/lib/engine/_utils.ts"
+    ],
+    "src/lib/engine/weapon.ts": [
+      "src/lib/types.ts",
+      "src/lib/engine/data.ts",
+      "src/lib/engine/shrine.ts",
+      "src/lib/engine/_utils.ts"
+    ],
+    "src/lib/Modal.svelte": [],
+    "src/lib/modals/AccessorySelectModal.svelte": [
+      "src/lib/store.ts",
+      "src/lib/engine.ts",
+      "src/lib/types.ts",
+      "src/data/statboost.ts",
+      "src/lib/Modal.svelte",
+      "src/lib/ui/Badge.svelte",
+      "src/ModalSearchHeader.svelte",
+      "src/DidYouMean.svelte",
+      "src/Highlight.svelte"
+    ],
+    "src/lib/modals/GuildModal.svelte": [
+      "src/lib/store.ts",
+      "src/lib/engine.ts",
+      "src/lib/Modal.svelte",
+      "src/ModalSearchHeader.svelte",
+      "src/DidYouMean.svelte",
+      "src/Highlight.svelte"
+    ],
+    "src/lib/modals/index.ts": [
+      "src/lib/modals/RaceModal.svelte",
+      "src/lib/modals/GuildModal.svelte",
+      "src/lib/modals/AccessorySelectModal.svelte",
+      "src/lib/modals/WeaponPartModal.svelte"
+    ],
+    "src/lib/modals/RaceModal.svelte": [
+      "src/lib/store.ts",
+      "src/lib/engine.ts",
+      "src/lib/Modal.svelte",
+      "src/ModalSearchHeader.svelte",
+      "src/DidYouMean.svelte",
+      "src/Highlight.svelte"
+    ],
+    "src/lib/modals/WeaponPartModal.svelte": [
+      "src/lib/store.ts",
+      "src/lib/engine.ts",
+      "src/lib/Modal.svelte",
+      "src/lib/ui/Badge.svelte",
+      "src/ModalSearchHeader.svelte",
+      "src/DidYouMean.svelte",
+      "src/Highlight.svelte",
+      "src/WeaponStatsDisplay.svelte"
+    ],
+    "src/lib/StatFilterShared.svelte": [],
+    "src/lib/stats/elementalBoosts.ts": [],
+    "src/lib/stats/filterActions.ts": [],
+    "src/lib/store.ts": [
+      "src/lib/types.ts",
+      "src/lib/engine.ts",
+      "src/lib/constants.ts"
+    ],
+    "src/lib/stores/toast.ts": [
+      "src/lib/constants.ts"
+    ],
+    "src/lib/Toast.svelte": [
+      "src/lib/stores/toast.ts"
+    ],
+    "src/lib/types.ts": [
+      "src/lib/constants/damage-types.ts"
+    ],
+    "src/lib/ui/Badge.svelte": [],
+    "src/lib/ui/Button.svelte": [],
+    "src/lib/ui/Card.svelte": [],
+    "src/lib/ui/Divider.svelte": [],
+    "src/lib/ui/index.ts": [
+      "src/lib/ui/Card.svelte",
+      "src/lib/ui/Badge.svelte",
+      "src/lib/ui/Button.svelte",
+      "src/lib/ui/Stat.svelte",
+      "src/lib/ui/Section.svelte",
+      "src/lib/ui/Divider.svelte",
+      "src/lib/ui/Panel.svelte"
+    ],
+    "src/lib/ui/Panel.svelte": [],
+    "src/lib/ui/RollValue.svelte": [],
+    "src/lib/ui/Section.svelte": [],
+    "src/lib/ui/Stat.svelte": [],
+    "src/lib/uiConstants.ts": [],
+    "src/lib/utils.ts": [
+      "src/lib/types.ts"
+    ],
+    "src/main.ts": [
+      "src/App.svelte",
+      "src/app.css"
+    ],
+    "src/ModalSearchHeader.svelte": [
+      "src/SuggestDrop.svelte",
+      "src/TagFilter.svelte",
+      "src/StatFilter.svelte",
+      "src/WeaponStatFilter.svelte"
+    ],
+    "src/MountIcon.svelte": [],
+    "src/PropellingFunTracker.svelte": [
+      "src/lib/store.ts"
+    ],
+    "src/ScalingBreakdownRow.svelte": [
+      "src/lib/utils.ts",
+      "src/lib/types.ts"
+    ],
+    "src/StatFilter.svelte": [
+      "src/lib/stats/elementalBoosts.ts",
+      "src/lib/stats/filterActions.ts",
+      "src/lib/uiConstants.ts",
+      "src/lib/StatFilterShared.svelte",
+      "src/lib/ui/Badge.svelte",
+      "src/lib/ui/Button.svelte"
+    ],
+    "src/SuggestDrop.svelte": [
+      "src/lib/utils.ts"
+    ],
+    "src/TagFilter.svelte": [
+      "src/lib/uiConstants.ts",
+      "src/lib/ui/Badge.svelte"
+    ],
+    "src/WeaponStatFilter.svelte": [
+      "src/lib/stats/elementalBoosts.ts",
+      "src/lib/stats/filterActions.ts",
+      "src/lib/uiConstants.ts",
+      "src/lib/StatFilterShared.svelte",
+      "src/lib/ui/Badge.svelte",
+      "src/lib/ui/Button.svelte"
+    ],
+    "src/WeaponStatsDisplay.svelte": [],
+    "stats-data.json": [],
+    "stats.html": [],
+    "tests/piercer.test.ts": [
+      "src/data/weaponConditionalBoosts.ts",
+      "src/lib/utils.ts"
+    ],
+    "ts-errors.txt": [],
+    "tsconfig.app.json": [],
+    "tsconfig.json": [],
+    "tsconfig.node.json": [],
+    "vercel.json": [],
+    "vite.config.ts": []
+  }
 }

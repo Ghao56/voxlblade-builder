@@ -45,6 +45,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   export let selfDebuffNames: string[] = []
   export let antiHealSelfMult: number = 1
   export let lightningCloakPct: number = 0
+  export let ichorSparkChainPct: number = 0
   export let stormRendPct: number = 0
   export let explosiveChargePct: number = 0
   export let blubBlubAmt: number = 0
@@ -647,6 +648,10 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       if (_hitDebuffedPreMitBase > 0) addProcEffect(_hitDebuffedPreMitBase, lightningCloakPct, { air: 0.5, magic: 0.5 }, 'Chain')
     }
 
+    if (!isHeal && ichorSparkChainPct > 0 && canProc(hit.procCoefficient)) {
+      if (_hitDebuffedPreMitBase > 0) addProcEffect(_hitDebuffedPreMitBase, ichorSparkChainPct, { air: 0.5, physical: 0.5 }, 'Ichor Spark')
+    }
+
     if (!isHeal && stormRendPct > 0 && canProc(hit.procCoefficient)) {
       if (_hitDebuffedPreMitBase > 0) addProcEffect(_hitDebuffedPreMitBase, stormRendPct, { air: 0.5, magic: 0.5 }, 'Chain')
     }
@@ -714,6 +719,9 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
           }
           if (lightningCloakPct > 0) {
             if (_dsPreMitBase > 0) addProcEffect(_dsPreMitBase, lightningCloakPct, { air: 0.5, magic: 0.5 }, 'Chain')
+          }
+          if (ichorSparkChainPct > 0) {
+            if (_dsPreMitBase > 0) addProcEffect(_dsPreMitBase, ichorSparkChainPct, { air: 0.5, physical: 0.5 }, 'Ichor Spark')
           }
           if (stormRendPct > 0) {
             if (_dsPreMitBase > 0) addProcEffect(_dsPreMitBase, stormRendPct, { air: 0.5, magic: 0.5 }, 'Chain')
@@ -795,6 +803,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
             }
             if (luminescentPct > 0) addProcEffect(preMitBase, luminescentPct, { holy: 1.0 }, 'Luminescent')
             if (lightningCloakPct > 0) addProcEffect(preMitBase, lightningCloakPct, { air: 0.5, magic: 0.5 }, 'Chain')
+            if (ichorSparkChainPct > 0) addProcEffect(preMitBase, ichorSparkChainPct, { air: 0.5, physical: 0.5 }, 'Ichor Spark')
             if (stormRendPct > 0) addProcEffect(preMitBase, stormRendPct, { air: 0.5, magic: 0.5 }, 'Chain')
             if (explosiveChargePct > 0 && hit.group === 'WA') addProcEffect(preMitBase, explosiveChargePct, { physical: 0.5, fire: 0.5 }, 'Explosive')
             if (blubBlubAmt > 0) {

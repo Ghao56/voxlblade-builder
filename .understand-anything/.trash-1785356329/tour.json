@@ -1,0 +1,50 @@
+[
+  {
+    "order": 1,
+    "title": "Application Entry Point",
+    "description": "How the app boots: Vite serves index.html, main.ts mounts the Svelte 5 App component to #app, imports global CSS, and injects Vercel Analytics",
+    "nodeIds": ["file:index.html", "file:src/main.ts", "file:src/app.css"]
+  },
+  {
+    "order": 2,
+    "title": "App Shell & State Management",
+    "description": "The monolithic App.svelte orchestrates all UI sections. It consumes the central Svelte store (store.ts) and shared TypeScript types (types.ts) that define BuildState and all game data structures",
+    "nodeIds": ["file:src/App.svelte", "file:src/lib/store.ts", "file:src/lib/types.ts"]
+  },
+  {
+    "order": 3,
+    "title": "Damage Calculation UI",
+    "description": "BaseDamageCalc.svelte and DamageAnalyzer.svelte are the core calculator views. They read build state from the store, run engine computations, and display damage breakdowns, scaling, and tooltips",
+    "nodeIds": ["file:src/BaseDamageCalc.svelte", "file:src/DamageAnalyzer.svelte"]
+  },
+  {
+    "order": 4,
+    "title": "Engine Core — Build Resolution",
+    "description": "The engine transforms BuildState into BuildResult. build.ts orchestrates weapon/enchant/shrine computations; weapon.ts calculates weapon stats; enchant.ts enforces slot rules; dmgTypeBonuses.ts computes type bonuses from perks",
+    "nodeIds": ["file:src/lib/engine/build.ts", "file:src/lib/engine/weapon.ts", "file:src/lib/engine/enchant.ts", "file:src/lib/engine/shrine.ts", "file:src/lib/engine/dmgTypeBonuses.ts"]
+  },
+  {
+    "order": 5,
+    "title": "Game Data — Mechanics & Formulas",
+    "description": "TypeScript modules implementing game mechanics: Perkbasedmg.ts resolves perk damage definitions, BuffData.ts handles buff/debuff descriptions and potency, and statboost.ts computes stat conversion formulas",
+    "nodeIds": ["file:src/data/Perkbasedmg.ts", "file:src/data/BuffData.ts", "file:src/data/statboost.ts"]
+  },
+  {
+    "order": 6,
+    "title": "Game Constants — Shared Values",
+    "description": "All numeric constants and labels are centralized in src/lib/constants/. index.ts re-exports sub-modules for damage types, perk base damage, buffs, thresholds, cooldowns, and more — the single source of truth for game tuning",
+    "nodeIds": ["file:src/lib/constants/index.ts", "file:src/lib/constants/damage-types.ts", "file:src/lib/constants/perk-base-damage.ts", "file:src/lib/constants/storage.ts"]
+  },
+  {
+    "order": 7,
+    "title": "Reusable UI Library",
+    "description": "Primitive UI components in src/lib/ui/ (Badge, Button, Card, Panel, Stat, Section) provide consistent styling across the app. Barrel index.ts re-exports them for convenient imports",
+    "nodeIds": ["file:src/lib/ui/Badge.svelte", "file:src/lib/ui/Button.svelte", "file:src/lib/ui/Card.svelte", "file:src/lib/ui/index.ts"]
+  },
+  {
+    "order": 8,
+    "title": "Build Persistence & Data Layer",
+    "description": "BuildSaves.svelte handles saving/loading builds to localStorage. Engine data modules (character.ts, equipment.ts, weapons.ts) load JSON game data (races, guilds, perks, armors, blades, etc.) and provide typed lookups",
+    "nodeIds": ["file:src/BuildSaves.svelte", "file:src/lib/engine/data/character.ts", "file:src/lib/engine/data/equipment.ts", "file:src/lib/engine/data/weapons.ts"]
+  }
+]
