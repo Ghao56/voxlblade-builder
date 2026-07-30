@@ -26,8 +26,10 @@
     const seen = new Map<string, string>()
     for (const slot of builds) {
       const st = slot.state
-      if (st.weaponBlade)  { const k = 'blade:' + st.weaponBlade;  if (!seen.has(k)) seen.set(k, st.weaponBlade) }
-      if (st.weaponHandle) { const k = 'handle:' + st.weaponHandle; if (!seen.has(k)) seen.set(k, st.weaponHandle) }
+      if (!isMonkGuild(st.guild)) {
+        if (st.weaponBlade)  { const k = 'blade:' + st.weaponBlade;  if (!seen.has(k)) seen.set(k, st.weaponBlade) }
+        if (st.weaponHandle) { const k = 'handle:' + st.weaponHandle; if (!seen.has(k)) seen.set(k, st.weaponHandle) }
+      }
       if (st.helmet)       { const k = 'helmet:' + st.helmet;     if (!seen.has(k)) seen.set(k, st.helmet) }
       if (st.chestplate)   { const k = 'chest:' + st.chestplate;  if (!seen.has(k)) seen.set(k, st.chestplate) }
       if (st.leggings)     { const k = 'legs:' + st.leggings;     if (!seen.has(k)) seen.set(k, st.leggings) }
@@ -54,15 +56,17 @@
         const k = 'perk:' + name
         if (!seen.has(k)) seen.set(k, name)
       }
-      const blade = getBlade(st.weaponBlade)
-      if (blade) {
-        if (blade.perkName) addPerk(blade.perkName)
-        if (blade.perks) for (const p of blade.perks) addPerk(p.name)
-      }
-      const handle = getHandle(st.weaponHandle)
-      if (handle) {
-        if (handle.perkName) addPerk(handle.perkName)
-        if (handle.perks) for (const p of handle.perks) addPerk(p.name)
+      if (!isMonkGuild(st.guild)) {
+        const blade = getBlade(st.weaponBlade)
+        if (blade) {
+          if (blade.perkName) addPerk(blade.perkName)
+          if (blade.perks) for (const p of blade.perks) addPerk(p.name)
+        }
+        const handle = getHandle(st.weaponHandle)
+        if (handle) {
+          if (handle.perkName) addPerk(handle.perkName)
+          if (handle.perks) for (const p of handle.perks) addPerk(p.name)
+        }
       }
       const helmetPart = getArmorPart(st.helmet, 'Helmet')
       if (helmetPart?.perkName) addPerk(helmetPart.perkName)
