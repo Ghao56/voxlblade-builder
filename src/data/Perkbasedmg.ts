@@ -226,10 +226,10 @@ export interface PerkDmgDef {
   getHits?: (ctx: PerkDmgCtx) => number 
   dmgTypeMode: 'weapon' | 'fixed' | 'dynamic'
   dmgTypes?: Record<string, number>
-  getDmgTypes?: (ctx: { draconicColor: string; propellingFunElement?: 'air' | 'fire' }) => Record<string, number>
+   getDmgTypes?: (ctx: { draconicColor: string; propellingFunElement?: 'air' | 'fire'; statuses?: Record<string, number>; sliderVal?: number }) => Record<string, number>
   scalingMode: 'weapon' | 'fixed' | 'none' | 'dynamic'
   scalings?: Record<string, number>
-   getScalings?: (ctx: { draconicColor: string; perkAmount?: number; propellingFunElement?: 'air' | 'fire' }) => Record<string, number>
+   getScalings?: (ctx: { draconicColor: string; perkAmount?: number; propellingFunElement?: 'air' | 'fire'; sliderVal?: number; statuses?: Record<string, number> }) => Record<string, number>
   isM1?: boolean
   isM2?: boolean
   isFinisher?: boolean
@@ -246,7 +246,7 @@ export interface PerkDmgDef {
   enemyHpGate?: HpGate
   secondaryEffects?: SecondaryEffect[]
   triggerChain?: TriggerChainEntry[]
-  activeIf?: (ctx: { draconicRuneInfusion: string; draconicColor: string; selectedWeaponArt?: string }) => boolean
+  activeIf?: (ctx: { draconicRuneInfusion: string; draconicColor: string; selectedWeaponArt?: string; perks?: Record<string, number> }) => boolean
   requiredBuff?: string
   requiredEnemyDebuff?: string
   slider?: PerkSliderDef
@@ -1324,6 +1324,73 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
     requiredEnemyDebuff: 'Burn',
     note: `Removes Burn on hit. Additional 20% of finisher's pre-mit base damage (inherits finisher's damage type distribution and scaling). ${0.2}s cooldown per enemy. Explosion size scales on perk amount. Can proc other effects.`,
+  },
+  // ── Divine Crash ────────────────────────────────────────────────
+  {
+    perkName: 'Divine Crash',
+    condition: 'On RMB in air (Finisher, Guardbreak)',
+    getBaseDamage: ({ perkAmount, statuses, sliderVal = 0 }) => {
+      const distance = sliderVal
+      const fellRushAmt = statuses?.fellRushAmt ?? 0
+      if (fellRushAmt > 0) {
+        const totalAmt = perkAmount + fellRushAmt
+        return (8.5 + 0.85 * totalAmt) * (1 + Math.min(5, distance / 50))
+      }
+      return (6 + 0.6 * perkAmount) * (1 + Math.min(5, distance / 30))
+    },
+    dmgTypeMode: 'dynamic',
+    getDmgTypes: ({ statuses }) => {
+      const fellRushAmt = statuses?.fellRushAmt ?? 0
+      if (fellRushAmt > 0) return { holy: 0.4, hex: 0.3, air: 0.3 }
+      return { air: 0.5, holy: 0.5 }
+    },
+    scalingMode: 'dynamic',
+    getScalings: ({ statuses, sliderVal = 0 }) => {
+      const fellRushAmt = statuses?.fellRushAmt ?? 0
+      const distance = sliderVal
+      const holyScale = 0.5 + Math.min(0.5, distance / 500)
+      if (fellRushAmt > 0) return { air: 0.5, hex: holyScale, holy: holyScale }
+      return { air: 0.5, holy: holyScale }
+    },
+    isFinisher: true,
+    guardbreak: true,
+    isM2: true,
+    procCoefficient: { type: 'hasCoeff', value: 1.0 },
+    slider: {
+      buildKey: 'divineCrashDistance',
+      label: 'Distance (studs)',
+      min: 0,
+      max: 250,
+      step: 1,
+    },
+    note: 'Cancels default RMB. Deals no knockback. Short cooldown. Explosion size scales with perk amount and distance. Combines with Fell Rush for stronger variant.',
+  },
+  // ── Fell Rush ─────────────────────────────────────────────────
+  {
+    perkName: 'Fell Rush',
+    condition: 'On RMB after linking with a Debuff (Guardbreak)',
+    activeIf: ({ perks }) => (perks?.['Divine Crash'] ?? 0) <= 0,
+    getBaseDamage: ({ perkAmount, sliderVal = 0 }) => {
+      const distance = sliderVal
+      return (8.5 + 0.85 * perkAmount) * (1 + Math.min(5, distance / 50))
+    },
+    dmgTypeMode: 'fixed',
+    dmgTypes: { air: 0.5, hex: 0.5 },
+    scalingMode: 'dynamic',
+    getScalings: ({ sliderVal = 0 }) => {
+      const distance = sliderVal
+      return { air: 0.5, hex: 0.5 + Math.min(0.5, distance / 500) }
+    },
+    guardbreak: true,
+    procCoefficient: { type: 'hasCoeff', value: 1.0 },
+    slider: {
+      buildKey: 'divineCrashDistance',
+      label: 'Distance (studs)',
+      min: 0,
+      max: 250,
+      step: 1,
+    },
+    note: 'Does regular M2 after teleporting. Deals no knockback. ~1s cooldown. One tether at a time. Combines with Divine Crash for stronger variant (handled by Divine Crash entry).',
   },
 ]
 

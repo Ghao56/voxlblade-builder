@@ -218,6 +218,7 @@ export interface BuildState {
   sporelingsSummoned: number
   bastionBallistaArrows: number
   ichorSparkCharge: number
+  divineCrashDistance: number
   inDarkness: boolean
   cdrToggles: Record<string, boolean>
   // Potion slots

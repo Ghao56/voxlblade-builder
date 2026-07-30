@@ -53,6 +53,7 @@ const DEFAULT_BUILD: BuildState = {
   sporelingsSummoned: 0,
   bastionBallistaArrows: 0,
   ichorSparkCharge: 100,
+  divineCrashDistance: 250,
   inDarkness: true,
   cdrToggles: {},
   potion1: "",

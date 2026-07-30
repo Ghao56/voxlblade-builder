@@ -2372,7 +2372,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     for (const def of PERK_DMG_DEFS) {
       const perkAmount = perks[def.perkName] ?? 0
       if (perkAmount <= 0) continue
-      if (def.activeIf && !def.activeIf({ draconicRuneInfusion: $build.draconicRuneInfusion, draconicColor: _effDraconicColor, selectedWeaponArt: $build.selectedWeaponArt })) continue
+      if (def.activeIf && !def.activeIf({ draconicRuneInfusion: $build.draconicRuneInfusion, draconicColor: _effDraconicColor, selectedWeaponArt: $build.selectedWeaponArt, perks })) continue
       if (def.perkName === 'Bomber Charge' && selectedWA.name === 'Retaliate') continue
       if (def.perkName === 'Ruler Of The Sands' && disabledEffects.has('rulerOfTheSands')) continue
 
@@ -2385,10 +2385,31 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       const mwMult = (def.isFinisher || def.isM2) && _mortalWillFinisherDmgMult !== 1 ? _mortalWillFinisherDmgMult : 1
       const finalCombatMult = combatMult * mwMult
 
+      const _perkCtxBurnPotency = (() => {
+        let pot = perks['Burn Potency'] ?? 0
+        if (__daBuildVal.draconicRuneInfusion === 'infusion' && __daBuildVal.draconicColor === 'fire') {
+          const dbAmt = perks['Draconic Blood'] ?? 0
+          if (dbAmt > 0) pot *= getDraconicInfusionDurMult(dbAmt)
+        }
+        return pot
+      })()
+      const _perkCtxStatuses: Record<string, number> = {
+        poisonPotency: perks['Poison Potency'] ?? 0,
+        burnPotency: _perkCtxBurnPotency,
+        missingHpPct: Math.min(50, Math.max(0, 100 - (_hpFillPct ?? 100))),
+        waCooldown: _waCooldown,
+        runeCooldown: _runeBaseCd,
+        fellRushAmt: perks['Fell Rush'] ?? 0,
+      }
+      const _sliderDef = def.slider ?? PERK_DMG_DEFS.find(d => d.perkName === def.perkName && d.slider)?.slider
+      const _perkSliderMax = _sliderDef?.getMax ? _sliderDef.getMax({ perks }) : (_sliderDef?.max ?? 0)
+      const _rawSliderVal = _sliderDef ? Math.min(($build as any)[_sliderDef.buildKey] ?? 0, _perkSliderMax) : 0
+      const _perkSliderVal = (_sliderDef && disabledBuffKeys.has(`Arrows:${def.perkName}`)) ? 0 : _rawSliderVal
+
       const baseDmgTypes = def.dmgTypeMode === 'weapon'
         ? _weaponDmgTypes
         : def.dmgTypeMode === 'dynamic'
-          ? (def.getDmgTypes?.({ draconicColor: _effDraconicColor, propellingFunElement }) ?? {})
+          ? (def.getDmgTypes?.({ draconicColor: _effDraconicColor, propellingFunElement, statuses: _perkCtxStatuses, sliderVal: _perkSliderVal }) ?? {})
           : (def.dmgTypes ?? {})
 
       // Apply Draconic Runes + Dragon Infusion bonuses to rune damage
@@ -2420,7 +2441,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         : def.scalingMode === 'fixed'
           ? (def.scalings ?? {})
           : def.scalingMode === 'dynamic'
-            ? (def.getScalings?.({ draconicColor: _effDraconicColor, perkAmount, propellingFunElement }) ?? {})
+            ? (def.getScalings?.({ draconicColor: _effDraconicColor, perkAmount, propellingFunElement, statuses: _perkCtxStatuses, sliderVal: _perkSliderVal }) ?? {})
             : {}
 
       const scalingMult = Object.keys(resolvedScalings).length > 0
@@ -2437,25 +2458,6 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
 
       const _fhM2  = _m2FinisherHits
       const _fhM1f = _m1FinisherHits
-      const _perkCtxBurnPotency = (() => {
-        let pot = perks['Burn Potency'] ?? 0
-        if (__daBuildVal.draconicRuneInfusion === 'infusion' && __daBuildVal.draconicColor === 'fire') {
-          const dbAmt = perks['Draconic Blood'] ?? 0
-          if (dbAmt > 0) pot *= getDraconicInfusionDurMult(dbAmt)
-        }
-        return pot
-      })()
-      const _perkCtxStatuses: Record<string, number> = {
-        poisonPotency: perks['Poison Potency'] ?? 0,
-        burnPotency: _perkCtxBurnPotency,
-        missingHpPct: Math.min(50, Math.max(0, 100 - (_hpFillPct ?? 100))),
-        waCooldown: _waCooldown,
-        runeCooldown: _runeBaseCd,
-      }
-      const _sliderDef = def.slider ?? PERK_DMG_DEFS.find(d => d.perkName === def.perkName && d.slider)?.slider
-      const _perkSliderMax = _sliderDef?.getMax ? _sliderDef.getMax({ perks }) : (_sliderDef?.max ?? 0)
-      const _rawSliderVal = _sliderDef ? Math.min(($build as any)[_sliderDef.buildKey] ?? 0, _perkSliderMax) : 0
-      const _perkSliderVal = (_sliderDef && disabledBuffKeys.has(`Arrows:${def.perkName}`)) ? 0 : _rawSliderVal
       const baseDmg_m2  = def.getBaseDamage({ perkAmount, finisherHits: _fhM2,  draconicColor: _effDraconicColor, statuses: _perkCtxStatuses, sliderVal: _perkSliderVal })
       const baseDmg_m1f = def.getBaseDamage({ perkAmount, finisherHits: _fhM1f, draconicColor: _effDraconicColor, statuses: _perkCtxStatuses, sliderVal: _perkSliderVal })
 
