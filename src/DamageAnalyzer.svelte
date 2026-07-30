@@ -1024,6 +1024,7 @@ import {
       else nextBoosts.delete('Minion Absorption')
       disabledBoosts = nextBoosts
     }
+    build.update(s => ({ ...s, disabledBuffKeys: [...nextKeys], disabledBoosts: [...disabledBoosts] }))
   }
   function toggleBuffByName(name: string) {
     const sources = _dedupedActiveBuffs.find(b => b.buffName === name)?._allSources ?? _allActiveBuffsRaw.filter(b => b.buffName === name).map(b => b.sourceName)
@@ -1049,6 +1050,7 @@ import {
       else nextBoosts.add('Minion Absorption')
       disabledBoosts = nextBoosts
     }
+    build.update(s => ({ ...s, disabledBuffKeys: [...nextKeys], disabledBoosts: [...disabledBoosts] }))
   }
   const HANDLED_BUFF_NAMES = new Set(['Rage', 'Glyph Conduit', 'Extinguish', 'Lightning Cloak', 'Storm Rend'])
 
@@ -1432,45 +1434,6 @@ import {
 
   $: if (_togglesInited && $build) {
     const s = $build
-    const needsUpdate =
-      s.disabledBoosts && !arraysEqual(s.disabledBoosts, [...disabledBoosts]) ||
-      s.disabledEffects && !arraysEqual(s.disabledEffects, [...disabledEffects]) ||
-      s.disabledHealBoosts && !arraysEqual(s.disabledHealBoosts, [...disabledHealBoosts]) ||
-      s.disabledBuffKeys && !arraysEqual(s.disabledBuffKeys, [...disabledBuffKeys]) ||
-      s.showCritValues !== undefined && s.showCritValues !== showCritValues ||
-      s.emotionalDisabled !== undefined && s.emotionalDisabled !== emotionalDisabled ||
-      s.rageDisabled !== undefined && s.rageDisabled !== rageDisabled ||
-      s.glyphConduitDisabled !== undefined && s.glyphConduitDisabled !== glyphConduitDisabled ||
-      s.extinguishDisabled !== undefined && s.extinguishDisabled !== extinguishDisabled ||
-      s.draconicInfusionDisabled !== undefined && s.draconicInfusionDisabled !== draconicInfusionDisabled ||
-      s.disableCurseRip !== undefined && s.disableCurseRip !== disableCurseRip ||
-      s.disableReaper !== undefined && s.disableReaper !== disableReaper ||
-      s.disableWeaponBoost !== undefined && s.disableWeaponBoost !== disableWeaponBoost ||
-      s.mycoticBloomDotDisabled !== undefined && s.mycoticBloomDotDisabled !== mycoticBloomDotDisabled ||
-      s.lightningCloakState !== undefined && s.lightningCloakState !== lightningCloakState ||
-      s.stormRendState !== undefined && s.stormRendState !== stormRendState ||
-      s.weaponCharge !== undefined && s.weaponCharge !== weaponCharge ||
-      s.enemiesHit !== undefined && s.enemiesHit !== enemiesHit
-    if (needsUpdate) {
-      disabledBoosts = new Set(s.disabledBoosts ?? [])
-      disabledEffects = new Set(s.disabledEffects ?? [])
-      disabledHealBoosts = new Set(s.disabledHealBoosts ?? ['Extinguish'])
-      disabledBuffKeys = new Set(s.disabledBuffKeys ?? [])
-      showCritValues = s.showCritValues ?? false
-      emotionalDisabled = s.emotionalDisabled ?? false
-      rageDisabled = s.rageDisabled ?? false
-      glyphConduitDisabled = s.glyphConduitDisabled ?? false
-      extinguishDisabled = s.extinguishDisabled ?? false
-      draconicInfusionDisabled = s.draconicInfusionDisabled ?? false
-      disableCurseRip = s.disableCurseRip ?? false
-      disableReaper = s.disableReaper ?? false
-      disableWeaponBoost = s.disableWeaponBoost ?? false
-      mycoticBloomDotDisabled = s.mycoticBloomDotDisabled ?? false
-      lightningCloakState = (s.lightningCloakState ?? 'third') as LightningCloakState
-      stormRendState = (s.stormRendState ?? 'third') as LightningCloakState
-      weaponCharge = s.weaponCharge ?? 100
-      enemiesHit = Math.max(1, s.enemiesHit ?? 1)
-    }
     build.update(s2 => {
       let next = s2
       if (s.showCritValues !== showCritValues) next = { ...next, showCritValues }
@@ -1508,6 +1471,7 @@ import {
     if (next.has(name)) next.delete(name)
     else next.add(name)
     disabledBoosts = next
+    build.update(s => ({ ...s, disabledBoosts: [...next] }))
 
     if (name === 'Smoldering') {
       const burnKey = 'Burn:Smoldering'
@@ -1523,6 +1487,7 @@ import {
     if (next.has(name)) next.delete(name)
     else next.add(name)
     disabledEffects = next
+    build.update(s => ({ ...s, disabledEffects: [...next] }))
   }
 
   const _boostCondDisableRules: Array<{ sourceName: string; test: () => boolean }> = [
@@ -1580,6 +1545,7 @@ import {
     if (next.has(name)) next.delete(name)
     else next.add(name)
     disabledHealBoosts = next
+    build.update(s => ({ ...s, disabledHealBoosts: [...next] }))
     if (name === 'Emotional') emotionalDisabled = next.has('Emotional')
   }
   type BoostAttackType = 'm1' | 'm2' | 'perk' | 'rune' | 'wa';
