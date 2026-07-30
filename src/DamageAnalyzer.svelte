@@ -85,6 +85,20 @@ import {
   ICHOR_SPARK_SLASH_CHARGE_THRESHOLD,
 } from './lib/constants'
 
+// Centralized mappings for cross-toggle relationships
+const BUFF_KEY_BOOST_LINKS: Record<string, string> = {
+  'Burn:Smoldering': 'Smoldering',
+}
+const BUFF_NAME_BOOST_LINKS: Record<string, string> = {
+  'Perfection': 'Perfection',
+  'Minion Absorbed': 'Minion Absorption',
+}
+const BOOST_BUFF_KEY_LINKS: Record<string, string[]> = {
+  'Smoldering': ['Burn:Smoldering'],
+}
+const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
+  'Emotional': 'emotionalDisabled',
+}
 
   $: _m1FinisherWeaponBoostRaw = getWeaponConditionalBoost(perks, _baseWeaponType, 'm1Finisher')
   $: _m2WeaponBoostRaw         = getWeaponConditionalBoost(perks, _baseWeaponType, 'm2')
@@ -1004,26 +1018,14 @@ import {
     else nextKeys.add(key)
     disabledBuffKeys = nextKeys
 
-    if (key === 'Burn:Smoldering') {
+    const linkedBoost = BUFF_KEY_BOOST_LINKS[key] ?? BUFF_NAME_BOOST_LINKS[key.split(':')[0]]
+    if (linkedBoost) {
       const nextBoosts = new Set(disabledBoosts)
-      if (nextKeys.has(key)) nextBoosts.add('Smoldering')
-      else nextBoosts.delete('Smoldering')
+      if (nextKeys.has(key)) nextBoosts.add(linkedBoost)
+      else nextBoosts.delete(linkedBoost)
       disabledBoosts = nextBoosts
     }
 
-    const buffName = key.split(':')[0]
-    if (buffName === 'Perfection') {
-      const nextBoosts = new Set(disabledBoosts)
-      if (nextKeys.has(key)) nextBoosts.add('Perfection')
-      else nextBoosts.delete('Perfection')
-      disabledBoosts = nextBoosts
-    }
-    if (buffName === 'Minion Absorbed') {
-      const nextBoosts = new Set(disabledBoosts)
-      if (nextKeys.has(key)) nextBoosts.add('Minion Absorption')
-      else nextBoosts.delete('Minion Absorption')
-      disabledBoosts = nextBoosts
-    }
     build.update(s => ({ ...s, disabledBuffKeys: [...nextKeys], disabledBoosts: [...disabledBoosts] }))
   }
   function toggleBuffByName(name: string) {
@@ -1037,19 +1039,14 @@ import {
     }
     disabledBuffKeys = nextKeys
 
-    if (name === 'Perfection') {
+    const linkedBoost = BUFF_NAME_BOOST_LINKS[name]
+    if (linkedBoost) {
       const nextBoosts = new Set(disabledBoosts)
-      if (allDisabled) nextBoosts.delete('Perfection')
-      else nextBoosts.add('Perfection')
+      if (allDisabled) nextBoosts.delete(linkedBoost)
+      else nextBoosts.add(linkedBoost)
       disabledBoosts = nextBoosts
     }
 
-    if (name === 'Minion Absorbed') {
-      const nextBoosts = new Set(disabledBoosts)
-      if (allDisabled) nextBoosts.delete('Minion Absorption')
-      else nextBoosts.add('Minion Absorption')
-      disabledBoosts = nextBoosts
-    }
     build.update(s => ({ ...s, disabledBuffKeys: [...nextKeys], disabledBoosts: [...disabledBoosts] }))
   }
   const HANDLED_BUFF_NAMES = new Set(['Rage', 'Glyph Conduit', 'Extinguish', 'Lightning Cloak', 'Storm Rend'])
@@ -1473,11 +1470,13 @@ import {
     disabledBoosts = next
     build.update(s => ({ ...s, disabledBoosts: [...next] }))
 
-    if (name === 'Smoldering') {
-      const burnKey = 'Burn:Smoldering'
+    const linkedKeys = BOOST_BUFF_KEY_LINKS[name]
+    if (linkedKeys) {
       const nextKeys = new Set(disabledBuffKeys)
-      if (next.has(name)) nextKeys.add(burnKey)
-      else nextKeys.delete(burnKey)
+      for (const key of linkedKeys) {
+        if (next.has(name)) nextKeys.add(key)
+        else nextKeys.delete(key)
+      }
       disabledBuffKeys = nextKeys
     }
   }
@@ -1546,7 +1545,7 @@ import {
     else next.add(name)
     disabledHealBoosts = next
     build.update(s => ({ ...s, disabledHealBoosts: [...next] }))
-    if (name === 'Emotional') emotionalDisabled = next.has('Emotional')
+    if (HEAL_BOOST_FLAG_LINKS[name]) emotionalDisabled = next.has(name)
   }
   type BoostAttackType = 'm1' | 'm2' | 'perk' | 'rune' | 'wa';
   $: _syntheticDmgBoostEntries = (() => {
