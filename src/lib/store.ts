@@ -1,6 +1,7 @@
 import { writable, derived, get } from 'svelte/store'
 import type { BuildState, EnchantSlot } from './types'
 import { calcBuild, races, enforceEnchantSlot, armorSupportsSlot } from './engine'
+import { isMonkGuild } from './engine/data/character'
 import { STORAGE_KEY_BUILD, DEFAULT_LEVEL, DEFAULT_HP_FILL, DEFAULT_ENEMY_HP_FILL, SAVE_DEBOUNCE_MS } from './constants'
 
 const DEFAULT_BUILD: BuildState = {
@@ -146,6 +147,8 @@ export function clearBuild() {
 export function setGuild(guildName: string, guildRank: number) {
   build.update(s => {
     const isDraconic = guildName === 'Draconic'
+    const wasMonk = isMonkGuild(s.guild)
+    const nowMonk = isMonkGuild(guildName)
     return {
       ...s,
       guild: guildName,
@@ -153,6 +156,10 @@ export function setGuild(guildName: string, guildRank: number) {
       race: isDraconic ? 'DRAGON BLOODED' : s.race,
       draconicColor: isDraconic ? (s.draconicColor || 'air') : '',
       draconicRuneInfusion: isDraconic ? s.draconicRuneInfusion : '',
+      weaponBlade: wasMonk && !nowMonk ? 'Basic Blade' : nowMonk ? '' : s.weaponBlade,
+      weaponHandle: wasMonk && !nowMonk ? 'Basic Handle' : nowMonk ? '' : s.weaponHandle,
+      monkGlove: nowMonk ? (s.monkGlove || 'Basic Gloves') : '',
+      monkEssence: nowMonk ? (s.monkEssence || 'Basic Essence') : '',
     }
   })
 }

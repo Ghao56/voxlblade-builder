@@ -663,8 +663,10 @@
 
   function encodeState(state: BuildState): Promise<string> {
     const slim: Record<string, any> = {}
+    const isMonk = isMonkGuild(state.guild)
     for (const [k, v] of Object.entries(state)) {
       if (k === 'enchantments') continue
+      if ((k === 'weaponBlade' || k === 'weaponHandle') && isMonk) continue
       if (JSON.stringify(v) === JSON.stringify(DEFAULTS[k])) continue
       const sk = KEY_MAP[k] ?? k
       slim[sk] = v
