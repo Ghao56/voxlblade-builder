@@ -215,8 +215,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     return baseMult
   })()
 
-  // _curseRipHealMult is identical to _healFinalMultiplierNoLevel (excludes Level Healing)
-  $: _curseRipHealMult = _healFinalMultiplierNoLevel
+  $: _curseRipHealMult = _healFinalMultiplier
 
   $: _healCritDmgMult = (perks['Critical Healing'] ?? 0) > 0
     ? CRIT_HEALING_BASE + (stats.holyBoost ?? 0) / CRIT_HEALING_HOLY_BOOST_DIVISOR + CRIT_HEALING_PER_STACK * (perks['Critical Healing'] ?? 0)
@@ -2705,7 +2704,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
             group: 'M1', index: 1, count: 1,
             base: m1Def.healFlat,
             scalingMult: 1,
-            combatMult: _healFinalMultiplierNoLevel,
+            combatMult: _healFinalMultiplier,
             isFinisher: false,
             dmgTypes: { heal: 1.0 },
             label: `${_activeMountRuneDef.mountLabel} Heal`,
@@ -3357,7 +3356,7 @@ $: _groupedSelfDamageSources = (() => {
     lifeDrinkerAmt={perks['Life Drinker'] ?? 0}
     siphoningRotAmt={perks['Siphoning Rot'] ?? 0}
     lifestealStacks={perks['Lifesteal'] ?? 0}
-    lifestealHealMult={_curseRipHealMult}
+    lifestealHealMult={_healFinalMultiplier}
     sunburnUniversalDmgMult={_sunburnEnemyBurning ? _sunburnUniversalDmgMult : 1}
     phantomPainPct={_phantomPainPct}
     dotTicks={_dotTicks}
