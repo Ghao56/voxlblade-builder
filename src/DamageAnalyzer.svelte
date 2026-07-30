@@ -3359,7 +3359,7 @@ $: _groupedSelfDamageSources = (() => {
     lifeDrinkerAmt={perks['Life Drinker'] ?? 0}
     siphoningRotAmt={perks['Siphoning Rot'] ?? 0}
     lifestealStacks={perks['Lifesteal'] ?? 0}
-    lifestealHealMult={_healFinalMultiplier}
+    lifestealHealMult={_healFinalMultiplierNoLevel}
     sunburnUniversalDmgMult={_sunburnEnemyBurning ? _sunburnUniversalDmgMult : 1}
     phantomPainPct={_phantomPainPct}
     dotTicks={_dotTicks}
