@@ -1,7 +1,13 @@
 import type { WeaponArt, WeaponArtRequirement } from '../data/weaponArts'
 
 const WEAPON_TYPE_EQUIVALENTS: Record<string, string[]> = {
-  'Dual Kamas': ['Dagger'],
+  'Dual Kamas':              ['Dagger'],
+  'Dual Wielding Daggers':   ['Dagger'],
+  'Dual Swords':             ['1-Handed Sword'],
+  'Dual Unbalanced Swords':  ['Unbalanced Sword'],
+  'Dual Mallets':            ['Mallet'],
+  'Lance':                   ['Unbalanced Sword', 'Greatsword'],
+  'Scythe':                  ['Spear', 'Great Spear'],
 }
 
 function weaponTypeMatches(required: string, actual: string): boolean {
