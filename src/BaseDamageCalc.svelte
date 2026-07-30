@@ -156,6 +156,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   export let siphoningRotAmt: number = 0
   export let lifestealStacks: number = 0
   export let sunburnUniversalDmgMult: number = 1
+  export let bellowingEmberMult: number = 1
   export let phantomPainPct: number = 0
   export let enemyHpFill: number = 100
   export let dotTicks: Array<{
@@ -195,6 +196,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     debuffMult: number
     sunburnMult: number
     finalDmg: number
+    weaponBoostLabel?: string
   } | null = null
 
   let _meltingTooltip: {
@@ -418,6 +420,11 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     const scalingMult = d.scalingMult
     const combatMult = d.combatMult
     const sunburnMult = sunburnUniversalDmgMult
+    const dotWbMult = Math.round((sunburnMult * bellowingEmberMult + Number.EPSILON) * 10000) / 10000
+    const dotWbLabel = [
+      sunburnMult !== 1 ? 'Sunburn' : '',
+      bellowingEmberMult !== 1 ? 'Bellowing Ember' : '',
+    ].filter(Boolean).join(', ') || undefined
     const preMitBase = d.tickDamage * scalingMult * combatMult
 
     const resolvedTypes = resolveDamageTypes({ [dmgType]: 1.0 }, perkDmgTypeBonusesDoT)
@@ -434,7 +441,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     const debuffMult = _activeDebuffDamageMult
 
     const primaryMult = resolvedTypes[dmgType] ?? 1
-    const finalDmgPrimary = preMitBase * sunburnMult * primaryMult * typedMult * defMult * typeDebuffMult * debuffMult * selfDebuffDamageMult
+    const finalDmgPrimary = preMitBase * dotWbMult * primaryMult * typedMult * defMult * typeDebuffMult * debuffMult * selfDebuffDamageMult
 
     const bonusTypes = Object.entries(resolvedTypes)
       .filter(([k]) => k !== dmgType)
@@ -445,7 +452,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
         const bCrushPen = crushingPenForType(k)
         const { mult: bDefMult } = calcArmorMult(bDefPct, (totalPen + bCrushPen) / 100, k)
         const bTypeDebuffMult = _activeDebuffTypeDamageMult[k] ?? 1
-        const raw = preMitBase * sunburnMult * mult * bTypedMult * bDefMult * bTypeDebuffMult * debuffMult * selfDebuffDamageMult
+        const raw = preMitBase * dotWbMult * mult * bTypedMult * bDefMult * bTypeDebuffMult * debuffMult * selfDebuffDamageMult
         const info = DMG_TYPE_MAP.get(k) ?? { label: k, color: '#e8e4da' }
         return { key: k, label: info.label, color: info.color, raw }
       })
@@ -453,13 +460,13 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     const finalDmg = finalDmgPrimary + bonusTypes.reduce((s, b) => s + b.raw, 0)
 
     const trueDmg = d.meltingShredFactor != null
-      ? preMitBase * sunburnMult * d.meltingShredFactor
+      ? preMitBase * dotWbMult * d.meltingShredFactor
       : 0
 
     const woundPotency = d.type === 'Bleed'
       ? (resolvedDebuffs.find(r => r.name === 'Wound' && !disabledDebuffs.has(r.name))?.potency ?? 0)
       : 0
-    const woundTrueDmg = woundPotency > 0 ? preMitBase * sunburnMult * woundPotency : 0
+    const woundTrueDmg = woundPotency > 0 ? preMitBase * dotWbMult * woundPotency : 0
     const woundAmt = woundPotency > 0 ? Math.round(woundPotency * 10) : 0
 
     const lifeDrinkerHeal = lifeDrinkerAmt > 0
@@ -470,7 +477,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       ? SIPHONING_ROT_HEAL_PER_STACK * siphoningRotAmt
       : 0
 
-    return { ...d, dmgType, scalingMult, combatMult, preMitBase, applicableBoosts, typedMult, defPct, defMult, typeDebuffMult, debuffMult, finalDmg, finalDmgPrimary, bonusTypes, trueDmg, woundTrueDmg, woundPotency, woundAmt, lifeDrinkerHeal, siphoningRotHeal, weaponBoostMult: sunburnMult, weaponBoostLabel: sunburnMult !== 1 ? 'Sunburn' : undefined }
+    return { ...d, dmgType, scalingMult, combatMult, preMitBase, applicableBoosts, typedMult, defPct, defMult, typeDebuffMult, debuffMult, finalDmg, finalDmgPrimary, bonusTypes, trueDmg, woundTrueDmg, woundPotency, woundAmt, lifeDrinkerHeal, siphoningRotHeal, weaponBoostMult: dotWbMult, weaponBoostLabel: dotWbLabel }
   })
 
   function defPctForType(k: string): number {
@@ -794,6 +801,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
               raw, critVal: Math.round(raw * critDmgMult / 100 * 10000) / 10000,
               isHeal: false, tag: ph.tag, oncePerGroup: ph.oncePerFinisher ?? true, forceCrit: false,
               ...(ph.halfActivations ? { activationDivisor: 2 } : {}),
+              ...(ph.weaponBoostLabel != null ? { weaponBoostLabel: ph.weaponBoostLabel } : {}),
             })
           }
 
@@ -905,6 +913,8 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
           bfEntry.typeBase += inheritedBase
           bfEntry.raw += inheritedRawAdd
           bfEntry.critVal = Math.round(bfEntry.raw * critDmgMult / 100 * 10000) / 10000
+          bfEntry._bfBonusBase = inheritedBase
+          bfEntry._bfBonusRaw = inheritedRawAdd
         }
       }
     }
@@ -1341,7 +1351,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
                               <div class="bdc-hit-type-formula">
                               <div class="bdc-fr">
                                 <span class="bdc-fr-label">{t.isHeal ? 'Base Heal' : 'Base Damage'}</span>
-                                <span class="bdc-fr-val">{fmt(t.typeBase)}</span>
+                                <span class="bdc-fr-val">{fmt(t._bfBonusBase != null ? t.typeBase - t._bfBonusBase : t.typeBase)}</span>
                               </div>
                               {#if t.phantomPainPct != null && t.phantomPainPct > 0}
                                 <div class="bdc-fr">
@@ -1414,21 +1424,29 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
                                   <span class="bdc-fr-val bdc-fr-val--hits">× {t.hitCount}</span>
                                 </div>
                               {/if}
-                              <div class="bdc-fr-divider"></div>
-                               <div class="bdc-fr bdc-fr--result">
-                                <span class="bdc-fr-label">{t.isHeal ? 'Final Heal' : 'Final Damage'}</span>
-                                <span class="bdc-fr-val bdc-fr-val--result" style="--tc:{t.color}">{fmt((showCritValues || t.forceCrit) ? t.critVal : t.raw)}</span>
-                              </div>
+                              {#if t._bfBonusRaw != null}
+                                {@const _bfBaseRaw = t.raw - t._bfBonusRaw}
+                                <div class="bdc-fr-divider"></div>
+                                <div class="bdc-fr bdc-fr--result">
+                                  <span class="bdc-fr-label">Subtotal</span>
+                                  <span class="bdc-fr-val bdc-fr-val--result" style="--tc:{t.color}">{fmt(_bfBaseRaw)}</span>
+                                </div>
+                                <div class="bdc-fr">
+                                  <span class="bdc-fr-label">+ Finisher Bonus (20%)</span>
+                                  <span class="bdc-fr-val" style="--tc:{t.color}">+ {fmt(t._bfBonusRaw)}</span>
+                                </div>
+                              {/if}
                               {#if (showCritValues && !t.isCritExempt) || t.forceCrit}
                                 <div class="bdc-fr">
                                   <span class="bdc-fr-label">{t.forceCrit ? 'Guaranteed Crit' : 'Crit Multiplier'}</span>
                                   <span class="bdc-fr-val bdc-fr-val--crit">× {fmtMult(critDmgMult / 100)}</span>
                                 </div>
-                                <div class="bdc-fr bdc-fr--result">
-                                  <span class="bdc-fr-label">Crit Damage</span>
-                                  <span class="bdc-fr-val bdc-fr-val--result bdc-fr-val--crit" style="--tc:{t.color}">{fmt(t.critVal)}</span>
-                                </div>
                               {/if}
+                              <div class="bdc-fr-divider"></div>
+                               <div class="bdc-fr bdc-fr--result">
+                                <span class="bdc-fr-label">{t.isHeal ? 'Final Heal' : 'Final Damage'}</span>
+                                <span class="bdc-fr-val bdc-fr-val--result" style="--tc:{t.color}">{fmt((showCritValues || t.forceCrit) ? t.critVal : t.raw)}</span>
+                              </div>
                             </div>
                           </div>
                         {/each}
@@ -1519,6 +1537,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
                           typeDebuffMult: dot.typeDebuffMult,
                           debuffMult: dot.debuffMult,
                           sunburnMult: dot.weaponBoostMult ?? 1,
+                          weaponBoostLabel: dot.weaponBoostLabel,
                           finalDmg: dot.finalDmg,
                           style: spaceBelow > 180
                             ? `left:${left}px;top:${r.bottom + 4}px;`
@@ -1705,7 +1724,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     {/if}
     {#if _dotTooltip.sunburnMult !== 1}
       <div class="bdc-fr">
-        <span class="bdc-fr-label">Sunburn</span>
+        <span class="bdc-fr-label">{_dotTooltip.weaponBoostLabel ?? 'Sunburn'}</span>
         <span class="bdc-fr-val bdc-fr-val--weaponboost">× {fmtMult(_dotTooltip.sunburnMult)}</span>
       </div>
     {/if}
@@ -1796,7 +1815,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   <div class="bdc-tt-formula-fixed" style={_ttFormula.style}>
     <div class="bdc-fr">
       <span class="bdc-fr-label">{t.isHeal ? 'Base Heal' : 'Base Damage'}</span>
-      <span class="bdc-fr-val">{fmt(t.typeBase)}</span>
+      <span class="bdc-fr-val">{fmt(t._bfBonusBase != null ? t.typeBase - t._bfBonusBase : t.typeBase)}</span>
     </div>
     {#if t.phantomPainPct != null && t.phantomPainPct > 0}
       <div class="bdc-fr">
@@ -1869,21 +1888,28 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
         <span class="bdc-fr-val bdc-fr-val--hits">× {t.hitCount}</span>
       </div>
     {/if}
-    <div class="bdc-fr-divider"></div>
-    <div class="bdc-fr bdc-fr--result">
-      <span class="bdc-fr-label">{t.isHeal ? 'Final Heal' : 'Final Damage'}</span>
-      <span class="bdc-fr-val bdc-fr-val--result" style="--tc:{t.color}">{fmt((showCritValues || t.forceCrit) ? t.critVal : t.raw)}</span>
-    </div>
+    {#if t._bfBonusRaw != null}
+      <div class="bdc-fr-divider"></div>
+      <div class="bdc-fr bdc-fr--result">
+        <span class="bdc-fr-label">Subtotal</span>
+        <span class="bdc-fr-val bdc-fr-val--result" style="--tc:{t.color}">{fmt(t.raw - t._bfBonusRaw)}</span>
+      </div>
+      <div class="bdc-fr">
+        <span class="bdc-fr-label">+ Finisher Bonus (20%)</span>
+        <span class="bdc-fr-val" style="--tc:{t.color}">+ {fmt(t._bfBonusRaw)}</span>
+      </div>
+    {/if}
     {#if (showCritValues && !t.isCritExempt) || t.forceCrit}
       <div class="bdc-fr">
         <span class="bdc-fr-label">{t.forceCrit ? 'Guaranteed Crit' : 'Crit Multiplier'}</span>
         <span class="bdc-fr-val bdc-fr-val--crit">× {fmtMult(critDmgMult / 100)}</span>
       </div>
-      <div class="bdc-fr bdc-fr--result">
-        <span class="bdc-fr-label">Crit Damage</span>
-        <span class="bdc-fr-val bdc-fr-val--result bdc-fr-val--crit" style="--tc:{t.color}">{fmt(t.critVal)}</span>
-      </div>
     {/if}
+    <div class="bdc-fr-divider"></div>
+    <div class="bdc-fr bdc-fr--result">
+      <span class="bdc-fr-label">{t.isHeal ? 'Final Heal' : 'Final Damage'}</span>
+      <span class="bdc-fr-val bdc-fr-val--result" style="--tc:{t.color}">{fmt((showCritValues || t.forceCrit) ? t.critVal : t.raw)}</span>
+    </div>
   </div>
 {/if}
 

@@ -879,6 +879,15 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     ? Math.round((SUNBURN_BURN_BASE_CHANCE + SUNBURN_BURN_CHANCE_PER_STACK * _sunburnAmt) * 100)
     : 0
 
+  $: _bellowingEmberMult = (() => {
+    const beAmt = perks['Bellowing Ember'] ?? 0
+    if (beAmt <= 0) return 1
+    const threshold = BELLOWING_EMBER_HP_GATE_THRESHOLD + BELLOWING_EMBER_HP_GATE_PER_STACK * (beAmt - 1)
+    if ((_hpFillPct ?? 100) > threshold) return 1
+    return _hasFireDmg ? BELLOWING_EMBER_FIRE_MULT : BELLOWING_EMBER_BASE_MULT
+  })()
+  $: _activeBellowingEmberMult = !disabledEffects.has('bellowingEmber') ? _bellowingEmberMult : 1
+
   $: _procChips = (() => {
     const chips: Array<{
       key: string; name: string; title: string
@@ -934,6 +943,16 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         title: `Sunburn (${_sunburnAmt}): +${_sunburnAmt * 10}% dmg vs Burning · +${_sunburnAmt * 15}% if attack has Holy · ${_sunburnBurnChance}% apply Burn on Holy`,
         val: disabledEffects.has('sunburn') ? '—' : `+${_sunburnAmt * 10}%/+${_sunburnAmt * 15}%`,
         cond: disabledEffects.has('sunburn') ? 'disabled' : `vs Burning · ${_sunburnBurnChance}% Burn`,
+      })
+    }
+    if (_bellowingEmberMult > 1) {
+      const beAmt = perks['Bellowing Ember'] ?? 0
+      const threshold = BELLOWING_EMBER_HP_GATE_THRESHOLD + BELLOWING_EMBER_HP_GATE_PER_STACK * (beAmt - 1)
+      chips.push({
+        key: 'bellowingEmber', name: 'Bellowing Ember',
+        title: `HP ≤${threshold}% · +10% dmg boost${_hasFireDmg ? ' · +23% (Fire Type)' : ''}`,
+        val: disabledEffects.has('bellowingEmber') ? '—' : `×${+_bellowingEmberMult.toFixed(4)}`,
+        cond: `HP ≤${threshold}%${_hasFireDmg ? ' · Fire Type' : ''}`,
       })
     }
     if (_photosynthesisStacks > 0) {
@@ -1586,20 +1605,6 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       }
     }
 
-    const beAmt = perks['Bellowing Ember'] ?? 0
-    if (beAmt > 0) {
-      const threshold = BELLOWING_EMBER_HP_GATE_THRESHOLD + BELLOWING_EMBER_HP_GATE_PER_STACK * (beAmt - 1)
-      if ((_hpFillPct ?? 100) <= threshold) {
-        const mult = _hasFireDmg ? BELLOWING_EMBER_FIRE_MULT : BELLOWING_EMBER_BASE_MULT
-        entries.push({
-          sourceName: 'Bellowing Ember',
-          rawMultiplier: mult,
-          condition: `HP ≤${threshold}% · +10% dmg boost${_hasFireDmg ? ' · +23% (Fire Type)' : ''}`,
-          type: 'dmg',
-        })
-      }
-    }
-
     const ferocityAmt = perks['Ferocity'] ?? 0
     if (ferocityAmt > 0 && _effectiveTenacity > 0) {
       const pct = _effectiveTenacity * FEROCITY_TENACITY_MULT * ferocityAmt
@@ -1624,7 +1629,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     if (disabledBoosts.has(e.sourceName)) return false
     return true
   })]
-  $: hasDisabledVisible = boosts.dmgEntries.some(e => disabledBoosts.has(e.sourceName) || _condDisabledSources.has(e.sourceName)) || (_curseRipPerkAmount > 0 && disableCurseRip) || (_reaperPerkAmount > 0 && disableReaper) || ((perks['True Balance'] ?? 0) > 0 && disabledBoosts.has('True Balance')) || ((perks['Frenzy'] ?? 0) > 0 && disabledBoosts.has('Frenzy')) || (_sunburnAmt > 0 && disabledEffects.has('sunburn')) || (_mortalWillAmt > 0 && disabledEffects.has('mortalWill')) || ((perks['Ruler Of The Sands'] ?? 0) > 0 && disabledEffects.has('rulerOfTheSands'))
+  $: hasDisabledVisible = boosts.dmgEntries.some(e => disabledBoosts.has(e.sourceName) || _condDisabledSources.has(e.sourceName)) || (_curseRipPerkAmount > 0 && disableCurseRip) || (_reaperPerkAmount > 0 && disableReaper) || ((perks['True Balance'] ?? 0) > 0 && disabledBoosts.has('True Balance')) || ((perks['Frenzy'] ?? 0) > 0 && disabledBoosts.has('Frenzy'))
 
   $: _levelMult = (() => {
     const levelEntry = boosts.dmgEntries.find(e => e.sourceName === 'Level Damage')
@@ -2540,8 +2545,10 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
 
       const perkSunburnMult = _sunburnActive && _sunburnEnemyBurning
         ? ((e.resolvedDmgTypes.holy ?? 0) > 0 ? _sunburnHolyDmgMult : _sunburnUniversalDmgMult) : 1
+      const perkWbMult = roundMultiplier(perkSunburnMult * _activeBellowingEmberMult)
       const perkLabel = [
         perkSunburnMult !== 1 ? 'Sunburn' : '',
+        _activeBellowingEmberMult !== 1 ? 'Bellowing Ember' : '',
       ].filter(Boolean).join(', ')
 
       out.push({
@@ -2554,7 +2561,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         procCoefficient: e.perkName === 'Blazing Finisher' ? { type: 'noProc' } : e.procCoefficient,
         isProcHit: e.isProcHit,
         canApplyBurn: _hasSingedBurn,
-        ...(perkSunburnMult !== 1 ? { weaponBoostMult: perkSunburnMult, weaponBoostLabel: perkLabel } : {}),
+        ...(perkWbMult !== 1 ? { weaponBoostMult: perkWbMult, weaponBoostLabel: perkLabel } : {}),
         ...(e.rawFinisherNumerator != null ? { rawFinisherNumerator: e.rawFinisherNumerator } : {}),
         ...(e.halfActivations != null ? { halfActivations: e.halfActivations } : {}),
         ...(e.oncePerFinisher != null ? { oncePerFinisher: e.perkName === 'Blazing Finisher' ? false : e.oncePerFinisher } : {}),
@@ -2624,12 +2631,13 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           const boostDmgTypes = piercerRank > 0 ? { ...hitDmgTypes } : undefined
           const sunburnMult = _sunburnActive && _sunburnEnemyBurning
             ? ((hitDmgTypes.holy ?? 0) > 0 ? _sunburnHolyDmgMult : _sunburnUniversalDmgMult) : 1
-          const combinedWbMult = roundMultiplier((wb?.mult ?? 1) * mwMult * sunburnMult * _pursuitMult)
+          const combinedWbMult = roundMultiplier((wb?.mult ?? 1) * mwMult * sunburnMult * _pursuitMult * _activeBellowingEmberMult)
           const wbLabel = [
             wb && wb.mult !== 1 ? wb.labels.join(', ') : '',
             _mortalWillFinisherDmgMult !== 1 ? 'Mortal Will' : '',
             sunburnMult !== 1 ? 'Sunburn' : '',
             _pursuitMult !== 1 ? 'Pursuit' : '',
+            _activeBellowingEmberMult !== 1 ? 'Bellowing Ember' : '',
           ].filter(Boolean).join(', ')
           result.push({
             group: 'M1', index: i, count, base, scalingMult: _scalingMult, combatMult: _m1CombatMult,
@@ -2656,11 +2664,12 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           const mwMult = _mortalWillFinisherDmgMult !== 1 ? _mortalWillFinisherDmgMult : 1
           const sunburnMult = _sunburnActive && _sunburnEnemyBurning
             ? ((hitDmgTypes.holy ?? 0) > 0 ? _sunburnHolyDmgMult : _sunburnUniversalDmgMult) : 1
-          const combinedWbMult = roundMultiplier((_m2WeaponBoost.mult ?? 1) * mwMult * sunburnMult)
+          const combinedWbMult = roundMultiplier((_m2WeaponBoost.mult ?? 1) * mwMult * sunburnMult * _activeBellowingEmberMult)
           const wbLabel = [
             _m2WeaponBoost.mult !== 1 ? _m2WeaponBoost.labels.join(', ') : '',
             _mortalWillFinisherDmgMult !== 1 ? 'Mortal Will' : '',
             sunburnMult !== 1 ? 'Sunburn' : '',
+            _activeBellowingEmberMult !== 1 ? 'Bellowing Ember' : '',
           ].filter(Boolean).join(', ')
           result.push({
             group: 'M2', index: i, count, base, scalingMult: _scalingMult, combatMult: _m2CombatMult,
@@ -2701,6 +2710,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           dmgTypes: _mountM1DmgTypes,
           label: `${_activeMountRuneDef.mountLabel} (Mounted)`,
           canApplyBurn: _hasSingedBurn,
+          ...(_activeBellowingEmberMult !== 1 ? { weaponBoostMult: _activeBellowingEmberMult, weaponBoostLabel: 'Bellowing Ember' } : {}),
         })
         if (m1Def.healFlat) {
           result.push({
@@ -2774,10 +2784,11 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           : hitDt
         const waSunburnMult = _sunburnActive && _sunburnEnemyBurning
           ? ((hitDmgTypesForMw.holy ?? 0) > 0 ? _sunburnHolyDmgMult : _sunburnUniversalDmgMult) : 1
-        const combinedWbMult = roundMultiplier(mwMult * waSunburnMult)
+        const combinedWbMult = roundMultiplier(mwMult * waSunburnMult * _activeBellowingEmberMult)
         const wbLabel = [
           _mortalWillFinisherDmgMult !== 1 ? 'Mortal Will' : '',
           waSunburnMult !== 1 ? 'Sunburn' : '',
+          _activeBellowingEmberMult !== 1 ? 'Bellowing Ember' : '',
         ].filter(Boolean).join(', ')
         result.push({
           group: 'WA', index: i, count: h.count, base: h.n, scalingMult: sc, combatMult: _waCombatMult,
@@ -2841,6 +2852,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           dmgTypes: waDmgTypes,
           label: `${_activeMountRuneDef.mountLabel} WA (Mounted)`,
           canApplyBurn: _hasSingedBurn,
+          ...(_activeBellowingEmberMult !== 1 ? { weaponBoostMult: _activeBellowingEmberMult, weaponBoostLabel: 'Bellowing Ember' } : {}),
         })
       }
     }
@@ -2931,10 +2943,11 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         ...((() => {
           const perkSunburnMult = _sunburnActive && _sunburnEnemyBurning
             ? ((entry.resolvedDmgTypes.holy ?? 0) > 0 ? _sunburnHolyDmgMult : _sunburnUniversalDmgMult) : 1
-          const combined = roundMultiplier(_colorMult * perkSunburnMult)
+          const combined = roundMultiplier(_colorMult * perkSunburnMult * _activeBellowingEmberMult)
           const label = [
             _colorMult !== 1 ? `${_effDraconicColor.charAt(0).toUpperCase()}${_effDraconicColor.slice(1)} Color Bonus` : '',
             perkSunburnMult !== 1 ? 'Sunburn' : '',
+            _activeBellowingEmberMult !== 1 ? 'Bellowing Ember' : '',
           ].filter(Boolean).join(', ')
           return combined !== 1 ? { weaponBoostMult: combined, weaponBoostLabel: label } : {}
         })()),
@@ -2976,7 +2989,9 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         isFinisher: false,
         label: _activeRuneDmgDef.runeName,
         isHeal: _runeIsHeal,
-        ...(runeSunburnMult !== 1 ? { weaponBoostMult: runeSunburnMult, weaponBoostLabel: 'Sunburn' } : {}),
+        ...(_activeBellowingEmberMult !== 1
+          ? { weaponBoostMult: roundMultiplier(runeSunburnMult * _activeBellowingEmberMult), weaponBoostLabel: ['Sunburn', 'Bellowing Ember'].filter(Boolean).join(', ') }
+          : runeSunburnMult !== 1 ? { weaponBoostMult: runeSunburnMult, weaponBoostLabel: 'Sunburn' } : {}),
         canApplyBurn: _hasSingedBurn,
       })
     }
@@ -3001,24 +3016,20 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     }
     if (_waveRiderAmt > 0) {
       const wrScaling = _computePerkScalingMult({ water: 1.0 })
-      result.push({
-        group: 'Perk', index: result.length, count: 1, base: 40, scalingMult: wrScaling, combatMult: _perkCombatMult,
-        isFinisher: false, dmgTypes: { water: 1.0, heal: 0.2 }, baseDmgTypes: { water: 1.0 },
-        dmgTypeCombatMults: { heal: _healFinalMultiplier },
-        dmgTypeIsHeal: { heal: true },
-        dmgTypeIsCritExempt: { heal: true },
-        label: 'Wave Rider (M2)',
-        canApplyBurn: _hasSingedBurn,
-      })
-      result.push({
-        group: 'Perk', index: result.length, count: 1, base: 35, scalingMult: wrScaling, combatMult: _perkCombatMult,
-        isFinisher: false, dmgTypes: { water: 1.0, heal: 0.2 }, baseDmgTypes: { water: 1.0 },
-        dmgTypeCombatMults: { heal: _healFinalMultiplier },
-        dmgTypeIsHeal: { heal: true },
-        dmgTypeIsCritExempt: { heal: true },
-        label: 'Wave Rider (WA)',
-        canApplyBurn: _hasSingedBurn,
-      })
+      const pushWr = (baseDmg: number, labelSuffix: string) => {
+        result.push({
+          group: 'Perk', index: result.length, count: 1, base: baseDmg, scalingMult: wrScaling, combatMult: _perkCombatMult,
+          isFinisher: false, dmgTypes: { water: 1.0, heal: 0.2 }, baseDmgTypes: { water: 1.0 },
+          dmgTypeCombatMults: { heal: _healFinalMultiplier },
+          dmgTypeIsHeal: { heal: true },
+          dmgTypeIsCritExempt: { heal: true },
+          label: `Wave Rider (${labelSuffix})`,
+          canApplyBurn: _hasSingedBurn,
+          ...(_activeBellowingEmberMult !== 1 ? { weaponBoostMult: _activeBellowingEmberMult, weaponBoostLabel: 'Bellowing Ember' } : {}),
+        })
+      }
+      pushWr(40, 'M2')
+      pushWr(35, 'WA')
     }
     if (_oceanSongAmt > 0) {
       const osScaling = _computePerkScalingMult({ water: 1.0, dexterity: 1.0 })
@@ -3363,6 +3374,7 @@ $: _groupedSelfDamageSources = (() => {
     lifestealStacks={perks['Lifesteal'] ?? 0}
     lifestealHealMult={_healFinalMultiplierNoLevel}
     sunburnUniversalDmgMult={_sunburnEnemyBurning ? _sunburnUniversalDmgMult : 1}
+    bellowingEmberMult={_activeBellowingEmberMult}
     phantomPainPct={_phantomPainPct}
     dotTicks={_dotTicks}
     enemyHpFill={_enemyHpFillPct}
