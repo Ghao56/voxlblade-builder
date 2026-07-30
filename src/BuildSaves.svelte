@@ -20,42 +20,52 @@
 
   const STORAGE_KEY = STORAGE_KEY_SAVES
 
-  type SearchItem = { label: string; category: string }
+  type SearchItem = { label: string; category: string; sources: string[] }
 
   function buildSearchIndexFromBuilds(builds: SaveSlot[]): SearchItem[] {
-    const seen = new Map<string, string>()
+    const grouped = new Map<string, Set<string>>()
+    const catLabel = new Map<string, string>()
+    const add = (prefix: string, label: string) => {
+      if (!label) return
+      const existing = grouped.get(label)
+      if (existing) { existing.add(prefix); return }
+      grouped.set(label, new Set([prefix]))
+    }
+    const catMap: Record<string, string> = {
+      blade: 'Blade', handle: 'Handle', helmet: 'Helmet', chest: 'Chest', legs: 'Legs',
+      ring: 'Ring', rune: 'Rune', wa: 'Weapon Art', infH: 'Infusion Helmet', infC: 'Infusion Chest',
+      infL: 'Infusion Legs', infR: 'Infusion Ring', ench: 'Enchant', glove: 'Monk Glove', essence: 'Monk Essence',
+      race: 'Race', guild: 'Guild', perk: 'Perk'
+    }
+    const getCat = (key: string) => catMap[key.split(':')[0]] ?? ''
     for (const slot of builds) {
       const st = slot.state
       if (!isMonkGuild(st.guild)) {
-        if (st.weaponBlade)  { const k = 'blade:' + st.weaponBlade;  if (!seen.has(k)) seen.set(k, st.weaponBlade) }
-        if (st.weaponHandle) { const k = 'handle:' + st.weaponHandle; if (!seen.has(k)) seen.set(k, st.weaponHandle) }
+        if (st.weaponBlade)  add('blade', st.weaponBlade)
+        if (st.weaponHandle) add('handle', st.weaponHandle)
       }
-      if (st.helmet)       { const k = 'helmet:' + st.helmet;     if (!seen.has(k)) seen.set(k, st.helmet) }
-      if (st.chestplate)   { const k = 'chest:' + st.chestplate;  if (!seen.has(k)) seen.set(k, st.chestplate) }
-      if (st.leggings)     { const k = 'legs:' + st.leggings;     if (!seen.has(k)) seen.set(k, st.leggings) }
-      if (st.ring)         { const k = 'ring:' + st.ring;         if (!seen.has(k)) seen.set(k, st.ring) }
-      if (st.rune)         { const k = 'rune:' + st.rune;         if (!seen.has(k)) seen.set(k, st.rune) }
-      if (st.selectedWeaponArt) { const k = 'wa:' + st.selectedWeaponArt; if (!seen.has(k)) seen.set(k, st.selectedWeaponArt) }
-      if (st.infusionHelmet)     { const k = 'infH:' + st.infusionHelmet;     if (!seen.has(k)) seen.set(k, st.infusionHelmet) }
-      if (st.infusionChestplate) { const k = 'infC:' + st.infusionChestplate; if (!seen.has(k)) seen.set(k, st.infusionChestplate) }
-      if (st.infusionLeggings)   { const k = 'infL:' + st.infusionLeggings;   if (!seen.has(k)) seen.set(k, st.infusionLeggings) }
-      if (st.infusionRing)       { const k = 'infR:' + st.infusionRing;       if (!seen.has(k)) seen.set(k, st.infusionRing) }
+      if (st.helmet)     add('helmet', st.helmet)
+      if (st.chestplate) add('chest', st.chestplate)
+      if (st.leggings)   add('legs', st.leggings)
+      if (st.ring)       add('ring', st.ring)
+      if (st.rune)       add('rune', st.rune)
+      if (st.selectedWeaponArt) add('wa', st.selectedWeaponArt)
+      if (st.infusionHelmet)     add('infH', st.infusionHelmet)
+      if (st.infusionChestplate) add('infC', st.infusionChestplate)
+      if (st.infusionLeggings)   add('infL', st.infusionLeggings)
+      if (st.infusionRing)       add('infR', st.infusionRing)
       if (st.enchantments) {
         for (const [slotName, val] of Object.entries(st.enchantments)) {
-          if (val && val[0]) { const k = 'ench:' + slotName + ':' + val[0]; if (!seen.has(k)) seen.set(k, val[0]) }
+          if (val && val[0]) add('ench', val[0])
         }
       }
       if (isMonkGuild(st.guild)) {
-        if (st.monkGlove)   { const k = 'glove:' + st.monkGlove;   if (!seen.has(k)) seen.set(k, st.monkGlove) }
-        if (st.monkEssence) { const k = 'essence:' + st.monkEssence; if (!seen.has(k)) seen.set(k, st.monkEssence) }
+        if (st.monkGlove)   add('glove', st.monkGlove)
+        if (st.monkEssence) add('essence', st.monkEssence)
       }
-      if (st.race)  { const k = 'race:' + st.race; if (!seen.has(k)) seen.set(k, st.race) }
-      if (st.guild) { const k = 'guild:' + st.guild; if (!seen.has(k)) seen.set(k, st.guild) }
-      const addPerk = (name: string) => {
-        if (!name) return
-        const k = 'perk:' + name
-        if (!seen.has(k)) seen.set(k, name)
-      }
+      if (st.race)  add('race', st.race)
+      if (st.guild) add('guild', st.guild)
+      const addPerk = (name: string) => { if (name) add('perk', name) }
       if (!isMonkGuild(st.guild)) {
         const blade = getBlade(st.weaponBlade)
         if (blade) {
@@ -86,15 +96,10 @@
       }
     }
     const items: SearchItem[] = []
-    const catMap: Record<string, string> = {
-      blade: 'Blade', handle: 'Handle', helmet: 'Helmet', chest: 'Chest', legs: 'Legs',
-      ring: 'Ring', rune: 'Rune', wa: 'Weapon Art', infH: 'Inf Helmet', infC: 'Inf Chest',
-      infL: 'Inf Legs', infR: 'Inf Ring', enchant: 'Enchant', glove: 'Glove', essence: 'Essence',
-      race: 'Race', guild: 'Guild', perk: 'Perk'
-    }
-    for (const [key, label] of seen) {
-      const cat = catMap[key.split(':')[0]] ?? ''
-      items.push({ label, category: cat })
+    for (const [label, prefixes] of grouped) {
+      const sources = [...prefixes].map(p => catMap[p] ?? p).filter(Boolean)
+      const primaryCat = getCat([...prefixes][0])
+      items.push({ label, category: primaryCat, sources })
     }
     return items
   }
@@ -116,6 +121,8 @@
   }
 
   let searchSuggestions: SearchItem[] = []
+  let activeTags: Array<{ label: string; category: string }> = []
+  let tagInput = ''
 
   interface SaveSlot {
     name: string
@@ -155,7 +162,6 @@
   let confirmDelete: number | null = null
   let duplicateModal: { targetIndex: number; duplicates: { slot: SaveSlot; index: number }[] } | null = null
   let open = false
-  let searchQuery = ''
   let sortBy: 'slot' | 'name' | 'date' = 'slot'
   let filteredSlots: { slot: SaveSlot; origIndex: number }[] = []
   let draggingFrom: number | null = null
@@ -228,7 +234,7 @@
     }
   }
 
-  $: canDrag = sortBy === 'slot' && !searchQuery.trim()
+  $: canDrag = sortBy === 'slot' && activeTags.length === 0 && !tagInput.trim()
 
   function moveSlot(fromIdx: number, toIdx: number) {
     if (fromIdx === toIdx) return
@@ -421,7 +427,14 @@
 
   $: {
     let indexed = slots.map((s, i) => ({ slot: s, origIndex: i }))
-    const q = searchQuery.trim()
+    const q = tagInput.trim()
+    if (activeTags.length > 0) {
+      indexed = indexed.filter(({ slot }) => {
+        const summary = getBuildSummary(slot.state).toLowerCase()
+        const name = slot.name.toLowerCase()
+        return activeTags.every(t => name.includes(t.label.toLowerCase()) || summary.includes(t.label.toLowerCase()))
+      })
+    }
     if (q) {
       const ql = q.toLowerCase()
       indexed = indexed.filter(({ slot }) => {
@@ -435,7 +448,7 @@
       const index = buildSearchIndexFromBuilds(slots)
       const scored = index
         .map((item: SearchItem) => ({ ...item, score: fuzzyScore(ql, item.label.toLowerCase()) }))
-        .filter((item: SearchItem & { score: number }) => item.score < Infinity)
+        .filter((item: SearchItem & { score: number }) => item.score < Infinity && !activeTags.some(t => t.label === item.label))
         .sort((a: SearchItem & { score: number }, b: SearchItem & { score: number }) => a.score - b.score)
         .slice(0, 12)
       searchSuggestions = scored
@@ -854,27 +867,39 @@
     </div>
     <div class="saves-toolbar">
       <div class="search-wrap">
-        <span class="search-icon" aria-hidden="true"><i class="fa fa-search"></i></span>
-        <input
-          class="search-input"
-          type="text"
-          placeholder="Search by name, weapon, perk…"
-          bind:value={searchQuery}
-          onfocus={() => { if (searchQuery.trim() && searchSuggestions.length) searchSuggestions = searchSuggestions }}
-        />
-        {#if searchQuery}
-          <button class="search-clear" onclick={() => searchQuery = ''} aria-label="Clear search"><i class="fa fa-times"></i></button>
+        <div class="tag-list">
+          {#each activeTags as tag, i}
+            <span class="tag-chip tag-{tag.category.toLowerCase().replace(/\s+/g, '-')}">
+              <span class="tag-cat">{tag.category}</span>
+              {tag.label}
+              <button class="tag-remove" onclick={() => activeTags = activeTags.filter((_, j) => j !== i)} aria-label="Remove filter">&times;</button>
+            </span>
+          {/each}
+          <input
+            class="search-input"
+            type="text"
+            placeholder={activeTags.length ? 'Add more filters…' : "Search by name, weapon, perk…"}
+            bind:value={tagInput}
+            onkeydown={(e) => { if (e.key === 'Enter' && tagInput.trim()) { const m = tagInput.trim(); activeTags = [...activeTags, { label: m, category: '' }]; tagInput = '' } }}
+            onfocus={() => { if (tagInput.trim() && searchSuggestions.length) searchSuggestions = searchSuggestions }}
+          />
+        </div>
+        {#if tagInput || activeTags.length}
+          <button class="search-clear" onclick={() => { tagInput = ''; activeTags = [] }} aria-label="Clear all filters"><i class="fa fa-times"></i></button>
         {/if}
-        {#if searchQuery.trim() && searchSuggestions.length > 0}
+        {#if tagInput.trim() && searchSuggestions.length > 0}
           <div class="suggest-drop">
             {#each searchSuggestions as item}
-              <button class="suggest-item" onmousedown={(e) => { e.preventDefault(); searchQuery = item.label }}>
+              <button class="suggest-item" onmousedown={(e) => { e.preventDefault(); activeTags = [...activeTags, { label: item.label, category: item.category }]; tagInput = '' }}>
                 <span class="suggest-cat">{item.category}</span>
                 <span class="suggest-label">
-                  {#each highlightTextParts(item.label, searchQuery) as part}
+                  {#each highlightTextParts(item.label, tagInput) as part}
                     {#if part.highlight}<mark class="suggest-hl">{part.text}</mark>{:else}{part.text}{/if}
                   {/each}
                 </span>
+                {#if item.sources.length > 1}
+                  <span class="suggest-sources">{item.sources.join(', ')}</span>
+                {/if}
               </button>
             {/each}
           </div>
@@ -892,9 +917,9 @@
     <div class="saves-list">
       {#if filteredSlots.length === 0}
         <div class="saves-empty">
-          {#if searchQuery}
+          {#if activeTags.length || tagInput.trim()}
             <span class="empty-icon"><i class="fa fa-search"></i></span>
-            <span>No builds matching "{searchQuery}"</span>
+            <span>No builds matching filters</span>
           {:else}
             <span class="empty-icon"><i class="fa fa-inbox"></i></span>
             <span>No saved builds yet</span>
@@ -1088,17 +1113,49 @@
     padding:0 2px;line-height:1;
   }
   .saves-toolbar{display:flex;gap:6px;align-items:center;}
-  .search-wrap{flex:1;position:relative;display:flex;align-items:center;}
-  .search-icon{position:absolute;left:8px;font-size:.7rem;pointer-events:none;opacity:.4;color:var(--ink-muted);}
-  .search-input{
-    width:100%;padding:5px 24px 5px 24px;border-radius:6px;border:1px solid var(--border);
-    background:var(--surface2);color:var(--ink);font-size:.72rem;font-family:var(--font-body);
-    outline:none;transition:border-color .15s;
+  .search-wrap{flex:1;position:relative;display:flex;align-items:flex-start;flex-wrap:wrap;gap:4px;min-height:30px;}
+  .tag-list{
+    display:flex;flex-wrap:wrap;gap:4px;align-items:center;flex:1;min-width:120px;
+    padding:3px 24px 3px 6px;border-radius:6px;border:1px solid var(--border);
+    background:var(--surface2);cursor:text;transition:border-color .15s;
   }
-  .search-input:focus{border-color:rgba(74,222,128,.4);}
+  .tag-list:focus-within{border-color:rgba(74,222,128,.4);}
+  .tag-chip{
+    display:inline-flex;align-items:center;gap:3px;padding:1px 5px;border-radius:4px;
+    font-size:.65rem;font-weight:600;white-space:nowrap;line-height:1.4;
+  }
+  .tag-cat{font-size:.5rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;opacity:.8;margin-right:1px;}
+  .tag-blade{background:rgba(99,102,241,.18);border:1px solid rgba(99,102,241,.3);color:#818cf8;}
+  .tag-handle{background:rgba(99,102,241,.18);border:1px solid rgba(99,102,241,.3);color:#818cf8;}
+  .tag-helmet{background:rgba(251,191,36,.18);border:1px solid rgba(251,191,36,.3);color:#fbbf24;}
+  .tag-chest{background:rgba(251,191,36,.18);border:1px solid rgba(251,191,36,.3);color:#fbbf24;}
+  .tag-legs{background:rgba(251,191,36,.18);border:1px solid rgba(251,191,36,.3);color:#fbbf24;}
+  .tag-ring{background:rgba(52,211,153,.18);border:1px solid rgba(52,211,153,.3);color:#34d399;}
+  .tag-rune{background:rgba(52,211,153,.18);border:1px solid rgba(52,211,153,.3);color:#34d399;}
+  .tag-weapon-art{background:rgba(244,114,182,.18);border:1px solid rgba(244,114,182,.3);color:#f472b6;}
+  .tag-infusion-helmet{background:rgba(251,191,36,.10);border:1px solid rgba(251,191,36,.18);color:#fbbf24;opacity:.85;}
+  .tag-infusion-chest{background:rgba(251,191,36,.10);border:1px solid rgba(251,191,36,.18);color:#fbbf24;opacity:.85;}
+  .tag-infusion-legs{background:rgba(251,191,36,.10);border:1px solid rgba(251,191,36,.18);color:#fbbf24;opacity:.85;}
+  .tag-infusion-ring{background:rgba(52,211,153,.10);border:1px solid rgba(52,211,153,.18);color:#34d399;opacity:.85;}
+  .tag-enchant{background:rgba(167,139,250,.18);border:1px solid rgba(167,139,250,.3);color:#a78bfa;}
+  .tag-monk-glove{background:rgba(248,113,113,.18);border:1px solid rgba(248,113,113,.3);color:#f87171;}
+  .tag-monk-essence{background:rgba(248,113,113,.18);border:1px solid rgba(248,113,113,.3);color:#f87171;}
+  .tag-race{background:rgba(148,163,184,.18);border:1px solid rgba(148,163,184,.3);color:#94a3b8;}
+  .tag-guild{background:rgba(148,163,184,.18);border:1px solid rgba(148,163,184,.3);color:#94a3b8;}
+  .tag-perk{background:rgba(56,189,248,.18);border:1px solid rgba(56,189,248,.3);color:#38bdf8;}
+  .tag-remove{
+    background:none;border:none;color:var(--accent);cursor:pointer;padding:0 1px;
+    font-size:.7rem;line-height:1;opacity:.6;transition:opacity .1s;
+  }
+  .tag-remove:hover{opacity:1;}
+  .search-input{
+    flex:1;min-width:80px;border:none;background:transparent;padding:2px 0;
+    color:var(--ink);font-size:.72rem;font-family:var(--font-body);
+    outline:none;
+  }
   .search-input::placeholder{color:var(--ink-muted);opacity:.4;}
   .search-clear{
-    position:absolute;right:4px;background:none;border:none;color:var(--ink-muted);
+    position:absolute;right:4px;top:4px;background:none;border:none;color:var(--ink-muted);
     font-size:.7rem;cursor:pointer;padding:2px 4px;border-radius:3px;line-height:1;
   }
   .search-clear:hover{background:var(--surface3);color:var(--ink);}
@@ -1125,6 +1182,7 @@
     background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.2);color:var(--accent);
   }
   .suggest-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .suggest-sources{font-size:.55rem;color:var(--ink-muted);opacity:.6;flex-shrink:0;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .suggest-hl{background:rgba(74,222,128,.25);color:var(--accent);border-radius:2px;padding:0 1px;}
   .sort-group{display:flex;gap:2px;flex-shrink:0;}
   .sort-btn{
