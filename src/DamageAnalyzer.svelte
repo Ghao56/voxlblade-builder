@@ -884,7 +884,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     if (beAmt <= 0) return 1
     const threshold = BELLOWING_EMBER_HP_GATE_THRESHOLD + BELLOWING_EMBER_HP_GATE_PER_STACK * (beAmt - 1)
     if ((_hpFillPct ?? 100) > threshold) return 1
-    return _hasFireDmg ? BELLOWING_EMBER_FIRE_MULT : BELLOWING_EMBER_BASE_MULT
+    return _hasFireDmg ? (1 + (BELLOWING_EMBER_FIRE_MULT - 1) * beAmt) : (1 + (BELLOWING_EMBER_BASE_MULT - 1) * beAmt)
   })()
   $: _activeBellowingEmberMult = !disabledEffects.has('bellowingEmber') ? _bellowingEmberMult : 1
 
@@ -950,7 +950,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       const threshold = BELLOWING_EMBER_HP_GATE_THRESHOLD + BELLOWING_EMBER_HP_GATE_PER_STACK * (beAmt - 1)
       chips.push({
         key: 'bellowingEmber', name: 'Bellowing Ember',
-        title: `HP ≤${threshold}% · +10% dmg boost${_hasFireDmg ? ' · +23% (Fire Type)' : ''}`,
+        title: `HP ≤${threshold}% · +${10 * beAmt}% dmg boost${_hasFireDmg ? ` · +${23 * beAmt}% (Fire Type)` : ''}`,
         val: disabledEffects.has('bellowingEmber') ? '—' : `×${+_bellowingEmberMult.toFixed(4)}`,
         cond: `HP ≤${threshold}%${_hasFireDmg ? ' · Fire Type' : ''}`,
       })
