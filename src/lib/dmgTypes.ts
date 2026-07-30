@@ -25,6 +25,7 @@ export const BADGE_CONFIG: Record<string, { color: string; label: string; title:
   'Cinderpull': { color: '#f97316', label: '✦ Cinderpull', title: 'Cinderpull: deal x% of your damage as bonus fire damage that counts as the applier\'s damage' },
   'Quake': { color: '#a3722a', label: '✦ Quake', title: 'Quake: Earth shockwave on hit · RNG chance · Guardbreak · Cannot proc other effects' },
   'Sandnado': { color: '#d4a547', label: '✦ Sandnado', title: 'Ruler Of The Sands: sandnado on WA/Rune use · Reduced proc coefficient · Earth+Air damage' },
+  'Blazing Finisher': { color: '#f97316', label: '✦ Blazing', title: 'Blazing Finisher: fire AoE on finisher vs burning · 2×perkAmount + 20% of finisher damage' },
 }
 
 export interface ComputedType {

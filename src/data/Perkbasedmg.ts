@@ -145,6 +145,7 @@ import {
   ICHOR_SPARK_SLASH_HEAL_AT_MIN,
   ICHOR_SPARK_SLASH_CHARGE_THRESHOLD,
   ICHOR_SPARK_BLEED_DURATION,
+  BLAZING_FINISHER_BASE_DMG,
 } from '../lib/constants'
 
 export interface PerkSliderDef {
@@ -1307,6 +1308,22 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
       },
     ],
     note: 'Guardbreak, no knockback. Applies Bleed 5s, lifesteals. Only activates at ≥37.5% charge bonus.',
+  },
+  // ── Blazing Finisher ──────────────────────────────────────────────────────
+  {
+    perkName: 'Blazing Finisher',
+    condition: 'On Finisher vs Burning enemies',
+    getBaseDamage: ({ perkAmount }) => BLAZING_FINISHER_BASE_DMG * perkAmount,
+    hits: 1,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { fire: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { fire: 1.0 },
+    finisherOnly: true,
+    guardbreak: true,
+    procCoefficient: { type: 'hasCoeff', value: 1.0 },
+    requiredEnemyDebuff: 'Burn',
+    note: `Removes Burn on hit. Additional 20% of finisher's pre-mit base damage (inherits finisher's damage type distribution and scaling). ${0.2}s cooldown per enemy. Explosion size scales on perk amount. Can proc other effects.`,
   },
 ]
 

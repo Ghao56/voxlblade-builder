@@ -808,6 +808,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: _explosiveChargePct = (perks['Explosive Charge'] ?? 0) > 0 ? EXPLOSIVE_CHARGE_PCT : 0
   $: _ichorSparkChainPct = ICHOR_SPARK_CHAIN_DMG_PCT * (perks['Ichor Spark'] ?? 0)
   $: _blubBlubAmt = (perks['Blub Blub'] ?? 0) && !disabledEffects.has('blubBlub') ? perks['Blub Blub'] ?? 0 : 0
+  $: _blazingFinisherAmt = perks['Blazing Finisher'] ?? 0
   $: _crushingPressureAmt = perks['Crushing Pressure'] ?? 0
   $: _echoIncinerationAmt = perks['Echo Incineration'] ?? 0
   $: _echoIncinerationDef = findPerkDmgDef('Echo Incineration')
@@ -2531,7 +2532,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     }> = []
     for (const e of _activePerkDmgEntries) {
       if (!e.isActive) continue
-      if (!e.isProcHit && e.perkName !== 'Springblast') continue
+      if (!e.isProcHit && e.perkName !== 'Springblast' && e.perkName !== 'Blazing Finisher') continue
       if (e.perkName === 'Echo Incineration' || e.perkName === 'Bombardier' || e.perkName === 'Runic Blades' || e.perkName === 'Quake') continue
       const perkDef = findPerkDmgDef(e.perkName)
 
@@ -2548,13 +2549,13 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         combatMult: e.combatMult,
         totalDmg: e.totalDmg,
         dmgTypes: e.resolvedDmgTypes,
-        procCoefficient: e.procCoefficient,
+        procCoefficient: e.perkName === 'Blazing Finisher' ? { type: 'noProc' } : e.procCoefficient,
         isProcHit: e.isProcHit,
         canApplyBurn: _hasSingedBurn,
         ...(perkSunburnMult !== 1 ? { weaponBoostMult: perkSunburnMult, weaponBoostLabel: perkLabel } : {}),
         ...(e.rawFinisherNumerator != null ? { rawFinisherNumerator: e.rawFinisherNumerator } : {}),
         ...(e.halfActivations != null ? { halfActivations: e.halfActivations } : {}),
-        ...(e.oncePerFinisher != null ? { oncePerFinisher: e.oncePerFinisher } : {}),
+        ...(e.oncePerFinisher != null ? { oncePerFinisher: e.perkName === 'Blazing Finisher' ? false : e.oncePerFinisher } : {}),
         ...(e.isProcHit && !e.finisherOnly ? { alwaysOnHit: true } : {}),
         ...(e.finisherOnly ? { finisherOnly: true } : {}),
         ...(perkDef?.getFinisherHitBaseDmg ? { getFinisherHitBaseDmg: perkDef.getFinisherHitBaseDmg } : {}),
@@ -2846,6 +2847,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       if (!entry.isActive) continue 
       if (entry.isProcHit) continue 
       if (entry.perkName === 'Cauterize') continue 
+      if (entry.perkName === 'Blazing Finisher') continue 
 
        // Check for heal effects from Draconic Blood abilities
        if (entry.perkName === 'Draconic Blood') {
@@ -3316,6 +3318,7 @@ $: _groupedSelfDamageSources = (() => {
     stormRendPct={_stormRendPct}
     explosiveChargePct={_explosiveChargePct}
     blubBlubAmt={_blubBlubAmt}
+    blazingFinisherAmt={_blazingFinisherAmt}
     dragonStateBaseDmg={_dragonStateHpGateActive ? _dragonStateBaseDmg : 0}
     dragonStateScalingMult={_dragonStateScalingMult}
     dragonStateCombatMult={_dragonStateCombatMult}

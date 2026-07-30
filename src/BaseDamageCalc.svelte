@@ -26,6 +26,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     LIFESTEAL_FLAT_HEAL_PER_STACK,
     CURSE_RIP_DIVISOR,
     BASE_CRIT_DMG_PCT,
+    BLAZING_FINISHER_FINISHER_PCT,
   } from './lib/constants'
 
   const _LIFESTEAL_EXCLUDED = new Set(['Barbed Flurry', 'Hex Ray', 'Ice Burst', 'Cauterize', 'Lightning Cloak'])
@@ -49,6 +50,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   export let stormRendPct: number = 0
   export let explosiveChargePct: number = 0
   export let blubBlubAmt: number = 0
+  export let blazingFinisherAmt: number = 0
   export let dragonStateBaseDmg: number = 0
   export let dragonStateScalingMult: number = 1
   export let dragonStateCombatMult: number = 1
@@ -91,9 +93,9 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     return out
   }
 
-  function resolveTypeInfo(k: string, penDecimal: number, procCoeff?: ProcCoefficient) {
+  function resolveTypeInfo(k: string, penDecimal: number, procCoeff?: ProcCoefficient, group?: string) {
     const info = DMG_TYPE_MAP.get(k) ?? { label: k, color: FALLBACK_DMG_COLOR }
-    const applicableBoosts = getApplicableBoosts(k, false, undefined, procCoeff)
+    const applicableBoosts = getApplicableBoosts(k, false, group, procCoeff)
     const typedMultUsed = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
     const typeDebuffMult = _activeDebuffTypeDamageMult[k] ?? 1
     const defPct = defPctForType(k)
@@ -593,6 +595,8 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       }
     })
 
+    const _finisherMainTypesEnd = types.length
+
     if (!isHeal && phantomPainPct > 0 && canProc(hit.procCoefficient)) {
       const ppHitBase = types.filter(t => !t.isHeal).reduce((s, t) => s + t.raw / (t.defMult || 1), 0)
       if (ppHitBase > 0) {
@@ -881,6 +885,26 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
           if (cauterizeBaseDmg > 0 && ph.canApplyBurn && canProc(ph.procCoefficient)) {
             addProcEffect(cauterizeBaseDmg, 1, { fire: 1.0 }, 'Cauterize', cauterizeScalingMult, ph.combatMult)
           }
+
+        }
+      }
+    }
+
+    if (!isHeal && hit.isFinisher && blazingFinisherAmt > 0) {
+      const bfDebuffMult = _activeDebuffDamageMult * selfDebuffDamageMult
+      const finisherPreDef = types.slice(0, _finisherMainTypesEnd)
+        .filter(t => !t.isHeal)
+        .reduce((s, t) => s + t.raw / (t.defMult * t.typeDebuffMult * bfDebuffMult), 0)
+      const inheritedBase = finisherPreDef * BLAZING_FINISHER_FINISHER_PCT * blazingFinisherAmt
+      if (inheritedBase > 0) {
+        const crushPen = crushingPenForType('fire')
+        const { typedMultUsed, typeDebuffMult, defMult } = resolveTypeInfo('fire', hitPenDecimal + crushPen / 100, hit.procCoefficient, hit.group)
+        const inheritedRawAdd = inheritedBase * typedMultUsed * defMult * bfDebuffMult * typeDebuffMult
+        const bfEntry = types.find(t => t.tag === 'Blazing Finisher')
+        if (bfEntry) {
+          bfEntry.typeBase += inheritedBase
+          bfEntry.raw += inheritedRawAdd
+          bfEntry.critVal = Math.round(bfEntry.raw * critDmgMult / 100 * 10000) / 10000
         }
       }
     }
