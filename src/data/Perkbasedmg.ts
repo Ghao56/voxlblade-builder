@@ -1422,6 +1422,30 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     },
     note: 'Does regular M2 after teleporting. Deals no knockback. ~1s cooldown. One tether at a time. Combines with Divine Crash for stronger variant (handled by Divine Crash entry).',
   },
+  // ── Grandmagic Guard ─────────────────────────────────────────────────
+  {
+    perkName: 'Grandmagic Guard',
+    condition: 'While Blocking',
+    getBaseDamage: ({ perkAmount }) => 0.2 * perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { magic: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { magic: 1.0 },
+    procCoefficient: { type: 'noProc' },
+  },
+  // ── Final Act ─────────────────────────────────────────────────
+  {
+    perkName: 'Final Act',
+    condition: 'Using a Rune while you have minions',
+    getBaseDamage: ({ perkAmount }) => 5 + 7.5 * perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { hex: 0.5, magic: 0.5 },
+    scalingMode: 'fixed',
+    scalings: ({ hex: 1.0, magic: 1.0,  summon: 1.0 }),
+    procCoefficient: { type: 'hasCoeff', value: 1.0 },
+    guardbreak: true,
+    note: 'Explosion size scales with perk amount.',
+  }
 ]
 
 const _perkDmgDefMap = new Map<string, PerkDmgDef[]>()
