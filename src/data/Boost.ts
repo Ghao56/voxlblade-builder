@@ -22,6 +22,7 @@ import {
   GUIDING_WINDS_WA_MULT_PER_STACK, CIVILIAN_MULT_PER_STACK,
   VAMPIRE_DIVISOR, TOXIN_CASTER_MULT_PER_STACK,
   CUT_DOWN_MULT_PER_AMOUNT, EXECUTIONER_MULT_PER_AMOUNT,
+  FREQUENT_FLIER_MULT_PER_STACK,
 } from '../lib/constants'
 import type { BoostAttackType, ProcScalingType } from '../lib/types'
 
@@ -99,6 +100,7 @@ export const BOOST_DEFS: BoostDef[] = [
   {sourceName: 'Frostbite', multiplierPerPerk: 0.10, type: 'dmg', condition: 'against Slowed or Frostbitten opponents'},
   {sourceName: 'Gelid Lance', multiplierPerPerk: 0.10, type: 'dmg', condition: 'against Bleeding opponents'},
   {sourceName: 'Vicious Edge', multiplierPerPerk: VICIOUS_EDGE_MULT_PER_STACK, type: 'dmg', condition: 'against Bleeding opponents'},
+  {sourceName: 'Frequent Flier', multiplierPerPerk: FREQUENT_FLIER_MULT_PER_STACK, type: 'dmg', condition: 'while mid-air'},
   {sourceName:'Perfection',multiplierPerPerk: PERFECTION_MULT_PER_STACK, type: 'dmg', condition: 'at max potency',},
   {sourceName:'Stealth',multiplierPerPerk: STEALTH_MULT_PER_STACK, type: 'dmg', condition: "against opponents not targeting you",},
   { sourceName: 'Golden Crits', multiplierPerPerk: GOLDEN_CRITS_MULT_PER_STACK, type: 'dmg', condition: '40% chance on crit', procScaling: 'positiveOnly', hasToggle: true, baseProcChance: GOLDEN_CRITS_BASE_PROC_CHANCE },
