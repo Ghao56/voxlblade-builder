@@ -986,7 +986,8 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     getHits: ({ perkAmount, statuses }) => {
       const cd = statuses?.waCooldown ?? 10
       const amt = Math.floor(perkAmount)
-      return Math.floor((PYRE_BLOOM_AMMO_BASE + PYRE_BLOOM_AMMO_PER_STACK * amt) * Math.min((cd / PYRE_BLOOM_AMMO_CD_DIVISOR) - PYRE_BLOOM_AMMO_CD_SUBTRACT, PYRE_BLOOM_AMMO_MAX))
+      const cdBracket = Math.min(Math.max((cd / PYRE_BLOOM_AMMO_CD_DIVISOR) - PYRE_BLOOM_AMMO_CD_SUBTRACT, PYRE_BLOOM_AMMO_MIN), PYRE_BLOOM_AMMO_MAX)
+      return Math.floor((PYRE_BLOOM_AMMO_BASE + PYRE_BLOOM_AMMO_PER_STACK * amt) * cdBracket)
     },
     dmgTypeMode: 'fixed',
     dmgTypes: { fire: 1.0 },
@@ -1000,7 +1001,8 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
         getValue: ({ perkAmount, statuses }) => {
           const cd = statuses?.waCooldown ?? 10
           const amt = Math.floor(perkAmount)
-          return Math.floor((PYRE_BLOOM_AMMO_BASE + PYRE_BLOOM_AMMO_PER_STACK * amt) * Math.min((cd / PYRE_BLOOM_AMMO_CD_DIVISOR) - PYRE_BLOOM_AMMO_CD_SUBTRACT, PYRE_BLOOM_AMMO_MAX))
+          const cdBracket = Math.min(Math.max((cd / PYRE_BLOOM_AMMO_CD_DIVISOR) - PYRE_BLOOM_AMMO_CD_SUBTRACT, PYRE_BLOOM_AMMO_MIN), PYRE_BLOOM_AMMO_MAX)
+          return Math.floor((PYRE_BLOOM_AMMO_BASE + PYRE_BLOOM_AMMO_PER_STACK * amt) * cdBracket)
         },
         format: v => `${v}`,
         condition: 'Min 1 · Max 10',
@@ -1022,7 +1024,8 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
           const cd = statuses?.waCooldown ?? 10
           const amt = Math.floor(perkAmount)
           const firerate = 1 + cd / PYRE_BLOOM_FIRERATE_DIVISOR
-          const hits = Math.floor((PYRE_BLOOM_AMMO_BASE + PYRE_BLOOM_AMMO_PER_STACK * amt) * Math.min((cd / PYRE_BLOOM_AMMO_CD_DIVISOR) - PYRE_BLOOM_AMMO_CD_SUBTRACT, PYRE_BLOOM_AMMO_MAX))
+          const cdBracket = Math.min(Math.max((cd / PYRE_BLOOM_AMMO_CD_DIVISOR) - PYRE_BLOOM_AMMO_CD_SUBTRACT, PYRE_BLOOM_AMMO_MIN), PYRE_BLOOM_AMMO_MAX)
+          const hits = Math.floor((PYRE_BLOOM_AMMO_BASE + PYRE_BLOOM_AMMO_PER_STACK * amt) * cdBracket)
           return firerate * hits
         },
         format: v => `${Math.round(v * 100) / 100}s`,
