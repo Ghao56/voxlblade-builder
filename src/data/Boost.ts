@@ -423,6 +423,21 @@ export const BOOST_DEFS: BoostDef[] = [
     },
   },
 
+  {
+    sourceName: 'Deltabit',
+    type: 'dmg',
+    calcFn: (ctx) => {
+      const amount = ctx.perks['Deltabit'] ?? 0
+      if (amount <= 0) return null
+      const pct = 10 * amount
+      return {
+        multiplier: 1 + 0.1 * amount,
+        condition: `on M2 damage → +${pct}% dmg`,
+      }
+    },
+    appliesTo: ['m2'],
+  },
+
   // Level damage (handled specially in calcBoosts)
   { sourceName: 'Level Damage', multiplierPerPerk: 0, type: 'dmg', isLevel: true },
 ]

@@ -2136,8 +2136,8 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           ? { ...base, hex: Math.round(((base.hex ?? 0) + _emotionalHexBonus) * 10000) / 10000 }
           : base
         result = applyAirToMagicConversion(result, _spiritWindsConversionRate, _darkMagicHexBonus, _echoIncinerationAmt)
-        return result
-      })()
+    return result
+  })()
       const types: DamageDisplayType[] = Object.entries(dtFinal).map(([k, mult]) => ({
         label: k.charAt(0).toUpperCase() + k.slice(1),
         rawVal: Math.round(base * 10000) / 10000,
@@ -2319,6 +2319,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
 
   /** Hit count of the last element in M1 (M1 finisher) */
   $: _m1FinisherHits = (() => {
+    if ((perks['Deltabit'] ?? 0) > 0 && !disableWeaponBoost) return _m2FinisherHits
     if (!_displayRows.length || !_displayRows[0].m1) return 1
     const m1 = _displayRows[0].m1
     const last = m1[m1.length - 1]
@@ -2383,11 +2384,11 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       if (def.perkName === 'Bomber Charge' && selectedWA.name === 'Retaliate') continue
       if (def.perkName === 'Ruler Of The Sands' && disabledEffects.has('rulerOfTheSands')) continue
 
-      const hitType: BoostAttackType = def.isWA   ? 'wa'
+      const hitType: BoostAttackType = def.boostCat ?? (def.isWA   ? 'wa'
                       : def.isRune ? 'rune'
                       : (def.isM2 || def.isFinisher) ? 'm2'
                       : def.isM1  ? 'm1'
-                      : 'perk'
+                      : 'perk')
       const combatMult = _categoryMult(hitType, canProc(def.procCoefficient))
       const mwMult = (def.isFinisher || def.isM2) && _mortalWillFinisherDmgMult !== 1 ? _mortalWillFinisherDmgMult : 1
       const finalCombatMult = combatMult * mwMult
@@ -2628,16 +2629,52 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     procCount?: number
     finisherGroupHitCount?: number
     perHitCounts?: boolean
+    finisherIndex?: number
   }
 
   $: _bdcWeaponHits = (() => {
     void weaponCharge
     const result: BDCHit[] = []
     const row = _displayRows[0]
+    const _deltabitRank = disableWeaponBoost ? 0 : (perks['Deltabit'] ?? 0)
+    const _deltabitCombo = _deltabitRank > 0 && !!row && !!row.m1 && row.m1.length > 0 && isFinisher(row, 'm1', row.m1.length - 1)
+    const _deltaDrillReps = disableWeaponBoost ? 0 : Math.round(perks['Delta Drill'] ?? 0)
     if (row && Object.keys(_weaponDmgTypes).length > 0) {
       const gunLabel = (row as any).gunLabel as string | undefined
       const m1Types = (gunLabel && !(row as any).m2Only)   ? _gunDmgTypes : _convertedWeaponDmgTypes
       const m2Types = (gunLabel && !(row as any).m2NoLock) ? _gunDmgTypes : _convertedWeaponDmgTypes
+      const pushM2Hit = (h: any, i: number, label?: string, group: 'M1' | 'M2' = 'M2', finMult = 1, finisherIndex?: number) => {
+        const rawBase = typeof h === 'number' ? h : h.n
+        const count = typeof h === 'number' ? 1 : h.count
+        const base = finMult !== 1 ? roundMultiplier(applyWeaponCharge(rawBase) * finMult) : applyWeaponCharge(rawBase)
+        const hitDmgTypes = _mortalWillHolyTypeBonus > 0
+          ? { ...m2Types, holy: Math.round(((m2Types.holy ?? 0) + _mortalWillHolyTypeBonus) * 10000) / 10000 }
+          : m2Types
+        const piercerRank = disableWeaponBoost ? 0 : (perks['Piercer'] ?? 0)
+        const finalDmgTypes = piercerRank > 0 ? applyPiercerTrueConversion(hitDmgTypes, piercerRank) : hitDmgTypes
+        const boostDmgTypes = piercerRank > 0 ? { ...hitDmgTypes } : undefined
+        const mwMult = _mortalWillFinisherDmgMult !== 1 ? _mortalWillFinisherDmgMult : 1
+        const sunburnMult = _sunburnActive && _sunburnEnemyBurning
+          ? ((hitDmgTypes.holy ?? 0) > 0 ? _sunburnHolyDmgMult : _sunburnUniversalDmgMult) : 1
+        const combinedWbMult = roundMultiplier((_m2WeaponBoost.mult ?? 1) * mwMult * sunburnMult * _activeBellowingEmberMult)
+        const wbLabel = [
+          _m2WeaponBoost.mult !== 1 ? _m2WeaponBoost.labels.join(', ') : '',
+          _mortalWillFinisherDmgMult !== 1 ? 'Mortal Will' : '',
+          sunburnMult !== 1 ? 'Sunburn' : '',
+          _activeBellowingEmberMult !== 1 ? 'Bellowing Ember' : '',
+        ].filter(Boolean).join(', ')
+        result.push({
+          group, index: i, count, base, scalingMult: _scalingMult, combatMult: _m2CombatMult,
+          isFinisher: true, dmgTypes: finalDmgTypes,
+          baseDmgTypes: _weaponDmgTypesBase,
+          ...(piercerRank > 0 ? { boostDmgTypes } : {}),
+          ...(combinedWbMult !== 1 ? { weaponBoostMult: combinedWbMult, weaponBoostLabel: wbLabel } : {}),
+          canApplyBurn: _hasSingedBurn,
+          finisherGroupHitCount: _m2FinisherHits,
+          ...(label ? { label } : {}),
+          ...(finisherIndex != null ? { finisherIndex } : {}),
+        })
+      }
       if (row.m1 && !(_activeMountRuneDef && mountActive)) {
         const m1Hits = row.m1
         const _pursuitRank = disableWeaponBoost ? 0 : (perks['Pursuit'] ?? 0)
@@ -2645,69 +2682,65 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         const _pursuitMult = _pursuitActive ? PURSUIT_BASE_MULT + PURSUIT_MULT_PER_RANK * _pursuitRank : 1
         m1Hits.forEach((h: any, i: number) => {
           if (_pursuitActive && i === m1Hits.length - 1) return
+          const finisherHit = isFinisher(row, 'm1', i)
+          if (finisherHit && _deltabitCombo) {
+            if (row.m2) {
+              if (_deltaDrillReps === 0) {
+                row.m2.forEach((m2h: any, m2i: number) => pushM2Hit(m2h, m2i, 'M2 (Deltabit)', 'M1'))
+              } else {
+                for (let p = 1; p <= _deltaDrillReps + 1; p++) {
+                  row.m2.forEach((m2h: any, m2i: number) =>
+                    pushM2Hit(m2h, m2i, `M2-${p}`, 'M1', Math.max(0.3, 0.7 - 0.1 * p), p))
+                }
+              }
+            }
+            return
+          }
           const base = typeof h === 'number' ? h : h.n
           const count = typeof h === 'number' ? 1 : h.count
-          const finisherHit = isFinisher(row, 'm1', i)
-          const wb = finisherHit ? _m1FinisherWeaponBoost : null
-          const mwMult = finisherHit && _mortalWillFinisherDmgMult !== 1 ? _mortalWillFinisherDmgMult : 1
-          const hitDmgTypes = finisherHit && _mortalWillHolyTypeBonus > 0
-            ? { ...m1Types, holy: Math.round(((m1Types.holy ?? 0) + _mortalWillHolyTypeBonus) * 10000) / 10000 }
-            : m1Types
-          const piercerRank = (finisherHit && !disableWeaponBoost) ? (perks['Piercer'] ?? 0) : 0
-          const finalDmgTypes = piercerRank > 0 ? applyPiercerTrueConversion(hitDmgTypes, piercerRank) : hitDmgTypes
-          const boostDmgTypes = piercerRank > 0 ? { ...hitDmgTypes } : undefined
-          const sunburnMult = _sunburnActive && _sunburnEnemyBurning
-            ? ((hitDmgTypes.holy ?? 0) > 0 ? _sunburnHolyDmgMult : _sunburnUniversalDmgMult) : 1
-          const combinedWbMult = roundMultiplier((wb?.mult ?? 1) * mwMult * sunburnMult * _pursuitMult * _activeBellowingEmberMult)
-          const wbLabel = [
-            wb && wb.mult !== 1 ? wb.labels.join(', ') : '',
-            _mortalWillFinisherDmgMult !== 1 ? 'Mortal Will' : '',
-            sunburnMult !== 1 ? 'Sunburn' : '',
-            _pursuitMult !== 1 ? 'Pursuit' : '',
-            _activeBellowingEmberMult !== 1 ? 'Bellowing Ember' : '',
-          ].filter(Boolean).join(', ')
-          result.push({
-            group: 'M1', index: i, count, base, scalingMult: _scalingMult, combatMult: _m1CombatMult,
-            isFinisher: finisherHit, dmgTypes: finalDmgTypes,
-            baseDmgTypes: _weaponDmgTypesBase,
-            ...(piercerRank > 0 ? { boostDmgTypes } : {}),
-            ...(combinedWbMult !== 1 ? { weaponBoostMult: combinedWbMult, weaponBoostLabel: wbLabel } : {}),
-            canApplyBurn: _hasSingedBurn,
-            finisherGroupHitCount: finisherHit ? _m1FinisherHits : undefined,
-          })
+          const pushM1Hit = (finMult: number, finLabel?: string) => {
+            const wb = finisherHit ? _m1FinisherWeaponBoost : null
+            const mwMult = finisherHit && _mortalWillFinisherDmgMult !== 1 ? _mortalWillFinisherDmgMult : 1
+            const hitDmgTypes = finisherHit && _mortalWillHolyTypeBonus > 0
+              ? { ...m1Types, holy: Math.round(((m1Types.holy ?? 0) + _mortalWillHolyTypeBonus) * 10000) / 10000 }
+              : m1Types
+            const piercerRank = (finisherHit && !disableWeaponBoost) ? (perks['Piercer'] ?? 0) : 0
+            const finalDmgTypes = piercerRank > 0 ? applyPiercerTrueConversion(hitDmgTypes, piercerRank) : hitDmgTypes
+            const boostDmgTypes = piercerRank > 0 ? { ...hitDmgTypes } : undefined
+            const sunburnMult = _sunburnActive && _sunburnEnemyBurning
+              ? ((hitDmgTypes.holy ?? 0) > 0 ? _sunburnHolyDmgMult : _sunburnUniversalDmgMult) : 1
+            const combinedWbMult = roundMultiplier((wb?.mult ?? 1) * mwMult * sunburnMult * _pursuitMult * _activeBellowingEmberMult)
+            const wbLabel = [
+              wb && wb.mult !== 1 ? wb.labels.join(', ') : '',
+              _mortalWillFinisherDmgMult !== 1 ? 'Mortal Will' : '',
+              sunburnMult !== 1 ? 'Sunburn' : '',
+              _pursuitMult !== 1 ? 'Pursuit' : '',
+              _activeBellowingEmberMult !== 1 ? 'Bellowing Ember' : '',
+            ].filter(Boolean).join(', ')
+            result.push({
+              group: 'M1', index: i, count,
+              base: finMult !== 1 ? roundMultiplier(base * finMult) : base,
+              scalingMult: _scalingMult, combatMult: _m1CombatMult,
+              isFinisher: finisherHit, dmgTypes: finalDmgTypes,
+              baseDmgTypes: _weaponDmgTypesBase,
+              ...(piercerRank > 0 ? { boostDmgTypes } : {}),
+              ...(combinedWbMult !== 1 ? { weaponBoostMult: combinedWbMult, weaponBoostLabel: wbLabel } : {}),
+              canApplyBurn: _hasSingedBurn,
+              finisherGroupHitCount: finisherHit ? _m1FinisherHits : undefined,
+              ...(finLabel ? { label: finLabel } : {}),
+            })
+          }
+          if (finisherHit && _deltaDrillReps > 0) {
+            for (let p = 1; p <= _deltaDrillReps + 1; p++) {
+              pushM1Hit(Math.max(0.3, 0.7 - 0.1 * p), p > 1 ? 'Delta Drill' : undefined)
+            }
+            return
+          }
+          pushM1Hit(1)
         })
       }
       if (row.m2 && !(_activeMountRuneDef && mountActive)) {
-        row.m2.forEach((h: any, i: number) => {
-          const rawBase = typeof h === 'number' ? h : h.n
-          const count = typeof h === 'number' ? 1 : h.count
-          const base = applyWeaponCharge(rawBase)
-          const hitDmgTypes = _mortalWillHolyTypeBonus > 0
-            ? { ...m2Types, holy: Math.round(((m2Types.holy ?? 0) + _mortalWillHolyTypeBonus) * 10000) / 10000 }
-            : m2Types
-          const piercerRank = disableWeaponBoost ? 0 : (perks['Piercer'] ?? 0)
-          const finalDmgTypes = piercerRank > 0 ? applyPiercerTrueConversion(hitDmgTypes, piercerRank) : hitDmgTypes
-          const boostDmgTypes = piercerRank > 0 ? { ...hitDmgTypes } : undefined
-          const mwMult = _mortalWillFinisherDmgMult !== 1 ? _mortalWillFinisherDmgMult : 1
-          const sunburnMult = _sunburnActive && _sunburnEnemyBurning
-            ? ((hitDmgTypes.holy ?? 0) > 0 ? _sunburnHolyDmgMult : _sunburnUniversalDmgMult) : 1
-          const combinedWbMult = roundMultiplier((_m2WeaponBoost.mult ?? 1) * mwMult * sunburnMult * _activeBellowingEmberMult)
-          const wbLabel = [
-            _m2WeaponBoost.mult !== 1 ? _m2WeaponBoost.labels.join(', ') : '',
-            _mortalWillFinisherDmgMult !== 1 ? 'Mortal Will' : '',
-            sunburnMult !== 1 ? 'Sunburn' : '',
-            _activeBellowingEmberMult !== 1 ? 'Bellowing Ember' : '',
-          ].filter(Boolean).join(', ')
-          result.push({
-            group: 'M2', index: i, count, base, scalingMult: _scalingMult, combatMult: _m2CombatMult,
-            isFinisher: true, dmgTypes: finalDmgTypes,
-            baseDmgTypes: _weaponDmgTypesBase,
-            ...(piercerRank > 0 ? { boostDmgTypes } : {}),
-            ...(combinedWbMult !== 1 ? { weaponBoostMult: combinedWbMult, weaponBoostLabel: wbLabel } : {}),
-            canApplyBurn: _hasSingedBurn,
-            finisherGroupHitCount: _m2FinisherHits,
-          })
-        })
+        row.m2.forEach((h: any, i: number) => pushM2Hit(h, i))
       }
     }
     if (_activeMountRuneDef && mountActive) {
@@ -2948,8 +2981,8 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         ? getDraconicColorDmgMultiplier(_effDraconicColor)
         : 1
 
-      const _pushBdcHit = (hitCount: number, hitBase: number, perHitCounts?: boolean) => result.push({
-        group: entry.perkName === 'Draconic Blood' ? 'Rune' : entry.isWA ? 'WA' : entry.isRune ? 'Rune' : 'Perk',
+      const _pushBdcHit = (hitCount: number, hitBase: number, perHitCounts?: boolean, groupOverride?: string, labelOverride?: string, finisherIndex?: number) => result.push({
+        group: groupOverride ?? (entry.perkName === 'Draconic Blood' ? 'Rune' : entry.isWA ? 'WA' : entry.isRune ? 'Rune' : entry.isM2 ? 'M2' : entry.isM1 ? 'M1' : 'Perk'),
         index: result.length,
         count: hitCount,
         base: hitBase,
@@ -2958,7 +2991,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         isFinisher: entry.isFinisher ?? false,
         dmgTypes: entry.resolvedDmgTypes,
         baseDmgTypes: entry.baseDmgTypes,
-        label: entry.displayName,
+        label: labelOverride ?? entry.displayName,
         isM1: entry.isM1,
         isM2: entry.isM2,
         procCoefficient: entry.procCoefficient,
@@ -2966,6 +2999,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         ...(entry.isM2 && entry.isFinisher && entry.procCoefficient?.type !== 'noProc' ? { procCount: 1 } : {}),
         canApplyBurn: _hasSingedBurn,
         ...(entry.forceCrit ? { forceCrit: true } : {}),
+        ...(finisherIndex != null ? { finisherIndex } : {}),
         ...((() => {
           const perkSunburnMult = _sunburnActive && _sunburnEnemyBurning
             ? ((entry.resolvedDmgTypes.holy ?? 0) > 0 ? _sunburnHolyDmgMult : _sunburnUniversalDmgMult) : 1
@@ -2983,16 +3017,29 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       // typedHits_m2 is built per (damage type x hit value), but the same hit value
       // appears once per type (rawVal is type-independent) — dedupe so each hit
       // value is pushed a single time with the full resolved type split.
+      const _pushPerkHit = (hitCount: number, hitBase: number, perHitCounts?: boolean) => {
+        _pushBdcHit(hitCount, hitBase, perHitCounts)
+        if (entry.isM2 && _deltabitCombo) {
+          if (_deltaDrillReps === 0) {
+            _pushBdcHit(hitCount, hitBase, perHitCounts, 'M1', `${entry.displayName} (Deltabit)`)
+          } else {
+            _pushBdcHit(hitCount, hitBase, perHitCounts, 'M1', `${entry.displayName} (Deltabit)`, 1)
+            for (let p = 1; p <= _deltaDrillReps; p++) {
+              _pushBdcHit(hitCount, hitBase, perHitCounts, 'M1', `${entry.displayName} (Delta Drill)`, p + 1)
+            }
+          }
+        }
+      }
       const hasPerHitCounts = entry.typedHits_m2.some(t => t.count != null)
       if (hasPerHitCounts) {
         const pushedBases = new Set<number>()
         for (const typedHit of entry.typedHits_m2) {
           if (!typedHit.count || pushedBases.has(typedHit.rawVal)) continue
           pushedBases.add(typedHit.rawVal)
-          _pushBdcHit(typedHit.count, typedHit.rawVal, true)
+          _pushPerkHit(typedHit.count, typedHit.rawVal, true)
         }
       } else {
-        _pushBdcHit(
+        _pushPerkHit(
           entry.perkName === 'Springblast' ? springblastFinisherHits : (entry.hits ?? 1),
           entry.typedHits_m2[0].rawVal,
         )
@@ -3118,6 +3165,22 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
             * _computePerkScalingMult(_activeRuneDmgDef.scalings) * _runeCombatMult, 'Rune')
         }
       }
+    }
+
+    // Interleave Deltabit/Delta Drill M2 finisher perks with their M2 rows:
+    // M1 group becomes [plain hits, Perk#1, M2-1, Perk#2, M2-2, ...].
+    if (result.some(h => h.group === 'M1' && h.finisherIndex != null)) {
+      const m1Indices = result.map((h, i) => h.group === 'M1' ? i : -1).filter(i => i >= 0)
+      const m1Rows = m1Indices.map(i => result[i])
+      const plainM1 = m1Rows.filter(h => h.finisherIndex == null)
+      const indexed = m1Rows.filter(h => h.finisherIndex != null)
+      const maxP = Math.max(...indexed.map(h => h.finisherIndex!))
+      const reorderedM1 = [...plainM1]
+      for (let p = 1; p <= maxP; p++) {
+        reorderedM1.push(...indexed.filter(h => h.finisherIndex === p && !h.isM2))
+        reorderedM1.push(...indexed.filter(h => h.finisherIndex === p && h.isM2))
+      }
+      m1Indices.forEach((idx, k) => { result[idx] = reorderedM1[k] })
     }
 
     return result

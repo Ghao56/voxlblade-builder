@@ -3,6 +3,7 @@ import { HYPNOTIST_POTENCY_PER_PERK, HYPNOTIST_DURATION_BASE, HYPNOTIST_DURATION
 import type { GrantedBuff } from './BuffData'
 import { canProc, type ProcCoefficient } from '../lib/types'
 import { calcBaseMaxHP } from '../lib/constants/game'
+import { BASIC_DEBUFF_DURATION } from '../lib/constants/buffs'
 import { BELLOWING_EMBER_HP_GATE_THRESHOLD, BELLOWING_EMBER_HP_GATE_PER_STACK, PYRE_BLOOM_BURN_DURATION, RUNIC_BLADES_DEBUFF_DURATION_PER_STACK, CACI_SPIRIT_BLEED_DURATION } from '../lib/constants/perk-base-damage'
 import { getActiveEnemyHpDebuffs } from './enemyHpEffects'
 
@@ -160,6 +161,18 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
       duration: CACI_SPIRIT_BLEED_DURATION,
       condition: 'Every hit of Caci Spirit inflicts Bleed',
       sourceName: 'Caci Spirit',
+      sourceType: 'perk',
+    })
+  }
+
+  const gravEnforcerAmt = perks['Gravitational Enforcer'] ?? 0
+  if (gravEnforcerAmt > 0 && !existingBuffNames.includes('Shatter')) {
+    debuffs.push({
+      buffName: 'Shatter',
+      potency: 0.1 * gravEnforcerAmt,
+      duration: BASIC_DEBUFF_DURATION,
+      condition: 'On RMB activation · Potency = 0.1 × ' + +gravEnforcerAmt.toFixed(2),
+      sourceName: 'Gravitational Enforcer',
       sourceType: 'perk',
     })
   }

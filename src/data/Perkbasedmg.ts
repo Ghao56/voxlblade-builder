@@ -245,6 +245,7 @@ export interface PerkDmgDef {
   halfActivations?: boolean
   forceCrit?: boolean
   guardbreak?: boolean
+  boostCat?: 'm1' | 'm2' | 'perk' | 'rune' | 'wa'
   procCoefficient?: ProcCoefficient
   note?: string
   hpGate?: HpGate
@@ -1108,6 +1109,29 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     scalingMode: 'fixed',
     scalings: { earth: 0.5, magic: 0.5 },
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
+  },
+  // ── Gravitational Enforcer ────────────────────────────────────────────────
+  {
+    perkName: 'Gravitational Enforcer',
+    condition: 'On RMB activation — pulls opponents before your normal RMB',
+    getBaseDamage: ({ perkAmount }) => 10 + 1 * perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { earth: 0.5, magic: 0.5 },
+    scalingMode: 'fixed',
+    scalings: { earth: 1.0, magic: 1.0 },
+    isM2: true,
+    guardbreak: true,
+    boostCat: 'perk',
+    secondaryEffects: [
+      {
+        label: 'Shatter',
+        getValue: ({ perkAmount }) => 0.1 * perkAmount,
+        format: v => `${v.toFixed(1)} potency`,
+        condition: 'Applied to pulled opponents · Stun',
+        tone: 'offense',
+      },
+    ],
+    note: 'Increases RMB cooldown. Your normal RMB immediately follows once this perk\'s animation ends.',
   },
 // ── Heavy Slate ──────────────────────────────────────────────────────
   {
