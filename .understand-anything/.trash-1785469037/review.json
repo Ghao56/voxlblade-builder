@@ -1,0 +1,41 @@
+{
+  "issues": [],
+  "warnings": [
+    "Node 'document:AGENTS.md' has no edges (orphan)",
+    "Node 'document:README.md' has no edges (orphan)",
+    "Node 'document:ts-errors.txt' has no edges (orphan)",
+    "Node 'file:analyze-mounticon.mjs' has no edges (orphan)",
+    "Node 'file:src/DidYouMean.svelte' has no edges (orphan)",
+    "Node 'file:src/Highlight.svelte' has no edges (orphan)",
+    "Node 'file:src/lib/constants/boosts.ts' has no edges (orphan)",
+    "Node 'file:src/lib/constants/cdr.ts' has no edges (orphan)",
+    "Node 'file:src/lib/engine/engine.ts' has no edges (orphan)",
+    "Node 'file:src/lib/Toast.svelte' has no edges (orphan)",
+    "Node 'file:src/MountIcon.svelte' has no edges (orphan)",
+    "Node 'file:vite.config.ts' has no edges (orphan)"
+  ],
+  "stats": {
+    "totalNodes": 292,
+    "totalEdges": 487,
+    "totalLayers": 8,
+    "tourSteps": 14,
+    "nodeTypes": {
+      "file": 126,
+      "function": 149,
+      "pipeline": 1,
+      "config": 10,
+      "document": 6
+    },
+    "edgeTypes": {
+      "imports": 126,
+      "contains": 149,
+      "exports": 100,
+      "calls": 40,
+      "depends_on": 43,
+      "tested_by": 2,
+      "serves": 1,
+      "related": 15,
+      "documents": 11
+    }
+  }
+}

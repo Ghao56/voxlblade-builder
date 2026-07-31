@@ -1,0 +1,20 @@
+{
+  "fixedSectionOk": true,
+  "nodesRecovered": 0,
+  "edgesRestored": 0,
+  "crossBatchEdgesAdded": 0,
+  "typesRemapped": 0,
+  "complexityRemapped": 0,
+  "notes": [
+    "Merge report verified: assembled-graph.json contains 292 nodes and 487 edges, matching the merged input (12 batch files: 30+35+54+33+13+15+1+16+11+38+35+11 = 292 nodes; 70+65+113+65+28+31+1+10+0+46+34+24 = 487 edges). No 'Fixed'/'Could not fix' sections, consistent with a clean merge.",
+    "Node sanity: all 292 nodes have non-empty ids and valid types (file=126, function=149, config=10, document=6, pipeline=1). All file nodes follow the 'file:<path>' id convention and carry filePath. No duplicate node ids. No dropped or malformed nodes found in any batch (0 nodes missing id across batch-1..12).",
+    "Edge sanity: 0 self-referencing edges, 0 edges with invalid/missing types, 0 edges referencing missing nodes. All 487 edges carry direction and weight. Edge type histogram: imports=126, contains=149, exports=100, calls=40, depends_on=43, tested_by=2, serves=1, related=15, documents=11. Batch edges have no id field by convention (verified against batch files), so absence of edge ids is not a defect.",
+    "Cross-batch import gaps: import-map.json has 143 entries, 41 with resolved targets (108 source->target pairs total). Verified every pair has a matching 'imports' edge (source 'file:<path>', target 'file:<resolvedPath>') in the assembled graph; 0 missing, so no cross-batch edges were added. 18 additional imports edges exist for Svelte components (e.g. src/StatFilter.svelte) that the import-map scanner did not resolve; these came from batch source analysis, reference real scan-inventory files, and were kept.",
+    "Inventory coverage: all 143 files in scan-result.json files[] have a matching node in the graph (exact filePath match, 1:1). No scan-inventory files are missing; conversely no node filePath exists outside the scan inventory. 0 missing inventory files.",
+    "Batch provenance: all 292 batch node ids are present exactly once in the assembled graph (292 unique ids), including the 11 edge-less nodes from batch-9.",
+    "tested_by edges: 2 (src/data/weaponConditionalBoosts.ts and src/lib/utils.ts -> tests/piercer.test.ts), production->test direction, consistent with path-convention supplement. Both production nodes are tagged 'tested'.",
+    "No corrections were required: the assembled graph required no edits. No nodes recovered, no edges restored, no types or complexities remapped.",
+    "Remaining concerns: none significant. Minor observation - 102 import-map entries resolve to empty target lists (files with no detected imports, including config/markup files), which is expected and produces no edges."
+  ],
+  "missingInventoryFiles": []
+}

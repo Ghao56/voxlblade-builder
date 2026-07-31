@@ -1,0 +1,185 @@
+{
+  "projectRoot": "C:/Users/Administrator/Downloads/voxlblade-builder",
+  "batchFiles": [
+    {
+      "path": "src/lib/constants/defensive.ts",
+      "language": "typescript",
+      "sizeLines": 22,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/draconic-colors.ts",
+      "language": "typescript",
+      "sizeLines": 20,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/draconic.ts",
+      "language": "typescript",
+      "sizeLines": 10,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/heals.ts",
+      "language": "typescript",
+      "sizeLines": 5,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/index.ts",
+      "language": "typescript",
+      "sizeLines": 18,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/thresholds.ts",
+      "language": "typescript",
+      "sizeLines": 5,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/constants/wa-display.ts",
+      "language": "typescript",
+      "sizeLines": 17,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/EnchantSelect.svelte",
+      "language": "svelte",
+      "sizeLines": 464,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/engine/engine.ts",
+      "language": "typescript",
+      "sizeLines": 5,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/Modal.svelte",
+      "language": "svelte",
+      "sizeLines": 212,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/modals/AccessorySelectModal.svelte",
+      "language": "svelte",
+      "sizeLines": 202,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/modals/GuildModal.svelte",
+      "language": "svelte",
+      "sizeLines": 98,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/modals/index.ts",
+      "language": "typescript",
+      "sizeLines": 4,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/modals/RaceModal.svelte",
+      "language": "svelte",
+      "sizeLines": 60,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/modals/WeaponPartModal.svelte",
+      "language": "svelte",
+      "sizeLines": 137,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/StatFilterShared.svelte",
+      "language": "svelte",
+      "sizeLines": 97,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/stats/elementalBoosts.ts",
+      "language": "typescript",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/stats/filterActions.ts",
+      "language": "typescript",
+      "sizeLines": 40,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/Toast.svelte",
+      "language": "svelte",
+      "sizeLines": 99,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/ui/Badge.svelte",
+      "language": "svelte",
+      "sizeLines": 148,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/ui/Button.svelte",
+      "language": "svelte",
+      "sizeLines": 143,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/ui/RollValue.svelte",
+      "language": "svelte",
+      "sizeLines": 65,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/uiConstants.ts",
+      "language": "typescript",
+      "sizeLines": 80,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/main.ts",
+      "language": "typescript",
+      "sizeLines": 7,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/ModalSearchHeader.svelte",
+      "language": "svelte",
+      "sizeLines": 199,
+      "fileCategory": "code"
+    }
+  ],
+  "batchImportData": {
+    "src/lib/constants/defensive.ts": [],
+    "src/lib/constants/draconic-colors.ts": [],
+    "src/lib/constants/draconic.ts": [],
+    "src/lib/constants/heals.ts": [],
+    "src/lib/constants/index.ts": [],
+    "src/lib/constants/thresholds.ts": [],
+    "src/lib/constants/wa-display.ts": [],
+    "src/lib/EnchantSelect.svelte": [],
+    "src/lib/engine/engine.ts": [],
+    "src/lib/Modal.svelte": [],
+    "src/lib/modals/AccessorySelectModal.svelte": [],
+    "src/lib/modals/GuildModal.svelte": [],
+    "src/lib/modals/index.ts": [],
+    "src/lib/modals/RaceModal.svelte": [],
+    "src/lib/modals/WeaponPartModal.svelte": [],
+    "src/lib/StatFilterShared.svelte": [],
+    "src/lib/stats/elementalBoosts.ts": [],
+    "src/lib/stats/filterActions.ts": [],
+    "src/lib/Toast.svelte": [],
+    "src/lib/ui/Badge.svelte": [],
+    "src/lib/ui/Button.svelte": [],
+    "src/lib/ui/RollValue.svelte": [],
+    "src/lib/uiConstants.ts": [],
+    "src/main.ts": [
+      "src/app.css",
+      "src/App.svelte"
+    ],
+    "src/ModalSearchHeader.svelte": []
+  }
+}

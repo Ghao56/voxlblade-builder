@@ -1,0 +1,2390 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 12,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "src/data/TypedDmgBoost.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 138,
+      "nonEmptyLines": 122,
+      "functions": [
+        {
+          "name": "getMaxBuffPotency",
+          "startLine": 73,
+          "endLine": 78,
+          "params": [
+            "buffName",
+            "activeBuffs"
+          ]
+        },
+        {
+          "name": "calcTypedDmgBoosts",
+          "startLine": 97,
+          "endLine": 138,
+          "params": [
+            "perks",
+            "ctx"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "calcTypedDmgBoosts",
+          "line": 97,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getMaxBuffPotency",
+          "callee": "activeBuffs.filter",
+          "lineNumber": 75
+        },
+        {
+          "caller": "getMaxBuffPotency",
+          "callee": "Math.max",
+          "lineNumber": 77
+        },
+        {
+          "caller": "getMaxBuffPotency",
+          "callee": "matches.map",
+          "lineNumber": 77
+        },
+        {
+          "caller": "calcTypedDmgBoosts",
+          "callee": "def.activeIf",
+          "lineNumber": 107
+        },
+        {
+          "caller": "calcTypedDmgBoosts",
+          "callee": "getMaxBuffPotency",
+          "lineNumber": 110
+        },
+        {
+          "caller": "calcTypedDmgBoosts",
+          "callee": "def.getDamageMultiplier",
+          "lineNumber": 116
+        },
+        {
+          "caller": "calcTypedDmgBoosts",
+          "callee": "def.getHealMultiplier",
+          "lineNumber": 117
+        },
+        {
+          "caller": "calcTypedDmgBoosts",
+          "callee": "def.getAffectedTypes",
+          "lineNumber": 120
+        },
+        {
+          "caller": "calcTypedDmgBoosts",
+          "callee": "activeEntries.push",
+          "lineNumber": 126
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 1,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/data/Weaponartcheck.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 148,
+      "nonEmptyLines": 128,
+      "functions": [
+        {
+          "name": "weaponTypeMatches",
+          "startLine": 3,
+          "endLine": 5,
+          "params": [
+            "required",
+            "actual"
+          ]
+        },
+        {
+          "name": "passesAtLeastOneScaling",
+          "startLine": 36,
+          "endLine": 45,
+          "params": [
+            "req",
+            "scalings"
+          ]
+        },
+        {
+          "name": "meetsScalingReqs",
+          "startLine": 47,
+          "endLine": 53,
+          "params": [
+            "req",
+            "scalings"
+          ]
+        },
+        {
+          "name": "meetsStatReqs",
+          "startLine": 55,
+          "endLine": 61,
+          "params": [
+            "req",
+            "stats"
+          ]
+        },
+        {
+          "name": "buildUnmetStatReqs",
+          "startLine": 63,
+          "endLine": 70,
+          "params": [
+            "req",
+            "stats"
+          ]
+        },
+        {
+          "name": "buildUnmetScalingReqs",
+          "startLine": 72,
+          "endLine": 93,
+          "params": [
+            "req",
+            "scalings"
+          ]
+        },
+        {
+          "name": "checkWA",
+          "startLine": 95,
+          "endLine": 118,
+          "params": [
+            "wa",
+            "scalings",
+            "stats",
+            "weaponType",
+            "isMonk",
+            "bladeName",
+            "handleName"
+          ]
+        },
+        {
+          "name": "getUnmetReqs",
+          "startLine": 120,
+          "endLine": 148,
+          "params": [
+            "wa",
+            "scalings",
+            "stats",
+            "weaponType",
+            "isMonk",
+            "bladeName",
+            "handleName"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "checkWA",
+          "line": 95,
+          "isDefault": false
+        },
+        {
+          "name": "getUnmetReqs",
+          "line": 120,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "passesAtLeastOneScaling",
+          "callee": "Object.entries(req.atLeastOneScaling).some",
+          "lineNumber": 41
+        },
+        {
+          "caller": "passesAtLeastOneScaling",
+          "callee": "Object.entries",
+          "lineNumber": 41
+        },
+        {
+          "caller": "meetsScalingReqs",
+          "callee": "Object.entries",
+          "lineNumber": 48
+        },
+        {
+          "caller": "buildUnmetStatReqs",
+          "callee": "result.push",
+          "lineNumber": 67
+        },
+        {
+          "caller": "buildUnmetStatReqs",
+          "callee": "fmt.replace",
+          "lineNumber": 67
+        },
+        {
+          "caller": "buildUnmetStatReqs",
+          "callee": "String",
+          "lineNumber": 67
+        },
+        {
+          "caller": "buildUnmetScalingReqs",
+          "callee": "result.push",
+          "lineNumber": 77
+        },
+        {
+          "caller": "buildUnmetScalingReqs",
+          "callee": "Object.entries(req.atLeastOneScaling).some",
+          "lineNumber": 80
+        },
+        {
+          "caller": "buildUnmetScalingReqs",
+          "callee": "Object.entries",
+          "lineNumber": 80
+        },
+        {
+          "caller": "buildUnmetScalingReqs",
+          "callee": "SCALE_MAP_LABELS.find",
+          "lineNumber": 81
+        },
+        {
+          "caller": "buildUnmetScalingReqs",
+          "callee": "Object.entries(req.atLeastOneScaling).map",
+          "lineNumber": 85
+        },
+        {
+          "caller": "buildUnmetScalingReqs",
+          "callee": "Object.entries",
+          "lineNumber": 85
+        },
+        {
+          "caller": "buildUnmetScalingReqs",
+          "callee": "SCALE_MAP_LABELS.find",
+          "lineNumber": 86
+        },
+        {
+          "caller": "buildUnmetScalingReqs",
+          "callee": "result.push",
+          "lineNumber": 89
+        },
+        {
+          "caller": "buildUnmetScalingReqs",
+          "callee": "parts.join",
+          "lineNumber": 89
+        },
+        {
+          "caller": "checkWA",
+          "callee": "req.bothParts.every",
+          "lineNumber": 109
+        },
+        {
+          "caller": "checkWA",
+          "callee": "passesAtLeastOneScaling",
+          "lineNumber": 110
+        },
+        {
+          "caller": "checkWA",
+          "callee": "req.scalingExemptWeaponTypes?.some",
+          "lineNumber": 112
+        },
+        {
+          "caller": "checkWA",
+          "callee": "weaponTypeMatches",
+          "lineNumber": 112
+        },
+        {
+          "caller": "checkWA",
+          "callee": "meetsScalingReqs",
+          "lineNumber": 113
+        },
+        {
+          "caller": "checkWA",
+          "callee": "meetsStatReqs",
+          "lineNumber": 114
+        },
+        {
+          "caller": "checkWA",
+          "callee": "req.weaponType.some",
+          "lineNumber": 115
+        },
+        {
+          "caller": "checkWA",
+          "callee": "weaponTypeMatches",
+          "lineNumber": 115
+        },
+        {
+          "caller": "getUnmetReqs",
+          "callee": "Object.keys",
+          "lineNumber": 130
+        },
+        {
+          "caller": "getUnmetReqs",
+          "callee": "unmet.push",
+          "lineNumber": 134
+        },
+        {
+          "caller": "getUnmetReqs",
+          "callee": "req.weaponType.some",
+          "lineNumber": 135
+        },
+        {
+          "caller": "getUnmetReqs",
+          "callee": "weaponTypeMatches",
+          "lineNumber": 135
+        },
+        {
+          "caller": "getUnmetReqs",
+          "callee": "unmet.push",
+          "lineNumber": 136
+        },
+        {
+          "caller": "getUnmetReqs",
+          "callee": "req.weaponType.join",
+          "lineNumber": 136
+        },
+        {
+          "caller": "getUnmetReqs",
+          "callee": "req.bothParts.every",
+          "lineNumber": 137
+        },
+        {
+          "caller": "getUnmetReqs",
+          "callee": "unmet.push",
+          "lineNumber": 138
+        },
+        {
+          "caller": "getUnmetReqs",
+          "callee": "req.bothParts.join",
+          "lineNumber": 138
+        },
+        {
+          "caller": "getUnmetReqs",
+          "callee": "req.scalingExemptWeaponTypes?.some",
+          "lineNumber": 140
+        },
+        {
+          "caller": "getUnmetReqs",
+          "callee": "weaponTypeMatches",
+          "lineNumber": 140
+        },
+        {
+          "caller": "getUnmetReqs",
+          "callee": "unmet.push",
+          "lineNumber": 142
+        },
+        {
+          "caller": "getUnmetReqs",
+          "callee": "buildUnmetScalingReqs",
+          "lineNumber": 142
+        },
+        {
+          "caller": "getUnmetReqs",
+          "callee": "unmet.push",
+          "lineNumber": 145
+        },
+        {
+          "caller": "getUnmetReqs",
+          "callee": "buildUnmetStatReqs",
+          "lineNumber": 145
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 2,
+        "functionCount": 8,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/data/weaponArts.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 511,
+      "nonEmptyLines": 508,
+      "exports": [
+        {
+          "name": "WEAPON_ARTS",
+          "line": 52,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/constants/damage-types.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 41,
+      "nonEmptyLines": 32,
+      "exports": [
+        {
+          "name": "DMG_TYPE_META",
+          "line": 1,
+          "isDefault": false
+        },
+        {
+          "name": "DEF_TRACKED_TYPES",
+          "line": 15,
+          "isDefault": false
+        },
+        {
+          "name": "DEF_INHERITANCE",
+          "line": 17,
+          "isDefault": false
+        },
+        {
+          "name": "PHYSICAL_INHERITED_TYPES",
+          "line": 26,
+          "isDefault": false
+        },
+        {
+          "name": "MAGIC_INHERITED_TYPES",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "DMG_TYPE_COLORS",
+          "line": 30,
+          "isDefault": false
+        },
+        {
+          "name": "DMG_TYPE_PRIORITY",
+          "line": 34,
+          "isDefault": false
+        },
+        {
+          "name": "FALLBACK_DMG_COLOR",
+          "line": 38,
+          "isDefault": false
+        },
+        {
+          "name": "ALL_DMG_TYPES",
+          "line": 40,
+          "isDefault": false
+        },
+        {
+          "name": "TRACKED_TYPES_WITH_TRUE",
+          "line": 41,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 10,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/damageTypeResolve.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 99,
+      "nonEmptyLines": 94,
+      "functions": [
+        {
+          "name": "resolveDamageTypes",
+          "startLine": 4,
+          "endLine": 14,
+          "params": [
+            "baseTypes",
+            "bonuses"
+          ]
+        },
+        {
+          "name": "applyFireAirConversion",
+          "startLine": 17,
+          "endLine": 27,
+          "params": [
+            "types"
+          ]
+        },
+        {
+          "name": "resolveWaDamageTypeKeys",
+          "startLine": 29,
+          "endLine": 59,
+          "params": [
+            "waDamageType",
+            "weaponDmgTypes"
+          ]
+        },
+        {
+          "name": "getFinalWaDmgTypes",
+          "startLine": 61,
+          "endLine": 68,
+          "params": [
+            "waDamageType",
+            "weaponDmgTypes",
+            "dmgTypeBonuses"
+          ]
+        },
+        {
+          "name": "applyAirToMagicConversion",
+          "startLine": 71,
+          "endLine": 99,
+          "params": [
+            "types",
+            "conversionRate",
+            "darkMagicHex",
+            "echoIncinerateAmt"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "resolveDamageTypes",
+          "line": 4,
+          "isDefault": false
+        },
+        {
+          "name": "applyFireAirConversion",
+          "line": 17,
+          "isDefault": false
+        },
+        {
+          "name": "resolveWaDamageTypeKeys",
+          "line": 29,
+          "isDefault": false
+        },
+        {
+          "name": "getFinalWaDmgTypes",
+          "line": 61,
+          "isDefault": false
+        },
+        {
+          "name": "applyAirToMagicConversion",
+          "line": 71,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "resolveDamageTypes",
+          "callee": "Object.keys",
+          "lineNumber": 8
+        },
+        {
+          "caller": "resolveDamageTypes",
+          "callee": "Object.entries",
+          "lineNumber": 10
+        },
+        {
+          "caller": "resolveDamageTypes",
+          "callee": "round4",
+          "lineNumber": 11
+        },
+        {
+          "caller": "applyFireAirConversion",
+          "callee": "round4",
+          "lineNumber": 22
+        },
+        {
+          "caller": "applyFireAirConversion",
+          "callee": "round4",
+          "lineNumber": 23
+        },
+        {
+          "caller": "applyFireAirConversion",
+          "callee": "round4",
+          "lineNumber": 24
+        },
+        {
+          "caller": "applyFireAirConversion",
+          "callee": "round4",
+          "lineNumber": 25
+        },
+        {
+          "caller": "resolveWaDamageTypeKeys",
+          "callee": "waDamageType.includes",
+          "lineNumber": 36
+        },
+        {
+          "caller": "resolveWaDamageTypeKeys",
+          "callee": "Object.entries",
+          "lineNumber": 37
+        },
+        {
+          "caller": "resolveWaDamageTypeKeys",
+          "callee": "entries.reduce",
+          "lineNumber": 40
+        },
+        {
+          "caller": "resolveWaDamageTypeKeys",
+          "callee": "priority.indexOf",
+          "lineNumber": 43
+        },
+        {
+          "caller": "resolveWaDamageTypeKeys",
+          "callee": "priority.indexOf",
+          "lineNumber": 44
+        },
+        {
+          "caller": "resolveWaDamageTypeKeys",
+          "callee": "re.exec",
+          "lineNumber": 54
+        },
+        {
+          "caller": "resolveWaDamageTypeKeys",
+          "callee": "m[2].toLowerCase",
+          "lineNumber": 55
+        },
+        {
+          "caller": "resolveWaDamageTypeKeys",
+          "callee": "parseFloat",
+          "lineNumber": 55
+        },
+        {
+          "caller": "resolveWaDamageTypeKeys",
+          "callee": "Object.keys",
+          "lineNumber": 57
+        },
+        {
+          "caller": "getFinalWaDmgTypes",
+          "callee": "resolveWaDamageTypeKeys",
+          "lineNumber": 66
+        },
+        {
+          "caller": "getFinalWaDmgTypes",
+          "callee": "resolveDamageTypes",
+          "lineNumber": 67
+        },
+        {
+          "caller": "applyAirToMagicConversion",
+          "callee": "round4",
+          "lineNumber": 83
+        },
+        {
+          "caller": "applyAirToMagicConversion",
+          "callee": "round4",
+          "lineNumber": 85
+        },
+        {
+          "caller": "applyAirToMagicConversion",
+          "callee": "round4",
+          "lineNumber": 86
+        },
+        {
+          "caller": "applyAirToMagicConversion",
+          "callee": "applyFireAirConversion",
+          "lineNumber": 91
+        },
+        {
+          "caller": "applyAirToMagicConversion",
+          "callee": "round4",
+          "lineNumber": 96
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 5,
+        "functionCount": 5,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/engine/_utils.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 2,
+      "nonEmptyLines": 2,
+      "functions": [
+        {
+          "name": "round2",
+          "startLine": 1,
+          "endLine": 1,
+          "params": [
+            "v"
+          ]
+        },
+        {
+          "name": "round4",
+          "startLine": 2,
+          "endLine": 2,
+          "params": [
+            "v"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "round2",
+          "line": 1,
+          "isDefault": false
+        },
+        {
+          "name": "round4",
+          "line": 2,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "round2",
+          "callee": "Math.round",
+          "lineNumber": 1
+        },
+        {
+          "caller": "round4",
+          "callee": "Math.round",
+          "lineNumber": 2
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 2,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/engine/build.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 569,
+      "nonEmptyLines": 507,
+      "functions": [
+        {
+          "name": "calcCDR",
+          "startLine": 30,
+          "endLine": 102,
+          "params": [
+            "perks",
+            "raceCooldownModifiers",
+            "activeRuneName",
+            "activeRaceName",
+            "emotionalState",
+            "emotionalDisabled",
+            "cdrToggles"
+          ]
+        },
+        {
+          "name": "calcBoosts",
+          "startLine": 106,
+          "endLine": 213,
+          "params": [
+            "perks",
+            "emotionalState",
+            "emotionalDisabled",
+            "level",
+            "naturalCritChance",
+            "jumpBoost",
+            "summonCount",
+            "ragePotency",
+            "bouncePotency",
+            "tailwindPotency",
+            "airBoost",
+            "speedBoost",
+            "attackSpeed",
+            "tenacity",
+            "raceName",
+            "hpFillPct",
+            "inDarkness",
+            "mountActive",
+            "summonBoostPct",
+            "quickdrawPotency",
+            "selectedWeaponArt",
+            "burnPotency",
+            "hasBurn",
+            "selfDebuffCount",
+            "hasMagicDmg",
+            "hasMagicOrPhysicalDmg",
+            "enemyHpFillPct"
+          ]
+        },
+        {
+          "name": "accumulateMonkWeapon",
+          "startLine": 221,
+          "endLine": 272,
+          "params": [
+            "state",
+            "perks",
+            "addStats",
+            "addPerks"
+          ]
+        },
+        {
+          "name": "accumulateStandardWeapon",
+          "startLine": 274,
+          "endLine": 292,
+          "params": [
+            "state",
+            "perks",
+            "addStats",
+            "addPerks"
+          ]
+        },
+        {
+          "name": "processEnchantedSlot",
+          "startLine": 294,
+          "endLine": 313,
+          "params": [
+            "itemName",
+            "getItem",
+            "upgrade",
+            "enchants",
+            "addStats",
+            "addPerkMap"
+          ]
+        },
+        {
+          "name": "accumulateEquipment",
+          "startLine": 315,
+          "endLine": 398,
+          "params": [
+            "state"
+          ]
+        },
+        {
+          "name": "finalizePerks",
+          "startLine": 400,
+          "endLine": 430,
+          "params": [
+            "rawPerks"
+          ]
+        },
+        {
+          "name": "applyEmotionalAttackSpeed",
+          "startLine": 432,
+          "endLine": 437,
+          "params": [
+            "boostedStats",
+            "finalPerks",
+            "emotionalState",
+            "emotionalDisabled"
+          ]
+        },
+        {
+          "name": "applyGladiatorialRage",
+          "startLine": 439,
+          "endLine": 448,
+          "params": [
+            "boostedStats",
+            "finalPerks"
+          ]
+        },
+        {
+          "name": "computeBuffs",
+          "startLine": 450,
+          "endLine": 455,
+          "params": [
+            "state",
+            "finalPerks",
+            "wardingDebuffMult"
+          ]
+        },
+        {
+          "name": "maxBuffPotency",
+          "startLine": 457,
+          "endLine": 461,
+          "params": [
+            "allBuffs",
+            "buffName"
+          ]
+        },
+        {
+          "name": "deriveResults",
+          "startLine": 463,
+          "endLine": 563,
+          "params": [
+            "rawStats",
+            "finalPerks",
+            "state"
+          ]
+        },
+        {
+          "name": "calcBuild",
+          "startLine": 565,
+          "endLine": 569,
+          "params": [
+            "state"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "calcBuild",
+          "line": 565,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "calcCDR",
+          "callee": "waSteps.push",
+          "lineNumber": 45
+        },
+        {
+          "caller": "calcCDR",
+          "callee": "Math.round",
+          "lineNumber": 45
+        },
+        {
+          "caller": "calcCDR",
+          "callee": "Object.prototype.hasOwnProperty.call",
+          "lineNumber": 51
+        },
+        {
+          "caller": "calcCDR",
+          "callee": "data.runeFilter.includes",
+          "lineNumber": 58
+        },
+        {
+          "caller": "calcCDR",
+          "callee": "runeSteps.push",
+          "lineNumber": 63
+        },
+        {
+          "caller": "calcCDR",
+          "callee": "Math.round",
+          "lineNumber": 63
+        },
+        {
+          "caller": "calcCDR",
+          "callee": "data.runeMultiplier",
+          "lineNumber": 66
+        },
+        {
+          "caller": "calcCDR",
+          "callee": "runeSteps.push",
+          "lineNumber": 67
+        },
+        {
+          "caller": "calcCDR",
+          "callee": "Math.round",
+          "lineNumber": 67
+        },
+        {
+          "caller": "calcCDR",
+          "callee": "waSteps.push",
+          "lineNumber": 71
+        },
+        {
+          "caller": "calcCDR",
+          "callee": "Math.round",
+          "lineNumber": 71
+        },
+        {
+          "caller": "calcCDR",
+          "callee": "data.waMultiplier",
+          "lineNumber": 74
+        },
+        {
+          "caller": "calcCDR",
+          "callee": "waSteps.push",
+          "lineNumber": 75
+        },
+        {
+          "caller": "calcCDR",
+          "callee": "Math.round",
+          "lineNumber": 75
+        },
+        {
+          "caller": "calcCDR",
+          "callee": "runeSteps.push",
+          "lineNumber": 82
+        },
+        {
+          "caller": "calcCDR",
+          "callee": "Math.round",
+          "lineNumber": 82
+        },
+        {
+          "caller": "calcCDR",
+          "callee": "waSteps.push",
+          "lineNumber": 86
+        },
+        {
+          "caller": "calcCDR",
+          "callee": "Math.round",
+          "lineNumber": 86
+        },
+        {
+          "caller": "calcBoosts",
+          "callee": "roundMultiplier",
+          "lineNumber": 137
+        },
+        {
+          "caller": "calcBoosts",
+          "callee": "Math.max",
+          "lineNumber": 137
+        },
+        {
+          "caller": "calcBoosts",
+          "callee": "Math.min",
+          "lineNumber": 137
+        },
+        {
+          "caller": "calcBoosts",
+          "callee": "dmgMap.set",
+          "lineNumber": 138
+        },
+        {
+          "caller": "calcBoosts",
+          "callee": "def.calcFn",
+          "lineNumber": 157
+        },
+        {
+          "caller": "calcBoosts",
+          "callee": "dmgMap.set",
+          "lineNumber": 169
+        },
+        {
+          "caller": "calcBoosts",
+          "callee": "dmgMap.set",
+          "lineNumber": 188
+        },
+        {
+          "caller": "calcBoosts",
+          "callee": "getActiveRaceEffect",
+          "lineNumber": 193
+        },
+        {
+          "caller": "calcBoosts",
+          "callee": "dmgMap.set",
+          "lineNumber": 195
+        },
+        {
+          "caller": "calcBoosts",
+          "callee": "dmgMap.values",
+          "lineNumber": 204
+        },
+        {
+          "caller": "calcBoosts",
+          "callee": "roundMultiplier",
+          "lineNumber": 211
+        },
+        {
+          "caller": "accumulateMonkWeapon",
+          "callee": "getGlove",
+          "lineNumber": 227
+        },
+        {
+          "caller": "accumulateMonkWeapon",
+          "callee": "Math.max",
+          "lineNumber": 229
+        },
+        {
+          "caller": "accumulateMonkWeapon",
+          "callee": "addStats",
+          "lineNumber": 242
+        },
+        {
+          "caller": "accumulateMonkWeapon",
+          "callee": "Math.max",
+          "lineNumber": 247
+        },
+        {
+          "caller": "accumulateMonkWeapon",
+          "callee": "getEssence",
+          "lineNumber": 252
+        },
+        {
+          "caller": "accumulateMonkWeapon",
+          "callee": "Math.max",
+          "lineNumber": 254
+        },
+        {
+          "caller": "accumulateMonkWeapon",
+          "callee": "addStats",
+          "lineNumber": 265
+        },
+        {
+          "caller": "accumulateMonkWeapon",
+          "callee": "addStats",
+          "lineNumber": 267
+        },
+        {
+          "caller": "accumulateMonkWeapon",
+          "callee": "applyShrineToStats",
+          "lineNumber": 267
+        },
+        {
+          "caller": "accumulateMonkWeapon",
+          "callee": "addPerks",
+          "lineNumber": 270
+        },
+        {
+          "caller": "accumulateStandardWeapon",
+          "callee": "getBlade",
+          "lineNumber": 280
+        },
+        {
+          "caller": "accumulateStandardWeapon",
+          "callee": "addStats",
+          "lineNumber": 282
+        },
+        {
+          "caller": "accumulateStandardWeapon",
+          "callee": "applyShrineToStats",
+          "lineNumber": 282
+        },
+        {
+          "caller": "accumulateStandardWeapon",
+          "callee": "addPerks",
+          "lineNumber": 284
+        },
+        {
+          "caller": "accumulateStandardWeapon",
+          "callee": "getHandle",
+          "lineNumber": 286
+        },
+        {
+          "caller": "accumulateStandardWeapon",
+          "callee": "addStats",
+          "lineNumber": 288
+        },
+        {
+          "caller": "accumulateStandardWeapon",
+          "callee": "applyShrineToStats",
+          "lineNumber": 288
+        },
+        {
+          "caller": "accumulateStandardWeapon",
+          "callee": "addPerks",
+          "lineNumber": 290
+        },
+        {
+          "caller": "processEnchantedSlot",
+          "callee": "getItem",
+          "lineNumber": 303
+        },
+        {
+          "caller": "processEnchantedSlot",
+          "callee": "applyEnchantmentsToSlot",
+          "lineNumber": 305
+        },
+        {
+          "caller": "processEnchantedSlot",
+          "callee": "addStats",
+          "lineNumber": 311
+        },
+        {
+          "caller": "processEnchantedSlot",
+          "callee": "addPerkMap",
+          "lineNumber": 312
+        },
+        {
+          "caller": "addPerkMap",
+          "callee": "Object.prototype.hasOwnProperty.call",
+          "lineNumber": 334
+        },
+        {
+          "caller": "accumulateEquipment",
+          "callee": "addStats",
+          "lineNumber": 338
+        },
+        {
+          "caller": "accumulateEquipment",
+          "callee": "getRace",
+          "lineNumber": 338
+        },
+        {
+          "caller": "accumulateEquipment",
+          "callee": "getGuild",
+          "lineNumber": 340
+        },
+        {
+          "caller": "accumulateEquipment",
+          "callee": "getGuildRank",
+          "lineNumber": 342
+        },
+        {
+          "caller": "accumulateEquipment",
+          "callee": "addStats",
+          "lineNumber": 343
+        },
+        {
+          "caller": "accumulateEquipment",
+          "callee": "addPerks",
+          "lineNumber": 343
+        },
+        {
+          "caller": "accumulateEquipment",
+          "callee": "addPerkMap",
+          "lineNumber": 346
+        },
+        {
+          "caller": "accumulateEquipment",
+          "callee": "getArmorPart",
+          "lineNumber": 358
+        },
+        {
+          "caller": "accumulateEquipment",
+          "callee": "applyEnchantmentsToSlot",
+          "lineNumber": 361
+        },
+        {
+          "caller": "accumulateEquipment",
+          "callee": "addStats",
+          "lineNumber": 367
+        },
+        {
+          "caller": "accumulateEquipment",
+          "callee": "addPerkMap",
+          "lineNumber": 368
+        },
+        {
+          "caller": "accumulateEquipment",
+          "callee": "processEnchantedSlot",
+          "lineNumber": 371
+        },
+        {
+          "caller": "accumulateEquipment",
+          "callee": "processEnchantedSlot",
+          "lineNumber": 372
+        },
+        {
+          "caller": "accumulateEquipment",
+          "callee": "isMonkGuild",
+          "lineNumber": 374
+        },
+        {
+          "caller": "accumulateEquipment",
+          "callee": "accumulateMonkWeapon",
+          "lineNumber": 375
+        },
+        {
+          "caller": "accumulateEquipment",
+          "callee": "accumulateStandardWeapon",
+          "lineNumber": 377
+        },
+        {
+          "caller": "accumulateEquipment",
+          "callee": "getRing",
+          "lineNumber": 389
+        },
+        {
+          "caller": "accumulateEquipment",
+          "callee": "getArmorPart",
+          "lineNumber": 389
+        },
+        {
+          "caller": "accumulateEquipment",
+          "callee": "applyInfusion",
+          "lineNumber": 391
+        },
+        {
+          "caller": "accumulateEquipment",
+          "callee": "addStats",
+          "lineNumber": 392
+        },
+        {
+          "caller": "accumulateEquipment",
+          "callee": "addPerkMap",
+          "lineNumber": 393
+        },
+        {
+          "caller": "finalizePerks",
+          "callee": "Object.prototype.hasOwnProperty.call",
+          "lineNumber": 403
+        },
+        {
+          "caller": "finalizePerks",
+          "callee": "applyPerkEffectiveness",
+          "lineNumber": 411
+        },
+        {
+          "caller": "finalizePerks",
+          "callee": "Object.keys",
+          "lineNumber": 418
+        },
+        {
+          "caller": "finalizePerks",
+          "callee": "POTENCY_PERKS.has",
+          "lineNumber": 419
+        },
+        {
+          "caller": "finalizePerks",
+          "callee": "getPerk",
+          "lineNumber": 420
+        },
+        {
+          "caller": "finalizePerks",
+          "callee": "POTENCY_PERKS.has",
+          "lineNumber": 423
+        },
+        {
+          "caller": "computeBuffs",
+          "callee": "assembleActiveBuffs",
+          "lineNumber": 451
+        },
+        {
+          "caller": "computeBuffs",
+          "callee": "calcOrkTenacityBonus",
+          "lineNumber": 453
+        },
+        {
+          "caller": "maxBuffPotency",
+          "callee": "Array.isArray",
+          "lineNumber": 458
+        },
+        {
+          "caller": "maxBuffPotency",
+          "callee": "allBuffs.filter(b => names.includes(b.buffName)).map",
+          "lineNumber": 459
+        },
+        {
+          "caller": "maxBuffPotency",
+          "callee": "allBuffs.filter",
+          "lineNumber": 459
+        },
+        {
+          "caller": "maxBuffPotency",
+          "callee": "names.includes",
+          "lineNumber": 459
+        },
+        {
+          "caller": "maxBuffPotency",
+          "callee": "Math.max",
+          "lineNumber": 460
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "Math.round",
+          "lineNumber": 472
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "calcCDR",
+          "lineNumber": 476
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "getRace",
+          "lineNumber": 478
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "applyStatBoostPerks",
+          "lineNumber": 486
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "applyEmotionalAttackSpeed",
+          "lineNumber": 487
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "applyGladiatorialRage",
+          "lineNumber": 488
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "Math.round",
+          "lineNumber": 493
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "calcCrit",
+          "lineNumber": 497
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "calcWardingDebuffMultiplier",
+          "lineNumber": 499
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "computeBuffs",
+          "lineNumber": 500
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "maxBuffPotency",
+          "lineNumber": 501
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "maxBuffPotency",
+          "lineNumber": 502
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "maxBuffPotency",
+          "lineNumber": 503
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "maxBuffPotency",
+          "lineNumber": 504
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "maxBuffPotency",
+          "lineNumber": 505
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "allBuffs.some",
+          "lineNumber": 506
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "allBuffs.filter((b: any) => {\r\n    const def = BUFF_DEFS[b.buffName]\r\n    return (b.isSelfDebuff || def?.isSelfDebuff) && def?.isDebuff\r\n  }).map",
+          "lineNumber": 507
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "allBuffs.filter",
+          "lineNumber": 507
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "allBuffs\r\n    .filter((b: any) => b.buffName === 'Queens Power')\r\n    .reduce",
+          "lineNumber": 512
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "allBuffs\r\n    .filter",
+          "lineNumber": 512
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "Math.max",
+          "lineNumber": 514
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "calcBaseMaxHP",
+          "lineNumber": 524
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "Math.max",
+          "lineNumber": 525
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "Math.round",
+          "lineNumber": 525
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "Math.round",
+          "lineNumber": 525
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "Math.min",
+          "lineNumber": 526
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "Math.round",
+          "lineNumber": 526
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "state.rune.endsWith",
+          "lineNumber": 529
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "isMonkGuild",
+          "lineNumber": 530
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "calcMonkWeapon",
+          "lineNumber": 531
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "calcWeapon",
+          "lineNumber": 532
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "buildDmgTypeBonuses",
+          "lineNumber": 533
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "(() => {\r\n    if (!_weaponResult) return {} as Record<string, number>\r\n    const wa = WEAPON_ARTS.find(a => a.name === state.selectedWeaponArt)\r\n    return getFinalWaDmgTypes(wa?.damageType, _weaponResult.damageTypes, _perkDmgTypeBonusesForBoost)\r\n  })",
+          "lineNumber": 539
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "WEAPON_ARTS.find",
+          "lineNumber": 541
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "getFinalWaDmgTypes",
+          "lineNumber": 542
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "Object.entries(_waDmgTypesForBoost).some",
+          "lineNumber": 544
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "Object.entries",
+          "lineNumber": 544
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "Object.entries(_waDmgTypesForBoost).some",
+          "lineNumber": 545
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "Object.entries",
+          "lineNumber": 545
+        },
+        {
+          "caller": "deriveResults",
+          "callee": "calcBoosts",
+          "lineNumber": 546
+        },
+        {
+          "caller": "calcBuild",
+          "callee": "accumulateEquipment",
+          "lineNumber": 566
+        },
+        {
+          "caller": "calcBuild",
+          "callee": "finalizePerks",
+          "lineNumber": 567
+        },
+        {
+          "caller": "calcBuild",
+          "callee": "deriveResults",
+          "lineNumber": 568
+        }
+      ],
+      "metrics": {
+        "importCount": 17,
+        "exportCount": 1,
+        "functionCount": 13,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/engine/data.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 3,
+      "nonEmptyLines": 3,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/engine/enchant.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 222,
+      "nonEmptyLines": 190,
+      "functions": [
+        {
+          "name": "applyMod",
+          "startLine": 8,
+          "endLine": 10,
+          "params": [
+            "value",
+            "mod"
+          ]
+        },
+        {
+          "name": "normalizeModifiers",
+          "startLine": 12,
+          "endLine": 14,
+          "params": [
+            "m"
+          ]
+        },
+        {
+          "name": "applyModsToKey",
+          "startLine": 16,
+          "endLine": 26,
+          "params": [
+            "key",
+            "mods",
+            "mult",
+            "add"
+          ]
+        },
+        {
+          "name": "applyModsWhere",
+          "startLine": 28,
+          "endLine": 40,
+          "params": [
+            "mods",
+            "baseStats",
+            "mult",
+            "add",
+            "predicate"
+          ]
+        },
+        {
+          "name": "applyEnchantmentsToSlot",
+          "startLine": 57,
+          "endLine": 148,
+          "params": [
+            "baseStats",
+            "basePerks",
+            "enchantNames",
+            "upgradeLevel"
+          ]
+        },
+        {
+          "name": "applyPerkEffectiveness",
+          "startLine": 164,
+          "endLine": 178,
+          "params": [
+            "perks",
+            "perkEffectivenessStacks",
+            "cursedStacks"
+          ]
+        },
+        {
+          "name": "applyInfusion",
+          "startLine": 182,
+          "endLine": 193,
+          "params": [
+            "baseStats",
+            "basePerks"
+          ]
+        },
+        {
+          "name": "isExclusiveEnchant",
+          "startLine": 197,
+          "endLine": 199,
+          "params": [
+            "e"
+          ]
+        },
+        {
+          "name": "enforceEnchantSlot",
+          "startLine": 201,
+          "endLine": 222,
+          "params": [
+            "selections",
+            "changedIndex"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "applyEnchantmentsToSlot",
+          "line": 57,
+          "isDefault": false
+        },
+        {
+          "name": "applyPerkEffectiveness",
+          "line": 164,
+          "isDefault": false
+        },
+        {
+          "name": "applyInfusion",
+          "line": 182,
+          "isDefault": false
+        },
+        {
+          "name": "isExclusiveEnchant",
+          "line": 197,
+          "isDefault": false
+        },
+        {
+          "name": "enforceEnchantSlot",
+          "line": 201,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "normalizeModifiers",
+          "callee": "Array.isArray",
+          "lineNumber": 13
+        },
+        {
+          "caller": "applyModsWhere",
+          "callee": "predicate",
+          "lineNumber": 38
+        },
+        {
+          "caller": "applyModsWhere",
+          "callee": "applyModsToKey",
+          "lineNumber": 38
+        },
+        {
+          "caller": "applyEnchantmentsToSlot",
+          "callee": "[...enchantNames].reverse",
+          "lineNumber": 63
+        },
+        {
+          "caller": "applyEnchantmentsToSlot",
+          "callee": "getEnchant",
+          "lineNumber": 73
+        },
+        {
+          "caller": "applyEnchantmentsToSlot",
+          "callee": "applyModsWhere",
+          "lineNumber": 80
+        },
+        {
+          "caller": "applyEnchantmentsToSlot",
+          "callee": "normalizeModifiers",
+          "lineNumber": 80
+        },
+        {
+          "caller": "applyEnchantmentsToSlot",
+          "callee": "applyUpgrade",
+          "lineNumber": 95
+        },
+        {
+          "caller": "applyEnchantmentsToSlot",
+          "callee": "getEnchant",
+          "lineNumber": 108
+        },
+        {
+          "caller": "applyEnchantmentsToSlot",
+          "callee": "applyModsToKey",
+          "lineNumber": 117
+        },
+        {
+          "caller": "applyEnchantmentsToSlot",
+          "callee": "normalizeModifiers",
+          "lineNumber": 117
+        },
+        {
+          "caller": "applyEnchantmentsToSlot",
+          "callee": "normalizeModifiers",
+          "lineNumber": 121
+        },
+        {
+          "caller": "applyEnchantmentsToSlot",
+          "callee": "Object.prototype.hasOwnProperty.call",
+          "lineNumber": 123
+        },
+        {
+          "caller": "applyEnchantmentsToSlot",
+          "callee": "applyMod",
+          "lineNumber": 125
+        },
+        {
+          "caller": "applyPerkEffectiveness",
+          "callee": "Object.prototype.hasOwnProperty.call",
+          "lineNumber": 173
+        },
+        {
+          "caller": "applyPerkEffectiveness",
+          "callee": "PERK_EFFECTIVENESS_EXEMPT.has",
+          "lineNumber": 174
+        },
+        {
+          "caller": "enforceEnchantSlot",
+          "callee": "isExclusiveEnchant",
+          "lineNumber": 215
+        },
+        {
+          "caller": "enforceEnchantSlot",
+          "callee": "getEnchant",
+          "lineNumber": 215
+        },
+        {
+          "caller": "enforceEnchantSlot",
+          "callee": "filled.push",
+          "lineNumber": 220
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 5,
+        "functionCount": 9,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/engine/format.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 14,
+      "nonEmptyLines": 12,
+      "functions": [
+        {
+          "name": "formatStat",
+          "startLine": 4,
+          "endLine": 10,
+          "params": [
+            "key",
+            "value"
+          ]
+        },
+        {
+          "name": "formatLabel",
+          "startLine": 12,
+          "endLine": 14,
+          "params": [
+            "key"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "formatStat",
+          "line": 4,
+          "isDefault": false
+        },
+        {
+          "name": "formatLabel",
+          "line": 12,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "formatStat",
+          "callee": "round2",
+          "lineNumber": 5
+        },
+        {
+          "caller": "formatStat",
+          "callee": "Math.abs",
+          "lineNumber": 6
+        },
+        {
+          "caller": "formatStat",
+          "callee": "Number.isInteger",
+          "lineNumber": 7
+        },
+        {
+          "caller": "formatStat",
+          "callee": "String",
+          "lineNumber": 7
+        },
+        {
+          "caller": "formatStat",
+          "callee": "abs.toFixed(2).replace",
+          "lineNumber": 7
+        },
+        {
+          "caller": "formatStat",
+          "callee": "abs.toFixed",
+          "lineNumber": 7
+        },
+        {
+          "caller": "formatStat",
+          "callee": "PERCENT_STATS.has",
+          "lineNumber": 9
+        },
+        {
+          "caller": "formatLabel",
+          "callee": "key.replace(/([a-z])([A-Z])/g, \"$1 $2\").replace",
+          "lineNumber": 13
+        },
+        {
+          "caller": "formatLabel",
+          "callee": "key.replace",
+          "lineNumber": 13
+        },
+        {
+          "caller": "formatLabel",
+          "callee": "c.toUpperCase",
+          "lineNumber": 13
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 2,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/engine/shrine.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 33,
+      "nonEmptyLines": 30,
+      "functions": [
+        {
+          "name": "applyShrineToScalings",
+          "startLine": 9,
+          "endLine": 20,
+          "params": [
+            "scalings",
+            "tier"
+          ]
+        },
+        {
+          "name": "applyShrineToStats",
+          "startLine": 22,
+          "endLine": 33,
+          "params": [
+            "stats",
+            "tier"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "SHRINE_MULTIPLIERS",
+          "line": 5,
+          "isDefault": false
+        },
+        {
+          "name": "applyShrineToScalings",
+          "line": 9,
+          "isDefault": false
+        },
+        {
+          "name": "applyShrineToStats",
+          "line": 22,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "applyShrineToScalings",
+          "callee": "Object.prototype.hasOwnProperty.call",
+          "lineNumber": 17
+        },
+        {
+          "caller": "applyShrineToStats",
+          "callee": "round2",
+          "lineNumber": 30
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 3,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/engine/weapon.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 443,
+      "nonEmptyLines": 388,
+      "functions": [
+        {
+          "name": "checkHybrid",
+          "startLine": 20,
+          "endLine": 43,
+          "params": [
+            "part1",
+            "part2"
+          ]
+        },
+        {
+          "name": "getWeaponType",
+          "startLine": 53,
+          "endLine": 55,
+          "params": [
+            "handleType",
+            "bladeType"
+          ]
+        },
+        {
+          "name": "resolveWeaponType",
+          "startLine": 81,
+          "endLine": 99,
+          "params": [
+            "handleType",
+            "bladeType",
+            "perks"
+          ]
+        },
+        {
+          "name": "getMonkWeaponType",
+          "startLine": 108,
+          "endLine": 110,
+          "params": [
+            "essenceType",
+            "gloveType"
+          ]
+        },
+        {
+          "name": "resolveMonkWeaponType",
+          "startLine": 112,
+          "endLine": 121,
+          "params": [
+            "essenceType",
+            "gloveType",
+            "perks"
+          ]
+        },
+        {
+          "name": "extractDamageAndScalings",
+          "startLine": 171,
+          "endLine": 192,
+          "params": [
+            "part"
+          ]
+        },
+        {
+          "name": "mergePartPerks",
+          "startLine": 194,
+          "endLine": 222,
+          "params": [
+            "part1",
+            "part2"
+          ]
+        },
+        {
+          "name": "applyShrineToPart",
+          "startLine": 224,
+          "endLine": 226,
+          "params": [
+            "data",
+            "part",
+            "shrineActive",
+            "fn"
+          ]
+        },
+        {
+          "name": "mergeRecords",
+          "startLine": 228,
+          "endLine": 234,
+          "params": [
+            "a",
+            "b"
+          ]
+        },
+        {
+          "name": "mergeScalingsAndStats",
+          "startLine": 236,
+          "endLine": 280,
+          "params": [
+            "p1Data",
+            "p2Data",
+            "part1",
+            "part2",
+            "shrineActive"
+          ]
+        },
+        {
+          "name": "buildWeaponResult",
+          "startLine": 282,
+          "endLine": 362,
+          "params": [
+            "opts"
+          ]
+        },
+        {
+          "name": "calcWeaponGeneric",
+          "startLine": 364,
+          "endLine": 385,
+          "params": [
+            "part1",
+            "part2",
+            "part1TypeLabel",
+            "part2TypeLabel",
+            "part1TypeKey",
+            "part2TypeKey",
+            "isMonk",
+            "shrineActive"
+          ]
+        },
+        {
+          "name": "applyMonkStatBonus",
+          "startLine": 393,
+          "endLine": 412,
+          "params": [
+            "baseStats",
+            "shrineMult",
+            "monkPct",
+            "result",
+            "finalKey",
+            "rawKey"
+          ]
+        },
+        {
+          "name": "calcWeapon",
+          "startLine": 416,
+          "endLine": 418,
+          "params": [
+            "bladeName",
+            "handleName",
+            "shrineActive"
+          ]
+        },
+        {
+          "name": "calcMonkWeapon",
+          "startLine": 420,
+          "endLine": 443,
+          "params": [
+            "gloveName",
+            "essenceName",
+            "shrineActive",
+            "monkRank"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "MONK_RANK_MULTIPLIER",
+          "line": 7,
+          "isDefault": false
+        },
+        {
+          "name": "calcWeapon",
+          "line": 416,
+          "isDefault": false
+        },
+        {
+          "name": "calcMonkWeapon",
+          "line": 420,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "checkHybrid",
+          "callee": "scalings1.add",
+          "lineNumber": 33
+        },
+        {
+          "caller": "checkHybrid",
+          "callee": "scalings1.has",
+          "lineNumber": 40
+        },
+        {
+          "caller": "resolveWeaponType",
+          "callee": "getWeaponType",
+          "lineNumber": 86
+        },
+        {
+          "caller": "resolveWeaponType",
+          "callee": "o.bladeTypes.includes",
+          "lineNumber": 92
+        },
+        {
+          "caller": "resolveWeaponType",
+          "callee": "o.bladeTypes.includes",
+          "lineNumber": 93
+        },
+        {
+          "caller": "resolveWeaponType",
+          "callee": "o.handleTypes.includes",
+          "lineNumber": 94
+        },
+        {
+          "caller": "resolveMonkWeaponType",
+          "callee": "getMonkWeaponType",
+          "lineNumber": 117
+        },
+        {
+          "caller": "extractDamageAndScalings",
+          "callee": "key.replace",
+          "lineNumber": 181
+        },
+        {
+          "caller": "extractDamageAndScalings",
+          "callee": "key.replace",
+          "lineNumber": 185
+        },
+        {
+          "caller": "processPart",
+          "callee": "speedParts.push",
+          "lineNumber": 203
+        },
+        {
+          "caller": "mergePartPerks",
+          "callee": "processPart",
+          "lineNumber": 211
+        },
+        {
+          "caller": "mergePartPerks",
+          "callee": "processPart",
+          "lineNumber": 212
+        },
+        {
+          "caller": "applyShrineToPart",
+          "callee": "fn",
+          "lineNumber": 225
+        },
+        {
+          "caller": "mergeRecords",
+          "callee": "Object.prototype.hasOwnProperty.call",
+          "lineNumber": 231
+        },
+        {
+          "caller": "mergeScalingsAndStats",
+          "callee": "applyShrineToPart",
+          "lineNumber": 252
+        },
+        {
+          "caller": "mergeScalingsAndStats",
+          "callee": "applyShrineToPart",
+          "lineNumber": 253
+        },
+        {
+          "caller": "mergeScalingsAndStats",
+          "callee": "applyShrineToPart",
+          "lineNumber": 254
+        },
+        {
+          "caller": "mergeScalingsAndStats",
+          "callee": "applyShrineToPart",
+          "lineNumber": 255
+        },
+        {
+          "caller": "mergeScalingsAndStats",
+          "callee": "checkHybrid",
+          "lineNumber": 257
+        },
+        {
+          "caller": "mergeScalingsAndStats",
+          "callee": "mergeRecords",
+          "lineNumber": 259
+        },
+        {
+          "caller": "mergeScalingsAndStats",
+          "callee": "Object.prototype.hasOwnProperty.call",
+          "lineNumber": 264
+        },
+        {
+          "caller": "mergeScalingsAndStats",
+          "callee": "mergeRecords",
+          "lineNumber": 268
+        },
+        {
+          "caller": "mergeScalingsAndStats",
+          "callee": "round2",
+          "lineNumber": 274
+        },
+        {
+          "caller": "buildWeaponResult",
+          "callee": "Object.prototype.hasOwnProperty.call",
+          "lineNumber": 304
+        },
+        {
+          "caller": "buildWeaponResult",
+          "callee": "round4",
+          "lineNumber": 305
+        },
+        {
+          "caller": "buildWeaponResult",
+          "callee": "resolveMonkWeaponType",
+          "lineNumber": 313
+        },
+        {
+          "caller": "buildWeaponResult",
+          "callee": "resolveWeaponType",
+          "lineNumber": 313
+        },
+        {
+          "caller": "buildWeaponResult",
+          "callee": "Math.max",
+          "lineNumber": 332
+        },
+        {
+          "caller": "buildWeaponResult",
+          "callee": "round2",
+          "lineNumber": 335
+        },
+        {
+          "caller": "calcWeaponGeneric",
+          "callee": "extractDamageAndScalings",
+          "lineNumber": 376
+        },
+        {
+          "caller": "calcWeaponGeneric",
+          "callee": "extractDamageAndScalings",
+          "lineNumber": 377
+        },
+        {
+          "caller": "calcWeaponGeneric",
+          "callee": "mergePartPerks",
+          "lineNumber": 378
+        },
+        {
+          "caller": "calcWeaponGeneric",
+          "callee": "mergeScalingsAndStats",
+          "lineNumber": 379
+        },
+        {
+          "caller": "calcWeaponGeneric",
+          "callee": "buildWeaponResult",
+          "lineNumber": 381
+        },
+        {
+          "caller": "applyMonkStatBonus",
+          "callee": "round2",
+          "lineNumber": 405
+        },
+        {
+          "caller": "applyMonkStatBonus",
+          "callee": "round2",
+          "lineNumber": 406
+        },
+        {
+          "caller": "applyMonkStatBonus",
+          "callee": "round2",
+          "lineNumber": 407
+        },
+        {
+          "caller": "applyMonkStatBonus",
+          "callee": "round2",
+          "lineNumber": 408
+        },
+        {
+          "caller": "calcWeapon",
+          "callee": "calcWeaponGeneric",
+          "lineNumber": 417
+        },
+        {
+          "caller": "calcWeapon",
+          "callee": "getBlade",
+          "lineNumber": 417
+        },
+        {
+          "caller": "calcWeapon",
+          "callee": "getHandle",
+          "lineNumber": 417
+        },
+        {
+          "caller": "calcMonkWeapon",
+          "callee": "getGlove",
+          "lineNumber": 421
+        },
+        {
+          "caller": "calcMonkWeapon",
+          "callee": "calcWeaponGeneric",
+          "lineNumber": 422
+        },
+        {
+          "caller": "calcMonkWeapon",
+          "callee": "getEssence",
+          "lineNumber": 422
+        },
+        {
+          "caller": "calcMonkWeapon",
+          "callee": "Math.max",
+          "lineNumber": 425
+        },
+        {
+          "caller": "calcMonkWeapon",
+          "callee": "applyMonkStatBonus",
+          "lineNumber": 429
+        },
+        {
+          "caller": "calcMonkWeapon",
+          "callee": "getEssence",
+          "lineNumber": 435
+        },
+        {
+          "caller": "calcMonkWeapon",
+          "callee": "applyMonkStatBonus",
+          "lineNumber": 439
+        }
+      ],
+      "metrics": {
+        "importCount": 4,
+        "exportCount": 3,
+        "functionCount": 15,
+        "classCount": 0
+      }
+    }
+  ]
+}

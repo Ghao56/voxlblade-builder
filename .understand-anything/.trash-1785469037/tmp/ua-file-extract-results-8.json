@@ -1,0 +1,652 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 16,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": ".fallowrc.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 72,
+      "nonEmptyLines": 72,
+      "sections": [
+        {
+          "heading": "$schema",
+          "level": 1,
+          "line": 2
+        },
+        {
+          "heading": "entry",
+          "level": 1,
+          "line": 3
+        },
+        {
+          "heading": "duplicates",
+          "level": 1,
+          "line": 7
+        },
+        {
+          "heading": "rules",
+          "level": 1,
+          "line": 19
+        },
+        {
+          "heading": "ignoreExports",
+          "level": 1,
+          "line": 22
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 5
+      }
+    },
+    {
+      "path": "AGENTS.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 59,
+      "nonEmptyLines": 51,
+      "sections": [
+        {
+          "heading": "AGENTS.md",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Project Overview",
+          "level": 2,
+          "line": 5
+        },
+        {
+          "heading": "Project Structure",
+          "level": 2,
+          "line": 17
+        },
+        {
+          "heading": "Development Workflow",
+          "level": 2,
+          "line": 33
+        },
+        {
+          "heading": "AI Agent Interaction Guidelines",
+          "level": 2,
+          "line": 41
+        },
+        {
+          "heading": "File Operations",
+          "level": 2,
+          "line": 47
+        },
+        {
+          "heading": "Testing",
+          "level": 2,
+          "line": 52
+        },
+        {
+          "heading": "Security",
+          "level": 2,
+          "line": 57
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 8
+      }
+    },
+    {
+      "path": "README.md",
+      "language": "markdown",
+      "fileCategory": "docs",
+      "totalLines": 47,
+      "nonEmptyLines": 27,
+      "sections": [
+        {
+          "heading": "Svelte + TS + Vite",
+          "level": 1,
+          "line": 1
+        },
+        {
+          "heading": "Recommended IDE Setup",
+          "level": 2,
+          "line": 5
+        },
+        {
+          "heading": "Need an official Svelte framework?",
+          "level": 2,
+          "line": 9
+        },
+        {
+          "heading": "Technical considerations",
+          "level": 2,
+          "line": 13
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 4
+      }
+    },
+    {
+      "path": "build-decode.txt",
+      "language": "txt",
+      "fileCategory": "docs",
+      "totalLines": 2,
+      "nonEmptyLines": 2,
+      "metrics": {}
+    },
+    {
+      "path": "build-decode2.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 1,
+      "nonEmptyLines": 1,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 0
+      }
+    },
+    {
+      "path": "fallow-output.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 782,
+      "nonEmptyLines": 782,
+      "sections": [
+        {
+          "heading": "kind",
+          "level": 1,
+          "line": 2
+        },
+        {
+          "heading": "schema_version",
+          "level": 1,
+          "line": 3
+        },
+        {
+          "heading": "version",
+          "level": 1,
+          "line": 4
+        },
+        {
+          "heading": "elapsed_ms",
+          "level": 1,
+          "line": 5
+        },
+        {
+          "heading": "total_issues",
+          "level": 1,
+          "line": 6
+        },
+        {
+          "heading": "entry_points",
+          "level": 1,
+          "line": 7
+        },
+        {
+          "heading": "summary",
+          "level": 1,
+          "line": 14
+        },
+        {
+          "heading": "unused_files",
+          "level": 1,
+          "line": 16
+        },
+        {
+          "heading": "unused_exports",
+          "level": 1,
+          "line": 17
+        },
+        {
+          "heading": "unused_types",
+          "level": 1,
+          "line": 18
+        },
+        {
+          "heading": "private_type_leaks",
+          "level": 1,
+          "line": 19
+        },
+        {
+          "heading": "unused_dependencies",
+          "level": 1,
+          "line": 20
+        },
+        {
+          "heading": "unused_dev_dependencies",
+          "level": 1,
+          "line": 631
+        },
+        {
+          "heading": "unused_optional_dependencies",
+          "level": 1,
+          "line": 632
+        },
+        {
+          "heading": "unused_enum_members",
+          "level": 1,
+          "line": 21
+        },
+        {
+          "heading": "unused_class_members",
+          "level": 1,
+          "line": 22
+        },
+        {
+          "heading": "unresolved_imports",
+          "level": 1,
+          "line": 33
+        },
+        {
+          "heading": "unlisted_dependencies",
+          "level": 1,
+          "line": 34
+        },
+        {
+          "heading": "duplicate_exports",
+          "level": 1,
+          "line": 35
+        },
+        {
+          "heading": "type_only_dependencies",
+          "level": 1,
+          "line": 36
+        },
+        {
+          "heading": "test_only_dependencies",
+          "level": 1,
+          "line": 37
+        },
+        {
+          "heading": "circular_dependencies",
+          "level": 1,
+          "line": 38
+        },
+        {
+          "heading": "re_export_cycles",
+          "level": 1,
+          "line": 39
+        },
+        {
+          "heading": "boundary_violations",
+          "level": 1,
+          "line": 40
+        },
+        {
+          "heading": "boundary_coverage_violations",
+          "level": 1,
+          "line": 41
+        },
+        {
+          "heading": "boundary_call_violations",
+          "level": 1,
+          "line": 42
+        },
+        {
+          "heading": "policy_violations",
+          "level": 1,
+          "line": 43
+        },
+        {
+          "heading": "stale_suppressions",
+          "level": 1,
+          "line": 44
+        },
+        {
+          "heading": "unused_catalog_entries",
+          "level": 1,
+          "line": 45
+        },
+        {
+          "heading": "empty_catalog_groups",
+          "level": 1,
+          "line": 46
+        },
+        {
+          "heading": "unresolved_catalog_references",
+          "level": 1,
+          "line": 47
+        },
+        {
+          "heading": "unused_dependency_overrides",
+          "level": 1,
+          "line": 48
+        },
+        {
+          "heading": "misconfigured_dependency_overrides",
+          "level": 1,
+          "line": 49
+        },
+        {
+          "heading": "invalid_client_exports",
+          "level": 1,
+          "line": 50
+        },
+        {
+          "heading": "mixed_client_server_barrels",
+          "level": 1,
+          "line": 51
+        },
+        {
+          "heading": "misplaced_directives",
+          "level": 1,
+          "line": 52
+        },
+        {
+          "heading": "route_collisions",
+          "level": 1,
+          "line": 53
+        },
+        {
+          "heading": "dynamic_segment_name_conflicts",
+          "level": 1,
+          "line": 54
+        },
+        {
+          "heading": "next_steps",
+          "level": 1,
+          "line": 760
+        },
+        {
+          "heading": "_meta",
+          "level": 1,
+          "line": 777
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 40
+      }
+    },
+    {
+      "path": "fallow-security.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 1391,
+      "nonEmptyLines": 1391,
+      "sections": [
+        {
+          "heading": "kind",
+          "level": 1,
+          "line": 2
+        },
+        {
+          "heading": "schema_version",
+          "level": 1,
+          "line": 3
+        },
+        {
+          "heading": "version",
+          "level": 1,
+          "line": 4
+        },
+        {
+          "heading": "elapsed_ms",
+          "level": 1,
+          "line": 5
+        },
+        {
+          "heading": "config",
+          "level": 1,
+          "line": 6
+        },
+        {
+          "heading": "security_findings",
+          "level": 1,
+          "line": 20
+        },
+        {
+          "heading": "attack_surface",
+          "level": 1,
+          "line": 1150
+        },
+        {
+          "heading": "unresolved_edge_files",
+          "level": 1,
+          "line": 1151
+        },
+        {
+          "heading": "unresolved_callee_sites",
+          "level": 1,
+          "line": 1152
+        },
+        {
+          "heading": "unresolved_callee_diagnostics",
+          "level": 1,
+          "line": 1153
+        },
+        {
+          "heading": "_meta",
+          "level": 1,
+          "line": 1386
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 11
+      }
+    },
+    {
+      "path": "index.html",
+      "language": "html",
+      "fileCategory": "markup",
+      "totalLines": 13,
+      "nonEmptyLines": 13,
+      "metrics": {}
+    },
+    {
+      "path": "package.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 32,
+      "nonEmptyLines": 32,
+      "sections": [
+        {
+          "heading": "name",
+          "level": 1,
+          "line": 2
+        },
+        {
+          "heading": "private",
+          "level": 1,
+          "line": 3
+        },
+        {
+          "heading": "version",
+          "level": 1,
+          "line": 4
+        },
+        {
+          "heading": "type",
+          "level": 1,
+          "line": 5
+        },
+        {
+          "heading": "scripts",
+          "level": 1,
+          "line": 6
+        },
+        {
+          "heading": "devDependencies",
+          "level": 1,
+          "line": 13
+        },
+        {
+          "heading": "dependencies",
+          "level": 1,
+          "line": 29
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 7
+      }
+    },
+    {
+      "path": "stats-data.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 1,
+      "nonEmptyLines": 1,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 0
+      }
+    },
+    {
+      "path": "stats.html",
+      "language": "html",
+      "fileCategory": "markup",
+      "totalLines": 4950,
+      "nonEmptyLines": 4243,
+      "metrics": {}
+    },
+    {
+      "path": "ts-errors.txt",
+      "language": "txt",
+      "fileCategory": "docs",
+      "totalLines": 1,
+      "nonEmptyLines": 0,
+      "metrics": {}
+    },
+    {
+      "path": "tsconfig.app.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 20,
+      "nonEmptyLines": 20,
+      "sections": [
+        {
+          "heading": "extends",
+          "level": 1,
+          "line": 2
+        },
+        {
+          "heading": "compilerOptions",
+          "level": 1,
+          "line": 3
+        },
+        {
+          "heading": "include",
+          "level": 1,
+          "line": 19
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 3
+      }
+    },
+    {
+      "path": "tsconfig.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 3,
+      "nonEmptyLines": 3,
+      "sections": [
+        {
+          "heading": "extends",
+          "level": 1,
+          "line": 2
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 1
+      }
+    },
+    {
+      "path": "tsconfig.node.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 24,
+      "nonEmptyLines": 22,
+      "sections": [
+        {
+          "heading": "compilerOptions",
+          "level": 1,
+          "line": 2
+        },
+        {
+          "heading": "include",
+          "level": 1,
+          "line": 23
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 2
+      }
+    },
+    {
+      "path": "vercel.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 34,
+      "nonEmptyLines": 34,
+      "sections": [
+        {
+          "heading": "buildCommand",
+          "level": 1,
+          "line": 2
+        },
+        {
+          "heading": "outputDirectory",
+          "level": 1,
+          "line": 3
+        },
+        {
+          "heading": "framework",
+          "level": 1,
+          "line": 4
+        },
+        {
+          "heading": "headers",
+          "level": 1,
+          "line": 5
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 4
+      }
+    }
+  ]
+}

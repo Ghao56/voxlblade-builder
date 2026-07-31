@@ -2978,11 +2978,17 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         })()),
       })
 
-      // Per-hit grouping (e.g. Caci Spirit: 7 thorns + 3 slams)
+      // Per-hit grouping (e.g. Caci Spirit: 7 thorns + 3 slams).
+      // typedHits_m2 is built per (damage type x hit value), but the same hit value
+      // appears once per type (rawVal is type-independent) — dedupe so each hit
+      // value is pushed a single time with the full resolved type split.
       const hasPerHitCounts = entry.typedHits_m2.some(t => t.count != null)
       if (hasPerHitCounts) {
+        const pushedBases = new Set<number>()
         for (const typedHit of entry.typedHits_m2) {
-          if (typedHit.count) _pushBdcHit(typedHit.count, typedHit.rawVal, true)
+          if (!typedHit.count || pushedBases.has(typedHit.rawVal)) continue
+          pushedBases.add(typedHit.rawVal)
+          _pushBdcHit(typedHit.count, typedHit.rawVal, true)
         }
       } else {
         _pushBdcHit(

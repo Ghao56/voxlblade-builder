@@ -1,0 +1,26 @@
+Found 12 batch files (12 logical batches, 0 multi-part):
+  batch-1.json: 30 nodes, 70 edges
+  batch-2.json: 35 nodes, 65 edges
+  batch-3.json: 54 nodes, 113 edges
+  batch-4.json: 33 nodes, 65 edges
+  batch-5.json: 13 nodes, 28 edges
+  batch-6.json: 15 nodes, 31 edges
+  batch-7.json: 1 nodes, 1 edges
+  batch-8.json: 16 nodes, 10 edges
+  batch-9.json: 11 nodes, 0 edges
+  batch-10.json: 38 nodes, 46 edges
+  batch-11.json: 35 nodes, 34 edges
+  batch-12.json: 11 nodes, 24 edges
+
+Input: 292 nodes, 487 edges
+
+Tested-by linker:
+     0 × tested_by edges produced (path-convention supplement, production \u2192 test)
+     2 × production nodes tagged "tested"
+
+Output: 292 nodes, 487 edges
+
+Imports edge recovery:
+  Recovered 0 `imports` edges from importMap (143 entries scanned)
+
+Written to C:\Users\Administrator\Downloads\voxlblade-builder\.understand-anything\intermediate\assembled-graph.json (238 KB)

@@ -1,16 +1,16 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "68cd8f50821881ccdf039c873330ff08f017d2a9",
-  "generatedAt": "2026-07-29T13:18:26.487Z",
+  "gitCommitHash": "9cb48c23ce32de361e8af1e0035ed669f237183a",
+  "generatedAt": "2026-07-31T03:37:09.725Z",
   "files": {
     ".fallowrc.json": {
       "filePath": ".fallowrc.json",
-      "contentHash": "4feb921c9e532377b46d28959f2f61ce61e1c4e4f2140e1fbc9bd4db149d3ca2",
+      "contentHash": "9b9131d583c8d9a68819d8d3ceaf2218e88df74987dd14befd5cd4caa1197687",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 57,
+      "totalLines": 73,
       "hasStructuralAnalysis": true
     },
     ".github/workflows/static.yml": {
@@ -45,7 +45,7 @@
     },
     "analyze-mounticon.mjs": {
       "filePath": "analyze-mounticon.mjs",
-      "contentHash": "f30d97d3b7f45121783a7e7981225c39552e701d4c44e389271b3a0a5e055d00",
+      "contentHash": "7dfd3127dac1c80c9cfd991af527589fc7d69b826afca886ac195e7e90071336",
       "functions": [],
       "classes": [],
       "imports": [
@@ -57,7 +57,7 @@
         }
       ],
       "exports": [],
-      "totalLines": 12,
+      "totalLines": 13,
       "hasStructuralAnalysis": true
     },
     "build-decode.txt": {
@@ -82,7 +82,7 @@
     },
     "decode_full.mjs": {
       "filePath": "decode_full.mjs",
-      "contentHash": "292dd333e2cd77f5da49d18febe45af43ef5c82aebae9862e5635e00d6aff7e0",
+      "contentHash": "044ec2ab349ff4b08169bb5711344084e4bea08b6f0918eee4a8a097ec162880",
       "functions": [
         {
           "name": "getPerk",
@@ -111,6 +111,25 @@
           "lineCount": 13
         },
         {
+          "name": "computeSelectorBaseMult",
+          "params": [
+            "baseStats",
+            "enchantNames"
+          ],
+          "exported": false,
+          "lineCount": 24
+        },
+        {
+          "name": "applyDirectEnchantModifiers",
+          "params": [
+            "currentStats",
+            "enchantNames",
+            "basePerks"
+          ],
+          "exported": false,
+          "lineCount": 26
+        },
+        {
           "name": "applyEnchantmentsToSlot",
           "params": [
             "baseStats",
@@ -119,7 +138,7 @@
             "upgradeLevel"
           ],
           "exported": false,
-          "lineCount": 51
+          "lineCount": 11
         },
         {
           "name": "applyShrine",
@@ -174,7 +193,7 @@
         }
       ],
       "exports": [],
-      "totalLines": 264,
+      "totalLines": 277,
       "hasStructuralAnalysis": true
     },
     "docs/ONBOARDING.md": {
@@ -249,7 +268,7 @@
     },
     "src/App.svelte": {
       "filePath": "src/App.svelte",
-      "contentHash": "28fe5459a6394c00ca2a20e6d2a65d02b4f62d1e102c96ad83af378a662c2829",
+      "contentHash": "7fd3af0bf1e41ba4d85fb259f71573e8fd790adced99181d68b69170fa605db6",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -259,12 +278,12 @@
     },
     "src/BaseDamageCalc.svelte": {
       "filePath": "src/BaseDamageCalc.svelte",
-      "contentHash": "adcffd62df9808c6241e520ab717aab4ba1ffee2520993dd29f8c9afbd812968",
+      "contentHash": "dd3f05a4e7f68032bca68d1f0e969fa093e5c809e7ddf8f78fdeced3bbe71d2c",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 2734,
+      "totalLines": 2813,
       "hasStructuralAnalysis": false
     },
     "src/BuffList.svelte": {
@@ -279,12 +298,12 @@
     },
     "src/BuildSaves.svelte": {
       "filePath": "src/BuildSaves.svelte",
-      "contentHash": "c81ac9bffc65d2aec746bd58418d4cf14477c2b672f892e89a8cf80596c11db8",
+      "contentHash": "8c05b3da7ace502dae26e68310508a0f47ce0cc941333f7b2ed72be51e2ae78e",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 1288,
+      "totalLines": 1360,
       "hasStructuralAnalysis": false
     },
     "src/CdrStepsCalc.svelte": {
@@ -309,12 +328,12 @@
     },
     "src/DamageAnalyzer.svelte": {
       "filePath": "src/DamageAnalyzer.svelte",
-      "contentHash": "658e20d9a571e6b0e2ef322098e81969a0e0528afd05653a38d96461c52a2a76",
+      "contentHash": "ce20c30455a63a64426780ca936ed43f8e602af1f3462535eddb6e56ab38dcfc",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 7387,
+      "totalLines": 7567,
       "hasStructuralAnalysis": false
     },
     "src/data/armors.json": {
@@ -339,7 +358,7 @@
     },
     "src/data/Boost.ts": {
       "filePath": "src/data/Boost.ts",
-      "contentHash": "142f96049c70a71f586f2fcf99ed94bacd89176ec835ede67dcdee1b847d2f75",
+      "contentHash": "811010e04c4b8df23c7cf6041aabbfc5fd4ef859d40488e83f7da70469663ad4",
       "functions": [
         {
           "name": "calcMinionAbsorptionPotency",
@@ -428,7 +447,6 @@
         "calcMinionAbsorptionPotency",
         "calcFrenzyPct",
         "PENANCE_HP_THRESHOLD",
-        "PENANCE_MAX_BOOST",
         "PENANCE_BLEED_POTENCY",
         "PENANCE_BLEED_DURATION",
         "BOOST_DEFS",
@@ -439,7 +457,7 @@
     },
     "src/data/BuffData.ts": {
       "filePath": "src/data/BuffData.ts",
-      "contentHash": "e935ca4fcbceb32df67d9450d6b5a550b858ae1c2ee0026ff8ec5f45197da14e",
+      "contentHash": "dffcf4a3801eaaece355fd1b39e4a1168e34286b5b55369429a5f8ed07834741",
       "functions": [
         {
           "name": "formatDamageTypes",
@@ -712,12 +730,6 @@
             "LIGHTNING_CLOAK_DURATION_WA",
             "CURSED_GROUND_WEAKNESS_POTENCY",
             "CURSED_GROUND_WEAKNESS_DURATION",
-            "TRUE_BALANCE_POTENCY_COEFF",
-            "TRUE_BALANCE_REGEN_DURATION_BASE",
-            "TRUE_BALANCE_TAILWIND_DURATION_BASE",
-            "TRUE_BALANCE_REINFORCE_POTENCY_BASE",
-            "TRUE_BALANCE_RAGE_DURATION_BASE",
-            "TRUE_BALANCE_INSPIRED_DURATION_BASE",
             "PERFECTION_POTENCY_PER_AMOUNT",
             "BOUNCE_MOMENTUM_BUFF_POTENCY",
             "BOUNCE_MOMENTUM_DURATION_PER_AMOUNT",
@@ -838,7 +850,7 @@
         "calcBuffEffect",
         "formatPerkDescription"
       ],
-      "totalLines": 2097,
+      "totalLines": 2094,
       "hasStructuralAnalysis": true
     },
     "src/data/cdr.ts": {
@@ -974,7 +986,7 @@
     },
     "src/data/DoTDamage.ts": {
       "filePath": "src/data/DoTDamage.ts",
-      "contentHash": "58228db5f6b4e433c931950093724fc79985b0f3030442f7a05702f0212d3771",
+      "contentHash": "98a5e714ac1f76bf7d2f36568c5c5eb32831b00aa29c4fded40d708a86aaee3f",
       "functions": [
         {
           "name": "getDotBase",
@@ -1001,7 +1013,7 @@
             "inflictionPotency"
           ],
           "returnType": "number",
-          "exported": true,
+          "exported": false,
           "lineCount": 8
         },
         {
@@ -1043,7 +1055,6 @@
         "DOT_DMG_TYPE_MAP",
         "getDotBase",
         "getDotPotencyMult",
-        "calcDotTick",
         "toGamePotency",
         "calcDotDisplayPotency"
       ],
@@ -1274,7 +1285,7 @@
     },
     "src/data/enemyHpEffects.ts": {
       "filePath": "src/data/enemyHpEffects.ts",
-      "contentHash": "a24334cb0fe3020eb5482dae430eaba0ad34a24dd874dfc2755dca5ebb8faccd",
+      "contentHash": "8e2ba3b7a05e1de803a9749fa5f4ecb2f3e707311344b62de2703d1e6a656305",
       "functions": [
         {
           "name": "isEnemyHpGateActive",
@@ -1360,7 +1371,7 @@
     },
     "src/data/HealBoost.ts": {
       "filePath": "src/data/HealBoost.ts",
-      "contentHash": "0c55a103397099ad0f8df939ed8105565a958f03145ef51e1c39b760f9d63e98",
+      "contentHash": "ef6c975c2cdd99eee0489095280f18ae901555e251d1f0d099a7c3dc557cb760",
       "functions": [
         {
           "name": "calculateHealBoost",
@@ -1411,7 +1422,7 @@
       "exports": [
         "calculateHealBoost"
       ],
-      "totalLines": 217,
+      "totalLines": 218,
       "hasStructuralAnalysis": true
     },
     "src/data/mountRunes.ts": {
@@ -1445,7 +1456,7 @@
     },
     "src/data/perkAutoDebuffs.ts": {
       "filePath": "src/data/perkAutoDebuffs.ts",
-      "contentHash": "e3eacf4fa49649c3a121de0898c211acd0a71ac78518d8241a4544ea2efaa049",
+      "contentHash": "e97f36597c9fd4ce7eb227ce593de749c6952adc08dba0f813c4c581adfbddc5",
       "functions": [
         {
           "name": "calcActualHpFillPct",
@@ -1465,7 +1476,7 @@
           ],
           "returnType": "GrantedBuff[]",
           "exported": true,
-          "lineCount": 262
+          "lineCount": 274
         }
       ],
       "classes": [],
@@ -1517,7 +1528,8 @@
             "BELLOWING_EMBER_HP_GATE_THRESHOLD",
             "BELLOWING_EMBER_HP_GATE_PER_STACK",
             "PYRE_BLOOM_BURN_DURATION",
-            "RUNIC_BLADES_DEBUFF_DURATION_PER_STACK"
+            "RUNIC_BLADES_DEBUFF_DURATION_PER_STACK",
+            "CACI_SPIRIT_BLEED_DURATION"
           ]
         },
         {
@@ -1531,12 +1543,12 @@
         "calcActualHpFillPct",
         "getAutoDebuffs"
       ],
-      "totalLines": 295,
+      "totalLines": 307,
       "hasStructuralAnalysis": true
     },
     "src/data/Perkbasedmg.ts": {
       "filePath": "src/data/Perkbasedmg.ts",
-      "contentHash": "e1b2d475c39892386c0b634eb29a37f255a84ef8b83ba60f2d19266426b457f2",
+      "contentHash": "2aad648a6348655c799f1a047d6a368f07c2671312e126f4220602a1f68f1042",
       "functions": [
         {
           "name": "gateThreshold",
@@ -1579,14 +1591,23 @@
           "lineCount": 5
         },
         {
+          "name": "calcIchorSparkChargeMult",
+          "params": [
+            "chargePct"
+          ],
+          "returnType": "number",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
           "name": "calcIchorSparkSwipeBase",
           "params": [
             "perkAmount",
             "chargePct"
           ],
           "returnType": "number",
-          "exported": true,
-          "lineCount": 5
+          "exported": false,
+          "lineCount": 4
         },
         {
           "name": "calcIchorSparkSlashBase",
@@ -1595,8 +1616,8 @@
             "chargePct"
           ],
           "returnType": "number",
-          "exported": true,
-          "lineCount": 5
+          "exported": false,
+          "lineCount": 4
         },
         {
           "name": "calcIchorSparkChargeTime",
@@ -1604,7 +1625,7 @@
             "perkAmount"
           ],
           "returnType": "number",
-          "exported": true,
+          "exported": false,
           "lineCount": 3
         },
         {
@@ -1730,6 +1751,11 @@
             "BOMBER_CHARGE_MISSING_HP_CAP",
             "ROGUENT_SPIRIT_BASE_DMG",
             "ROGUENT_SPIRIT_HITS",
+            "CACI_SPIRIT_THORN_DMG",
+            "CACI_SPIRIT_SLAM_DMG",
+            "CACI_SPIRIT_THORN_HITS",
+            "CACI_SPIRIT_SLAM_HITS",
+            "CACI_SPIRIT_BLEED_DURATION",
             "DARK_HARVEST_BASE_DAMAGE",
             "DARK_HARVEST_DAMAGE_PER_STACK",
             "DARK_HARVEST_HP_GATE_THRESHOLD",
@@ -1774,21 +1800,17 @@
             "RULER_SANDS_HITS",
             "RULER_SANDS_CHANCE_CD_MULT",
             "RULER_SANDS_CHANCE_PERK_MULT",
-            "ICHOR_SPARK_SWIPE_MIN_A",
-            "ICHOR_SPARK_SWIPE_MIN_B",
-            "ICHOR_SPARK_SWIPE_MAX_A",
-            "ICHOR_SPARK_SWIPE_MAX_B",
-            "ICHOR_SPARK_SLASH_MIN_A",
-            "ICHOR_SPARK_SLASH_MIN_B",
-            "ICHOR_SPARK_SLASH_MAX_A",
-            "ICHOR_SPARK_SLASH_MAX_B",
+            "ICHOR_SPARK_SWIPE_BASE_A",
+            "ICHOR_SPARK_SWIPE_BASE_B",
+            "ICHOR_SPARK_SLASH_BASE_A",
+            "ICHOR_SPARK_SLASH_BASE_B",
+            "ICHOR_SPARK_CHARGE_DMG_MULT",
             "ICHOR_SPARK_CHARGE_TIME_BASE",
             "ICHOR_SPARK_CHARGE_TIME_PER_STACK",
-            "ICHOR_SPARK_CHAIN_DMG_PCT",
-            "ICHOR_SPARK_CHAIN_HEAL_FLAT",
-            "ICHOR_SPARK_SLASH_HEAL_PER_STACK",
-            "ICHOR_SPARK_CHAIN_PROC_CHANCE",
-            "ICHOR_SPARK_BLEED_DURATION"
+            "ICHOR_SPARK_SLASH_HEAL_AT_MIN",
+            "ICHOR_SPARK_SLASH_CHARGE_THRESHOLD",
+            "ICHOR_SPARK_BLEED_DURATION",
+            "BLAZING_FINISHER_BASE_DMG"
           ]
         }
       ],
@@ -1799,13 +1821,10 @@
         "SECONDARY_TONE_COLORS",
         "calcSpringblastBaseDamage",
         "calcBomberChargeBaseDamage",
-        "calcIchorSparkSwipeBase",
-        "calcIchorSparkSlashBase",
-        "calcIchorSparkChargeTime",
         "PERK_DMG_DEFS",
         "findPerkDmgDef"
       ],
-      "totalLines": 1336,
+      "totalLines": 1439,
       "hasStructuralAnalysis": true
     },
     "src/data/perks.json": {
@@ -2308,7 +2327,7 @@
     },
     "src/data/Weaponartcheck.ts": {
       "filePath": "src/data/Weaponartcheck.ts",
-      "contentHash": "bcc23249501c6507fb95d0b96c471803279c7da1dc5ea102201f150f7d7f9549",
+      "contentHash": "1417ce0de8d4ca807e01e6ca223d8656601e64b2583c7ffefd660b8c463471a4",
       "functions": [
         {
           "name": "weaponTypeMatches",
@@ -2318,7 +2337,7 @@
           ],
           "returnType": "boolean",
           "exported": false,
-          "lineCount": 4
+          "lineCount": 3
         },
         {
           "name": "passesAtLeastOneScaling",
@@ -2376,7 +2395,7 @@
             "wa",
             "scalings",
             "stats",
-            "finalWeaponType",
+            "weaponType",
             "isMonk",
             "bladeName",
             "handleName"
@@ -2391,7 +2410,7 @@
             "wa",
             "scalings",
             "stats",
-            "finalWeaponType",
+            "weaponType",
             "isMonk",
             "bladeName",
             "handleName"
@@ -2415,7 +2434,7 @@
         "checkWA",
         "getUnmetReqs"
       ],
-      "totalLines": 153,
+      "totalLines": 148,
       "hasStructuralAnalysis": true
     },
     "src/data/weaponArts.ts": {
@@ -2473,7 +2492,7 @@
     },
     "src/DmgTotalTooltip.svelte": {
       "filePath": "src/DmgTotalTooltip.svelte",
-      "contentHash": "c666bbc59e89215558bda4a8c7c0bf43e705a18044bfec4a7e60d6e120870e07",
+      "contentHash": "a9851ec5207e526f636ede64f477d0179aecc011178fcb086056dc4717f072bb",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2493,12 +2512,12 @@
     },
     "src/EmotionalTracker.svelte": {
       "filePath": "src/EmotionalTracker.svelte",
-      "contentHash": "bcd92589b1b19fbf6e7b1e171744ba1ee0affd825041f064ba6fec4242561034",
+      "contentHash": "baf6147a304763e8c073b9abb95cf4dbf46a928ad4abb44e3cbaec55da77d180",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 232,
+      "totalLines": 237,
       "hasStructuralAnalysis": false
     },
     "src/Highlight.svelte": {
@@ -2616,7 +2635,7 @@
     },
     "src/lib/constants/buffs.ts": {
       "filePath": "src/lib/constants/buffs.ts",
-      "contentHash": "ff5c6aec35426d94b525622071b94ffd250631d8416753d1dade30198f57a6b7",
+      "contentHash": "07d0df40827e8c79167ffce37874195a77841b011ec7bd8bb132749147d9e82a",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2670,12 +2689,6 @@
         "LIGHTNING_CLOAK_DURATION_WA",
         "CURSED_GROUND_WEAKNESS_POTENCY",
         "CURSED_GROUND_WEAKNESS_DURATION",
-        "TRUE_BALANCE_POTENCY_COEFF",
-        "TRUE_BALANCE_REGEN_DURATION_BASE",
-        "TRUE_BALANCE_TAILWIND_DURATION_BASE",
-        "TRUE_BALANCE_REINFORCE_POTENCY_BASE",
-        "TRUE_BALANCE_RAGE_DURATION_BASE",
-        "TRUE_BALANCE_INSPIRED_DURATION_BASE",
         "PERFECTION_POTENCY_PER_AMOUNT",
         "BOUNCE_MOMENTUM_BUFF_POTENCY",
         "BOUNCE_MOMENTUM_DURATION_PER_AMOUNT",
@@ -2795,7 +2808,7 @@
     },
     "src/lib/constants/damage-types.ts": {
       "filePath": "src/lib/constants/damage-types.ts",
-      "contentHash": "f81f97c0b3b58dc49320c439c2d9f86403fc2cb9fd1ac975989be0cb1ec8e76e",
+      "contentHash": "ed7d4d6d8fe2d7532ac2883c92b9fbb0f743386811cd1a7ce0933fe13e4ae165",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2807,7 +2820,6 @@
         "MAGIC_INHERITED_TYPES",
         "DMG_TYPE_COLORS",
         "DMG_TYPE_PRIORITY",
-        "DEFAULT_DMG_TYPE",
         "FALLBACK_DMG_COLOR",
         "ALL_DMG_TYPES",
         "TRACKED_TYPES_WITH_TRUE"
@@ -2918,7 +2930,7 @@
     },
     "src/lib/constants/game.ts": {
       "filePath": "src/lib/constants/game.ts",
-      "contentHash": "21a721cf93c57c8519bf6c9c0be504ca526219d4a5fc70dd04d8ddc534501ede",
+      "contentHash": "2dc967156e9e425ef5647922ce9224311f06238a1ba91c8d22ebc06344d35628",
       "functions": [
         {
           "name": "calcBaseMaxHP",
@@ -2937,8 +2949,6 @@
         "DEFAULT_LEVEL",
         "DEFAULT_HP_FILL",
         "DEFAULT_ENEMY_HP_FILL",
-        "BASE_HP",
-        "HP_PER_LEVEL",
         "calcBaseMaxHP",
         "SAVE_DEBOUNCE_MS",
         "UNDO_WINDOW_MS",
@@ -2977,7 +2987,7 @@
     },
     "src/lib/constants/perk-base-damage.ts": {
       "filePath": "src/lib/constants/perk-base-damage.ts",
-      "contentHash": "ea65d89ae3e5f9ae188369f20ae81d78e9a54fff56f3fdc5c58842fc2abfb3de",
+      "contentHash": "382434b86d336b2c8a2c94ed9c3b4762af6d29be3bdfd8776fb5018b2c3d754f",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3012,6 +3022,11 @@
         "VOID_ROOT_SPIRIT_HITS",
         "ROGUENT_SPIRIT_BASE_DMG",
         "ROGUENT_SPIRIT_HITS",
+        "CACI_SPIRIT_THORN_DMG",
+        "CACI_SPIRIT_SLAM_DMG",
+        "CACI_SPIRIT_THORN_HITS",
+        "CACI_SPIRIT_SLAM_HITS",
+        "CACI_SPIRIT_BLEED_DURATION",
         "BOUNCE_MOMENTUM_BASE_DMG",
         "BOUNCE_MOMENTUM_DMG_PER_STACK",
         "PROTECTOR_SPIRIT_BASE_DMG",
@@ -3105,33 +3120,32 @@
         "RULER_SANDS_HITS",
         "RULER_SANDS_CHANCE_CD_MULT",
         "RULER_SANDS_CHANCE_PERK_MULT",
-        "ICHOR_SPARK_SWIPE_MIN_A",
-        "ICHOR_SPARK_SWIPE_MIN_B",
-        "ICHOR_SPARK_SWIPE_MAX_A",
-        "ICHOR_SPARK_SWIPE_MAX_B",
-        "ICHOR_SPARK_SLASH_MIN_A",
-        "ICHOR_SPARK_SLASH_MIN_B",
-        "ICHOR_SPARK_SLASH_MAX_A",
-        "ICHOR_SPARK_SLASH_MAX_B",
+        "ICHOR_SPARK_SWIPE_BASE_A",
+        "ICHOR_SPARK_SWIPE_BASE_B",
+        "ICHOR_SPARK_SLASH_BASE_A",
+        "ICHOR_SPARK_SLASH_BASE_B",
+        "ICHOR_SPARK_CHARGE_DMG_MULT",
         "ICHOR_SPARK_CHARGE_TIME_BASE",
         "ICHOR_SPARK_CHARGE_TIME_PER_STACK",
         "ICHOR_SPARK_CHAIN_DMG_PCT",
         "ICHOR_SPARK_CHAIN_HEAL_FLAT",
-        "ICHOR_SPARK_SLASH_HEAL_PER_STACK",
+        "ICHOR_SPARK_SLASH_HEAL_AT_MIN",
+        "ICHOR_SPARK_SLASH_CHARGE_THRESHOLD",
         "ICHOR_SPARK_CHAIN_PROC_CHANCE",
-        "ICHOR_SPARK_BLEED_DURATION"
+        "ICHOR_SPARK_BLEED_DURATION",
+        "BLAZING_FINISHER_BASE_DMG",
+        "BLAZING_FINISHER_FINISHER_PCT"
       ],
-      "totalLines": 218,
+      "totalLines": 227,
       "hasStructuralAnalysis": true
     },
     "src/lib/constants/perks.ts": {
       "filePath": "src/lib/constants/perks.ts",
-      "contentHash": "a4922dd152c115e693561f71a5d4140551de366284d77a9f4732a4db06321bb2",
+      "contentHash": "ecb158e6a58810e00ad60070b3a14b4144fd43438a7fd911e3f4c23ec3343401",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [
-        "POTION_CHUGGER_POTENCY_MULT_PER_STACK",
         "LUMINESCENT_PCT_PER_STACK",
         "SPIRIT_WINDS_PCT_PER_STACK",
         "DARK_MAGIC_PCT_PER_STACK",
@@ -3272,7 +3286,7 @@
     },
     "src/lib/constants/storage.ts": {
       "filePath": "src/lib/constants/storage.ts",
-      "contentHash": "3262c172bbce7ae7c290c07e57660b5a57f14f4493e1c3090dbf90410e056803",
+      "contentHash": "c2b2df85a5fddbf87c8fa3c1a43000d9541bdabb27be5ac2b93e067e867508a7",
       "functions": [],
       "classes": [],
       "imports": [
@@ -3280,7 +3294,8 @@
           "source": "./game",
           "specifiers": [
             "DEFAULT_LEVEL",
-            "DEFAULT_HP_FILL"
+            "DEFAULT_HP_FILL",
+            "DEFAULT_ENEMY_HP_FILL"
           ]
         }
       ],
@@ -3298,7 +3313,7 @@
         "MAX_BUILD_SLOTS",
         "CONFIRM_TIMEOUT_MS"
       ],
-      "totalLines": 43,
+      "totalLines": 58,
       "hasStructuralAnalysis": true
     },
     "src/lib/constants/thresholds.ts": {
@@ -3317,7 +3332,7 @@
     },
     "src/lib/constants/wa-display.ts": {
       "filePath": "src/lib/constants/wa-display.ts",
-      "contentHash": "23f55226ced71a4a7253ec94f3700c8241266fc541d0d061696383492f232009",
+      "contentHash": "13493fd510ca85e9efa036c0bae547778736874b98c456dbb334e016c2457c65",
       "functions": [
         {
           "name": "getWADisplayName",
@@ -3333,7 +3348,6 @@
       "classes": [],
       "imports": [],
       "exports": [
-        "WA_PERK_DISPLAY_NAMES",
         "getWADisplayName"
       ],
       "totalLines": 18,
@@ -3588,7 +3602,7 @@
     },
     "src/lib/dmgTypes.ts": {
       "filePath": "src/lib/dmgTypes.ts",
-      "contentHash": "582ab046c47ffc565e39a9feb62d56f48eb623d7cd1658095487acd80efe380e",
+      "contentHash": "d24ce5adadb218d7c55b294ce87d80d367e183ac53192d966294474c384760c0",
       "functions": [],
       "classes": [],
       "imports": [
@@ -3602,7 +3616,7 @@
       "exports": [
         "BADGE_CONFIG"
       ],
-      "totalLines": 79,
+      "totalLines": 82,
       "hasStructuralAnalysis": true
     },
     "src/lib/EnchantSelect.svelte": {
@@ -3687,7 +3701,7 @@
     },
     "src/lib/engine/build.ts": {
       "filePath": "src/lib/engine/build.ts",
-      "contentHash": "0fa7c7db92d24b39911217a85f0733b19aa3bcad75413a9f0638a6c27e1c54a5",
+      "contentHash": "c1eedafb4c5076baa9be97e22ddcae8c849946a8963944beba4319ee1da75f85",
       "functions": [
         {
           "name": "calcCDR",
@@ -3697,17 +3711,19 @@
             "activeRuneName",
             "activeRaceName",
             "emotionalState",
+            "emotionalDisabled",
             "cdrToggles"
           ],
           "returnType": "CDRResult",
           "exported": false,
-          "lineCount": 72
+          "lineCount": 73
         },
         {
           "name": "calcBoosts",
           "params": [
             "perks",
             "emotionalState",
+            "emotionalDisabled",
             "level",
             "naturalCritChance",
             "jumpBoost",
@@ -3735,7 +3751,7 @@
           ],
           "returnType": "BoostResult",
           "exported": false,
-          "lineCount": 107
+          "lineCount": 108
         },
         {
           "name": "accumulateMonkWeapon",
@@ -3798,7 +3814,8 @@
           "params": [
             "boostedStats",
             "finalPerks",
-            "emotionalState"
+            "emotionalState",
+            "emotionalDisabled"
           ],
           "returnType": "void",
           "exported": false,
@@ -3844,7 +3861,7 @@
           ],
           "returnType": "BuildResult",
           "exported": false,
-          "lineCount": 100
+          "lineCount": 101
         },
         {
           "name": "calcBuild",
@@ -4017,7 +4034,7 @@
       "exports": [
         "calcBuild"
       ],
-      "totalLines": 566,
+      "totalLines": 569,
       "hasStructuralAnalysis": true
     },
     "src/lib/engine/data.ts": {
@@ -4124,7 +4141,7 @@
     },
     "src/lib/engine/data/equipment.ts": {
       "filePath": "src/lib/engine/data/equipment.ts",
-      "contentHash": "a646ba202e326948a25c27c93a5e6bfabbd159c071f3650167db904b8162ac1d",
+      "contentHash": "4834edc832c686872c73095af5575a80119fe765befc4715b8acc5b6c3dcde1c",
       "functions": [
         {
           "name": "getEnchant",
@@ -4165,7 +4182,7 @@
             "name"
           ],
           "returnType": "Set<ArmorPart[\"type\"]>",
-          "exported": true,
+          "exported": false,
           "lineCount": 5
         },
         {
@@ -4226,7 +4243,6 @@
         "getRing",
         "getRune",
         "getArmorPart",
-        "getArmorSlotTypes",
         "armorSupportsSlot"
       ],
       "totalLines": 58,
@@ -4320,7 +4336,7 @@
     },
     "src/lib/engine/dmgTypeBonuses.ts": {
       "filePath": "src/lib/engine/dmgTypeBonuses.ts",
-      "contentHash": "e7a65f62d384ae0be0d861a98a56cc2b7300928c7b7d7edbc1fe5dd4a0dfd11d",
+      "contentHash": "04c17d2f46c2c8a331105b8c0f5e298241a94d6faa4f24f4bf4e06a699b4c5b0",
       "functions": [
         {
           "name": "buildDmgTypeBonuses",
@@ -4331,7 +4347,7 @@
           ],
           "returnType": "Record<string, number>",
           "exported": true,
-          "lineCount": 25
+          "lineCount": 26
         }
       ],
       "classes": [],
@@ -4353,10 +4369,9 @@
         }
       ],
       "exports": [
-        "PERK_DMG_TYPE_BONUS_DEFS",
         "buildDmgTypeBonuses"
       ],
-      "totalLines": 57,
+      "totalLines": 58,
       "hasStructuralAnalysis": true
     },
     "src/lib/engine/enchant.ts": {
@@ -4615,7 +4630,7 @@
     },
     "src/lib/engine/weapon.ts": {
       "filePath": "src/lib/engine/weapon.ts",
-      "contentHash": "82ae9a25af8cddfd75ea47b2bf23dd3bcd9ede9d2a1cac555b85593fc16feb3f",
+      "contentHash": "482abde959f63849e2e00feee67a850639dcfd243283bece02418d4e70dabb10",
       "functions": [
         {
           "name": "checkHybrid",
@@ -4949,7 +4964,7 @@
     },
     "src/lib/store.ts": {
       "filePath": "src/lib/store.ts",
-      "contentHash": "21ae74809f9a9dddd0683ea13d55b573752b3254a6b573f3bc944cdec76cb5f9",
+      "contentHash": "97d882736b982470c97b1c3026d4e640c73b8347abab17c818c970c2ebbb523a",
       "functions": [
         {
           "name": "loadBuild",
@@ -4974,7 +4989,7 @@
             "slotA",
             "slotB"
           ],
-          "exported": true,
+          "exported": false,
           "lineCount": 15
         },
         {
@@ -4990,7 +5005,7 @@
             "guildRank"
           ],
           "exported": true,
-          "lineCount": 13
+          "lineCount": 19
         },
         {
           "name": "moveArmorSlot",
@@ -5052,6 +5067,12 @@
           ]
         },
         {
+          "source": "./engine/data/character",
+          "specifiers": [
+            "isMonkGuild"
+          ]
+        },
+        {
           "source": "./constants",
           "specifiers": [
             "STORAGE_KEY_BUILD",
@@ -5067,7 +5088,6 @@
         "effectiveDarknessOverride",
         "result",
         "setEnchantment",
-        "swapEnchantments",
         "orkBuffTenacity",
         "clearBuild",
         "setGuild",
@@ -5075,7 +5095,7 @@
         "canArmorMoveToSlot",
         "moveRingSlot"
       ],
-      "totalLines": 216,
+      "totalLines": 242,
       "hasStructuralAnalysis": true
     },
     "src/lib/stores/toast.ts": {
@@ -5136,7 +5156,7 @@
     },
     "src/lib/types.ts": {
       "filePath": "src/lib/types.ts",
-      "contentHash": "169fb8a28b2751bc7cc950bb3a44c8e977af632b924fbf0983361bc3fa43e1b8",
+      "contentHash": "c54eb6eb1aed4c0c81d2e5c96d5f8b42af9ac15750874d505e10817414c9745b",
       "functions": [
         {
           "name": "applyUpgrade",
@@ -5154,7 +5174,7 @@
             "pc"
           ],
           "returnType": "number",
-          "exported": true,
+          "exported": false,
           "lineCount": 5
         },
         {
@@ -5174,13 +5194,12 @@
         "STAT_KEYS",
         "UPGRADE_MAX",
         "applyUpgrade",
-        "getProcCoeffValue",
         "canProc",
         "DMG_TYPE_COLORS",
         "DMG_TYPE_PRIORITY",
         "SCALING_TO_BOOST"
       ],
-      "totalLines": 296,
+      "totalLines": 316,
       "hasStructuralAnalysis": true
     },
     "src/lib/ui/Badge.svelte": {
@@ -5203,54 +5222,6 @@
       "totalLines": 144,
       "hasStructuralAnalysis": false
     },
-    "src/lib/ui/Card.svelte": {
-      "filePath": "src/lib/ui/Card.svelte",
-      "contentHash": "432794580332c77fa7aa15b51739a9a08fcdd3f465a97adf582c5f4fc5952a31",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 104,
-      "hasStructuralAnalysis": false
-    },
-    "src/lib/ui/Divider.svelte": {
-      "filePath": "src/lib/ui/Divider.svelte",
-      "contentHash": "8f34baf1c60f1e653cafd43cdfd9357dd6833a0f4ce8a1b8eb9180b545cddf10",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 43,
-      "hasStructuralAnalysis": false
-    },
-    "src/lib/ui/index.ts": {
-      "filePath": "src/lib/ui/index.ts",
-      "contentHash": "09b135f454842b4d57ecdbcc4abe514123267737f07c37c74cde4fec3af643ff",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [
-        "Card",
-        "Badge",
-        "Button",
-        "Stat",
-        "Section",
-        "Divider",
-        "Panel"
-      ],
-      "totalLines": 8,
-      "hasStructuralAnalysis": true
-    },
-    "src/lib/ui/Panel.svelte": {
-      "filePath": "src/lib/ui/Panel.svelte",
-      "contentHash": "8da5b772aaafa5682d0bae981b36fb8ca05f037d2428ec92a2bbe4f8cb65413c",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 95,
-      "hasStructuralAnalysis": false
-    },
     "src/lib/ui/RollValue.svelte": {
       "filePath": "src/lib/ui/RollValue.svelte",
       "contentHash": "d3af0614ab20055df279f33001184cf4563a15933ad6d2cf1e9137ecd4771949",
@@ -5259,26 +5230,6 @@
       "imports": [],
       "exports": [],
       "totalLines": 66,
-      "hasStructuralAnalysis": false
-    },
-    "src/lib/ui/Section.svelte": {
-      "filePath": "src/lib/ui/Section.svelte",
-      "contentHash": "f8eac59a894ec30b788ab023ca13bbe184f2d56c7980a6fac41395667c65306c",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 130,
-      "hasStructuralAnalysis": false
-    },
-    "src/lib/ui/Stat.svelte": {
-      "filePath": "src/lib/ui/Stat.svelte",
-      "contentHash": "3899437f48babd3ca1da0466434f26b44daef0918fd98439ad2b667261e734c8",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 91,
       "hasStructuralAnalysis": false
     },
     "src/lib/uiConstants.ts": {
@@ -5529,7 +5480,7 @@
     },
     "stats.html": {
       "filePath": "stats.html",
-      "contentHash": "c351c38e731e9c748a20b1047e7b857373eaa417931757e9a816cb4ecbbc15e2",
+      "contentHash": "eccceefa1bb9455e753999ce3f554c75c97b01043f0933a0e9c8016022a34595",
       "functions": [],
       "classes": [],
       "imports": [],

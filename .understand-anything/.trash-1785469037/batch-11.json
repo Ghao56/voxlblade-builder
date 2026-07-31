@@ -1,0 +1,559 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/lib/constants/defensive.ts",
+      "type": "file",
+      "name": "defensive.ts",
+      "summary": "Exports numeric damage-reduction constants for defensive perks (Barb Skin, Stone Skin, Adaptive Plate, Valor, Vampire, Carapace, etc.) consumed by the damage engine's defensive calculations.",
+      "tags": ["constants", "defensive", "damage-reduction", "game-data"],
+      "complexity": "simple",
+      "filePath": "src/lib/constants/defensive.ts"
+    },
+    {
+      "id": "file:src/lib/constants/draconic-colors.ts",
+      "type": "file",
+      "name": "draconic-colors.ts",
+      "summary": "Draconic color effect multipliers for fire, air, earth, water, and hex, covering speed, damage, knockback, stun, and cooldown modifiers.",
+      "tags": ["constants", "draconic", "multipliers", "game-data"],
+      "complexity": "simple",
+      "filePath": "src/lib/constants/draconic-colors.ts"
+    },
+    {
+      "id": "file:src/lib/constants/draconic.ts",
+      "type": "file",
+      "name": "draconic.ts",
+      "summary": "Draconic infusion potency/duration multipliers and Dragon State HP/damage balance constants including Bastion blessing.",
+      "tags": ["constants", "draconic", "balance", "game-data"],
+      "complexity": "simple",
+      "filePath": "src/lib/constants/draconic.ts"
+    },
+    {
+      "id": "file:src/lib/constants/heals.ts",
+      "type": "file",
+      "name": "heals.ts",
+      "summary": "Healing-related balance constants for crit healing (base, per-stack, holy boost divisor) and Ocean Song per-stack bonus.",
+      "tags": ["constants", "healing", "game-data"],
+      "complexity": "simple",
+      "filePath": "src/lib/constants/heals.ts"
+    },
+    {
+      "id": "file:src/lib/constants/index.ts",
+      "type": "file",
+      "name": "constants/index.ts",
+      "summary": "Barrel re-export aggregating all game constant modules (damage types, perks, boosts, draconic, thresholds, heals, defensive, etc.).",
+      "tags": ["barrel", "re-export", "constants"],
+      "complexity": "simple",
+      "filePath": "src/lib/constants/index.ts"
+    },
+    {
+      "id": "file:src/lib/constants/thresholds.ts",
+      "type": "file",
+      "name": "thresholds.ts",
+      "summary": "Global balance thresholds: armor-pen branch cutoff, cooldown floor, and base critical damage percent.",
+      "tags": ["constants", "thresholds", "balance"],
+      "complexity": "simple",
+      "filePath": "src/lib/constants/thresholds.ts"
+    },
+    {
+      "id": "file:src/lib/constants/wa-display.ts",
+      "type": "file",
+      "name": "wa-display.ts",
+      "summary": "Maps weapon-art perk display names so perks like Weighty Slam, Guardian Spin, or Heat Drill render a friendlier label.",
+      "tags": ["constants", "weapon-art", "display-names"],
+      "complexity": "simple",
+      "filePath": "src/lib/constants/wa-display.ts"
+    },
+    {
+      "id": "file:src/lib/EnchantSelect.svelte",
+      "type": "file",
+      "name": "EnchantSelect.svelte",
+      "summary": "Accessible custom dropdown/combobox for picking an enchantment with search, keyboard navigation, rAF-throttled positioning, and per-enchantment color dots.",
+      "tags": ["component", "enchant", "dropdown", "combobox"],
+      "complexity": "complex",
+      "filePath": "src/lib/EnchantSelect.svelte"
+    },
+    {
+      "id": "file:src/lib/engine/engine.ts",
+      "type": "file",
+      "name": "engine/engine.ts",
+      "summary": "Barrel module re-exporting the public damage-engine API from data, shrine, enchant, weapon, build, and format submodules.",
+      "tags": ["barrel", "engine", "re-export"],
+      "complexity": "simple",
+      "filePath": "src/lib/engine/engine.ts"
+    },
+    {
+      "id": "file:src/lib/Modal.svelte",
+      "type": "file",
+      "name": "Modal.svelte",
+      "summary": "Reusable modal shell with overlay, focus trapping, focus-on-open, and shared modal-list/modal-item global styling used by all selection modals.",
+      "tags": ["component", "modal", "accessibility"],
+      "complexity": "complex",
+      "filePath": "src/lib/Modal.svelte"
+    },
+    {
+      "id": "file:src/lib/modals/AccessorySelectModal.svelte",
+      "type": "file",
+      "name": "AccessorySelectModal.svelte",
+      "summary": "Modal for selecting armor pieces, rings, runes, and infusions, showing effective boost computed against weapon scalings and Brawny conversion.",
+      "tags": ["component", "modal", "accessory", "build"],
+      "complexity": "complex",
+      "filePath": "src/lib/modals/AccessorySelectModal.svelte"
+    },
+    {
+      "id": "file:src/lib/modals/GuildModal.svelte",
+      "type": "file",
+      "name": "GuildModal.svelte",
+      "summary": "Modal for selecting a guild and its rank, filtering by name/perk search and rendering rank stats and perk tags.",
+      "tags": ["component", "modal", "guild", "rank"],
+      "complexity": "moderate",
+      "filePath": "src/lib/modals/GuildModal.svelte"
+    },
+    {
+      "id": "file:src/lib/modals/index.ts",
+      "type": "file",
+      "name": "modals/index.ts",
+      "summary": "Barrel re-export of the four selection modal components (Race, Guild, Accessory, WeaponPart).",
+      "tags": ["barrel", "re-export", "modal"],
+      "complexity": "simple",
+      "filePath": "src/lib/modals/index.ts"
+    },
+    {
+      "id": "file:src/lib/modals/RaceModal.svelte",
+      "type": "file",
+      "name": "RaceModal.svelte",
+      "summary": "Modal for selecting a race, listing passive description and stat modifiers for each option.",
+      "tags": ["component", "modal", "race"],
+      "complexity": "moderate",
+      "filePath": "src/lib/modals/RaceModal.svelte"
+    },
+    {
+      "id": "file:src/lib/modals/WeaponPartModal.svelte",
+      "type": "file",
+      "name": "WeaponPartModal.svelte",
+      "summary": "Modal for picking weapon blade/handle or monk glove/essence parts with tier/type filter dropdowns and weapon stat filtering.",
+      "tags": ["component", "modal", "weapon", "part"],
+      "complexity": "moderate",
+      "filePath": "src/lib/modals/WeaponPartModal.svelte"
+    },
+    {
+      "id": "file:src/lib/StatFilterShared.svelte",
+      "type": "file",
+      "name": "StatFilterShared.svelte",
+      "summary": "Shared stat-filter chip button with include/exclude state and a module-level buildStatMaps helper for label/color lookups.",
+      "tags": ["component", "stat-filter", "chip"],
+      "complexity": "moderate",
+      "filePath": "src/lib/StatFilterShared.svelte"
+    },
+    {
+      "id": "file:src/lib/stats/elementalBoosts.ts",
+      "type": "file",
+      "name": "elementalBoosts.ts",
+      "summary": "Defines StatDef entries for the elemental boost stats (dexterity, physical, magic, elemental) plus their negative debuff variants.",
+      "tags": ["stats", "elemental", "boosts", "constants"],
+      "complexity": "simple",
+      "filePath": "src/lib/stats/elementalBoosts.ts"
+    },
+    {
+      "id": "file:src/lib/stats/filterActions.ts",
+      "type": "file",
+      "name": "filterActions.ts",
+      "summary": "Creates include/exclude filter action handlers (toggle, remove, clear, chip keyboard) that mutate a FilterMap and notify subscribers.",
+      "tags": ["stats", "filter", "actions"],
+      "complexity": "simple",
+      "filePath": "src/lib/stats/filterActions.ts"
+    },
+    {
+      "id": "file:src/lib/Toast.svelte",
+      "type": "file",
+      "name": "Toast.svelte",
+      "summary": "Fixed top-right toast notification container rendering toasts from the toast store with per-type styling and dismiss buttons.",
+      "tags": ["component", "toast", "notification"],
+      "complexity": "moderate",
+      "filePath": "src/lib/Toast.svelte"
+    },
+    {
+      "id": "file:src/lib/ui/Badge.svelte",
+      "type": "file",
+      "name": "Badge.svelte",
+      "summary": "Svelte 5 badge/pill component supporting size, shape, color, solid, mono, tag, and named variant props.",
+      "tags": ["component", "ui", "badge"],
+      "complexity": "moderate",
+      "filePath": "src/lib/ui/Badge.svelte"
+    },
+    {
+      "id": "file:src/lib/ui/Button.svelte",
+      "type": "file",
+      "name": "Button.svelte",
+      "summary": "Svelte 5 button component with variant (positive/negative/warning/info/neutral), size, and active-state props.",
+      "tags": ["component", "ui", "button"],
+      "complexity": "moderate",
+      "filePath": "src/lib/ui/Button.svelte"
+    },
+    {
+      "id": "file:src/lib/ui/RollValue.svelte",
+      "type": "file",
+      "name": "RollValue.svelte",
+      "summary": "Animated value display that eases between numeric strings while preserving prefixes/suffixes and coloring negatives.",
+      "tags": ["component", "ui", "animation", "numbers"],
+      "complexity": "moderate",
+      "filePath": "src/lib/ui/RollValue.svelte"
+    },
+    {
+      "id": "file:src/lib/uiConstants.ts",
+      "type": "file",
+      "name": "uiConstants.ts",
+      "summary": "Shared UI constants: colors per damage type/tag/source/enchant rarity, source labels, and stat/tag label maps.",
+      "tags": ["constants", "ui", "colors", "labels"],
+      "complexity": "moderate",
+      "filePath": "src/lib/uiConstants.ts"
+    },
+    {
+      "id": "file:src/main.ts",
+      "type": "file",
+      "name": "main.ts",
+      "summary": "Application entry point that injects Vercel analytics and mounts the root App component into the DOM.",
+      "tags": ["entry", "mount", "analytics"],
+      "complexity": "simple",
+      "filePath": "src/main.ts"
+    },
+    {
+      "id": "file:src/ModalSearchHeader.svelte",
+      "type": "file",
+      "name": "ModalSearchHeader.svelte",
+      "summary": "Shared modal header composing a search input with suggestions, tag filter, stat/weapon-stat filter, and Highest/Most Effective/Brawny sort buttons.",
+      "tags": ["component", "modal", "search", "header"],
+      "complexity": "moderate",
+      "filePath": "src/ModalSearchHeader.svelte"
+    },
+    {
+      "id": "function:src/lib/constants/wa-display.ts:getWADisplayName",
+      "type": "function",
+      "name": "getWADisplayName",
+      "summary": "Returns the friendlier weapon-art display name when the build has the matching perk, otherwise returns the base name.",
+      "tags": ["helper", "weapon-art", "display"],
+      "complexity": "simple",
+      "lineRange": [9, 17]
+    },
+    {
+      "id": "function:src/lib/stats/filterActions.ts:createFilterActions",
+      "type": "function",
+      "name": "createFilterActions",
+      "summary": "Builds include/exclude filter action handlers (toggle/remove/clear/keyboard) operating on a FilterMap with external state getters/setters.",
+      "tags": ["filter", "actions", "state"],
+      "complexity": "simple",
+      "lineRange": [4, 41]
+    },
+    {
+      "id": "function:src/lib/Modal.svelte:trapFocus",
+      "type": "function",
+      "name": "trapFocus",
+      "summary": "Traps Tab focus within the modal's focusable elements, cycling between first and last focusables.",
+      "tags": ["modal", "accessibility", "focus"],
+      "complexity": "simple",
+      "lineRange": [6, 20]
+    },
+    {
+      "id": "function:src/lib/StatFilterShared.svelte:buildStatMaps",
+      "type": "function",
+      "name": "buildStatMaps",
+      "summary": "Builds label and color lookup Maps from stat groups for shared stat-filter chips.",
+      "tags": ["stats", "helper", "maps"],
+      "complexity": "simple",
+      "lineRange": [11, 23]
+    },
+    {
+      "id": "function:src/lib/modals/AccessorySelectModal.svelte:computeItemEffectiveBoost",
+      "type": "function",
+      "name": "computeItemEffectiveBoost",
+      "summary": "Computes an item's effective boost as the sum of weapon scalings multiplied by matching stat values.",
+      "tags": ["accessory", "scaling", "boost"],
+      "complexity": "simple",
+      "lineRange": [85, 96]
+    },
+    {
+      "id": "function:src/lib/modals/AccessorySelectModal.svelte:computeItemBrawnyBoost",
+      "type": "function",
+      "name": "computeItemBrawnyBoost",
+      "summary": "Computes effective boost after converting non-physical boosts into physical boost per the Brawny perk conversion rate.",
+      "tags": ["brawny", "boost", "conversion"],
+      "complexity": "simple",
+      "lineRange": [98, 121]
+    },
+    {
+      "id": "function:src/lib/EnchantSelect.svelte:updateDropdownPos",
+      "type": "function",
+      "name": "updateDropdownPos",
+      "summary": "Positions the enchant dropdown fixed relative to the trigger, flipping above when there is insufficient space below.",
+      "tags": ["dropdown", "position", "layout"],
+      "complexity": "simple",
+      "lineRange": [81, 91]
+    },
+    {
+      "id": "function:src/lib/EnchantSelect.svelte:handleKeydown",
+      "type": "function",
+      "name": "handleKeydown",
+      "summary": "Handles dropdown keyboard navigation: open on Enter/Space, arrow-key highlighting, Escape to close, Enter to select.",
+      "tags": ["keyboard", "accessibility", "dropdown"],
+      "complexity": "simple",
+      "lineRange": [117, 143]
+    },
+    {
+      "id": "function:src/lib/EnchantSelect.svelte:handleScroll",
+      "type": "function",
+      "name": "handleScroll",
+      "summary": "Re-positions the dropdown on scroll/resize using a requestAnimationFrame throttle.",
+      "tags": ["dropdown", "scroll", "layout"],
+      "complexity": "simple",
+      "lineRange": [154, 163]
+    },
+    {
+      "id": "function:src/lib/ui/RollValue.svelte:animate",
+      "type": "function",
+      "name": "animate",
+      "summary": "Animates the numeric roll between two formatted values using eased rAF ticks while preserving prefix, suffix, and decimals.",
+      "tags": ["animation", "number", "easing"],
+      "complexity": "simple",
+      "lineRange": [18, 46]
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/lib/constants/wa-display.ts",
+      "target": "function:src/lib/constants/wa-display.ts:getWADisplayName",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lib/constants/wa-display.ts",
+      "target": "function:src/lib/constants/wa-display.ts:getWADisplayName",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lib/stats/filterActions.ts",
+      "target": "function:src/lib/stats/filterActions.ts:createFilterActions",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lib/stats/filterActions.ts",
+      "target": "function:src/lib/stats/filterActions.ts:createFilterActions",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lib/Modal.svelte",
+      "target": "function:src/lib/Modal.svelte:trapFocus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lib/StatFilterShared.svelte",
+      "target": "function:src/lib/StatFilterShared.svelte:buildStatMaps",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lib/StatFilterShared.svelte",
+      "target": "function:src/lib/StatFilterShared.svelte:buildStatMaps",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lib/modals/AccessorySelectModal.svelte",
+      "target": "function:src/lib/modals/AccessorySelectModal.svelte:computeItemEffectiveBoost",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lib/modals/AccessorySelectModal.svelte",
+      "target": "function:src/lib/modals/AccessorySelectModal.svelte:computeItemBrawnyBoost",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lib/EnchantSelect.svelte",
+      "target": "function:src/lib/EnchantSelect.svelte:updateDropdownPos",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lib/EnchantSelect.svelte",
+      "target": "function:src/lib/EnchantSelect.svelte:handleKeydown",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lib/EnchantSelect.svelte",
+      "target": "function:src/lib/EnchantSelect.svelte:handleScroll",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lib/ui/RollValue.svelte",
+      "target": "function:src/lib/ui/RollValue.svelte:animate",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/main.ts",
+      "target": "file:src/app.css",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main.ts",
+      "target": "file:src/App.svelte",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/modals/AccessorySelectModal.svelte",
+      "target": "file:src/lib/Modal.svelte",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/lib/modals/GuildModal.svelte",
+      "target": "file:src/lib/Modal.svelte",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/lib/modals/RaceModal.svelte",
+      "target": "file:src/lib/Modal.svelte",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/lib/modals/WeaponPartModal.svelte",
+      "target": "file:src/lib/Modal.svelte",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/lib/modals/AccessorySelectModal.svelte",
+      "target": "file:src/ModalSearchHeader.svelte",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/lib/modals/GuildModal.svelte",
+      "target": "file:src/ModalSearchHeader.svelte",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/lib/modals/RaceModal.svelte",
+      "target": "file:src/ModalSearchHeader.svelte",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/lib/modals/WeaponPartModal.svelte",
+      "target": "file:src/ModalSearchHeader.svelte",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/lib/EnchantSelect.svelte",
+      "target": "file:src/lib/constants/index.ts",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/wa-display.ts",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/thresholds.ts",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/heals.ts",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/draconic.ts",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/defensive.ts",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/lib/constants/index.ts",
+      "target": "file:src/lib/constants/draconic-colors.ts",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/lib/modals/index.ts",
+      "target": "file:src/lib/modals/RaceModal.svelte",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/lib/modals/index.ts",
+      "target": "file:src/lib/modals/GuildModal.svelte",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/lib/modals/index.ts",
+      "target": "file:src/lib/modals/AccessorySelectModal.svelte",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/lib/modals/index.ts",
+      "target": "file:src/lib/modals/WeaponPartModal.svelte",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

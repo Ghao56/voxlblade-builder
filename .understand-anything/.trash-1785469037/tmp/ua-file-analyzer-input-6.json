@@ -1,0 +1,55 @@
+{
+  "projectRoot": "C:/Users/Administrator/Downloads/voxlblade-builder",
+  "batchFiles": [
+    {
+      "path": "src/data/weaponConditionalBoosts.ts",
+      "language": "typescript",
+      "sizeLines": 78,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/crit.ts",
+      "language": "typescript",
+      "sizeLines": 340,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/defense.ts",
+      "language": "typescript",
+      "sizeLines": 81,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/lib/utils.ts",
+      "language": "typescript",
+      "sizeLines": 112,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/piercer.test.ts",
+      "language": "typescript",
+      "sizeLines": 185,
+      "fileCategory": "code"
+    }
+  ],
+  "batchImportData": {
+    "src/data/weaponConditionalBoosts.ts": [
+      "src/lib/utils.ts"
+    ],
+    "src/lib/crit.ts": [
+      "src/lib/constants.ts",
+      "src/lib/types.ts",
+      "src/lib/utils.ts"
+    ],
+    "src/lib/defense.ts": [
+      "src/lib/utils.ts"
+    ],
+    "src/lib/utils.ts": [
+      "src/lib/types.ts"
+    ],
+    "tests/piercer.test.ts": [
+      "src/data/weaponConditionalBoosts.ts",
+      "src/lib/utils.ts"
+    ]
+  }
+}

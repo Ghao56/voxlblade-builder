@@ -1,0 +1,161 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 11,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "src/data/armors.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 174,
+      "nonEmptyLines": 174,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 0
+      }
+    },
+    {
+      "path": "src/data/blades.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 108,
+      "nonEmptyLines": 108,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 0
+      }
+    },
+    {
+      "path": "src/data/enchantments.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 53,
+      "nonEmptyLines": 52,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 0
+      }
+    },
+    {
+      "path": "src/data/essences.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 107,
+      "nonEmptyLines": 107,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 0
+      }
+    },
+    {
+      "path": "src/data/gloves.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 24,
+      "nonEmptyLines": 24,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 0
+      }
+    },
+    {
+      "path": "src/data/guilds.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 56,
+      "nonEmptyLines": 56,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 0
+      }
+    },
+    {
+      "path": "src/data/handles.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 105,
+      "nonEmptyLines": 105,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 0
+      }
+    },
+    {
+      "path": "src/data/perks.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 3689,
+      "nonEmptyLines": 3689,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 0
+      }
+    },
+    {
+      "path": "src/data/races.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 12,
+      "nonEmptyLines": 12,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 0
+      }
+    },
+    {
+      "path": "src/data/rings.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 37,
+      "nonEmptyLines": 37,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 0
+      }
+    },
+    {
+      "path": "src/data/runes.json",
+      "language": "json",
+      "fileCategory": "config",
+      "totalLines": 43,
+      "nonEmptyLines": 43,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0,
+        "sectionCount": 0
+      }
+    }
+  ]
+}

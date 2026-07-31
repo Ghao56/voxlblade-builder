@@ -1,0 +1,274 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/MountIcon.svelte",
+      "type": "file",
+      "name": "MountIcon.svelte",
+      "summary": "Inline SVG mount icon component that renders a detailed gradient-shaded mount silhouette built from dozens of path layers, scaled by a `size` prop and using a per-instance unique gradient ID so multiple icons render independently.",
+      "tags": ["component", "icon", "svg", "svelte"],
+      "complexity": "simple",
+      "filePath": "src/MountIcon.svelte"
+    },
+    {
+      "id": "file:src/PropellingFunTracker.svelte",
+      "type": "file",
+      "name": "PropellingFunTracker.svelte",
+      "summary": "Component for configuring the 'Propelling Fun' jump element (Air/Fire) and buff mode (Air only, Both, Fire only) through color-coded button groups and segmented range sliders, persisting choices into the shared `build` store via build.update.",
+      "tags": ["component", "ui", "svelte", "build-store", "controls"],
+      "complexity": "moderate",
+      "filePath": "src/PropellingFunTracker.svelte",
+      "languageNotes": "Svelte with legacy $: reactive declarations deriving slider state from the build store"
+    },
+    {
+      "id": "file:src/ScalingBreakdownRow.svelte",
+      "type": "file",
+      "name": "ScalingBreakdownRow.svelte",
+      "summary": "Displays a single scaling-breakdown table row showing a stat's scaling value, boost percentage, and net contribution, formatting numeric values with roundMultiplier and treating boost keys found in PERCENT_STATS as percentage values.",
+      "tags": ["component", "ui", "svelte", "stats", "breakdown"],
+      "complexity": "moderate",
+      "filePath": "src/ScalingBreakdownRow.svelte"
+    },
+    {
+      "id": "file:src/StatFilter.svelte",
+      "type": "file",
+      "name": "StatFilter.svelte",
+      "summary": "Collapsible stat filter panel with Positive/Negative tabs, include/exclude chip cycling via shared createFilterActions helpers, and sort-mode buttons (highest/lowest/alphabetical), dispatching filter maps and sort mode changes to the parent component.",
+      "tags": ["component", "ui", "svelte", "filter", "stats"],
+      "complexity": "complex",
+      "filePath": "src/StatFilter.svelte"
+    },
+    {
+      "id": "file:src/SuggestDrop.svelte",
+      "type": "file",
+      "name": "SuggestDrop.svelte",
+      "summary": "Dropdown that renders type-ahead suggestions for weapon names and perks, highlighting the query substring via highlightTextParts and dispatching a `select` event on mousedown so the input does not lose focus.",
+      "tags": ["component", "ui", "svelte", "autocomplete", "dropdown"],
+      "complexity": "simple",
+      "filePath": "src/SuggestDrop.svelte"
+    },
+    {
+      "id": "file:src/TagFilter.svelte",
+      "type": "file",
+      "name": "TagFilter.svelte",
+      "summary": "Collapsible tag filter panel grouping perk tags into Combat, Support, Status, Weapon Art/Rune, and Special categories with color-coded chips, an active-tag summary bar with per-tag removal, a clear-all action, and toggle/change events dispatched to the parent.",
+      "tags": ["component", "ui", "svelte", "filter", "tags"],
+      "complexity": "complex",
+      "filePath": "src/TagFilter.svelte"
+    },
+    {
+      "id": "file:src/WeaponStatFilter.svelte",
+      "type": "file",
+      "name": "WeaponStatFilter.svelte",
+      "summary": "Collapsible weapon-stat filter for Damage Type, Scaling, and Boost/Stats groups using include/exclude chips with DMG/SCL/STAT prefixes, and an exported matchesFilter predicate that tests weapon records against the active include/exclude map.",
+      "tags": ["component", "ui", "svelte", "filter", "weapon-stats"],
+      "complexity": "complex",
+      "filePath": "src/WeaponStatFilter.svelte"
+    },
+    {
+      "id": "function:src/WeaponStatFilter.svelte:matchesFilter",
+      "type": "function",
+      "name": "matchesFilter",
+      "summary": "Exported predicate that returns true when an item's stats satisfy every active include/exclude filter entry, comparing stat values (> 0 for include, <= 0 for exclude) resolved from the item's stats map or top-level fields.",
+      "tags": ["filter", "predicate", "stats"],
+      "complexity": "simple",
+      "lineRange": [84, 94]
+    },
+    {
+      "id": "file:src/WeaponStatsDisplay.svelte",
+      "type": "file",
+      "name": "WeaponStatsDisplay.svelte",
+      "summary": "Renders a weapon's stat block as grouped pills for damage types, scalings, and stat boosts, splitting the flat stats map by key suffix and formatting percentage-style stats (boost/defense/warding) with a % sign.",
+      "tags": ["component", "ui", "svelte", "stats", "weapon"],
+      "complexity": "moderate",
+      "filePath": "src/WeaponStatsDisplay.svelte"
+    },
+    {
+      "id": "function:src/WeaponStatsDisplay.svelte:splitWeaponStats",
+      "type": "function",
+      "name": "splitWeaponStats",
+      "summary": "Partitions a flat weapon stats record into three arrays by key suffix: keys ending in 'Type' become damage types, keys ending in 'Scaling' become scalings, and everything else becomes boosts.",
+      "tags": ["stats", "utility", "categorization"],
+      "complexity": "simple",
+      "lineRange": [4, 16]
+    },
+    {
+      "id": "file:vite.config.ts",
+      "type": "file",
+      "name": "vite.config.ts",
+      "summary": "Vite build configuration that sets the app base path from VITE_BASE_PATH, wires the Svelte plugin, a PWA plugin (autoUpdate service worker with a StaleWhileRevalidate navigation cache), and a rollup bundle-size visualizer while disabling manual chunks.",
+      "tags": ["vite", "config", "build", "pwa"],
+      "complexity": "simple",
+      "filePath": "vite.config.ts"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/PropellingFunTracker.svelte",
+      "target": "file:src/lib/store.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/ScalingBreakdownRow.svelte",
+      "target": "file:src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/ScalingBreakdownRow.svelte",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/StatFilter.svelte",
+      "target": "file:src/lib/stats/elementalBoosts.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/StatFilter.svelte",
+      "target": "file:src/lib/stats/filterActions.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/StatFilter.svelte",
+      "target": "file:src/lib/uiConstants.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/StatFilter.svelte",
+      "target": "file:src/lib/StatFilterShared.svelte",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/StatFilter.svelte",
+      "target": "file:src/lib/ui/Badge.svelte",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/StatFilter.svelte",
+      "target": "file:src/lib/ui/Button.svelte",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/SuggestDrop.svelte",
+      "target": "file:src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/TagFilter.svelte",
+      "target": "file:src/lib/uiConstants.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/TagFilter.svelte",
+      "target": "file:src/lib/ui/Badge.svelte",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/WeaponStatFilter.svelte",
+      "target": "file:src/lib/stats/elementalBoosts.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/WeaponStatFilter.svelte",
+      "target": "file:src/lib/stats/filterActions.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/WeaponStatFilter.svelte",
+      "target": "file:src/lib/uiConstants.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/WeaponStatFilter.svelte",
+      "target": "file:src/lib/StatFilterShared.svelte",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/WeaponStatFilter.svelte",
+      "target": "file:src/lib/ui/Badge.svelte",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/WeaponStatFilter.svelte",
+      "target": "file:src/lib/ui/Button.svelte",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/WeaponStatFilter.svelte",
+      "target": "function:src/WeaponStatFilter.svelte:matchesFilter",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/WeaponStatFilter.svelte",
+      "target": "function:src/WeaponStatFilter.svelte:matchesFilter",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/WeaponStatsDisplay.svelte",
+      "target": "function:src/WeaponStatsDisplay.svelte:splitWeaponStats",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/PropellingFunTracker.svelte",
+      "target": "file:src/lib/store.ts",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/StatFilter.svelte",
+      "target": "file:src/WeaponStatFilter.svelte",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/TagFilter.svelte",
+      "target": "file:src/StatFilter.svelte",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.5
+    }
+  ]
+}

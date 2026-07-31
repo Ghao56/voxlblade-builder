@@ -1,0 +1,1131 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 13,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "src/data/mountRunes.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 89,
+      "nonEmptyLines": 84,
+      "functions": [
+        {
+          "name": "getMountRuneDef",
+          "startLine": 87,
+          "endLine": 89,
+          "params": [
+            "runeName"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "MOUNT_RUNE_DEFS",
+          "line": 28,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/data/procCoefficients.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 52,
+      "nonEmptyLines": 49,
+      "exports": [
+        {
+          "name": "WEAPON_PROC_COEFFS",
+          "line": 8,
+          "isDefault": false
+        },
+        {
+          "name": "WA_PROC_COEFFS",
+          "line": 43,
+          "isDefault": false
+        },
+        {
+          "name": "DEFAULT_PROC_COEFF",
+          "line": 52,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 3,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/data/statboost.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 243,
+      "nonEmptyLines": 206,
+      "functions": [
+        {
+          "name": "r",
+          "startLine": 43,
+          "endLine": 45,
+          "params": [
+            "v"
+          ]
+        },
+        {
+          "name": "get",
+          "startLine": 47,
+          "endLine": 49,
+          "params": [
+            "s",
+            "key"
+          ]
+        },
+        {
+          "name": "add",
+          "startLine": 51,
+          "endLine": 53,
+          "params": [
+            "s",
+            "key",
+            "amount"
+          ]
+        },
+        {
+          "name": "sub",
+          "startLine": 55,
+          "endLine": 57,
+          "params": [
+            "s",
+            "key",
+            "amount"
+          ]
+        },
+        {
+          "name": "negMagnitude",
+          "startLine": 59,
+          "endLine": 61,
+          "params": [
+            "v"
+          ]
+        },
+        {
+          "name": "negSum",
+          "startLine": 63,
+          "endLine": 65,
+          "params": [
+            "s",
+            "keys"
+          ]
+        },
+        {
+          "name": "finalizeRounding",
+          "startLine": 214,
+          "endLine": 223,
+          "params": [
+            "s"
+          ]
+        },
+        {
+          "name": "applyStatBoostPerks",
+          "startLine": 225,
+          "endLine": 243,
+          "params": [
+            "stats",
+            "perks"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "OFFENSIVE_BOOSTS",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "applyStatBoostPerks",
+          "line": 225,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "r",
+          "callee": "Math.round",
+          "lineNumber": 44
+        },
+        {
+          "caller": "add",
+          "callee": "get",
+          "lineNumber": 52
+        },
+        {
+          "caller": "sub",
+          "callee": "get",
+          "lineNumber": 56
+        },
+        {
+          "caller": "negMagnitude",
+          "callee": "Math.abs",
+          "lineNumber": 60
+        },
+        {
+          "caller": "negMagnitude",
+          "callee": "Math.min",
+          "lineNumber": 60
+        },
+        {
+          "caller": "negSum",
+          "callee": "keys.reduce",
+          "lineNumber": 64
+        },
+        {
+          "caller": "negSum",
+          "callee": "negMagnitude",
+          "lineNumber": 64
+        },
+        {
+          "caller": "negSum",
+          "callee": "get",
+          "lineNumber": 64
+        },
+        {
+          "caller": "finalizeRounding",
+          "callee": "Object.entries",
+          "lineNumber": 216
+        },
+        {
+          "caller": "finalizeRounding",
+          "callee": "PERCENT_STATS.has",
+          "lineNumber": 217
+        },
+        {
+          "caller": "finalizeRounding",
+          "callee": "r",
+          "lineNumber": 217
+        },
+        {
+          "caller": "applyStatBoostPerks",
+          "callee": "handler",
+          "lineNumber": 237
+        },
+        {
+          "caller": "applyStatBoostPerks",
+          "callee": "finalizeRounding",
+          "lineNumber": 242
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 2,
+        "functionCount": 8,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/data/weapon base dmg.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 42,
+      "nonEmptyLines": 39,
+      "exports": [
+        {
+          "name": "WEAPON_BASE_DMG",
+          "line": 3,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/constants/stat-conversions.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 30,
+      "nonEmptyLines": 27,
+      "exports": [
+        {
+          "name": "WEIGHT_DISTRIBUTION_SPLIT_RATIO",
+          "line": 5,
+          "isDefault": false
+        },
+        {
+          "name": "WEIGHT_DISTRIBUTION_MULTIPLIER",
+          "line": 6,
+          "isDefault": false
+        },
+        {
+          "name": "QUICK_WITTED_CONVERSION",
+          "line": 8,
+          "isDefault": false
+        },
+        {
+          "name": "WHIRL_FOOT_CONVERSION",
+          "line": 9,
+          "isDefault": false
+        },
+        {
+          "name": "CARAPACE_CONVERSION",
+          "line": 10,
+          "isDefault": false
+        },
+        {
+          "name": "EXTRA_LAYERS_MULT",
+          "line": 11,
+          "isDefault": false
+        },
+        {
+          "name": "FROZEN_HEART_CONVERSION",
+          "line": 12,
+          "isDefault": false
+        },
+        {
+          "name": "IMMOVABLE_MULT",
+          "line": 13,
+          "isDefault": false
+        },
+        {
+          "name": "RIGHTED_WRONGS_BASE_COEFF",
+          "line": 14,
+          "isDefault": false
+        },
+        {
+          "name": "RIGHTED_WRONGS_TENACITY_WEIGHT",
+          "line": 15,
+          "isDefault": false
+        },
+        {
+          "name": "RIGHTED_WRONGS_OFFENSE_WEIGHT",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "RIGHTED_WRONGS_SPEED_FRACTION",
+          "line": 17,
+          "isDefault": false
+        },
+        {
+          "name": "ROCKY_BODY_CONVERSION",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "SPELLSHIELD_CONVERSION",
+          "line": 19,
+          "isDefault": false
+        },
+        {
+          "name": "STRONG_TIDES_CONVERSION",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "SWIFT_GUARD_CONVERSION",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "TRUE_BALANCE_STAT_MULT",
+          "line": 22,
+          "isDefault": false
+        },
+        {
+          "name": "RAWNY_CONVERSION",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "RAWNY_MAX_CAP",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "ROARING_HEADINGS_WARDING_SUB",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "LUCKY_WARDING_SUB",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "LUCKY_PROTECTION_SUB",
+          "line": 29,
+          "isDefault": false
+        },
+        {
+          "name": "LUCKY_TENACITY_SUB",
+          "line": 30,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 23,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/dmgTypes.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 81,
+      "nonEmptyLines": 77,
+      "exports": [
+        {
+          "name": "BADGE_CONFIG",
+          "line": 3,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/enchantTooltip.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 27,
+      "nonEmptyLines": 21,
+      "functions": [
+        {
+          "name": "getEnchantTooltipText",
+          "startLine": 3,
+          "endLine": 27,
+          "params": [
+            "name",
+            "includeDescription"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "getEnchantTooltipText",
+          "line": 3,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getEnchantTooltipText",
+          "callee": "getEnchant",
+          "lineNumber": 5
+        },
+        {
+          "caller": "getEnchantTooltipText",
+          "callee": "lines.push",
+          "lineNumber": 11
+        },
+        {
+          "caller": "getEnchantTooltipText",
+          "callee": "Object.entries(e.stats).flatMap",
+          "lineNumber": 14
+        },
+        {
+          "caller": "getEnchantTooltipText",
+          "callee": "Object.entries",
+          "lineNumber": 14
+        },
+        {
+          "caller": "getEnchantTooltipText",
+          "callee": "Array.isArray",
+          "lineNumber": 16
+        },
+        {
+          "caller": "getEnchantTooltipText",
+          "callee": "mods.map((m: any) =>\r\n      m.type === 'multiplier' ? `${k}: ×${m.value}` : `${k}: ${m.value > 0 ? '+' : ''}${m.value}`\r\n    ).join",
+          "lineNumber": 17
+        },
+        {
+          "caller": "getEnchantTooltipText",
+          "callee": "mods.map",
+          "lineNumber": 17
+        },
+        {
+          "caller": "getEnchantTooltipText",
+          "callee": "lines.push",
+          "lineNumber": 22
+        },
+        {
+          "caller": "getEnchantTooltipText",
+          "callee": "statLines.join",
+          "lineNumber": 22
+        },
+        {
+          "caller": "getEnchantTooltipText",
+          "callee": "lines.push",
+          "lineNumber": 23
+        },
+        {
+          "caller": "getEnchantTooltipText",
+          "callee": "e.effects.map((ef: any) => `${ef.name} +${ef.value}`).join",
+          "lineNumber": 23
+        },
+        {
+          "caller": "getEnchantTooltipText",
+          "callee": "e.effects.map",
+          "lineNumber": 23
+        },
+        {
+          "caller": "getEnchantTooltipText",
+          "callee": "lines.push",
+          "lineNumber": 24
+        },
+        {
+          "caller": "getEnchantTooltipText",
+          "callee": "lines.join",
+          "lineNumber": 26
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/engine.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 6,
+      "nonEmptyLines": 6,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/engine/data/character.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 29,
+      "nonEmptyLines": 22,
+      "functions": [
+        {
+          "name": "getRace",
+          "startLine": 16,
+          "endLine": 16,
+          "params": [
+            "name"
+          ]
+        },
+        {
+          "name": "getGuild",
+          "startLine": 17,
+          "endLine": 17,
+          "params": [
+            "name"
+          ]
+        },
+        {
+          "name": "getPerk",
+          "startLine": 18,
+          "endLine": 18,
+          "params": [
+            "name"
+          ]
+        },
+        {
+          "name": "getGuildRank",
+          "startLine": 20,
+          "endLine": 25,
+          "params": [
+            "guild",
+            "rank"
+          ]
+        },
+        {
+          "name": "isMonkGuild",
+          "startLine": 27,
+          "endLine": 29,
+          "params": [
+            "guildName"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "races",
+          "line": 9,
+          "isDefault": false
+        },
+        {
+          "name": "guilds",
+          "line": 10,
+          "isDefault": false
+        },
+        {
+          "name": "getRace",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "getGuild",
+          "line": 17,
+          "isDefault": false
+        },
+        {
+          "name": "getPerk",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "getGuildRank",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "isMonkGuild",
+          "line": 27,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 4,
+        "exportCount": 7,
+        "functionCount": 5,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/engine/data/equipment.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 58,
+      "nonEmptyLines": 48,
+      "functions": [
+        {
+          "name": "getEnchant",
+          "startLine": 37,
+          "endLine": 37,
+          "params": [
+            "name"
+          ]
+        },
+        {
+          "name": "getRing",
+          "startLine": 38,
+          "endLine": 38,
+          "params": [
+            "name"
+          ]
+        },
+        {
+          "name": "getRune",
+          "startLine": 39,
+          "endLine": 39,
+          "params": [
+            "name"
+          ]
+        },
+        {
+          "name": "getArmorPart",
+          "startLine": 41,
+          "endLine": 48,
+          "params": [
+            "name",
+            "type"
+          ]
+        },
+        {
+          "name": "getArmorSlotTypes",
+          "startLine": 50,
+          "endLine": 54,
+          "params": [
+            "name"
+          ]
+        },
+        {
+          "name": "armorSupportsSlot",
+          "startLine": 56,
+          "endLine": 58,
+          "params": [
+            "name",
+            "type"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "rings",
+          "line": 8,
+          "isDefault": false
+        },
+        {
+          "name": "runes",
+          "line": 9,
+          "isDefault": false
+        },
+        {
+          "name": "enchantments",
+          "line": 10,
+          "isDefault": false
+        },
+        {
+          "name": "enchantmentsRaw",
+          "line": 13,
+          "isDefault": false
+        },
+        {
+          "name": "armors",
+          "line": 35,
+          "isDefault": false
+        },
+        {
+          "name": "getEnchant",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "getRing",
+          "line": 38,
+          "isDefault": false
+        },
+        {
+          "name": "getRune",
+          "line": 39,
+          "isDefault": false
+        },
+        {
+          "name": "getArmorPart",
+          "line": 41,
+          "isDefault": false
+        },
+        {
+          "name": "armorSupportsSlot",
+          "line": 56,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getArmorSlotTypes",
+          "callee": "armor.parts.map",
+          "lineNumber": 53
+        },
+        {
+          "caller": "armorSupportsSlot",
+          "callee": "getArmorSlotTypes(name).has",
+          "lineNumber": 57
+        },
+        {
+          "caller": "armorSupportsSlot",
+          "callee": "getArmorSlotTypes",
+          "lineNumber": 57
+        }
+      ],
+      "metrics": {
+        "importCount": 5,
+        "exportCount": 10,
+        "functionCount": 6,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/engine/data/weapons.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 21,
+      "nonEmptyLines": 17,
+      "functions": [
+        {
+          "name": "getBlade",
+          "startLine": 18,
+          "endLine": 18,
+          "params": [
+            "name"
+          ]
+        },
+        {
+          "name": "getHandle",
+          "startLine": 19,
+          "endLine": 19,
+          "params": [
+            "name"
+          ]
+        },
+        {
+          "name": "getGlove",
+          "startLine": 20,
+          "endLine": 20,
+          "params": [
+            "name"
+          ]
+        },
+        {
+          "name": "getEssence",
+          "startLine": 21,
+          "endLine": 21,
+          "params": [
+            "name"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "blades",
+          "line": 8,
+          "isDefault": false
+        },
+        {
+          "name": "handles",
+          "line": 9,
+          "isDefault": false
+        },
+        {
+          "name": "gloves",
+          "line": 10,
+          "isDefault": false
+        },
+        {
+          "name": "essences",
+          "line": 11,
+          "isDefault": false
+        },
+        {
+          "name": "getBlade",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "getHandle",
+          "line": 19,
+          "isDefault": false
+        },
+        {
+          "name": "getGlove",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "getEssence",
+          "line": 21,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 5,
+        "exportCount": 8,
+        "functionCount": 4,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/store.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 242,
+      "nonEmptyLines": 223,
+      "functions": [
+        {
+          "name": "loadBuild",
+          "startLine": 81,
+          "endLine": 90,
+          "params": []
+        },
+        {
+          "name": "setEnchantment",
+          "startLine": 111,
+          "endLine": 123,
+          "params": [
+            "slot",
+            "index",
+            "value"
+          ]
+        },
+        {
+          "name": "swapEnchantments",
+          "startLine": 125,
+          "endLine": 139,
+          "params": [
+            "slotA",
+            "slotB"
+          ]
+        },
+        {
+          "name": "clearBuild",
+          "startLine": 143,
+          "endLine": 145,
+          "params": []
+        },
+        {
+          "name": "setGuild",
+          "startLine": 147,
+          "endLine": 165,
+          "params": [
+            "guildName",
+            "guildRank"
+          ]
+        },
+        {
+          "name": "moveArmorSlot",
+          "startLine": 181,
+          "endLine": 206,
+          "params": [
+            "from",
+            "to",
+            "clone"
+          ]
+        },
+        {
+          "name": "canArmorMoveToSlot",
+          "startLine": 208,
+          "endLine": 210,
+          "params": [
+            "armorName",
+            "to"
+          ]
+        },
+        {
+          "name": "moveRingSlot",
+          "startLine": 219,
+          "endLine": 242,
+          "params": [
+            "from",
+            "to",
+            "clone"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "build",
+          "line": 92,
+          "isDefault": false
+        },
+        {
+          "name": "effectiveDarknessOverride",
+          "line": 104,
+          "isDefault": false
+        },
+        {
+          "name": "result",
+          "line": 106,
+          "isDefault": false
+        },
+        {
+          "name": "setEnchantment",
+          "line": 111,
+          "isDefault": false
+        },
+        {
+          "name": "orkBuffTenacity",
+          "line": 141,
+          "isDefault": false
+        },
+        {
+          "name": "clearBuild",
+          "line": 143,
+          "isDefault": false
+        },
+        {
+          "name": "setGuild",
+          "line": 147,
+          "isDefault": false
+        },
+        {
+          "name": "moveArmorSlot",
+          "line": 181,
+          "isDefault": false
+        },
+        {
+          "name": "canArmorMoveToSlot",
+          "line": 208,
+          "isDefault": false
+        },
+        {
+          "name": "moveRingSlot",
+          "line": 219,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "loadBuild",
+          "callee": "localStorage.getItem",
+          "lineNumber": 83
+        },
+        {
+          "caller": "loadBuild",
+          "callee": "JSON.parse",
+          "lineNumber": 85
+        },
+        {
+          "caller": "setEnchantment",
+          "callee": "build.update",
+          "lineNumber": 112
+        },
+        {
+          "caller": "setEnchantment",
+          "callee": "enforceEnchantSlot",
+          "lineNumber": 119
+        },
+        {
+          "caller": "swapEnchantments",
+          "callee": "build.update",
+          "lineNumber": 127
+        },
+        {
+          "caller": "clearBuild",
+          "callee": "build.set",
+          "lineNumber": 144
+        },
+        {
+          "caller": "setGuild",
+          "callee": "build.update",
+          "lineNumber": 148
+        },
+        {
+          "caller": "setGuild",
+          "callee": "isMonkGuild",
+          "lineNumber": 150
+        },
+        {
+          "caller": "setGuild",
+          "callee": "isMonkGuild",
+          "lineNumber": 151
+        },
+        {
+          "caller": "moveArmorSlot",
+          "callee": "build.update",
+          "lineNumber": 184
+        },
+        {
+          "caller": "moveArmorSlot",
+          "callee": "armorSupportsSlot",
+          "lineNumber": 188
+        },
+        {
+          "caller": "moveArmorSlot",
+          "callee": "armorSupportsSlot",
+          "lineNumber": 192
+        },
+        {
+          "caller": "canArmorMoveToSlot",
+          "callee": "armorSupportsSlot",
+          "lineNumber": 209
+        },
+        {
+          "caller": "moveRingSlot",
+          "callee": "build.update",
+          "lineNumber": 222
+        }
+      ],
+      "metrics": {
+        "importCount": 4,
+        "exportCount": 10,
+        "functionCount": 8,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/types.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 316,
+      "nonEmptyLines": 278,
+      "functions": [
+        {
+          "name": "applyUpgrade",
+          "startLine": 75,
+          "endLine": 89,
+          "params": [
+            "stats",
+            "level"
+          ]
+        },
+        {
+          "name": "getProcCoeffValue",
+          "startLine": 251,
+          "endLine": 255,
+          "params": [
+            "pc"
+          ]
+        },
+        {
+          "name": "canProc",
+          "startLine": 257,
+          "endLine": 259,
+          "params": [
+            "pc"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "PERCENT_STATS",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "STAT_KEYS",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "UPGRADE_MAX",
+          "line": 72,
+          "isDefault": false
+        },
+        {
+          "name": "applyUpgrade",
+          "line": 75,
+          "isDefault": false
+        },
+        {
+          "name": "canProc",
+          "line": 257,
+          "isDefault": false
+        },
+        {
+          "name": "DMG_TYPE_COLORS",
+          "line": 281,
+          "isDefault": false
+        },
+        {
+          "name": "DMG_TYPE_PRIORITY",
+          "line": 289,
+          "isDefault": false
+        },
+        {
+          "name": "SCALING_TO_BOOST",
+          "line": 291,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "canProc",
+          "callee": "getProcCoeffValue",
+          "lineNumber": 258
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 8,
+        "functionCount": 3,
+        "classCount": 0
+      }
+    }
+  ]
+}

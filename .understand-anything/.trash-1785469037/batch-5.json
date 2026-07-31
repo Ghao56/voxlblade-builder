@@ -1,0 +1,319 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/data/Boost.ts",
+      "type": "file",
+      "name": "Boost.ts",
+      "summary": "Central registry of damage-boost definitions (BOOST_DEFS) and a BoostContext type consumed by the damage engine. Each BoostDef maps a perk name to either a flat multiplierPerPerk or a custom calcFn that evaluates conditional boosts (Primal, Frenzy, Penance, Cut Down, Executioner, etc.).",
+      "tags": ["damage-boosts", "perk-definitions", "registry", "damage-engine"],
+      "complexity": "complex",
+      "filePath": "src/data/Boost.ts"
+    },
+    {
+      "id": "function:src/data/Boost.ts:calcMinionAbsorptionPotency",
+      "type": "function",
+      "name": "calcMinionAbsorptionPotency",
+      "summary": "Computes the potency gained per stack of the Minion Absorption perk from the player's Summon Boost percentage, rounded to 4 decimals.",
+      "tags": ["minion-absorption", "summon-boost", "potency"],
+      "complexity": "simple",
+      "lineRange": [27, 29]
+    },
+    {
+      "id": "function:src/data/Boost.ts:calcFrenzyPct",
+      "type": "function",
+      "name": "calcFrenzyPct",
+      "summary": "Calculates the Frenzy damage percent granted for a given Rage potency using the Frenzy base and rage multiplier constants.",
+      "tags": ["frenzy", "rage", "damage-boost"],
+      "complexity": "simple",
+      "lineRange": [31, 33]
+    },
+    {
+      "id": "file:src/data/enemyHpEffects.ts",
+      "type": "file",
+      "name": "enemyHpEffects.ts",
+      "summary": "Defines enemy-HP-gated perk effects (e.g. Mycotic Bloom) that either apply a debuff while the enemy is above/below an HP threshold or boost a DoT type. Exports helpers that resolve which enemy-HP effects are currently active for a build.",
+      "tags": ["enemy-hp", "hp-gates", "debuffs", "dot-boosts"],
+      "complexity": "moderate",
+      "filePath": "src/data/enemyHpEffects.ts"
+    },
+    {
+      "id": "function:src/data/enemyHpEffects.ts:getActiveEnemyHpDebuffs",
+      "type": "function",
+      "name": "getActiveEnemyHpDebuffs",
+      "summary": "Returns the debuffs (e.g. Slowness) granted by enemy-HP-gated perks that are active given the equipped perk amounts, enemy HP fill percent, and already-active debuff names.",
+      "tags": ["enemy-hp", "debuff-resolution"],
+      "complexity": "simple",
+      "lineRange": [53, 74]
+    },
+    {
+      "id": "function:src/data/enemyHpEffects.ts:getEnemyHpDotMultiplier",
+      "type": "function",
+      "name": "getEnemyHpDotMultiplier",
+      "summary": "Computes the multiplicative DoT damage boost from enemy-HP-gated effects (e.g. +25% Poison damage per stack below 50% HP) for a given DoT type.",
+      "tags": ["dot-multiplier", "enemy-hp"],
+      "complexity": "simple",
+      "lineRange": [76, 90]
+    },
+    {
+      "id": "file:src/data/perkAutoDebuffs.ts",
+      "type": "file",
+      "name": "perkAutoDebuffs.ts",
+      "summary": "Determines which debuffs a build automatically applies based on equipped perks and combat state. getAutoDebuffs synthesizes debuff applications (Burn, Bleed, Poison, Slowness, Weakness, Hypnotized, etc.) from perks like Penance, Sunburn, Frostbite and Cryo Engine, guarding against duplicates and checking proc coefficients.",
+      "tags": ["auto-debuffs", "perk-effects", "granted-buffs", "combat-state"],
+      "complexity": "complex",
+      "filePath": "src/data/perkAutoDebuffs.ts"
+    },
+    {
+      "id": "function:src/data/perkAutoDebuffs.ts:calcActualHpFillPct",
+      "type": "function",
+      "name": "calcActualHpFillPct",
+      "summary": "Recomputes the player's effective HP fill percent accounting for negative Protection, which reduces effective max HP relative to the level-based base.",
+      "tags": ["hp-fill", "protection", "effective-hp"],
+      "complexity": "simple",
+      "lineRange": [22, 31]
+    },
+    {
+      "id": "function:src/data/perkAutoDebuffs.ts:getAutoDebuffs",
+      "type": "function",
+      "name": "getAutoDebuffs",
+      "summary": "Main entry point that assembles the list of GrantedBuff debuffs a build applies, evaluating each perk's conditions (proc coefficient, existing buffs, HP gates) and merging in enemy-HP-gated debuffs.",
+      "tags": ["debuff-synthesis", "perk-procs", "granted-buffs"],
+      "complexity": "complex",
+      "lineRange": [33, 306]
+    },
+    {
+      "id": "file:src/lib/constants/game.ts",
+      "type": "file",
+      "name": "game.ts",
+      "summary": "Single source of truth for core game constants: max level, defaults for HP fill, the base HP formula (calcBaseMaxHP), and UI timing constants such as save debounce and undo window.",
+      "tags": ["game-constants", "base-hp", "level", "timing"],
+      "complexity": "simple",
+      "filePath": "src/lib/constants/game.ts"
+    },
+    {
+      "id": "function:src/lib/constants/game.ts:calcBaseMaxHP",
+      "type": "function",
+      "name": "calcBaseMaxHP",
+      "summary": "Computes a character's base max HP at a given level using a flat base plus per-level percentage scaling, rounded to an integer.",
+      "tags": ["base-hp", "formula", "level-scaling"],
+      "complexity": "simple",
+      "lineRange": [13, 15]
+    },
+    {
+      "id": "file:src/lib/constants/perk-base-damage.ts",
+      "type": "file",
+      "name": "perk-base-damage.ts",
+      "summary": "Curated table of numeric base damage, heal, and scaling coefficient constants for many perks and weapon arts (Dragon Claw, Springblast, spirits, Pyre Bloom, Bastion Ballista, etc.) consumed by the damage engine.",
+      "tags": ["perk-damage", "constants", "scaling", "base-values"],
+      "complexity": "complex",
+      "filePath": "src/lib/constants/perk-base-damage.ts"
+    },
+    {
+      "id": "file:src/lib/constants/storage.ts",
+      "type": "file",
+      "name": "storage.ts",
+      "summary": "LocalStorage persistence contracts: storage keys, build-state defaults, and save/encode maps that compress build fields to short keys, plus build slot and confirmation timeout limits.",
+      "tags": ["localstorage", "persistence", "build-saves", "key-map"],
+      "complexity": "moderate",
+      "filePath": "src/lib/constants/storage.ts"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/data/Boost.ts",
+      "target": "function:src/data/Boost.ts:calcMinionAbsorptionPotency",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/data/Boost.ts",
+      "target": "function:src/data/Boost.ts:calcFrenzyPct",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/data/enemyHpEffects.ts",
+      "target": "function:src/data/enemyHpEffects.ts:getActiveEnemyHpDebuffs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/data/enemyHpEffects.ts",
+      "target": "function:src/data/enemyHpEffects.ts:getEnemyHpDotMultiplier",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/data/perkAutoDebuffs.ts",
+      "target": "function:src/data/perkAutoDebuffs.ts:calcActualHpFillPct",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/data/perkAutoDebuffs.ts",
+      "target": "function:src/data/perkAutoDebuffs.ts:getAutoDebuffs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lib/constants/game.ts",
+      "target": "function:src/lib/constants/game.ts:calcBaseMaxHP",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/data/Boost.ts",
+      "target": "function:src/data/Boost.ts:calcMinionAbsorptionPotency",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/data/Boost.ts",
+      "target": "function:src/data/Boost.ts:calcFrenzyPct",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/data/enemyHpEffects.ts",
+      "target": "function:src/data/enemyHpEffects.ts:getActiveEnemyHpDebuffs",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/data/enemyHpEffects.ts",
+      "target": "function:src/data/enemyHpEffects.ts:getEnemyHpDotMultiplier",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/data/perkAutoDebuffs.ts",
+      "target": "function:src/data/perkAutoDebuffs.ts:calcActualHpFillPct",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/data/perkAutoDebuffs.ts",
+      "target": "function:src/data/perkAutoDebuffs.ts:getAutoDebuffs",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lib/constants/game.ts",
+      "target": "function:src/lib/constants/game.ts:calcBaseMaxHP",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/data/Boost.ts",
+      "target": "file:src/lib/constants.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/Boost.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/Boost.ts",
+      "target": "file:src/lib/utils.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/perkAutoDebuffs.ts",
+      "target": "file:src/data/Boost.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/perkAutoDebuffs.ts",
+      "target": "file:src/data/BuffData.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/perkAutoDebuffs.ts",
+      "target": "file:src/data/enemyHpEffects.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/perkAutoDebuffs.ts",
+      "target": "file:src/lib/constants/game.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/perkAutoDebuffs.ts",
+      "target": "file:src/lib/constants/perk-base-damage.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/perkAutoDebuffs.ts",
+      "target": "file:src/lib/constants/perks.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/data/perkAutoDebuffs.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/lib/constants/storage.ts",
+      "target": "file:src/lib/constants/game.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "function:src/data/perkAutoDebuffs.ts:getAutoDebuffs",
+      "target": "function:src/data/enemyHpEffects.ts:getActiveEnemyHpDebuffs",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/data/perkAutoDebuffs.ts:getAutoDebuffs",
+      "target": "function:src/lib/types.ts:canProc",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "function:src/data/perkAutoDebuffs.ts:calcActualHpFillPct",
+      "target": "function:src/lib/constants/game.ts:calcBaseMaxHP",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

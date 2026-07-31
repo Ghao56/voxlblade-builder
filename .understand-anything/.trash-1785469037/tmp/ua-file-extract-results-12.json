@@ -1,0 +1,84 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 9,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "src/MountIcon.svelte",
+      "language": "svelte",
+      "fileCategory": "code",
+      "totalLines": 64,
+      "nonEmptyLines": 63,
+      "metrics": {}
+    },
+    {
+      "path": "src/PropellingFunTracker.svelte",
+      "language": "svelte",
+      "fileCategory": "code",
+      "totalLines": 192,
+      "nonEmptyLines": 171,
+      "metrics": {}
+    },
+    {
+      "path": "src/ScalingBreakdownRow.svelte",
+      "language": "svelte",
+      "fileCategory": "code",
+      "totalLines": 102,
+      "nonEmptyLines": 92,
+      "metrics": {}
+    },
+    {
+      "path": "src/StatFilter.svelte",
+      "language": "svelte",
+      "fileCategory": "code",
+      "totalLines": 335,
+      "nonEmptyLines": 311,
+      "metrics": {}
+    },
+    {
+      "path": "src/SuggestDrop.svelte",
+      "language": "svelte",
+      "fileCategory": "code",
+      "totalLines": 68,
+      "nonEmptyLines": 65,
+      "metrics": {}
+    },
+    {
+      "path": "src/TagFilter.svelte",
+      "language": "svelte",
+      "fileCategory": "code",
+      "totalLines": 331,
+      "nonEmptyLines": 302,
+      "metrics": {}
+    },
+    {
+      "path": "src/WeaponStatFilter.svelte",
+      "language": "svelte",
+      "fileCategory": "code",
+      "totalLines": 241,
+      "nonEmptyLines": 218,
+      "metrics": {}
+    },
+    {
+      "path": "src/WeaponStatsDisplay.svelte",
+      "language": "svelte",
+      "fileCategory": "code",
+      "totalLines": 121,
+      "nonEmptyLines": 110,
+      "metrics": {}
+    },
+    {
+      "path": "vite.config.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 59,
+      "nonEmptyLines": 44,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    }
+  ]
+}

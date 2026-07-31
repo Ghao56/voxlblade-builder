@@ -1,0 +1,999 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 12,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "src/data/DoTDamage.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 74,
+      "nonEmptyLines": 66,
+      "functions": [
+        {
+          "name": "getDotBase",
+          "startLine": 27,
+          "endLine": 29,
+          "params": [
+            "inflictionPotency"
+          ]
+        },
+        {
+          "name": "getDotPotencyMult",
+          "startLine": 36,
+          "endLine": 38,
+          "params": [
+            "dotPotency"
+          ]
+        },
+        {
+          "name": "calcDotTick",
+          "startLine": 46,
+          "endLine": 53,
+          "params": [
+            "dotPotency",
+            "inflictionPotency"
+          ]
+        },
+        {
+          "name": "toGamePotency",
+          "startLine": 59,
+          "endLine": 61,
+          "params": [
+            "builderValue"
+          ]
+        },
+        {
+          "name": "calcDotDisplayPotency",
+          "startLine": 70,
+          "endLine": 74,
+          "params": [
+            "potPerk",
+            "edAmt"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "DOT_TYPE_LIST",
+          "line": 5,
+          "isDefault": false
+        },
+        {
+          "name": "DOT_SCALINGS",
+          "line": 8,
+          "isDefault": false
+        },
+        {
+          "name": "DOT_DMG_TYPE_MAP",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "getDotBase",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "getDotPotencyMult",
+          "line": 36,
+          "isDefault": false
+        },
+        {
+          "name": "toGamePotency",
+          "line": 59,
+          "isDefault": false
+        },
+        {
+          "name": "calcDotDisplayPotency",
+          "line": 70,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getDotPotencyMult",
+          "callee": "Math.pow",
+          "lineNumber": 37
+        },
+        {
+          "caller": "getDotPotencyMult",
+          "callee": "Math.min",
+          "lineNumber": 37
+        },
+        {
+          "caller": "calcDotTick",
+          "callee": "getDotBase",
+          "lineNumber": 50
+        },
+        {
+          "caller": "calcDotTick",
+          "callee": "getDotPotencyMult",
+          "lineNumber": 51
+        },
+        {
+          "caller": "calcDotTick",
+          "callee": "Math.round",
+          "lineNumber": 52
+        },
+        {
+          "caller": "calcDotDisplayPotency",
+          "callee": "Math.round",
+          "lineNumber": 71
+        },
+        {
+          "caller": "calcDotDisplayPotency",
+          "callee": "Math.round",
+          "lineNumber": 73
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 7,
+        "functionCount": 5,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/data/HealBoost.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 217,
+      "nonEmptyLines": 192,
+      "functions": [
+        {
+          "name": "calculateHealBoost",
+          "startLine": 134,
+          "endLine": 209,
+          "params": [
+            "ctx",
+            "appliesToType"
+          ]
+        },
+        {
+          "name": "getHealScalingMultiplier",
+          "startLine": 211,
+          "endLine": 217,
+          "params": [
+            "ctx",
+            "appliesToType"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "calculateHealBoost",
+          "line": 134,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "calculateHealBoost",
+          "callee": "roundMultiplier",
+          "lineNumber": 142
+        },
+        {
+          "caller": "calculateHealBoost",
+          "callee": "Math.max",
+          "lineNumber": 142
+        },
+        {
+          "caller": "calculateHealBoost",
+          "callee": "Math.min",
+          "lineNumber": 142
+        },
+        {
+          "caller": "calculateHealBoost",
+          "callee": "entriesMap.set",
+          "lineNumber": 143
+        },
+        {
+          "caller": "calculateHealBoost",
+          "callee": "def.appliesTo.includes",
+          "lineNumber": 152
+        },
+        {
+          "caller": "calculateHealBoost",
+          "callee": "def.activeIf",
+          "lineNumber": 156
+        },
+        {
+          "caller": "calculateHealBoost",
+          "callee": "def.calcFn",
+          "lineNumber": 161
+        },
+        {
+          "caller": "calculateHealBoost",
+          "callee": "entriesMap.set",
+          "lineNumber": 163
+        },
+        {
+          "caller": "calculateHealBoost",
+          "callee": "entriesMap.set",
+          "lineNumber": 176
+        },
+        {
+          "caller": "calculateHealBoost",
+          "callee": "roundMultiplier",
+          "lineNumber": 177
+        },
+        {
+          "caller": "calculateHealBoost",
+          "callee": "Array.from(entriesMap.entries()).map",
+          "lineNumber": 184
+        },
+        {
+          "caller": "calculateHealBoost",
+          "callee": "Array.from",
+          "lineNumber": 184
+        },
+        {
+          "caller": "calculateHealBoost",
+          "callee": "entriesMap.entries",
+          "lineNumber": 184
+        },
+        {
+          "caller": "calculateHealBoost",
+          "callee": "roundMultiplier",
+          "lineNumber": 200
+        },
+        {
+          "caller": "calculateHealBoost",
+          "callee": "roundMultiplier",
+          "lineNumber": 207
+        },
+        {
+          "caller": "getHealScalingMultiplier",
+          "callee": "calculateHealBoost",
+          "lineNumber": 215
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 1,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/data/Perkbasedmg.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 1439,
+      "nonEmptyLines": 1418,
+      "functions": [
+        {
+          "name": "gateThreshold",
+          "startLine": 184,
+          "endLine": 188,
+          "params": [
+            "gate",
+            "perkAmount"
+          ]
+        },
+        {
+          "name": "isHpGateActive",
+          "startLine": 190,
+          "endLine": 195,
+          "params": [
+            "gate",
+            "hpFillPct",
+            "perkAmount"
+          ]
+        },
+        {
+          "name": "calcSpringblastBaseDamage",
+          "startLine": 260,
+          "endLine": 262,
+          "params": [
+            "perkAmount"
+          ]
+        },
+        {
+          "name": "calcBomberChargeBaseDamage",
+          "startLine": 264,
+          "endLine": 268,
+          "params": [
+            "perkAmount",
+            "missingHpPct"
+          ]
+        },
+        {
+          "name": "calcIchorSparkChargeMult",
+          "startLine": 270,
+          "endLine": 272,
+          "params": [
+            "chargePct"
+          ]
+        },
+        {
+          "name": "calcIchorSparkSwipeBase",
+          "startLine": 274,
+          "endLine": 277,
+          "params": [
+            "perkAmount",
+            "chargePct"
+          ]
+        },
+        {
+          "name": "calcIchorSparkSlashBase",
+          "startLine": 279,
+          "endLine": 282,
+          "params": [
+            "perkAmount",
+            "chargePct"
+          ]
+        },
+        {
+          "name": "calcIchorSparkChargeTime",
+          "startLine": 284,
+          "endLine": 286,
+          "params": [
+            "perkAmount"
+          ]
+        },
+        {
+          "name": "findPerkDmgDef",
+          "startLine": 1434,
+          "endLine": 1439,
+          "params": [
+            "perkName",
+            "label"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "gateThreshold",
+          "line": 184,
+          "isDefault": false
+        },
+        {
+          "name": "isHpGateActive",
+          "line": 190,
+          "isDefault": false
+        },
+        {
+          "name": "DRAGON_STATE_HP_GATE",
+          "line": 197,
+          "isDefault": false
+        },
+        {
+          "name": "SECONDARY_TONE_COLORS",
+          "line": 213,
+          "isDefault": false
+        },
+        {
+          "name": "calcSpringblastBaseDamage",
+          "line": 260,
+          "isDefault": false
+        },
+        {
+          "name": "calcBomberChargeBaseDamage",
+          "line": 264,
+          "isDefault": false
+        },
+        {
+          "name": "PERK_DMG_DEFS",
+          "line": 288,
+          "isDefault": false
+        },
+        {
+          "name": "findPerkDmgDef",
+          "line": 1434,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "gateThreshold",
+          "callee": "gate.getThreshold",
+          "lineNumber": 187
+        },
+        {
+          "caller": "isHpGateActive",
+          "callee": "gateThreshold",
+          "lineNumber": 192
+        },
+        {
+          "caller": "calcBomberChargeBaseDamage",
+          "callee": "Math.min",
+          "lineNumber": 265
+        },
+        {
+          "caller": "calcBomberChargeBaseDamage",
+          "callee": "Math.round",
+          "lineNumber": 267
+        },
+        {
+          "caller": "calcIchorSparkSwipeBase",
+          "callee": "calcIchorSparkChargeMult",
+          "lineNumber": 276
+        },
+        {
+          "caller": "calcIchorSparkSlashBase",
+          "callee": "calcIchorSparkChargeMult",
+          "lineNumber": 281
+        },
+        {
+          "caller": "findPerkDmgDef",
+          "callee": "_perkDmgDefMap.get",
+          "lineNumber": 1435
+        },
+        {
+          "caller": "findPerkDmgDef",
+          "callee": "defs.find",
+          "lineNumber": 1437
+        }
+      ],
+      "metrics": {
+        "importCount": 4,
+        "exportCount": 8,
+        "functionCount": 9,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/data/Runebasedmg.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 217,
+      "nonEmptyLines": 209,
+      "functions": [
+        {
+          "name": "calculateRuneHealScaling",
+          "startLine": 44,
+          "endLine": 66,
+          "params": [
+            "runeDef",
+            "ctx"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "RUNE_DMG_DEFS",
+          "line": 68,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "calculateRuneHealScaling",
+          "callee": "calculateHealBoost",
+          "lineNumber": 64
+        }
+      ],
+      "metrics": {
+        "importCount": 4,
+        "exportCount": 1,
+        "functionCount": 1,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/data/SummonData.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 84,
+      "nonEmptyLines": 73,
+      "functions": [
+        {
+          "name": "calcSummonStat",
+          "startLine": 3,
+          "endLine": 5,
+          "params": [
+            "base",
+            "summonBoostPct",
+            "level"
+          ]
+        },
+        {
+          "name": "calcMaxSummonCount",
+          "startLine": 9,
+          "endLine": 11,
+          "params": [
+            "perks"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "calcSummonStat",
+          "line": 3,
+          "isDefault": false
+        },
+        {
+          "name": "calcMaxSummonCount",
+          "line": 9,
+          "isDefault": false
+        },
+        {
+          "name": "SUMMON_MAP",
+          "line": 52,
+          "isDefault": false
+        },
+        {
+          "name": "WA_SUMMON_MAP",
+          "line": 54,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "calcSummonStat",
+          "callee": "Math.round",
+          "lineNumber": 4
+        },
+        {
+          "caller": "calcMaxSummonCount",
+          "callee": "Math.floor",
+          "lineNumber": 10
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 4,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/data/cdr.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 64,
+      "nonEmptyLines": 59,
+      "exports": [
+        {
+          "name": "CDR_PERK_DATA",
+          "line": 31,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/data/draconicColorEffects.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 50,
+      "nonEmptyLines": 45,
+      "functions": [
+        {
+          "name": "getDraconicColorDmgMultiplier",
+          "startLine": 44,
+          "endLine": 46,
+          "params": [
+            "color"
+          ]
+        },
+        {
+          "name": "getDraconicColorAttackStats",
+          "startLine": 48,
+          "endLine": 50,
+          "params": [
+            "color"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "DRACONIC_COLOR_ATTACK_STATS",
+          "line": 33,
+          "isDefault": false
+        },
+        {
+          "name": "getDraconicColorDmgMultiplier",
+          "line": 44,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getDraconicColorDmgMultiplier",
+          "callee": "DRACONIC_COLOR_MAP.get",
+          "lineNumber": 45
+        },
+        {
+          "caller": "getDraconicColorAttackStats",
+          "callee": "DRACONIC_COLOR_MAP.get",
+          "lineNumber": 49
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 2,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/data/raceEffects.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 49,
+      "nonEmptyLines": 43,
+      "functions": [
+        {
+          "name": "getActiveRaceEffect",
+          "startLine": 24,
+          "endLine": 26,
+          "params": [
+            "raceName",
+            "hpFillPct"
+          ]
+        },
+        {
+          "name": "getOrkTenacityBuffs",
+          "startLine": 30,
+          "endLine": 42,
+          "params": [
+            "buffs",
+            "buffDefs"
+          ]
+        },
+        {
+          "name": "calcOrkTenacityBonus",
+          "startLine": 44,
+          "endLine": 49,
+          "params": [
+            "buffs",
+            "buffDefs"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "getActiveRaceEffect",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "getOrkTenacityBuffs",
+          "line": 30,
+          "isDefault": false
+        },
+        {
+          "name": "calcOrkTenacityBonus",
+          "line": 44,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "getActiveRaceEffect",
+          "callee": "RACE_CONDITIONAL_EFFECTS.find",
+          "lineNumber": 25
+        },
+        {
+          "caller": "getActiveRaceEffect",
+          "callee": "isHpGateActive",
+          "lineNumber": 25
+        },
+        {
+          "caller": "getOrkTenacityBuffs",
+          "callee": "buffs.filter",
+          "lineNumber": 35
+        },
+        {
+          "caller": "getOrkTenacityBuffs",
+          "callee": "seen.has",
+          "lineNumber": 38
+        },
+        {
+          "caller": "getOrkTenacityBuffs",
+          "callee": "seen.add",
+          "lineNumber": 39
+        },
+        {
+          "caller": "calcOrkTenacityBonus",
+          "callee": "getOrkTenacityBuffs",
+          "lineNumber": 48
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 3,
+        "functionCount": 3,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/constants.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 1,
+      "nonEmptyLines": 1,
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 0,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/constants/dot-damage.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 10,
+      "nonEmptyLines": 8,
+      "exports": [
+        {
+          "name": "DOT_BASE_DAMAGE",
+          "line": 5,
+          "isDefault": false
+        },
+        {
+          "name": "DOT_INFLICTION_DIVISOR",
+          "line": 6,
+          "isDefault": false
+        },
+        {
+          "name": "DOT_POTENCY_POWER_CAP",
+          "line": 8,
+          "isDefault": false
+        },
+        {
+          "name": "DOT_ROUND_FACTOR",
+          "line": 9,
+          "isDefault": false
+        },
+        {
+          "name": "DOT_BUILDER_TO_GAME",
+          "line": 10,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 5,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/constants/rune-base-damage.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 54,
+      "nonEmptyLines": 43,
+      "exports": [
+        {
+          "name": "ANCIENT_CLERIC_BASE_DMG",
+          "line": 6,
+          "isDefault": false
+        },
+        {
+          "name": "ANCIENT_CLERIC_SLIDER_MAX",
+          "line": 7,
+          "isDefault": false
+        },
+        {
+          "name": "ANCIENT_CLERIC_SHIELD_BASE",
+          "line": 8,
+          "isDefault": false
+        },
+        {
+          "name": "ANCIENT_CLERIC_SHIELD_PER_VAL",
+          "line": 9,
+          "isDefault": false
+        },
+        {
+          "name": "BEENADE_BASE_DMG",
+          "line": 12,
+          "isDefault": false
+        },
+        {
+          "name": "BEENADE_MAX_POTENCY",
+          "line": 13,
+          "isDefault": false
+        },
+        {
+          "name": "BOOSTSHROOM_BASE_DMG",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "THUNDEROUS_CHARGE_BASE_DMG",
+          "line": 19,
+          "isDefault": false
+        },
+        {
+          "name": "SPORELING_TOSS_BASE_DMG",
+          "line": 22,
+          "isDefault": false
+        },
+        {
+          "name": "SPORELING_TOSS_HITS_BASE",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "SPORELING_TOSS_SLIDER_MAX",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "FOOT_DIVE_BASE_DMG",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "CACI_BASE_DMG",
+          "line": 30,
+          "isDefault": false
+        },
+        {
+          "name": "CACI_HITS",
+          "line": 31,
+          "isDefault": false
+        },
+        {
+          "name": "CACITROPS_BASE_DMG",
+          "line": 34,
+          "isDefault": false
+        },
+        {
+          "name": "CACITROPS_HITS",
+          "line": 35,
+          "isDefault": false
+        },
+        {
+          "name": "HEX_WEB_BASE_DMG",
+          "line": 38,
+          "isDefault": false
+        },
+        {
+          "name": "HEX_WEB_HITS",
+          "line": 39,
+          "isDefault": false
+        },
+        {
+          "name": "BRAINBLAST_BASE_DMG",
+          "line": 42,
+          "isDefault": false
+        },
+        {
+          "name": "BRAINBLAST_HITS",
+          "line": 43,
+          "isDefault": false
+        },
+        {
+          "name": "ROCKY_TAIL_BASE_DMG",
+          "line": 46,
+          "isDefault": false
+        },
+        {
+          "name": "ROCKY_TAIL_PROT_SCALE",
+          "line": 47,
+          "isDefault": false
+        },
+        {
+          "name": "ROCKY_TAIL_VS_BASE_RES",
+          "line": 48,
+          "isDefault": false
+        },
+        {
+          "name": "ROCKY_TAIL_VS_PER_LEVEL",
+          "line": 49,
+          "isDefault": false
+        },
+        {
+          "name": "ROCKY_TAIL_VS_DEFAULT_RES",
+          "line": 50,
+          "isDefault": false
+        },
+        {
+          "name": "ROCKY_TAIL_DIVISOR_COEFF",
+          "line": 51,
+          "isDefault": false
+        },
+        {
+          "name": "ROCKY_TAIL_DIVISOR_BASE",
+          "line": 52,
+          "isDefault": false
+        },
+        {
+          "name": "ROCKY_TAIL_HITS_MULT",
+          "line": 53,
+          "isDefault": false
+        },
+        {
+          "name": "ROCKY_TAIL_MIN_HITS",
+          "line": 54,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 29,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/stores/toast.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 28,
+      "nonEmptyLines": 22,
+      "functions": [
+        {
+          "name": "addToast",
+          "startLine": 17,
+          "endLine": 24,
+          "params": [
+            "message",
+            "type",
+            "duration"
+          ]
+        },
+        {
+          "name": "removeToast",
+          "startLine": 26,
+          "endLine": 28,
+          "params": [
+            "id"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "toasts",
+          "line": 13,
+          "isDefault": false
+        },
+        {
+          "name": "addToast",
+          "line": 17,
+          "isDefault": false
+        },
+        {
+          "name": "removeToast",
+          "line": 26,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "addToast",
+          "callee": "toasts.update",
+          "lineNumber": 19
+        },
+        {
+          "caller": "addToast",
+          "callee": "setTimeout",
+          "lineNumber": 21
+        },
+        {
+          "caller": "addToast",
+          "callee": "removeToast",
+          "lineNumber": 21
+        },
+        {
+          "caller": "removeToast",
+          "callee": "toasts.update",
+          "lineNumber": 27
+        },
+        {
+          "caller": "removeToast",
+          "callee": "t.filter",
+          "lineNumber": 27
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 3,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    }
+  ]
+}

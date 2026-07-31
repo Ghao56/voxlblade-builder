@@ -1,0 +1,104 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/data/armors.json",
+      "type": "file",
+      "name": "armors.json",
+      "summary": "JSON game-data module listing the armor sets available in Voxel Blade. Each entry defines a shared stat block (elemental boosts, defenses, tenacity), an attached perk with amount, and the Helmet/Chestplate/Leggings parts (including standalone single-part items), which the equipment engine consumes to compute equipped armor effects.",
+      "tags": ["game-data", "dataset", "armor-data", "gear-stats"],
+      "complexity": "moderate",
+      "filePath": "src/data/armors.json"
+    },
+    {
+      "id": "file:src/data/blades.json",
+      "type": "file",
+      "name": "blades.json",
+      "summary": "JSON game-data module cataloguing blade heads across tiers 1-5. Each entry carries tier, attack speed, damage-type weights and scaling coefficients, blade type (Small/Medium/Heavy/Hammer), and any perks granted, feeding the weapon engine's blade lookup.",
+      "tags": ["game-data", "dataset", "weapon-data", "blade-stats"],
+      "complexity": "moderate",
+      "filePath": "src/data/blades.json"
+    },
+    {
+      "id": "file:src/data/enchantments.json",
+      "type": "file",
+      "name": "enchantments.json",
+      "summary": "JSON game-data module defining weapon/armor enchantments in unAscended and Ascended categories. Each entry specifies stacking behaviour (exclusive vs multi) plus stat/effect modifications such as multipliers and additions, some with acquisition notes (mob modifiers, Lord Frogg's Cavern).",
+      "tags": ["game-data", "dataset", "enchantment-data", "stat-modifiers"],
+      "complexity": "moderate",
+      "filePath": "src/data/enchantments.json"
+    },
+    {
+      "id": "file:src/data/essences.json",
+      "type": "file",
+      "name": "essences.json",
+      "summary": "JSON game-data module listing essence variants of weapon parts across tiers 1-5. Each entry mirrors blade-like stats, scaling coefficients, essence type, and granted perks, consumed by the weapon engine's getEssence lookup.",
+      "tags": ["game-data", "dataset", "weapon-data", "essence-data"],
+      "complexity": "moderate",
+      "filePath": "src/data/essences.json"
+    },
+    {
+      "id": "file:src/data/gloves.json",
+      "type": "file",
+      "name": "gloves.json",
+      "summary": "JSON game-data module describing gloves (and shield-type items) for the weapon slot. Entries define tier, attack speed, scaling stats, perks, and glove type, including unique 'Spirit' perks per glove, feeding the weapon engine's getGlove lookup.",
+      "tags": ["game-data", "dataset", "weapon-data", "glove-data"],
+      "complexity": "simple",
+      "filePath": "src/data/gloves.json"
+    },
+    {
+      "id": "file:src/data/guilds.json",
+      "type": "file",
+      "name": "guilds.json",
+      "summary": "JSON game-data module defining playable guilds (Gladiator, Cursed, Cleric, Scholar, Knight, Thief, Draconic, Monk, Vampire) with three progression ranks each. Every rank lists per-rank stat bonuses and granted perks, which the character engine uses to apply guild effects such as the Monk check.",
+      "tags": ["game-data", "dataset", "guild-data", "ranks"],
+      "complexity": "moderate",
+      "filePath": "src/data/guilds.json"
+    },
+    {
+      "id": "file:src/data/handles.json",
+      "type": "file",
+      "name": "handles.json",
+      "summary": "JSON game-data module cataloguing handle parts (Medium/Long Handle and Pole) across tiers 1-5. Each entry defines attack speed, scaling stats, handle type, and granted perks, feeding the weapon engine's getHandle lookup.",
+      "tags": ["game-data", "dataset", "weapon-data", "handle-data"],
+      "complexity": "moderate",
+      "filePath": "src/data/handles.json"
+    },
+    {
+      "id": "file:src/data/perks.json",
+      "type": "file",
+      "name": "perks.json",
+      "summary": "JSON game-data module holding the full perk encyclopedia (3689 lines). Each entry pairs a perk name with a gameplay description and functional tags (Offensive, Defensive, Buff, Debuff, Armor, Weapon, Rune, etc.) used to classify and validate perks across the character engine.",
+      "tags": ["game-data", "dataset", "perk-definitions", "perk-tags"],
+      "complexity": "complex",
+      "filePath": "src/data/perks.json"
+    },
+    {
+      "id": "file:src/data/races.json",
+      "type": "file",
+      "name": "races.json",
+      "summary": "JSON game-data module defining the ten playable races and their passive abilities. Entries include passive text plus optional mechanical modifiers such as global armor penetration, stat modifiers, and cooldown reductions, consumed by the character engine's race lookup.",
+      "tags": ["game-data", "dataset", "race-data", "passives"],
+      "complexity": "simple",
+      "filePath": "src/data/races.json"
+    },
+    {
+      "id": "file:src/data/rings.json",
+      "type": "file",
+      "name": "rings.json",
+      "summary": "JSON game-data module listing equippable rings with flavor text, upgrade level, stat bonuses, and an attached perk with amount. The equipment engine's getRing lookup consumes these entries for the ring slots.",
+      "tags": ["game-data", "dataset", "armor-data", "ring-data"],
+      "complexity": "simple",
+      "filePath": "src/data/rings.json"
+    },
+    {
+      "id": "file:src/data/runes.json",
+      "type": "file",
+      "name": "runes.json",
+      "summary": "JSON game-data module defining active ability runes with descriptions, stat bonuses, cooldowns, and optional linked perks. The equipment engine's getRune lookup consumes these entries for rune slot selection.",
+      "tags": ["game-data", "dataset", "rune-data", "cooldowns"],
+      "complexity": "simple",
+      "filePath": "src/data/runes.json"
+    }
+  ],
+  "edges": []
+}
