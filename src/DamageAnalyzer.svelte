@@ -2690,7 +2690,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
               } else {
                 for (let p = 1; p <= _deltaDrillReps + 1; p++) {
                   row.m2.forEach((m2h: any, m2i: number) =>
-                    pushM2Hit(m2h, m2i, `M2-${p}`, 'M1', Math.max(0.3, 0.7 - 0.1 * p), p))
+                    pushM2Hit(m2h, m2i, 'M2 (Delta Drill)', 'M1', Math.max(0.3, 0.7 - 0.1 * p), p))
                 }
               }
             }
@@ -3177,8 +3177,8 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       const maxP = Math.max(...indexed.map(h => h.finisherIndex!))
       const reorderedM1 = [...plainM1]
       for (let p = 1; p <= maxP; p++) {
-        reorderedM1.push(...indexed.filter(h => h.finisherIndex === p && !h.isM2))
         reorderedM1.push(...indexed.filter(h => h.finisherIndex === p && h.isM2))
+        reorderedM1.push(...indexed.filter(h => h.finisherIndex === p && !h.isM2))
       }
       m1Indices.forEach((idx, k) => { result[idx] = reorderedM1[k] })
     }
