@@ -1632,6 +1632,14 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   })]
   $: hasDisabledVisible = boosts.dmgEntries.some(e => disabledBoosts.has(e.sourceName) || _condDisabledSources.has(e.sourceName)) || (_curseRipPerkAmount > 0 && disableCurseRip) || (_reaperPerkAmount > 0 && disableReaper) || ((perks['True Balance'] ?? 0) > 0 && disabledBoosts.has('True Balance')) || ((perks['Frenzy'] ?? 0) > 0 && disabledBoosts.has('Frenzy'))
 
+  /** Product of all active finisher-scoped boosts (e.g. Deltabit), folded into
+   *  the combat multiplier of every hit flagged as a finisher. */
+  $: _finisherBoostMult = roundMultiplier(
+    activeEntries
+      .filter(e => (e as any).appliesTo?.includes('finisher'))
+      .reduce((acc, e) => acc * e.rawMultiplier, 1)
+  )
+
   $: _levelMult = (() => {
     const levelEntry = boosts.dmgEntries.find(e => e.sourceName === 'Level Damage')
     return levelEntry ? levelEntry.rawMultiplier : 1
@@ -1700,12 +1708,14 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   ) / 10000
 
   $: _catGroups = (() => {
+    const finisherChips = boosts.dmgEntries.filter(e => (e as any).appliesTo?.includes('finisher'))
     const CAT_DEFS: Array<{ key: BoostAttackType; label: string }> = [
       { key: 'm1',   label: 'M1'   },
       { key: 'm2',   label: 'M2'   },
       { key: 'perk', label: 'Perk' },
       { key: 'rune', label: 'Rune' },
       { key: 'wa',   label: 'WA'   },
+      ...(finisherChips.length > 0 ? [{ key: 'finisher' as BoostAttackType, label: 'Finisher' }] : []),
     ]
     type CatGroup = { labels: string[]; allChips: typeof boosts.dmgEntries; totalMult: number }
     const groups: CatGroup[] = []
@@ -2572,6 +2582,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
 
       const perkSunburnMult = _sunburnActive && _sunburnEnemyBurning
         ? ((e.resolvedDmgTypes.holy ?? 0) > 0 ? _sunburnHolyDmgMult : _sunburnUniversalDmgMult) : 1
+      const finisherMult = (e.isFinisher || e.isM2) && _finisherBoostMult !== 1 ? _finisherBoostMult : 1
       const perkWbMult = roundMultiplier(perkSunburnMult * _activeBellowingEmberMult)
       const perkLabel = [
         perkSunburnMult !== 1 ? 'Sunburn' : '',
@@ -2582,8 +2593,8 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         tag: e.displayName,
         baseDmg: e.baseDmg,
         scalingMult: e.scalingMult,
-        combatMult: e.combatMult,
-        totalDmg: e.totalDmg,
+        combatMult: roundMultiplier(e.combatMult * finisherMult),
+        totalDmg: roundMultiplier(e.totalDmg * finisherMult),
         dmgTypes: e.resolvedDmgTypes,
         procCoefficient: e.perkName === 'Blazing Finisher' ? { type: 'noProc' } : e.procCoefficient,
         isProcHit: e.isProcHit,
@@ -2630,6 +2641,8 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     finisherGroupHitCount?: number
     perHitCounts?: boolean
     finisherIndex?: number
+    weaponBoostMult?: number
+    weaponBoostLabel?: string
   }
 
   $: _bdcWeaponHits = (() => {
@@ -3194,6 +3207,16 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           const reorderedM2 = [...perkM2, ...m2Rows.filter(h => !h.isM2)]
           m2Indices.forEach((idx, k) => { result[idx] = reorderedM2[k] })
         }
+      }
+    }
+
+    // Apply finisher-scoped boosts (e.g. Deltabit) generically to every hit
+    // flagged as a finisher (M2 hits are finishers by game design), folded into
+    // the hit's combat multiplier so the row shows `Combat Multipliers × 2.2`.
+    if (_finisherBoostMult !== 1) {
+      for (const h of result) {
+        if (!(h.isFinisher || h.isM2)) continue
+        h.combatMult = roundMultiplier((h.combatMult ?? 1) * _finisherBoostMult)
       }
     }
 
@@ -7210,6 +7233,11 @@ $: _groupedSelfDamageSources = (() => {
   color: #34d399;
   background: rgba(52,211,153,.12);
   border-color: rgba(52,211,153,.3);
+}
+.da-cat-lbl--finisher {
+  color: #facc15;
+  background: rgba(250,204,21,.12);
+  border-color: rgba(250,204,21,.3);
 }
 
 .da-boost-chip--sm {

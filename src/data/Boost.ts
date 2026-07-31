@@ -434,10 +434,10 @@ export const BOOST_DEFS: BoostDef[] = [
       const pct = 10 * amount
       return {
         multiplier: 1 + 0.1 * amount,
-        condition: `on M2 damage → +${pct}% dmg`,
+        condition: `on Finishers → +${pct}% dmg`,
       }
     },
-    appliesTo: ['m2'],
+    appliesTo: ['finisher'],
   },
 
   // Level damage (handled specially in calcBoosts)

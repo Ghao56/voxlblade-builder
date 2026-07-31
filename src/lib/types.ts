@@ -260,7 +260,7 @@ export function canProc(pc: ProcCoefficient | undefined): boolean {
 
 export type ProcScalingType = 'normal' | 'ignore' | 'positiveOnly'
 
-export type BoostAttackType = 'm1' | 'm2' | 'wa' | 'rune' | 'perk'
+export type BoostAttackType = 'm1' | 'm2' | 'wa' | 'rune' | 'perk' | 'finisher'
 
 export interface BoostEntry {
   sourceName: string
