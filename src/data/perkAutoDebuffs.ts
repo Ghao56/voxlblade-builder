@@ -3,7 +3,7 @@ import { HYPNOTIST_POTENCY_PER_PERK, HYPNOTIST_DURATION_BASE, HYPNOTIST_DURATION
 import type { GrantedBuff } from './BuffData'
 import { canProc, type ProcCoefficient } from '../lib/types'
 import { calcBaseMaxHP } from '../lib/constants/game'
-import { BELLOWING_EMBER_HP_GATE_THRESHOLD, BELLOWING_EMBER_HP_GATE_PER_STACK, PYRE_BLOOM_BURN_DURATION, RUNIC_BLADES_DEBUFF_DURATION_PER_STACK } from '../lib/constants/perk-base-damage'
+import { BELLOWING_EMBER_HP_GATE_THRESHOLD, BELLOWING_EMBER_HP_GATE_PER_STACK, PYRE_BLOOM_BURN_DURATION, RUNIC_BLADES_DEBUFF_DURATION_PER_STACK, CACI_SPIRIT_BLEED_DURATION } from '../lib/constants/perk-base-damage'
 import { getActiveEnemyHpDebuffs } from './enemyHpEffects'
 
 export interface AutoDebuffInput {
@@ -136,6 +136,18 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
       duration: 5,
       condition: 'Crits inflict brief Bleed',
       sourceName: 'Splinter',
+      sourceType: 'perk',
+    })
+  }
+
+  const caciSpiritAmt = perks['Caci Spirit'] ?? 0
+  if (caciSpiritAmt > 0 && !existingBuffNames.includes('Bleed')) {
+    debuffs.push({
+      buffName: 'Bleed',
+      potency: 0,
+      duration: CACI_SPIRIT_BLEED_DURATION,
+      condition: 'Every hit of Caci Spirit inflicts Bleed',
+      sourceName: 'Caci Spirit',
       sourceType: 'perk',
     })
   }

@@ -52,6 +52,13 @@ export const VOID_ROOT_SPIRIT_HITS = 23
 export const ROGUENT_SPIRIT_BASE_DMG = 4
 export const ROGUENT_SPIRIT_HITS = 4
 
+// Caci Spirit
+export const CACI_SPIRIT_THORN_DMG = 5
+export const CACI_SPIRIT_SLAM_DMG = 15
+export const CACI_SPIRIT_THORN_HITS = 7
+export const CACI_SPIRIT_SLAM_HITS = 3
+export const CACI_SPIRIT_BLEED_DURATION = 5
+
 // Bounce Momentum
 export const BOUNCE_MOMENTUM_BASE_DMG = 5
 export const BOUNCE_MOMENTUM_DMG_PER_STACK = 2.5

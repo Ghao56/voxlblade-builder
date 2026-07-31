@@ -2350,7 +2350,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     guardbreak?: boolean
     procCoefficient?: ProcCoefficient
     note?: string
-    typedHits_m2:  Array<{ rawVal: number; val: number; color: string; label: string; rageApplied?: boolean }>
+    typedHits_m2:  Array<{ rawVal: number; val: number; color: string; label: string; rageApplied?: boolean; count?: number }>
     typedHits_m1f: Array<{ rawVal: number; val: number; color: string; label: string; rageApplied?: boolean }>
     scalingMult: number
     combatMult: number
@@ -2370,6 +2370,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     slider?: { buildKey: string; label: string; min: number; max: number; step?: number }
     sliderVal?: number
     sliderMax?: number
+    getFinisherHitBaseDmg?: (ctx: { baseDmg: number; hitIndex: number }) => number
   }
 
   $: _activePerkDmgEntries = (void activeEntries, void disabledDebuffs, (() => {
@@ -2461,6 +2462,23 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         label: k.charAt(0).toUpperCase() + k.slice(1),
       }))
 
+      const buildPerHitTypedHits = (baseDmg: number, hits: number, getFn: (ctx: { baseDmg: number; hitIndex: number }) => number) => {
+        const dmgCount = new Map<number, number>()
+        for (let i = 0; i < hits; i++) {
+          const dmg = getFn({ baseDmg, hitIndex: i })
+          dmgCount.set(dmg, (dmgCount.get(dmg) ?? 0) + 1)
+        }
+        return Object.entries(resolvedDmgTypesWithMw).flatMap(([k, mult]) =>
+          Array.from(dmgCount.entries()).map(([dmg, count]) => ({
+            rawVal: roundMultiplier(dmg),
+            val: roundMultiplier(dmg * mult),
+            color: DMG_TYPE_COLORS[k] ?? '#e8e4da',
+            label: k.charAt(0).toUpperCase() + k.slice(1),
+            count,
+          }))
+        )
+      }
+
       const _fhM2  = _m2FinisherHits
       const _fhM1f = _m1FinisherHits
       const baseDmg_m2  = def.getBaseDamage({ perkAmount, finisherHits: _fhM2,  draconicColor: _effDraconicColor, statuses: _perkCtxStatuses, sliderVal: _perkSliderVal })
@@ -2495,18 +2513,25 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         }
       })
 
+      const entryHits = def.getHits ? def.getHits({ perkAmount, statuses: _perkCtxStatuses, sliderVal: _perkSliderVal }) : def.hits
+
       out.push({
         perkName: def.perkName,
         displayName: def.label ?? def.perkName,
         perkAmount,
         condition: def.condition,
-        hits: def.getHits ? def.getHits({ perkAmount, statuses: _perkCtxStatuses, sliderVal: _perkSliderVal }) : def.hits,
+        hits: entryHits,
         isM1: def.isM1, isM2: def.isM2, isFinisher: def.isFinisher,
         isWA: def.isWA, isRune: def.isRune, isProcHit: def.isProcHit, finisherOnly: def.finisherOnly, guardbreak: def.guardbreak,
         procCoefficient: def.procCoefficient,
         note: def.note,
-        typedHits_m2: buildTypedHits(isSpringblast ? baseDmg : baseDmg_m2),
-        typedHits_m1f: buildTypedHits(isSpringblast ? baseDmg : baseDmg_m1f),
+        getFinisherHitBaseDmg: def.getFinisherHitBaseDmg,
+        typedHits_m2: (def.getFinisherHitBaseDmg && entryHits)
+          ? buildPerHitTypedHits(isSpringblast ? baseDmg : baseDmg_m2, entryHits, def.getFinisherHitBaseDmg)
+          : buildTypedHits(isSpringblast ? baseDmg : baseDmg_m2),
+        typedHits_m1f: (def.getFinisherHitBaseDmg && entryHits)
+          ? buildPerHitTypedHits(isSpringblast ? baseDmg : baseDmg_m1f, entryHits, def.getFinisherHitBaseDmg)
+          : buildTypedHits(isSpringblast ? baseDmg : baseDmg_m1f),
         scalingMult,
         combatMult: finalCombatMult,
         resolvedDmgTypes: resolvedDmgTypesWithMw,
@@ -2601,6 +2626,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     canApplyBurn?: boolean
     procCount?: number
     finisherGroupHitCount?: number
+    perHitCounts?: boolean
   }
 
   $: _bdcWeaponHits = (() => {
@@ -2920,14 +2946,12 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       const _colorMult = entry.perkName === 'Draconic Blood'
         ? getDraconicColorDmgMultiplier(_effDraconicColor)
         : 1
-      const _rawBase = entry.typedHits_m2[0].rawVal
-      const _preColorBase = _rawBase
 
-      result.push({
+      const _pushBdcHit = (hitCount: number, hitBase: number, perHitCounts?: boolean) => result.push({
         group: entry.perkName === 'Draconic Blood' ? 'Rune' : entry.isWA ? 'WA' : entry.isRune ? 'Rune' : 'Perk',
         index: result.length,
-        count: entry.perkName === 'Springblast' ? springblastFinisherHits : (entry.hits ?? 1),
-        base: _preColorBase,
+        count: hitCount,
+        base: hitBase,
         scalingMult: entry.scalingMult,
         combatMult: entry.combatMult,
         isFinisher: entry.isFinisher ?? false,
@@ -2937,6 +2961,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         isM1: entry.isM1,
         isM2: entry.isM2,
         procCoefficient: entry.procCoefficient,
+        ...(perHitCounts ? { perHitCounts: true } : {}),
         ...(entry.isM2 && entry.isFinisher && entry.procCoefficient?.type !== 'noProc' ? { procCount: 1 } : {}),
         canApplyBurn: _hasSingedBurn,
         ...(entry.forceCrit ? { forceCrit: true } : {}),
@@ -2952,6 +2977,19 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           return combined !== 1 ? { weaponBoostMult: combined, weaponBoostLabel: label } : {}
         })()),
       })
+
+      // Per-hit grouping (e.g. Caci Spirit: 7 thorns + 3 slams)
+      const hasPerHitCounts = entry.typedHits_m2.some(t => t.count != null)
+      if (hasPerHitCounts) {
+        for (const typedHit of entry.typedHits_m2) {
+          if (typedHit.count) _pushBdcHit(typedHit.count, typedHit.rawVal, true)
+        }
+      } else {
+        _pushBdcHit(
+          entry.perkName === 'Springblast' ? springblastFinisherHits : (entry.hits ?? 1),
+          entry.typedHits_m2[0].rawVal,
+        )
+      }
     }
 
     if (_activeRuneDmgDef && Object.keys(_activeRuneDmgDef.dmgTypes).length > 0) {
@@ -4694,9 +4732,12 @@ $: _groupedSelfDamageSources = (() => {
                     {fmtNum(t.val)}
                   </span>
                   <span class="da-hit-type">{t.label}</span>
+                  {#if t.count && t.count > 1}
+                    <span class="da-hit-repeat">×{t.count}</span>
+                  {/if}
                 </div>
               {/each}
-              {#if entry.hits && entry.hits > 1}
+              {#if entry.hits && entry.hits > 1 && !entry.getFinisherHitBaseDmg}
                 <span class="da-hit-repeat">×{entry.hits}<span class="da-hit-repeat-label">hits</span></span>
               {/if}
               {#if entry.isFinisher}

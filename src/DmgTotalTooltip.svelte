@@ -29,7 +29,7 @@
       if (t.isHeal || t.isCurseRip) continue
       const val = ((crit || t.forceCrit) ? t.critVal : t.raw) / (t.activationDivisor ?? 1)
       const dsCount = t.oncePerGroup && (h.group === 'M1' || h.group === 'M2') ? 1 : eventCount
-      const total = t.oncePerGroup ? val * dsCount : val * count
+      const total = t.oncePerGroup ? val * dsCount : val * (t.subHits ?? count)
       let g = map.get(t.key)
       if (!g) {
         g = { label: t.label, color: t.color, total: 0, entries: [] }

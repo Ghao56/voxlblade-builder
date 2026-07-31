@@ -48,6 +48,7 @@ export interface ComputedType {
   procCoefficient?: ProcCoefficient
   hitCount?: number
   activationDivisor?: number
+  subHits?: number
 }
 
 export interface PerkOnHitDmg {

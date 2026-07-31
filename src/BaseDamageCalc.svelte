@@ -130,6 +130,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     canApplyBurn?: boolean
     procCount?: number
     finisherGroupHitCount?: number
+    perHitCounts?: boolean
   }> = []
   export let typedBoostEntries: TypedDmgBoostEntry[] = []
   export let luminescentPct: number = 0
@@ -599,6 +600,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
         typeDebuffMult,
         defMult, enemyDefPct,
         raw, critVal, isHeal: typeIsHeal, isCritExempt: typeNoCrit, forceCrit: hit.forceCrit ?? false,
+        ...(hit.perHitCounts ? { subHits: hit.count } : {}),
       }
     })
 
@@ -1031,25 +1033,32 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
 
   // ── Totals ──────────────────────────────────────────────────
   function hitTypeSum(hit: ComputedHit, useCrit: boolean, includeCount: boolean = false): number {
-    const perHitSum = hit.types.filter(t => !t.isHeal && !t.isCurseRip && !t.oncePerGroup).reduce((s, t) => s + ((useCrit || t.forceCrit) ? t.critVal : t.raw) / (t.activationDivisor ?? 1), 0)
-    const onceSum = hit.types.filter(t => t.oncePerGroup).reduce((s, t) => s + ((useCrit || t.forceCrit) ? t.critVal : t.raw) / (t.activationDivisor ?? 1), 0)
+    const val = (t: ComputedType) => ((useCrit || t.forceCrit) ? t.critVal : t.raw) / (t.activationDivisor ?? 1)
+    let perHitSum = 0
+    for (const t of hit.types) {
+      if (t.isHeal || t.isCurseRip || t.oncePerGroup) continue
+      perHitSum += includeCount ? val(t) * (t.subHits ?? hit.count) : val(t)
+    }
+    const onceSum = hit.types.filter(t => t.oncePerGroup).reduce((s, t) => s + val(t), 0)
     const eventCount = hit.procCount ?? hit.count
     const dsCount = (hit.group === 'M1' || hit.group === 'M2') ? 1 : eventCount
-    return perHitSum * (includeCount ? hit.count : 1) + (includeCount ? onceSum * dsCount : onceSum)
+    return perHitSum + (includeCount ? onceSum * dsCount : onceSum)
   }
   function hitHealSum(hit: ComputedHit, useCrit: boolean, includeCount: boolean = false): number {
-    const sum = hit.types.filter(t => t.isHeal).reduce((s, t) => s + ((useCrit || t.forceCrit) ? t.critVal : t.raw), 0)
+    const sum = hit.types.filter(t => t.isHeal).reduce((s, t) => s + ((useCrit || t.forceCrit) ? t.critVal : t.raw) * (t.subHits ?? 1), 0)
     return sum * (includeCount ? hit.count : 1)
   }
   function groupTotalSum(list: ComputedHit[], useCrit: boolean): number {
     let total = 0
     for (const h of list) {
-      if (!h.isHeal) {
-        total += h.types.filter(t => !t.isHeal && !t.isCurseRip && !t.oncePerGroup).reduce((ts, t) => ts + ((useCrit || t.forceCrit) ? t.critVal : t.raw) / (t.activationDivisor ?? 1), 0) * h.count
-        const eventCount = h.procCount ?? h.count
-        const dsCount = (h.group === 'M1' || h.group === 'M2') ? 1 : eventCount
-        total += h.types.filter(t => t.oncePerGroup).reduce((ts, t) => ts + ((useCrit || t.forceCrit) ? t.critVal : t.raw) / (t.activationDivisor ?? 1), 0) * dsCount
+      if (h.isHeal) continue
+      for (const t of h.types) {
+        if (t.isHeal || t.isCurseRip || t.oncePerGroup) continue
+        total += ((useCrit || t.forceCrit) ? t.critVal : t.raw) / (t.activationDivisor ?? 1) * (t.subHits ?? h.count)
       }
+      const eventCount = h.procCount ?? h.count
+      const dsCount = (h.group === 'M1' || h.group === 'M2') ? 1 : eventCount
+      total += h.types.filter(t => t.oncePerGroup).reduce((ts, t) => ts + ((useCrit || t.forceCrit) ? t.critVal : t.raw) / (t.activationDivisor ?? 1), 0) * dsCount
     }
     return total
   }
@@ -1322,8 +1331,10 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
                                 {#if (showCritValues && !t.isCritExempt) || t.forceCrit}
                                   <span class="bdc-crit-inline-icon"><CritIcon size={12} /></span>
                                 {/if}
-                                <span class="bdc-hit-type-val">{fmt((showCritValues || t.forceCrit) ? (t.hitCount ? t.critVal / t.hitCount : t.critVal) : (t.hitCount ? t.raw / t.hitCount : t.raw))}</span>
-                                {#if t.hitCount && t.tag !== 'Blub'}
+                                <span class="bdc-hit-type-val">{fmt((showCritValues || t.forceCrit) ? (t.subHits ? t.critVal : (t.hitCount ? t.critVal / t.hitCount : t.critVal)) : (t.subHits ? t.raw : (t.hitCount ? t.raw / t.hitCount : t.raw)))}</span>
+                                {#if t.subHits}
+                                  <span class="bdc-hit-cnt">×{t.subHits}</span>
+                                {:else if t.hitCount && t.tag !== 'Blub'}
                                   <span class="bdc-hit-cnt">×{t.hitCount}</span>
                                 {/if}
                               </div>
@@ -1418,7 +1429,12 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
                                   <span class="bdc-fr-val bdc-fr-val--def" class:bdc-fr-val--amplify={t.defMult > 1}>× {fmtMult(t.defMult)}</span>
                                 </div>
                               {/if}
-                              {#if t.hitCount}
+                              {#if t.subHits}
+                                <div class="bdc-fr">
+                                  <span class="bdc-fr-label">Hits</span>
+                                  <span class="bdc-fr-val bdc-fr-val--hits">× {t.subHits}</span>
+                                </div>
+                              {:else if t.hitCount}
                                 <div class="bdc-fr">
                                   <span class="bdc-fr-label">Hits</span>
                                   <span class="bdc-fr-val bdc-fr-val--hits">× {t.hitCount}</span>
@@ -1452,7 +1468,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
                         {/each}
                       </div>
                       <div class="bdc-hit-row-end">
-                        {#if hit.count > 1}<span class="bdc-hit-cnt">×{hit.count}</span>{/if}
+                        {#if hit.count > 1 && !hit.types.some(t => t.subHits)}<span class="bdc-hit-cnt">×{hit.count}</span>{/if}
                         
                         {#if hSumWithCount > 0}
                         <span class="bdc-hit-type-sum-sep">=</span>

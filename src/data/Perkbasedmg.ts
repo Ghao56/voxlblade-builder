@@ -90,6 +90,11 @@ import {
   BOMBER_CHARGE_MISSING_HP_CAP,
   ROGUENT_SPIRIT_BASE_DMG,
   ROGUENT_SPIRIT_HITS,
+  CACI_SPIRIT_THORN_DMG,
+  CACI_SPIRIT_SLAM_DMG,
+  CACI_SPIRIT_THORN_HITS,
+  CACI_SPIRIT_SLAM_HITS,
+  CACI_SPIRIT_BLEED_DURATION,
   DARK_HARVEST_BASE_DAMAGE,
   DARK_HARVEST_DAMAGE_PER_STACK,
   DARK_HARVEST_HP_GATE_THRESHOLD,
@@ -431,6 +436,31 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     isFinisher: true,
     forceCrit: true,
     note: 'All hits are guaranteed crits. Throws 4 individual projectiles. Only requires 50% Spiritual Energy to activate.',
+  },
+  // ── Caci Spirit ────────────────────────────────────────────────────────────
+  {
+    perkName: 'Caci Spirit',
+    condition: 'On RMB (Monk)',
+    getBaseDamage: () => CACI_SPIRIT_THORN_DMG,
+    getFinisherHitBaseDmg: ({ baseDmg, hitIndex }) =>
+      hitIndex >= CACI_SPIRIT_THORN_HITS ? CACI_SPIRIT_SLAM_DMG : baseDmg,
+    hits: CACI_SPIRIT_THORN_HITS + CACI_SPIRIT_SLAM_HITS,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { physical: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { dexterity: 1.0, physical: 1.0 },
+    isM2: true,
+    guardbreak: true,
+    secondaryEffects: [
+      {
+        label: 'Bleed',
+        getValue: () => CACI_SPIRIT_BLEED_DURATION,
+        format: v => `${v}s`,
+        condition: 'Applied on every hit',
+        tone: 'offense',
+      },
+    ],
+    note: `${CACI_SPIRIT_THORN_HITS} thorn hits (${CACI_SPIRIT_THORN_DMG} dmg, no guardbreak) then ${CACI_SPIRIT_SLAM_HITS} slam hits (${CACI_SPIRIT_SLAM_DMG} dmg, guardbreak). Every hit inflicts Bleed for ${CACI_SPIRIT_BLEED_DURATION}s. User can move during thorn barrage, locked in place for slams.`,
   },
   // ── Bounce Momentum ────────────────────────────────────────────────────────
   {
