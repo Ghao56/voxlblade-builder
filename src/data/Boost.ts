@@ -7,6 +7,7 @@ import {
   ROYAL_PARRY_MULT_PER_STACK, SPELL_PIERCER_MULT_PER_STACK,
   SCOURGE_MULT_PER_STACK, SHARPSHOOTER_MULT_PER_STACK,
   VALOR_MULT_PER_STACK, GORECAST_MULT_PER_STACK,
+  VICIOUS_EDGE_MULT_PER_STACK,
   UNDEAD_MIGHT_MULT_PER_STACK, HIGHLANDER_MULT_PER_STACK,
   QUEENS_POWER_POTENCY_PER_AMOUNT, QUEENS_POWER_SUMMON_SCALING_PER_TENTH_POTENCY,
   
@@ -97,6 +98,7 @@ export const BOOST_DEFS: BoostDef[] = [
   {sourceName: 'Venom Spitter', multiplierPerPerk: VENOM_SPITTER_MULT_PER_STACK, type: 'dmg', condition: 'against Poisoned opponents'},
   {sourceName: 'Frostbite', multiplierPerPerk: 0.10, type: 'dmg', condition: 'against Slowed or Frostbitten opponents'},
   {sourceName: 'Gelid Lance', multiplierPerPerk: 0.10, type: 'dmg', condition: 'against Bleeding opponents'},
+  {sourceName: 'Vicious Edge', multiplierPerPerk: VICIOUS_EDGE_MULT_PER_STACK, type: 'dmg', condition: 'against Bleeding opponents'},
   {sourceName:'Perfection',multiplierPerPerk: PERFECTION_MULT_PER_STACK, type: 'dmg', condition: 'at max potency',},
   {sourceName:'Stealth',multiplierPerPerk: STEALTH_MULT_PER_STACK, type: 'dmg', condition: "against opponents not targeting you",},
   { sourceName: 'Golden Crits', multiplierPerPerk: GOLDEN_CRITS_MULT_PER_STACK, type: 'dmg', condition: '40% chance on crit', procScaling: 'positiveOnly', hasToggle: true, baseProcChance: GOLDEN_CRITS_BASE_PROC_CHANCE },

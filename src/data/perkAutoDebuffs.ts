@@ -140,6 +140,18 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
     })
   }
 
+  const viciousEdgeAmt = perks['Vicious Edge'] ?? 0
+  if (viciousEdgeAmt > 0 && !existingBuffNames.includes('Bleed')) {
+    debuffs.push({
+      buffName: 'Bleed',
+      potency: 0,
+      duration: 5,
+      condition: `${Math.round(33 * viciousEdgeAmt)}% chance on M1/M2 · Bleed lasts 5s`,
+      sourceName: 'Vicious Edge',
+      sourceType: 'perk',
+    })
+  }
+
   const caciSpiritAmt = perks['Caci Spirit'] ?? 0
   if (caciSpiritAmt > 0 && !existingBuffNames.includes('Bleed')) {
     debuffs.push({

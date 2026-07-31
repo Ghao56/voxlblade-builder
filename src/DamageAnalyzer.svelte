@@ -1514,6 +1514,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     { sourceName: 'Golden Crits',   test: () => !showCritValues },
     { sourceName: 'Blood Thirsty',  test: () => !_dummyHasBleedActive },
     { sourceName: 'Gelid Lance',    test: () => !_dummyHasBleedActive },
+    { sourceName: 'Vicious Edge',   test: () => !_dummyHasBleedActive },
     { sourceName: 'Gorecast',       test: () => !_dummyHasBleedActive },
     { sourceName: 'Venom Spitter',  test: () => !_dummyHasPoisonActive },
     { sourceName: 'Frostbite',      test: () => !_dummyHasSlowActive && !_dummyHasFrostbiteActive },
@@ -1529,7 +1530,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     if (_effectiveTailwindPotency <= 0) s.add('Spirit Winds')
     if (!showCritValues || !_dummyHasPoisonActive) s.add('Venom Eater')
     if (!showCritValues) s.add('Golden Crits')
-    if (!_dummyHasBleedActive) { s.add('Blood Thirsty'); s.add('Gelid Lance'); s.add('Gorecast') }
+    if (!_dummyHasBleedActive) { s.add('Blood Thirsty'); s.add('Gelid Lance'); s.add('Vicious Edge'); s.add('Gorecast') }
     if (!_dummyHasPoisonActive) s.add('Venom Spitter')
     if (!_dummyHasSlowActive && !_dummyHasFrostbiteActive) s.add('Frostbite')
     return s
