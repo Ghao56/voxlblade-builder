@@ -131,6 +131,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     procCount?: number
     finisherGroupHitCount?: number
     perHitCounts?: boolean
+    finisherHitIndex?: number
   }> = []
   export let typedBoostEntries: TypedDmgBoostEntry[] = []
   export let luminescentPct: number = 0
@@ -784,7 +785,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
             const defMult = calcArmorMult(defPct, basePenDecimal + crushPen / 100, k).mult
             let baseForType: number
             if (ph.getFinisherHitBaseDmg) {
-              baseForType = ph.getFinisherHitBaseDmg({ baseDmg: ph.baseDmg, hitIndex: hit.index })
+              baseForType = ph.getFinisherHitBaseDmg({ baseDmg: ph.baseDmg, hitIndex: hit.finisherHitIndex ?? hit.index })
             } else if (ph.rawFinisherNumerator != null) {
               const fh = hit.finisherGroupHitCount ?? hit.count
               baseForType = Math.round(ph.rawFinisherNumerator / (0.5 + fh / 2) * 1000) / 1000

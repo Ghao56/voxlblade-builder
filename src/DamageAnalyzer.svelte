@@ -2641,6 +2641,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     finisherGroupHitCount?: number
     perHitCounts?: boolean
     finisherIndex?: number
+    finisherHitIndex?: number
     weaponBoostMult?: number
     weaponBoostLabel?: string
   }
@@ -3208,6 +3209,22 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           m2Indices.forEach((idx, k) => { result[idx] = reorderedM2[k] })
         }
       }
+    }
+
+    // Assign each finisher hit its position within its own finisher action's
+    // hit sequence (the M1 finisher and the M2 are separate finisher actions,
+    // so the sequence restarts for each). Perks with a per-finisher-hit
+    // falloff (e.g. Venom Spitter) key off this index, not the hit's index
+    // within its own move array.
+    let finisherSeqIndex = 0
+    let prevBaseM2 = false
+    for (const h of result) {
+      if (!h.isFinisher) continue
+      const isBaseM2 = h.group === 'M2' && !h.isM2
+      if (!(prevBaseM2 && isBaseM2)) finisherSeqIndex = 0
+      h.finisherHitIndex = finisherSeqIndex
+      finisherSeqIndex += h.count ?? 1
+      prevBaseM2 = isBaseM2
     }
 
     // Apply finisher-scoped boosts (e.g. Deltabit) generically to every hit
