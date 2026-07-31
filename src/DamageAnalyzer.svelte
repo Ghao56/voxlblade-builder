@@ -1224,7 +1224,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     emotionalState: $build.emotionalState, draconicColor: _effDraconicColor,
     guild: $build.guild, draconicInfusionDisabled, toxinTransferHexBonus: _toxinTransferHexBonus,
     rageDisabled, emotionalDisabled,
-  })
+  }, new Set(['Channeled Weapon']))
 
   $: _emotionalHexBonus = (() => {
     const amt = perks['Emotional'] ?? 0
