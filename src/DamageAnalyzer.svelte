@@ -3183,6 +3183,20 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       m1Indices.forEach((idx, k) => { result[idx] = reorderedM1[k] })
     }
 
+    // M2 group: M2-replacement perk hits (isM2, e.g. Gravitational Enforcer) hit
+    // before the base weapon M2, so list them first.
+    {
+      const m2Indices = result.map((h, i) => h.group === 'M2' ? i : -1).filter(i => i >= 0)
+      if (m2Indices.length > 0) {
+        const m2Rows = m2Indices.map(i => result[i])
+        const perkM2 = m2Rows.filter(h => h.isM2)
+        if (perkM2.length > 0) {
+          const reorderedM2 = [...perkM2, ...m2Rows.filter(h => !h.isM2)]
+          m2Indices.forEach((idx, k) => { result[idx] = reorderedM2[k] })
+        }
+      }
+    }
+
     return result
   })()
 
