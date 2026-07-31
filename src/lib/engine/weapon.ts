@@ -63,7 +63,7 @@ type WeaponOverride = {
 }
 
 const WEAPON_OVERRIDES: WeaponOverride[] = [
-  { perk: "Kama Blades",    bladeTypes:  ["Small Blade"],                    result: "Dual Kamas" },
+  { perk: "Kama Blades",    bladeTypes:  ["Small Blade"],  handleTypes: ["Medium Handle", "Long Handle"], result: "Dual Kamas" },
   { perk: "Kama Blades",    bladeTypes:  ["Spear", "Great Spear"],           result: "Scythe" },
   { perk: "Artillery Mage", hammerOnly:  true,                               result: "Artillery Mage" },
   { perk: "Stratos Winds",  hammerOnly:  true,                               result: "Stratos Winds" },

@@ -1616,7 +1616,7 @@ $: highestDamageType = (() => {
   // ── Weapon Art helpers ─────────────────────────────────────────────────────
   $: _waScalings = weaponResult?.baseScalings ?? {} as Record<string, number>
   $: _waStats = weaponResult?.stats ?? {} as Record<string, number>
-  $: _waWeaponType = weaponResult?.finalWeaponType ?? ''
+  $: _waWeaponType = weaponResult?.weaponType ?? ''
   $: _waBlade = $build.weaponBlade
   $: _waHandle = $build.weaponHandle
 

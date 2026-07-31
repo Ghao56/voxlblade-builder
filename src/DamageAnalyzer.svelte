@@ -950,9 +950,9 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       const threshold = BELLOWING_EMBER_HP_GATE_THRESHOLD + BELLOWING_EMBER_HP_GATE_PER_STACK * (beAmt - 1)
       chips.push({
         key: 'bellowingEmber', name: 'Bellowing Ember',
-        title: `HP ≤${threshold}% · +${10 * beAmt}% dmg boost${_hasFireDmg ? ` · +${23 * beAmt}% (Fire Type)` : ''}`,
-        val: disabledEffects.has('bellowingEmber') ? '—' : `×${+_bellowingEmberMult.toFixed(4)}`,
-        cond: `HP ≤${threshold}%${_hasFireDmg ? ' · Fire Type' : ''}`,
+        title: `Bellowing Ember (${beAmt}): +${10 * beAmt}% dmg at low HP · +${23 * beAmt}% if attack has Fire · HP ≤${threshold}%`,
+        val: disabledEffects.has('bellowingEmber') ? '—' : `+${10 * beAmt}%/+${23 * beAmt}%`,
+        cond: disabledEffects.has('bellowingEmber') ? 'disabled' : `HP ≤${threshold}%${_hasFireDmg ? ' · Fire Type' : ''}`,
       })
     }
     if (_photosynthesisStacks > 0) {

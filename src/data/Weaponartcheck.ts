@@ -1,18 +1,7 @@
 import type { WeaponArt, WeaponArtRequirement } from '../data/weaponArts'
 
-const WEAPON_TYPE_EQUIVALENTS: Record<string, string[]> = {
-  'Dual Kamas':              ['Dagger'],
-  'Dual Wielding Daggers':   ['Dagger'],
-  'Dual Swords':             ['1-Handed Sword'],
-  'Dual Unbalanced Swords':  ['Unbalanced Sword'],
-  'Dual Mallets':            ['Mallet'],
-  'Lance':                   ['Unbalanced Sword', 'Greatsword'],
-  'Scythe':                  ['Spear', 'Great Spear'],
-}
-
 function weaponTypeMatches(required: string, actual: string): boolean {
-  if (required === actual) return true
-  return (WEAPON_TYPE_EQUIVALENTS[actual] ?? []).includes(required)
+  return required === actual
 }
 
 const SCALE_MAP: Record<string, string> = {
@@ -107,7 +96,7 @@ export function checkWA(
   wa: WeaponArt,
   scalings: Record<string, number>,
   stats: Record<string, number>,
-  finalWeaponType: string,
+  weaponType: string,
   isMonk: boolean,
   bladeName: string,
   handleName: string,
@@ -120,10 +109,10 @@ export function checkWA(
   if (req.bothParts && !req.bothParts.every(p => p === bladeName || p === handleName)) return false
   if (!passesAtLeastOneScaling(req, scalings)) return false
 
-  const isScalingExempt = req.scalingExemptWeaponTypes?.some(t => weaponTypeMatches(t, finalWeaponType)) ?? false
+  const isScalingExempt = req.scalingExemptWeaponTypes?.some(t => weaponTypeMatches(t, weaponType)) ?? false
   if (!isScalingExempt && !meetsScalingReqs(req, scalings)) return false
   if (!meetsStatReqs(req, stats)) return false
-  if (req.weaponType?.length && !req.weaponType.some(t => weaponTypeMatches(t, finalWeaponType))) return false
+  if (req.weaponType?.length && !req.weaponType.some(t => weaponTypeMatches(t, weaponType))) return false
 
   return true
 }
@@ -132,7 +121,7 @@ export function getUnmetReqs(
   wa: WeaponArt,
   scalings: Record<string, number>,
   stats: Record<string, number>,
-  finalWeaponType: string,
+  weaponType: string,
   isMonk: boolean,
   bladeName: string,
   handleName: string,
@@ -143,12 +132,12 @@ export function getUnmetReqs(
   const unmet: string[] = []
 
   if (req.guild && !isMonk) unmet.push(`Guild: ${req.guild}`)
-  if (req.weaponType?.length && !req.weaponType.some(t => weaponTypeMatches(t, finalWeaponType)))
+  if (req.weaponType?.length && !req.weaponType.some(t => weaponTypeMatches(t, weaponType)))
     unmet.push(`Weapon: ${req.weaponType.join(' / ')}`)
   if (req.bothParts && !req.bothParts.every(p => p === bladeName || p === handleName))
     unmet.push(`Requires both: ${req.bothParts.join(' + ')}`)
 
-  const isScalingExempt = req.scalingExemptWeaponTypes?.some(t => weaponTypeMatches(t, finalWeaponType)) ?? false
+  const isScalingExempt = req.scalingExemptWeaponTypes?.some(t => weaponTypeMatches(t, weaponType)) ?? false
   if (!isScalingExempt) {
     unmet.push(...buildUnmetScalingReqs(req, scalings))
   }
