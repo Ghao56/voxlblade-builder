@@ -69,6 +69,7 @@ import {
   CLEAVE_POTENCY,
   CLEAVE_DURATION,
   SERRATED_EDGE_DURATION,
+  INSPIRED_POTENCY_PER_AMOUNT, INSPIRED_DURATION, INSPIRED_EFFECT_PER_TENTH,
 } from '../lib/constants/buffs'
 import {
   CRYO_ENGINE_TAILWIND_BASE_POTENCY, CRYO_ENGINE_TAILWIND_POTENCY_PER_AMOUNT,
@@ -186,9 +187,9 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
   },
   Inspired: {
     name: 'Inspired',
-    color: '#818cf8',
-    description: 'Gain x% inspiration.',
-    effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
+    color: '#ffde0f',
+    description: 'Deal x% more damage.',
+    effectPerTenthPotency: INSPIRED_EFFECT_PER_TENTH,
     effectUnit: 'flat',
   },
   'Perfection': {
@@ -786,6 +787,17 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       duration: 0,
       condition: `On dodge/parry · +${amount}/dodge · max ${amount * 5} · −${amount} on unblocked hit`,
       sourceName: 'Perfection',
+      sourceType: 'perk',
+    },
+  ],
+
+  'Inspiration': (amount) => [
+    {
+      buffName: 'Inspired',
+      potency: INSPIRED_POTENCY_PER_AMOUNT * amount,
+      duration: INSPIRED_DURATION,
+      condition: `On landing M1/M2 · pulse has no Proc Coefficient`,
+      sourceName: 'Inspiration',
       sourceType: 'perk',
     },
   ],

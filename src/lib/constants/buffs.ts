@@ -17,6 +17,11 @@ export const WHIRLWIND_EFFECT_PER_TENTH = 0.0666
 export const GLYPH_CONDUIT_EFFECT_PER_TENTH = 0.2
 export const DESPAIR_EFFECT_PER_TENTH = 0.085
 
+// Inspiration: Inspired buff potency/duration and damage effect (7.5% per 1 perk = 0.1 potency)
+export const INSPIRED_POTENCY_PER_AMOUNT = 0.1
+export const INSPIRED_DURATION = 15
+export const INSPIRED_EFFECT_PER_TENTH = 0.075
+
 // Luminescent % per potency (not 0.1 scale)
 export const LUMINESCENT_PCT_PER_POTENCY = 5
 

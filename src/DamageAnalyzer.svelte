@@ -92,9 +92,11 @@ const BUFF_KEY_BOOST_LINKS: Record<string, string> = {
 const BUFF_NAME_BOOST_LINKS: Record<string, string> = {
   'Perfection': 'Perfection',
   'Minion Absorbed': 'Minion Absorption',
+  'Queens Power': 'Queens Power',
 }
 const BOOST_BUFF_KEY_LINKS: Record<string, string[]> = {
   'Smoldering': ['Burn:Smoldering'],
+  'Queens Power': ['Queens Power:Queens Power'],
 }
 const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   'Emotional': 'emotionalDisabled',
@@ -1612,6 +1614,17 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       entries.push({ sourceName: 'Ferocity', rawMultiplier: roundMultiplier(1 + pct / 100), condition: `based on your Tenacity`, type: 'dmg' })
     }
 
+    const inspiredPotency = Math.max(0, ..._allActiveBuffs.filter(b => b.buffName === 'Inspired').map(b => b.potency))
+    if (inspiredPotency > 0) {
+      const dmgPct = inspiredPotency * 0.75 * 100
+      entries.push({
+        sourceName: 'Inspired',
+        rawMultiplier: roundMultiplier(1 + inspiredPotency * 0.75),
+        condition: `while Inspired · +${+dmgPct.toFixed(2)}% dmg`,
+        type: 'dmg',
+      })
+    }
+
     const convertedEnergyEntry = _typedBoostResult.activeEntries.find(e => e.perkName === 'Hex Shield')
     if (convertedEnergyEntry && convertedEnergyEntry.dmgMult !== 1) {
       entries.push({
@@ -2342,6 +2355,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     halfActivations?: boolean
     oncePerFinisher?: boolean
     forceCrit?: boolean
+    eachHitM1M2?: boolean
     secondaryEffects: Array<{ label: string; display: string; condition?: string; color: string; isActive: boolean }>
     triggerChain?: TriggerChainEntry[]
     slider?: { buildKey: string; label: string; min: number; max: number; step?: number }
@@ -2522,6 +2536,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         halfActivations,
         oncePerFinisher,
         forceCrit: def.forceCrit,
+        eachHitM1M2: def.note?.startsWith('Each hit counts as individual M1/M2') === true,
         secondaryEffects,
         triggerChain: def.triggerChain,
         ...(def.slider ? { slider: { buildKey: def.slider.buildKey, label: def.slider.label, min: def.slider.min, max: _perkSliderMax, step: def.slider.step }, sliderVal: _perkSliderVal, sliderMax: _perkSliderMax } : {}),
@@ -2975,6 +2990,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         isM2: entry.isM2,
         procCoefficient: entry.procCoefficient,
         ...(perHitCounts ? { perHitCounts: true } : {}),
+        ...(entry.eachHitM1M2 ? { eachHitM1M2: true } : {}),
         ...(entry.isM2 && entry.isFinisher && entry.procCoefficient?.type !== 'noProc' ? { procCount: 1 } : {}),
         canApplyBurn: _hasSingedBurn,
         ...(entry.forceCrit ? { forceCrit: true } : {}),
@@ -3490,6 +3506,10 @@ $: _groupedSelfDamageSources = (() => {
     showCritToggle={_showCrit}
     appliedDebuffs={_dummyDebuffs}
     curseRipPerkAmount={_curseRipPerkAmount}
+    inspirationPerkAmount={perks['Inspiration'] ?? 0}
+    inspirationBaseHeal={(perks['Inspiration'] ?? 0) > 0 ? 0.15 + 0.015 * (perks['Inspiration'] ?? 0) : 0}
+    inspirationScalingMult={(perks['Inspiration'] ?? 0) > 0 ? _computePerkScalingMult({ holy: 1.0, summon: 1.0 }) : 1}
+    inspirationHealMult={_healFinalMultiplier}
     curseRipActiveDebuffCount={_curseRipActiveDebuffCount}
     curseRipHealMult={_curseRipHealMult}
     disableCurseRip={disableCurseRip}

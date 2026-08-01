@@ -132,6 +132,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     finisherGroupHitCount?: number
     perHitCounts?: boolean
     finisherHitIndex?: number
+    eachHitM1M2?: boolean
   }> = []
   export let typedBoostEntries: TypedDmgBoostEntry[] = []
   export let luminescentPct: number = 0
@@ -148,6 +149,10 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     }>
   }> = []
   export let curseRipPerkAmount: number = 0
+  export let inspirationPerkAmount: number = 0
+  export let inspirationBaseHeal: number = 0
+  export let inspirationScalingMult: number = 1
+  export let inspirationHealMult: number = 1
   export let curseRipActiveDebuffCount: number = 0
   export let curseRipHealMult: number = 1
   export let lifestealHealMult: number = 1
@@ -523,7 +528,9 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     return results
   }
  
-  $: computedHits = typedBoostEntries && effectiveDefenses && weaponHits.map((hit): ComputedHit => {
+  $: computedHits = typedBoostEntries && effectiveDefenses && (() => {
+    const _inspirationDone = new Set<string>()
+    return weaponHits.map((hit): ComputedHit => {
     const isHeal = hit.isHeal ?? false
     const basePenDecimal = (armorPen + globalArmorPenetration) / 100
     const hitPenDecimal = hit.group === 'WA' || hit.group === 'Rune' ? (armorPen + globalArmorPenetration + waArmorPenetration) / 100 : basePenDecimal
@@ -944,6 +951,25 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       }
     }
 
+    if (!isHeal && inspirationPerkAmount > 0 && (hit.group === 'M1' || hit.group === 'M2') && (hit.eachHitM1M2 || !_inspirationDone.has(hit.group))) {
+      if (!hit.eachHitM1M2) _inspirationDone.add(hit.group)
+      const inspBase = inspirationBaseHeal
+      const inspScaled = inspBase * inspirationScalingMult
+      if (inspScaled > 0) {
+        const healRaw = inspScaled * inspirationHealMult * antiHealSelfMult
+        types.push({
+          key: 'heal', label: 'Heal', color: '#4ade80',
+          typeBase: inspBase, scalingMult: inspirationScalingMult, combatMult: 1,
+          applicableBoosts: [], weaponBoostMult: 1, typeDebuffMult: 1,
+          defMult: 1, enemyDefPct: 0,
+          raw: healRaw, critVal: healRaw,
+          isHeal: true, oncePerGroup: !hit.eachHitM1M2, isCritExempt: true, forceCrit: false,
+          tag: 'Inspiration',
+          healBoostMult: inspirationHealMult !== 1 ? inspirationHealMult : undefined,
+        })
+      }
+    }
+
     if (!isHeal && _venomEaterActive && canProc(hit.procCoefficient)) {
       const veHeal = VENOM_EATER_HEAL_PER_STACK * venomEaterStacks
       if (veHeal > 0) {
@@ -997,8 +1023,9 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       }
     }
 
-    return { group: hit.group, index: hit.index, count: hit.count, isFinisher: hit.isFinisher, label: hit.label, isHeal, types, procCount: hit.procCount, finisherGroupHitCount: hit.finisherGroupHitCount }
-  })
+    return { group: hit.group, index: hit.index, count: hit.count, isFinisher: hit.isFinisher, label: hit.label, isHeal, types, procCount: hit.procCount, finisherGroupHitCount: hit.finisherGroupHitCount, eachHitM1M2: hit.eachHitM1M2 ?? false }
+    })
+  })()
 
   $: m1Hits   = computedHits.filter(h => h.group === 'M1')
   $: m2Hits   = computedHits.filter(h => h.group === 'M2')
@@ -1040,14 +1067,23 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       if (t.isHeal || t.isCurseRip || t.oncePerGroup) continue
       perHitSum += includeCount ? val(t) * (t.subHits ?? hit.count) : val(t)
     }
-    const onceSum = hit.types.filter(t => t.oncePerGroup).reduce((s, t) => s + val(t), 0)
+    const onceSum = hit.types.filter(t => t.oncePerGroup && !t.isHeal && !t.isCurseRip).reduce((s, t) => s + val(t), 0)
     const eventCount = hit.procCount ?? hit.count
     const dsCount = (hit.group === 'M1' || hit.group === 'M2') ? 1 : eventCount
     return perHitSum + (includeCount ? onceSum * dsCount : onceSum)
   }
   function hitHealSum(hit: ComputedHit, useCrit: boolean, includeCount: boolean = false): number {
-    const sum = hit.types.filter(t => t.isHeal).reduce((s, t) => s + ((useCrit || t.forceCrit) ? t.critVal : t.raw) * (t.subHits ?? 1), 0)
-    return sum * (includeCount ? hit.count : 1)
+    let sum = 0
+    for (const t of hit.types) {
+      if (!t.isHeal) continue
+      const v = (useCrit || t.forceCrit) ? t.critVal : t.raw
+      if (t.oncePerGroup) {
+        sum += v
+      } else {
+        sum += v * (t.subHits ?? 1) * (includeCount ? hit.count : 1)
+      }
+    }
+    return sum
   }
   function groupTotalSum(list: ComputedHit[], useCrit: boolean): number {
     let total = 0
@@ -1059,11 +1095,11 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       }
       const eventCount = h.procCount ?? h.count
       const dsCount = (h.group === 'M1' || h.group === 'M2') ? 1 : eventCount
-      total += h.types.filter(t => t.oncePerGroup).reduce((ts, t) => ts + ((useCrit || t.forceCrit) ? t.critVal : t.raw) / (t.activationDivisor ?? 1), 0) * dsCount
+      total += h.types.filter(t => t.oncePerGroup && !t.isHeal && !t.isCurseRip).reduce((ts, t) => ts + ((useCrit || t.forceCrit) ? t.critVal : t.raw) / (t.activationDivisor ?? 1), 0) * dsCount
     }
     return total
   }
-  function groupHealTotalSum(list: ComputedHit[], useCrit: boolean): number {return list.reduce((s, h) =>s +h.types.filter(t => t.isHeal).reduce((ts, t) => ts + ((useCrit || t.forceCrit) ? t.critVal : t.raw),0) * h.count, 0)}
+  function groupHealTotalSum(list: ComputedHit[], useCrit: boolean): number {return list.reduce((s, h) =>s +h.types.filter(t => t.isHeal).reduce((ts, t) => ts + ((useCrit || t.forceCrit) ? t.critVal : t.raw) * (t.oncePerGroup ? 1 : h.count),0), 0)}
 
   import { onMount } from 'svelte'
   onMount(() => {
