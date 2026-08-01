@@ -844,6 +844,17 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: _runicBladesScalings = _runicBladesDef?.scalings ?? {}
   $: _runicBladesScalingMult = _runicBladesAmt > 0 ? _computePerkScalingMult(_runicBladesScalings) : 1
 
+  $: _starStruckAmt = perks['Star Struck'] ?? 0
+  let starRerollSeed = 0
+  $: _starStruckScalingMults = (() => {
+    const out: Record<string, number> = {}
+    for (const t of ['magic', 'air', 'fire', 'hex', 'holy', 'water']) {
+      out[t] = _computePerkScalingMult({ [t]: 1.0 })
+    }
+    out.true = _computePerkScalingMult({ magic: 0.5 })
+    return out
+  })()
+
   $: _cauterizeAmt = (perks['Cauterize'] ?? 0)
   $: _cauterizeDef = findPerkDmgDef('Cauterize')
   $: _burnApplicationCount = getBurnApplicationCount([..._allActiveBuffs, ..._cauterizedAbilityDebuffs]) + (_hasSingedBurn && _echoIncinerationAmt > 0 ? 1 : 0)
@@ -2364,7 +2375,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     getFinisherHitBaseDmg?: (ctx: { baseDmg: number; hitIndex: number }) => number
   }
 
-  $: _activePerkDmgEntries = (void activeEntries, void disabledDebuffs, (() => {
+  $: _activePerkDmgEntries = (void activeEntries, void disabledDebuffs, void starRerollSeed, (() => {
     const out: PerkDmgComputedEntry[] = []
     for (const def of PERK_DMG_DEFS) {
       const perkAmount = perks[def.perkName] ?? 0
@@ -2557,7 +2568,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     for (const e of _activePerkDmgEntries) {
       if (!e.isActive) continue
       if (!e.isProcHit && e.perkName !== 'Springblast' && e.perkName !== 'Blazing Finisher') continue
-      if (e.perkName === 'Echo Incineration' || e.perkName === 'Bombardier' || e.perkName === 'Runic Blades' || e.perkName === 'Quake') continue
+      if (e.perkName === 'Echo Incineration' || e.perkName === 'Bombardier' || e.perkName === 'Runic Blades' || e.perkName === 'Quake' || e.perkName === 'Star Struck') continue
       const perkDef = findPerkDmgDef(e.perkName)
 
       const perkSunburnMult = _sunburnActive && _sunburnEnemyBurning
@@ -3494,6 +3505,9 @@ $: _groupedSelfDamageSources = (() => {
     cauterizeScalingMult={_cauterizeScalingMult}
     runicBladesBaseDmg={_runicBladesBaseDmg}
     runicBladesScalingMult={_runicBladesScalingMult}
+    starStruckAmt={_starStruckAmt}
+    starStruckScalingMults={_starStruckScalingMults}
+    starRerollSeed={starRerollSeed}
     m1Label={_activeMountRuneDef && mountActive ? 'M1/M2' : 'M1'}
     draconicRunesBonus={getDraconicBonuses({
       draconicRunesStacks: perks['Draconic Runes'] ?? 0,
@@ -4797,6 +4811,9 @@ $: _groupedSelfDamageSources = (() => {
         <!-- Condition -->
         {#if entry.condition}
           <div class="da-pbd-condition">{entry.condition}</div>
+        {/if}
+        {#if entry.perkName === 'Star Struck'}
+          <button class="da-reroll-btn" on:click={() => starRerollSeed++} title="Re-roll the random star damage type (and the stars shown next to M1/M2)">🎲 Reroll Star</button>
         {/if}
         <!-- Slider -->
         {#if entry.slider}
@@ -6889,6 +6906,27 @@ $: _groupedSelfDamageSources = (() => {
   background: rgba(255,255,255,.02);
   border-radius: 4px;
   line-height: 1.4;
+}
+
+.da-reroll-btn {
+  align-self: flex-start;
+  font-size: .62rem;
+  font-weight: 700;
+  font-family: 'Courier New', monospace;
+  color: #fde047;
+  background: rgba(253,224,71,.08);
+  border: 1px solid rgba(253,224,71,.28);
+  border-radius: 5px;
+  padding: 3px 9px;
+  cursor: pointer;
+  transition: background .12s ease, border-color .12s ease;
+}
+.da-reroll-btn:hover {
+  background: rgba(253,224,71,.18);
+  border-color: rgba(253,224,71,.5);
+}
+.da-reroll-btn:active {
+  transform: translateY(1px);
 }
 
 .da-pbd-dmg-row {

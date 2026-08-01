@@ -271,6 +271,15 @@ export function calcBomberChargeBaseDamage(perkAmount: number, missingHpPct: num
   return Math.round(base * 1000) / 1000
 }
 
+const STAR_STRUCK_TYPES = ['magic', 'air', 'fire', 'hex', 'holy', 'water', 'true']
+let _starStruckRoll: { type: string; scalings: Record<string, number> } | null = null
+
+function rollStarStruckType(): string {
+  const t = STAR_STRUCK_TYPES[Math.floor(Math.random() * STAR_STRUCK_TYPES.length)]
+  _starStruckRoll = { type: t, scalings: t === 'true' ? { magic: 0.5 } : { [t]: 1.0 } }
+  return t
+}
+
 function calcIchorSparkChargeMult(chargePct: number): number {
   return 1 + ICHOR_SPARK_CHARGE_DMG_MULT * chargePct / 100
 }
@@ -1494,7 +1503,24 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
     guardbreak: true,
     note: 'Explosion size scales with perk amount.',
-  }
+  },
+  // ── Star Struck ─────────────────────────────────────────────────
+  {
+    perkName: 'Star Struck',
+    label: 'Star Struck',
+    condition: 'On M1/M2 hit · random star damage type',
+    getBaseDamage: () => 3,
+    getHits: ({ perkAmount }) => Math.round(2 * perkAmount),
+    dmgTypeMode: 'dynamic',
+    getDmgTypes: () => ({ [rollStarStruckType()]: 1.0 }),
+    getScalings: () => _starStruckRoll?.scalings ?? { magic: 1.0 },
+    scalingMode: 'dynamic',
+    isM1: true,
+    isM2: true,
+    isProcHit: true,
+    procCoefficient: { type: 'hasCoeff', value: 1 },
+    note: 'Stars deal 3 base damage with 1.0 of their type and 1.0 scaling of that type. True stars instead deal 6 base with 0.5 Magic scaling. 100% activation chance. Star type is random per recalculation — actual damage appears next to M1/M2.',
+  },
 ]
 
 const _perkDmgDefMap = new Map<string, PerkDmgDef[]>()

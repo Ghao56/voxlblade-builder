@@ -70,6 +70,9 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   export let cauterizeScalingMult: number = 1
   export let runicBladesBaseDmg: number = 0
   export let runicBladesScalingMult: number = 1
+  export let starStruckAmt: number = 0
+  export let starStruckScalingMults: Record<string, number> = {}
+  export let starRerollSeed: number = 0
   export let m1Label: string = 'M1'
   export let mountActive: boolean = false
   export let mountLabel: string = ''
@@ -91,6 +94,11 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     const out = { ...types }
     out.hex = Math.round(((out.hex ?? 0) + darkMagicHexBonus) * 10000) / 10000
     return out
+  }
+
+  const STAR_TYPES = ['magic', 'air', 'fire', 'hex', 'holy', 'water', 'true']
+  function pickStarType(): string {
+    return STAR_TYPES[Math.floor(Math.random() * STAR_TYPES.length)]
   }
 
   function resolveTypeInfo(k: string, penDecimal: number, procCoeff?: ProcCoefficient, group?: string) {
@@ -528,7 +536,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     return results
   }
  
-  $: computedHits = typedBoostEntries && effectiveDefenses && (() => {
+  $: computedHits = typedBoostEntries && effectiveDefenses && (void starRerollSeed, () => {
     return weaponHits.map((hit): ComputedHit => {
     const isHeal = hit.isHeal ?? false
     const basePenDecimal = (armorPen + globalArmorPenetration) / 100
@@ -703,6 +711,40 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
             defMult: blubDefMult, enemyDefPct: blubDefPct,
             raw: blubRawPerHit, critVal: Math.round(blubRawPerHit * critDmgMult / 100 * 10000) / 10000,
             isHeal: false, tag: 'Blub', forceCrit: false, procCoefficient: { type: 'noProc' }, hitCount: 2,
+          })
+        }
+      }
+    }
+
+    if (!isHeal && starStruckAmt > 0 && canProc(hit.procCoefficient) && (hit.group === 'M1' || hit.group === 'M2' || hit.isM1 || hit.isM2 || hit.isFinisher)) {
+      const stars = Math.round(2 * starStruckAmt)
+      if (stars > 0) {
+        const starCounts = new Map<string, number>()
+        for (let i = 0; i < stars; i++) {
+          const t = pickStarType()
+          starCounts.set(t, (starCounts.get(t) ?? 0) + 1)
+        }
+        for (const [starType, count] of starCounts) {
+          const isTrueStar = starType === 'true'
+          const starBase = isTrueStar ? 6 : 3
+          const starScalingMult = starStruckScalingMults[starType] ?? 1
+          const info = DMG_TYPE_MAP.get(starType) ?? { label: starType, color: FALLBACK_DMG_COLOR }
+          const applicableBoosts = getApplicableBoosts(starType, false, hit.group, hit.procCoefficient)
+          const typedMultUsed = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
+          const typeDebuffMult = _activeDebuffTypeDamageMult[starType] ?? 1
+          const defPct = defPctForType(starType)
+          const crushPen = crushingPenForType(starType)
+          const defMult = calcArmorMult(defPct, hitPenDecimal + crushPen / 100, starType).mult
+          const rawPerStar = starBase * starScalingMult * typedMultUsed * sunburnUniversalDmgMult * (hit.combatMult ?? 1) * defMult * typeDebuffMult * _activeDebuffDamageMult * selfDebuffDamageMult
+          const raw = rawPerStar * count
+          types.push({
+            key: starType, label: info.label, color: info.color,
+            typeBase: starBase, scalingMult: starScalingMult, combatMult: hit.combatMult ?? 1,
+            applicableBoosts, weaponBoostMult: sunburnUniversalDmgMult, typeDebuffMult,
+            defMult, enemyDefPct: defPct,
+            raw, critVal: Math.round(raw * critDmgMult / 100 * 10000) / 10000,
+            isHeal: false, tag: 'Star Struck', forceCrit: false, procCoefficient: { type: 'hasCoeff', value: 1 },
+            ...(count > 1 ? { hitCount: count } : {}),
           })
         }
       }
