@@ -51,6 +51,7 @@ import {
   SWIFT_GUARD_POTENCY_PER_AMOUNT, SWIFT_GUARD_DURATION,
   RUNIC_WINDS_POTENCY_PER_AMOUNT, RUNIC_WINDS_DURATION,
   GRANDMAGIC_GUARD_POTENCY_PER_AMOUNT, GRANDMAGIC_GUARD_DURATION,
+  MARSH_FLOW_POTENCY, MARSH_FLOW_DURATION_BASE, MARSH_FLOW_DURATION_PER_AMOUNT,
   BOUNCE_DURATION_BASE, BOUNCE_DURATION_PER_STACK,
   MOD_GLADIATORIAL_POTENCY, MOD_MAGE_RAGE_POTENCY, MOD_OCEANS_RAGE_POTENCY,
   MOD_SLAYER_RAGE_POTENCY, MOD_SLAYER_WEAKNESS_POTENCY,
@@ -63,6 +64,11 @@ import {
   RAGE_POTION_POTENCY, RAGE_POTION_DURATION,
   POISON_POTION_POTENCY, POISON_POTION_DURATION,
   POTION_CHUGGER_POTENCY_MULT_PER_LEVEL,
+  SHATTERING_JUSTICE_POTENCY_PER_AMOUNT,
+  SHATTERING_JUSTICE_DURATION,
+  CLEAVE_POTENCY,
+  CLEAVE_DURATION,
+  SERRATED_EDGE_DURATION,
 } from '../lib/constants/buffs'
 import {
   CRYO_ENGINE_TAILWIND_BASE_POTENCY, CRYO_ENGINE_TAILWIND_POTENCY_PER_AMOUNT,
@@ -1461,6 +1467,46 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       duration: GRANDMAGIC_GUARD_DURATION,
       condition: `To the user and allies within the shielding bubble`,
       sourceName: 'Grandmagic Guard',
+      sourceType: 'perk',
+    },
+  ],
+  'Marsh Flow': (amount) => [
+    {
+      buffName: 'Regen',
+      potency: MARSH_FLOW_POTENCY,
+      duration: MARSH_FLOW_DURATION_BASE + MARSH_FLOW_DURATION_PER_AMOUNT * amount,
+      condition: `10% chance on finisher hits`,
+      sourceName: 'Marsh Flow',
+      sourceType: 'perk',
+    },
+  ],
+  'Shattering Justice': (amount) => [
+    {
+      buffName: 'Shatter',
+      potency: SHATTERING_JUSTICE_POTENCY_PER_AMOUNT * amount,
+      duration: SHATTERING_JUSTICE_DURATION,
+      condition: `When hitting a poise-broken opponent, or breaking an opponents guard`,
+      sourceName: 'Shattering Justice',
+      sourceType: 'perk',
+    },
+  ],
+  'Cleave': (amount) => [
+    {
+      buffName: 'Shatter',
+      potency: CLEAVE_POTENCY,
+      duration: CLEAVE_DURATION,
+      condition: `On finisher hit`,
+      sourceName: 'Cleave',
+      sourceType: 'perk',
+    },
+  ],
+  'Serrated Edge': (amount) => [
+    {
+      buffName: 'Bleed',
+      potency: 0,
+      duration: SERRATED_EDGE_DURATION,
+      condition: `on Finisher hit`,
+      sourceName: 'Serrated Edge',
       sourceType: 'perk',
     },
   ],
