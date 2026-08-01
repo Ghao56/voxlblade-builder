@@ -306,6 +306,8 @@ export interface WeaponBaseDmg {
   type: string;
   m1: WeaponHit[] | null;
   m1Finisher?: boolean;
+  noM1?: boolean;
+  noM2?: boolean;
   m2: WeaponHit[];
   m2Charge?: {
     enabled: boolean;

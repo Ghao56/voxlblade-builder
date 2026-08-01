@@ -529,7 +529,6 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   }
  
   $: computedHits = typedBoostEntries && effectiveDefenses && (() => {
-    const _inspirationDone = new Set<string>()
     return weaponHits.map((hit): ComputedHit => {
     const isHeal = hit.isHeal ?? false
     const basePenDecimal = (armorPen + globalArmorPenetration) / 100
@@ -951,8 +950,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       }
     }
 
-    if (!isHeal && inspirationPerkAmount > 0 && (hit.group === 'M1' || hit.group === 'M2') && (hit.eachHitM1M2 || !_inspirationDone.has(hit.group))) {
-      if (!hit.eachHitM1M2) _inspirationDone.add(hit.group)
+    if (!isHeal && inspirationPerkAmount > 0 && (hit.group === 'M1' || hit.group === 'M2')) {
       const inspBase = inspirationBaseHeal
       const inspScaled = inspBase * inspirationScalingMult
       if (inspScaled > 0) {

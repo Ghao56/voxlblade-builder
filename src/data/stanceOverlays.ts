@@ -20,6 +20,16 @@ interface StanceOverlayDef {
 
 const STANCE_OVERLAY_DEFS: StanceOverlayDef[] = [
   {
+    id: 'Mine',
+    condition: ctx => (ctx.weaponPerks['Mine'] ?? 0) > 0,
+    resolve: () => ({ type: 'Mine', m2Only: true, m2NoLock: true }),
+  },
+  {
+    id: 'Cosmic Ray',
+    condition: ctx => (ctx.weaponPerks['Cosmic Ray'] ?? 0) > 0,
+    resolve: () => ({ type: 'Cosmic Ray', m2Only: true, m2NoLock: true }),
+  },
+  {
     id: 'Blaster Ring (Fists)',
     condition: ctx => ctx.blasterCount >= 2 && ctx.isFists,
     resolve: () => ({ type: 'Rifle', m2Only: false, m2NoLock: true }),
@@ -38,16 +48,6 @@ const STANCE_OVERLAY_DEFS: StanceOverlayDef[] = [
     id: 'Locked And Loaded (Weapon)',
     condition: ctx => ctx.hasLockedAndLoaded && !ctx.isFists && ctx.hasWeaponType,
     resolve: () => ({ type: 'Side Gun', m2Only: true }),
-  },
-  {
-    id: 'Cosmic Ray',
-    condition: ctx => (ctx.weaponPerks['Cosmic Ray'] ?? 0) > 0,
-    resolve: () => ({ type: 'Cosmic Ray', m2Only: true, m2NoLock: true }),
-  },
-  {
-    id: 'Mine',
-    condition: ctx => (ctx.weaponPerks['Mine'] ?? 0) > 0,
-    resolve: () => ({ type: 'Mine', m2Only: true, m2NoLock: true }),
   },
 ]
 

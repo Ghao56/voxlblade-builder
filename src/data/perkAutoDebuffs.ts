@@ -177,6 +177,18 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
     })
   }
 
+  const mineAmt = perks['Mine'] ?? 0
+  if (mineAmt > 0 && !existingBuffNames.includes('Shatter')) {
+    debuffs.push({
+      buffName: 'Shatter',
+      potency: 0.1 * mineAmt,
+      duration: 10,
+      condition: 'Final hit of Mine M2 applies Shatter · Potency = 0.1 × ' + +mineAmt.toFixed(2),
+      sourceName: 'Mine',
+      sourceType: 'perk',
+    })
+  }
+
   const bellowingAmt = perks['Bellowing Ember'] ?? 0
   if (bellowingAmt > 0) {
     const actualHpPct = calcActualHpFillPct(hpFill, level, protection)
