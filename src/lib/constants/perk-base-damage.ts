@@ -189,6 +189,11 @@ export const GNAWING_POISON_BASE_DMG = 0
 export const GNAWING_POISON_DMG_PER_STACK = 8
 export const GNAWING_POISON_COOLDOWN = 1.5
 
+// Ice Burst
+export const ICE_BURST_BASE_DMG = 8
+export const ICE_BURST_DMG_PER_STACK = 4
+export const ICE_BURST_BLEED_DURATION = 5
+
 // Propelling Fun
 export const PROPELLING_FUN_BASE_DMG = 5
 export const PROPELLING_FUN_DMG_PER_STACK = 4

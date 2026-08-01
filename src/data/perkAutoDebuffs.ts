@@ -4,7 +4,7 @@ import type { GrantedBuff } from './BuffData'
 import { canProc, type ProcCoefficient } from '../lib/types'
 import { calcBaseMaxHP } from '../lib/constants/game'
 import { BASIC_DEBUFF_DURATION } from '../lib/constants/buffs'
-import { BELLOWING_EMBER_HP_GATE_THRESHOLD, BELLOWING_EMBER_HP_GATE_PER_STACK, PYRE_BLOOM_BURN_DURATION, RUNIC_BLADES_DEBUFF_DURATION_PER_STACK, CACI_SPIRIT_BLEED_DURATION } from '../lib/constants/perk-base-damage'
+import { BELLOWING_EMBER_HP_GATE_THRESHOLD, BELLOWING_EMBER_HP_GATE_PER_STACK, PYRE_BLOOM_BURN_DURATION, RUNIC_BLADES_DEBUFF_DURATION_PER_STACK, CACI_SPIRIT_BLEED_DURATION, ICE_BURST_BLEED_DURATION } from '../lib/constants/perk-base-damage'
 import { getActiveEnemyHpDebuffs } from './enemyHpEffects'
 
 export interface AutoDebuffInput {
@@ -185,6 +185,20 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
       duration: 10,
       condition: 'Final hit of Mine M2 applies Shatter · Potency = 0.1 × ' + +mineAmt.toFixed(2),
       sourceName: 'Mine',
+      sourceType: 'perk',
+    })
+  }
+
+  const iceBurstAmt = perks['Ice Burst'] ?? 0
+  const hasShatter = existingBuffNames.includes('Shatter') || debuffs.some(d => d.buffName === 'Shatter')
+  const hasBleed = existingBuffNames.includes('Bleed') || debuffs.some(d => d.buffName === 'Bleed')
+  if (iceBurstAmt > 0 && hasShatter && !hasBleed) {
+    debuffs.push({
+      buffName: 'Bleed',
+      potency: 0,
+      duration: ICE_BURST_BLEED_DURATION,
+      condition: 'Inflicting Shatter creates an icicle burst that inflicts brief Bleed',
+      sourceName: 'Ice Burst',
       sourceType: 'perk',
     })
   }

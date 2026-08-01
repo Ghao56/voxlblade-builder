@@ -129,6 +129,9 @@ import {
   GNAWING_POISON_BASE_DMG,
   GNAWING_POISON_DMG_PER_STACK,
   GNAWING_POISON_COOLDOWN,
+  ICE_BURST_BASE_DMG,
+  ICE_BURST_DMG_PER_STACK,
+  ICE_BURST_BLEED_DURATION,
   PROPELLING_FUN_BASE_DMG,
   PROPELLING_FUN_DMG_PER_STACK,
   PROPELLING_FUN_COOLDOWN,
@@ -1182,6 +1185,28 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
     requiredEnemyDebuff: 'Poison',
     note: `Bites all enemies you have Poisoned, dealing burst damage. ${GNAWING_POISON_COOLDOWN}s cooldown. Can proc other effects. You don't have to hit an opponent — just using your finisher after having inflicted a target with Poison activates it. Grants Poison Potency. Damage may increase depending on how many enemies you have Poisoned (unknown scaling).`,
+  },
+  // ── Ice Burst ─────────────────────────────────────────────────────────
+  {
+    perkName: 'Ice Burst',
+    condition: 'Inflicting Shatter creates an icicle burst that inflicts brief Bleed and does Water and Physical Damage in a radius',
+    getBaseDamage: ({ perkAmount }) => ICE_BURST_BASE_DMG + ICE_BURST_DMG_PER_STACK * perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { water: 0.5, physical: 0.5 },
+    scalingMode: 'fixed',
+    scalings: { water: 1.0, physical: 1.0 },
+    procCoefficient: { type: 'noProc' },
+    requiredEnemyDebuff: 'Shatter',
+    secondaryEffects: [
+      {
+        label: 'Bleed',
+        getValue: () => ICE_BURST_BLEED_DURATION,
+        format: v => `${v}s`,
+        condition: 'Applied in AoE · lasts 5s at 1 of this perk',
+        tone: 'offense',
+      },
+    ],
+    note: `Size appears to increase with perk amount (?). Cannot proc other effects.`,
   },
   // ── Propelling Fun ────────────────────────────────────────────────────────
   {
