@@ -542,7 +542,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     const basePenDecimal = (armorPen + globalArmorPenetration) / 100
     const hitPenDecimal = hit.group === 'WA' || hit.group === 'Rune' ? (armorPen + globalArmorPenetration + waArmorPenetration) / 100 : basePenDecimal
 
-    const addProcEffect = (baseAmount: number, pct: number, dmgTypes: Record<string, number>, tag: string, scalingMult = 1, combatMult = 1) => {
+    const addProcEffect = (baseAmount: number, pct: number, dmgTypes: Record<string, number>, tag: string, scalingMult = 1, combatMult = 1, hitCount?: number) => {
       const amount = baseAmount * pct
       if (amount <= 0) return
       let resolvedTypes = withDarkMagicHex(resolveDamageTypes(dmgTypes, perkDmgTypeBonusesDoT))
@@ -556,7 +556,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
         const crushPen = crushingPenForType(k)
         const defMult  = calcArmorMult(defPct, basePenDecimal + crushPen / 100, k).mult
         const typeBase = amount * mult
-        const raw = typeBase * scalingMult * typedMultUsed * sunburnUniversalDmgMult * combatMult * defMult * debuffMult
+        const raw = typeBase * scalingMult * typedMultUsed * sunburnUniversalDmgMult * combatMult * defMult * debuffMult * (hitCount ?? 1)
         types.push({
           key: k, label: info.label, color: info.color,
           typeBase, scalingMult, combatMult,
@@ -564,6 +564,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
           defMult, enemyDefPct: defPct,
           raw, critVal: Math.round(raw * critDmgMult / 100 * 10000) / 10000,
           isHeal: false, tag, forceCrit: false, procCoefficient: { type: 'noProc' },
+          ...(hitCount && hitCount > 1 ? { hitCount } : {}),
         })
       }
     }
@@ -737,6 +738,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
           const defMult = calcArmorMult(defPct, hitPenDecimal + crushPen / 100, starType).mult
           const rawPerStar = starBase * starScalingMult * typedMultUsed * sunburnUniversalDmgMult * (hit.combatMult ?? 1) * defMult * typeDebuffMult * _activeDebuffDamageMult * selfDebuffDamageMult
           const raw = rawPerStar * count
+          const starPreMitBase = starBase * starScalingMult * sunburnUniversalDmgMult * (hit.combatMult ?? 1) * _activeDebuffDamageMult * selfDebuffDamageMult
           types.push({
             key: starType, label: info.label, color: info.color,
             typeBase: starBase, scalingMult: starScalingMult, combatMult: hit.combatMult ?? 1,
@@ -746,6 +748,9 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
             isHeal: false, tag: 'Star Struck', forceCrit: false, procCoefficient: { type: 'hasCoeff', value: 1 },
             ...(count > 1 ? { hitCount: count } : {}),
           })
+          if (lightningCloakPct > 0 && starPreMitBase > 0) {
+            addProcEffect(starPreMitBase, lightningCloakPct, { air: 0.5, magic: 0.5 }, 'Chain', 1, 1, count)
+          }
         }
       }
     }
@@ -1511,11 +1516,6 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
                                   <span class="bdc-fr-label">Hits</span>
                                   <span class="bdc-fr-val bdc-fr-val--hits">× {t.subHits}</span>
                                 </div>
-                              {:else if t.hitCount}
-                                <div class="bdc-fr">
-                                  <span class="bdc-fr-label">Hits</span>
-                                  <span class="bdc-fr-val bdc-fr-val--hits">× {t.hitCount}</span>
-                                </div>
                               {/if}
                               {#if t._bfBonusRaw != null}
                                 {@const _bfBaseRaw = t.raw - t._bfBonusRaw}
@@ -1538,7 +1538,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
                               <div class="bdc-fr-divider"></div>
                                <div class="bdc-fr bdc-fr--result">
                                 <span class="bdc-fr-label">{t.isHeal ? 'Final Heal' : 'Final Damage'}</span>
-                                <span class="bdc-fr-val bdc-fr-val--result" style="--tc:{t.color}">{fmt((showCritValues || t.forceCrit) ? t.critVal : t.raw)}</span>
+                                <span class="bdc-fr-val bdc-fr-val--result" style="--tc:{t.color}">{fmt((showCritValues || t.forceCrit) ? (t.hitCount ? t.critVal / t.hitCount : t.critVal) : (t.hitCount ? t.raw / t.hitCount : t.raw))}</span>
                               </div>
                             </div>
                           </div>
@@ -1975,7 +1975,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
         <span class="bdc-fr-val bdc-fr-val--def" class:bdc-fr-val--amplify={t.defMult > 1}>× {fmtMult(t.defMult)}</span>
       </div>
     {/if}
-    {#if t.hitCount}
+    {#if t.hitCount && t.tag === 'Blub'}
       <div class="bdc-fr">
         <span class="bdc-fr-label">Hits</span>
         <span class="bdc-fr-val bdc-fr-val--hits">× {t.hitCount}</span>
@@ -2001,7 +2001,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     <div class="bdc-fr-divider"></div>
     <div class="bdc-fr bdc-fr--result">
       <span class="bdc-fr-label">{t.isHeal ? 'Final Heal' : 'Final Damage'}</span>
-      <span class="bdc-fr-val bdc-fr-val--result" style="--tc:{t.color}">{fmt((showCritValues || t.forceCrit) ? t.critVal : t.raw)}</span>
+      <span class="bdc-fr-val bdc-fr-val--result" style="--tc:{t.color}">{fmt((showCritValues || t.forceCrit) ? (t.hitCount && t.tag !== 'Blub' ? t.critVal / t.hitCount : t.critVal) : (t.hitCount && t.tag !== 'Blub' ? t.raw / t.hitCount : t.raw))}</span>
     </div>
   </div>
 {/if}

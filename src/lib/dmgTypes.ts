@@ -27,7 +27,7 @@ export const BADGE_CONFIG: Record<string, { color: string; label: string; title:
   'Quake': { color: '#a3722a', label: '✦ Quake', title: 'Quake: Earth shockwave on hit · RNG chance · Guardbreak · Cannot proc other effects' },
   'Sandnado': { color: '#d4a547', label: '✦ Sandnado', title: 'Ruler Of The Sands: sandnado on WA/Rune use · Reduced proc coefficient · Earth+Air damage' },
   'Blazing Finisher': { color: '#f97316', label: '✦ Blazing', title: 'Blazing Finisher: fire AoE on finisher vs burning · 2×perkAmount + 20% of finisher damage' },
-  'Star Struck': { color: '#fde047', label: '✦ Star', title: 'Star Struck: landed M1/M2 shoot stars · random damage type · True star deals 6 base with 0.5 Magic scaling' },
+  'Star Struck': { color: '#fde047', label: '✦ Star', title: 'Star Struck: landed M1/M2 shoot stars · random damage type · True star deals 6 base with 0.5 Magic scaling · stars can proc other on-hit effects' },
 }
 
 export interface ComputedType {
