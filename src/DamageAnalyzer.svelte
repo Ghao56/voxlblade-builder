@@ -26,7 +26,7 @@
   import { calculateHealBoost, type HealSource } from './data/HealBoost'
   import { roundMultiplier, calcWardingDebuffMultiplier, calcProcChance, applyScalingMult, scalingEq } from './lib/utils'
   import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage, UNDEAD_MIGHT_SELF_DMG_FRACTION, UNDEAD_MIGHT_DR_PCT_PER_STACK, type SelfDamagePerkDef } from './data/selfDamagePerks'
-  import { resolveDamageTypes, resolveWaDamageTypeKeys, applyAirToMagicConversion } from './lib/damageTypeResolve'
+  import { resolveDamageTypes, resolveWaDamageTypeKeys, applyAirToMagicConversion, computeEffectiveWaDmgTypes } from './lib/damageTypeResolve'
   import { buildDmgTypeBonuses } from './lib/engine/dmgTypeBonuses'
 import { FEROCITY_TENACITY_MULT } from './lib/constants'
 import { calcTypedDmgBoosts } from './data/TypedDmgBoost'
@@ -215,7 +215,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     return baseMult
   })()
 
-  $: _curseRipHealMult = _healFinalMultiplier
+  $: _curseRipHealMult = _healFinalMultiplierNoLevel
 
   $: _healCritDmgMult = (perks['Critical Healing'] ?? 0) > 0
     ? CRIT_HEALING_BASE + (stats.holyBoost ?? 0) / CRIT_HEALING_HOLY_BOOST_DIVISOR + CRIT_HEALING_PER_STACK * (perks['Critical Healing'] ?? 0)
@@ -1996,65 +1996,20 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     _wildBoltElemIdx = Math.floor(Math.random() * WILD_BOLT_ELEMENTS.length)
   }
   $: _wildBoltElement = _wildBoltAmt > 0 && selectedWA.name === 'Laser' ? WILD_BOLT_ELEMENTS[_wildBoltElemIdx] : null
-  $: _waDmgTypes = (() => {
-    const apply = (types: Record<string, number>) =>
-      applyAirToMagicConversion(types, _spiritWindsConversionRate, _darkMagicHexBonus, _echoIncinerationAmt)
-
-    if (_wildBoltElement) {
-      return apply(_applyDmgBonuses({ [_wildBoltElement]: 1 }, _waDmgTypeBonuses))
-    }
-    if (_weightySlamAmt > 0 && selectedWA.name === 'Slam') {
-      return apply(_applyDmgBonuses({ physical: 1 }, _waDmgTypeBonuses))
-    }
-    if (_heatDrillActive) {
-      const entries = Object.entries(_weaponDmgTypesBase)
-      const highestKey = entries.length > 0
-        ? entries.reduce((a, b) => b[1] > a[1] ? b : a)[0]
-        : Object.keys(_weaponDmgTypes)[0] ?? 'physical'
-      return apply(_applyDmgBonuses({ [highestKey]: 1 }, _waDmgTypeBonuses))
-    }
-    if (_essenceRayActive) {
-      return apply(_applyDmgBonuses({ true: 1 }, _waDmgTypeBonuses))
-    }
-    const dt = selectedWA.damageType
-    
-    if (!dt || dt === 'Same as weapon') {
-      return apply(_applyDmgBonuses(_weaponDmgTypes, _waOnlyBonuses))
-    }
-    
-    if (dt.includes('Highest damage type')) {
-      const entries = Object.entries(_weaponDmgTypesBase)
-      if (entries.length === 0) {
-        return apply(_applyDmgBonuses(_weaponDmgTypes, _waOnlyBonuses))
-      }
-      const [highestKey] = entries.reduce((a, b) => {
-        if (b[1] > a[1]) return b
-        if (b[1] === a[1]) {
-          const ia = (DMG_TYPE_PRIORITY as readonly string[]).indexOf(a[0])
-          const ib = (DMG_TYPE_PRIORITY as readonly string[]).indexOf(b[0])
-          return (ib === -1 ? 999 : ib) < (ia === -1 ? 999 : ia) ? b : a
-        }
-        return a
-      })
-      return apply(_applyDmgBonuses({ [highestKey]: 1 }, _waDmgTypeBonuses))
-    }
-
-    const types: Record<string, number> = {}
-    const re =
-      /([\d.]+)\s*(Physical|Magic|Fire|Water|Earth|Air|Hex|Holy|True|Summon)/gi
-
-    let m: RegExpExecArray | null
-
-    while ((m = re.exec(dt)) !== null) {
-      types[m[2].toLowerCase()] = parseFloat(m[1])
-    }
-
-    if (Object.keys(types).length > 0) {
-      return apply(_applyDmgBonuses(types, _waDmgTypeBonuses))
-    } else {
-      return apply(_applyDmgBonuses(_weaponDmgTypes, _waOnlyBonuses))
-    }
-  })()
+  $: _waDmgTypes = computeEffectiveWaDmgTypes({
+    waDamageType: selectedWA.damageType,
+    weaponDmgTypes: _weaponDmgTypes,
+    weaponDmgTypesBase: _weaponDmgTypesBase,
+    waDmgTypeBonuses: _waDmgTypeBonuses,
+    waOnlyBonuses: _waOnlyBonuses,
+    airToMagicConversionRate: _spiritWindsConversionRate,
+    darkMagicHexBonus: _darkMagicHexBonus,
+    echoIncinerateAmt: _echoIncinerationAmt,
+    wildBoltElement: _wildBoltElement,
+    weightySlamActive: _weightySlamAmt > 0 && selectedWA.name === 'Slam',
+    heatDrillActive: _heatDrillActive,
+    essenceRayActive: _essenceRayActive,
+  })
   
   $: _waDmgTypesBase = (() => {
     if (_wildBoltElement) {

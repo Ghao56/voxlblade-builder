@@ -1,0 +1,13 @@
+{
+  "projectRoot": "C:/Users/Administrator/Downloads/voxlblade-builder",
+  "batchFiles": [
+    {"path": "src/BaseDamageCalc.svelte", "language": "svelte", "sizeLines": 2812, "fileCategory": "code"},
+    {"path": "src/DamageAnalyzer.svelte", "language": "svelte", "sizeLines": 7560, "fileCategory": "code"},
+    {"path": "src/lib/constants/boosts.ts", "language": "typescript", "sizeLines": 75, "fileCategory": "code"}
+  ],
+  "batchImportData": {
+    "src/BaseDamageCalc.svelte": [],
+    "src/DamageAnalyzer.svelte": [],
+    "src/lib/constants/boosts.ts": []
+  }
+}

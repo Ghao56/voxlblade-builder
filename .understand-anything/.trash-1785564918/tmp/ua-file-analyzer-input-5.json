@@ -1,0 +1,19 @@
+{
+  "projectRoot": "C:/Users/Administrator/Downloads/voxlblade-builder",
+  "batchFiles": [
+    {
+      "path": "src/data/Perkbasedmg.ts",
+      "language": "typescript",
+      "sizeLines": 1438,
+      "fileCategory": "code"
+    }
+  ],
+  "batchImportData": {
+    "src/data/Perkbasedmg.ts": [
+      "src/data/DoTDamage.ts",
+      "src/data/draconicColorEffects.ts",
+      "src/lib/constants.ts",
+      "src/lib/types.ts"
+    ]
+  }
+}

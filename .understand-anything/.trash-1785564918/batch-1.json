@@ -1,0 +1,15 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/lib/constants/buffs.ts",
+      "type": "file",
+      "name": "buffs.ts",
+      "filePath": "src/lib/constants/buffs.ts",
+      "summary": "Central constants module exporting 140 numeric values for buff and debuff potency, duration, and scaling, sourced from the game's BuffData. Covers potions, rune-granted buffs, weapon-art-granted buffs, perk-buff factory constants, potency modifiers, and generic debuff modifiers used by the damage calculation engine.",
+      "tags": ["constants", "data-model", "buff-system", "game-balance", "config"],
+      "complexity": "moderate",
+      "languageNotes": "Pure data module: 140 exported UPPER_SNAKE_CASE const declarations, zero imports and zero functions, organized into commented sections that mirror the BuffData.ts definitions."
+    }
+  ],
+  "edges": []
+}

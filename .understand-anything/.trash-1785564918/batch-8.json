@@ -1,0 +1,15 @@
+{
+  "nodes": [
+    {
+      "id": "file:stats.html",
+      "type": "file",
+      "name": "stats.html",
+      "filePath": "stats.html",
+      "summary": "Self-contained Rollup Visualizer HTML report (generated build artifact) showing the Voxel Blade production bundle's size distribution as an interactive treemap, with embedded compiled rendering code and inline module-tree data.",
+      "tags": ["markup", "visualization", "build-artifact", "report", "generated"],
+      "complexity": "complex",
+      "languageNotes": "Single-file artifact bundling a minified preact-compatible VDOM renderer with d3 hierarchy/treemap layout, plus an inline JSON tree of the rolldown output modules; SVG is produced at runtime rather than in markup."
+    }
+  ],
+  "edges": []
+}

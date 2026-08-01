@@ -1,0 +1,185 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 1,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "src/data/Perkbasedmg.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 1487,
+      "nonEmptyLines": 1466,
+      "functions": [
+        {
+          "name": "gateThreshold",
+          "startLine": 184,
+          "endLine": 188,
+          "params": [
+            "gate",
+            "perkAmount"
+          ]
+        },
+        {
+          "name": "isHpGateActive",
+          "startLine": 190,
+          "endLine": 195,
+          "params": [
+            "gate",
+            "hpFillPct",
+            "perkAmount"
+          ]
+        },
+        {
+          "name": "calcSpringblastBaseDamage",
+          "startLine": 261,
+          "endLine": 263,
+          "params": [
+            "perkAmount"
+          ]
+        },
+        {
+          "name": "calcBomberChargeBaseDamage",
+          "startLine": 265,
+          "endLine": 269,
+          "params": [
+            "perkAmount",
+            "missingHpPct"
+          ]
+        },
+        {
+          "name": "calcIchorSparkChargeMult",
+          "startLine": 271,
+          "endLine": 273,
+          "params": [
+            "chargePct"
+          ]
+        },
+        {
+          "name": "calcIchorSparkSwipeBase",
+          "startLine": 275,
+          "endLine": 278,
+          "params": [
+            "perkAmount",
+            "chargePct"
+          ]
+        },
+        {
+          "name": "calcIchorSparkSlashBase",
+          "startLine": 280,
+          "endLine": 283,
+          "params": [
+            "perkAmount",
+            "chargePct"
+          ]
+        },
+        {
+          "name": "calcIchorSparkChargeTime",
+          "startLine": 285,
+          "endLine": 287,
+          "params": [
+            "perkAmount"
+          ]
+        },
+        {
+          "name": "findPerkDmgDef",
+          "startLine": 1482,
+          "endLine": 1487,
+          "params": [
+            "perkName",
+            "label"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "gateThreshold",
+          "line": 184,
+          "isDefault": false
+        },
+        {
+          "name": "isHpGateActive",
+          "line": 190,
+          "isDefault": false
+        },
+        {
+          "name": "DRAGON_STATE_HP_GATE",
+          "line": 197,
+          "isDefault": false
+        },
+        {
+          "name": "SECONDARY_TONE_COLORS",
+          "line": 213,
+          "isDefault": false
+        },
+        {
+          "name": "calcSpringblastBaseDamage",
+          "line": 261,
+          "isDefault": false
+        },
+        {
+          "name": "calcBomberChargeBaseDamage",
+          "line": 265,
+          "isDefault": false
+        },
+        {
+          "name": "PERK_DMG_DEFS",
+          "line": 289,
+          "isDefault": false
+        },
+        {
+          "name": "findPerkDmgDef",
+          "line": 1482,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "gateThreshold",
+          "callee": "gate.getThreshold",
+          "lineNumber": 187
+        },
+        {
+          "caller": "isHpGateActive",
+          "callee": "gateThreshold",
+          "lineNumber": 192
+        },
+        {
+          "caller": "calcBomberChargeBaseDamage",
+          "callee": "Math.min",
+          "lineNumber": 266
+        },
+        {
+          "caller": "calcBomberChargeBaseDamage",
+          "callee": "Math.round",
+          "lineNumber": 268
+        },
+        {
+          "caller": "calcIchorSparkSwipeBase",
+          "callee": "calcIchorSparkChargeMult",
+          "lineNumber": 277
+        },
+        {
+          "caller": "calcIchorSparkSlashBase",
+          "callee": "calcIchorSparkChargeMult",
+          "lineNumber": 282
+        },
+        {
+          "caller": "findPerkDmgDef",
+          "callee": "_perkDmgDefMap.get",
+          "lineNumber": 1483
+        },
+        {
+          "caller": "findPerkDmgDef",
+          "callee": "defs.find",
+          "lineNumber": 1485
+        }
+      ],
+      "metrics": {
+        "importCount": 4,
+        "exportCount": 8,
+        "functionCount": 9,
+        "classCount": 0
+      }
+    }
+  ]
+}

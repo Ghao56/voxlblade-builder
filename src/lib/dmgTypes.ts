@@ -49,6 +49,8 @@ export interface ComputedType {
   hitCount?: number
   activationDivisor?: number
   subHits?: number
+  _bfBonusBase?: number
+  _bfBonusRaw?: number
 }
 
 export interface PerkOnHitDmg {

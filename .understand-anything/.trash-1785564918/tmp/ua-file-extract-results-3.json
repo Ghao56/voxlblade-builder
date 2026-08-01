@@ -1,0 +1,475 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 2,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "src/data/Boost.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 447,
+      "nonEmptyLines": 429,
+      "functions": [
+        {
+          "name": "calcMinionAbsorptionPotency",
+          "startLine": 29,
+          "endLine": 31,
+          "params": [
+            "summonBoostPct",
+            "stacks"
+          ]
+        },
+        {
+          "name": "calcFrenzyPct",
+          "startLine": 33,
+          "endLine": 35,
+          "params": [
+            "ragePotency"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "calcMinionAbsorptionPotency",
+          "line": 29,
+          "isDefault": false
+        },
+        {
+          "name": "calcFrenzyPct",
+          "line": 33,
+          "isDefault": false
+        },
+        {
+          "name": "PENANCE_HP_THRESHOLD",
+          "line": 38,
+          "isDefault": false
+        },
+        {
+          "name": "PENANCE_BLEED_POTENCY",
+          "line": 40,
+          "isDefault": false
+        },
+        {
+          "name": "PENANCE_BLEED_DURATION",
+          "line": 41,
+          "isDefault": false
+        },
+        {
+          "name": "BOOST_DEFS",
+          "line": 96,
+          "isDefault": false
+        },
+        {
+          "name": "BOOST_DEF_MAP",
+          "line": 447,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "calcMinionAbsorptionPotency",
+          "callee": "Math.round",
+          "lineNumber": 30
+        }
+      ],
+      "metrics": {
+        "importCount": 3,
+        "exportCount": 7,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/data/perkAutoDebuffs.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 331,
+      "nonEmptyLines": 304,
+      "functions": [
+        {
+          "name": "calcActualHpFillPct",
+          "startLine": 23,
+          "endLine": 32,
+          "params": [
+            "hpFill",
+            "level",
+            "protection"
+          ]
+        },
+        {
+          "name": "getAutoDebuffs",
+          "startLine": 34,
+          "endLine": 331,
+          "params": [
+            "input"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "calcActualHpFillPct",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "getAutoDebuffs",
+          "line": 34,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "calcActualHpFillPct",
+          "callee": "calcBaseMaxHP",
+          "lineNumber": 29
+        },
+        {
+          "caller": "calcActualHpFillPct",
+          "callee": "Math.max",
+          "lineNumber": 30
+        },
+        {
+          "caller": "calcActualHpFillPct",
+          "callee": "Math.round",
+          "lineNumber": 30
+        },
+        {
+          "caller": "calcActualHpFillPct",
+          "callee": "Math.round",
+          "lineNumber": 30
+        },
+        {
+          "caller": "calcActualHpFillPct",
+          "callee": "Math.min",
+          "lineNumber": 31
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "playerBuffNames.includes",
+          "lineNumber": 38
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 39
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "canProc",
+          "lineNumber": 40
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 43
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "calcActualHpFillPct",
+          "lineNumber": 55
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 56
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 57
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "dotDebuffs.some",
+          "lineNumber": 71
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 71
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 72
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 73
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 85
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 86
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 97
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 98
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 109
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 110
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 121
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 122
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 133
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 134
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 145
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 146
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "Math.round",
+          "lineNumber": 150
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 157
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 158
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 169
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 170
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "gravEnforcerAmt.toFixed",
+          "lineNumber": 174
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "calcActualHpFillPct",
+          "lineNumber": 182
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 184
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 185
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 197
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 198
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "Math.round",
+          "lineNumber": 202
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 210
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.some",
+          "lineNumber": 210
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 211
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.some",
+          "lineNumber": 211
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 213
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 225
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 226
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "Math.round",
+          "lineNumber": 230
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "weakeningAmt.toFixed",
+          "lineNumber": 230
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 237
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 239
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "Math.round",
+          "lineNumber": 243
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 250
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 251
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 262
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 263
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 274
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 275
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "runicBladesAmt.toFixed",
+          "lineNumber": 279
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 286
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 287
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "hypnotistAmt.toFixed",
+          "lineNumber": 291
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "getActiveEnemyHpDebuffs",
+          "lineNumber": 297
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 299
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 300
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "existingBuffNames.includes",
+          "lineNumber": 317
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.some",
+          "lineNumber": 317
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "debuffs.push",
+          "lineNumber": 319
+        },
+        {
+          "caller": "getAutoDebuffs",
+          "callee": "Math.round",
+          "lineNumber": 323
+        }
+      ],
+      "metrics": {
+        "importCount": 7,
+        "exportCount": 2,
+        "functionCount": 2,
+        "classCount": 0
+      }
+    }
+  ]
+}

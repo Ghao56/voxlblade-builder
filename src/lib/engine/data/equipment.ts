@@ -50,7 +50,7 @@ export function getArmorPart(name: string, type: ArmorPart["type"]) {
 function getArmorSlotTypes(name: string): Set<ArmorPart["type"]> {
   const armor = ARMOR_MAP[name]
   if (!armor) return new Set()
-  return new Set(armor.parts.map(p => p.type))
+  return new Set(armor.parts.map((p: ArmorPart) => p.type))
 }
 
 export function armorSupportsSlot(name: string, type: ArmorPart["type"]): boolean {

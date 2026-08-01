@@ -98,7 +98,7 @@
     const srcName = $build[activeRingSource]
     if (!srcName) return null
     const other = activeRingSource === 'ring' ? 'infusionRing' : 'ring'
-    const valid = new Set<string>()
+    const valid = new Set<'ring' | 'infusionRing'>()
     valid.add(other)
     return valid
   })()
@@ -348,7 +348,7 @@
       else { dragOverRing = null }
     }
     const hasTarget = (gridDragKind === 'armor') ? !!dragOverArmorSlot : !!dragOverRing
-    updateActionBadge(gridGhostEl, hasTarget ? getGridDragAction(gridDragKind, gridDragSlot, target) : '')
+    updateActionBadge(gridGhostEl, hasTarget ? getGridDragAction(gridDragKind!, gridDragSlot, target) : '')
   }
 
   function onGridMouseUp() {
@@ -414,7 +414,7 @@
       else { dragOverRing = null }
     }
     const hasTarget = (gridTouchKind === 'armor') ? !!dragOverArmorSlot : !!dragOverRing
-    updateActionBadge(gridTouchGhost, hasTarget ? getGridDragAction(gridTouchKind, gridTouchSlot, target) : '')
+    updateActionBadge(gridTouchGhost, hasTarget ? getGridDragAction(gridTouchKind!, gridTouchSlot, target) : '')
   }
 
   function onGridTouchEnd() {
@@ -1828,7 +1828,7 @@ $: _appWaAvgTotal = (() => {
                   data-slot="infusionHelmet"
                   role="button" tabindex="0"
                   on:click={() => { if (gridJustDropped) return; selectedArmorSlot ? onArmorTap('infusionHelmet') : openModal('infusion-helmet') }}
-                  on:keydown={e => e.key === 'Enter' && (selectedArmorSlot ? onArmorTap('infusion-helmet') : openModal('infusion-helmet'))}
+                  on:keydown={e => e.key === 'Enter' && (selectedArmorSlot ? onArmorTap('infusionHelmet') : openModal('infusion-helmet'))}
                   on:mousedown={e => handleGridMouseDown(e, 'infusionHelmet', 'armor')}
                   on:touchstart={e => handleGridTouchStart(e, 'infusionHelmet', 'armor')}>
                   <span class="sg-label">Inf. Helmet</span>
@@ -1895,7 +1895,7 @@ $: _appWaAvgTotal = (() => {
                   data-slot="infusionChestplate"
                   role="button" tabindex="0"
                   on:click={() => { if (gridJustDropped) return; selectedArmorSlot ? onArmorTap('infusionChestplate') : openModal('infusion-chestplate') }}
-                  on:keydown={e => e.key === 'Enter' && (selectedArmorSlot ? onArmorTap('infusion-chestplate') : openModal('infusion-chestplate'))}
+                  on:keydown={e => e.key === 'Enter' && (selectedArmorSlot ? onArmorTap('infusionChestplate') : openModal('infusion-chestplate'))}
                   on:mousedown={e => handleGridMouseDown(e, 'infusionChestplate', 'armor')}
                   on:touchstart={e => handleGridTouchStart(e, 'infusionChestplate', 'armor')}>
                   <span class="sg-label">Inf. Chestplate</span>
@@ -2001,7 +2001,7 @@ $: _appWaAvgTotal = (() => {
                   data-slot="infusionLeggings"
                   role="button" tabindex="0"
                   on:click={() => { if (gridJustDropped) return; selectedArmorSlot ? onArmorTap('infusionLeggings') : openModal('infusion-leggings') }}
-                  on:keydown={e => e.key === 'Enter' && (selectedArmorSlot ? onArmorTap('infusion-leggings') : openModal('infusion-leggings'))}
+                  on:keydown={e => e.key === 'Enter' && (selectedArmorSlot ? onArmorTap('infusionLeggings') : openModal('infusion-leggings'))}
                   on:mousedown={e => handleGridMouseDown(e, 'infusionLeggings', 'armor')}
                   on:touchstart={e => handleGridTouchStart(e, 'infusionLeggings', 'armor')}>
                   <span class="sg-label">Inf. Leggings</span>
@@ -3440,7 +3440,6 @@ $: _appWaAvgTotal = (() => {
   .sg-potion-toggle-btn--active { border-color: var(--pot-color); background: color-mix(in srgb, var(--pot-color) 12%, transparent); color: var(--ink); }
   .sg-potion-toggle-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; transition: background .15s ease; }
   .sg-potion-toggle-name { font-size: 12px; font-weight: 600; flex-shrink: 0; }
-  .sg-potion-toggle-desc { font-size: 10px; opacity: .6; margin-left: auto; white-space: nowrap; }
 
   .sg-selected {
     background: rgba(251,191,36,.3) !important;

@@ -29,7 +29,9 @@ import { getAutoDebuffs } from './data/perkAutoDebuffs'
 import { RUNE_DMG_DEFS } from './data/Runebasedmg'
 import { WA_PROC_COEFFS, DEFAULT_PROC_COEFF } from './data/procCoefficients'
 import { canProc } from './lib/types'
-import { resolveWaDamageTypeKeys } from './lib/damageTypeResolve'
+import { resolveWaDamageTypeKeys, resolveDamageTypes, computeEffectiveWaDmgTypes } from './lib/damageTypeResolve'
+import { buildDmgTypeBonuses } from './lib/engine/dmgTypeBonuses'
+import { SPIRIT_WINDS_PCT_PER_STACK, DARK_MAGIC_PCT_PER_STACK, EMOTIONAL_PCT_PER_STACK, TOXIN_TRANSFER_PCT_PER_STACK } from './lib/constants/perks'
 
 
   $: wardingDebuffMult = calcWardingDebuffMultiplier($result.stats.warding ?? 0)
@@ -110,6 +112,88 @@ import { resolveWaDamageTypeKeys } from './lib/damageTypeResolve'
       }
     }
 
+    const _waWeapon = isMonkGuild($build.guild)
+      ? ($build.monkGlove && $build.monkEssence)
+        ? calcMonkWeapon($build.monkGlove, $build.monkEssence, $build.shrineActive, $build.guildRank)
+        : null
+      : ($build.weaponBlade || $build.weaponHandle)
+        ? calcWeapon($build.weaponBlade, $build.weaponHandle, $build.shrineActive)
+        : null
+    const _effDracoColor = $build.race === 'DRAGON BLOODED' ? ($build.draconicColor || 'physical') : 'physical'
+    const _hasTailwindOrWhirlwind = modified.some(b => b.buffName === 'Tailwind' || b.buffName === 'Whirlwind')
+    const _ragePotency = Math.max(0, ...modified.filter(b => b.buffName === 'Rage').map(b => b.potency ?? 0))
+    const _spiritWindsAmt = $result.perks['Spirit Winds'] ?? 0
+    const _darkMagicAmt = $result.perks['Dark Magic'] ?? 0
+    const _echoIncinerateAmt = $result.perks['Echo Incineration'] ?? 0
+    const _toxinTransferHexBonus = (() => {
+      const amt = $result.perks['Toxin Transfer'] ?? 0
+      if (amt <= 0) return 0
+      if (!modified.some(b => b.buffName === 'Poison' && b.isSelfDebuff)) return 0
+      return Math.round(amt * TOXIN_TRANSFER_PCT_PER_STACK * 10000) / 10000
+    })()
+    const _perkDmgTypeBonuses = buildDmgTypeBonuses(true, {
+      perks: $result.perks,
+      ragePotency: _ragePotency,
+      draconicRuneInfusion: $build.draconicRuneInfusion,
+      emotionalState: $build.emotionalState,
+      draconicColor: _effDracoColor,
+      guild: $build.guild,
+      draconicInfusionDisabled: $build.draconicInfusionDisabled ?? false,
+      toxinTransferHexBonus: _toxinTransferHexBonus,
+      rageDisabled: $build.rageDisabled ?? false,
+      emotionalDisabled: $build.emotionalDisabled ?? false,
+    })
+    const _waDmgTypeBonuses = (() => {
+      const bonuses = { ..._perkDmgTypeBonuses }
+      const _emotionalHexBonus = (() => {
+        const amt = $result.perks['Emotional'] ?? 0
+        if (amt <= 0) return 0
+        if ($build.emotionalDisabled || $build.emotionalState !== 'buffs') return 0
+        return Math.round(amt * EMOTIONAL_PCT_PER_STACK * 10000) / 10000
+      })()
+      if (_emotionalHexBonus > 0) {
+        bonuses.hex = Math.round(((bonuses.hex ?? 0) + _emotionalHexBonus) * 10000) / 10000
+      }
+      if (_hasTailwindOrWhirlwind) {
+        const wwAmt = $result.perks['Wind Walker'] ?? 0
+        if (wwAmt > 0) {
+          bonuses.air = Math.round(((bonuses.air ?? 0) + wwAmt * 0.15) * 10000) / 10000
+        }
+      }
+      return bonuses
+    })()
+    const _waOnlyBonuses = (() => {
+      const result: Record<string, number> = {}
+      for (const [k, v] of Object.entries(_waDmgTypeBonuses)) {
+        const bv = _perkDmgTypeBonuses[k] ?? 0
+        if (v !== bv) result[k] = Math.round((v - bv) * 10000) / 10000
+      }
+      return result
+    })()
+    const _weaponDmgTypesBase: Record<string, number> = { ...(_waWeapon?.damageTypes ?? {}) }
+    const _weaponDmgTypes: Record<string, number> = { ..._weaponDmgTypesBase }
+    const _stoneWeapon = $result.perks['Stone Weapon'] ?? 0
+    if (_stoneWeapon > 0) {
+      _weaponDmgTypes['earth'] = Math.round(((_weaponDmgTypes['earth'] ?? 0) + _stoneWeapon * 0.3) * 10000) / 10000
+    }
+    const _weaponDmgTypesBonused = resolveDamageTypes(_weaponDmgTypes, _perkDmgTypeBonuses)
+    const _selectedWA = WEAPON_ARTS.find(a => a.name === $build.selectedWeaponArt) ?? WEAPON_ARTS[0]
+    const _effectiveWaDmgTypes = computeEffectiveWaDmgTypes({
+      waDamageType: _selectedWA.damageType,
+      weaponDmgTypes: _weaponDmgTypesBonused,
+      weaponDmgTypesBase: _weaponDmgTypesBase,
+      waDmgTypeBonuses: _waDmgTypeBonuses,
+      waOnlyBonuses: _waOnlyBonuses,
+      airToMagicConversionRate: _spiritWindsAmt > 0 && _hasTailwindOrWhirlwind ? SPIRIT_WINDS_PCT_PER_STACK * _spiritWindsAmt : 0,
+      darkMagicHexBonus: _darkMagicAmt > 0 ? DARK_MAGIC_PCT_PER_STACK * _darkMagicAmt : 0,
+      echoIncinerateAmt: _echoIncinerateAmt,
+      weightySlamActive: ($result.perks['Weighty Slam'] ?? 0) > 0 && _selectedWA.name === 'Slam',
+      heatDrillActive: ($result.perks['Heat Drill'] ?? 0) > 0 && (_selectedWA.name === 'Lunge' || _selectedWA.name === 'Barrage'),
+      essenceRayActive: ($result.perks['Essence Ray'] ?? 0) > 0 && _selectedWA.name === 'Magical Ray',
+    })
+    const _hasMagicDmg = Object.entries(_effectiveWaDmgTypes).some(([dt, mult]) => dt === 'magic' && mult > 0)
+    const _hasMagicOrPhysicalDmg = Object.entries(_effectiveWaDmgTypes).some(([dt, mult]) => (dt === 'magic' || dt === 'physical') && mult > 0)
+
     const autoDebuffs = getAutoDebuffs({
       existingBuffNames: modified.map(b => b.buffName),
       playerBuffNames: modified.map(b => b.buffName),
@@ -119,32 +203,8 @@ import { resolveWaDamageTypeKeys } from './lib/damageTypeResolve'
       protection: ($result.stats as Record<string, number>).protection ?? 0,
       selectedWAProcCoefficient: WA_PROC_COEFFS[$build.selectedWeaponArt] ?? DEFAULT_PROC_COEFF,
       enemyHpFillPct: $build.enemyHpFill ?? 100,
-      hasMagicDmg: (() => {
-        const w = isMonkGuild($build.guild)
-          ? ($build.monkGlove && $build.monkEssence)
-            ? calcMonkWeapon($build.monkGlove, $build.monkEssence, $build.shrineActive)
-            : null
-          : ($build.weaponBlade || $build.weaponHandle)
-            ? calcWeapon($build.weaponBlade, $build.weaponHandle, $build.shrineActive)
-            : null
-        if (!w) return false
-        const wa = WEAPON_ARTS.find(a => a.name === $build.selectedWeaponArt)
-        const waDmgTypes = resolveWaDamageTypeKeys(wa?.damageType, w.damageTypes)
-        return Object.entries(waDmgTypes).some(([dt, mult]) => dt === 'magic' && mult > 0)
-      })(),
-      hasMagicOrPhysicalDmg: (() => {
-        const w = isMonkGuild($build.guild)
-          ? ($build.monkGlove && $build.monkEssence)
-            ? calcMonkWeapon($build.monkGlove, $build.monkEssence, $build.shrineActive)
-            : null
-          : ($build.weaponBlade || $build.weaponHandle)
-            ? calcWeapon($build.weaponBlade, $build.weaponHandle, $build.shrineActive)
-            : null
-        if (!w) return false
-        const wa = WEAPON_ARTS.find(a => a.name === $build.selectedWeaponArt)
-        const waDmgTypes = resolveWaDamageTypeKeys(wa?.damageType, w.damageTypes)
-        return Object.entries(waDmgTypes).some(([dt, mult]) => (dt === 'magic' || dt === 'physical') && mult > 0)
-      })(),
+      hasMagicDmg: _hasMagicDmg,
+      hasMagicOrPhysicalDmg: _hasMagicOrPhysicalDmg,
 
     })
     modified.push(...applyBuffPerkModifiers(autoDebuffs, $result.perks, $build.rune || undefined, wardingDebuffMult))

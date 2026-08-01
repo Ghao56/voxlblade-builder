@@ -110,7 +110,7 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
     debuffs.push({
       buffName: 'Poison',
       potency: 0,
-      duration: 0,
+      duration: BASIC_DEBUFF_DURATION,
       condition: 'Magic damage from WA or Rune applies Poison',
       sourceName: 'Toxin Caster',
       sourceType: 'perk',

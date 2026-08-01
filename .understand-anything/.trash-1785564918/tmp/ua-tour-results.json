@@ -1,0 +1,1372 @@
+{
+  "scriptCompleted": true,
+  "entryPointCandidates": [
+    {
+      "id": "document:README.md",
+      "score": 5,
+      "name": "README.md",
+      "summary": "Stock create-vite README for the Svelte + TypeScript template, covering recommended IDE setup, why plain Vite was chosen over SvelteKit, and technical decisions around global.d.ts, allowJs, and HMR state preservation.",
+      "type": "document",
+      "filePath": "README.md"
+    },
+    {
+      "id": "file:src/main.ts",
+      "score": 4,
+      "name": "main.ts",
+      "summary": "Application entry point that injects Vercel analytics and mounts the root App component into the DOM.",
+      "type": "file",
+      "filePath": "src/main.ts"
+    },
+    {
+      "id": "file:src/data/Runebasedmg.ts",
+      "score": 2,
+      "name": "Runebasedmg.ts",
+      "summary": "Rune damage definitions and helpers covering rune skills such as Ancient Cleric, Beenade, Boostshroom, and Rocky Tail. Computes rune heal scaling through the shared heal-boost engine and carries slider and shield configs.",
+      "type": "file",
+      "filePath": "src/data/Runebasedmg.ts"
+    },
+    {
+      "id": "config:.fallowrc.json",
+      "score": 2,
+      "name": ".fallowrc.json",
+      "summary": "Fallow dead-code analysis configuration that sets source entry points (src/index, src/main), duplicate-detection thresholds (minOccurrences 3), a warn rule for unused dependencies, and per-file ignoreExports lists for Svelte components and game-data constants that fallow would otherwise flag.",
+      "type": "config",
+      "filePath": ".fallowrc.json"
+    },
+    {
+      "id": "document:AGENTS.md",
+      "score": 2,
+      "name": "AGENTS.md",
+      "summary": "Agent Context file describing the voxlblade-builder project: the Svelte 5 + Vite + TypeScript stack, source layout, development workflow (install/dev/test/build/lint/format), testing conventions, and AI agent interaction guidelines.",
+      "type": "document",
+      "filePath": "AGENTS.md"
+    }
+  ],
+  "fanInRanking": [
+    {
+      "id": "file:src/lib/types.ts",
+      "fanIn": 20,
+      "name": "types.ts",
+      "summary": "Central shared type definitions and constants for the damage engine, covering races, guilds, armor, rings, runes, enchantments, weapons, monk gear, build state, proc coefficients, boosts, and weapon hit data, plus helpers for upgrade scaling and proc checks."
+    },
+    {
+      "id": "file:src/lib/constants.ts",
+      "fanIn": 13,
+      "name": "constants.ts",
+      "summary": "Barrel re-export module that aggregates all game constant submodules under lib/constants."
+    },
+    {
+      "id": "file:src/lib/utils.ts",
+      "fanIn": 7,
+      "name": "utils.ts",
+      "summary": "Provides shared math, text-highlighting, and proc-chance utility helpers used across the damage engine and UI, including multiplier rounding, scaling factors, warding debuff multipliers, search highlighting, and proc chance computation."
+    },
+    {
+      "id": "file:src/lib/engine/_utils.ts",
+      "fanIn": 5,
+      "name": "_utils.ts",
+      "summary": "Tiny rounding helpers round2 and round4 used throughout the engine to keep floating-point results consistent."
+    },
+    {
+      "id": "file:src/lib/constants/perks.ts",
+      "fanIn": 4,
+      "name": "perks.ts",
+      "summary": "Catalog of roughly 60 tuning constants for perk mechanics including crit damage, frostbite and sunburn scaling, curse rip, true balance, toxin transfer, void rage, draconic blood and other per-stack percentage values."
+    },
+    {
+      "id": "file:src/lib/Modal.svelte",
+      "fanIn": 4,
+      "name": "Modal.svelte",
+      "summary": "Reusable modal shell with overlay, focus trapping, focus-on-open, and shared modal-list/modal-item global styling used by all selection modals."
+    },
+    {
+      "id": "file:src/ModalSearchHeader.svelte",
+      "fanIn": 4,
+      "name": "ModalSearchHeader.svelte",
+      "summary": "Shared modal header composing a search input with suggestions, tag filter, stat/weapon-stat filter, and Highest/Most Effective/Brawny sort buttons."
+    },
+    {
+      "id": "file:src/data/BuffData.ts",
+      "fanIn": 4,
+      "name": "BuffData.ts",
+      "summary": "Central data registry and computation module for Voxel Blade buffs and debuffs: defines the BUFF_DEFS metadata table and BASIC_DEBUFF_POOL, and provides the logic to assemble a build's active buffs, apply perk-based potency/duration modifiers, convert buff types, compute buff effects, and format perk descriptions."
+    },
+    {
+      "id": "file:src/lib/engine/data.ts",
+      "fanIn": 3,
+      "name": "data.ts",
+      "summary": "Barrel re-export of engine data modules (character, equipment, weapons) exposing item registries and getters such as getBlade, getHandle, getGlove, getEnchant and getPerk."
+    },
+    {
+      "id": "file:src/lib/engine/shrine.ts",
+      "fanIn": 3,
+      "name": "shrine.ts",
+      "summary": "Defines shrine tier multipliers and applies shrine scaling to weapon part stats and scalings."
+    },
+    {
+      "id": "file:src/data/draconicBuffs.ts",
+      "fanIn": 3,
+      "name": "draconicBuffs.ts",
+      "summary": "Generates Draconic guild buffs and debuffs for the Draconic Infusion rune and the Dragon Claw / Dragon Bubble abilities, with per-color (air, fire, hex, holy, water, earth) effects and potency/duration multipliers driven by the Draconic Blood perk."
+    },
+    {
+      "id": "config:package.json",
+      "fanIn": 3,
+      "name": "package.json",
+      "summary": "Project manifest for voxlblade with scripts (dev, build, preview, check, test) and dependencies including Svelte 5, Vite 8, TypeScript 6, Vitest, fallow, Playwright, vite-plugin-pwa, rollup-plugin-visualizer, and @vercel/analytics."
+    },
+    {
+      "id": "file:src/App.svelte",
+      "fanIn": 3,
+      "name": "src/App.svelte",
+      "summary": "Root Svelte component orchestrating the entire app: build-state editors (race, guild, armor, ring, rune, weapon, enchant selection with drag-and-drop), and the damage analyzer, buff list, level bar, emotional tracker and build saves."
+    },
+    {
+      "id": "file:src/lib/ui/Badge.svelte",
+      "fanIn": 3,
+      "name": "Badge.svelte",
+      "summary": "Svelte 5 badge/pill component supporting size, shape, color, solid, mono, tag, and named variant props."
+    },
+    {
+      "id": "file:src/lib/uiConstants.ts",
+      "fanIn": 3,
+      "name": "uiConstants.ts",
+      "summary": "Shared UI constants: colors per damage type/tag/source/enchant rarity, source labels, and stat/tag label maps."
+    },
+    {
+      "id": "file:src/lib/engine.ts",
+      "fanIn": 2,
+      "name": "engine.ts",
+      "summary": "Barrel module that re-exports the entire damage engine: data lookups (character/equipment/weapons), shrine, enchant, weapon, build and format modules."
+    },
+    {
+      "id": "file:src/lib/engine/data/character.ts",
+      "fanIn": 2,
+      "name": "character.ts",
+      "summary": "Typed access to race, guild and perk JSON data with lookup maps, plus helpers for resolving guild ranks and detecting the Monk guild."
+    },
+    {
+      "id": "file:src/lib/store.ts",
+      "fanIn": 2,
+      "name": "store.ts",
+      "summary": "Svelte writable/derived stores holding the build state with debounced localStorage persistence and mutation actions (setEnchantment, setGuild, moveArmorSlot, moveRingSlot, clearBuild); the derived result store runs calcBuild for live damage output."
+    },
+    {
+      "id": "file:src/data/weaponArts.ts",
+      "fanIn": 2,
+      "name": "weaponArts.ts",
+      "summary": "Static data catalog of all weapon arts with per-art requirements, damage type, scaling, cooldown, hit breakdowns and monk flags. Drives requirement checks and weapon-art damage-type resolution in the engine."
+    },
+    {
+      "id": "file:src/lib/constants/damage-types.ts",
+      "fanIn": 2,
+      "name": "damage-types.ts",
+      "summary": "Central constants for damage-type metadata: labels/colors, defense-tracked types, inheritance rules (air/earth to physical, fire/water/hex/holy to magic), priority ordering and canonical type lists."
+    }
+  ],
+  "fanOutRanking": [
+    {
+      "id": "file:src/lib/engine/build.ts",
+      "fanOut": 17,
+      "name": "build.ts",
+      "summary": "Core build pipeline: accumulates stats/perks from all equipment slots, finalizes perks, computes CDR, boosts, crit, buffs and weapon results, and returns the assembled BuildResult via calcBuild."
+    },
+    {
+      "id": "file:src/lib/engine.ts",
+      "fanOut": 8,
+      "name": "engine.ts",
+      "summary": "Barrel module that re-exports the entire damage engine: data lookups (character/equipment/weapons), shrine, enchant, weapon, build and format modules."
+    },
+    {
+      "id": "document:docs/ONBOARDING.md",
+      "fanOut": 8,
+      "name": "docs/ONBOARDING.md",
+      "summary": "Onboarding guide describing voxlblade's architecture layers (config, source, data, engine, modals, stores), the damage calculation pipeline, component hierarchy and a file map with complexity hotspots."
+    },
+    {
+      "id": "file:src/App.svelte",
+      "fanOut": 8,
+      "name": "src/App.svelte",
+      "summary": "Root Svelte component orchestrating the entire app: build-state editors (race, guild, armor, ring, rune, weapon, enchant selection with drag-and-drop), and the damage analyzer, buff list, level bar, emotional tracker and build saves."
+    },
+    {
+      "id": "file:src/StatFilter.svelte",
+      "fanOut": 7,
+      "name": "StatFilter.svelte",
+      "summary": "Collapsible stat filter panel with Positive/Negative tabs, include/exclude chip cycling via shared createFilterActions helpers, and sort-mode buttons (highest/lowest/alphabetical), dispatching filter maps and sort mode changes to the parent component."
+    },
+    {
+      "id": "file:src/data/perkAutoDebuffs.ts",
+      "fanOut": 7,
+      "name": "perkAutoDebuffs.ts",
+      "summary": "Computes the debuffs a build auto-applies from its active perks and combat conditions (Burn via Exhaust, Penance bleed, Weakening, Runic Blades, Hypnotist, HP-gated effects, and more) through getAutoDebuffs, with calcActualHpFillPct adjusting HP fill for negative protection."
+    },
+    {
+      "id": "file:src/lib/constants/index.ts",
+      "fanOut": 6,
+      "name": "constants/index.ts",
+      "summary": "Barrel re-export aggregating all game constant modules (damage types, perks, boosts, draconic, thresholds, heals, defensive, etc.)."
+    },
+    {
+      "id": "file:src/WeaponStatFilter.svelte",
+      "fanOut": 6,
+      "name": "WeaponStatFilter.svelte",
+      "summary": "Collapsible weapon-stat filter for Damage Type, Scaling, and Boost/Stats groups using include/exclude chips with DMG/SCL/STAT prefixes, and an exported matchesFilter predicate that tests weapon records against the active include/exclude map."
+    },
+    {
+      "id": "file:src/lib/engine/data/equipment.ts",
+      "fanOut": 5,
+      "name": "equipment.ts",
+      "summary": "Typed access to ring, rune, enchantment and armor JSON data with lookup maps, armor part normalization (shared parts merged into each part) and armor slot-support helpers."
+    },
+    {
+      "id": "file:src/lib/engine/data/weapons.ts",
+      "fanOut": 5,
+      "name": "weapons.ts",
+      "summary": "Typed access to blade, handle, glove and essence JSON weapon data with per-item lookup maps used when computing weapon stats and scalings."
+    },
+    {
+      "id": "file:src/lib/engine/data/character.ts",
+      "fanOut": 4,
+      "name": "character.ts",
+      "summary": "Typed access to race, guild and perk JSON data with lookup maps, plus helpers for resolving guild ranks and detecting the Monk guild."
+    },
+    {
+      "id": "file:src/lib/store.ts",
+      "fanOut": 4,
+      "name": "store.ts",
+      "summary": "Svelte writable/derived stores holding the build state with debounced localStorage persistence and mutation actions (setEnchantment, setGuild, moveArmorSlot, moveRingSlot, clearBuild); the derived result store runs calcBuild for live damage output."
+    },
+    {
+      "id": "file:src/data/Runebasedmg.ts",
+      "fanOut": 4,
+      "name": "Runebasedmg.ts",
+      "summary": "Rune damage definitions and helpers covering rune skills such as Ancient Cleric, Beenade, Boostshroom, and Rocky Tail. Computes rune heal scaling through the shared heal-boost engine and carries slider and shield configs."
+    },
+    {
+      "id": "file:src/lib/engine/weapon.ts",
+      "fanOut": 4,
+      "name": "weapon.ts",
+      "summary": "Computes weapon results for standard and monk weapons: merges blade/handle (or glove/essence) damage types, scalings, stats and perks, resolves weapon type with perk overrides, and applies shrine and monk-rank bonuses."
+    },
+    {
+      "id": "file:src/lib/modals/index.ts",
+      "fanOut": 4,
+      "name": "modals/index.ts",
+      "summary": "Barrel re-export of the four selection modal components (Race, Guild, Accessory, WeaponPart)."
+    },
+    {
+      "id": "file:src/data/BuffData.ts",
+      "fanOut": 4,
+      "name": "BuffData.ts",
+      "summary": "Central data registry and computation module for Voxel Blade buffs and debuffs: defines the BUFF_DEFS metadata table and BASIC_DEBUFF_POOL, and provides the logic to assemble a build's active buffs, apply perk-based potency/duration modifiers, convert buff types, compute buff effects, and format perk descriptions."
+    },
+    {
+      "id": "file:src/data/Perkbasedmg.ts",
+      "fanOut": 4,
+      "name": "Perkbasedmg.ts",
+      "summary": "Defines base-damage calculation helpers, HP-gate thresholds, and the PERK_DMG_DEFS registry for perk-based damage sources (springblast, bomber charge, ichor spark) used by the build damage engine."
+    },
+    {
+      "id": "file:src/data/HealBoost.ts",
+      "fanOut": 3,
+      "name": "HealBoost.ts",
+      "summary": "Aggregates all heal-scaling sources (level, Emotional, Heal Boost, Oceans Rage, Vampire Sunlight, draconic infusion) into a final heal multiplier for perk, rune, and weapon-art healing."
+    },
+    {
+      "id": "file:src/lib/engine/enchant.ts",
+      "fanOut": 3,
+      "name": "enchant.ts",
+      "summary": "Applies enchantments to equipment slots: stat-selector transformations, direct stat modifiers, upgrade application, perk-effectiveness scaling and infusion; also enforces exclusive-enchant slot rules."
+    },
+    {
+      "id": "file:src/lib/crit.ts",
+      "fanOut": 3,
+      "name": "crit.ts",
+      "summary": "Core crit engine computing natural/extra crit chance, proc-coefficient scaled chances, and crit damage multiplier from perk sources (Dexterity, elemental boosts, Thief Training, Venom Eater, etc.), including Primal gating and full breakdown reporting."
+    }
+  ],
+  "bfsTraversal": {
+    "startNode": "file:src/main.ts",
+    "order": [
+      "file:src/main.ts",
+      "file:src/app.css",
+      "file:src/App.svelte",
+      "file:src/lib/AppHeader.svelte",
+      "file:src/BuffList.svelte",
+      "file:src/LevelBar.svelte",
+      "file:src/EmotionalTracker.svelte",
+      "file:src/CdrStepsCalc.svelte",
+      "file:src/DraconicAbilityStats.svelte",
+      "file:src/data/potions.ts",
+      "file:src/BuildSaves.svelte"
+    ],
+    "depthMap": {
+      "file:src/main.ts": 0,
+      "file:src/app.css": 1,
+      "file:src/App.svelte": 1,
+      "file:src/lib/AppHeader.svelte": 2,
+      "file:src/BuffList.svelte": 2,
+      "file:src/LevelBar.svelte": 2,
+      "file:src/EmotionalTracker.svelte": 2,
+      "file:src/CdrStepsCalc.svelte": 2,
+      "file:src/DraconicAbilityStats.svelte": 2,
+      "file:src/data/potions.ts": 2,
+      "file:src/BuildSaves.svelte": 3
+    },
+    "byDepth": {
+      "0": [
+        "file:src/main.ts"
+      ],
+      "1": [
+        "file:src/app.css",
+        "file:src/App.svelte"
+      ],
+      "2": [
+        "file:src/lib/AppHeader.svelte",
+        "file:src/BuffList.svelte",
+        "file:src/LevelBar.svelte",
+        "file:src/EmotionalTracker.svelte",
+        "file:src/CdrStepsCalc.svelte",
+        "file:src/DraconicAbilityStats.svelte",
+        "file:src/data/potions.ts"
+      ],
+      "3": [
+        "file:src/BuildSaves.svelte"
+      ]
+    }
+  },
+  "nonCodeFiles": {
+    "documentation": [
+      {
+        "id": "document:AGENTS.md",
+        "name": "AGENTS.md",
+        "type": "document",
+        "summary": "Agent Context file describing the voxlblade-builder project: the Svelte 5 + Vite + TypeScript stack, source layout, development workflow (install/dev/test/build/lint/format), testing conventions, and AI agent interaction guidelines.",
+        "filePath": "AGENTS.md"
+      },
+      {
+        "id": "document:README.md",
+        "name": "README.md",
+        "type": "document",
+        "summary": "Stock create-vite README for the Svelte + TypeScript template, covering recommended IDE setup, why plain Vite was chosen over SvelteKit, and technical decisions around global.d.ts, allowJs, and HMR state preservation.",
+        "filePath": "README.md"
+      },
+      {
+        "id": "document:build-decode.txt",
+        "name": "build-decode.txt",
+        "type": "document",
+        "summary": "Two-line scratch artifact holding a corrupted/truncated JSON snapshot of a decoded in-game build (race ORK, class Monk, weapons, runes, and essence parts) used as a manual decode scratchpad.",
+        "filePath": "build-decode.txt"
+      },
+      {
+        "id": "document:ts-errors.txt",
+        "name": "ts-errors.txt",
+        "type": "document",
+        "summary": "Empty placeholder file (0 non-empty lines) apparently intended to capture TypeScript compiler error output; currently contains no diagnostics.",
+        "filePath": "ts-errors.txt"
+      },
+      {
+        "id": "document:.slim/deepwork/ui-upgrade.md",
+        "name": ".slim/deepwork/ui-upgrade.md",
+        "type": "document",
+        "summary": "Planning document for a phased UI refactor of the voxlblade app, proposing extraction of the repetitive modal system, a toast/notification system, the app header, and consolidation of CSS design tokens into app.css to shrink App.svelte.",
+        "filePath": ".slim/deepwork/ui-upgrade.md"
+      },
+      {
+        "id": "document:docs/ONBOARDING.md",
+        "name": "docs/ONBOARDING.md",
+        "type": "document",
+        "summary": "Onboarding guide describing voxlblade's architecture layers (config, source, data, engine, modals, stores), the damage calculation pipeline, component hierarchy and a file map with complexity hotspots.",
+        "filePath": "docs/ONBOARDING.md"
+      }
+    ],
+    "infrastructure": [
+      {
+        "id": "pipeline:.github/workflows/static.yml",
+        "name": "Deploy static content to Pages",
+        "type": "pipeline",
+        "summary": "GitHub Actions workflow that checks out the repository, installs dependencies, builds the Vite/Svelte project via `npm run build`, and deploys the resulting ./dist artifact to GitHub Pages on pushes to main or manual dispatch.",
+        "filePath": ".github/workflows/static.yml"
+      }
+    ],
+    "data": [],
+    "config": [
+      {
+        "id": "config:.fallowrc.json",
+        "name": ".fallowrc.json",
+        "type": "config",
+        "summary": "Fallow dead-code analysis configuration that sets source entry points (src/index, src/main), duplicate-detection thresholds (minOccurrences 3), a warn rule for unused dependencies, and per-file ignoreExports lists for Svelte components and game-data constants that fallow would otherwise flag.",
+        "filePath": ".fallowrc.json"
+      },
+      {
+        "id": "config:build-decode2.json",
+        "name": "build-decode2.json",
+        "type": "config",
+        "summary": "Invalid/truncated JSON file (1 line) containing the same corrupted decoded build snapshot as build-decode.txt; not machine-parseable, kept as a working artifact.",
+        "filePath": "build-decode2.json"
+      },
+      {
+        "id": "config:fallow-output.json",
+        "name": "fallow-output.json",
+        "type": "config",
+        "summary": "Fallow dead-code analysis report (schema v7) recording 28 total issues: 1 unused file, 23 unused exports, 2 unused types, and 2 duplicate exports, with entry-point sources and guided next-step fallow commands.",
+        "filePath": "fallow-output.json"
+      },
+      {
+        "id": "config:fallow-security.json",
+        "name": "fallow-security.json",
+        "type": "config",
+        "summary": "Fallow security analysis report with security_findings (e.g. a low-severity tainted-sink / CWE-79 finding in src/DidYouMean.svelte writing to innerHTML), an attack-surface summary, and unresolved-callee diagnostics.",
+        "filePath": "fallow-security.json"
+      },
+      {
+        "id": "config:package.json",
+        "name": "package.json",
+        "type": "config",
+        "summary": "Project manifest for voxlblade with scripts (dev, build, preview, check, test) and dependencies including Svelte 5, Vite 8, TypeScript 6, Vitest, fallow, Playwright, vite-plugin-pwa, rollup-plugin-visualizer, and @vercel/analytics.",
+        "filePath": "package.json"
+      },
+      {
+        "id": "config:stats-data.json",
+        "name": "stats-data.json",
+        "type": "config",
+        "summary": "Single-line rollup-plugin-visualizer output tree (JSON) of the production bundle, enumerating rolldown/vite runtime chunks, Svelte internal modules, and app modules with per-module sizes and UIDs.",
+        "filePath": "stats-data.json"
+      },
+      {
+        "id": "config:tsconfig.app.json",
+        "name": "tsconfig.app.json",
+        "type": "config",
+        "summary": "TypeScript configuration for the Svelte app extending @tsconfig/svelte, targeting ES2023 with svelte and vite/client types, checkJs enabled, and src/**/*.{ts,js,svelte} included for svelte-check.",
+        "filePath": "tsconfig.app.json"
+      },
+      {
+        "id": "config:tsconfig.json",
+        "name": "tsconfig.json",
+        "type": "config",
+        "summary": "Root TypeScript config that simply extends ./tsconfig.app.json so editor tooling picks up the app typechecking settings.",
+        "filePath": "tsconfig.json"
+      },
+      {
+        "id": "config:tsconfig.node.json",
+        "name": "tsconfig.node.json",
+        "type": "config",
+        "summary": "TypeScript config for the Node/build side covering vite.config.ts with bundler module resolution, node types, noEmit, and strict linting flags (noUnusedLocals, noUnusedParameters).",
+        "filePath": "tsconfig.node.json"
+      },
+      {
+        "id": "config:vercel.json",
+        "name": "vercel.json",
+        "type": "config",
+        "summary": "Vercel deployment configuration that runs npm run build, serves the dist output as a Vite app, and sets immutable long-term Cache-Control headers for /assets, plus must-revalidate policies for /sw.js and /index.html.",
+        "filePath": "vercel.json"
+      }
+    ]
+  },
+  "clusters": [
+    {
+      "nodes": [
+        "file:src/PropellingFunTracker.svelte",
+        "file:src/lib/store.ts"
+      ],
+      "edgeCount": 2
+    }
+  ],
+  "layers": {
+    "count": 7,
+    "list": [
+      {
+        "id": "layer:data",
+        "name": "Game Data",
+        "description": "Voxel Blade game data definitions — weapon/armor/enchantment JSON databases, boost, buff, debuff and perk tables, rune/weapon-art damage catalogs, and the balance tuning constants under lib/constants consumed by the damage engine."
+      },
+      {
+        "id": "layer:engine",
+        "name": "Calculation Engine",
+        "description": "Core damage-calculation pipeline: build assembly, weapon/enchant/shrine math, crit and defense resolution, damage-type merging, and the shared types and math utilities backing the calculator."
+      },
+      {
+        "id": "layer:ui",
+        "name": "UI Components",
+        "description": "Svelte 5 user interface: calculator pages, selection modals, stat filters, build-state and toast stores, and shared UI primitives that render engine results for the Voxel Blade damage calculator."
+      },
+      {
+        "id": "layer:config",
+        "name": "Configuration",
+        "description": "Project and build configuration — package manifest, TypeScript compiler settings for app and tooling, and the Vite build setup."
+      },
+      {
+        "id": "layer:infrastructure",
+        "name": "Infrastructure & CI",
+        "description": "Deployment and CI/CD — the GitHub Actions workflow that builds and publishes the app to GitHub Pages, and the Vercel static-hosting configuration."
+      },
+      {
+        "id": "layer:documentation",
+        "name": "Documentation",
+        "description": "Project documentation: agent context file, the stock template README, and the onboarding guide describing the architecture layers and damage pipeline."
+      },
+      {
+        "id": "layer:dev-tools",
+        "name": "Dev Tools & Scratch Artifacts",
+        "description": "Standalone debug scripts, fallow dead-code/security analysis outputs, bundle-visualizer reports, truncated decode scratch files, and the .slim deepwork UI-refactor planning doc."
+      }
+    ]
+  },
+  "nodeSummaryIndex": {
+    "file:src/data/mountRunes.ts": {
+      "name": "mountRunes.ts",
+      "type": "file",
+      "summary": "Mount mount-rune damage definitions (Winter Woof, Slizard, Glacial Snapper) with per-hit M1/WA base damage, damage types, summon scalings, heals, guardbreak flags and cooldowns used by the damage engine.",
+      "filePath": "src/data/mountRunes.ts"
+    },
+    "file:src/data/procCoefficients.ts": {
+      "name": "procCoefficients.ts",
+      "type": "file",
+      "summary": "Lookup tables of M1/M2 and Weapon Art proc coefficients per weapon type plus a default fallback coefficient (1.0) for anything not listed.",
+      "filePath": "src/data/procCoefficients.ts"
+    },
+    "file:src/data/statboost.ts": {
+      "name": "statboost.ts",
+      "type": "file",
+      "summary": "Registry of perk-driven stat boosts (Roaring Heads, Righted Wrongs, Weight Distribution, Brawny, etc.) that mutate a StatMap in a fixed execution order; exports applyStatBoostPerks to apply selected perks and round the result.",
+      "filePath": "src/data/statboost.ts"
+    },
+    "file:src/data/weapon base dmg.ts": {
+      "name": "weapon base dmg.ts",
+      "type": "file",
+      "summary": "Static per-weapon-type base damage arrays for M1/M2 hits, including multi-hit objects, m1Finisher flags and the Rifle charge formula, consumed to compute per-hit weapon damage.",
+      "filePath": "src/data/weapon base dmg.ts"
+    },
+    "file:src/lib/constants/stat-conversions.ts": {
+      "name": "stat-conversions.ts",
+      "type": "file",
+      "summary": "Numeric constants for perk stat conversion rates (Quick Witted, Whirl Foot, Frozen Heart, etc.) and stat subtractions (Roaring Heads, Lucky) used by the statboost.ts perk handlers.",
+      "filePath": "src/lib/constants/stat-conversions.ts"
+    },
+    "file:src/lib/dmgTypes.ts": {
+      "name": "dmgTypes.ts",
+      "type": "file",
+      "summary": "Damage-type computation interfaces (ComputedType, PerkOnHitDmg, ComputedHit) plus BADGE_CONFIG display metadata (colors, labels, tooltips) for the proc badges shown in calculator results.",
+      "filePath": "src/lib/dmgTypes.ts"
+    },
+    "file:src/lib/enchantTooltip.ts": {
+      "name": "enchantTooltip.ts",
+      "type": "file",
+      "summary": "Builds a multi-line tooltip string for an enchantment from its description, stat modifiers and effects via the exported getEnchantTooltipText helper.",
+      "filePath": "src/lib/enchantTooltip.ts"
+    },
+    "file:src/lib/engine.ts": {
+      "name": "engine.ts",
+      "type": "file",
+      "summary": "Barrel module that re-exports the entire damage engine: data lookups (character/equipment/weapons), shrine, enchant, weapon, build and format modules.",
+      "filePath": "src/lib/engine.ts"
+    },
+    "file:src/lib/engine/data/character.ts": {
+      "name": "character.ts",
+      "type": "file",
+      "summary": "Typed access to race, guild and perk JSON data with lookup maps, plus helpers for resolving guild ranks and detecting the Monk guild.",
+      "filePath": "src/lib/engine/data/character.ts"
+    },
+    "file:src/lib/engine/data/equipment.ts": {
+      "name": "equipment.ts",
+      "type": "file",
+      "summary": "Typed access to ring, rune, enchantment and armor JSON data with lookup maps, armor part normalization (shared parts merged into each part) and armor slot-support helpers.",
+      "filePath": "src/lib/engine/data/equipment.ts"
+    },
+    "file:src/lib/engine/data/weapons.ts": {
+      "name": "weapons.ts",
+      "type": "file",
+      "summary": "Typed access to blade, handle, glove and essence JSON weapon data with per-item lookup maps used when computing weapon stats and scalings.",
+      "filePath": "src/lib/engine/data/weapons.ts"
+    },
+    "file:src/lib/store.ts": {
+      "name": "store.ts",
+      "type": "file",
+      "summary": "Svelte writable/derived stores holding the build state with debounced localStorage persistence and mutation actions (setEnchantment, setGuild, moveArmorSlot, moveRingSlot, clearBuild); the derived result store runs calcBuild for live damage output.",
+      "filePath": "src/lib/store.ts"
+    },
+    "file:src/data/DoTDamage.ts": {
+      "name": "DoTDamage.ts",
+      "type": "file",
+      "summary": "Damage-over-time calculation module for Bleed, Burn, and Poison debuffs. Provides base damage, potency multipliers, tick damage, and builder-to-game potency conversion, including Endless Despair modifier handling.",
+      "filePath": "src/data/DoTDamage.ts"
+    },
+    "file:src/data/HealBoost.ts": {
+      "name": "HealBoost.ts",
+      "type": "file",
+      "summary": "Aggregates all heal-scaling sources (level, Emotional, Heal Boost, Oceans Rage, Vampire Sunlight, draconic infusion) into a final heal multiplier for perk, rune, and weapon-art healing.",
+      "filePath": "src/data/HealBoost.ts"
+    },
+    "file:src/data/Runebasedmg.ts": {
+      "name": "Runebasedmg.ts",
+      "type": "file",
+      "summary": "Rune damage definitions and helpers covering rune skills such as Ancient Cleric, Beenade, Boostshroom, and Rocky Tail. Computes rune heal scaling through the shared heal-boost engine and carries slider and shield configs.",
+      "filePath": "src/data/Runebasedmg.ts"
+    },
+    "file:src/data/SummonData.ts": {
+      "name": "SummonData.ts",
+      "type": "file",
+      "summary": "Defines summon stat-scaling helpers and static summon data (Mage Bomber, Blessedling) with attack stats, plus a map from weapon-art summons to summon definitions and summon-perk metadata.",
+      "filePath": "src/data/SummonData.ts"
+    },
+    "file:src/data/cdr.ts": {
+      "name": "cdr.ts",
+      "type": "file",
+      "summary": "Cooldown reduction data per perk, mapping perks like Caster, Whirlwind, Poison Acceleration, and Voltaic Body to rune/weapon-art CDR percentages, multipliers, and set cooldowns.",
+      "filePath": "src/data/cdr.ts"
+    },
+    "file:src/data/draconicColorEffects.ts": {
+      "name": "draconicColorEffects.ts",
+      "type": "file",
+      "summary": "Defines per-draconic-color attack modifiers (damage, speed, knockback, stun) and a helper to look up the damage multiplier for a given draconic color.",
+      "filePath": "src/data/draconicColorEffects.ts"
+    },
+    "file:src/data/raceEffects.ts": {
+      "name": "raceEffects.ts",
+      "type": "file",
+      "summary": "Race passive conditionals (e.g. Human below 50% HP gaining damage boost and flat DR) plus Ork tenacity buff-counting helpers.",
+      "filePath": "src/data/raceEffects.ts"
+    },
+    "file:src/lib/constants.ts": {
+      "name": "constants.ts",
+      "type": "file",
+      "summary": "Barrel re-export module that aggregates all game constant submodules under lib/constants.",
+      "filePath": "src/lib/constants.ts"
+    },
+    "file:src/lib/constants/dot-damage.ts": {
+      "name": "dot-damage.ts",
+      "type": "file",
+      "summary": "Centralized DoT tuning constants: base damage, infliction divisor, potency power cap, rounding factor, and builder-to-game conversion.",
+      "filePath": "src/lib/constants/dot-damage.ts"
+    },
+    "file:src/lib/constants/rune-base-damage.ts": {
+      "name": "rune-base-damage.ts",
+      "type": "file",
+      "summary": "Base damage, hit-count, and scaling constants for rune skills including Rocky Tail, Caci, Beenade, Boostshroom, and Ancient Cleric.",
+      "filePath": "src/lib/constants/rune-base-damage.ts"
+    },
+    "file:src/lib/stores/toast.ts": {
+      "name": "toast.ts",
+      "type": "file",
+      "summary": "Svelte store managing transient toast notifications with time-based auto-dismissal.",
+      "filePath": "src/lib/stores/toast.ts"
+    },
+    "file:src/data/TypedDmgBoost.ts": {
+      "name": "TypedDmgBoost.ts",
+      "type": "file",
+      "summary": "Defines type-specific damage boost definitions (Glyph Conduit, Rage, Photosynthesis, Hex Shield) and calcTypedDmgBoosts, which computes damage/heal multipliers per damage type from perks and active buffs.",
+      "filePath": "src/data/TypedDmgBoost.ts"
+    },
+    "file:src/data/Weaponartcheck.ts": {
+      "name": "Weaponartcheck.ts",
+      "type": "file",
+      "summary": "Validates whether a weapon art's requirements (scaling, stats, weapon type, guild, part names) are satisfied for a given build. Exports checkWA for a pass/fail check and getUnmetReqs for human-readable unmet-requirement lists.",
+      "filePath": "src/data/Weaponartcheck.ts"
+    },
+    "file:src/data/weaponArts.ts": {
+      "name": "weaponArts.ts",
+      "type": "file",
+      "summary": "Static data catalog of all weapon arts with per-art requirements, damage type, scaling, cooldown, hit breakdowns and monk flags. Drives requirement checks and weapon-art damage-type resolution in the engine.",
+      "filePath": "src/data/weaponArts.ts"
+    },
+    "file:src/lib/constants/damage-types.ts": {
+      "name": "damage-types.ts",
+      "type": "file",
+      "summary": "Central constants for damage-type metadata: labels/colors, defense-tracked types, inheritance rules (air/earth to physical, fire/water/hex/holy to magic), priority ordering and canonical type lists.",
+      "filePath": "src/lib/constants/damage-types.ts"
+    },
+    "file:src/lib/damageTypeResolve.ts": {
+      "name": "damageTypeResolve.ts",
+      "type": "file",
+      "summary": "Resolves final damage-type distributions: merges weapon-art damage types with bonuses, applies Fire-Air (Echo Incineration) and Air-to-Magic (Spirit Winds) conversions, and parses damage-type strings including 'Highest damage type'.",
+      "filePath": "src/lib/damageTypeResolve.ts"
+    },
+    "file:src/lib/engine/_utils.ts": {
+      "name": "_utils.ts",
+      "type": "file",
+      "summary": "Tiny rounding helpers round2 and round4 used throughout the engine to keep floating-point results consistent.",
+      "filePath": "src/lib/engine/_utils.ts"
+    },
+    "file:src/lib/engine/build.ts": {
+      "name": "build.ts",
+      "type": "file",
+      "summary": "Core build pipeline: accumulates stats/perks from all equipment slots, finalizes perks, computes CDR, boosts, crit, buffs and weapon results, and returns the assembled BuildResult via calcBuild.",
+      "filePath": "src/lib/engine/build.ts"
+    },
+    "file:src/lib/engine/data.ts": {
+      "name": "data.ts",
+      "type": "file",
+      "summary": "Barrel re-export of engine data modules (character, equipment, weapons) exposing item registries and getters such as getBlade, getHandle, getGlove, getEnchant and getPerk.",
+      "filePath": "src/lib/engine/data.ts"
+    },
+    "file:src/lib/engine/enchant.ts": {
+      "name": "enchant.ts",
+      "type": "file",
+      "summary": "Applies enchantments to equipment slots: stat-selector transformations, direct stat modifiers, upgrade application, perk-effectiveness scaling and infusion; also enforces exclusive-enchant slot rules.",
+      "filePath": "src/lib/engine/enchant.ts"
+    },
+    "file:src/lib/engine/format.ts": {
+      "name": "format.ts",
+      "type": "file",
+      "summary": "Formatting helpers for displaying stat values with signs/percentages and converting camelCase keys to human-readable labels.",
+      "filePath": "src/lib/engine/format.ts"
+    },
+    "file:src/lib/engine/shrine.ts": {
+      "name": "shrine.ts",
+      "type": "file",
+      "summary": "Defines shrine tier multipliers and applies shrine scaling to weapon part stats and scalings.",
+      "filePath": "src/lib/engine/shrine.ts"
+    },
+    "file:src/lib/engine/weapon.ts": {
+      "name": "weapon.ts",
+      "type": "file",
+      "summary": "Computes weapon results for standard and monk weapons: merges blade/handle (or glove/essence) damage types, scalings, stats and perks, resolves weapon type with perk overrides, and applies shrine and monk-rank bonuses.",
+      "filePath": "src/lib/engine/weapon.ts"
+    },
+    "file:src/data/debuffCombatEffects.ts": {
+      "name": "debuffCombatEffects.ts",
+      "type": "file",
+      "summary": "Defines DEBUFF_COMBAT_EFFECTS, a map of debuffs (Weakness, Shatter, Sticky, Electrical Rend, Despair, Frostbite, Hypnotized) to combat-effect callbacks that compute damage multipliers, defense reductions and per-type damage multipliers from potency.",
+      "filePath": "src/data/debuffCombatEffects.ts"
+    },
+    "file:src/data/defensivePerks.ts": {
+      "name": "defensivePerks.ts",
+      "type": "file",
+      "summary": "Defines the defensive perk source table (Barbskin, Stoneskin, Adaptive Plate, Protector Spirit, Valor, Carapace, Cursed Bark, etc.) with DR-per-stack values and activation conditions, plus functions to resolve active DR sources for a build context and compute the defensive potency multiplier.",
+      "filePath": "src/data/defensivePerks.ts"
+    },
+    "file:src/data/draconicBuffs.ts": {
+      "name": "draconicBuffs.ts",
+      "type": "file",
+      "summary": "Generates Draconic guild buffs and debuffs for the Draconic Infusion rune and the Dragon Claw / Dragon Bubble abilities, with per-color (air, fire, hex, holy, water, earth) effects and potency/duration multipliers driven by the Draconic Blood perk.",
+      "filePath": "src/data/draconicBuffs.ts"
+    },
+    "file:src/lib/constants/debuff-effects.ts": {
+      "name": "debuff-effects.ts",
+      "type": "file",
+      "summary": "Small set of shared constants for debuff combat-effect math: the Sticky damage multiplier and the Despair display/damage coefficients used by debuffCombatEffects.",
+      "filePath": "src/lib/constants/debuff-effects.ts"
+    },
+    "file:src/lib/constants/perks.ts": {
+      "name": "perks.ts",
+      "type": "file",
+      "summary": "Catalog of roughly 60 tuning constants for perk mechanics including crit damage, frostbite and sunburn scaling, curse rip, true balance, toxin transfer, void rage, draconic blood and other per-stack percentage values.",
+      "filePath": "src/lib/constants/perks.ts"
+    },
+    "file:src/lib/engine/dmgTypeBonuses.ts": {
+      "name": "dmgTypeBonuses.ts",
+      "type": "file",
+      "summary": "Engine module that accumulates per-damage-type percentage bonuses contributed by perks (Void Rage, Channeled Weapon, Emotional, Draconic Blood), including dynamic effective-potency calculation for Draconic Infusion, while honoring no-proc exemptions and perk exclusion sets.",
+      "filePath": "src/lib/engine/dmgTypeBonuses.ts"
+    },
+    "file:src/data/enemyHpEffects.ts": {
+      "name": "enemyHpEffects.ts",
+      "type": "file",
+      "summary": "Defines enemy-HP-gated perk effects (e.g. Mycotic Bloom) that either apply a debuff while the enemy is above/below an HP threshold or boost a DoT type. Exports helpers that resolve which enemy-HP effects are currently active for a build.",
+      "filePath": "src/data/enemyHpEffects.ts"
+    },
+    "file:src/lib/constants/game.ts": {
+      "name": "game.ts",
+      "type": "file",
+      "summary": "Single source of truth for core game constants: max level, defaults for HP fill, the base HP formula (calcBaseMaxHP), and UI timing constants such as save debounce and undo window.",
+      "filePath": "src/lib/constants/game.ts"
+    },
+    "file:src/lib/constants/perk-base-damage.ts": {
+      "name": "perk-base-damage.ts",
+      "type": "file",
+      "summary": "Curated table of numeric base damage, heal, and scaling coefficient constants for many perks and weapon arts (Dragon Claw, Springblast, spirits, Pyre Bloom, Bastion Ballista, etc.) consumed by the damage engine.",
+      "filePath": "src/lib/constants/perk-base-damage.ts"
+    },
+    "file:src/lib/constants/storage.ts": {
+      "name": "storage.ts",
+      "type": "file",
+      "summary": "LocalStorage persistence contracts: storage keys, build-state defaults, and save/encode maps that compress build fields to short keys, plus build slot and confirmation timeout limits.",
+      "filePath": "src/lib/constants/storage.ts"
+    },
+    "file:src/data/weaponConditionalBoosts.ts": {
+      "name": "weaponConditionalBoosts.ts",
+      "type": "file",
+      "summary": "Defines weapon-conditional perk boosts (Aggressive Personality, Piercer) with per-weapon-type multipliers scoped to M1/M2 finisher hits, plus a lookup that aggregates matching boosts into a combined rounded multiplier.",
+      "filePath": "src/data/weaponConditionalBoosts.ts"
+    },
+    "file:src/lib/crit.ts": {
+      "name": "crit.ts",
+      "type": "file",
+      "summary": "Core crit engine computing natural/extra crit chance, proc-coefficient scaled chances, and crit damage multiplier from perk sources (Dexterity, elemental boosts, Thief Training, Venom Eater, etc.), including Primal gating and full breakdown reporting.",
+      "filePath": "src/lib/crit.ts"
+    },
+    "file:src/lib/defense.ts": {
+      "name": "defense.ts",
+      "type": "file",
+      "summary": "Resolves defense sources into flat and percent defense multipliers, converting them into effective damage multipliers and true DR percentages, and maps damage types to the armor stat keys that grant their base defense.",
+      "filePath": "src/lib/defense.ts"
+    },
+    "pipeline:.github/workflows/static.yml": {
+      "name": "Deploy static content to Pages",
+      "type": "pipeline",
+      "summary": "GitHub Actions workflow that checks out the repository, installs dependencies, builds the Vite/Svelte project via `npm run build`, and deploys the resulting ./dist artifact to GitHub Pages on pushes to main or manual dispatch.",
+      "filePath": ".github/workflows/static.yml"
+    },
+    "config:.fallowrc.json": {
+      "name": ".fallowrc.json",
+      "type": "config",
+      "summary": "Fallow dead-code analysis configuration that sets source entry points (src/index, src/main), duplicate-detection thresholds (minOccurrences 3), a warn rule for unused dependencies, and per-file ignoreExports lists for Svelte components and game-data constants that fallow would otherwise flag.",
+      "filePath": ".fallowrc.json"
+    },
+    "document:AGENTS.md": {
+      "name": "AGENTS.md",
+      "type": "document",
+      "summary": "Agent Context file describing the voxlblade-builder project: the Svelte 5 + Vite + TypeScript stack, source layout, development workflow (install/dev/test/build/lint/format), testing conventions, and AI agent interaction guidelines.",
+      "filePath": "AGENTS.md"
+    },
+    "document:README.md": {
+      "name": "README.md",
+      "type": "document",
+      "summary": "Stock create-vite README for the Svelte + TypeScript template, covering recommended IDE setup, why plain Vite was chosen over SvelteKit, and technical decisions around global.d.ts, allowJs, and HMR state preservation.",
+      "filePath": "README.md"
+    },
+    "document:build-decode.txt": {
+      "name": "build-decode.txt",
+      "type": "document",
+      "summary": "Two-line scratch artifact holding a corrupted/truncated JSON snapshot of a decoded in-game build (race ORK, class Monk, weapons, runes, and essence parts) used as a manual decode scratchpad.",
+      "filePath": "build-decode.txt"
+    },
+    "config:build-decode2.json": {
+      "name": "build-decode2.json",
+      "type": "config",
+      "summary": "Invalid/truncated JSON file (1 line) containing the same corrupted decoded build snapshot as build-decode.txt; not machine-parseable, kept as a working artifact.",
+      "filePath": "build-decode2.json"
+    },
+    "config:fallow-output.json": {
+      "name": "fallow-output.json",
+      "type": "config",
+      "summary": "Fallow dead-code analysis report (schema v7) recording 28 total issues: 1 unused file, 23 unused exports, 2 unused types, and 2 duplicate exports, with entry-point sources and guided next-step fallow commands.",
+      "filePath": "fallow-output.json"
+    },
+    "config:fallow-security.json": {
+      "name": "fallow-security.json",
+      "type": "config",
+      "summary": "Fallow security analysis report with security_findings (e.g. a low-severity tainted-sink / CWE-79 finding in src/DidYouMean.svelte writing to innerHTML), an attack-surface summary, and unresolved-callee diagnostics.",
+      "filePath": "fallow-security.json"
+    },
+    "file:index.html": {
+      "name": "index.html",
+      "type": "file",
+      "summary": "HTML entry page for the VoxlBlade Builder app: loads Font Awesome from CDN and mounts the Svelte application by loading /src/main.ts into the #app container.",
+      "filePath": "index.html"
+    },
+    "config:package.json": {
+      "name": "package.json",
+      "type": "config",
+      "summary": "Project manifest for voxlblade with scripts (dev, build, preview, check, test) and dependencies including Svelte 5, Vite 8, TypeScript 6, Vitest, fallow, Playwright, vite-plugin-pwa, rollup-plugin-visualizer, and @vercel/analytics.",
+      "filePath": "package.json"
+    },
+    "config:stats-data.json": {
+      "name": "stats-data.json",
+      "type": "config",
+      "summary": "Single-line rollup-plugin-visualizer output tree (JSON) of the production bundle, enumerating rolldown/vite runtime chunks, Svelte internal modules, and app modules with per-module sizes and UIDs.",
+      "filePath": "stats-data.json"
+    },
+    "document:ts-errors.txt": {
+      "name": "ts-errors.txt",
+      "type": "document",
+      "summary": "Empty placeholder file (0 non-empty lines) apparently intended to capture TypeScript compiler error output; currently contains no diagnostics.",
+      "filePath": "ts-errors.txt"
+    },
+    "config:tsconfig.app.json": {
+      "name": "tsconfig.app.json",
+      "type": "config",
+      "summary": "TypeScript configuration for the Svelte app extending @tsconfig/svelte, targeting ES2023 with svelte and vite/client types, checkJs enabled, and src/**/*.{ts,js,svelte} included for svelte-check.",
+      "filePath": "tsconfig.app.json"
+    },
+    "config:tsconfig.json": {
+      "name": "tsconfig.json",
+      "type": "config",
+      "summary": "Root TypeScript config that simply extends ./tsconfig.app.json so editor tooling picks up the app typechecking settings.",
+      "filePath": "tsconfig.json"
+    },
+    "config:tsconfig.node.json": {
+      "name": "tsconfig.node.json",
+      "type": "config",
+      "summary": "TypeScript config for the Node/build side covering vite.config.ts with bundler module resolution, node types, noEmit, and strict linting flags (noUnusedLocals, noUnusedParameters).",
+      "filePath": "tsconfig.node.json"
+    },
+    "config:vercel.json": {
+      "name": "vercel.json",
+      "type": "config",
+      "summary": "Vercel deployment configuration that runs npm run build, serves the dist output as a Vite app, and sets immutable long-term Cache-Control headers for /assets, plus must-revalidate policies for /sw.js and /index.html.",
+      "filePath": "vercel.json"
+    },
+    "file:src/data/armors.json": {
+      "name": "armors.json",
+      "type": "file",
+      "summary": "JSON game-data module listing the armor sets available in Voxel Blade. Each entry defines a shared stat block (elemental boosts, defenses, tenacity), an attached perk with amount, and the Helmet/Chestplate/Leggings parts (including standalone single-part items), which the equipment engine consumes to compute equipped armor effects.",
+      "filePath": "src/data/armors.json"
+    },
+    "file:src/data/blades.json": {
+      "name": "blades.json",
+      "type": "file",
+      "summary": "JSON game-data module cataloguing blade heads across tiers 1-5. Each entry carries tier, attack speed, damage-type weights and scaling coefficients, blade type (Small/Medium/Heavy/Hammer), and any perks granted, feeding the weapon engine's blade lookup.",
+      "filePath": "src/data/blades.json"
+    },
+    "file:src/data/enchantments.json": {
+      "name": "enchantments.json",
+      "type": "file",
+      "summary": "JSON game-data module defining weapon/armor enchantments in unAscended and Ascended categories. Each entry specifies stacking behaviour (exclusive vs multi) plus stat/effect modifications such as multipliers and additions, some with acquisition notes (mob modifiers, Lord Frogg's Cavern).",
+      "filePath": "src/data/enchantments.json"
+    },
+    "file:src/data/essences.json": {
+      "name": "essences.json",
+      "type": "file",
+      "summary": "JSON game-data module listing essence variants of weapon parts across tiers 1-5. Each entry mirrors blade-like stats, scaling coefficients, essence type, and granted perks, consumed by the weapon engine's getEssence lookup.",
+      "filePath": "src/data/essences.json"
+    },
+    "file:src/data/gloves.json": {
+      "name": "gloves.json",
+      "type": "file",
+      "summary": "JSON game-data module describing gloves (and shield-type items) for the weapon slot. Entries define tier, attack speed, scaling stats, perks, and glove type, including unique 'Spirit' perks per glove, feeding the weapon engine's getGlove lookup.",
+      "filePath": "src/data/gloves.json"
+    },
+    "file:src/data/guilds.json": {
+      "name": "guilds.json",
+      "type": "file",
+      "summary": "JSON game-data module defining playable guilds (Gladiator, Cursed, Cleric, Scholar, Knight, Thief, Draconic, Monk, Vampire) with three progression ranks each. Every rank lists per-rank stat bonuses and granted perks, which the character engine uses to apply guild effects such as the Monk check.",
+      "filePath": "src/data/guilds.json"
+    },
+    "file:src/data/handles.json": {
+      "name": "handles.json",
+      "type": "file",
+      "summary": "JSON game-data module cataloguing handle parts (Medium/Long Handle and Pole) across tiers 1-5. Each entry defines attack speed, scaling stats, handle type, and granted perks, feeding the weapon engine's getHandle lookup.",
+      "filePath": "src/data/handles.json"
+    },
+    "file:src/data/perks.json": {
+      "name": "perks.json",
+      "type": "file",
+      "summary": "JSON game-data module holding the full perk encyclopedia (3689 lines). Each entry pairs a perk name with a gameplay description and functional tags (Offensive, Defensive, Buff, Debuff, Armor, Weapon, Rune, etc.) used to classify and validate perks across the character engine.",
+      "filePath": "src/data/perks.json"
+    },
+    "file:src/data/races.json": {
+      "name": "races.json",
+      "type": "file",
+      "summary": "JSON game-data module defining the ten playable races and their passive abilities. Entries include passive text plus optional mechanical modifiers such as global armor penetration, stat modifiers, and cooldown reductions, consumed by the character engine's race lookup.",
+      "filePath": "src/data/races.json"
+    },
+    "file:src/data/rings.json": {
+      "name": "rings.json",
+      "type": "file",
+      "summary": "JSON game-data module listing equippable rings with flavor text, upgrade level, stat bonuses, and an attached perk with amount. The equipment engine's getRing lookup consumes these entries for the ring slots.",
+      "filePath": "src/data/rings.json"
+    },
+    "file:src/data/runes.json": {
+      "name": "runes.json",
+      "type": "file",
+      "summary": "JSON game-data module defining active ability runes with descriptions, stat bonuses, cooldowns, and optional linked perks. The equipment engine's getRune lookup consumes these entries for rune slot selection.",
+      "filePath": "src/data/runes.json"
+    },
+    "document:.slim/deepwork/ui-upgrade.md": {
+      "name": ".slim/deepwork/ui-upgrade.md",
+      "type": "document",
+      "summary": "Planning document for a phased UI refactor of the voxlblade app, proposing extraction of the repetitive modal system, a toast/notification system, the app header, and consolidation of CSS design tokens into app.css to shrink App.svelte.",
+      "filePath": ".slim/deepwork/ui-upgrade.md"
+    },
+    "file:analyze-mounticon.mjs": {
+      "name": "analyze-mounticon.mjs",
+      "type": "file",
+      "summary": "Standalone debug script that reads src/MountIcon.svelte and prints the length plus first/last chunks of its SVG path data so the mount icon shape can be inspected.",
+      "filePath": "analyze-mounticon.mjs"
+    },
+    "file:decode_full.mjs": {
+      "name": "decode_full.mjs",
+      "type": "file",
+      "summary": "Standalone debug build decoder that loads all game data JSON files and reconstructs final equipment stats by applying upgrade scaling, enchantment selectors, shrines and infusions, mirroring engine constants for validation.",
+      "filePath": "decode_full.mjs"
+    },
+    "document:docs/ONBOARDING.md": {
+      "name": "docs/ONBOARDING.md",
+      "type": "document",
+      "summary": "Onboarding guide describing voxlblade's architecture layers (config, source, data, engine, modals, stores), the damage calculation pipeline, component hierarchy and a file map with complexity hotspots.",
+      "filePath": "docs/ONBOARDING.md"
+    },
+    "file:src/app.css": {
+      "name": "src/app.css",
+      "type": "file",
+      "summary": "Global stylesheet defining the dark-theme design tokens (colors, surfaces, fonts, radii, shadows, z-indexes) and draconic theme variables consumed by every Svelte component.",
+      "filePath": "src/app.css"
+    },
+    "file:src/App.svelte": {
+      "name": "src/App.svelte",
+      "type": "file",
+      "summary": "Root Svelte component orchestrating the entire app: build-state editors (race, guild, armor, ring, rune, weapon, enchant selection with drag-and-drop), and the damage analyzer, buff list, level bar, emotional tracker and build saves.",
+      "filePath": "src/App.svelte"
+    },
+    "file:src/BuffList.svelte": {
+      "name": "src/BuffList.svelte",
+      "type": "file",
+      "summary": "Displays and manages the active buff/debuff list for the current build, deriving buffs from equipped items, potions, perks and weapon arts, applying warding multipliers and letting the user toggle effects.",
+      "filePath": "src/BuffList.svelte"
+    },
+    "file:src/BuildSaves.svelte": {
+      "name": "src/BuildSaves.svelte",
+      "type": "file",
+      "summary": "Implements build save/load/export/import with localStorage slots, a search index over saved items, confirmation modals and toast feedback.",
+      "filePath": "src/BuildSaves.svelte"
+    },
+    "file:src/CdrStepsCalc.svelte": {
+      "name": "src/CdrStepsCalc.svelte",
+      "type": "file",
+      "summary": "Renders cooldown reduction as a chain of multiplication steps (rune or weapon-art breakdown) with the final floor and CD minimum cap applied, including an optional set-bonus override.",
+      "filePath": "src/CdrStepsCalc.svelte"
+    },
+    "file:src/CritIcon.svelte": {
+      "name": "src/CritIcon.svelte",
+      "type": "file",
+      "summary": "Tiny SVG component rendering a gradient crit star/bolt glyph at a configurable size with a unique per-instance gradient id.",
+      "filePath": "src/CritIcon.svelte"
+    },
+    "file:src/data/draconicRunes.ts": {
+      "name": "src/data/draconicRunes.ts",
+      "type": "file",
+      "summary": "Data/calculation module for the Draconic Runes and Dragon Infusion buff systems, providing apply/get helpers that modify or read per-element damage-type bonuses based on rune stacks and infusion potency.",
+      "filePath": "src/data/draconicRunes.ts"
+    },
+    "file:src/data/potions.ts": {
+      "name": "src/data/potions.ts",
+      "type": "file",
+      "summary": "Static data module listing the potion options (Rage Potion and Poison Potion) with descriptions and colors, plus a name-to-potion lookup map.",
+      "filePath": "src/data/potions.ts"
+    },
+    "file:src/data/selfDamagePerks.ts": {
+      "name": "src/data/selfDamagePerks.ts",
+      "type": "file",
+      "summary": "Defines self-damage perk metadata (Undead Might, Explosive Charge, Dark Magic, Bombardier, Steam Powered) and calcSelfDamage, which computes self-inflicted damage by type with DR, multi-target falloff and flat proc handling.",
+      "filePath": "src/data/selfDamagePerks.ts"
+    },
+    "file:src/data/stanceOverlays.ts": {
+      "name": "src/data/stanceOverlays.ts",
+      "type": "file",
+      "summary": "Defines stance-overlay rules (Blaster Ring, Locked And Loaded, Cosmic Ray, Mine) that map build conditions to a resolved weapon-art stance type, exported via resolveStanceOverlay.",
+      "filePath": "src/data/stanceOverlays.ts"
+    },
+    "file:src/DidYouMean.svelte": {
+      "name": "src/DidYouMean.svelte",
+      "type": "file",
+      "summary": "Shows 'Did you mean?' suggestion chips when a search returns no exact results, dispatching the selected label and highlighting matched text parts.",
+      "filePath": "src/DidYouMean.svelte"
+    },
+    "file:src/DmgTotalTooltip.svelte": {
+      "name": "src/DmgTotalTooltip.svelte",
+      "type": "file",
+      "summary": "Tooltip component rendering a per-hit damage breakdown grouped by damage type with an animated pie chart, badge configs per entry and percentage share of the hit total.",
+      "filePath": "src/DmgTotalTooltip.svelte"
+    },
+    "file:src/DraconicAbilityStats.svelte": {
+      "name": "src/DraconicAbilityStats.svelte",
+      "type": "file",
+      "summary": "Small stat display panel for draconic abilities showing damage type, scaling, poise damage and optional holy/water heal rows.",
+      "filePath": "src/DraconicAbilityStats.svelte"
+    },
+    "file:src/EmotionalTracker.svelte": {
+      "name": "src/EmotionalTracker.svelte",
+      "type": "file",
+      "summary": "UI control for selecting the character's emotional state (buff/debuff/both) via quick buttons and a segmented slider, writing the selection into the build store and reflecting a disabled flag.",
+      "filePath": "src/EmotionalTracker.svelte"
+    },
+    "file:src/Highlight.svelte": {
+      "name": "src/Highlight.svelte",
+      "type": "file",
+      "summary": "Utility component that splits text into highlighted/unhighlighted parts matching a query using highlightTextParts and renders matched segments inside a mark element.",
+      "filePath": "src/Highlight.svelte"
+    },
+    "file:src/LevelBar.svelte": {
+      "name": "src/LevelBar.svelte",
+      "type": "file",
+      "summary": "Interactive level and HP-fill editor synced to the build store and localStorage, computing effective max HP from protection (shield/negative) values and letting the user drag the HP bar.",
+      "filePath": "src/LevelBar.svelte"
+    },
+    "file:src/lib/AppHeader.svelte": {
+      "name": "src/lib/AppHeader.svelte",
+      "type": "file",
+      "summary": "App shell header with an animated Overview/Analyze tab navigation (including keyboard Tab switching) and hosting the BuildSaves component.",
+      "filePath": "src/lib/AppHeader.svelte"
+    },
+    "file:src/lib/constants/cdr.ts": {
+      "name": "src/lib/constants/cdr.ts",
+      "type": "file",
+      "summary": "Constants module exporting cooldown-reduction tuning values (percentages, per-stack reductions, set bonuses) for various runes, weapon arts and set effects.",
+      "filePath": "src/lib/constants/cdr.ts"
+    },
+    "file:src/lib/constants/defensive.ts": {
+      "name": "defensive.ts",
+      "type": "file",
+      "summary": "Exports numeric damage-reduction constants for defensive perks (Barb Skin, Stone Skin, Adaptive Plate, Valor, Vampire, Carapace, etc.) consumed by the damage engine's defensive calculations.",
+      "filePath": "src/lib/constants/defensive.ts"
+    },
+    "file:src/lib/constants/draconic-colors.ts": {
+      "name": "draconic-colors.ts",
+      "type": "file",
+      "summary": "Draconic color effect multipliers for fire, air, earth, water, and hex, covering speed, damage, knockback, stun, and cooldown modifiers.",
+      "filePath": "src/lib/constants/draconic-colors.ts"
+    },
+    "file:src/lib/constants/draconic.ts": {
+      "name": "draconic.ts",
+      "type": "file",
+      "summary": "Draconic infusion potency/duration multipliers and Dragon State HP/damage balance constants including Bastion blessing.",
+      "filePath": "src/lib/constants/draconic.ts"
+    },
+    "file:src/lib/constants/heals.ts": {
+      "name": "heals.ts",
+      "type": "file",
+      "summary": "Healing-related balance constants for crit healing (base, per-stack, holy boost divisor) and Ocean Song per-stack bonus.",
+      "filePath": "src/lib/constants/heals.ts"
+    },
+    "file:src/lib/constants/index.ts": {
+      "name": "constants/index.ts",
+      "type": "file",
+      "summary": "Barrel re-export aggregating all game constant modules (damage types, perks, boosts, draconic, thresholds, heals, defensive, etc.).",
+      "filePath": "src/lib/constants/index.ts"
+    },
+    "file:src/lib/constants/thresholds.ts": {
+      "name": "thresholds.ts",
+      "type": "file",
+      "summary": "Global balance thresholds: armor-pen branch cutoff, cooldown floor, and base critical damage percent.",
+      "filePath": "src/lib/constants/thresholds.ts"
+    },
+    "file:src/lib/constants/wa-display.ts": {
+      "name": "wa-display.ts",
+      "type": "file",
+      "summary": "Maps weapon-art perk display names so perks like Weighty Slam, Guardian Spin, or Heat Drill render a friendlier label.",
+      "filePath": "src/lib/constants/wa-display.ts"
+    },
+    "file:src/lib/EnchantSelect.svelte": {
+      "name": "EnchantSelect.svelte",
+      "type": "file",
+      "summary": "Accessible custom dropdown/combobox for picking an enchantment with search, keyboard navigation, rAF-throttled positioning, and per-enchantment color dots.",
+      "filePath": "src/lib/EnchantSelect.svelte"
+    },
+    "file:src/lib/engine/engine.ts": {
+      "name": "engine/engine.ts",
+      "type": "file",
+      "summary": "Barrel module re-exporting the public damage-engine API from data, shrine, enchant, weapon, build, and format submodules.",
+      "filePath": "src/lib/engine/engine.ts"
+    },
+    "file:src/lib/Modal.svelte": {
+      "name": "Modal.svelte",
+      "type": "file",
+      "summary": "Reusable modal shell with overlay, focus trapping, focus-on-open, and shared modal-list/modal-item global styling used by all selection modals.",
+      "filePath": "src/lib/Modal.svelte"
+    },
+    "file:src/lib/modals/AccessorySelectModal.svelte": {
+      "name": "AccessorySelectModal.svelte",
+      "type": "file",
+      "summary": "Modal for selecting armor pieces, rings, runes, and infusions, showing effective boost computed against weapon scalings and Brawny conversion.",
+      "filePath": "src/lib/modals/AccessorySelectModal.svelte"
+    },
+    "file:src/lib/modals/GuildModal.svelte": {
+      "name": "GuildModal.svelte",
+      "type": "file",
+      "summary": "Modal for selecting a guild and its rank, filtering by name/perk search and rendering rank stats and perk tags.",
+      "filePath": "src/lib/modals/GuildModal.svelte"
+    },
+    "file:src/lib/modals/index.ts": {
+      "name": "modals/index.ts",
+      "type": "file",
+      "summary": "Barrel re-export of the four selection modal components (Race, Guild, Accessory, WeaponPart).",
+      "filePath": "src/lib/modals/index.ts"
+    },
+    "file:src/lib/modals/RaceModal.svelte": {
+      "name": "RaceModal.svelte",
+      "type": "file",
+      "summary": "Modal for selecting a race, listing passive description and stat modifiers for each option.",
+      "filePath": "src/lib/modals/RaceModal.svelte"
+    },
+    "file:src/lib/modals/WeaponPartModal.svelte": {
+      "name": "WeaponPartModal.svelte",
+      "type": "file",
+      "summary": "Modal for picking weapon blade/handle or monk glove/essence parts with tier/type filter dropdowns and weapon stat filtering.",
+      "filePath": "src/lib/modals/WeaponPartModal.svelte"
+    },
+    "file:src/lib/StatFilterShared.svelte": {
+      "name": "StatFilterShared.svelte",
+      "type": "file",
+      "summary": "Shared stat-filter chip button with include/exclude state and a module-level buildStatMaps helper for label/color lookups.",
+      "filePath": "src/lib/StatFilterShared.svelte"
+    },
+    "file:src/lib/stats/elementalBoosts.ts": {
+      "name": "elementalBoosts.ts",
+      "type": "file",
+      "summary": "Defines StatDef entries for the elemental boost stats (dexterity, physical, magic, elemental) plus their negative debuff variants.",
+      "filePath": "src/lib/stats/elementalBoosts.ts"
+    },
+    "file:src/lib/stats/filterActions.ts": {
+      "name": "filterActions.ts",
+      "type": "file",
+      "summary": "Creates include/exclude filter action handlers (toggle, remove, clear, chip keyboard) that mutate a FilterMap and notify subscribers.",
+      "filePath": "src/lib/stats/filterActions.ts"
+    },
+    "file:src/lib/Toast.svelte": {
+      "name": "Toast.svelte",
+      "type": "file",
+      "summary": "Fixed top-right toast notification container rendering toasts from the toast store with per-type styling and dismiss buttons.",
+      "filePath": "src/lib/Toast.svelte"
+    },
+    "file:src/lib/ui/Badge.svelte": {
+      "name": "Badge.svelte",
+      "type": "file",
+      "summary": "Svelte 5 badge/pill component supporting size, shape, color, solid, mono, tag, and named variant props.",
+      "filePath": "src/lib/ui/Badge.svelte"
+    },
+    "file:src/lib/ui/Button.svelte": {
+      "name": "Button.svelte",
+      "type": "file",
+      "summary": "Svelte 5 button component with variant (positive/negative/warning/info/neutral), size, and active-state props.",
+      "filePath": "src/lib/ui/Button.svelte"
+    },
+    "file:src/lib/ui/RollValue.svelte": {
+      "name": "RollValue.svelte",
+      "type": "file",
+      "summary": "Animated value display that eases between numeric strings while preserving prefixes/suffixes and coloring negatives.",
+      "filePath": "src/lib/ui/RollValue.svelte"
+    },
+    "file:src/lib/uiConstants.ts": {
+      "name": "uiConstants.ts",
+      "type": "file",
+      "summary": "Shared UI constants: colors per damage type/tag/source/enchant rarity, source labels, and stat/tag label maps.",
+      "filePath": "src/lib/uiConstants.ts"
+    },
+    "file:src/main.ts": {
+      "name": "main.ts",
+      "type": "file",
+      "summary": "Application entry point that injects Vercel analytics and mounts the root App component into the DOM.",
+      "filePath": "src/main.ts"
+    },
+    "file:src/ModalSearchHeader.svelte": {
+      "name": "ModalSearchHeader.svelte",
+      "type": "file",
+      "summary": "Shared modal header composing a search input with suggestions, tag filter, stat/weapon-stat filter, and Highest/Most Effective/Brawny sort buttons.",
+      "filePath": "src/ModalSearchHeader.svelte"
+    },
+    "file:src/MountIcon.svelte": {
+      "name": "MountIcon.svelte",
+      "type": "file",
+      "summary": "Inline SVG mount icon component that renders a detailed gradient-shaded mount silhouette built from dozens of path layers, scaled by a `size` prop and using a per-instance unique gradient ID so multiple icons render independently.",
+      "filePath": "src/MountIcon.svelte"
+    },
+    "file:src/PropellingFunTracker.svelte": {
+      "name": "PropellingFunTracker.svelte",
+      "type": "file",
+      "summary": "Component for configuring the 'Propelling Fun' jump element (Air/Fire) and buff mode (Air only, Both, Fire only) through color-coded button groups and segmented range sliders, persisting choices into the shared `build` store via build.update.",
+      "filePath": "src/PropellingFunTracker.svelte"
+    },
+    "file:src/ScalingBreakdownRow.svelte": {
+      "name": "ScalingBreakdownRow.svelte",
+      "type": "file",
+      "summary": "Displays a single scaling-breakdown table row showing a stat's scaling value, boost percentage, and net contribution, formatting numeric values with roundMultiplier and treating boost keys found in PERCENT_STATS as percentage values.",
+      "filePath": "src/ScalingBreakdownRow.svelte"
+    },
+    "file:src/StatFilter.svelte": {
+      "name": "StatFilter.svelte",
+      "type": "file",
+      "summary": "Collapsible stat filter panel with Positive/Negative tabs, include/exclude chip cycling via shared createFilterActions helpers, and sort-mode buttons (highest/lowest/alphabetical), dispatching filter maps and sort mode changes to the parent component.",
+      "filePath": "src/StatFilter.svelte"
+    },
+    "file:src/SuggestDrop.svelte": {
+      "name": "SuggestDrop.svelte",
+      "type": "file",
+      "summary": "Dropdown that renders type-ahead suggestions for weapon names and perks, highlighting the query substring via highlightTextParts and dispatching a `select` event on mousedown so the input does not lose focus.",
+      "filePath": "src/SuggestDrop.svelte"
+    },
+    "file:src/TagFilter.svelte": {
+      "name": "TagFilter.svelte",
+      "type": "file",
+      "summary": "Collapsible tag filter panel grouping perk tags into Combat, Support, Status, Weapon Art/Rune, and Special categories with color-coded chips, an active-tag summary bar with per-tag removal, a clear-all action, and toggle/change events dispatched to the parent.",
+      "filePath": "src/TagFilter.svelte"
+    },
+    "file:src/WeaponStatFilter.svelte": {
+      "name": "WeaponStatFilter.svelte",
+      "type": "file",
+      "summary": "Collapsible weapon-stat filter for Damage Type, Scaling, and Boost/Stats groups using include/exclude chips with DMG/SCL/STAT prefixes, and an exported matchesFilter predicate that tests weapon records against the active include/exclude map.",
+      "filePath": "src/WeaponStatFilter.svelte"
+    },
+    "file:src/WeaponStatsDisplay.svelte": {
+      "name": "WeaponStatsDisplay.svelte",
+      "type": "file",
+      "summary": "Renders a weapon's stat block as grouped pills for damage types, scalings, and stat boosts, splitting the flat stats map by key suffix and formatting percentage-style stats (boost/defense/warding) with a % sign.",
+      "filePath": "src/WeaponStatsDisplay.svelte"
+    },
+    "file:vite.config.ts": {
+      "name": "vite.config.ts",
+      "type": "file",
+      "summary": "Vite build configuration that sets the app base path from VITE_BASE_PATH, wires the Svelte plugin, a PWA plugin (autoUpdate service worker with a StaleWhileRevalidate navigation cache), and a rollup bundle-size visualizer while disabling manual chunks.",
+      "filePath": "vite.config.ts"
+    },
+    "file:src/lib/constants/buffs.ts": {
+      "name": "buffs.ts",
+      "type": "file",
+      "summary": "Central constants module exporting 140 numeric values for buff and debuff potency, duration, and scaling, sourced from the game's BuffData. Covers potions, rune-granted buffs, weapon-art-granted buffs, perk-buff factory constants, potency modifiers, and generic debuff modifiers used by the damage calculation engine.",
+      "filePath": "src/lib/constants/buffs.ts"
+    },
+    "file:src/lib/types.ts": {
+      "name": "types.ts",
+      "type": "file",
+      "summary": "Central shared type definitions and constants for the damage engine, covering races, guilds, armor, rings, runes, enchantments, weapons, monk gear, build state, proc coefficients, boosts, and weapon hit data, plus helpers for upgrade scaling and proc checks.",
+      "filePath": "src/lib/types.ts"
+    },
+    "file:src/data/Boost.ts": {
+      "name": "Boost.ts",
+      "type": "file",
+      "summary": "Defines the boost system for the damage calculator: exports BOOST_DEFS (damage/heal multiplier definitions keyed by perk) and BOOST_DEF_MAP lookup, the BoostContext/BoostDef interfaces, plus helper functions calcMinionAbsorptionPotency and calcFrenzyPct and Penance bleed constants.",
+      "filePath": "src/data/Boost.ts"
+    },
+    "file:src/data/perkAutoDebuffs.ts": {
+      "name": "perkAutoDebuffs.ts",
+      "type": "file",
+      "summary": "Computes the debuffs a build auto-applies from its active perks and combat conditions (Burn via Exhaust, Penance bleed, Weakening, Runic Blades, Hypnotist, HP-gated effects, and more) through getAutoDebuffs, with calcActualHpFillPct adjusting HP fill for negative protection.",
+      "filePath": "src/data/perkAutoDebuffs.ts"
+    },
+    "file:src/data/BuffData.ts": {
+      "name": "BuffData.ts",
+      "type": "file",
+      "summary": "Central data registry and computation module for Voxel Blade buffs and debuffs: defines the BUFF_DEFS metadata table and BASIC_DEBUFF_POOL, and provides the logic to assemble a build's active buffs, apply perk-based potency/duration modifiers, convert buff types, compute buff effects, and format perk descriptions.",
+      "filePath": "src/data/BuffData.ts"
+    },
+    "file:src/data/Perkbasedmg.ts": {
+      "name": "Perkbasedmg.ts",
+      "type": "file",
+      "summary": "Defines base-damage calculation helpers, HP-gate thresholds, and the PERK_DMG_DEFS registry for perk-based damage sources (springblast, bomber charge, ichor spark) used by the build damage engine.",
+      "filePath": "src/data/Perkbasedmg.ts"
+    },
+    "file:src/lib/utils.ts": {
+      "name": "utils.ts",
+      "type": "file",
+      "summary": "Provides shared math, text-highlighting, and proc-chance utility helpers used across the damage engine and UI, including multiplier rounding, scaling factors, warding debuff multipliers, search highlighting, and proc chance computation.",
+      "filePath": "src/lib/utils.ts"
+    },
+    "file:stats.html": {
+      "name": "stats.html",
+      "type": "file",
+      "summary": "Self-contained Rollup Visualizer HTML report (generated build artifact) showing the Voxel Blade production bundle's size distribution as an interactive treemap, with embedded compiled rendering code and inline module-tree data.",
+      "filePath": "stats.html"
+    },
+    "file:src/BaseDamageCalc.svelte": {
+      "name": "BaseDamageCalc.svelte",
+      "type": "file",
+      "summary": "Core per-hit damage calculation component. Receives weapon hits, typed boosts, debuffs, crit values, enemy defenses, and DoT data as props, then computes final damage per hit type by applying armor penetration, damage-type multipliers, debuff effects, crits, and heal sources. Renders the computed hit breakdown with badges and tooltips.",
+      "filePath": "src/BaseDamageCalc.svelte"
+    },
+    "file:src/DamageAnalyzer.svelte": {
+      "name": "DamageAnalyzer.svelte",
+      "type": "file",
+      "summary": "Main damage analysis screen. Assembles active buffs/debuffs from the build store, resolves weapon/weapon-art/rune/mount-damage scalings and damage-type conversions, computes DoT ticks, self-damage perks, and defensive sources, then feeds computed hits into the BaseDamageCalc engine. Renders scaling breakdowns, per-hit rows, and toggle controls for boosts, buffs, and effects.",
+      "filePath": "src/DamageAnalyzer.svelte"
+    },
+    "file:src/lib/constants/boosts.ts": {
+      "name": "boosts.ts",
+      "type": "file",
+      "summary": "Pure constant module exporting 64 named numeric boost multipliers used across the damage engine, covering frenzy, minion absorption, lifesteal, per-stack perk multipliers, Heat Drill, and Essence Ray tuning values.",
+      "filePath": "src/lib/constants/boosts.ts"
+    }
+  },
+  "totalNodes": 142,
+  "totalEdges": 180
+}

@@ -1393,13 +1393,13 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
       return (6 + 0.6 * perkAmount) * (1 + Math.min(5, distance / 30))
     },
     dmgTypeMode: 'dynamic',
-    getDmgTypes: ({ statuses }) => {
+    getDmgTypes: ({ statuses }): Record<string, number> => {
       const fellRushAmt = statuses?.fellRushAmt ?? 0
       if (fellRushAmt > 0) return { holy: 0.4, hex: 0.3, air: 0.3 }
       return { air: 0.5, holy: 0.5 }
     },
     scalingMode: 'dynamic',
-    getScalings: ({ statuses, sliderVal = 0 }) => {
+    getScalings: ({ statuses, sliderVal = 0 }): Record<string, number> => {
       const fellRushAmt = statuses?.fellRushAmt ?? 0
       const distance = sliderVal
       const holyScale = 0.5 + Math.min(0.5, distance / 500)

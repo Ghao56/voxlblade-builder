@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "9cb48c23ce32de361e8af1e0035ed669f237183a",
-  "generatedAt": "2026-07-31T03:37:09.725Z",
+  "gitCommitHash": "e43b1c6139ed14a313f945e711a4f00123caeb47",
+  "generatedAt": "2026-08-01T06:15:05.472Z",
   "files": {
     ".fallowrc.json": {
       "filePath": ".fallowrc.json",
@@ -278,12 +278,12 @@
     },
     "src/BaseDamageCalc.svelte": {
       "filePath": "src/BaseDamageCalc.svelte",
-      "contentHash": "dd3f05a4e7f68032bca68d1f0e969fa093e5c809e7ddf8f78fdeced3bbe71d2c",
+      "contentHash": "ee8d67e1abaf0bfa6fd224db6fcf52e8ddfec9f92d658db2cf5f175b483bc2e1",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 2813,
+      "totalLines": 2814,
       "hasStructuralAnalysis": false
     },
     "src/BuffList.svelte": {
@@ -328,12 +328,12 @@
     },
     "src/DamageAnalyzer.svelte": {
       "filePath": "src/DamageAnalyzer.svelte",
-      "contentHash": "ce20c30455a63a64426780ca936ed43f8e602af1f3462535eddb6e56ab38dcfc",
+      "contentHash": "04c09963a3a383c336dd678f00e5787763ee7a53f22b780cde45a9723b329d05",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 7567,
+      "totalLines": 7700,
       "hasStructuralAnalysis": false
     },
     "src/data/armors.json": {
@@ -358,7 +358,7 @@
     },
     "src/data/Boost.ts": {
       "filePath": "src/data/Boost.ts",
-      "contentHash": "811010e04c4b8df23c7cf6041aabbfc5fd4ef859d40488e83f7da70469663ad4",
+      "contentHash": "e5ff5bc166489b2d532f1c1064c5b7162c4f0b64dbd2ce271a0b5256f2ab3b0b",
       "functions": [
         {
           "name": "calcMinionAbsorptionPotency",
@@ -385,7 +385,8 @@
         {
           "source": "../lib/utils",
           "specifiers": [
-            "roundMultiplier"
+            "roundMultiplier",
+            "applyScalingMult"
           ]
         },
         {
@@ -406,6 +407,7 @@
             "SHARPSHOOTER_MULT_PER_STACK",
             "VALOR_MULT_PER_STACK",
             "GORECAST_MULT_PER_STACK",
+            "VICIOUS_EDGE_MULT_PER_STACK",
             "UNDEAD_MIGHT_MULT_PER_STACK",
             "HIGHLANDER_MULT_PER_STACK",
             "QUEENS_POWER_POTENCY_PER_AMOUNT",
@@ -432,7 +434,8 @@
             "VAMPIRE_DIVISOR",
             "TOXIN_CASTER_MULT_PER_STACK",
             "CUT_DOWN_MULT_PER_AMOUNT",
-            "EXECUTIONER_MULT_PER_AMOUNT"
+            "EXECUTIONER_MULT_PER_AMOUNT",
+            "FREQUENT_FLIER_MULT_PER_STACK"
           ]
         },
         {
@@ -452,12 +455,12 @@
         "BOOST_DEFS",
         "BOOST_DEF_MAP"
       ],
-      "totalLines": 428,
+      "totalLines": 447,
       "hasStructuralAnalysis": true
     },
     "src/data/BuffData.ts": {
       "filePath": "src/data/BuffData.ts",
-      "contentHash": "dffcf4a3801eaaece355fd1b39e4a1168e34286b5b55369429a5f8ed07834741",
+      "contentHash": "f5164ecc2b57547d931a7fc897b271c0b2007e5f984bcc910527f8414901a601",
       "functions": [
         {
           "name": "formatDamageTypes",
@@ -796,6 +799,8 @@
             "SWIFT_GUARD_DURATION",
             "RUNIC_WINDS_POTENCY_PER_AMOUNT",
             "RUNIC_WINDS_DURATION",
+            "GRANDMAGIC_GUARD_POTENCY_PER_AMOUNT",
+            "GRANDMAGIC_GUARD_DURATION",
             "BOUNCE_DURATION_BASE",
             "BOUNCE_DURATION_PER_STACK",
             "MOD_GLADIATORIAL_POTENCY",
@@ -850,7 +855,7 @@
         "calcBuffEffect",
         "formatPerkDescription"
       ],
-      "totalLines": 2094,
+      "totalLines": 2105,
       "hasStructuralAnalysis": true
     },
     "src/data/cdr.ts": {
@@ -1456,7 +1461,7 @@
     },
     "src/data/perkAutoDebuffs.ts": {
       "filePath": "src/data/perkAutoDebuffs.ts",
-      "contentHash": "e97f36597c9fd4ce7eb227ce593de749c6952adc08dba0f813c4c581adfbddc5",
+      "contentHash": "d8083e77f0698ca163f4af974e70df3c6a494a557d5af06a139c3fce9552e1c2",
       "functions": [
         {
           "name": "calcActualHpFillPct",
@@ -1476,7 +1481,7 @@
           ],
           "returnType": "GrantedBuff[]",
           "exported": true,
-          "lineCount": 274
+          "lineCount": 298
         }
       ],
       "classes": [],
@@ -1523,6 +1528,12 @@
           ]
         },
         {
+          "source": "../lib/constants/buffs",
+          "specifiers": [
+            "BASIC_DEBUFF_DURATION"
+          ]
+        },
+        {
           "source": "../lib/constants/perk-base-damage",
           "specifiers": [
             "BELLOWING_EMBER_HP_GATE_THRESHOLD",
@@ -1543,12 +1554,12 @@
         "calcActualHpFillPct",
         "getAutoDebuffs"
       ],
-      "totalLines": 307,
+      "totalLines": 332,
       "hasStructuralAnalysis": true
     },
     "src/data/Perkbasedmg.ts": {
       "filePath": "src/data/Perkbasedmg.ts",
-      "contentHash": "2aad648a6348655c799f1a047d6a368f07c2671312e126f4220602a1f68f1042",
+      "contentHash": "aebca5b7e7823e1621319483b4b07978f0809bcb89714b8dfe6580078af3eff8",
       "functions": [
         {
           "name": "gateThreshold",
@@ -1824,7 +1835,7 @@
         "PERK_DMG_DEFS",
         "findPerkDmgDef"
       ],
-      "totalLines": 1439,
+      "totalLines": 1487,
       "hasStructuralAnalysis": true
     },
     "src/data/perks.json": {
@@ -2562,7 +2573,7 @@
     },
     "src/lib/constants/boosts.ts": {
       "filePath": "src/lib/constants/boosts.ts",
-      "contentHash": "6118789e5efbb1810e1a35d18c41b6f44796e008caa73c1de3522231a728d64c",
+      "contentHash": "972a9c41d06ab5c25e860d902ef2853bb419402f041a12d5a6a74ab3142c1a0a",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2589,6 +2600,8 @@
         "SHARPSHOOTER_MULT_PER_STACK",
         "VALOR_MULT_PER_STACK",
         "GORECAST_MULT_PER_STACK",
+        "VICIOUS_EDGE_MULT_PER_STACK",
+        "FREQUENT_FLIER_MULT_PER_STACK",
         "UNDEAD_MIGHT_MULT_PER_STACK",
         "HIGHLANDER_MULT_PER_STACK",
         "EMOTIONAL_MULT_PER_STACK",
@@ -2630,12 +2643,12 @@
         "ESSENCE_RAY_HITS",
         "STEAM_POWERED_MULT_PER_AIR_BOOST"
       ],
-      "totalLines": 76,
+      "totalLines": 78,
       "hasStructuralAnalysis": true
     },
     "src/lib/constants/buffs.ts": {
       "filePath": "src/lib/constants/buffs.ts",
-      "contentHash": "07d0df40827e8c79167ffce37874195a77841b011ec7bd8bb132749147d9e82a",
+      "contentHash": "c255cffe447bce725d1ec4eaed4f4a292ccfb8699e49a59a92fc7898372b304f",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2755,6 +2768,8 @@
         "SWIFT_GUARD_DURATION",
         "RUNIC_WINDS_POTENCY_PER_AMOUNT",
         "RUNIC_WINDS_DURATION",
+        "GRANDMAGIC_GUARD_POTENCY_PER_AMOUNT",
+        "GRANDMAGIC_GUARD_DURATION",
         "BOUNCE_DURATION_BASE",
         "BOUNCE_DURATION_PER_STACK",
         "MOD_GLADIATORIAL_POTENCY",
@@ -2779,7 +2794,7 @@
         "CLOUDPUSH_PCT_PER_STACK",
         "CINDERPULL_PCT_PER_STACK"
       ],
-      "totalLines": 176,
+      "totalLines": 178,
       "hasStructuralAnalysis": true
     },
     "src/lib/constants/cdr.ts": {
@@ -5156,7 +5171,7 @@
     },
     "src/lib/types.ts": {
       "filePath": "src/lib/types.ts",
-      "contentHash": "c54eb6eb1aed4c0c81d2e5c96d5f8b42af9ac15750874d505e10817414c9745b",
+      "contentHash": "3af5566dff657a68196e6cd6e8b4c36138b0d281d355710502e02b727941cadc",
       "functions": [
         {
           "name": "applyUpgrade",
@@ -5247,7 +5262,7 @@
     },
     "src/lib/utils.ts": {
       "filePath": "src/lib/utils.ts",
-      "contentHash": "2b9405d9ccb9a3dc4b5768dc96e69b8da81ad383be024b730a1961d3aee601a5",
+      "contentHash": "cca57b0a0dfdc6f9e89a84187c99fa2ed067899b7edfe340eddad80a743ce1bc",
       "functions": [
         {
           "name": "calculateMultiplierFromPct",
@@ -5273,6 +5288,24 @@
             "multiplier"
           ],
           "returnType": "number",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "applyScalingMult",
+          "params": [
+            "effFrac"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "scalingEq",
+          "params": [
+            "pct"
+          ],
+          "returnType": "string",
           "exported": true,
           "lineCount": 3
         },
@@ -5338,11 +5371,13 @@
       ],
       "exports": [
         "roundMultiplier",
+        "applyScalingMult",
+        "scalingEq",
         "calcWardingDebuffMultiplier",
         "highlightTextParts",
         "calcProcChance"
       ],
-      "totalLines": 113,
+      "totalLines": 122,
       "hasStructuralAnalysis": true
     },
     "src/main.ts": {
@@ -5480,55 +5515,13 @@
     },
     "stats.html": {
       "filePath": "stats.html",
-      "contentHash": "eccceefa1bb9455e753999ce3f554c75c97b01043f0933a0e9c8016022a34595",
+      "contentHash": "ebfed3dfec4872ea2b164757d0d5497b95aa5937b7b85490aa212790b086c0bc",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
       "totalLines": 4951,
       "hasStructuralAnalysis": false
-    },
-    "tests/piercer.test.ts": {
-      "filePath": "tests/piercer.test.ts",
-      "contentHash": "2310e93cb4e1674d4a869b319bdc3f72f27ee40780658c7a6713c83915ce5a2b",
-      "functions": [
-        {
-          "name": "applyPiercerTrueConversion",
-          "params": [
-            "types",
-            "piercerRank"
-          ],
-          "returnType": "Record<string, number>",
-          "exported": false,
-          "lineCount": 4
-        }
-      ],
-      "classes": [],
-      "imports": [
-        {
-          "source": "vitest",
-          "specifiers": [
-            "describe",
-            "it",
-            "expect"
-          ]
-        },
-        {
-          "source": "../src/data/weaponConditionalBoosts",
-          "specifiers": [
-            "getWeaponConditionalBoost"
-          ]
-        },
-        {
-          "source": "../src/lib/utils",
-          "specifiers": [
-            "roundMultiplier"
-          ]
-        }
-      ],
-      "exports": [],
-      "totalLines": 186,
-      "hasStructuralAnalysis": true
     },
     "ts-errors.txt": {
       "filePath": "ts-errors.txt",

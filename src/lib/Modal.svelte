@@ -30,7 +30,7 @@
 </div>
 
 <script context="module">
-  function focusOnOpen(node) {
+  function focusOnOpen(node: HTMLElement) {
     requestAnimationFrame(() => {
       const first = node.querySelector<HTMLElement>('button:not(.modal-close), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')
       first?.focus()
