@@ -3597,7 +3597,7 @@ $: _groupedSelfDamageSources = (() => {
               build.update(s => ({ ...s, inDarkness: !s.inDarkness }))
             }}
           >
-            {@html $build.inDarkness ? '<i class="fa fa-moon-o"></i> Darkness' : '<i class="fa fa-sun-o"></i> Sunlight'}
+            {#if $build.inDarkness}<i class="fa fa-moon-o"></i> Darkness{:else}<i class="fa fa-sun-o"></i> Sunlight{/if}
           </button>
         </div>
         {#if _sunBlessedStacks > 0}

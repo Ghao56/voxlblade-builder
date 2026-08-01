@@ -974,7 +974,7 @@
               <i class="fa fa-arrow-up"></i> Save
             </Button>
             <Button variant={confirmLoad === i ? 'warning' : 'info'} size="sm" onclick={() => loadBuild(i)}>
-              {@html confirmLoad === i ? '<i class="fa fa-check"></i> Sure?' : '<i class="fa fa-arrow-down"></i> Load'}
+              {#if confirmLoad === i}<i class="fa fa-check"></i> Sure?{:else}<i class="fa fa-arrow-down"></i> Load{/if}
             </Button>
             <button class="btn btn-share" class:btn-share--active={exportingSlot === i}
               draggable="false"
@@ -982,7 +982,7 @@
               <i class="fa fa-upload"></i>
             </button>
             <Button variant={confirmDelete === i ? 'warning' : 'negative'} size="sm" onclick={() => deleteSlot(i)} disabled={false}>
-              {@html confirmDelete === i ? '<i class="fa fa-exclamation-triangle"></i> Sure?' : '<i class="fa fa-times"></i>'}
+              {#if confirmDelete === i}<i class="fa fa-exclamation-triangle"></i> Sure?{:else}<i class="fa fa-times"></i>{/if}
             </Button>
           </div>
         </div>

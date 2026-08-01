@@ -126,7 +126,7 @@
         <span class="lb-hp-max">{baseMaxHP}</span>
         {#if effectiveProt !== 0}
           <Badge color={effectiveProt > 0 ? '#38bdf8' : '#f87171'} size="xs">
-            {@html effectiveProt > 0 ? `<i class="fa fa-shield"></i> +${effectiveProt}` : `<i class="fa fa-warning"></i> ${effectiveProt}`}
+            {#if effectiveProt > 0}<i class="fa fa-shield"></i> +{effectiveProt}{:else}<i class="fa fa-warning"></i> {effectiveProt}{/if}
           </Badge>
         {/if}
       </span>
