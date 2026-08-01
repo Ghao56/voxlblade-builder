@@ -1,4 +1,4 @@
-import { roundMultiplier } from '../lib/utils'
+import { roundMultiplier, applyScalingMult } from '../lib/utils'
 import {
   FRENZY_BASE, FRENZY_RAGE_MULT, MINION_ABSORPTION_MULT,
   BLOOD_THIRSTY_MULT_PER_STACK, VENOM_SPITTER_MULT_PER_STACK,
@@ -371,7 +371,7 @@ export const BOOST_DEFS: BoostDef[] = [
       if (sb <= 0) return null
       const dmgPct = bonusSummonScaling * sb
       return {
-        multiplier: roundMultiplier(1 + dmgPct / 100),
+        multiplier: roundMultiplier(applyScalingMult(dmgPct / 100)),
         condition: `+${bonusSummonScaling.toFixed(2)} Summon Scaling × ${sb}% Summon Boost`,
       }
     },

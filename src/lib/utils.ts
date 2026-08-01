@@ -10,6 +10,15 @@ export function roundMultiplier(multiplier: number): number {
   return Math.round(multiplier * 10000) / 10000
 }
 
+export function applyScalingMult(effFrac: number): number {
+  if (effFrac >= 0) return 1 + effFrac
+  return 1 / (1 - effFrac)
+}
+
+export function scalingEq(pct: number): string {
+  return pct >= 0 ? `1 + ${pct}%` : `1 / (1 + ${-pct}%)`
+}
+
 export function calcWardingDebuffMultiplier(warding: number): number {
   const wardingPct = warding / 100
   if (warding >= 0) {

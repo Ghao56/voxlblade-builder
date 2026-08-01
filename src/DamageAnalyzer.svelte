@@ -24,7 +24,7 @@
   import { getDraconicColorDmgMultiplier } from './data/draconicColorEffects'
   import { applyDraconicBonuses, getDraconicBonuses } from './data/draconicRunes'
   import { calculateHealBoost, type HealSource } from './data/HealBoost'
-  import { roundMultiplier, calcWardingDebuffMultiplier, calcProcChance } from './lib/utils'
+  import { roundMultiplier, calcWardingDebuffMultiplier, calcProcChance, applyScalingMult, scalingEq } from './lib/utils'
   import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage, UNDEAD_MIGHT_SELF_DMG_FRACTION, UNDEAD_MIGHT_DR_PCT_PER_STACK, type SelfDamagePerkDef } from './data/selfDamagePerks'
   import { resolveDamageTypes, resolveWaDamageTypeKeys, applyAirToMagicConversion } from './lib/damageTypeResolve'
   import { buildDmgTypeBonuses } from './lib/engine/dmgTypeBonuses'
@@ -676,7 +676,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       const boostPct = (stats as Record<string, number>)[boostKey] ?? 0
       totalPct += val * boostPct
     }
-    return 1 + totalPct / 100
+    return applyScalingMult(totalPct / 100)
   }
 
   let _dotCollapsed = true
@@ -1769,6 +1769,16 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     return rows
   }
 
+  function computeScalingPct(scalings: Record<string, number>): number {
+    let total = 0
+    for (const [key, scalingVal] of Object.entries(scalings)) {
+      const boostKey = SCALING_TO_BOOST[key]
+      if (!boostKey) continue
+      total += scalingVal * ((stats as Record<string, number>)[boostKey] ?? 0)
+    }
+    return Math.round(total * 1000) / 1000
+  }
+
   interface ScalingRow {
     key: string
     label?: string 
@@ -1785,7 +1795,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     const rows = buildScalingRows(scalings)
     const totalEffective = rows.reduce((a, r) => a + r.contribution, 0)
     const totalEffectivePct = Math.round(totalEffective * 1000) / 1000
-    const multiplier = roundMultiplier(1 + totalEffective / 100)
+    const multiplier = roundMultiplier(applyScalingMult(totalEffective / 100))
     return { rows, totalEffectivePct, multiplier }
   })()
 
@@ -1818,7 +1828,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       if (!rows.length) return null
       const totalContribution = rows.reduce((sum, row) => sum + row.contribution, 0)
       const avgEffectivePct = Math.round((totalContribution / rows.length) * 1000) / 1000
-      const multiplier = roundMultiplier(1 + avgEffectivePct / 100)
+      const multiplier = roundMultiplier(applyScalingMult(avgEffectivePct / 100))
       return {
         rows,
         totalEffectivePct: avgEffectivePct,
@@ -1838,7 +1848,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     if (!rows.length) return null
     const totalEffectivePct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 1000) / 1000
     return { rows, totalEffectivePct,
-      multiplier: roundMultiplier(1 + totalEffectivePct / 100),
+      multiplier: roundMultiplier(applyScalingMult(totalEffectivePct / 100)),
       isPerHit: false }
   })()
   $: runeScalingBreakdown = (() => {
@@ -1850,7 +1860,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     if (!rows.length) return null
 
     const totalEffectivePct = Math.round(rows.reduce((a, r) => a + (PERCENT_STATS.has(r.boostKey) ? r.contribution : r.contribution * 100), 0) * 1000) / 1000
-    const multiplier = roundMultiplier(1 + totalEffectivePct / 100)
+    const multiplier = roundMultiplier(applyScalingMult(totalEffectivePct / 100))
     return { rows, totalEffectivePct, multiplier }
   })()
   $: _mountRuneScalingBreakdown = (() => {
@@ -1860,7 +1870,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     const rows = buildScalingRows(scalings)
     if (!rows.length) return null
     const totalEffectivePct = Math.round(rows.reduce((a, r) => a + (PERCENT_STATS.has(r.boostKey) ? r.contribution : r.contribution * 100), 0) * 1000) / 1000
-    const multiplier = roundMultiplier(1 + totalEffectivePct / 100)
+    const multiplier = roundMultiplier(applyScalingMult(totalEffectivePct / 100))
     return { rows, totalEffectivePct, multiplier }
   })()
 
@@ -1871,7 +1881,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     const rows = buildScalingRows(scalings)
     if (!rows.length) return null
     const totalEffectivePct = Math.round(rows.reduce((a, r) => a + (PERCENT_STATS.has(r.boostKey) ? r.contribution : r.contribution * 100), 0) * 1000) / 1000
-    const multiplier = roundMultiplier(1 + totalEffectivePct / 100)
+    const multiplier = roundMultiplier(applyScalingMult(totalEffectivePct / 100))
     return { rows, totalEffectivePct, multiplier }
   })()
 
@@ -1903,7 +1913,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     return { 
       rows, 
       totalEffectivePct, 
-      multiplier: roundMultiplier(1 + totalEffectivePct / 100),
+      multiplier: roundMultiplier(applyScalingMult(totalEffectivePct / 100)),
       label: `${_draconicBloodEntry.displayName} Heal`
     }
   })()
@@ -1918,7 +1928,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       const boostPct = (stats as Record<string, number>)[boostKey] ?? 0
       totalEffectivePct += scalingVal * boostPct
     }
-    return 1 + totalEffectivePct / 100
+    return applyScalingMult(totalEffectivePct / 100)
   })()
 
   $: selectedWA = WEAPON_ARTS.find(wa => wa.name === $build.selectedWeaponArt) ?? WEAPON_ARTS[0]
@@ -2110,7 +2120,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       const typeName = /dex/i.test(m[2]) ? 'dexterity' : m[2].toLowerCase()
       totalPct += parseFloat(m[1]) * ((stats as Record<string, number>)[typeName + 'Boost'] ?? 0)
     }
-    return 1 + totalPct / 100
+    return applyScalingMult(totalPct / 100)
   })()
 
   $: _waTyped = (() => {
@@ -2133,7 +2143,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           const typeName = /dex/i.test(scM[2]) ? 'dexterity' : scM[2].toLowerCase()
           totalPct += parseFloat(scM[1]) * ((stats as Record<string, number>)[typeName + 'Boost'] ?? 0)
         }
-        hitScalingMult = roundMultiplier(1 + totalPct / 100)
+        hitScalingMult = roundMultiplier(applyScalingMult(totalPct / 100))
       } else if (hitScalingStr === 'Same as weapon') {
         hitScalingMult = _scalingMult
       }
@@ -2348,7 +2358,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         total += val * statVal
       }
     }
-    return 1 + total
+    return applyScalingMult(total)
   }
 
   interface PerkDmgComputedEntry {
@@ -5012,7 +5022,7 @@ $: _groupedSelfDamageSources = (() => {
   <div class="da-section-title">📐 Damage Scaling</div>
 
   <div class="ds-formula-hint">
-    Effective Boost = Σ (Scaling × Boost%) → adds to base as ×(1 + Effective%)
+    Effective Boost = Σ (Scaling × Boost%) → ×(1 + Effective%) when ≥ 0, × 1/(1 + |Effective%|) when &lt; 0
   </div>
 
   <div class="ds-table">
@@ -5066,7 +5076,7 @@ $: _groupedSelfDamageSources = (() => {
       <div class="ds-col ds-col--boost"></div>
       <div class="ds-col ds-col--op">=</div>
       <div class="ds-col ds-col--contrib">
-        <span class="ds-contrib" style="color:#34d399">+{scalingBreakdown.totalEffectivePct}%</span>
+        <span class="ds-contrib" class:ds-contrib--zero={scalingBreakdown.totalEffectivePct === 0} style={scalingBreakdown.totalEffectivePct < 0 ? 'color:#cf6679' : 'color:#34d399'}>{scalingBreakdown.totalEffectivePct > 0 ? '+' : ''}{scalingBreakdown.totalEffectivePct}%</span>
       </div>
     </div>
   </div>
@@ -5077,7 +5087,7 @@ $: _groupedSelfDamageSources = (() => {
       <span class="ds-result-label">Scaling Multiplier</span>
       <span class="ds-applies-to">{waScalingSameAsWeapon ? 'M1 · M2 · Weapon Art' : 'M1 · M2'}</span>
     </div>
-    <span class="ds-result-eq">1 + {scalingBreakdown.totalEffectivePct}% =</span>
+    <span class="ds-result-eq">{scalingEq(scalingBreakdown.totalEffectivePct)} =</span>
     <span class="ds-result-val">×{+scalingBreakdown.multiplier.toFixed(4)}</span>
   </div>
 
@@ -5137,7 +5147,7 @@ $: _groupedSelfDamageSources = (() => {
           <div class="ds-col ds-col--boost"></div>
           <div class="ds-col ds-col--op">=</div>
           <div class="ds-col ds-col--contrib">
-            <span class="ds-total-pct">+{waScalingBreakdown.totalEffectivePct}%</span>
+            <span class="ds-total-pct" style={waScalingBreakdown.totalEffectivePct < 0 ? 'color:#cf6679' : ''}>{waScalingBreakdown.totalEffectivePct > 0 ? '+' : ''}{waScalingBreakdown.totalEffectivePct}%</span>
           </div>
         </div>
       </div>
@@ -5151,7 +5161,7 @@ $: _groupedSelfDamageSources = (() => {
           </span>
           <span class="ds-applies-to">Weapon Art</span>
         </div>
-        <span class="ds-result-eq">1 + {waScalingBreakdown.totalEffectivePct}% =</span>
+        <span class="ds-result-eq">{scalingEq(waScalingBreakdown.totalEffectivePct)} =</span>
         <span class="ds-result-val"
           style={waScalingIsHealOnly ? 'color:#4ade80;text-shadow:0 0 12px rgba(74,222,128,.4)' : ''}>
           ×{+waScalingBreakdown.multiplier.toFixed(4)}
@@ -5196,7 +5206,7 @@ $: _groupedSelfDamageSources = (() => {
             </div>
             <div class="ds-col ds-col--op">=</div>
             <div class="ds-col ds-col--contrib">
-              <span class="ds-contrib" style="color:{DMG_TYPE_COLORS[key]}">+{contribution}%</span>
+              <span class="ds-contrib" style={contribution < 0 ? 'color:#cf6679' : `color:${DMG_TYPE_COLORS[key]}`}>{contribution > 0 ? '+' : ''}{contribution}%</span>
             </div>
           </div>
         {/each}
@@ -5206,8 +5216,8 @@ $: _groupedSelfDamageSources = (() => {
           <span class="ds-result-label">Scaling Multiplier</span>
           <span class="ds-applies-to">Weapon Art (Bomber Charge)</span>
         </div>
-        <span class="ds-result-eq">1 + {bcTotalPct}% =</span>
-        <span class="ds-result-val">×{+(1 + bcTotalPct / 100).toFixed(4)}</span>
+        <span class="ds-result-eq">{scalingEq(bcTotalPct)} =</span>
+        <span class="ds-result-val">×{+applyScalingMult(bcTotalPct / 100).toFixed(4)}</span>
       </div>
     </div>
   {/if}
@@ -5234,7 +5244,7 @@ $: _groupedSelfDamageSources = (() => {
   && _nonDraconicPerkEntries.some(e =>(e.dmgTypeMode === 'fixed' ||e.dmgTypeMode === 'dynamic')&& Object.keys(e.resolvedScalings ?? {}).length > 0|| e.dmgTypeMode === 'weapon')}
   <div class="da-section da-section--scaling">
     <div class="da-section-title">📐 Damage Scaling</div>
-    <div class="ds-formula-hint">Effective Boost = Σ (Scaling × Boost%) → adds to base as ×(1 + Effective%)</div>
+    <div class="ds-formula-hint">Effective Boost = Σ (Scaling × Boost%) → ×(1 + Effective%) when ≥ 0, × 1/(1 + |Effective%|) when &lt; 0</div>
     
     <div class="ds-table">
       <div class="ds-head">
@@ -5300,7 +5310,7 @@ $: _groupedSelfDamageSources = (() => {
               <div class="ds-col ds-col--boost"></div>
               <div class="ds-col ds-col--op">=</div>
               <div class="ds-col ds-col--contrib">
-                <span class="ds-contrib" style="color:#34d399">+{roundMultiplier((entry.scalingMult - 1) * 100)}%</span>
+                <span class="ds-contrib" class:ds-contrib--zero={roundMultiplier(computeScalingPct(entry.resolvedScalings)) === 0} style={computeScalingPct(entry.resolvedScalings) < 0 ? 'color:#cf6679' : 'color:#34d399'}>{computeScalingPct(entry.resolvedScalings) > 0 ? '+' : ''}{roundMultiplier(computeScalingPct(entry.resolvedScalings))}%</span>
               </div>
             </div>
           </div>
@@ -5340,7 +5350,7 @@ $: _groupedSelfDamageSources = (() => {
       📐 DoT Damage Scaling
       <button class="da-collapse-btn" on:click={() => _dotCollapsed = !_dotCollapsed}>{_dotCollapsed ? '▲' : '▼'}</button>
     </div>
-    <div class="ds-formula-hint">Effective Boost = Σ (Scaling × Boost%) → adds to base as ×(1 + Effective%)</div>
+    <div class="ds-formula-hint">Effective Boost = Σ (Scaling × Boost%) → ×(1 + Effective%) when ≥ 0, × 1/(1 + |Effective%|) when &lt; 0</div>
     {#if _dotCollapsed}
       {#if _topDotTick && _topDotTick.totalEffectivePct !== 0}
         {#each [_topDotTick] as dt}
@@ -5394,7 +5404,7 @@ $: _groupedSelfDamageSources = (() => {
             <div class="ds-col ds-col--boost" style="flex:1.2;"></div>
             <div class="ds-col ds-col--op" style="flex:0.3;">=</div>
             <div class="ds-col ds-col--contrib" style="flex:1;">
-              <span class="ds-contrib" style="color:#34d399">+{dt.totalEffectivePct}%</span>
+              <span class="ds-contrib" class:ds-contrib--zero={dt.totalEffectivePct === 0} style={dt.totalEffectivePct < 0 ? 'color:#cf6679' : 'color:#34d399'}>{dt.totalEffectivePct > 0 ? '+' : ''}{dt.totalEffectivePct}%</span>
             </div>
           </div>
         </div>
@@ -5402,7 +5412,7 @@ $: _groupedSelfDamageSources = (() => {
           <div style="display:flex;flex-direction:column;gap:2px;flex:1;">
             <span class="ds-result-label" style="color:#fb923c;">{dt.type} Scaling Multiplier</span>
           </div>
-          <span class="ds-result-eq">1 + {dt.totalEffectivePct}% =</span>
+          <span class="ds-result-eq">{scalingEq(dt.totalEffectivePct)} =</span>
           <span class="ds-result-val">×{+dt.scalingMult.toFixed(4)}</span>
         </div>
         {/each}
@@ -5461,7 +5471,7 @@ $: _groupedSelfDamageSources = (() => {
             <div class="ds-col ds-col--boost" style="flex:1.2;"></div>
             <div class="ds-col ds-col--op" style="flex:0.3;">=</div>
             <div class="ds-col ds-col--contrib" style="flex:1;">
-              <span class="ds-contrib" style="color:#34d399">+{dt.totalEffectivePct}%</span>
+              <span class="ds-contrib" class:ds-contrib--zero={dt.totalEffectivePct === 0} style={dt.totalEffectivePct < 0 ? 'color:#cf6679' : 'color:#34d399'}>{dt.totalEffectivePct > 0 ? '+' : ''}{dt.totalEffectivePct}%</span>
             </div>
           </div>
         </div>
@@ -5469,7 +5479,7 @@ $: _groupedSelfDamageSources = (() => {
           <div style="display:flex;flex-direction:column;gap:2px;flex:1;">
             <span class="ds-result-label" style="color:#fb923c;">{dt.type} Scaling Multiplier</span>
           </div>
-          <span class="ds-result-eq">1 + {dt.totalEffectivePct}% =</span>
+          <span class="ds-result-eq">{scalingEq(dt.totalEffectivePct)} =</span>
           <span class="ds-result-val">×{+dt.scalingMult.toFixed(4)}</span>
         </div>
           {/if}
@@ -5481,7 +5491,7 @@ $: _groupedSelfDamageSources = (() => {
 {#if runeScalingBreakdown || _draconicScalingBreakdown || _mountRuneScalingBreakdown}
 <div class="da-section da-section--scaling">
   <div class="da-section-title">📐 Rune Damage Scaling</div>
-  <div class="ds-formula-hint">Effective Boost = Σ (Scaling × Boost%) → adds to base as ×(1 + Effective%)</div>
+  <div class="ds-formula-hint">Effective Boost = Σ (Scaling × Boost%) → ×(1 + Effective%) when ≥ 0, × 1/(1 + |Effective%|) when &lt; 0</div>
 
   {#if runeScalingBreakdown}
     <div class="ds-wa-subsection" style="margin-top:0">
@@ -5536,7 +5546,7 @@ $: _groupedSelfDamageSources = (() => {
           <div class="ds-col ds-col--val"></div><div class="ds-col ds-col--op"></div><div class="ds-col ds-col--boost"></div>
           <div class="ds-col ds-col--op">=</div>
           <div class="ds-col ds-col--contrib">
-            <span class="ds-contrib" style="color:#34d399">+{runeScalingBreakdown.totalEffectivePct}%</span>
+            <span class="ds-contrib" class:ds-contrib--zero={runeScalingBreakdown.totalEffectivePct === 0} style={runeScalingBreakdown.totalEffectivePct < 0 ? 'color:#cf6679' : 'color:#34d399'}>{runeScalingBreakdown.totalEffectivePct > 0 ? '+' : ''}{runeScalingBreakdown.totalEffectivePct}%</span>
           </div>
         </div>
       </div>
@@ -5549,7 +5559,7 @@ $: _groupedSelfDamageSources = (() => {
         </span>
         <span class="ds-applies-to">Rune</span>
       </div>
-      <span class="ds-result-eq">1 + {runeScalingBreakdown.totalEffectivePct}% =</span>
+      <span class="ds-result-eq">{scalingEq(runeScalingBreakdown.totalEffectivePct)} =</span>
       <span class="ds-result-val" style={_activeRuneDmgDef?.isHealOnly ? 'color:#4ade80;text-shadow:0 0 12px rgba(74,222,128,.4)' : ''}>
         ×{+runeScalingBreakdown.multiplier.toFixed(4)}
       </span>
@@ -5585,7 +5595,7 @@ $: _groupedSelfDamageSources = (() => {
           <div class="ds-col ds-col--val"></div><div class="ds-col ds-col--op"></div><div class="ds-col ds-col--boost"></div>
           <div class="ds-col ds-col--op">=</div>
           <div class="ds-col ds-col--contrib">
-            <span class="ds-contrib" style="color:#34d399">+{_draconicScalingBreakdown.totalEffectivePct}%</span>
+            <span class="ds-contrib" class:ds-contrib--zero={_draconicScalingBreakdown.totalEffectivePct === 0} style={_draconicScalingBreakdown.totalEffectivePct < 0 ? 'color:#cf6679' : 'color:#34d399'}>{_draconicScalingBreakdown.totalEffectivePct > 0 ? '+' : ''}{_draconicScalingBreakdown.totalEffectivePct}%</span>
           </div>
         </div>
       </div>
@@ -5595,7 +5605,7 @@ $: _groupedSelfDamageSources = (() => {
         <span class="ds-result-label">Scaling Multiplier</span>
         <span class="ds-applies-to">Rune</span>
       </div>
-      <span class="ds-result-eq">1 + {_draconicScalingBreakdown.totalEffectivePct}% =</span>
+      <span class="ds-result-eq">{scalingEq(_draconicScalingBreakdown.totalEffectivePct)} =</span>
       <span class="ds-result-val">×{+_draconicScalingBreakdown.multiplier.toFixed(4)}</span>
     </div>
   {/if}
@@ -5625,7 +5635,7 @@ $: _groupedSelfDamageSources = (() => {
           <div class="ds-col ds-col--val"></div><div class="ds-col ds-col--op"></div><div class="ds-col ds-col--boost"></div>
           <div class="ds-col ds-col--op">=</div>
           <div class="ds-col ds-col--contrib">
-            <span class="ds-contrib" style="color:#34d399">+{_mountRuneScalingBreakdown.totalEffectivePct}%</span>
+            <span class="ds-contrib" class:ds-contrib--zero={_mountRuneScalingBreakdown.totalEffectivePct === 0} style={_mountRuneScalingBreakdown.totalEffectivePct < 0 ? 'color:#cf6679' : 'color:#34d399'}>{_mountRuneScalingBreakdown.totalEffectivePct > 0 ? '+' : ''}{_mountRuneScalingBreakdown.totalEffectivePct}%</span>
           </div>
         </div>
       </div>
@@ -5635,7 +5645,7 @@ $: _groupedSelfDamageSources = (() => {
         <span class="ds-result-label">Scaling Multiplier</span>
         <span class="ds-applies-to">Mount M1 · Mount WA</span>
       </div>
-      <span class="ds-result-eq">1 + {_mountRuneScalingBreakdown.totalEffectivePct}% =</span>
+      <span class="ds-result-eq">{scalingEq(_mountRuneScalingBreakdown.totalEffectivePct)} =</span>
       <span class="ds-result-val">×{+_mountRuneScalingBreakdown.multiplier.toFixed(4)}</span>
     </div>
   {/if}
