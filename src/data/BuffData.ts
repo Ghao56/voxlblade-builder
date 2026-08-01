@@ -64,6 +64,11 @@ import {
   RAGE_POTION_POTENCY, RAGE_POTION_DURATION,
   POISON_POTION_POTENCY, POISON_POTION_DURATION,
   POTION_CHUGGER_POTENCY_MULT_PER_LEVEL,
+  SHATTERING_JUSTICE_POTENCY_PER_AMOUNT,
+  SHATTERING_JUSTICE_DURATION,
+  CLEAVE_POTENCY,
+  CLEAVE_DURATION,
+  SERRATED_EDGE_DURATION,
 } from '../lib/constants/buffs'
 import {
   CRYO_ENGINE_TAILWIND_BASE_POTENCY, CRYO_ENGINE_TAILWIND_POTENCY_PER_AMOUNT,
@@ -1472,6 +1477,36 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       duration: MARSH_FLOW_DURATION_BASE + MARSH_FLOW_DURATION_PER_AMOUNT * amount,
       condition: `10% chance on finisher hits`,
       sourceName: 'Marsh Flow',
+      sourceType: 'perk',
+    },
+  ],
+  'Shattering Justice': (amount) => [
+    {
+      buffName: 'Shatter',
+      potency: SHATTERING_JUSTICE_POTENCY_PER_AMOUNT * amount,
+      duration: SHATTERING_JUSTICE_DURATION,
+      condition: `When hitting a poise-broken opponent, or breaking an opponents guard`,
+      sourceName: 'Shattering Justice',
+      sourceType: 'perk',
+    },
+  ],
+  'Cleave': (amount) => [
+    {
+      buffName: 'Shatter',
+      potency: CLEAVE_POTENCY,
+      duration: CLEAVE_DURATION,
+      condition: `On finisher hit`,
+      sourceName: 'Cleave',
+      sourceType: 'perk',
+    },
+  ],
+  'Serrated Edge': (amount) => [
+    {
+      buffName: 'Bleed',
+      potency: 0,
+      duration: SERRATED_EDGE_DURATION,
+      condition: `on Finisher hit`,
+      sourceName: 'Serrated Edge',
       sourceType: 'perk',
     },
   ],
