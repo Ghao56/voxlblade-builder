@@ -2351,8 +2351,8 @@ $: _appWaAvgTotal = (() => {
                              <span class="ce-val">+{storedCorruptionDmgTakenPct}%</span>
                            </span>
                          </div>
-                       </div>
-                     {/if}
+                        </div>
+                      {/if}
                   </div>
                 {/each}
               </div>

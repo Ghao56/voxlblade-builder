@@ -9,6 +9,7 @@ const DEFAULT_BUILD: BuildState = {
   guild: "",
   guildRank: 1,
   storedCorruptionAmount: 0,
+  darkeningHexActivations: 10,
   helmet: "",
   chestplate: "",
   leggings: "",

@@ -18,6 +18,9 @@ import { isMonkGuild } from './lib/engine/data/character'
     convertTailwindToWhirlwind,
     applyToxinTransferDuration,
     applyCauterizeConversion,
+    hasEligibleDarkeningHexSource,
+    applyDarkeningHexPotency,
+    isDarkeningHexPotencyMultExcluded,
     type GrantedBuff,
   } from './data/BuffData'
   import { getDraconicInfusionBuff, getDraconicAbilityDebuffs, getDraconicInfusionPotMult, getDraconicInfusionDurMult } from './data/draconicBuffs'
@@ -31,8 +34,25 @@ import { WA_PROC_COEFFS, DEFAULT_PROC_COEFF } from './data/procCoefficients'
 import { canProc } from './lib/types'
 import { resolveWaDamageTypeKeys, resolveDamageTypes, computeEffectiveWaDmgTypes } from './lib/damageTypeResolve'
 import { buildDmgTypeBonuses } from './lib/engine/dmgTypeBonuses'
-import { SPIRIT_WINDS_PCT_PER_STACK, DARK_MAGIC_PCT_PER_STACK, EMOTIONAL_PCT_PER_STACK, TOXIN_TRANSFER_PCT_PER_STACK } from './lib/constants/perks'
+import { SPIRIT_WINDS_PCT_PER_STACK, DARK_MAGIC_PCT_PER_STACK, EMOTIONAL_PCT_PER_STACK, TOXIN_TRANSFER_PCT_PER_STACK, DARKENING_HEX_MAX_ACTIVATIONS } from './lib/constants/perks'
 
+  $: buffListWeapon = isMonkGuild($build.guild)
+    ? ($build.monkGlove && $build.monkEssence)
+      ? calcMonkWeapon($build.monkGlove, $build.monkEssence, $build.shrineActive, $build.guildRank)
+      : null
+    : ($build.weaponBlade || $build.weaponHandle)
+      ? calcWeapon($build.weaponBlade, $build.weaponHandle, $build.shrineActive)
+      : null
+  $: buffListSelectedWA = WEAPON_ARTS.find(a => a.name === $build.selectedWeaponArt) ?? WEAPON_ARTS[0]
+
+  $: darkeningHexModifierOptions = {
+    darkeningHexActivations: $build.darkeningHexActivations ?? DARKENING_HEX_MAX_ACTIVATIONS,
+    darkeningHexEligible: hasEligibleDarkeningHexSource($result.perks, $build, buffListWeapon?.damageTypes, buffListSelectedWA.damageType),
+  }
+  $: darkeningHexAmt = $result.perks['Darkening Hex'] ?? 0
+  $: darkeningHexActiveActivations = darkeningHexAmt > 0 && darkeningHexModifierOptions.darkeningHexEligible
+    ? Math.min(Math.max($build.darkeningHexActivations ?? DARKENING_HEX_MAX_ACTIVATIONS, 0), DARKENING_HEX_MAX_ACTIVATIONS)
+    : 0
 
   $: wardingDebuffMult = calcWardingDebuffMultiplier($result.stats.warding ?? 0)
   $: itemBuffs = (() => {
@@ -98,7 +118,8 @@ import { SPIRIT_WINDS_PCT_PER_STACK, DARK_MAGIC_PCT_PER_STACK, EMOTIONAL_PCT_PER
       [...itemBuffs, ...perkBuffs, ...weaponArtBuffs],
       $result.perks,
       $build.rune || undefined,
-      wardingDebuffMult
+      wardingDebuffMult,
+      darkeningHexModifierOptions
     ), $result.perks), $result.perks)
 
     const _minionAbsAmt = $result.perks['Minion Absorption'] ?? 0
@@ -112,13 +133,7 @@ import { SPIRIT_WINDS_PCT_PER_STACK, DARK_MAGIC_PCT_PER_STACK, EMOTIONAL_PCT_PER
       }
     }
 
-    const _waWeapon = isMonkGuild($build.guild)
-      ? ($build.monkGlove && $build.monkEssence)
-        ? calcMonkWeapon($build.monkGlove, $build.monkEssence, $build.shrineActive, $build.guildRank)
-        : null
-      : ($build.weaponBlade || $build.weaponHandle)
-        ? calcWeapon($build.weaponBlade, $build.weaponHandle, $build.shrineActive)
-        : null
+    const _waWeapon = buffListWeapon
     const _effDracoColor = $build.race === 'DRAGON BLOODED' ? ($build.draconicColor || 'physical') : 'physical'
     const _hasTailwindOrWhirlwind = modified.some(b => b.buffName === 'Tailwind' || b.buffName === 'Whirlwind')
     const _ragePotency = Math.max(0, ...modified.filter(b => b.buffName === 'Rage').map(b => b.potency ?? 0))
@@ -177,7 +192,7 @@ import { SPIRIT_WINDS_PCT_PER_STACK, DARK_MAGIC_PCT_PER_STACK, EMOTIONAL_PCT_PER
       _weaponDmgTypes['earth'] = Math.round(((_weaponDmgTypes['earth'] ?? 0) + _stoneWeapon * 0.3) * 10000) / 10000
     }
     const _weaponDmgTypesBonused = resolveDamageTypes(_weaponDmgTypes, _perkDmgTypeBonuses)
-    const _selectedWA = WEAPON_ARTS.find(a => a.name === $build.selectedWeaponArt) ?? WEAPON_ARTS[0]
+    const _selectedWA = buffListSelectedWA
     const _effectiveWaDmgTypes = computeEffectiveWaDmgTypes({
       waDamageType: _selectedWA.damageType,
       weaponDmgTypes: _weaponDmgTypesBonused,
@@ -207,7 +222,7 @@ import { SPIRIT_WINDS_PCT_PER_STACK, DARK_MAGIC_PCT_PER_STACK, EMOTIONAL_PCT_PER
       hasMagicOrPhysicalDmg: _hasMagicOrPhysicalDmg,
 
     })
-    modified.push(...applyBuffPerkModifiers(autoDebuffs, $result.perks, $build.rune || undefined, wardingDebuffMult))
+    modified.push(...applyBuffPerkModifiers(autoDebuffs, $result.perks, $build.rune || undefined, wardingDebuffMult, darkeningHexModifierOptions))
 
     const _ffAmt = $result.perks['Fragrant Flesh'] ?? 0
     if (_ffAmt > 0) {
@@ -263,7 +278,7 @@ import { SPIRIT_WINDS_PCT_PER_STACK, DARK_MAGIC_PCT_PER_STACK, EMOTIONAL_PCT_PER
       activeDebuffs
     )
     if (buffs.length === 0) return buffs
-    return applyBuffPerkModifiers(buffs, $result.perks, $build.rune || undefined)
+    return applyBuffPerkModifiers(buffs, $result.perks, $build.rune || undefined, undefined, darkeningHexModifierOptions)
   })()
   
   $: rawDraconicInfusionBuff = getDraconicInfusionBuff(
@@ -282,7 +297,9 @@ import { SPIRIT_WINDS_PCT_PER_STACK, DARK_MAGIC_PCT_PER_STACK, EMOTIONAL_PCT_PER
       $build.guild, $build.draconicRuneInfusion, _isDragonBlooded ? $build.draconicColor : 'physical', $result.perks['Draconic Blood'] ?? 0
     ),
     $result.perks,
-    $build.rune || undefined
+    $build.rune || undefined,
+    undefined,
+    darkeningHexModifierOptions
   )
 
   $: activeBuffs = [
@@ -353,7 +370,10 @@ import { SPIRIT_WINDS_PCT_PER_STACK, DARK_MAGIC_PCT_PER_STACK, EMOTIONAL_PCT_PER
         potPerk = roundMultiplier(potPerk * getDraconicInfusionPotMult(_infPerkAmt))
       }
       const edAmt = $result.perks['Endless Despair'] ?? 0
-      const potency = calcDotDisplayPotency(potPerk, edAmt)
+      let potency = calcDotDisplayPotency(potPerk, edAmt)
+      if (darkeningHexActiveActivations > 0) {
+        potency = applyDarkeningHexPotency(potency, darkeningHexAmt, darkeningHexActiveActivations, isDarkeningHexPotencyMultExcluded(buff.buffName))
+      }
       const extra = roundMultiplier(potency - currentPot)
       return {
         ...buff,

@@ -7,7 +7,7 @@
   import { WEAPON_ARTS } from './data/weaponArts'
   import { WEAPON_BASE_DMG } from './data/weapon base dmg'
   import { DMG_TYPE_COLORS, DMG_TYPE_PRIORITY, SCALING_TO_BOOST, PERCENT_STATS, canProc, type WeaponBaseDmg, type ProcCoefficient } from './lib/types'
-  import { BUFF_DEFS, getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, calcBuffEffect, getBuffDescription, convertTailwindToWhirlwind, getTrueBalanceBuffs, assembleActiveBuffs, applyCauterizeConversion, getBurnApplicationCount } from './data/BuffData'
+  import { BUFF_DEFS, getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, calcBuffEffect, getBuffDescription, convertTailwindToWhirlwind, getTrueBalanceBuffs, assembleActiveBuffs, applyCauterizeConversion, getBurnApplicationCount, hasEligibleDarkeningHexSource, applyDarkeningHexPotency } from './data/BuffData'
   import { DEBUFF_COMBAT_EFFECTS } from './data/debuffCombatEffects'
   import { getDraconicInfusionBuff, getDraconicAbilityDebuffs, getEffectiveDraconicInfusionPotency, getDraconicInfusionPotMult, getDraconicInfusionDurMult } from './data/draconicBuffs'  
   import { WA_SUMMON_MAP, SUMMON_MAP, calcSummonStat, calcMaxSummonCount } from './data/SummonData'
@@ -28,7 +28,7 @@
   import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage, UNDEAD_MIGHT_SELF_DMG_FRACTION, UNDEAD_MIGHT_DR_PCT_PER_STACK, type SelfDamagePerkDef } from './data/selfDamagePerks'
   import { resolveDamageTypes, resolveWaDamageTypeKeys, applyAirToMagicConversion, computeEffectiveWaDmgTypes } from './lib/damageTypeResolve'
   import { buildDmgTypeBonuses } from './lib/engine/dmgTypeBonuses'
-import { FEROCITY_TENACITY_MULT } from './lib/constants'
+import { FEROCITY_TENACITY_MULT, DARKENING_HEX_MAX_ACTIVATIONS, DARKENING_HEX_POTENCY_ADD_PER_AMOUNT, DARKENING_HEX_POTENCY_MULT_PER_AMOUNT, DARKENING_HEX_DURATION_ADD_PER_AMOUNT } from './lib/constants'
 import { calcTypedDmgBoosts } from './data/TypedDmgBoost'
 import { TRACKED_TYPES_WITH_TRUE } from './lib/constants/damage-types'
 import { resolveStanceOverlay } from './data/stanceOverlays'
@@ -206,6 +206,17 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: _allHealEntriesForDisplay = [..._healScalingResult.entries, ..._typedHealBoostEntries, ...(_tbHealEntry ? [_tbHealEntry] : [])]
   $: _allHealEntries = [..._activeHealEntries, ..._activeTypedHealEntries, ...(_tbHealEntry && !disabledHealBoosts.has('True Balance') ? [_tbHealEntry] : [])]
   $: wardingDebuffMult = calcWardingDebuffMultiplier(stats.warding ?? 0)
+  $: darkeningHexModifierOptions = {
+    darkeningHexActivations: $build.darkeningHexActivations ?? DARKENING_HEX_MAX_ACTIVATIONS,
+    darkeningHexEligible: hasEligibleDarkeningHexSource(perks, $build, _weaponDmgTypesBase, selectedWA.damageType),
+  }
+  $: darkeningHexAmt = perks['Darkening Hex'] ?? 0
+  $: darkeningHexActivations = Math.min(Math.max($build.darkeningHexActivations ?? DARKENING_HEX_MAX_ACTIVATIONS, 0), DARKENING_HEX_MAX_ACTIVATIONS)
+  $: darkeningHexEligible = hasEligibleDarkeningHexSource(perks, $build, _weaponDmgTypesBase, selectedWA.damageType)
+  $: darkeningHexActiveActivations = darkeningHexAmt > 0 && darkeningHexEligible ? darkeningHexActivations : 0
+  $: darkeningHexPotencyMult = Math.round((Math.pow(1 + DARKENING_HEX_POTENCY_MULT_PER_AMOUNT * darkeningHexAmt, darkeningHexActivations) - 1) * 10000) / 100
+  $: darkeningHexDurationAdd = Math.round(DARKENING_HEX_DURATION_ADD_PER_AMOUNT * darkeningHexAmt * darkeningHexActivations * 100) / 100
+  $: darkeningHexFillPct = (darkeningHexActivations / DARKENING_HEX_MAX_ACTIVATIONS) * 100
   $: _healFinalMultiplier = (() => {
     const baseMult = _allHealEntries.reduce((acc, e) => acc * e.rawMultiplier, 1.0)
     return baseMult
@@ -327,7 +338,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   })()
 
   $: _allActiveBuffsRaw = (() => {
-    const baseBuffs = assembleActiveBuffs($build, $result.perks, wardingDebuffMult)
+    const baseBuffs = assembleActiveBuffs($build, $result.perks, wardingDebuffMult, darkeningHexEligible)
 
     const _minionAbsAmt = $result.perks['Minion Absorption'] ?? 0
     const _minionAbsSB  = (($result.stats as Record<string, number>).summonBoost ?? 0)
@@ -513,7 +524,9 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       ).filter(b => b.buffName !== 'Draconic Infusion'),
     ],
     $result.perks,
-    $build.rune || undefined
+    $build.rune || undefined,
+    undefined,
+    darkeningHexModifierOptions
   )
   
   $: _cauterizedAbilityDebuffs = applyCauterizeConversion(_draconicAbilityDebuffsForDummy, $result.perks)
@@ -551,7 +564,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       hasMagicDmg: Object.entries(_waDmgTypes).some(([dt, mult]) => dt === 'magic' && mult > 0),
       hasMagicOrPhysicalDmg: Object.entries(_waDmgTypes).some(([dt, mult]) => (dt === 'magic' || dt === 'physical') && mult > 0),
 
-    }), perks, $build.rune || undefined, wardingDebuffMult)
+    }), perks, $build.rune || undefined, wardingDebuffMult, darkeningHexModifierOptions)
     for (const d of autoDebuffs) {
       if (!groups.has(d.buffName)) groups.set(d.buffName, new Map())
       const inner = groups.get(d.buffName)!
@@ -633,7 +646,10 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         }
         if (potPerk > 0) {
           const edAmt = perks['Endless Despair'] ?? 0
-          const dispPot = calcDotDisplayPotency(potPerk, edAmt)
+          let dispPot = calcDotDisplayPotency(potPerk, edAmt)
+          if (darkeningHexActiveActivations > 0) {
+            dispPot = applyDarkeningHexPotency(dispPot, darkeningHexAmt, darkeningHexActiveActivations, false)
+          }
           const effect = calcBuffEffect(debuff.name, dispPot)
           debuff.potency = dispPot
           debuff.effectLabel = effect ? `${effect.value}${effect.unit === '%' ? '%' : ''}` : null
@@ -707,7 +723,10 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       }
       const gamePot = toGamePotency(dotPot)
       const edAmt = perks['Endless Despair'] ?? 0
-      const inflictionPot = edAmt > 0 ? gamePot * (1 + 0.35 * edAmt) + 0.1 : gamePot
+      let inflictionPot = edAmt > 0 ? gamePot * (1 + 0.35 * edAmt) + 0.1 : gamePot
+      if (darkeningHexActiveActivations > 0) {
+        inflictionPot = applyDarkeningHexPotency(inflictionPot, darkeningHexAmt, darkeningHexActiveActivations, false)
+      }
       const level = __daBuildVal.level ?? 80
       const levelMult = 1 + level / 80
       const base = getDotBase(inflictionPot)
@@ -4784,12 +4803,54 @@ $: _groupedSelfDamageSources = (() => {
 </div><!-- end da-section--wbd -->
 
 <!-- ── Perk Base Damage ── -->
-{#if _nonDraconicPerkEntries.length > 0}
+{#if _nonDraconicPerkEntries.length > 0 || darkeningHexAmt > 0}
 <div class="da-section da-section--pbd">
   <div class="da-section-title-row">
     <span class="da-section-title">Perk Base Damage</span>
   </div>
   <div class="da-pbd-list">
+    {#if darkeningHexAmt > 0}
+      <div class="da-pbd-card da-pbd-card--hex">
+        <div class="da-pbd-head">
+          <span class="da-pbd-name">Darkening Hex</span>
+          <span class="da-pbd-amt">+{Math.round(darkeningHexAmt * 1000) / 1000}</span>
+          {#if !darkeningHexEligible}
+            <Badge variant="muted" size="xs">Inactive</Badge>
+          {/if}
+        </div>
+        {#if !darkeningHexEligible}
+          <div class="da-pbd-condition">Inactive — needs Dark Magic, Concealed Edge, or Hex Infusion to proc hex damage.</div>
+        {:else}
+          <div class="da-sb-slider-wrap">
+            <span class="da-sb-slider-label">Activations</span>
+            <input
+              type="range"
+              min="0"
+              max={DARKENING_HEX_MAX_ACTIVATIONS}
+              step="1"
+              value={darkeningHexActivations}
+              on:input={(e) => {
+                const val = +(e.target as HTMLInputElement).value
+                build.update(s => ({ ...s, darkeningHexActivations: val }) as any)
+              }}
+              class="da-sb-slider"
+              style="--tc:{DMG_TYPE_COLORS.hex ?? '#f0abfc'}; --fill:{darkeningHexFillPct}%"
+            />
+            <span class="da-sb-slider-val" style="color:{DMG_TYPE_COLORS.hex ?? '#f0abfc'}">{darkeningHexActivations}</span>
+          </div>
+          <div class="da-pbd-condition">Per activation (20% per hex hit): +{Math.round(DARKENING_HEX_POTENCY_ADD_PER_AMOUNT * darkeningHexAmt * 10000) / 10000} potency, ×{Math.round((1 + DARKENING_HEX_POTENCY_MULT_PER_AMOUNT * darkeningHexAmt) * 1000) / 1000} potency, +{Math.round(DARKENING_HEX_DURATION_ADD_PER_AMOUNT * darkeningHexAmt * 100) / 100}s duration (cap {DARKENING_HEX_MAX_ACTIVATIONS}). Now: +{darkeningHexPotencyMult}% potency, +{darkeningHexDurationAdd}s.</div>
+          <details class="da-pbd-details">
+            <summary class="da-pbd-details-summary">Perk Details</summary>
+            <div class="da-pbd-details-body">
+              <p>Increases the potency of debuffs by <b>{Math.round(DARKENING_HEX_POTENCY_ADD_PER_AMOUNT * darkeningHexAmt * 10000) / 10000}</b> (0.005 × perk amount) and multiplies the potency of debuffs by <b>{Math.round((1 + DARKENING_HEX_POTENCY_MULT_PER_AMOUNT * darkeningHexAmt) * 1000) / 1000}</b> (1 + perk amount × 0.05) per activation.</p>
+              <p>Adds <b>+{Math.round(DARKENING_HEX_DURATION_ADD_PER_AMOUNT * darkeningHexAmt * 100) / 100}s</b> duration (0.5s × perk amount) per activation. Capped at <b>{DARKENING_HEX_MAX_ACTIVATIONS}</b> activations per debuff; each hex hit has a <b>20%</b> chance to activate.</p>
+              <p>Cannot raise the potency of <b>Weakness</b>, <b>Hypnotized</b>, or <b>Wound</b>. Cannot multiply the potency of <b>Snarled</b>, <b>Shatter</b>, or <b>Electrical Rend</b>.</p>
+              <p>Only works with hex from <b>Dark Magic</b>, <b>Concealed Edge</b> (in shadows), or a <b>Hex Draconic Infusion</b> — not Emotional, Toxin Transfer, or Void Rage.</p>
+            </div>
+          </details>
+        {/if}
+      </div>
+    {/if}
     {#each _nonDraconicPerkEntries as entry}
       <div class="da-pbd-card">
         <!-- Header row -->
@@ -6906,6 +6967,50 @@ $: _groupedSelfDamageSources = (() => {
   background: rgba(255,255,255,.02);
   border-radius: 4px;
   line-height: 1.4;
+}
+
+.da-pbd-details {
+  margin-top: 5px;
+  border: 1px solid rgba(232,121,249,.22);
+  border-radius: 5px;
+  background: rgba(232,121,249,.04);
+  overflow: hidden;
+}
+.da-pbd-details-summary {
+  font-size: .62rem;
+  font-weight: 700;
+  color: #e879f9;
+  font-family: 'Courier New', monospace;
+  cursor: pointer;
+  padding: 4px 8px;
+  list-style: none;
+  user-select: none;
+}
+.da-pbd-details-summary::before {
+  content: '▸';
+  display: inline-block;
+  margin-right: 5px;
+  transition: transform .12s ease;
+}
+.da-pbd-details[open] > .da-pbd-details-summary::before {
+  transform: rotate(90deg);
+}
+.da-pbd-details-body {
+  font-size: .62rem;
+  color: var(--ink-muted, #8a8d85);
+  line-height: 1.55;
+  padding: 4px 9px 7px;
+  border-top: 1px solid rgba(232,121,249,.15);
+}
+.da-pbd-details-body p {
+  margin: 0 0 4px;
+}
+.da-pbd-details-body p:last-child {
+  margin-bottom: 0;
+}
+.da-pbd-details-body b {
+  color: var(--ink, #d8d5cc);
+  font-weight: 700;
 }
 
 .da-reroll-btn {

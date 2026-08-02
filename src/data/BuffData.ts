@@ -74,6 +74,8 @@ import {
 import {
   CRYO_ENGINE_TAILWIND_BASE_POTENCY, CRYO_ENGINE_TAILWIND_POTENCY_PER_AMOUNT,
   CRYO_ENGINE_TAILWIND_DURATION_PER_AMOUNT,
+  DARKENING_HEX_POTENCY_ADD_PER_AMOUNT, DARKENING_HEX_POTENCY_MULT_PER_AMOUNT,
+  DARKENING_HEX_DURATION_ADD_PER_AMOUNT, DARKENING_HEX_MAX_ACTIVATIONS,
 } from '../lib/constants/perks'
 
 export interface BuffDefinition {
@@ -1826,19 +1828,95 @@ function getTricksterReflection(
   return roundMultiplier(rawBonus / wardingDebuffMult)
 }
 
+/**
+ * Whether the build has a hex damage source that can trigger Darkening Hex.
+ * Per game spec: hex from Emotional, Toxin Transfer or Void Rage does NOT
+ * work; hex from Dark Magic, Concealed Edge or a Hex-colored Draconic
+ * Infusion DOES. Concealed Edge only grants hex while standing in shadows.
+ * Hex dealt natively by the weapon or a Weapon Art override also counts.
+ */
+export function hasEligibleDarkeningHexSource(
+  perks: Record<string, number>,
+  build?: { draconicRuneInfusion?: string; draconicColor?: string; inDarkness?: boolean },
+  weaponDmgTypes?: Record<string, number>,
+  waDamageType?: string,
+): boolean {
+  if ((perks['Dark Magic'] ?? 0) > 0) return true
+  if ((perks['Concealed Edge'] ?? 0) > 0 && build?.inDarkness !== false) return true
+  if (build && build.draconicRuneInfusion === 'infusion' && build.draconicColor === 'hex') return true
+  if (weaponDmgTypes && (weaponDmgTypes.hex ?? 0) > 0) return true
+  if (
+    waDamageType &&
+    waDamageType !== 'Same as weapon' &&
+    !waDamageType.includes('Highest damage type') &&
+    /hex/i.test(waDamageType)
+  ) return true
+  return false
+}
+
+const DARKENING_HEX_POTENCY_EXCLUDED = new Set(['Weakness', 'Hypnotized', 'Wound'])
+const DARKENING_HEX_POTENCY_MULT_EXCLUDED = new Set(['Snarled', 'Shatter', 'Electrical Rend'])
+
+export function isDarkeningHexPotencyExcluded(buffName: string): boolean {
+  return DARKENING_HEX_POTENCY_EXCLUDED.has(buffName)
+}
+
+export function isDarkeningHexPotencyMultExcluded(buffName: string): boolean {
+  return DARKENING_HEX_POTENCY_MULT_EXCLUDED.has(buffName)
+}
+
+/**
+ * Darkening Hex potency transform. Each activation adds `add` then multiplies
+ * by `mult` (e.g. (potency + 0.005) * 1.05). Closed form after n activations:
+ *   potency * mult^n + add * (mult^n - 1) / (mult - 1)
+ * When `multExcluded`, only the additive part applies (Shatter / Electrical
+ * Rend / Snarled may not have potency multiplied).
+ */
+export function applyDarkeningHexPotency(
+  potency: number,
+  perkAmount: number,
+  activations: number,
+  multExcluded: boolean,
+): number {
+  const add = DARKENING_HEX_POTENCY_ADD_PER_AMOUNT * perkAmount
+  const mult = 1 + DARKENING_HEX_POTENCY_MULT_PER_AMOUNT * perkAmount
+  if (multExcluded) return potency + add * activations
+  const mPow = Math.pow(mult, activations)
+  const sum = mPow === 1 ? activations : (mPow - 1) / (mult - 1)
+  return roundMultiplier(potency * mPow + add * sum)
+}
+
 export function applyBuffPerkModifiers(
   buffs: GrantedBuff[],
   perks: Record<string, number>,
   activeRune?: string,
-  wardingDebuffMult?: number
+  wardingDebuffMult?: number,
+  options?: { darkeningHexActivations?: number; darkeningHexEligible?: boolean }
 ): GrantedBuff[] {
   if (buffs.length === 0) return buffs
 
   const wMult = wardingDebuffMult ?? 1
 
+  const darkeningHexAmt = perks['Darkening Hex'] ?? 0
+  const darkeningHexActivations =
+    darkeningHexAmt > 0 && options?.darkeningHexEligible === true
+      ? Math.min(Math.max(options?.darkeningHexActivations ?? 0, 0), DARKENING_HEX_MAX_ACTIVATIONS)
+      : 0
+
   return buffs.map(buff => {
     const def = BUFF_DEFS[buff.buffName]
     const isSelfDebuff = buff.isSelfDebuff || def?.isSelfDebuff
+
+    let darkeningHexPotency = buff.potency
+    let darkeningHexDurationAdd = 0
+    if (darkeningHexActivations > 0 && def?.isDebuff && !isSelfDebuff) {
+      const noPotency = DARKENING_HEX_POTENCY_EXCLUDED.has(buff.buffName)
+      const noPotencyMult = DARKENING_HEX_POTENCY_MULT_EXCLUDED.has(buff.buffName)
+      if (!noPotency) {
+        darkeningHexPotency = applyDarkeningHexPotency(buff.potency, darkeningHexAmt, darkeningHexActivations, noPotencyMult)
+      }
+      darkeningHexDurationAdd = DARKENING_HEX_DURATION_ADD_PER_AMOUNT * darkeningHexAmt * darkeningHexActivations
+    }
 
     const specific = getSpecificBuffModifiers(buff, def, perks)
     const bastionBonus = getBastionBlessBonus(buff, def, perks)
@@ -1864,7 +1942,9 @@ export function applyBuffPerkModifiers(
       bonus === 0 &&
       durationMult === 1 &&
       generic.potencyMult === 1 &&
-      generic.flatBonus === 0
+      generic.flatBonus === 0 &&
+      darkeningHexPotency === buff.potency &&
+      darkeningHexDurationAdd === 0
     ) {
       return buff
     }
@@ -1881,19 +1961,19 @@ export function applyBuffPerkModifiers(
 
     let finalPotency
     if (isDespairWithTrickster) {
-      const preTricksterDisplayed = (buff.potency + specific.bonus + bastionBonus) * generic.potencyMult * wMult + generic.flatBonus
+      const preTricksterDisplayed = (darkeningHexPotency + specific.bonus + bastionBonus) * generic.potencyMult * wMult + generic.flatBonus
       const tricksterDisplayed = (tricksterStacks / 10) * (1 + preTricksterDisplayed)
       finalPotency = roundMultiplier((preTricksterDisplayed + tricksterDisplayed) / wMult)
     } else {
       finalPotency = roundMultiplier(
-        (buff.potency + bonus) * generic.potencyMult +
+        (darkeningHexPotency + bonus) * generic.potencyMult +
           effectiveFlatBonus
       )
     }
 
     return {
       ...buff,
-      duration: Math.round(buff.duration * durationMult),
+      duration: Math.round((buff.duration + darkeningHexDurationAdd) * durationMult),
       potency: finalPotency,
       basePotency: buff.potency,
       bonusPotency:
@@ -2057,6 +2137,10 @@ export interface ActiveBuffsBuildInput {
   selectedWeaponArt: string
   potion1?: string
   potion2?: string
+  darkeningHexActivations?: number
+  draconicRuneInfusion?: string
+  draconicColor?: string
+  inDarkness?: boolean
 }
 
 /**
@@ -2100,6 +2184,7 @@ export function assembleActiveBuffs(
   build: ActiveBuffsBuildInput,
   perks: Record<string, number>,
   wardingDebuffMult?: number,
+  darkeningHexEligible?: boolean,
 ): GrantedBuff[] {
   const itemBuffs = getActiveBuildBuffs({
     rune: build.rune, ring: build.ring, infusionRing: build.infusionRing,
@@ -2122,6 +2207,10 @@ export function assembleActiveBuffs(
     perks,
     build.rune || undefined,
     wardingDebuffMult,
+    {
+      darkeningHexActivations: build.darkeningHexActivations,
+      darkeningHexEligible: darkeningHexEligible ?? hasEligibleDarkeningHexSource(perks, build),
+    },
   ), perks)
   return applyCauterizeConversion(buffs, perks)
 }
