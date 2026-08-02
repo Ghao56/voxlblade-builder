@@ -1868,7 +1868,7 @@ export function isDarkeningHexPotencyMultExcluded(buffName: string): boolean {
 /**
  * Darkening Hex potency transform. Each activation adds `add` then multiplies
  * by `mult` (e.g. (potency + 0.005) * 1.05). Closed form after n activations:
- *   potency * mult^n + add * (mult^n - 1) / (mult - 1)
+ *   potency * mult^n + add * mult * (mult^n - 1) / (mult - 1)
  * When `multExcluded`, only the additive part applies (Shatter / Electrical
  * Rend / Snarled may not have potency multiplied).
  */
@@ -1883,7 +1883,7 @@ export function applyDarkeningHexPotency(
   if (multExcluded) return potency + add * activations
   const mPow = Math.pow(mult, activations)
   const sum = mPow === 1 ? activations : (mPow - 1) / (mult - 1)
-  return roundMultiplier(potency * mPow + add * sum)
+  return roundMultiplier(potency * mPow + add * mult * sum)
 }
 
 export function applyBuffPerkModifiers(

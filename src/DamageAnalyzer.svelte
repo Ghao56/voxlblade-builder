@@ -1352,20 +1352,24 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
 
   $: _gunDmgTypes = (() => {
     if (!_gunOverlay) return _weaponDmgTypes
-    const entries = Object.entries(_weaponDmgTypes)
+    const base = { ..._weaponDmgTypesBase }
+    const entries = Object.entries(base).filter(([, v]) => v > 0)
     if (entries.length === 0) return _weaponDmgTypes
-    const priority = DMG_TYPE_PRIORITY as readonly string[]
-    const [highestKey] = entries.reduce((a, b) => {
-      if (b[1] > a[1]) return b
-      if (b[1] === a[1]) {
-        const ia = priority.indexOf(a[0])
-        const ib = priority.indexOf(b[0])
-        return (ib === -1 ? 999 : ib) < (ia === -1 ? 999 : ia) ? b : a
-      }
-      return a
-    })
-    
-    return { [highestKey]: 1 }
+    const stoneWeapon = ($result.perks['Stone Weapon'] ?? 0)
+    if (stoneWeapon > 0) {
+      const priority = DMG_TYPE_PRIORITY as readonly string[]
+      const [highestKey] = entries.reduce((a, b) => {
+        if (b[1] > a[1]) return b
+        if (b[1] === a[1]) {
+          const ia = priority.indexOf(a[0])
+          const ib = priority.indexOf(b[0])
+          return (ib === -1 ? 999 : ib) < (ia === -1 ? 999 : ia) ? b : a
+        }
+        return a
+      })
+      base[highestKey] = Math.round(((base[highestKey] ?? 0) + stoneWeapon * 0.3) * 10000) / 10000
+    }
+    return resolveDamageTypes(base, _perkDmgTypeBonuses)
   })()
 
   let showAllWeapons = false
