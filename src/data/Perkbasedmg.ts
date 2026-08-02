@@ -154,6 +154,9 @@ import {
   ICHOR_SPARK_SLASH_CHARGE_THRESHOLD,
   ICHOR_SPARK_BLEED_DURATION,
   BLAZING_FINISHER_BASE_DMG,
+  DEATHMIST_SLASH_BASE_DMG,
+  DEATHMIST_SLASH_ALLIES_HEAL_BASE,
+  DEATHMIST_SLASH_SELF_HEAL_BASE,
 } from '../lib/constants'
 
 export interface PerkSliderDef {
@@ -1412,6 +1415,37 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
     requiredEnemyDebuff: 'Burn',
     note: `Removes Burn on hit. Additional 20% of finisher's pre-mit base damage (inherits finisher's damage type distribution and scaling). ${0.2}s cooldown per enemy. Explosion size scales on perk amount. Can proc other effects.`,
+  },
+  // ── Deathmist Slash ───────────────────────────────────────────────────────
+  {
+    perkName: 'Deathmist Slash',
+    condition: 'On Finisher (additional slash)',
+    getBaseDamage: ({ perkAmount }) => Math.round(DEATHMIST_SLASH_BASE_DMG * perkAmount * 1000) / 1000,
+    hits: 1,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { water: 0.5, hex: 0.5 },
+    scalingMode: 'fixed',
+    scalings: { water: 1.0, hex: 1.0 },
+    isFinisher: true,
+    finisherOnly: true,
+    procCoefficient: { type: 'hasCoeff', value: 1.0 },
+    secondaryEffects: [
+      {
+        label: 'Heal (Allies)',
+        getValue: ({ perkAmount }) => Math.round(DEATHMIST_SLASH_ALLIES_HEAL_BASE * perkAmount * 1000) / 1000,
+        format: v => `${v.toFixed(3)} HP`,
+        condition: 'Base Healing (Allies) · cleanses allies',
+        tone: 'defense',
+      },
+      {
+        label: 'Heal (Self)',
+        getValue: ({ perkAmount }) => Math.round(DEATHMIST_SLASH_SELF_HEAL_BASE * perkAmount * 1000) / 1000,
+        format: v => `${v.toFixed(3)} HP`,
+        condition: 'Base Healing (Self) · much less than allies',
+        tone: 'defense',
+      },
+    ],
+    note: 'Once per finisher. Additional slash deals 0.5 Water + 0.5 Hex damage (1.6 × perk amount base, 1.0 Water/Hex scaling). Heals and cleanses allies; the user is not cleansed and heals much less. Healing is halved if the attack does not connect. Can proc other effects, but cannot proc heal-based effects on self.',
   },
   // ── Divine Crash ────────────────────────────────────────────────
   {

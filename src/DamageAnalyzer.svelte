@@ -83,9 +83,13 @@ import {
   getWADisplayName,
   ICHOR_SPARK_CHAIN_DMG_PCT,
   ICHOR_SPARK_SLASH_CHARGE_THRESHOLD,
+  DEATHMIST_SLASH_ALLIES_HEAL_BASE,
+  DEATHMIST_SLASH_SELF_HEAL_BASE,
 } from './lib/constants'
 
 // Centralized mappings for cross-toggle relationships
+const _isSpiritPerk = (name: string) => name === 'Deathmist Slash' || name.endsWith(' Spirit')
+
 const BUFF_KEY_BOOST_LINKS: Record<string, string> = {
   'Burn:Smoldering': 'Smoldering',
 }
@@ -375,6 +379,9 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         if (!_hasWaterDmg && $build.rune && $build.rune !== 'None') {
           const rd = RUNE_DMG_DEFS.find(d => d.runeName === $build.rune)
           _hasWaterDmg = rd ? (rd.dmgTypes['water'] ?? 0) > 0 : false
+        }
+        if (!_hasWaterDmg && $build.race === 'DRAGON BLOODED' && $build.draconicColor === 'water' && $build.draconicRuneInfusion === 'infusion') {
+          _hasWaterDmg = true
         }
         if (_hasWaterDmg) {
           const _alreadyBleeding = baseBuffs.some(b => b.buffName === 'Bleed' && b.isSelfDebuff)
@@ -2590,13 +2597,13 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     }> = []
     for (const e of _activePerkDmgEntries) {
       if (!e.isActive) continue
-      if (!e.isProcHit && e.perkName !== 'Springblast' && e.perkName !== 'Blazing Finisher') continue
+      if (!e.isProcHit && e.perkName !== 'Springblast' && e.perkName !== 'Blazing Finisher' && e.perkName !== 'Deathmist Slash') continue
       if (e.perkName === 'Echo Incineration' || e.perkName === 'Bombardier' || e.perkName === 'Runic Blades' || e.perkName === 'Quake' || e.perkName === 'Star Struck') continue
       const perkDef = findPerkDmgDef(e.perkName)
 
       const perkSunburnMult = _sunburnActive && _sunburnEnemyBurning
         ? ((e.resolvedDmgTypes.holy ?? 0) > 0 ? _sunburnHolyDmgMult : _sunburnUniversalDmgMult) : 1
-      const finisherMult = (e.isFinisher || e.isM2) && _finisherBoostMult !== 1 ? _finisherBoostMult : 1
+      const finisherMult = e.perkName === 'Deathmist Slash' ? 1 : ((e.isFinisher || e.isM2) && _finisherBoostMult !== 1 ? _finisherBoostMult : 1)
       const perkWbMult = roundMultiplier(perkSunburnMult * _activeBellowingEmberMult)
       const perkLabel = [
         perkSunburnMult !== 1 ? 'Sunburn' : '',
@@ -2616,7 +2623,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         ...(perkWbMult !== 1 ? { weaponBoostMult: perkWbMult, weaponBoostLabel: perkLabel } : {}),
         ...(e.rawFinisherNumerator != null ? { rawFinisherNumerator: e.rawFinisherNumerator } : {}),
         ...(e.halfActivations != null ? { halfActivations: e.halfActivations } : {}),
-        ...(e.oncePerFinisher != null ? { oncePerFinisher: e.perkName === 'Blazing Finisher' ? false : e.oncePerFinisher } : {}),
+        ...(e.oncePerFinisher != null ? { oncePerFinisher: e.perkName === 'Blazing Finisher' || e.perkName === 'Deathmist Slash' ? false : e.oncePerFinisher } : {}),
         ...(e.isProcHit && !e.finisherOnly ? { alwaysOnHit: true } : {}),
         ...(e.finisherOnly ? { finisherOnly: true } : {}),
         ...(perkDef?.getFinisherHitBaseDmg ? { getFinisherHitBaseDmg: perkDef.getFinisherHitBaseDmg } : {}),
@@ -2979,8 +2986,8 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           }
        }
 
-       // Check for heal secondary effects (e.g. Dark Harvest)
-       if (entry.perkName === 'Dark Harvest') {
+        // Check for heal secondary effects (e.g. Dark Harvest)
+        if (entry.perkName === 'Dark Harvest') {
           const healSe = (findPerkDmgDef('Dark Harvest')
             ?.secondaryEffects ?? []).find(se => se.label === 'Heal')
           
@@ -3000,7 +3007,11 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
               isHeal: true,
             })
           }
-       }
+        }
+
+      // Deathmist Slash damage/heals attach to finisher hit rows via
+      // _perkOnHitDamages + BaseDamageCalc, so no standalone row here.
+      if (entry.perkName === 'Deathmist Slash') continue
 
       // Add damage if available
       if (entry.typedHits_m2.length === 0) continue
@@ -3010,7 +3021,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         : 1
 
       const _pushBdcHit = (hitCount: number, hitBase: number, perHitCounts?: boolean, groupOverride?: string, labelOverride?: string, finisherIndex?: number) => result.push({
-        group: groupOverride ?? (entry.perkName === 'Draconic Blood' ? 'Rune' : entry.isWA ? 'WA' : entry.isRune ? 'Rune' : entry.isM2 ? 'M2' : entry.isM1 ? 'M1' : 'Perk'),
+        group: groupOverride ?? (entry.perkName === 'Draconic Blood' ? 'Rune' : _isSpiritPerk(entry.perkName) ? 'Spirit' : entry.isWA ? 'WA' : entry.isRune ? 'Rune' : entry.isM2 ? 'M2' : entry.isM1 ? 'M1' : 'Perk'),
         index: result.length,
         count: hitCount,
         base: hitBase,
@@ -3547,6 +3558,9 @@ $: _groupedSelfDamageSources = (() => {
     inspirationBaseHeal={(perks['Inspiration'] ?? 0) > 0 ? 0.15 + 0.015 * (perks['Inspiration'] ?? 0) : 0}
     inspirationScalingMult={(perks['Inspiration'] ?? 0) > 0 ? _computePerkScalingMult({ holy: 1.0, summon: 1.0 }) : 1}
     inspirationHealMult={_healFinalMultiplier}
+    deathmistPerkAmount={perks['Deathmist Slash'] ?? 0}
+    deathmistAlliesHealBase={(perks['Deathmist Slash'] ?? 0) > 0 ? DEATHMIST_SLASH_ALLIES_HEAL_BASE * (perks['Deathmist Slash'] ?? 0) : 0}
+    deathmistSelfHealBase={(perks['Deathmist Slash'] ?? 0) > 0 ? DEATHMIST_SLASH_SELF_HEAL_BASE * (perks['Deathmist Slash'] ?? 0) : 0}
     curseRipActiveDebuffCount={_curseRipActiveDebuffCount}
     curseRipHealMult={_curseRipHealMult}
     disableCurseRip={disableCurseRip}

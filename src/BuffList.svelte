@@ -245,6 +245,9 @@ import { SPIRIT_WINDS_PCT_PER_STACK, DARK_MAGIC_PCT_PER_STACK, EMOTIONAL_PCT_PER
           const rd = RUNE_DMG_DEFS.find(d => d.runeName === $build.rune)
           _hasWaterDmg = rd ? (rd.dmgTypes['water'] ?? 0) > 0 : false
         }
+        if (!_hasWaterDmg && _effDracoColor === 'water' && $build.draconicRuneInfusion === 'infusion') {
+          _hasWaterDmg = true
+        }
         if (_hasWaterDmg) {
           modified.push({
             buffName: 'Bleed',

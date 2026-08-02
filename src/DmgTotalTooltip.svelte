@@ -73,7 +73,9 @@
             <span class="dtt-entry-val">{e.val.toFixed(4)}</span>
             {#if e.badge}
               {@const cfg = BADGE_CONFIG[e.badge]}
-              <Badge color={cfg.color} size="xs" square>{cfg.label}</Badge>
+              {#if cfg}
+                <Badge color={cfg.color} size="xs" square>{cfg.label}</Badge>
+              {/if}
             {/if}
           </div>
         {/each}

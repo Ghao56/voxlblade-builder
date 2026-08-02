@@ -229,3 +229,8 @@ export const ICHOR_SPARK_BLEED_DURATION = 5
 // Blazing Finisher
 export const BLAZING_FINISHER_BASE_DMG = 2
 export const BLAZING_FINISHER_FINISHER_PCT = 0.20
+
+// Deathmist Slash
+export const DEATHMIST_SLASH_BASE_DMG = 1.6
+export const DEATHMIST_SLASH_ALLIES_HEAL_BASE = 0.2667
+export const DEATHMIST_SLASH_SELF_HEAL_BASE = 0.16

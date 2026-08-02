@@ -161,6 +161,9 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   export let inspirationBaseHeal: number = 0
   export let inspirationScalingMult: number = 1
   export let inspirationHealMult: number = 1
+  export let deathmistPerkAmount: number = 0
+  export let deathmistAlliesHealBase: number = 0
+  export let deathmistSelfHealBase: number = 0
   export let curseRipActiveDebuffCount: number = 0
   export let curseRipHealMult: number = 1
   export let lifestealHealMult: number = 1
@@ -997,7 +1000,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       }
     }
 
-    if (!isHeal && inspirationPerkAmount > 0 && (hit.group === 'M1' || hit.group === 'M2')) {
+    if (!isHeal && inspirationPerkAmount > 0 && (hit.group === 'M1' || hit.group === 'M2' || hit.eachHitM1M2)) {
       const inspBase = inspirationBaseHeal
       const inspScaled = inspBase * inspirationScalingMult
       if (inspScaled > 0) {
@@ -1011,6 +1014,22 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
           isHeal: true, oncePerGroup: !hit.eachHitM1M2, isCritExempt: true, forceCrit: false,
           tag: 'Inspiration',
           healBoostMult: inspirationHealMult !== 1 ? inspirationHealMult : undefined,
+        })
+      }
+    }
+
+    if (!isHeal && deathmistPerkAmount > 0 && hit.isFinisher) {
+      for (const baseHeal of [deathmistAlliesHealBase, deathmistSelfHealBase]) {
+        if (baseHeal <= 0) continue
+        const healRaw = baseHeal * inspirationHealMult * antiHealSelfMult
+        types.push({
+          key: 'heal', label: 'Heal', color: '#4ade80',
+          typeBase: baseHeal, scalingMult: 1, combatMult: inspirationHealMult,
+          applicableBoosts: [], weaponBoostMult: 1, typeDebuffMult: 1,
+          defMult: 1, enemyDefPct: 0,
+          raw: healRaw, critVal: healRaw,
+          isHeal: true, oncePerGroup: false, isCritExempt: true, forceCrit: false,
+          tag: 'Deathmist Slash',
         })
       }
     }
@@ -1076,24 +1095,28 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   $: m2Hits   = computedHits.filter(h => h.group === 'M2')
   $: waHits   = computedHits.filter(h => h.group === 'WA')
   $: runeHits = computedHits.filter(h => h.group === 'Rune')
-  $: perkHits = computedHits.filter(h => h.group !== 'M1' && h.group !== 'M2' && h.group !== 'WA' && h.group !== 'Rune' && h.label !== 'Springblast')
+  $: spiritHits = computedHits.filter(h => h.group === 'Spirit')
+  $: perkHits = computedHits.filter(h => h.group !== 'M1' && h.group !== 'M2' && h.group !== 'WA' && h.group !== 'Rune' && h.group !== 'Spirit' && h.label !== 'Springblast')
 
-  $: _groupedPerks = (() => {
-    const map = new Map<string, typeof perkHits>()
-    for (const h of perkHits) {
+  function _mergeLabeledHits(list: ComputedHit[]): Array<{ label: string; list: ComputedHit[] }> {
+    const map = new Map<string, ComputedHit[]>()
+    for (const h of list) {
       const key = (h.label ?? 'Perk').replace(/ Heal$/, '')
       if (!map.has(key)) map.set(key, [])
       map.get(key)!.push(h)
     }
-    const merged = [...map.entries()].map(([label, list]) => {
-      if (list.length <= 1) return { label, list }
-      const base = list.find(h => !h.isHeal) ?? list[0]
-      const ungroupedTypes = list.flatMap(h => h.types.filter(t => t.ungroup))
-      const healTypes = list.filter(h => h.isHeal).flatMap(h => h.types.filter(t => !t.ungroup))
-      const dmgTypes = list.filter(h => !h.isHeal).flatMap(h => h.types.filter(t => !t.ungroup))
+    return [...map.entries()].map(([label, grouped]) => {
+      if (grouped.length <= 1) return { label, list: grouped }
+      const base = grouped.find(h => !h.isHeal) ?? grouped[0]
+      const ungroupedTypes = grouped.flatMap(h => h.types.filter(t => t.ungroup))
+      const healTypes = grouped.filter(h => h.isHeal).flatMap(h => h.types.filter(t => !t.ungroup))
+      const dmgTypes = grouped.filter(h => !h.isHeal).flatMap(h => h.types.filter(t => !t.ungroup))
       return { label, list: [{ ...base, types: [...dmgTypes, ...healTypes, ...ungroupedTypes], isHeal: false }] }
     })
-    const allHits = merged.flatMap(g => g.list)
+  }
+
+  $: _groupedPerks = (() => {
+    const allHits = _mergeLabeledHits(perkHits).flatMap(g => g.list)
     return allHits.length > 0 ? [{ label: 'Perk', list: allHits }] : []
   })()
   $: hitGroups = [
@@ -1101,6 +1124,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     { label: 'M2', list: m2Hits },
     { label: 'WA', list: waHits },
     ...(runeHits.length > 0 ? [{ label: 'Rune', list: runeHits }] : []),
+    ...(spiritHits.length > 0 ? [{ label: 'Spirit', list: spiritHits }] : []),
     ..._groupedPerks,
   ]
 
