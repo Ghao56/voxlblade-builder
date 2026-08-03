@@ -2509,7 +2509,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           )
         : def.isWA
           ? _applyDmgBonuses(baseDmgTypes, _waDmgTypeBonuses)
-          : _applyDmgBonuses(baseDmgTypes, _perkDmgTypeBonusesDoT)
+          : _applyDmgBonuses(baseDmgTypes, canProc(def.procCoefficient) ? _perkDmgTypeBonuses : _perkDmgTypeBonusesDoT)
       const resolvedDmgTypes = applyAirToMagicConversion(baseResolvedDmgTypes, _spiritWindsConversionRate, _darkMagicHexBonus, _echoIncinerationAmt)
       const resolvedDmgTypesWithMw = (def.isFinisher || def.isM2) && _mortalWillHolyTypeBonus > 0
         ? { ...resolvedDmgTypes, holy: Math.round(((resolvedDmgTypes.holy ?? 0) + _mortalWillHolyTypeBonus) * 10000) / 10000 }
