@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "e43b1c6139ed14a313f945e711a4f00123caeb47",
-  "generatedAt": "2026-08-01T06:15:05.472Z",
+  "gitCommitHash": "c941c14c1f8bec8bb993954361e6a14a0716e00f",
+  "generatedAt": "2026-08-03T07:43:51.072Z",
   "files": {
     ".fallowrc.json": {
       "filePath": ".fallowrc.json",
@@ -268,37 +268,37 @@
     },
     "src/App.svelte": {
       "filePath": "src/App.svelte",
-      "contentHash": "7fd3af0bf1e41ba4d85fb259f71573e8fd790adced99181d68b69170fa605db6",
+      "contentHash": "4b6ab930a516bee691b1b7e3cd1c59e4afa14fcb7e2e9580632497b8f6d53af9",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 4431,
+      "totalLines": 4432,
       "hasStructuralAnalysis": false
     },
     "src/BaseDamageCalc.svelte": {
       "filePath": "src/BaseDamageCalc.svelte",
-      "contentHash": "ee8d67e1abaf0bfa6fd224db6fcf52e8ddfec9f92d658db2cf5f175b483bc2e1",
+      "contentHash": "fe891b9de12bcccf3bcbb027ed37218a4ec50243b0c580b80bab3f5a95d3426c",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 2814,
+      "totalLines": 2963,
       "hasStructuralAnalysis": false
     },
     "src/BuffList.svelte": {
       "filePath": "src/BuffList.svelte",
-      "contentHash": "5d96656f36ca383ce8b73e5fb0a188bc706757fd8de510a52bba48f231af5e20",
+      "contentHash": "ab1889f8fd9ef25eeb6ee3d46691944fc067e0556a5955aeb07acea269747e2b",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 849,
+      "totalLines": 945,
       "hasStructuralAnalysis": false
     },
     "src/BuildSaves.svelte": {
       "filePath": "src/BuildSaves.svelte",
-      "contentHash": "8c05b3da7ace502dae26e68310508a0f47ce0cc941333f7b2ed72be51e2ae78e",
+      "contentHash": "8c24e75f015a10c9f31f254642d562d59a879a166cca4027cdae03fda8655c7f",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -328,12 +328,12 @@
     },
     "src/DamageAnalyzer.svelte": {
       "filePath": "src/DamageAnalyzer.svelte",
-      "contentHash": "04c09963a3a383c336dd678f00e5787763ee7a53f22b780cde45a9723b329d05",
+      "contentHash": "9ad29f6a027860d398141e19410a672068de9d518d3e931928c378974744d4e7",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 7700,
+      "totalLines": 7892,
       "hasStructuralAnalysis": false
     },
     "src/data/armors.json": {
@@ -358,7 +358,7 @@
     },
     "src/data/Boost.ts": {
       "filePath": "src/data/Boost.ts",
-      "contentHash": "e5ff5bc166489b2d532f1c1064c5b7162c4f0b64dbd2ce271a0b5256f2ab3b0b",
+      "contentHash": "a660d4351211442db9482072199b12c112af63e3abc4855181345f5028f2847e",
       "functions": [
         {
           "name": "calcMinionAbsorptionPotency",
@@ -435,7 +435,10 @@
             "TOXIN_CASTER_MULT_PER_STACK",
             "CUT_DOWN_MULT_PER_AMOUNT",
             "EXECUTIONER_MULT_PER_AMOUNT",
-            "FREQUENT_FLIER_MULT_PER_STACK"
+            "FREQUENT_FLIER_MULT_PER_STACK",
+            "MARSH_FLOW_MULT_PER_STACK",
+            "SERRATED_EDGE_MULT_PER_STACK",
+            "CLEAVE_MULT_PER_STACK"
           ]
         },
         {
@@ -455,12 +458,12 @@
         "BOOST_DEFS",
         "BOOST_DEF_MAP"
       ],
-      "totalLines": 447,
+      "totalLines": 453,
       "hasStructuralAnalysis": true
     },
     "src/data/BuffData.ts": {
       "filePath": "src/data/BuffData.ts",
-      "contentHash": "f5164ecc2b57547d931a7fc897b271c0b2007e5f984bcc910527f8414901a601",
+      "contentHash": "fae96d91aac24d62f236bf00233e5a02795c62a92a4eabc16f49647d14855ecd",
       "functions": [
         {
           "name": "formatDamageTypes",
@@ -542,16 +545,59 @@
           "lineCount": 24
         },
         {
+          "name": "hasEligibleDarkeningHexSource",
+          "params": [
+            "perks",
+            "build",
+            "weaponDmgTypes",
+            "waDamageType"
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "isDarkeningHexPotencyExcluded",
+          "params": [
+            "buffName"
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "isDarkeningHexPotencyMultExcluded",
+          "params": [
+            "buffName"
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "applyDarkeningHexPotency",
+          "params": [
+            "potency",
+            "perkAmount",
+            "activations",
+            "multExcluded"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
           "name": "applyBuffPerkModifiers",
           "params": [
             "buffs",
             "perks",
             "activeRune",
-            "wardingDebuffMult"
+            "wardingDebuffMult",
+            "options"
           ],
           "returnType": "GrantedBuff[]",
           "exported": true,
-          "lineCount": 77
+          "lineCount": 106
         },
         {
           "name": "applyToxinTransferDuration",
@@ -635,11 +681,12 @@
           "params": [
             "build",
             "perks",
-            "wardingDebuffMult"
+            "wardingDebuffMult",
+            "darkeningHexEligible"
           ],
           "returnType": "GrantedBuff[]",
           "exported": true,
-          "lineCount": 29
+          "lineCount": 34
         },
         {
           "name": "calcBuffEffect",
@@ -730,9 +777,17 @@
             "WARRIOR_STOMP_TAUNT_POTENCY",
             "WARRIOR_STOMP_TAUNT_DURATION",
             "JAVELIN_SLOWNESS_DURATION",
+            "JAVELIN_BLEED_DURATION",
             "LIGHTNING_CLOAK_DURATION_WA",
             "CURSED_GROUND_WEAKNESS_POTENCY",
             "CURSED_GROUND_WEAKNESS_DURATION",
+            "CROSS_SLASH_SHATTER_POTENCY",
+            "CROSS_SLASH_SHATTER_DURATION",
+            "DAGGER_THROW_POISON_DURATION",
+            "SHATTER_SHATTER_DURATION",
+            "SHATTER_SHATTER_POTENCY",
+            "FLAME_SLASH_BURN_DURATION",
+            "ICICLE_WAVE_FROSTBITE_DURATION",
             "PERFECTION_POTENCY_PER_AMOUNT",
             "BOUNCE_MOMENTUM_BUFF_POTENCY",
             "BOUNCE_MOMENTUM_DURATION_PER_AMOUNT",
@@ -801,6 +856,9 @@
             "RUNIC_WINDS_DURATION",
             "GRANDMAGIC_GUARD_POTENCY_PER_AMOUNT",
             "GRANDMAGIC_GUARD_DURATION",
+            "MARSH_FLOW_POTENCY",
+            "MARSH_FLOW_DURATION_BASE",
+            "MARSH_FLOW_DURATION_PER_AMOUNT",
             "BOUNCE_DURATION_BASE",
             "BOUNCE_DURATION_PER_STACK",
             "MOD_GLADIATORIAL_POTENCY",
@@ -826,7 +884,16 @@
             "RAGE_POTION_DURATION",
             "POISON_POTION_POTENCY",
             "POISON_POTION_DURATION",
-            "POTION_CHUGGER_POTENCY_MULT_PER_LEVEL"
+            "POTION_CHUGGER_POTENCY_MULT_PER_LEVEL",
+            "SHATTERING_JUSTICE_POTENCY_PER_AMOUNT",
+            "SHATTERING_JUSTICE_DURATION",
+            "CLEAVE_POTENCY",
+            "CLEAVE_DURATION",
+            "SERRATED_EDGE_DURATION",
+            "INSPIRED_POTENCY_PER_AMOUNT",
+            "INSPIRED_DURATION",
+            "INSPIRED_EFFECT_PER_TENTH",
+            "VIRULENT_CORE_DURATION"
           ]
         },
         {
@@ -834,7 +901,24 @@
           "specifiers": [
             "CRYO_ENGINE_TAILWIND_BASE_POTENCY",
             "CRYO_ENGINE_TAILWIND_POTENCY_PER_AMOUNT",
-            "CRYO_ENGINE_TAILWIND_DURATION_PER_AMOUNT"
+            "CRYO_ENGINE_TAILWIND_DURATION_PER_AMOUNT",
+            "DARKENING_HEX_POTENCY_ADD_PER_AMOUNT",
+            "DARKENING_HEX_POTENCY_MULT_PER_AMOUNT",
+            "DARKENING_HEX_DURATION_ADD_PER_AMOUNT",
+            "DARKENING_HEX_MAX_ACTIVATIONS",
+            "KINDLING_BURN_DURATION_MULT"
+          ]
+        },
+        {
+          "source": "../lib/types",
+          "specifiers": [
+            "canProc"
+          ]
+        },
+        {
+          "source": "./Perkbasedmg",
+          "specifiers": [
+            "findPerkDmgDef"
           ]
         }
       ],
@@ -843,6 +927,10 @@
         "BASIC_DEBUFF_POOL",
         "getWeaponArtBuffs",
         "getTrueBalanceBuffs",
+        "hasEligibleDarkeningHexSource",
+        "isDarkeningHexPotencyExcluded",
+        "isDarkeningHexPotencyMultExcluded",
+        "applyDarkeningHexPotency",
         "applyBuffPerkModifiers",
         "applyToxinTransferDuration",
         "convertTailwindToWhirlwind",
@@ -855,7 +943,7 @@
         "calcBuffEffect",
         "formatPerkDescription"
       ],
-      "totalLines": 2105,
+      "totalLines": 2301,
       "hasStructuralAnalysis": true
     },
     "src/data/cdr.ts": {
@@ -1461,7 +1549,7 @@
     },
     "src/data/perkAutoDebuffs.ts": {
       "filePath": "src/data/perkAutoDebuffs.ts",
-      "contentHash": "d8083e77f0698ca163f4af974e70df3c6a494a557d5af06a139c3fce9552e1c2",
+      "contentHash": "4c000cd959442d35c130010e39bcedd6c064132a9e4268a46f4a273b534fa5ea",
       "functions": [
         {
           "name": "calcActualHpFillPct",
@@ -1481,7 +1569,7 @@
           ],
           "returnType": "GrantedBuff[]",
           "exported": true,
-          "lineCount": 298
+          "lineCount": 324
         }
       ],
       "classes": [],
@@ -1540,7 +1628,8 @@
             "BELLOWING_EMBER_HP_GATE_PER_STACK",
             "PYRE_BLOOM_BURN_DURATION",
             "RUNIC_BLADES_DEBUFF_DURATION_PER_STACK",
-            "CACI_SPIRIT_BLEED_DURATION"
+            "CACI_SPIRIT_BLEED_DURATION",
+            "ICE_BURST_BLEED_DURATION"
           ]
         },
         {
@@ -1554,12 +1643,12 @@
         "calcActualHpFillPct",
         "getAutoDebuffs"
       ],
-      "totalLines": 332,
+      "totalLines": 358,
       "hasStructuralAnalysis": true
     },
     "src/data/Perkbasedmg.ts": {
       "filePath": "src/data/Perkbasedmg.ts",
-      "contentHash": "aebca5b7e7823e1621319483b4b07978f0809bcb89714b8dfe6580078af3eff8",
+      "contentHash": "d12fac67d5dd963c116d034254fef8e7b3e5172614191d3aba247ac4663b1a70",
       "functions": [
         {
           "name": "gateThreshold",
@@ -1599,6 +1688,13 @@
           ],
           "returnType": "number",
           "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "rollStarStruckType",
+          "params": [],
+          "returnType": "string",
+          "exported": false,
           "lineCount": 5
         },
         {
@@ -1800,6 +1896,9 @@
             "GNAWING_POISON_BASE_DMG",
             "GNAWING_POISON_DMG_PER_STACK",
             "GNAWING_POISON_COOLDOWN",
+            "ICE_BURST_BASE_DMG",
+            "ICE_BURST_DMG_PER_STACK",
+            "ICE_BURST_BLEED_DURATION",
             "PROPELLING_FUN_BASE_DMG",
             "PROPELLING_FUN_DMG_PER_STACK",
             "PROPELLING_FUN_COOLDOWN",
@@ -1821,7 +1920,10 @@
             "ICHOR_SPARK_SLASH_HEAL_AT_MIN",
             "ICHOR_SPARK_SLASH_CHARGE_THRESHOLD",
             "ICHOR_SPARK_BLEED_DURATION",
-            "BLAZING_FINISHER_BASE_DMG"
+            "BLAZING_FINISHER_BASE_DMG",
+            "DEATHMIST_SLASH_BASE_DMG",
+            "DEATHMIST_SLASH_ALLIES_HEAL_BASE",
+            "DEATHMIST_SLASH_SELF_HEAL_BASE"
           ]
         }
       ],
@@ -1835,17 +1937,17 @@
         "PERK_DMG_DEFS",
         "findPerkDmgDef"
       ],
-      "totalLines": 1487,
+      "totalLines": 1572,
       "hasStructuralAnalysis": true
     },
     "src/data/perks.json": {
       "filePath": "src/data/perks.json",
-      "contentHash": "586191a3a5d45a01107149c76c6b676e2a177625edebc3b44a6702dab1b6060b",
+      "contentHash": "166ea8b2a92477af439bda902703376ee6427c042ee76155ee72c1e4acaf8380",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 3689,
+      "totalLines": 3687,
       "hasStructuralAnalysis": true
     },
     "src/data/potions.ts": {
@@ -2079,7 +2181,7 @@
     },
     "src/data/stanceOverlays.ts": {
       "filePath": "src/data/stanceOverlays.ts",
-      "contentHash": "d5244f05c8380fec9e747c86eb8b75a04a0f034d5fa4bc88a821f6252e469bb3",
+      "contentHash": "90c8f83ed4611bebf407ed9d69fc0a1b6106dbb50c23afc52628a95dad114f5c",
       "functions": [
         {
           "name": "resolveStanceOverlay",
@@ -2319,7 +2421,7 @@
     },
     "src/data/weapon base dmg.ts": {
       "filePath": "src/data/weapon base dmg.ts",
-      "contentHash": "7d1dc112569bdae0808bea610bd97fe4b0a2465d53574f438f6247834970f9fb",
+      "contentHash": "e5972cbc695fe6ab9fb12c53708c607d1a55fb5bae5b682a6aef008641153180",
       "functions": [],
       "classes": [],
       "imports": [
@@ -2503,12 +2605,12 @@
     },
     "src/DmgTotalTooltip.svelte": {
       "filePath": "src/DmgTotalTooltip.svelte",
-      "contentHash": "a9851ec5207e526f636ede64f477d0179aecc011178fcb086056dc4717f072bb",
+      "contentHash": "4b7eca26fc1b0762832cff626b1a9d525ca6a716f401a9cf82aa95081a38d390",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 170,
+      "totalLines": 172,
       "hasStructuralAnalysis": false
     },
     "src/DraconicAbilityStats.svelte": {
@@ -2543,7 +2645,7 @@
     },
     "src/LevelBar.svelte": {
       "filePath": "src/LevelBar.svelte",
-      "contentHash": "c06257b5e1762d55759e734b342276e9ada879b3b8da714cb64da1b95ee48850",
+      "contentHash": "033c5e840293b3b3352d9be13ebaeb5f9fcbf41fae661d8b1d20799961148620",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2573,7 +2675,7 @@
     },
     "src/lib/constants/boosts.ts": {
       "filePath": "src/lib/constants/boosts.ts",
-      "contentHash": "972a9c41d06ab5c25e860d902ef2853bb419402f041a12d5a6a74ab3142c1a0a",
+      "contentHash": "7c67c6bee98b755e9ea7626cf252485aecc22cc2cc5811157a784917744e88f1",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2602,6 +2704,9 @@
         "GORECAST_MULT_PER_STACK",
         "VICIOUS_EDGE_MULT_PER_STACK",
         "FREQUENT_FLIER_MULT_PER_STACK",
+        "MARSH_FLOW_MULT_PER_STACK",
+        "SERRATED_EDGE_MULT_PER_STACK",
+        "CLEAVE_MULT_PER_STACK",
         "UNDEAD_MIGHT_MULT_PER_STACK",
         "HIGHLANDER_MULT_PER_STACK",
         "EMOTIONAL_MULT_PER_STACK",
@@ -2643,12 +2748,12 @@
         "ESSENCE_RAY_HITS",
         "STEAM_POWERED_MULT_PER_AIR_BOOST"
       ],
-      "totalLines": 78,
+      "totalLines": 81,
       "hasStructuralAnalysis": true
     },
     "src/lib/constants/buffs.ts": {
       "filePath": "src/lib/constants/buffs.ts",
-      "contentHash": "c255cffe447bce725d1ec4eaed4f4a292ccfb8699e49a59a92fc7898372b304f",
+      "contentHash": "1f674fbbe96eaa84b00f7a541a96c8ea6fe509431b5602c5fbfedf56e577f856",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -2662,6 +2767,9 @@
         "WHIRLWIND_EFFECT_PER_TENTH",
         "GLYPH_CONDUIT_EFFECT_PER_TENTH",
         "DESPAIR_EFFECT_PER_TENTH",
+        "INSPIRED_POTENCY_PER_AMOUNT",
+        "INSPIRED_DURATION",
+        "INSPIRED_EFFECT_PER_TENTH",
         "LUMINESCENT_PCT_PER_POTENCY",
         "RAGE_RUNE_BUFF_POTENCY",
         "RAGE_RUNE_BUFF_DURATION",
@@ -2699,9 +2807,17 @@
         "WARRIOR_STOMP_TAUNT_POTENCY",
         "WARRIOR_STOMP_TAUNT_DURATION",
         "JAVELIN_SLOWNESS_DURATION",
+        "JAVELIN_BLEED_DURATION",
         "LIGHTNING_CLOAK_DURATION_WA",
         "CURSED_GROUND_WEAKNESS_POTENCY",
         "CURSED_GROUND_WEAKNESS_DURATION",
+        "CROSS_SLASH_SHATTER_POTENCY",
+        "CROSS_SLASH_SHATTER_DURATION",
+        "DAGGER_THROW_POISON_DURATION",
+        "SHATTER_SHATTER_POTENCY",
+        "SHATTER_SHATTER_DURATION",
+        "FLAME_SLASH_BURN_DURATION",
+        "ICICLE_WAVE_FROSTBITE_DURATION",
         "PERFECTION_POTENCY_PER_AMOUNT",
         "BOUNCE_MOMENTUM_BUFF_POTENCY",
         "BOUNCE_MOMENTUM_DURATION_PER_AMOUNT",
@@ -2770,6 +2886,15 @@
         "RUNIC_WINDS_DURATION",
         "GRANDMAGIC_GUARD_POTENCY_PER_AMOUNT",
         "GRANDMAGIC_GUARD_DURATION",
+        "MARSH_FLOW_POTENCY",
+        "MARSH_FLOW_DURATION_BASE",
+        "MARSH_FLOW_DURATION_PER_AMOUNT",
+        "SHATTERING_JUSTICE_POTENCY_PER_AMOUNT",
+        "SHATTERING_JUSTICE_DURATION",
+        "SERRATED_EDGE_DURATION",
+        "CLEAVE_POTENCY",
+        "CLEAVE_DURATION",
+        "VIRULENT_CORE_DURATION",
         "BOUNCE_DURATION_BASE",
         "BOUNCE_DURATION_PER_STACK",
         "MOD_GLADIATORIAL_POTENCY",
@@ -2794,7 +2919,7 @@
         "CLOUDPUSH_PCT_PER_STACK",
         "CINDERPULL_PCT_PER_STACK"
       ],
-      "totalLines": 178,
+      "totalLines": 200,
       "hasStructuralAnalysis": true
     },
     "src/lib/constants/cdr.ts": {
@@ -3002,7 +3127,7 @@
     },
     "src/lib/constants/perk-base-damage.ts": {
       "filePath": "src/lib/constants/perk-base-damage.ts",
-      "contentHash": "382434b86d336b2c8a2c94ed9c3b4762af6d29be3bdfd8776fb5018b2c3d754f",
+      "contentHash": "3ba2bd678acac8ec226ff1b925bac8efcfacc0c8c47980dea3c28be7de33bf93",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3124,6 +3249,9 @@
         "GNAWING_POISON_BASE_DMG",
         "GNAWING_POISON_DMG_PER_STACK",
         "GNAWING_POISON_COOLDOWN",
+        "ICE_BURST_BASE_DMG",
+        "ICE_BURST_DMG_PER_STACK",
+        "ICE_BURST_BLEED_DURATION",
         "PROPELLING_FUN_BASE_DMG",
         "PROPELLING_FUN_DMG_PER_STACK",
         "PROPELLING_FUN_COOLDOWN",
@@ -3149,14 +3277,17 @@
         "ICHOR_SPARK_CHAIN_PROC_CHANCE",
         "ICHOR_SPARK_BLEED_DURATION",
         "BLAZING_FINISHER_BASE_DMG",
-        "BLAZING_FINISHER_FINISHER_PCT"
+        "BLAZING_FINISHER_FINISHER_PCT",
+        "DEATHMIST_SLASH_BASE_DMG",
+        "DEATHMIST_SLASH_ALLIES_HEAL_BASE",
+        "DEATHMIST_SLASH_SELF_HEAL_BASE"
       ],
-      "totalLines": 227,
+      "totalLines": 237,
       "hasStructuralAnalysis": true
     },
     "src/lib/constants/perks.ts": {
       "filePath": "src/lib/constants/perks.ts",
-      "contentHash": "ecb158e6a58810e00ad60070b3a14b4144fd43438a7fd911e3f4c23ec3343401",
+      "contentHash": "32328528992505ee8e0501a675668093f285bec6e5ac8c897b91dffa97377c53",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -3220,9 +3351,16 @@
         "PHANTOM_PAIN_BASE_PCT",
         "PHANTOM_PAIN_PERK_MULT",
         "PURSUIT_BASE_MULT",
-        "PURSUIT_MULT_PER_RANK"
+        "PURSUIT_MULT_PER_RANK",
+        "DARKENING_HEX_POTENCY_ADD_PER_AMOUNT",
+        "DARKENING_HEX_POTENCY_MULT_PER_AMOUNT",
+        "DARKENING_HEX_DURATION_ADD_PER_AMOUNT",
+        "DARKENING_HEX_MAX_ACTIVATIONS",
+        "DARKENING_HEX_PROC_CHANCE",
+        "KINDLING_BURN_DURATION_MULT",
+        "KINDLING_DMG_ADD_PER_AMOUNT"
       ],
-      "totalLines": 101,
+      "totalLines": 112,
       "hasStructuralAnalysis": true
     },
     "src/lib/constants/rune-base-damage.ts": {
@@ -3301,7 +3439,7 @@
     },
     "src/lib/constants/storage.ts": {
       "filePath": "src/lib/constants/storage.ts",
-      "contentHash": "c2b2df85a5fddbf87c8fa3c1a43000d9541bdabb27be5ac2b93e067e867508a7",
+      "contentHash": "5267648af4ac248867ae146f3d39fae83d6188dcecfae31566c4b0086b0d3d71",
       "functions": [],
       "classes": [],
       "imports": [
@@ -3328,7 +3466,7 @@
         "MAX_BUILD_SLOTS",
         "CONFIRM_TIMEOUT_MS"
       ],
-      "totalLines": 58,
+      "totalLines": 59,
       "hasStructuralAnalysis": true
     },
     "src/lib/constants/thresholds.ts": {
@@ -3476,7 +3614,7 @@
     },
     "src/lib/damageTypeResolve.ts": {
       "filePath": "src/lib/damageTypeResolve.ts",
-      "contentHash": "b3c4ead4bb8edd239ee2ad5c4e1e33ed5bff53b5f111c8710d399cbe86bb2e82",
+      "contentHash": "a2f24eb0a0caf7d8a86e443f77b566920d61d7332c5b3b9c55d465417ca62ac9",
       "functions": [
         {
           "name": "resolveDamageTypes",
@@ -3519,6 +3657,15 @@
           "lineCount": 8
         },
         {
+          "name": "computeEffectiveWaDmgTypes",
+          "params": [
+            "input"
+          ],
+          "returnType": "Record<string, number>",
+          "exported": true,
+          "lineCount": 54
+        },
+        {
           "name": "applyAirToMagicConversion",
           "params": [
             "types",
@@ -3551,9 +3698,10 @@
         "applyFireAirConversion",
         "resolveWaDamageTypeKeys",
         "getFinalWaDmgTypes",
+        "computeEffectiveWaDmgTypes",
         "applyAirToMagicConversion"
       ],
-      "totalLines": 99,
+      "totalLines": 176,
       "hasStructuralAnalysis": true
     },
     "src/lib/defense.ts": {
@@ -3617,7 +3765,7 @@
     },
     "src/lib/dmgTypes.ts": {
       "filePath": "src/lib/dmgTypes.ts",
-      "contentHash": "d24ce5adadb218d7c55b294ce87d80d367e183ac53192d966294474c384760c0",
+      "contentHash": "87ce7e6ff6b3687dda2adf23f265a266f9c7e8030a8089fb3c9eb23b47ab1b23",
       "functions": [],
       "classes": [],
       "imports": [
@@ -3631,7 +3779,7 @@
       "exports": [
         "BADGE_CONFIG"
       ],
-      "totalLines": 82,
+      "totalLines": 91,
       "hasStructuralAnalysis": true
     },
     "src/lib/EnchantSelect.svelte": {
@@ -4156,7 +4304,7 @@
     },
     "src/lib/engine/data/equipment.ts": {
       "filePath": "src/lib/engine/data/equipment.ts",
-      "contentHash": "4834edc832c686872c73095af5575a80119fe765befc4715b8acc5b6c3dcde1c",
+      "contentHash": "270182d3b6f8eb71dc8c34dbba7fd4c7048bdeaf7c0bef4a966324d9296bf043",
       "functions": [
         {
           "name": "getEnchant",
@@ -4868,7 +5016,7 @@
     },
     "src/lib/Modal.svelte": {
       "filePath": "src/lib/Modal.svelte",
-      "contentHash": "82f6e0f059d946a5bc2435145ceedd7f8ecbaf01769d653a634ab01f7784a293",
+      "contentHash": "53adeb77c2009f1cb3c1f7b4423753037cd58b0760fd1a4a9e56ffc5d5f593d4",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -4979,7 +5127,7 @@
     },
     "src/lib/store.ts": {
       "filePath": "src/lib/store.ts",
-      "contentHash": "97d882736b982470c97b1c3026d4e640c73b8347abab17c818c970c2ebbb523a",
+      "contentHash": "688134075a0c78dd17dabcc4a7d9d6ee229800793a4389e69aa829de70d29fa1",
       "functions": [
         {
           "name": "loadBuild",
@@ -5110,7 +5258,7 @@
         "canArmorMoveToSlot",
         "moveRingSlot"
       ],
-      "totalLines": 242,
+      "totalLines": 243,
       "hasStructuralAnalysis": true
     },
     "src/lib/stores/toast.ts": {
@@ -5161,17 +5309,17 @@
     },
     "src/lib/Toast.svelte": {
       "filePath": "src/lib/Toast.svelte",
-      "contentHash": "fdc9f974dfa32ccd4c8d775368bb2cef1518075d55ca28c3e337e1628079d366",
+      "contentHash": "781652425eb819f609fcf6bb5b047af4474c66dc2d9ddd1cad6a2f1536a6a401",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 100,
+      "totalLines": 101,
       "hasStructuralAnalysis": false
     },
     "src/lib/types.ts": {
       "filePath": "src/lib/types.ts",
-      "contentHash": "3af5566dff657a68196e6cd6e8b4c36138b0d281d355710502e02b727941cadc",
+      "contentHash": "aa8c2431cd8736c556adb0cc7432dde799796fa07fda28be9d55aff28f66a723",
       "functions": [
         {
           "name": "applyUpgrade",
@@ -5214,7 +5362,7 @@
         "DMG_TYPE_PRIORITY",
         "SCALING_TO_BOOST"
       ],
-      "totalLines": 316,
+      "totalLines": 319,
       "hasStructuralAnalysis": true
     },
     "src/lib/ui/Badge.svelte": {
@@ -5515,7 +5663,7 @@
     },
     "stats.html": {
       "filePath": "stats.html",
-      "contentHash": "ebfed3dfec4872ea2b164757d0d5497b95aa5937b7b85490aa212790b086c0bc",
+      "contentHash": "5ce303c610b347829153bb958e6ec0b2574937561ecfe15eb094f0880f85b86a",
       "functions": [],
       "classes": [],
       "imports": [],

@@ -1,0 +1,160 @@
+[
+    {
+        "title":  "Project Overview",
+        "description":  "Start with the real documentation, not the README: AGENTS.md explains the voxlblade-builder stack (Svelte 5 + Vite + TypeScript, pnpm, Vitest), while docs/ONBOARDING.md is the genuine architecture guide — it maps the config/source/data/engine/modal/store layers and walks through the damage-calculation pipeline. Note that README.md is only the stock create-vite Svelte template and says nothing about this project\u0027s actual purpose: a web damage calculator and build optimizer for the Roblox game Voxel Blade. This tour follows ONBOARDING\u0027s layer map: overview, entry, UI orchestration, damage computation, game data, engine, then config and deployment.",
+        "nodeIds":  [
+                        "document:docs/ONBOARDING.md",
+                        "document:AGENTS.md",
+                        "document:README.md"
+                    ],
+        "order":  1
+    },
+    {
+        "languageLesson":  "Svelte 5 uses the `mount(App, { target })` API (imported from \u0027svelte\u0027) instead of the legacy `new App({ target })`. Styling is driven by CSS custom properties (design tokens), so the whole theme can shift by overriding a handful of variables on :root.",
+        "title":  "Application Entry \u0026 Mount",
+        "description":  "index.html is the real browser entry: it loads the Svelte app into the #app container. src/main.ts then mounts the root App component and injects Vercel analytics, while src/app.css defines the dark-theme design tokens (colors, surfaces, radii, shadows, draconic theme variables) consumed by every component. This is the one place the app boots — everything else hangs off the App component mounted here.",
+        "nodeIds":  [
+                        "file:index.html",
+                        "file:src/main.ts",
+                        "file:src/app.css"
+                    ],
+        "order":  2
+    },
+    {
+        "languageLesson":  "Svelte 5 runes: `$state` declares reactive variables and `$derived` declares computed values that automatically re-run when their inputs change. Derived Svelte stores behave the same way — the result store recomputes calcBuild on every build mutation, giving \u0027live\u0027 damage numbers.",
+        "title":  "Root Orchestration \u0026 Build State",
+        "description":  "src/App.svelte is the root orchestration component and the largest file in the app (~7,560 lines): it owns the build-state editors for race, guild, armor, ring, rune, weapon, and enchantment selection (with drag-and-drop), and wires together the damage analyzer, buff list, level bar, emotional tracker, and build saves from the previous step. Its counterpart src/lib/store.ts centralizes reactive state: writable/derived stores with debounced localStorage persistence and mutation actions, where the derived result store reruns calcBuild live so damage output updates as you edit the build. This is where the UI connects to the calculation engine.",
+        "nodeIds":  [
+                        "file:src/App.svelte",
+                        "file:src/lib/store.ts"
+                    ],
+        "order":  3
+    },
+    {
+        "languageLesson":  "TypeScript: this codebase leans on large shared interface/union contracts (types.ts) as the single vocabulary shared between data, engine, and UI layers. It also uses small pure math helpers (round2/round4) instead of ad-hoc Number.toFixed calls to avoid float-precision drift across many sequential calculations.",
+        "title":  "Shared Domain Types \u0026 Math Utils",
+        "description":  "These are the foundations everything else imports. src/lib/types.ts has the highest fan-in in the project (20 importers) because it defines the central shared types and constants for the damage engine — races, guilds, armor, rings, runes, enchantments, weapons, monk gear, build state, and weapon hit data. src/lib/utils.ts supplies the shared math, text-highlighting, and proc-chance helpers used across engine and UI, and src/lib/engine/_utils.ts provides the tiny round2/round4 helpers that keep floating-point results consistent. Understanding these contracts first makes every engine and data module easier to read.",
+        "nodeIds":  [
+                        "file:src/lib/types.ts",
+                        "file:src/lib/utils.ts",
+                        "file:src/lib/engine/_utils.ts"
+                    ],
+        "order":  4
+    },
+    {
+        "title":  "Main Analysis Screen",
+        "description":  "src/DamageAnalyzer.svelte is the main build-analysis screen: it reads the build store, assembles active buffs and debuffs, resolves weapon/weapon-art/rune/mount damage scalings and damage-type conversions, computes DoT ticks, self-damage perks, and defensive sources, then feeds the computed hits into the per-hit engine from the next step. Around it, small control components feed state in: BuffList.svelte manages the active buff/debuff list with warding multipliers, LevelBar.svelte edits level and HP fill (computing effective max HP from protection), and EmotionalTracker.svelte selects the character\u0027s emotional state. Together they implement the \u0027inputs\u0027 of the calculator whose outputs you\u0027ll see next.",
+        "nodeIds":  [
+                        "file:src/DamageAnalyzer.svelte",
+                        "file:src/BuffList.svelte",
+                        "file:src/LevelBar.svelte",
+                        "file:src/EmotionalTracker.svelte"
+                    ],
+        "order":  5
+    },
+    {
+        "title":  "Per-Hit Damage Computation",
+        "description":  "This is the heart of the calculator. src/BaseDamageCalc.svelte receives weapon hits, typed boosts, debuffs, crit values, enemy defenses, and DoT data as props, then computes final damage per hit by applying armor penetration, damage-type multipliers, debuff effects, crits, and heal sources — and renders the breakdown with badges and tooltips. The prop interfaces come from src/lib/dmgTypes.ts (ComputedType, PerkOnHitDmg, ComputedHit plus badge display metadata), and src/DmgTotalTooltip.svelte renders the animated per-hit breakdown pie chart. This step converts all the state you\u0027ve seen so far into concrete numbers.",
+        "nodeIds":  [
+                        "file:src/BaseDamageCalc.svelte",
+                        "file:src/lib/dmgTypes.ts",
+                        "file:src/DmgTotalTooltip.svelte"
+                    ],
+        "order":  6
+    },
+    {
+        "languageLesson":  "JSON as game data: these files are schema-less arrays of objects, so correctness depends on convention rather than a compiler. The engine builds index maps (e.g. getBlade/getHandle/getGlove/getEssence) keyed by item name and relies on consistent field shapes across every entry.",
+        "title":  "Weapon Part Databases",
+        "description":  "Moving from code to content: the weapon system is data-driven. src/data/blades.json catalogues blade heads across tiers 1-5 (attack speed, damage-type weights, scaling coefficients, blade type, perks), src/data/handles.json does the same for Medium/Long Handle and Pole parts, and src/data/gloves.json and src/data/essences.json cover the monk weapon paths (gloves plus essence variants). The engine\u0027s weapon module (later in the tour) consumes these via name-keyed lookups, so adding a new weapon is a data change, not a code change.",
+        "nodeIds":  [
+                        "file:src/data/blades.json",
+                        "file:src/data/handles.json",
+                        "file:src/data/gloves.json",
+                        "file:src/data/essences.json"
+                    ],
+        "order":  7
+    },
+    {
+        "title":  "Gear \u0026 Character Databases",
+        "description":  "The rest of the equipable and character data lives here. src/data/armors.json defines armor sets with shared stat blocks, attached perks, and their Helmet/Chestplate/Leggings parts; src/data/rings.json and src/data/runes.json define equippable rings and active ability runes; and src/data/races.json plus src/data/guilds.json define the ten races\u0027 passives and the guilds with their three progression ranks and per-rank bonuses. The equipment and character engine data modules (from the engine barrel) load these registries, so every build in App.svelte resolves back to these files.",
+        "nodeIds":  [
+                        "file:src/data/armors.json",
+                        "file:src/data/rings.json",
+                        "file:src/data/runes.json",
+                        "file:src/data/races.json",
+                        "file:src/data/guilds.json"
+                    ],
+        "order":  8
+    },
+    {
+        "title":  "Data Modules: Buffs, Boosts \u0026 Perk Damage",
+        "description":  "Not all game data is JSON — several subsystems ship as TypeScript data+logic modules. src/data/BuffData.ts is the central registry and computation module for buffs/debuffs (BUFF_DEFS metadata, the debuff pool, and the logic to assemble a build\u0027s active buffs and compute their effects). src/data/Boost.ts defines the damage/heal boost system (BOOST_DEFS keyed by perk), src/data/Perkbasedmg.ts registers perk-based damage sources like springblast and bomber charge, and src/data/statboost.ts mutates a StatMap in a fixed execution order to apply perk stat boosts. These mirror the JSON layer of Step 7-8 but add the calculation logic that static data can\u0027t express.",
+        "nodeIds":  [
+                        "file:src/data/BuffData.ts",
+                        "file:src/data/Boost.ts",
+                        "file:src/data/Perkbasedmg.ts",
+                        "file:src/data/statboost.ts"
+                    ],
+        "order":  9
+    },
+    {
+        "languageLesson":  "TypeScript: the engine is built as a pipeline of pure functions — each module (shrine → weapon → enchant → build) takes structured inputs and returns structured outputs, composed by build.ts into a single BuildResult. This separation keeps the complex damage math unit-testable.",
+        "title":  "Engine Build Pipeline",
+        "description":  "src/lib/engine/build.ts is the core pipeline (highest fan-out in the project): it accumulates stats and perks from all equipment slots, finalizes perks, computes CDR, boosts, crit, buffs, and weapon results, and returns the assembled BuildResult via calcBuild — the function the result store calls live. It composes the weapon module (merging blade/handle or glove/essence data, applying shrine and monk-rank bonuses), the enchant module (stat transformations, upgrades, infusion, exclusive-slot rules), and the shrine module (tier multipliers on weapon part stats). The src/lib/engine.ts barrel re-exports all of this as the public engine API consumed by the UI.",
+        "nodeIds":  [
+                        "file:src/lib/engine.ts",
+                        "file:src/lib/engine/build.ts",
+                        "file:src/lib/engine/weapon.ts",
+                        "file:src/lib/engine/enchant.ts",
+                        "file:src/lib/engine/shrine.ts"
+                    ],
+        "order":  10
+    },
+    {
+        "title":  "Engine Helpers: Crit, Defense \u0026 Damage Types",
+        "description":  "Three specialist modules do the subtler math. src/lib/crit.ts computes natural/extra crit chance, proc-coefficient-scaled chances, and crit damage multipliers from perks (Dexterity, Thief Training, Venom Eater) including Primal gating and full breakdown reporting. src/lib/defense.ts resolves defense sources into flat and percent multipliers, converting them into effective damage multipliers and true DR percentages. src/lib/damageTypeResolve.ts resolves final damage-type distributions — merging weapon-art damage types with bonuses and applying conversions like Fire-Air (Echo Incineration) — guided by the canonical type metadata in src/lib/constants/damage-types.ts (labels, colors, inheritance rules, priority ordering). These feed directly into BaseDamageCalc from Step 6.",
+        "nodeIds":  [
+                        "file:src/lib/crit.ts",
+                        "file:src/lib/defense.ts",
+                        "file:src/lib/damageTypeResolve.ts",
+                        "file:src/lib/constants/damage-types.ts"
+                    ],
+        "order":  11
+    },
+    {
+        "title":  "Balance Constants \u0026 Tuning",
+        "description":  "Every magic number in the game is centralized under src/lib/constants/. The constants.ts barrel re-exports all submodules (second-highest fan-in), while perks.ts catalogs ~60 perk-mechanic tuning values, buffs.ts exports 140 buff/debuff potency, duration, and scaling numbers sourced from the game, boosts.ts holds 64 named boost multipliers, and game.ts is the single source of truth for core constants like max level and the base HP formula. Keeping balance tuning in one place means game updates are data edits, and the engine stays mechanical.",
+        "nodeIds":  [
+                        "file:src/lib/constants.ts",
+                        "file:src/lib/constants/perks.ts",
+                        "file:src/lib/constants/buffs.ts",
+                        "file:src/lib/constants/boosts.ts",
+                        "file:src/lib/constants/game.ts"
+                    ],
+        "order":  12
+    },
+    {
+        "title":  "UI Primitives \u0026 Selection Modals",
+        "description":  "The app\u0027s UI is built from reusable Svelte components rather than inline markup. src/lib/Modal.svelte provides the accessible modal shell (overlay, focus trapping) used by every selection dialog, src/lib/ModalSearchHeader.svelte composes search input, tag/stat filters, and sort buttons for the item pickers, and src/lib/ui/Badge.svelte is the shared pill component for tags and stat chips. The src/lib/modals/index.ts barrel re-exports the four selection modals (Race, Guild, Accessory, WeaponPart). These are the building blocks that keep the huge App.svelte and DamageAnalyzer.svelte components from becoming unmaintainable.",
+        "nodeIds":  [
+                        "file:src/lib/Modal.svelte",
+                        "file:src/ModalSearchHeader.svelte",
+                        "file:src/lib/ui/Badge.svelte",
+                        "file:src/lib/modals/index.ts"
+                    ],
+        "order":  13
+    },
+    {
+        "languageLesson":  "YAML (GitHub Actions): the workflow is structured as an `on` trigger, a `jobs` section, and ordered `steps` (checkout → install → build → deploy). `actions/configure-pages` plus the Pages artifact/deploy actions handle publishing the built ./dist directory to GitHub Pages.",
+        "title":  "Configuration, CI \u0026 Deployment",
+        "description":  "Wrapping up with how the project is configured, built, and shipped. config:package.json declares the scripts (dev, build, check, test) and the Svelte 5 + Vite + Vitest toolchain; file:vite.config.ts wires the Svelte plugin, a PWA service worker, and a bundle visualizer; config:tsconfig.app.json sets the strict app-level TypeScript checking. Deployment is dual-path: config:vercel.json serves the static build on Vercel with cache headers, while the GitHub Actions pipeline builds and publishes ./dist to GitHub Pages on pushes to main. Understanding these files explains how the SPA from Step 2 reaches players.",
+        "nodeIds":  [
+                        "config:package.json",
+                        "file:vite.config.ts",
+                        "config:tsconfig.app.json",
+                        "config:vercel.json",
+                        "pipeline:.github/workflows/static.yml"
+                    ],
+        "order":  14
+    }
+]

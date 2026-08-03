@@ -1,0 +1,300 @@
+{
+    "edges":  [
+                  {
+                      "source":  "file:src/lib/damageTypeResolve.ts",
+                      "target":  "function:src/lib/damageTypeResolve.ts:resolveDamageTypes",
+                      "type":  "contains",
+                      "direction":  "directed",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/lib/damageTypeResolve.ts",
+                      "target":  "function:src/lib/damageTypeResolve.ts:applyFireAirConversion",
+                      "type":  "contains",
+                      "direction":  "directed",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/lib/damageTypeResolve.ts",
+                      "target":  "function:src/lib/damageTypeResolve.ts:resolveWaDamageTypeKeys",
+                      "type":  "contains",
+                      "direction":  "directed",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/lib/damageTypeResolve.ts",
+                      "target":  "function:src/lib/damageTypeResolve.ts:getFinalWaDmgTypes",
+                      "type":  "contains",
+                      "direction":  "directed",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/lib/damageTypeResolve.ts",
+                      "target":  "class:src/lib/damageTypeResolve.ts:EffectiveWaDmgTypesInput",
+                      "type":  "contains",
+                      "direction":  "directed",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/lib/damageTypeResolve.ts",
+                      "target":  "function:src/lib/damageTypeResolve.ts:computeEffectiveWaDmgTypes",
+                      "type":  "contains",
+                      "direction":  "directed",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/lib/damageTypeResolve.ts",
+                      "target":  "function:src/lib/damageTypeResolve.ts:applyAirToMagicConversion",
+                      "type":  "contains",
+                      "direction":  "directed",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/lib/damageTypeResolve.ts",
+                      "target":  "file:src/lib/engine/_utils.ts",
+                      "type":  "imports",
+                      "direction":  "directed",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/lib/damageTypeResolve.ts",
+                      "target":  "file:src/lib/constants/damage-types.ts",
+                      "type":  "imports",
+                      "direction":  "directed",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "function:src/lib/damageTypeResolve.ts:resolveDamageTypes",
+                      "target":  "file:src/lib/engine/_utils.ts",
+                      "type":  "calls",
+                      "direction":  "directed",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "function:src/lib/damageTypeResolve.ts:resolveWaDamageTypeKeys",
+                      "target":  "file:src/lib/constants/damage-types.ts",
+                      "type":  "depends_on",
+                      "direction":  "directed",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "function:src/lib/damageTypeResolve.ts:getFinalWaDmgTypes",
+                      "target":  "function:src/lib/damageTypeResolve.ts:resolveWaDamageTypeKeys",
+                      "type":  "calls",
+                      "direction":  "directed",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "function:src/lib/damageTypeResolve.ts:getFinalWaDmgTypes",
+                      "target":  "function:src/lib/damageTypeResolve.ts:resolveDamageTypes",
+                      "type":  "calls",
+                      "direction":  "directed",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "function:src/lib/damageTypeResolve.ts:applyAirToMagicConversion",
+                      "target":  "function:src/lib/damageTypeResolve.ts:applyFireAirConversion",
+                      "type":  "calls",
+                      "direction":  "directed",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "function:src/lib/damageTypeResolve.ts:applyAirToMagicConversion",
+                      "target":  "file:src/lib/engine/_utils.ts",
+                      "type":  "calls",
+                      "direction":  "directed",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "function:src/lib/damageTypeResolve.ts:computeEffectiveWaDmgTypes",
+                      "target":  "function:src/lib/damageTypeResolve.ts:resolveDamageTypes",
+                      "type":  "calls",
+                      "direction":  "directed",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "function:src/lib/damageTypeResolve.ts:computeEffectiveWaDmgTypes",
+                      "target":  "function:src/lib/damageTypeResolve.ts:applyAirToMagicConversion",
+                      "type":  "calls",
+                      "direction":  "directed",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "function:src/lib/damageTypeResolve.ts:computeEffectiveWaDmgTypes",
+                      "target":  "class:src/lib/damageTypeResolve.ts:EffectiveWaDmgTypesInput",
+                      "type":  "depends_on",
+                      "direction":  "directed",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "function:src/lib/damageTypeResolve.ts:computeEffectiveWaDmgTypes",
+                      "target":  "file:src/lib/constants/damage-types.ts",
+                      "type":  "depends_on",
+                      "direction":  "directed",
+                      "weight":  1
+                  },
+                  {
+                      "source":  "file:src/lib/engine/build.ts",
+                      "target":  "file:src/lib/damageTypeResolve.ts",
+                      "type":  "depends_on",
+                      "direction":  "directed",
+                      "weight":  1
+                  }
+              ],
+    "nodes":  [
+                  {
+                      "id":  "file:src/lib/damageTypeResolve.ts",
+                      "type":  "file",
+                      "name":  "damageTypeResolve.ts",
+                      "filePath":  "src/lib/damageTypeResolve.ts",
+                      "summary":  "Damage-type resolution utilities for the weapon art damage engine: applies flat damage-type bonuses, Fire\u003c-\u003eAir conversion (Echo Incineration), Air-\u003eMagic conversion (Spirit Winds), Dark Magic hex bonus, parses WA damage-type strings, and computes effective WA damage types including perk overrides (Wild Bolt, Weighty Slam, Heat Drill, Essence Ray).",
+                      "tags":  [
+                                   "damage-types",
+                                   "weapon-art",
+                                   "conversion",
+                                   "engine",
+                                   "bonuses"
+                               ],
+                      "complexity":  "complex"
+                  },
+                  {
+                      "id":  "function:src/lib/damageTypeResolve.ts:resolveDamageTypes",
+                      "type":  "function",
+                      "name":  "resolveDamageTypes",
+                      "filePath":  "src/lib/damageTypeResolve.ts",
+                      "summary":  "Merges damage-type bonus values onto base damage types; returns base unchanged if there are no bonuses. Values are rounded to 4 decimals.",
+                      "tags":  [
+                                   "damage-types",
+                                   "bonus",
+                                   "merge"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/lib/damageTypeResolve.ts:applyFireAirConversion",
+                      "type":  "function",
+                      "name":  "applyFireAirConversion",
+                      "filePath":  "src/lib/damageTypeResolve.ts",
+                      "summary":  "Converts 50% of Fire damage to Air and 50% of Air to Fire (Echo Incineration Echo Incinerate effect). Returns input unchanged if both fire and air are zero.",
+                      "tags":  [
+                                   "conversion",
+                                   "fire",
+                                   "air",
+                                   "echo-incineration"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/lib/damageTypeResolve.ts:resolveWaDamageTypeKeys",
+                      "type":  "function",
+                      "name":  "resolveWaDamageTypeKeys",
+                      "filePath":  "src/lib/damageTypeResolve.ts",
+                      "summary":  "Resolves a Weapon Art\u0027s damage-type selection string (e.g. \u0027Same as weapon\u0027, \u0027Highest damage type\u0027, parsed \u0027value type\u0027 pairs) into a damage-type map, using DMG_TYPE_PRIORITY as tiebreaker for highest-type selection.",
+                      "tags":  [
+                                   "weapon-art",
+                                   "damage-types",
+                                   "parse",
+                                   "priority"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "function:src/lib/damageTypeResolve.ts:getFinalWaDmgTypes",
+                      "type":  "function",
+                      "name":  "getFinalWaDmgTypes",
+                      "filePath":  "src/lib/damageTypeResolve.ts",
+                      "summary":  "Convenience wrapper that resolves the WA damage-type keys then applies damage-type bonuses on top.",
+                      "tags":  [
+                                   "weapon-art",
+                                   "damage-types",
+                                   "bonuses"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "class:src/lib/damageTypeResolve.ts:EffectiveWaDmgTypesInput",
+                      "type":  "class",
+                      "name":  "EffectiveWaDmgTypesInput",
+                      "filePath":  "src/lib/damageTypeResolve.ts",
+                      "summary":  "Input interface for computeEffectiveWaDmgTypes: WA damage-type selector, weapon base/current damage type maps, WA/perk bonuses, Air-to-Magic conversion rate, Dark Magic hex bonus, Echo Incineration amount, and booleans for WA overrides (Wild Bolt, Weighty Slam, Heat Drill, Essence Ray).",
+                      "tags":  [
+                                   "interface",
+                                   "input",
+                                   "weapon-art",
+                                   "config"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/lib/damageTypeResolve.ts:computeEffectiveWaDmgTypes",
+                      "type":  "function",
+                      "name":  "computeEffectiveWaDmgTypes",
+                      "filePath":  "src/lib/damageTypeResolve.ts",
+                      "summary":  "Single source of truth for effective damage types dealt by the selected Weapon Art. Applies perk damage-type bonuses, WA-specific overrides (Wild Bolt/Weighty Slam/Heat Drill/Essence Ray), then Spirit Winds Doubles Air-\u003eMagic and Dark Magic/Echo Incineration conversions. Shared by the damage engine and BuffList panel so auto-debuff checks stay in sync.",
+                      "tags":  [
+                                   "weapon-art",
+                                   "damage-types",
+                                   "conversion",
+                                   "perk",
+                                   "engine"
+                               ],
+                      "complexity":  "complex"
+                  },
+                  {
+                      "id":  "function:src/lib/damageTypeResolve.ts:applyAirToMagicConversion",
+                      "type":  "function",
+                      "name":  "applyAirToMagicConversion",
+                      "filePath":  "src/lib/damageTypeResolve.ts",
+                      "summary":  "Converts a fraction of Air damage to Magic (Spirit Winds) BEFORE Echo Incineration, then applies Echo Incineration Fire\u003c-\u003eAir conversion and Dark Magic hex bonus on native magic damage. Order matters to avoid double-converting converted Air.",
+                      "tags":  [
+                                   "conversion",
+                                   "air",
+                                   "magic",
+                                   "dark-magic",
+                                   "spirit-winds"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "file:src/lib/engine/build.ts",
+                      "type":  "file",
+                      "name":  "build.ts",
+                      "filePath":  "src/lib/engine/build.ts",
+                      "summary":  "Neighboring engine file exporting calcBuild; consumes the damage-type resolution helpers for full build damage calculation.",
+                      "tags":  [
+                                   "engine",
+                                   "build",
+                                   "damage",
+                                   "neighbor"
+                               ],
+                      "complexity":  "complex"
+                  },
+                  {
+                      "id":  "file:src/lib/engine/_utils.ts",
+                      "type":  "file",
+                      "name":  "_utils.ts",
+                      "filePath":  "src/lib/engine/_utils.ts",
+                      "summary":  "Engine utilities providing round4 (and round2) rounding helpers used by damage-type resolution.",
+                      "tags":  [
+                                   "engine",
+                                   "utils",
+                                   "rounding"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/lib/constants/damage-types.ts",
+                      "type":  "file",
+                      "name":  "damage-types.ts",
+                      "filePath":  "src/lib/constants/damage-types.ts",
+                      "summary":  "Constants module defining damage-type metadata, inheritance, colors, and DMG_TYPE_PRIORITY ordering for all damage types.",
+                      "tags":  [
+                                   "constants",
+                                   "damage-types",
+                                   "metadata",
+                                   "priority"
+                               ],
+                      "complexity":  "moderate"
+                  }
+              ]
+}

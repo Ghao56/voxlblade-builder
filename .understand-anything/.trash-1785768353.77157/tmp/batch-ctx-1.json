@@ -1,0 +1,74 @@
+{
+    "batchImportData":  {
+                            "src/data/Perkbasedmg.ts":  [
+                                                            "src/data/DoTDamage.ts",
+                                                            "src/data/draconicColorEffects.ts",
+                                                            "src/lib/constants.ts",
+                                                            "src/lib/types.ts"
+                                                        ]
+                        },
+    "files":  [
+                  {
+                      "path":  "src/data/Perkbasedmg.ts",
+                      "language":  "typescript",
+                      "sizeLines":  1438,
+                      "fileCategory":  "code"
+                  }
+              ],
+    "neighborMap":  {
+                        "src/data/Perkbasedmg.ts":  [
+                                                        {
+                                                            "path":  "src/data/DoTDamage.ts",
+                                                            "batchIndex":  1,
+                                                            "symbols":  [
+                                                                            "DOT_TYPE_LIST",
+                                                                            "DOT_SCALINGS",
+                                                                            "DOT_DMG_TYPE_MAP",
+                                                                            "getDotBase",
+                                                                            "getDotPotencyMult",
+                                                                            "toGamePotency",
+                                                                            "calcDotDisplayPotency"
+                                                                        ]
+                                                        },
+                                                        {
+                                                            "path":  "src/data/draconicColorEffects.ts",
+                                                            "batchIndex":  1,
+                                                            "symbols":  [
+                                                                            "DRACONIC_COLOR_ATTACK_STATS",
+                                                                            "getDraconicColorDmgMultiplier"
+                                                                        ]
+                                                        },
+                                                        {
+                                                            "path":  "src/lib/constants.ts",
+                                                            "batchIndex":  1,
+                                                            "symbols":  [
+
+                                                                        ]
+                                                        },
+                                                        {
+                                                            "path":  "src/lib/types.ts",
+                                                            "batchIndex":  2,
+                                                            "symbols":  [
+                                                                            "PERCENT_STATS",
+                                                                            "STAT_KEYS",
+                                                                            "UPGRADE_MAX",
+                                                                            "applyUpgrade",
+                                                                            "canProc",
+                                                                            "DMG_TYPE_COLORS",
+                                                                            "DMG_TYPE_PRIORITY",
+                                                                            "SCALING_TO_BOOST"
+                                                                        ]
+                                                        },
+                                                        {
+                                                            "path":  "src/data/raceEffects.ts",
+                                                            "batchIndex":  1,
+                                                            "symbols":  [
+                                                                            "getActiveRaceEffect",
+                                                                            "getOrkTenacityBuffs",
+                                                                            "calcOrkTenacityBonus"
+                                                                        ]
+                                                        }
+                                                    ]
+                    },
+    "batchIndex":  1
+}

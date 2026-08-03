@@ -117,17 +117,20 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   const _DEF_TYPE_LIST = TRACKED_TYPES_WITH_TRUE
   
   $: _activeDefensivePerkSources = computeActiveDefensivePerkSources(
-    __daResultVal, __daBuildVal, perks, _hpFillPct, _adaptivePlateTriggered, _effectiveInDarkness, _ragePotency, mountActive, _dummyDebuffs, disabledDebuffs,
+    __daResultVal, __daBuildVal, perks, _hpFillPct, _adaptivePlateTriggered, _carapaceDisabled, _effectiveInDarkness, _ragePotency, mountActive, _dummyDebuffs, disabledDebuffs,
   )
   function computeActiveDefensivePerkSources(
     resultVal: typeof __daResultVal, buildVal: typeof __daBuildVal,
-    perka: Record<string,number>, hpFillPct: number, adaptivePlateTriggered: boolean, effectiveInDarkness: boolean, ragePotency: number, mountActive: boolean, dummyDebuffs: any[], disabledDebuffs: Set<string>,
+    perka: Record<string,number>, hpFillPct: number, adaptivePlateTriggered: boolean, carapaceDisabled: boolean, effectiveInDarkness: boolean, ragePotency: number, mountActive: boolean, dummyDebuffs: any[], disabledDebuffs: Set<string>,
   ) {
     const _hasProtection = (resultVal.stats.protection ?? 0) > 0
     const _debuffCount = dummyDebuffs.filter((d: any) => !disabledDebuffs.has(d.name)).length
-    const baseSources = getActiveDefensivePerkSources(
+    let baseSources = getActiveDefensivePerkSources(
       perka, hpFillPct, adaptivePlateTriggered, effectiveInDarkness, ragePotency > 0, mountActive, _hasProtection, _debuffCount
     )
+    if (carapaceDisabled) {
+      baseSources = baseSources.filter(s => s.name !== 'Carapace')
+    }
     const potMult = calcDefensivePotencyMult(perka, buildVal.draconicRuneInfusion, buildVal.draconicColor)
 
     if (potMult === 1) return baseSources
@@ -321,6 +324,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: _hpFillPct = calcActualHpFillPct($build.hpFill ?? 100, $build.level ?? 80, $result.stats.protection ?? 0)
   $: _enemyHpFillPct = $build.enemyHpFill ?? 100
   let _adaptivePlateTriggered = false
+  let _carapaceDisabled = false
 
   $: _waSummonDef = (() => {
     const summonName = WA_SUMMON_MAP[selectedWA.name]
@@ -4166,6 +4170,19 @@ $: _groupedSelfDamageSources = (() => {
         on:click={() => _adaptivePlateTriggered = !_adaptivePlateTriggered}
       >
         {_adaptivePlateTriggered ? 'Triggered' : 'Idle'}
+      </button>
+    </div>
+  {/if}
+
+  {#if (perks['Carapace'] ?? 0) > 0}
+    <div class="ap-toggle-row">
+      <span class="ap-toggle-label">Carapace</span>
+      <button
+        class="ap-toggle-btn"
+        class:ap-toggle-btn--on={!_carapaceDisabled}
+        on:click={() => _carapaceDisabled = !_carapaceDisabled}
+      >
+        {_carapaceDisabled ? 'Off' : 'On'}
       </button>
     </div>
   {/if}

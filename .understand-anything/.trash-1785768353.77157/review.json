@@ -1,0 +1,63 @@
+{
+  "issues": [],
+  "warnings": [
+    "Node 'document:AGENTS.md' has no edges (orphan)",
+    "Node 'document:README.md' has no edges (orphan)",
+    "Node 'config:stats-data.json' has no edges (orphan)",
+    "Node 'document:ts-errors.txt' has no edges (orphan)",
+    "Node 'document:.slim/deepwork/ui-upgrade.md' has no edges (orphan)",
+    "Node 'file:analyze-mounticon.mjs' has no edges (orphan)",
+    "Node 'file:src/CdrStepsCalc.svelte' has no edges (orphan)",
+    "Node 'file:src/CritIcon.svelte' has no edges (orphan)",
+    "Node 'file:src/data/potions.ts' has no edges (orphan)",
+    "Node 'function:src/data/stanceOverlays.ts:resolveStanceOverlay' has no edges (orphan)",
+    "Node 'file:src/DidYouMean.svelte' has no edges (orphan)",
+    "Node 'file:src/DraconicAbilityStats.svelte' has no edges (orphan)",
+    "Node 'file:src/Highlight.svelte' has no edges (orphan)",
+    "Node 'file:src/lib/AppHeader.svelte' has no edges (orphan)",
+    "Node 'file:src/lib/constants/cdr.ts' has no edges (orphan)",
+    "Node 'file:src/lib/engine/engine.ts' has no edges (orphan)",
+    "Node 'file:src/MountIcon.svelte' has no edges (orphan)",
+    "Node 'file:src/PropellingFunTracker.svelte' has no edges (orphan)",
+    "Node 'file:src/ScalingBreakdownRow.svelte' has no edges (orphan)",
+    "Node 'file:src/SuggestDrop.svelte' has no edges (orphan)",
+    "Node 'file:vite.config.ts' has no edges (orphan)",
+    "Node 'file:stats.html' has no edges (orphan)",
+    "Node 'file:src/BuffList.svelte' has no edges (orphan)",
+    "Node 'file:src/BuildSaves.svelte' has no edges (orphan)",
+    "Node 'file:src/DmgTotalTooltip.svelte' has no edges (orphan)",
+    "Node 'file:src/LevelBar.svelte' has no edges (orphan)",
+    "Node 'file:src/data/stanceOverlays.ts' has no edges (orphan)",
+    "Node 'file:src/lib/constants/boosts.ts' has no edges (orphan)",
+    "Node 'file:src/lib/Toast.svelte' has no edges (orphan)"
+  ],
+  "stats": {
+    "totalNodes": 340,
+    "totalEdges": 516,
+    "totalLayers": 7,
+    "tourSteps": 14,
+    "nodeTypes": {
+      "file": 124,
+      "function": 169,
+      "module": 13,
+      "pipeline": 1,
+      "config": 11,
+      "document": 6,
+      "concept": 8,
+      "class": 8
+    },
+    "edgeTypes": {
+      "imports": 122,
+      "contains": 197,
+      "exports": 60,
+      "calls": 64,
+      "depends_on": 41,
+      "serves": 1,
+      "related": 20,
+      "documents": 3,
+      "reads_from": 5,
+      "implements": 1,
+      "subscribes": 2
+    }
+  }
+}

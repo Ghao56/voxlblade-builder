@@ -1,0 +1,368 @@
+{
+    "edges":  [
+                  {
+                      "source":  "file:src/BaseDamageCalc.svelte",
+                      "target":  "function:src/BaseDamageCalc.svelte:resolveTypeInfo",
+                      "type":  "contains",
+                      "direction":  "directed",
+                      "weight":  1.0
+                  },
+                  {
+                      "source":  "file:src/BaseDamageCalc.svelte",
+                      "target":  "function:src/BaseDamageCalc.svelte:loadDefenses",
+                      "type":  "contains",
+                      "direction":  "directed",
+                      "weight":  1.0
+                  },
+                  {
+                      "source":  "file:src/BaseDamageCalc.svelte",
+                      "target":  "function:src/BaseDamageCalc.svelte:calcArmorMult",
+                      "type":  "contains",
+                      "direction":  "directed",
+                      "weight":  1.0
+                  },
+                  {
+                      "source":  "file:src/BaseDamageCalc.svelte",
+                      "target":  "function:src/BaseDamageCalc.svelte:computePreMitigationBase",
+                      "type":  "contains",
+                      "direction":  "directed",
+                      "weight":  1.0
+                  },
+                  {
+                      "source":  "file:src/BaseDamageCalc.svelte",
+                      "target":  "function:src/BaseDamageCalc.svelte:getApplicableBoosts",
+                      "type":  "contains",
+                      "direction":  "directed",
+                      "weight":  1.0
+                  },
+                  {
+                      "source":  "file:src/DamageAnalyzer.svelte",
+                      "target":  "function:src/DamageAnalyzer.svelte:computeActiveDefensivePerkSources",
+                      "type":  "contains",
+                      "direction":  "directed",
+                      "weight":  1.0
+                  },
+                  {
+                      "source":  "file:src/DamageAnalyzer.svelte",
+                      "target":  "function:src/DamageAnalyzer.svelte:dotScalingMult",
+                      "type":  "contains",
+                      "direction":  "directed",
+                      "weight":  1.0
+                  },
+                  {
+                      "source":  "file:src/DamageAnalyzer.svelte",
+                      "target":  "function:src/DamageAnalyzer.svelte:buildScalingRows",
+                      "type":  "contains",
+                      "direction":  "directed",
+                      "weight":  1.0
+                  },
+                  {
+                      "source":  "file:src/DamageAnalyzer.svelte",
+                      "target":  "function:src/DamageAnalyzer.svelte:_resolveHitDmgTypes",
+                      "type":  "contains",
+                      "direction":  "directed",
+                      "weight":  1.0
+                  },
+                  {
+                      "source":  "file:src/DamageAnalyzer.svelte",
+                      "target":  "function:src/DamageAnalyzer.svelte:parseWAHitsAll",
+                      "type":  "contains",
+                      "direction":  "directed",
+                      "weight":  1.0
+                  },
+                  {
+                      "source":  "file:src/DamageAnalyzer.svelte",
+                      "target":  "function:src/DamageAnalyzer.svelte:applyWeaponCharge",
+                      "type":  "contains",
+                      "direction":  "directed",
+                      "weight":  1.0
+                  },
+                  {
+                      "source":  "file:src/DamageAnalyzer.svelte",
+                      "target":  "function:src/DamageAnalyzer.svelte:_computePerkScalingMult",
+                      "type":  "contains",
+                      "direction":  "directed",
+                      "weight":  1.0
+                  }
+              ],
+    "nodes":  [
+                  {
+                      "id":  "file:src/App.svelte",
+                      "type":  "file",
+                      "name":  "App.svelte",
+                      "filePath":  "src/App.svelte",
+                      "summary":  "Root Svelte component of the voxlblade-builder app. Mounts the main analyzer UI, manages the shared build/result stores (runes), and orchestrates top-level tabs/sections.",
+                      "tags":  [
+                                   "svelte",
+                                   "ui",
+                                   "root",
+                                   "component"
+                               ],
+                      "complexity":  "complex"
+                  },
+                  {
+                      "id":  "file:src/BaseDamageCalc.svelte",
+                      "type":  "file",
+                      "name":  "BaseDamageCalc.svelte",
+                      "filePath":  "src/BaseDamageCalc.svelte",
+                      "summary":  "Base damage calculation component. Resolves damage-type info, computes pre-mitigation base damage for hits and DoTs, applies armor/defense multipliers via calcArmorMult, and aggregates per-type and per-group totals for display.",
+                      "tags":  [
+                                   "svelte",
+                                   "ui",
+                                   "damage-calc",
+                                   "component"
+                               ],
+                      "complexity":  "complex"
+                  },
+                  {
+                      "id":  "function:src/BaseDamageCalc.svelte:resolveTypeInfo",
+                      "type":  "function",
+                      "name":  "resolveTypeInfo",
+                      "filePath":  "src/BaseDamageCalc.svelte",
+                      "summary":  "Resolves applicable boosts, typed multipliers, defense percent and armor multiplier for a damage type given pen.",
+                      "tags":  [
+                                   "damage-calc",
+                                   "armor",
+                                   "multiplier"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "function:src/BaseDamageCalc.svelte:loadDefenses",
+                      "type":  "function",
+                      "name":  "loadDefenses",
+                      "filePath":  "src/BaseDamageCalc.svelte",
+                      "summary":  "Loads the enemy defense configuration (per-type defense values).",
+                      "tags":  [
+                                   "defense",
+                                   "config"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/BaseDamageCalc.svelte:calcArmorMult",
+                      "type":  "function",
+                      "name":  "calcArmorMult",
+                      "filePath":  "src/BaseDamageCalc.svelte",
+                      "summary":  "Computes the armor multiplier from defense percent and penetration, selecting high/low branch by threshold.",
+                      "tags":  [
+                                   "armor",
+                                   "multiplier",
+                                   "penetration"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "function:src/BaseDamageCalc.svelte:computePreMitigationBase",
+                      "type":  "function",
+                      "name":  "computePreMitigationBase",
+                      "filePath":  "src/BaseDamageCalc.svelte",
+                      "summary":  "Computes the pre-mitigation base damage for a hit given applied boosts and type multipliers.",
+                      "tags":  [
+                                   "damage-calc",
+                                   "base-damage"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "function:src/BaseDamageCalc.svelte:getApplicableBoosts",
+                      "type":  "function",
+                      "name":  "getApplicableBoosts",
+                      "filePath":  "src/BaseDamageCalc.svelte",
+                      "summary":  "Returns the conditional damage boosts that apply to the current build context.",
+                      "tags":  [
+                                   "damage-calc",
+                                   "boosts"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "file:src/BuffList.svelte",
+                      "type":  "file",
+                      "name":  "BuffList.svelte",
+                      "filePath":  "src/BuffList.svelte",
+                      "summary":  "UI component that renders the active buff/debuff list for the current build, including potencies.",
+                      "tags":  [
+                                   "svelte",
+                                   "ui",
+                                   "buffs",
+                                   "component"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "file:src/BuildSaves.svelte",
+                      "type":  "file",
+                      "name":  "BuildSaves.svelte",
+                      "filePath":  "src/BuildSaves.svelte",
+                      "summary":  "UI for saving, loading, and managing build presets with the storage key map and max slot limits from constants/storage.",
+                      "tags":  [
+                                   "svelte",
+                                   "ui",
+                                   "storage",
+                                   "saves",
+                                   "component"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "file:src/DamageAnalyzer.svelte",
+                      "type":  "file",
+                      "name":  "DamageAnalyzer.svelte",
+                      "filePath":  "src/DamageAnalyzer.svelte",
+                      "summary":  "Main analyzer component. Aggregates damage sources, buffs, perk-based damage, weapon arts, elemental/type bonuses, and defensive DR sources (including Carapace via getActiveDefensivePerkSources) into a full breakdown of displayed damage rows.",
+                      "tags":  [
+                                   "svelte",
+                                   "ui",
+                                   "damage-calc",
+                                   "analyzer",
+                                   "component"
+                               ],
+                      "complexity":  "complex"
+                  },
+                  {
+                      "id":  "function:src/DamageAnalyzer.svelte:computeActiveDefensivePerkSources",
+                      "type":  "function",
+                      "name":  "computeActiveDefensivePerkSources",
+                      "filePath":  "src/DamageAnalyzer.svelte",
+                      "summary":  "Gathers active defensive-perk DR sources, requiring protection\u003e0 for Carapace DR, then applies defensive potency multiplier.",
+                      "tags":  [
+                                   "defense",
+                                   "damage-reduction",
+                                   "carapace"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "function:src/DamageAnalyzer.svelte:dotScalingMult",
+                      "type":  "function",
+                      "name":  "dotScalingMult",
+                      "filePath":  "src/DamageAnalyzer.svelte",
+                      "summary":  "Computes the scaling multiplier for DoT damage rows by type combination.",
+                      "tags":  [
+                                   "dot",
+                                   "scaling"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/DamageAnalyzer.svelte:buildScalingRows",
+                      "type":  "function",
+                      "name":  "buildScalingRows",
+                      "filePath":  "src/DamageAnalyzer.svelte",
+                      "summary":  "Builds the per-hit scaling rows shown in the damage analyzer panel.",
+                      "tags":  [
+                                   "damage-calc",
+                                   "scaling",
+                                   "stats"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "function:src/DamageAnalyzer.svelte:_resolveHitDmgTypes",
+                      "type":  "function",
+                      "name":  "_resolveHitDmgTypes",
+                      "filePath":  "src/DamageAnalyzer.svelte",
+                      "summary":  "Resolves the effective damage-type split for a hit row after all conversions.",
+                      "tags":  [
+                                   "damage-calc",
+                                   "damage-types"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "function:src/DamageAnalyzer.svelte:parseWAHitsAll",
+                      "type":  "function",
+                      "name":  "parseWAHitsAll",
+                      "filePath":  "src/DamageAnalyzer.svelte",
+                      "summary":  "Parses the hits of a selected weapon art into individual hit rows.",
+                      "tags":  [
+                                   "weapon-arts",
+                                   "hits",
+                                   "parsing"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "function:src/DamageAnalyzer.svelte:applyWeaponCharge",
+                      "type":  "function",
+                      "name":  "applyWeaponCharge",
+                      "filePath":  "src/DamageAnalyzer.svelte",
+                      "summary":  "Applies weapon-charge multipliers to hit rows when applicable.",
+                      "tags":  [
+                                   "weapon",
+                                   "charge",
+                                   "multiplier"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "function:src/DamageAnalyzer.svelte:_computePerkScalingMult",
+                      "type":  "function",
+                      "name":  "_computePerkScalingMult",
+                      "filePath":  "src/DamageAnalyzer.svelte",
+                      "summary":  "Computes the scaling multiplier for perk-based damage rows from stat scalings.",
+                      "tags":  [
+                                   "perks",
+                                   "scaling",
+                                   "damage-calc"
+                               ],
+                      "complexity":  "moderate"
+                  },
+                  {
+                      "id":  "file:src/DmgTotalTooltip.svelte",
+                      "type":  "file",
+                      "name":  "DmgTotalTooltip.svelte",
+                      "filePath":  "src/DmgTotalTooltip.svelte",
+                      "summary":  "Tooltip component in the damage total display, breaking down total damage contributions.",
+                      "tags":  [
+                                   "svelte",
+                                   "ui",
+                                   "tooltip",
+                                   "damage"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/LevelBar.svelte",
+                      "type":  "file",
+                      "name":  "LevelBar.svelte",
+                      "filePath":  "src/LevelBar.svelte",
+                      "summary":  "HP/level bar UI component showing current HP fill with shield overlays and an editable HP slider (draggable).",
+                      "tags":  [
+                                   "svelte",
+                                   "ui",
+                                   "hp",
+                                   "slider",
+                                   "component"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/data/stanceOverlays.ts",
+                      "type":  "file",
+                      "name":  "stanceOverlays.ts",
+                      "filePath":  "src/data/stanceOverlays.ts",
+                      "summary":  "Game data for stance overlay effects used by the UI to show current stance bonuses.",
+                      "tags":  [
+                                   "data",
+                                   "stances",
+                                   "overlay"
+                               ],
+                      "complexity":  "simple"
+                  },
+                  {
+                      "id":  "file:src/lib/constants/boosts.ts",
+                      "type":  "file",
+                      "name":  "boosts.ts",
+                      "filePath":  "src/lib/constants/boosts.ts",
+                      "summary":  "Constant multipliers for conditional damage/heal boosts (Frenzy, Minion Absorption, cleave/smite perks, critical-related multipliers).",
+                      "tags":  [
+                                   "constants",
+                                   "boosts",
+                                   "data"
+                               ],
+                      "complexity":  "simple"
+                  }
+              ]
+}
