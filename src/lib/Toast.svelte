@@ -2,6 +2,8 @@
   import { toasts, removeToast } from './stores/toast'
   import { fly } from 'svelte/transition'
 
+  let { offsetTop = 16 }: { offsetTop?: number } = $props()
+
   const typeStyles: Record<string, string> = {
     success: 'border-color: rgba(74,222,128,0.3); background: rgba(74,222,128,0.06); color: var(--accent);',
     error: 'border-color: rgba(248,113,113,0.3); background: rgba(248,113,113,0.06); color: #f87171;',
@@ -17,7 +19,7 @@
   }
 </script>
 
-<div class="toast-container">
+<div class="toast-container" style="top:{offsetTop}px">
   {#each $toasts as toast (toast.id)}
     <div
       class="toast toast--{toast.type}"
@@ -28,7 +30,7 @@
     >
       <span class="toast-icon">{typeIcons[toast.type]}</span>
       <span class="toast-msg">{toast.message}</span>
-      <button class="toast-close" on:click={() => removeToast(toast.id)} aria-label="Dismiss">&times;</button>
+      <button class="toast-close" onclick={() => removeToast(toast.id)} aria-label="Dismiss">&times;</button>
     </div>
   {/each}
 </div>
@@ -36,7 +38,6 @@
 <style>
   .toast-container {
     position: fixed;
-    top: 16px;
     right: 16px;
     z-index: var(--z-toast);
     display: flex;

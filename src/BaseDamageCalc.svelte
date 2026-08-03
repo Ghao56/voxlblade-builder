@@ -162,7 +162,6 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   export let inspirationScalingMult: number = 1
   export let inspirationHealMult: number = 1
   export let deathmistPerkAmount: number = 0
-  export let deathmistAlliesHealBase: number = 0
   export let deathmistSelfHealBase: number = 0
   export let curseRipActiveDebuffCount: number = 0
   export let curseRipHealMult: number = 1
@@ -183,6 +182,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     dotBase: number; potencyMult: number
     scalingMult: number; combatMult: number
     meltingShredFactor?: number
+    kindlingMult?: number
   }> = []
 
   let activeVariants = new Map<string, number>()
@@ -202,6 +202,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     baseTick?: number
     dotBase: number
     potencyMult: number
+    kindlingMult?: number
     dmgType?: string
     scalingMult: number
     combatMult: number
@@ -858,7 +859,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
               applicableBoosts, weaponBoostMult: phWbMult, typeDebuffMult,
               defMult, enemyDefPct: defPct,
               raw, critVal: Math.round(raw * critDmgMult / 100 * 10000) / 10000,
-              isHeal: false, tag: ph.tag, oncePerGroup: ph.oncePerFinisher ?? true, forceCrit: false,
+              isHeal: false, tag: ph.tag, oncePerGroup: (ph.oncePerFinisher ?? true) && !hit.eachHitM1M2, forceCrit: false,
               ...(ph.halfActivations ? { activationDivisor: 2 } : {}),
               ...(ph.weaponBoostLabel != null ? { weaponBoostLabel: ph.weaponBoostLabel } : {}),
             })
@@ -1018,20 +1019,17 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       }
     }
 
-    if (!isHeal && deathmistPerkAmount > 0 && hit.isFinisher) {
-      for (const baseHeal of [deathmistAlliesHealBase, deathmistSelfHealBase]) {
-        if (baseHeal <= 0) continue
-        const healRaw = baseHeal * inspirationHealMult * antiHealSelfMult
-        types.push({
-          key: 'heal', label: 'Heal', color: '#4ade80',
-          typeBase: baseHeal, scalingMult: 1, combatMult: inspirationHealMult,
-          applicableBoosts: [], weaponBoostMult: 1, typeDebuffMult: 1,
-          defMult: 1, enemyDefPct: 0,
-          raw: healRaw, critVal: healRaw,
-          isHeal: true, oncePerGroup: false, isCritExempt: true, forceCrit: false,
-          tag: 'Deathmist Slash',
-        })
-      }
+    if (!isHeal && deathmistPerkAmount > 0 && hit.isFinisher && deathmistSelfHealBase > 0) {
+      const healRaw = deathmistSelfHealBase * inspirationHealMult * antiHealSelfMult
+      types.push({
+        key: 'heal', label: 'Heal', color: '#4ade80',
+        typeBase: deathmistSelfHealBase, scalingMult: 1, combatMult: inspirationHealMult,
+        applicableBoosts: [], weaponBoostMult: 1, typeDebuffMult: 1,
+        defMult: 1, enemyDefPct: 0,
+        raw: healRaw, critVal: healRaw,
+        isHeal: true, oncePerGroup: !hit.eachHitM1M2, isCritExempt: true, forceCrit: false,
+        tag: 'Deathmist Slash',
+      })
     }
 
     if (!isHeal && _venomEaterActive && canProc(hit.procCoefficient)) {
@@ -1643,6 +1641,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
                           baseTick: dot.baseTick,
                           dotBase: dot.dotBase,
                           potencyMult: dot.potencyMult,
+                          kindlingMult: dot.kindlingMult,
                           dmgType: dot.dmgType,
                           scalingMult: dot.scalingMult,
                           combatMult: dot.combatMult,
@@ -1827,6 +1826,12 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
           <span class="bdc-fr-val bdc-fr-val--scaling">× {fmtMult(_dotTooltip.potencyMult)}</span>
         </div>
       {/if}
+    {#if _dotTooltip.kindlingMult != null && _dotTooltip.kindlingMult !== 1}
+      <div class="bdc-fr">
+        <span class="bdc-fr-label">Kindling <span class="bdc-tt-muted">(50% × perk)</span></span>
+        <span class="bdc-fr-val bdc-fr-val--scaling">× {fmtMult(_dotTooltip.kindlingMult)}</span>
+      </div>
+    {/if}
     {#if _dotTooltip.scalingMult !== 1}
       <div class="bdc-fr">
         <span class="bdc-fr-label">Scaling</span>

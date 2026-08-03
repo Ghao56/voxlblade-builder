@@ -30,6 +30,7 @@ import { isMonkGuild } from './lib/engine/data/character'
   import { UI_COLORS, SOURCE_LABELS } from './lib/uiConstants'
 import { getAutoDebuffs } from './data/perkAutoDebuffs'
 import { RUNE_DMG_DEFS } from './data/Runebasedmg'
+import { findPerkDmgDef } from './data/Perkbasedmg'
 import { WA_PROC_COEFFS, DEFAULT_PROC_COEFF } from './data/procCoefficients'
 import { canProc } from './lib/types'
 import { resolveWaDamageTypeKeys, resolveDamageTypes, computeEffectiveWaDmgTypes } from './lib/damageTypeResolve'
@@ -48,6 +49,7 @@ import { SPIRIT_WINDS_PCT_PER_STACK, DARK_MAGIC_PCT_PER_STACK, EMOTIONAL_PCT_PER
   $: darkeningHexModifierOptions = {
     darkeningHexActivations: $build.darkeningHexActivations ?? DARKENING_HEX_MAX_ACTIVATIONS,
     darkeningHexEligible: hasEligibleDarkeningHexSource($result.perks, $build, buffListWeapon?.damageTypes, buffListSelectedWA.damageType),
+    kindlingEnabled: !($build.disabledEffects ?? []).includes('kindling'),
   }
   $: darkeningHexAmt = $result.perks['Darkening Hex'] ?? 0
   $: darkeningHexActiveActivations = darkeningHexAmt > 0 && darkeningHexModifierOptions.darkeningHexEligible
@@ -244,6 +246,17 @@ import { SPIRIT_WINDS_PCT_PER_STACK, DARK_MAGIC_PCT_PER_STACK, EMOTIONAL_PCT_PER
         if (!_hasWaterDmg && $build.rune && $build.rune !== 'None') {
           const rd = RUNE_DMG_DEFS.find(d => d.runeName === $build.rune)
           _hasWaterDmg = rd ? (rd.dmgTypes['water'] ?? 0) > 0 : false
+        }
+        if (!_hasWaterDmg) {
+          for (const [pname, amt] of Object.entries($result.perks)) {
+            if (amt <= 0) continue
+            if (pname === 'Wave Rider') { _hasWaterDmg = true; break }
+            const def = findPerkDmgDef(pname)
+            if (def && canProc(def.procCoefficient) && (def.dmgTypes?.['water'] ?? 0) > 0) {
+              _hasWaterDmg = true
+              break
+            }
+          }
         }
         if (!_hasWaterDmg && _effDracoColor === 'water' && $build.draconicRuneInfusion === 'infusion') {
           _hasWaterDmg = true

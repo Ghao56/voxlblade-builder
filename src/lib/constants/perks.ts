@@ -105,3 +105,7 @@ export const DARKENING_HEX_POTENCY_MULT_PER_AMOUNT = 0.05
 export const DARKENING_HEX_DURATION_ADD_PER_AMOUNT = 0.5
 export const DARKENING_HEX_MAX_ACTIVATIONS = 10
 export const DARKENING_HEX_PROC_CHANCE = 0.2
+
+// ── Kindling ─────────────────────────────────────
+export const KINDLING_BURN_DURATION_MULT = 0.2
+export const KINDLING_DMG_ADD_PER_AMOUNT = 0.5

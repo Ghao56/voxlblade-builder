@@ -76,7 +76,10 @@ import {
   CRYO_ENGINE_TAILWIND_DURATION_PER_AMOUNT,
   DARKENING_HEX_POTENCY_ADD_PER_AMOUNT, DARKENING_HEX_POTENCY_MULT_PER_AMOUNT,
   DARKENING_HEX_DURATION_ADD_PER_AMOUNT, DARKENING_HEX_MAX_ACTIVATIONS,
+  KINDLING_BURN_DURATION_MULT,
 } from '../lib/constants/perks'
+import { canProc } from '../lib/types'
+import { findPerkDmgDef } from './Perkbasedmg'
 
 export interface BuffDefinition {
   name: string
@@ -1834,6 +1837,8 @@ function getTricksterReflection(
  * work; hex from Dark Magic, Concealed Edge or a Hex-colored Draconic
  * Infusion DOES. Concealed Edge only grants hex while standing in shadows.
  * Hex dealt natively by the weapon or a Weapon Art override also counts.
+ * Perks whose base damage is hex and that can proc other effects (has a
+ * valid proc coefficient) also trigger Darkening Hex.
  */
 export function hasEligibleDarkeningHexSource(
   perks: Record<string, number>,
@@ -1851,6 +1856,11 @@ export function hasEligibleDarkeningHexSource(
     !waDamageType.includes('Highest damage type') &&
     /hex/i.test(waDamageType)
   ) return true
+  for (const [pname, amt] of Object.entries(perks)) {
+    if (amt <= 0) continue
+    const def = findPerkDmgDef(pname)
+    if (def && canProc(def.procCoefficient) && (def.dmgTypes?.hex ?? 0) > 0) return true
+  }
   return false
 }
 
@@ -1891,7 +1901,7 @@ export function applyBuffPerkModifiers(
   perks: Record<string, number>,
   activeRune?: string,
   wardingDebuffMult?: number,
-  options?: { darkeningHexActivations?: number; darkeningHexEligible?: boolean }
+  options?: { darkeningHexActivations?: number; darkeningHexEligible?: boolean; kindlingEnabled?: boolean }
 ): GrantedBuff[] {
   if (buffs.length === 0) return buffs
 
@@ -1902,6 +1912,9 @@ export function applyBuffPerkModifiers(
     darkeningHexAmt > 0 && options?.darkeningHexEligible === true
       ? Math.min(Math.max(options?.darkeningHexActivations ?? 0, 0), DARKENING_HEX_MAX_ACTIVATIONS)
       : 0
+
+  const kindlingAmt = perks['Kindling'] ?? 0
+  const kindlingEnabled = options?.kindlingEnabled !== false
 
   return buffs.map(buff => {
     const def = BUFF_DEFS[buff.buffName]
@@ -1934,9 +1947,15 @@ export function applyBuffPerkModifiers(
       ? 1 + 0.10 * darkOneStacks
       : 1
 
+    // Kindling: Burn lasts 80% shorter on enemies.
+    const kindlingBurnDurationMult =
+      kindlingAmt > 0 && kindlingEnabled && def?.isDebuff && !isSelfDebuff && buff.buffName === 'Burn'
+        ? KINDLING_BURN_DURATION_MULT
+        : 1
+
     const bonus = specific.bonus + bastionBonus + tricksterBonus
     const durationMult =
-      specific.durationMult * generic.durationMult * containedMult * darkOneDurationMult
+      specific.durationMult * generic.durationMult * containedMult * darkOneDurationMult * kindlingBurnDurationMult
 
     if (
       bonus === 0 &&

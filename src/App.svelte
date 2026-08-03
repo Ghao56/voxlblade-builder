@@ -576,6 +576,7 @@ function weaponMatchesFilter(item: any): boolean {
   onMount(async () => {
     await tick()
     waHydrated = true
+    if (potionBtnEl) toastOffsetTop = potionBtnEl.getBoundingClientRect().bottom + 12
   })
 
   // ── Armor drag/tap helpers ────────────────────────────────────────────────
@@ -613,6 +614,7 @@ function weaponMatchesFilter(item: any): boolean {
   let showPotionsDrawer = false
   let potionBtnEl: HTMLButtonElement | null = null
   let potionPopPos = { top: 0, left: 0 }
+  let toastOffsetTop = 16
   let activePerksTab: 'perks' | 'boosts' = 'perks'
   let activeDetailsTab: 'selection' | 'weapon' = 'selection'
 
@@ -3175,7 +3177,7 @@ $: _appWaAvgTotal = (() => {
     </div>
   {/if}
 
-  <Toast />
+  <Toast offsetTop={toastOffsetTop} />
 </div> <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   :global(body) { background: var(--bg); color: var(--ink); font-family: var(--font-body); min-height: 100vh; }

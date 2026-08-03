@@ -28,7 +28,7 @@
   import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage, UNDEAD_MIGHT_SELF_DMG_FRACTION, UNDEAD_MIGHT_DR_PCT_PER_STACK, type SelfDamagePerkDef } from './data/selfDamagePerks'
   import { resolveDamageTypes, resolveWaDamageTypeKeys, applyAirToMagicConversion, computeEffectiveWaDmgTypes } from './lib/damageTypeResolve'
   import { buildDmgTypeBonuses } from './lib/engine/dmgTypeBonuses'
-import { FEROCITY_TENACITY_MULT, DARKENING_HEX_MAX_ACTIVATIONS, DARKENING_HEX_POTENCY_ADD_PER_AMOUNT, DARKENING_HEX_POTENCY_MULT_PER_AMOUNT, DARKENING_HEX_DURATION_ADD_PER_AMOUNT } from './lib/constants'
+import { FEROCITY_TENACITY_MULT, DARKENING_HEX_MAX_ACTIVATIONS, DARKENING_HEX_POTENCY_ADD_PER_AMOUNT, DARKENING_HEX_POTENCY_MULT_PER_AMOUNT, DARKENING_HEX_DURATION_ADD_PER_AMOUNT, KINDLING_DMG_ADD_PER_AMOUNT } from './lib/constants'
 import { calcTypedDmgBoosts } from './data/TypedDmgBoost'
 import { TRACKED_TYPES_WITH_TRUE } from './lib/constants/damage-types'
 import { resolveStanceOverlay } from './data/stanceOverlays'
@@ -83,7 +83,6 @@ import {
   getWADisplayName,
   ICHOR_SPARK_CHAIN_DMG_PCT,
   ICHOR_SPARK_SLASH_CHARGE_THRESHOLD,
-  DEATHMIST_SLASH_ALLIES_HEAL_BASE,
   DEATHMIST_SLASH_SELF_HEAL_BASE,
 } from './lib/constants'
 
@@ -213,6 +212,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: darkeningHexModifierOptions = {
     darkeningHexActivations: $build.darkeningHexActivations ?? DARKENING_HEX_MAX_ACTIVATIONS,
     darkeningHexEligible: hasEligibleDarkeningHexSource(perks, $build, _weaponDmgTypesBase, selectedWA.damageType),
+    kindlingEnabled: !disabledEffects.has('kindling'),
   }
   $: darkeningHexAmt = perks['Darkening Hex'] ?? 0
   $: darkeningHexActivations = Math.min(Math.max($build.darkeningHexActivations ?? DARKENING_HEX_MAX_ACTIVATIONS, 0), DARKENING_HEX_MAX_ACTIVATIONS)
@@ -379,6 +379,17 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         if (!_hasWaterDmg && $build.rune && $build.rune !== 'None') {
           const rd = RUNE_DMG_DEFS.find(d => d.runeName === $build.rune)
           _hasWaterDmg = rd ? (rd.dmgTypes['water'] ?? 0) > 0 : false
+        }
+        if (!_hasWaterDmg) {
+          for (const [pname, amt] of Object.entries($result.perks)) {
+            if (amt <= 0) continue
+            if (pname === 'Wave Rider') { _hasWaterDmg = true; break }
+            const def = findPerkDmgDef(pname)
+            if (def && canProc(def.procCoefficient) && (def.dmgTypes?.['water'] ?? 0) > 0) {
+              _hasWaterDmg = true
+              break
+            }
+          }
         }
         if (!_hasWaterDmg && $build.race === 'DRAGON BLOODED' && $build.draconicColor === 'water' && $build.draconicRuneInfusion === 'infusion') {
           _hasWaterDmg = true
@@ -710,12 +721,14 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: _hasSingedBurn = _allActiveBuffs.some(b => b.burnMode === 'singed') || _cauterizedAbilityDebuffs.some(b => b.burnMode === 'singed')
 
   $: _dotTicks = (() => {
+    const kindlingAmt = perks['Kindling'] ?? 0
     const ticks: Array<{
       type: string; tickDamage: number; dotPotency?: number; inflictionPotency?: number
       debuffName?: string; slowDuration?: number; baseTick?: number
       dotBase: number; potencyMult: number; levelMult: number
       scalingMult: number; combatMult: number
       meltingShredFactor?: number
+      kindlingMult?: number
       scalingRows: ScalingRow[]; totalEffectivePct: number
     }> = (_hasSingedBurn ? DOT_TYPE_LIST.filter(t => t !== 'Burn') : DOT_TYPE_LIST).filter(type => (perks[`${type} Potency`] ?? 0) > 0 || _dummyDebuffs.some(d => d.name === type && !disabledDebuffs.has(type))).map(type => {
       let dotPot = perks[`${type} Potency`] ?? 0
@@ -738,13 +751,15 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       const levelMult = 1 + level / 80
       const base = getDotBase(inflictionPot)
       const mult = getDotPotencyMult(gamePot)
-      const tick = base * mult
+      const kindlingMult = type === 'Burn' && kindlingAmt > 0 && !disabledEffects.has('kindling') ? 1 + KINDLING_DMG_ADD_PER_AMOUNT * kindlingAmt : 1
+      const tick = base * mult * kindlingMult
       const rows = buildScalingRows(getEffectiveDotScalings(type))
       const totalPct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 1000) / 1000
       return {
         type, tickDamage: tick, dotPotency: dotPot, inflictionPotency: inflictionPot,
         dotBase: base, potencyMult: mult, levelMult: 1,
         baseTick: tick,
+        kindlingMult: kindlingMult !== 1 ? kindlingMult : undefined,
         scalingMult: dotScalingMult(type), combatMult: roundMultiplier(_dotCombatMult * getEnemyHpDotMultiplier(perks, _enemyHpFillPct, type) / (type === 'Poison' && mycoticBloomDotDisabled && _mycoticBloomDotMult !== 1 ? _mycoticBloomDotMult : 1)),
         scalingRows: rows, totalEffectivePct: totalPct,
       }
@@ -1024,6 +1039,15 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         title: `Ruler Of The Sands (${amt}): sandnado on WA/Rune · Earth+Air · ${RULER_SANDS_HITS} hits · Reduced proc`,
         val: disabledEffects.has('rulerOfTheSands') ? '—' : `${totalDmg}`,
         cond: disabledEffects.has('rulerOfTheSands') ? 'disabled' : `WA ${waChance.toFixed(1)}% · Rune ${runeChance.toFixed(1)}%`,
+      })
+    }
+    if ((perks['Kindling'] ?? 0) > 0) {
+      const kindlingAmt = perks['Kindling'] ?? 0
+      chips.push({
+        key: 'kindling', name: 'Kindling',
+        title: `Kindling (${kindlingAmt}): Burn deals +${50 * kindlingAmt}% dmg · Burn lasts 80% shorter`,
+        val: disabledEffects.has('kindling') ? '—' : `×${+(1 + KINDLING_DMG_ADD_PER_AMOUNT * kindlingAmt).toFixed(2)}`,
+        cond: disabledEffects.has('kindling') ? 'disabled' : 'Burn · 80% shorter',
       })
     }
     return chips
@@ -2383,6 +2407,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     note?: string
     typedHits_m2:  Array<{ rawVal: number; val: number; color: string; label: string; rageApplied?: boolean; count?: number }>
     typedHits_m1f: Array<{ rawVal: number; val: number; color: string; label: string; rageApplied?: boolean }>
+    typedHitsSameM2: boolean
     scalingMult: number
     combatMult: number
     resolvedDmgTypes: Record<string, number>
@@ -2547,6 +2572,13 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
 
       const entryHits = def.getHits ? def.getHits({ perkAmount, statuses: _perkCtxStatuses, sliderVal: _perkSliderVal }) : def.hits
 
+      const typedHitsM2 = (def.getFinisherHitBaseDmg && entryHits)
+        ? buildPerHitTypedHits(isSpringblast ? baseDmg : baseDmg_m2, entryHits, def.getFinisherHitBaseDmg)
+        : buildTypedHits(isSpringblast ? baseDmg : baseDmg_m2)
+      const typedHitsM1f = (def.getFinisherHitBaseDmg && entryHits)
+        ? buildPerHitTypedHits(isSpringblast ? baseDmg : baseDmg_m1f, entryHits, def.getFinisherHitBaseDmg)
+        : buildTypedHits(isSpringblast ? baseDmg : baseDmg_m1f)
+
       out.push({
         perkName: def.perkName,
         displayName: def.label ?? def.perkName,
@@ -2558,12 +2590,9 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         procCoefficient: def.procCoefficient,
         note: def.note,
         getFinisherHitBaseDmg: def.getFinisherHitBaseDmg,
-        typedHits_m2: (def.getFinisherHitBaseDmg && entryHits)
-          ? buildPerHitTypedHits(isSpringblast ? baseDmg : baseDmg_m2, entryHits, def.getFinisherHitBaseDmg)
-          : buildTypedHits(isSpringblast ? baseDmg : baseDmg_m2),
-        typedHits_m1f: (def.getFinisherHitBaseDmg && entryHits)
-          ? buildPerHitTypedHits(isSpringblast ? baseDmg : baseDmg_m1f, entryHits, def.getFinisherHitBaseDmg)
-          : buildTypedHits(isSpringblast ? baseDmg : baseDmg_m1f),
+        typedHits_m2: typedHitsM2,
+        typedHits_m1f: typedHitsM1f,
+        typedHitsSameM2: typedHitsM2.length === typedHitsM1f.length && typedHitsM2.every((t, i) => t.rawVal === typedHitsM1f[i].rawVal && t.val === typedHitsM1f[i].val && t.label === typedHitsM1f[i].label),
         scalingMult,
         combatMult: finalCombatMult,
         resolvedDmgTypes: resolvedDmgTypesWithMw,
@@ -2623,7 +2652,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         ...(perkWbMult !== 1 ? { weaponBoostMult: perkWbMult, weaponBoostLabel: perkLabel } : {}),
         ...(e.rawFinisherNumerator != null ? { rawFinisherNumerator: e.rawFinisherNumerator } : {}),
         ...(e.halfActivations != null ? { halfActivations: e.halfActivations } : {}),
-        ...(e.oncePerFinisher != null ? { oncePerFinisher: e.perkName === 'Blazing Finisher' || e.perkName === 'Deathmist Slash' ? false : e.oncePerFinisher } : {}),
+        ...(e.oncePerFinisher != null ? { oncePerFinisher: e.perkName === 'Blazing Finisher' ? false : e.oncePerFinisher } : {}),
         ...(e.isProcHit && !e.finisherOnly ? { alwaysOnHit: true } : {}),
         ...(e.finisherOnly ? { finisherOnly: true } : {}),
         ...(perkDef?.getFinisherHitBaseDmg ? { getFinisherHitBaseDmg: perkDef.getFinisherHitBaseDmg } : {}),
@@ -3009,9 +3038,31 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           }
         }
 
-      // Deathmist Slash damage/heals attach to finisher hit rows via
-      // _perkOnHitDamages + BaseDamageCalc, so no standalone row here.
-      if (entry.perkName === 'Deathmist Slash') continue
+      // Deathmist Slash damage attaches to finisher hit rows via
+      // _perkOnHitDamages + BaseDamageCalc, so no standalone damage row here.
+      // The allies heal is separated into its own standalone Perk row.
+      if (entry.perkName === 'Deathmist Slash') {
+        const healSe = (findPerkDmgDef('Deathmist Slash')
+          ?.secondaryEffects ?? []).find(se => se.label === 'Heal (Allies)')
+
+        if (healSe) {
+          const baseHeal = healSe.getValue({ perkAmount: entry.perkAmount })
+
+          result.push({
+            group: 'Perk',
+            index: result.length,
+            count: 1,
+            base: baseHeal,
+            scalingMult: 1,
+            combatMult: _healFinalMultiplier,
+            isFinisher: false,
+            dmgTypes: { heal: 1.0 },
+            label: 'Deathmist Slash Heal (Allies)',
+            isHeal: true,
+          })
+        }
+        continue
+      }
 
       // Add damage if available
       if (entry.typedHits_m2.length === 0) continue
@@ -3559,7 +3610,6 @@ $: _groupedSelfDamageSources = (() => {
     inspirationScalingMult={(perks['Inspiration'] ?? 0) > 0 ? _computePerkScalingMult({ holy: 1.0, summon: 1.0 }) : 1}
     inspirationHealMult={_healFinalMultiplier}
     deathmistPerkAmount={perks['Deathmist Slash'] ?? 0}
-    deathmistAlliesHealBase={(perks['Deathmist Slash'] ?? 0) > 0 ? DEATHMIST_SLASH_ALLIES_HEAL_BASE * (perks['Deathmist Slash'] ?? 0) : 0}
     deathmistSelfHealBase={(perks['Deathmist Slash'] ?? 0) > 0 ? DEATHMIST_SLASH_SELF_HEAL_BASE * (perks['Deathmist Slash'] ?? 0) : 0}
     curseRipActiveDebuffCount={_curseRipActiveDebuffCount}
     curseRipHealMult={_curseRipHealMult}
@@ -4837,7 +4887,7 @@ $: _groupedSelfDamageSources = (() => {
           {/if}
         </div>
         {#if !darkeningHexEligible}
-          <div class="da-pbd-condition">Inactive — needs Dark Magic, Concealed Edge, or Hex Infusion to proc hex damage.</div>
+          <div class="da-pbd-condition">Inactive — needs Dark Magic, Concealed Edge, Hex Infusion, weapon hex, or a hex-dealing perk that can proc other effects.</div>
         {:else}
           <div class="da-sb-slider-wrap">
             <span class="da-sb-slider-label">Activations</span>
@@ -4863,7 +4913,7 @@ $: _groupedSelfDamageSources = (() => {
               <p>Increases the potency of debuffs by <b>{Math.round(DARKENING_HEX_POTENCY_ADD_PER_AMOUNT * darkeningHexAmt * 10000) / 10000}</b> (0.005 × perk amount) and multiplies the potency of debuffs by <b>{Math.round((1 + DARKENING_HEX_POTENCY_MULT_PER_AMOUNT * darkeningHexAmt) * 1000) / 1000}</b> (1 + perk amount × 0.05) per activation.</p>
               <p>Adds <b>+{Math.round(DARKENING_HEX_DURATION_ADD_PER_AMOUNT * darkeningHexAmt * 100) / 100}s</b> duration (0.5s × perk amount) per activation. Capped at <b>{DARKENING_HEX_MAX_ACTIVATIONS}</b> activations per debuff; each hex hit has a <b>20%</b> chance to activate.</p>
               <p>Cannot raise the potency of <b>Weakness</b>, <b>Hypnotized</b>, or <b>Wound</b>. Cannot multiply the potency of <b>Snarled</b>, <b>Shatter</b>, or <b>Electrical Rend</b>.</p>
-              <p>Only works with hex from <b>Dark Magic</b>, <b>Concealed Edge</b> (in shadows), or a <b>Hex Draconic Infusion</b> — not Emotional, Toxin Transfer, or Void Rage.</p>
+              <p>Only works with hex from <b>Dark Magic</b>, <b>Concealed Edge</b> (in shadows), or a <b>Hex Draconic Infusion</b> — not Emotional, Toxin Transfer, or Void Rage. Hex-dealing perks that can proc other effects also trigger it.</p>
             </div>
           </details>
         {/if}
@@ -4884,7 +4934,6 @@ $: _groupedSelfDamageSources = (() => {
           {#if entry.isWA}<Badge color="#a78bfa" square size="xs">WA</Badge>{/if}
           {#if entry.isRune}<Badge color="#38bdf8" square size="xs">Rune</Badge>{/if}
           {#if entry.guardbreak}<Badge color="#f87171" square size="xs">Guardbreak</Badge>{/if}
-          {#if entry.dmgTypeMode === 'weapon'}<Badge color="#34d399" square size="xs">Weapon Type</Badge>{/if}
           {#if entry.isProcHit}<Badge color="#f472b6" square size="xs">Proc Hit</Badge>{/if}
         </div>
         <!-- Condition -->
@@ -4959,7 +5008,7 @@ $: _groupedSelfDamageSources = (() => {
           {/if}
         </div>
         <!-- M1 finisher context (only when different from M2) -->
-        {#if entry.isFinisher && !entry.isM2 && Number(_m1FinisherHits) !== Number(_m2FinisherHits)}
+        {#if entry.isFinisher && !entry.isM2 && !entry.typedHitsSameM2 && Number(_m1FinisherHits) !== Number(_m2FinisherHits)}
           <div class="da-pbd-dmg-row">
             <span class="da-pbd-ctx-label">M1 fin ({_m1FinisherHits} hit{_m1FinisherHits > 1 ? 's' : ''})</span>
             <div class="da-hits-row">
