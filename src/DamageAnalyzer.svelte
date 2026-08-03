@@ -4977,13 +4977,13 @@ $: _groupedSelfDamageSources = (() => {
           />
           <span class="da-sb-slider-val" style="color:#93ff87">{Math.floor(_vassalsCroakSummons)}</span>
         </div>
-        <div class="da-pbd-condition">{Math.floor(_vassalsCroakSummons)} active summon{Math.floor(_vassalsCroakSummons) === 1 ? '' : 's'} × {_vassalsCroakAmt} stack{_vassalsCroakAmt === 1 ? '' : 's'} → +{_vassalsCroakBoostPct}% damage boost. Last Croak (consume on RMB/M2 hit): M2 base × {Math.round(_lastCroakPotency * 1000) / 1000} potency × (1 + {_vassalsCroakAmt}) ÷ 15 physical — ignores the attack's output/post-output multipliers, but Rage/Sunburn/debuff multipliers still apply directly.</div>
+        <div class="da-pbd-condition">{Math.floor(_vassalsCroakSummons)} active summon{Math.floor(_vassalsCroakSummons) === 1 ? '' : 's'} × {_vassalsCroakAmt} stack{_vassalsCroakAmt === 1 ? '' : 's'} → +{_vassalsCroakBoostPct}% damage boost. Last Croak (consume on RMB/M2 hit): M2 base × {Math.round(_lastCroakPotency * 1000) / 1000} potency × (1 + {_vassalsCroakAmt}) ÷ 15 physical — ignores the attack's output multipliers, but its own damage is affected directly by post-output multipliers (level, damage boosts, Rage, Sunburn, debuffs).</div>
         <details class="da-pbd-details">
           <summary class="da-pbd-details-summary">Perk Details</summary>
           <div class="da-pbd-details-body">
             <p>Gain a <b>Damage Boost</b> that scales with active minions: <b>+2%</b> damage per active summon per stack (up to <b>{maxSummons}</b> summons — 15 base + Swarm). Use the slider to test with fewer active summons.</p>
             <p>When a minion dies, gain a stack of the neutral status <b>Last Croak</b> (max <b>{maxSummons}</b> stacks). Consuming it on RMB/M2 hit explodes for <b>M2 base damage × Last Croak potency × (1 + perk amount) ÷ 15</b> physical damage.</p>
-            <p>The explosion does not inherit the triggering attack's output or post-output multipliers, but its own damage can still be affected directly by post-output multipliers (e.g. <b>Rage</b>, <b>Sunburn</b>, debuff multipliers). Last Croak also grants <b>Rage</b> on consumption.</p>
+            <p>The explosion does not inherit the triggering attack's output multipliers, but its own damage can still be affected directly by post-output multipliers (level, damage boosts, <b>Rage</b>, <b>Sunburn</b>, debuff multipliers). Last Croak also grants <b>Rage</b> on consumption.</p>
             <p>Granted by the <b>Boglord Ring</b>.</p>
           </div>
         </details>

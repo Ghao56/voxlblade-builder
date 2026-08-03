@@ -1133,13 +1133,13 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
         const lcDebuffMult = _activeDebuffTypeDamageMult['physical'] ?? 1
         const lcBoosts = getApplicableBoosts('physical', false, undefined, hit.procCoefficient)
         const lcTypedMult = lcBoosts.reduce((acc, b) => acc * b.mult, 1)
-        const lcRaw = lcSourceBase * lcTypedMult * sunburnUniversalDmgMult * lcDefMult * lcDebuffMult * _activeDebuffDamageMult * selfDebuffDamageMult
+        const lcRaw = lcSourceBase * (hit.combatMult ?? 1) * lcTypedMult * sunburnUniversalDmgMult * lcDefMult * lcDebuffMult * _activeDebuffDamageMult * selfDebuffDamageMult
         const lcHit: ComputedHit = {
           group: hit.group, index: 0, count: 1, isFinisher: false, label: 'Last Croak',
           isHeal: false, eachHitM1M2: false,
           types: [{
             key: 'physical', label: lcInfo.label, color: lcInfo.color,
-            typeBase: lcSourceBase, scalingMult: 1, combatMult: 1,
+            typeBase: lcSourceBase, scalingMult: 1, combatMult: hit.combatMult ?? 1,
             applicableBoosts: lcBoosts, weaponBoostMult: sunburnUniversalDmgMult, typeDebuffMult: lcDebuffMult,
             defMult: lcDefMult, enemyDefPct: lcDefPct,
             raw: lcRaw, critVal: Math.round(lcRaw * critDmgMult / 100 * 10000) / 10000,
