@@ -48,6 +48,7 @@ export interface BoostContext {
   naturalCritChance: number
   jumpBoost: number
   summonCount: number
+  vassalsCroakSummons?: number
   ragePotency: number
   bouncePotency: number
   quickdrawPotency: number
@@ -228,8 +229,9 @@ export const BOOST_DEFS: BoostDef[] = [
     type: 'dmg',
     calcFn: (ctx) => {
       const stacks = ctx.perks['Vassals Croak'] ?? 0
-      if (stacks > 0 && ctx.summonCount > 0) {
-        const clampedCount = Math.floor(ctx.summonCount)
+      const summonCount = ctx.vassalsCroakSummons ?? ctx.summonCount
+      if (stacks > 0 && summonCount > 0) {
+        const clampedCount = Math.floor(summonCount)
         return {
           multiplier: roundMultiplier(1 + VASSALS_CROAK_MULT_PER_STACK * clampedCount * stacks),
           condition: `${clampedCount} summons × ${stacks} stack × 2%`,

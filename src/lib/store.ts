@@ -51,6 +51,7 @@ const DEFAULT_BUILD: BuildState = {
   hpFill: DEFAULT_HP_FILL,
   enemyHpFill: DEFAULT_ENEMY_HP_FILL,
   summonCount: 0,
+  vassalsCroakSummons: undefined,
   buffsConsumed: 0,
   sporelingsSummoned: 0,
   bastionBallistaArrows: 0,

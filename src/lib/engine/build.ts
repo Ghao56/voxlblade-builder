@@ -111,6 +111,7 @@ function calcBoosts(
   naturalCritChance: number = 0,
   jumpBoost:         number = 0,
   summonCount:       number = 0,
+  vassalsCroakSummons?: number,
   ragePotency:       number = 0,
   bouncePotency:     number = 0,
    tailwindPotency:   number = 0,
@@ -143,7 +144,7 @@ function calcBoosts(
   })
 
   const ctx: BoostContext = {
-    perks, naturalCritChance, jumpBoost, summonCount,
+    perks, naturalCritChance, jumpBoost, summonCount, vassalsCroakSummons,
     ragePotency, bouncePotency, quickdrawPotency,
     tailwindPotency, airBoost, speedBoost, attackSpeed, tenacity, inDarkness, emotionalState, level,
     mountActive, summonBoostPct, selectedWeaponArt, hpFillPct, burnPotency, hasBurn, selfDebuffCount,
@@ -546,7 +547,7 @@ function deriveResults(
   const boosts = calcBoosts(
     finalPerks, state.emotionalState, state.emotionalDisabled, state.level ?? MAX_LEVEL,
     crit.naturalCritChance, boostedStats.jumpBoost ?? 0,
-    state.summonCount ?? 0, ragePotency, bouncePotency,
+    state.summonCount ?? 0, state.vassalsCroakSummons, ragePotency, bouncePotency,
     tailwindPotency, boostedStats.airBoost ?? 0, boostedStats.speedBoost ?? 0, boostedStats.attackSpeed ?? 0, (finalStats.tenacity ?? 0) + orkBuffTenacity,
     state.race, _actualHpFill, state.inDarkness ?? true,
     isMountRune,

@@ -28,7 +28,7 @@
   import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage, UNDEAD_MIGHT_SELF_DMG_FRACTION, UNDEAD_MIGHT_DR_PCT_PER_STACK, type SelfDamagePerkDef } from './data/selfDamagePerks'
   import { resolveDamageTypes, resolveWaDamageTypeKeys, applyAirToMagicConversion, computeEffectiveWaDmgTypes } from './lib/damageTypeResolve'
   import { buildDmgTypeBonuses } from './lib/engine/dmgTypeBonuses'
-import { FEROCITY_TENACITY_MULT, DARKENING_HEX_MAX_ACTIVATIONS, DARKENING_HEX_POTENCY_ADD_PER_AMOUNT, DARKENING_HEX_POTENCY_MULT_PER_AMOUNT, DARKENING_HEX_DURATION_ADD_PER_AMOUNT, KINDLING_DMG_ADD_PER_AMOUNT } from './lib/constants'
+import { FEROCITY_TENACITY_MULT, DARKENING_HEX_MAX_ACTIVATIONS, DARKENING_HEX_POTENCY_ADD_PER_AMOUNT, DARKENING_HEX_POTENCY_MULT_PER_AMOUNT, DARKENING_HEX_DURATION_ADD_PER_AMOUNT, KINDLING_DMG_ADD_PER_AMOUNT, VASSALS_CROAK_MULT_PER_STACK } from './lib/constants'
 import { calcTypedDmgBoosts } from './data/TypedDmgBoost'
 import { TRACKED_TYPES_WITH_TRUE } from './lib/constants/damage-types'
 import { resolveStanceOverlay } from './data/stanceOverlays'
@@ -494,7 +494,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: _ragePotency = _activeRageBuffs.length > 0
     ? Math.max(..._activeRageBuffs.map(b => b.potency))
     : 0
-  $: _vassalsCroakAmt = perks['Vassals Croak'] ?? 0
+  $: _vassalsCroakAmt = disabledBoosts.has('Vassals Croak') ? 0 : (perks['Vassals Croak'] ?? 0)
   $: _lastCroakPotency = Math.max(0, ..._allActiveBuffs.filter(b => b.buffName === 'Last Croak').map(b => b.potency))
   $: _rageAffectedTypes = (() => {
     if (_ragePotency <= 0) return new Set<string>()
@@ -2304,6 +2304,12 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   }
 
   $: maxSummons = calcMaxSummonCount(perks);
+  $: _vassalsCroakSummons = Math.min(Math.max($build.vassalsCroakSummons ?? $build.summonCount, 0), maxSummons)
+  $: _vassalsCroakBoostPct = _vassalsCroakAmt > 0 ? Math.round(VASSALS_CROAK_MULT_PER_STACK * Math.floor(_vassalsCroakSummons) * _vassalsCroakAmt * 10000) / 100 : 0
+  $: _vassalsCroakFillPct = maxSummons > 0 ? (Math.floor(_vassalsCroakSummons) / maxSummons) * 100 : 0
+  $: if ($build.vassalsCroakSummons != null && $build.vassalsCroakSummons > maxSummons) {
+    build.update(s => ({ ...s, vassalsCroakSummons: maxSummons }) as any)
+  }
   $: _activeRuneDmgDef = (() => {
     const def = RUNE_DMG_DEFS.find(d => d.runeName === $build.rune) ?? null
     if (!def) return null
@@ -4900,7 +4906,7 @@ $: _groupedSelfDamageSources = (() => {
 </div><!-- end da-section--wbd -->
 
 <!-- ── Perk Base Damage ── -->
-{#if _nonDraconicPerkEntries.length > 0 || darkeningHexAmt > 0}
+{#if _nonDraconicPerkEntries.length > 0 || darkeningHexAmt > 0 || _vassalsCroakAmt > 0}
 <div class="da-section da-section--pbd">
   <div class="da-section-title-row">
     <span class="da-section-title">Perk Base Damage</span>
@@ -4946,6 +4952,41 @@ $: _groupedSelfDamageSources = (() => {
             </div>
           </details>
         {/if}
+      </div>
+    {/if}
+    {#if _vassalsCroakAmt > 0}
+      <div class="da-pbd-card da-pbd-card--hex">
+        <div class="da-pbd-head">
+          <span class="da-pbd-name">Vassals Croak</span>
+          <span class="da-pbd-amt">+{Math.round(_vassalsCroakAmt * 1000) / 1000}</span>
+        </div>
+        <div class="da-sb-slider-wrap">
+          <span class="da-sb-slider-label">Active Summons</span>
+          <input
+            type="range"
+            min="0"
+            max={maxSummons}
+            step="1"
+            value={_vassalsCroakSummons}
+            on:input={(e) => {
+              const val = Math.min(Math.max(+(e.target as HTMLInputElement).value, 0), maxSummons)
+              build.update(s => ({ ...s, vassalsCroakSummons: val }) as any)
+            }}
+            class="da-sb-slider"
+            style="--tc:#93ff87; --fill:{_vassalsCroakFillPct}%"
+          />
+          <span class="da-sb-slider-val" style="color:#93ff87">{Math.floor(_vassalsCroakSummons)}</span>
+        </div>
+        <div class="da-pbd-condition">{Math.floor(_vassalsCroakSummons)} active summon{Math.floor(_vassalsCroakSummons) === 1 ? '' : 's'} × {_vassalsCroakAmt} stack{_vassalsCroakAmt === 1 ? '' : 's'} → +{_vassalsCroakBoostPct}% damage boost. Last Croak (consume on RMB/M2 hit): M2 base × {Math.round(_lastCroakPotency * 1000) / 1000} potency × (1 + {_vassalsCroakAmt}) ÷ 15 physical — ignores the attack's output/post-output multipliers, but Rage/Sunburn/debuff multipliers still apply directly.</div>
+        <details class="da-pbd-details">
+          <summary class="da-pbd-details-summary">Perk Details</summary>
+          <div class="da-pbd-details-body">
+            <p>Gain a <b>Damage Boost</b> that scales with active minions: <b>+2%</b> damage per active summon per stack (up to <b>{maxSummons}</b> summons — 15 base + Swarm). Use the slider to test with fewer active summons.</p>
+            <p>When a minion dies, gain a stack of the neutral status <b>Last Croak</b> (max <b>{maxSummons}</b> stacks). Consuming it on RMB/M2 hit explodes for <b>M2 base damage × Last Croak potency × (1 + perk amount) ÷ 15</b> physical damage.</p>
+            <p>The explosion does not inherit the triggering attack's output or post-output multipliers, but its own damage can still be affected directly by post-output multipliers (e.g. <b>Rage</b>, <b>Sunburn</b>, debuff multipliers). Last Croak also grants <b>Rage</b> on consumption.</p>
+            <p>Granted by the <b>Boglord Ring</b>.</p>
+          </div>
+        </details>
       </div>
     {/if}
     {#each _nonDraconicPerkEntries as entry}
@@ -5405,7 +5446,7 @@ $: _groupedSelfDamageSources = (() => {
         <div class="ds-col ds-col--contrib">Contribution</div>
       </div>
 
-      {#each _nonDraconicPerkEntries as entry}
+    {#each _nonDraconicPerkEntries as entry}
         {#if Object.keys(entry.resolvedScalings ?? {}).length > 0}
           <div class="da-perk-scaling-divider">
             <span class="da-perk-scaling-label">{entry.perkName}</span>

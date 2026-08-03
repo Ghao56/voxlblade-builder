@@ -1131,14 +1131,16 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
         const lcCrushPen = crushingPenForType('physical')
         const lcDefMult = calcArmorMult(lcDefPct, basePenDecimal + lcCrushPen / 100, 'physical').mult
         const lcDebuffMult = _activeDebuffTypeDamageMult['physical'] ?? 1
-        const lcRaw = lcSourceBase * lcDefMult * lcDebuffMult * _activeDebuffDamageMult * selfDebuffDamageMult
+        const lcBoosts = getApplicableBoosts('physical', false, undefined, hit.procCoefficient)
+        const lcTypedMult = lcBoosts.reduce((acc, b) => acc * b.mult, 1)
+        const lcRaw = lcSourceBase * lcTypedMult * sunburnUniversalDmgMult * lcDefMult * lcDebuffMult * _activeDebuffDamageMult * selfDebuffDamageMult
         const lcHit: ComputedHit = {
           group: hit.group, index: 0, count: 1, isFinisher: false, label: 'Last Croak',
           isHeal: false, eachHitM1M2: false,
           types: [{
             key: 'physical', label: lcInfo.label, color: lcInfo.color,
             typeBase: lcSourceBase, scalingMult: 1, combatMult: 1,
-            applicableBoosts: [], weaponBoostMult: 1, typeDebuffMult: lcDebuffMult,
+            applicableBoosts: lcBoosts, weaponBoostMult: sunburnUniversalDmgMult, typeDebuffMult: lcDebuffMult,
             defMult: lcDefMult, enemyDefPct: lcDefPct,
             raw: lcRaw, critVal: Math.round(lcRaw * critDmgMult / 100 * 10000) / 10000,
             isHeal: false, tag: 'Last Croak', forceCrit: false, procCoefficient: { type: 'noProc' },
