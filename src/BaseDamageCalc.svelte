@@ -121,6 +121,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   export let weaponHits: Array<{
     group: string; index: number; count: number
     base: number; scalingMult: number; combatMult: number; isFinisher: boolean
+    combatMultNoFinisher?: number
     dmgTypes: Record<string, number>
     baseDmgTypes?: Record<string, number>
     boostDmgTypes?: Record<string, number>

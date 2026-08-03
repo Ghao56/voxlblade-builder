@@ -4990,12 +4990,12 @@ $: _groupedSelfDamageSources = (() => {
           <span class="da-sb-slider-label">Last Croak Potency</span>
           <input
             type="range"
-            min="1"
+            min="0"
             max={maxSummons}
             step="1"
             value={_lastCroakPotency}
             on:input={(e) => {
-              const val = Math.min(Math.max(+(e.target as HTMLInputElement).value, 1), maxSummons)
+              const val = Math.min(Math.max(+(e.target as HTMLInputElement).value, 0), maxSummons)
               build.update(s => ({ ...s, lastCroakStacks: val }) as any)
             }}
             class="da-sb-slider"

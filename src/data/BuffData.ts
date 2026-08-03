@@ -787,7 +787,7 @@ export const BASIC_DEBUFF_POOL: Array<{ buffName: string; potency: number; durat
   { buffName: 'Weakness', potency: BASIC_WEAKNESS_POTENCY, duration: BASIC_DEBUFF_DURATION },
 ]
 
-type PerkBuffFactory = (amount: number, allPerks: Record<string, number>) => GrantedBuff[]
+type PerkBuffFactory = (amount: number, allPerks: Record<string, number>, vassalsCroakStacks?: number) => GrantedBuff[]
 
 const PERK_BUFFS: Record<string, PerkBuffFactory> = {
 
@@ -1017,11 +1017,24 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
   'Beastial Rage': (amount) => [{ 
     buffName: 'Rage', potency: BEASTIAL_RAGE_POTENCY_PER_AMOUNT * amount, duration: BEASTIAL_RAGE_DURATION, condition: 'On kill or Poisebreak', sourceName: 'Beastial Rage', sourceType: 'perk' 
   }],
-  'Vassals Croak': (amount, allPerks) => {
+  'Vassals Croak': (amount, allPerks, vassalsCroakStacks) => {
     const swarm = allPerks['Swarm'] ?? 0
     const maxStacks = Math.floor(VASSALS_CROAK_MAX_SUMMONS_BASE + swarm)
     const minRage = roundMultiplier(0.1 + 0.01 * 1 * amount)
     const maxRage = roundMultiplier(0.1 + 0.01 * maxStacks * amount)
+    const stacks = vassalsCroakStacks == null
+      ? maxStacks
+      : Math.min(Math.max(Math.floor(vassalsCroakStacks), 0), maxStacks)
+    const rageBuffs: GrantedBuff[] = stacks > 0
+      ? [{
+          buffName: 'Rage',
+          potency: roundMultiplier(0.1 + 0.01 * stacks * amount),
+          duration: VASSALS_CROAK_RAGE_DURATION,
+          condition: `On RMB consume · ${minRage}–${maxRage} potency (1–${maxStacks} stacks)`,
+          sourceName: 'Vassals Croak',
+          sourceType: 'perk',
+        }]
+      : []
     return [
       {
         buffName: 'Last Croak',
@@ -1031,14 +1044,7 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
         sourceName: 'Vassals Croak',
         sourceType: 'perk',
       },
-      {
-        buffName: 'Rage',
-        potency: maxRage,
-        duration: VASSALS_CROAK_RAGE_DURATION,
-        condition: `On RMB consume · ${minRage}–${maxRage} potency (1–${maxStacks} stacks)`,
-        sourceName: 'Vassals Croak',
-        sourceType: 'perk',
-      },
+      ...rageBuffs,
     ]
   },
   'Iron Slayer Spirit': (amount) => [
@@ -2139,14 +2145,14 @@ export function getBuffDescription(
   return desc.replace(/x%/g, `${+(pct).toFixed(4).replace(/\.?0+$/, '')}%`)
 }
 
-export function getPerkBuffs(perks: Record<string, number>): GrantedBuff[] {
+export function getPerkBuffs(perks: Record<string, number>, vassalsCroakStacks?: number): GrantedBuff[] {
   const buffs: GrantedBuff[] = []
 
   for (const [perkName, amount] of Object.entries(perks)) {
     if (amount <= 0) continue
     const factory = PERK_BUFFS[perkName]
     if (!factory) continue
-    for (const b of factory(amount, perks)) {
+    for (const b of factory(amount, perks, vassalsCroakStacks)) {
       buffs.push({ ...b, duration: Math.round(b.duration * 100) / 100 })
     }
   }
@@ -2219,6 +2225,7 @@ export interface ActiveBuffsBuildInput {
   draconicRuneInfusion?: string
   draconicColor?: string
   inDarkness?: boolean
+  lastCroakStacks?: number
 }
 
 /**
@@ -2281,7 +2288,7 @@ export function assembleActiveBuffs(
   }
 
   const buffs = convertTailwindToWhirlwind(applyBuffPerkModifiers(
-    [...itemBuffs, ...potionBuffs, ...getPerkBuffs(perks), ...getWeaponArtBuffs(build.selectedWeaponArt)],
+    [...itemBuffs, ...potionBuffs, ...getPerkBuffs(perks, build.lastCroakStacks), ...getWeaponArtBuffs(build.selectedWeaponArt)],
     perks,
     build.rune || undefined,
     wardingDebuffMult,
