@@ -1205,11 +1205,13 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   }
   function hitHealSum(hit: ComputedHit, useCrit: boolean, includeCount: boolean = false): number {
     let sum = 0
+    const eventCount = hit.procCount ?? hit.count
+    const dsCount = (hit.group === 'M1' || hit.group === 'M2') ? 1 : eventCount
     for (const t of hit.types) {
       if (!t.isHeal) continue
       const v = (useCrit || t.forceCrit) ? t.critVal : t.raw
       if (t.oncePerGroup) {
-        sum += v
+        sum += includeCount ? v * dsCount : v
       } else {
         sum += v * (t.subHits ?? 1) * (includeCount ? hit.count : 1)
       }
@@ -1231,7 +1233,16 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     }
     return total
   }
-  function groupHealTotalSum(list: ComputedHit[], useCrit: boolean): number {return list.reduce((s, h) =>s +h.types.filter(t => t.isHeal).reduce((ts, t) => ts + ((useCrit || t.forceCrit) ? t.critVal : t.raw) * (t.oncePerGroup ? 1 : h.count),0), 0)}
+  function groupHealTotalSum(list: ComputedHit[], useCrit: boolean): number {
+    return list.reduce((s, h) => s + h.types.filter(t => t.isHeal).reduce((ts, t) => {
+      const v = (useCrit || t.forceCrit) ? t.critVal : t.raw
+      if (t.oncePerGroup) {
+        const dsCount = (h.group === 'M1' || h.group === 'M2') ? 1 : (h.procCount ?? h.count)
+        return ts + v * dsCount
+      }
+      return ts + v * h.count
+    }, 0), 0)
+  }
 
   import { onMount } from 'svelte'
   onMount(() => {
