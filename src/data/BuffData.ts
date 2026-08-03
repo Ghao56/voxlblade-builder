@@ -18,8 +18,11 @@ import {
   BASIC_SLOWNESS_POTENCY, BASIC_WEAKNESS_POTENCY,
   WARRIOR_STOMP_RAGE_POTENCY, WARRIOR_STOMP_RAGE_DURATION,
   WARRIOR_STOMP_TAUNT_POTENCY, WARRIOR_STOMP_TAUNT_DURATION,
-  JAVELIN_SLOWNESS_DURATION, LIGHTNING_CLOAK_DURATION_WA,
+  JAVELIN_SLOWNESS_DURATION, JAVELIN_BLEED_DURATION, LIGHTNING_CLOAK_DURATION_WA,
   CURSED_GROUND_WEAKNESS_POTENCY, CURSED_GROUND_WEAKNESS_DURATION,
+  CROSS_SLASH_SHATTER_POTENCY, CROSS_SLASH_SHATTER_DURATION,
+  DAGGER_THROW_POISON_DURATION, SHATTER_SHATTER_DURATION, SHATTER_SHATTER_POTENCY,
+  FLAME_SLASH_BURN_DURATION, ICICLE_WAVE_FROSTBITE_DURATION,
   PERFECTION_POTENCY_PER_AMOUNT,
   BOUNCE_MOMENTUM_BUFF_POTENCY, BOUNCE_MOMENTUM_DURATION_PER_AMOUNT,
   TOADZERKER_BUFF_POTENCY, TOADZERKER_BUFF_DURATION,
@@ -70,6 +73,7 @@ import {
   CLEAVE_DURATION,
   SERRATED_EDGE_DURATION,
   INSPIRED_POTENCY_PER_AMOUNT, INSPIRED_DURATION, INSPIRED_EFFECT_PER_TENTH,
+  VIRULENT_CORE_DURATION,
 } from '../lib/constants/buffs'
 import {
   CRYO_ENGINE_TAILWIND_BASE_POTENCY, CRYO_ENGINE_TAILWIND_POTENCY_PER_AMOUNT,
@@ -1527,6 +1531,16 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       sourceType: 'perk',
     },
   ],
+  'Virulent Core': (amount) => [
+    {
+      buffName: 'Poison',
+      potency: 0,
+      duration: VIRULENT_CORE_DURATION,
+      condition: `on M1/M2`,
+      sourceName: 'Virulent Core',
+      sourceType: 'perk',
+    },
+  ],
 }
 
 const WEAPON_ART_BUFF_MAP: Record<string, GrantedBuff[]> = {
@@ -1536,6 +1550,7 @@ const WEAPON_ART_BUFF_MAP: Record<string, GrantedBuff[]> = {
   ],
   'Javelin': [
     { buffName: 'Slowness', potency: 0, duration: JAVELIN_SLOWNESS_DURATION, sourceName: 'Javelin', sourceType: 'weaponArt' },
+    { buffName: 'Bleed', potency: 0, duration: JAVELIN_BLEED_DURATION, sourceName: 'Javelin', sourceType: 'weaponArt' },
   ],
   'Lightning Cloak': [
     { buffName: 'Lightning Cloak', potency: 0, duration: LIGHTNING_CLOAK_DURATION_WA, sourceName: 'Lightning Cloak', sourceType: 'weaponArt' },
@@ -1557,6 +1572,21 @@ const WEAPON_ART_BUFF_MAP: Record<string, GrantedBuff[]> = {
       sourceName: 'Cursed Ground',
       sourceType: 'weaponArt' as const,
     })),
+  ],
+  'Cross Slash': [
+    { buffName: 'Shatter', potency: CROSS_SLASH_SHATTER_POTENCY, duration: CROSS_SLASH_SHATTER_DURATION, sourceName: 'Cross Slash', sourceType: 'weaponArt' },
+  ],
+  'Dagger Throw': [
+    { buffName: 'Poison', potency: 0, duration: DAGGER_THROW_POISON_DURATION, sourceName: 'Dagger Throw', sourceType: 'weaponArt' },
+  ],
+  'Shatter': [
+    { buffName: 'Shatter', potency: SHATTER_SHATTER_POTENCY, duration: SHATTER_SHATTER_DURATION, sourceName: 'Shatter', sourceType: 'weaponArt' },
+  ],
+  'Flame Slash': [
+    { buffName: 'Burn', potency: 0, duration: FLAME_SLASH_BURN_DURATION, sourceName: 'Flame Slash', sourceType: 'weaponArt' },
+  ],
+  'Icicle Wave': [
+    { buffName: 'Frostbite', potency: 0, duration: ICICLE_WAVE_FROSTBITE_DURATION, sourceName: 'Icicle Wave', sourceType: 'weaponArt' },
   ],
 }
 
