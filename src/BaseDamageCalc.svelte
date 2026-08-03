@@ -425,8 +425,10 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
 
   $: critChance  = crit?.effectiveCritChance ?? 0
   $: _splinterAmount = crit?.critDmgBreakdown?.find((s: any) => s.source === 'Splinter')?.amount ?? 0
+  $: _sparkAmount = crit?.critDmgBreakdown?.find((s: any) => s.source === 'Spark (to burning enemies)')?.amount ?? 0
   $: _hasBleedOnTarget = resolvedDebuffs.some(d => d.name === 'Bleed' && !disabledDebuffs.has(d.name))
-  $: critDmgMult = (crit?.critDamageMultiplier ?? BASE_CRIT_DMG_PCT) - (_hasBleedOnTarget ? 0 : _splinterAmount)
+  $: _hasBurnOnTarget = resolvedDebuffs.some(d => d.name === 'Burn' && !disabledDebuffs.has(d.name))
+  $: critDmgMult = (crit?.critDamageMultiplier ?? BASE_CRIT_DMG_PCT) - (_hasBleedOnTarget ? 0 : _splinterAmount) - (_hasBurnOnTarget ? 0 : _sparkAmount)
   $: _venomEaterActive = venomEaterStacks > 0 && showCritValues && !disabledBoosts.has('Venom Eater') && resolvedDebuffs.some(d => d.name === 'Poison')
   $: _bloodThirstyActive = bloodThirstyStacks > 0 && !disabledBoosts.has('Blood Thirsty') && resolvedDebuffs.some(d => d.name === 'Bleed')
 
@@ -1619,7 +1621,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
         {#if _activeDotTicks.length > 0}
           <div class="bdc-hit-list-grp">
             <div class="bdc-grp-head">
-              <span class="bdc-hit-grp-label">DoT Dmg</span>
+              <span class="bdc-hit-grp-label">Status</span>
             </div>
             <div class="bdc-hit-list-rows">
               {#each _activeDotTicks as dot}

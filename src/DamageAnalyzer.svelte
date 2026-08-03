@@ -684,6 +684,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
 
   $: _dummyHasPoisonActive = _dummyDebuffs.some(d => d.name === 'Poison' && !disabledDebuffs.has(d.name))
   $: _dummyHasBleedActive = _dummyDebuffs.some(d => d.name === 'Bleed' && !disabledDebuffs.has(d.name))
+  $: _dummyHasBurnActive = _dummyDebuffs.some(d => d.name === 'Burn' && !disabledDebuffs.has(d.name))
   $: _dummyHasSlowActive = _dummyDebuffs.some(d => d.name === 'Slowness' && !disabledDebuffs.has(d.name))
   $: _dummyHasFrostbiteActive = _dummyDebuffs.some(d => d.name === 'Frostbite' && !disabledDebuffs.has(d.name))
   $: _venomEaterCanShow = (perks['Venom Eater'] ?? 0) > 0 && _dummyHasPoisonActive
@@ -1439,7 +1440,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     return gatingPerks.some(p => _critDisabledPerkNames.has(p))
   }
   $: allCritSources = crit.allCritBreakdown.filter(s => !_isCritSourceDisabled(s.gatingPerks))
-  $: critDmgSources = crit.critDmgBreakdown.filter(s => !_isCritSourceDisabled(s.gatingPerks) && !(s.source === 'Splinter' && !_dummyHasBleedActive))
+  $: critDmgSources = crit.critDmgBreakdown.filter(s => !_isCritSourceDisabled(s.gatingPerks) && !(s.source === 'Splinter' && !_dummyHasBleedActive) && !(s.source === 'Spark (to burning enemies)' && !_dummyHasBurnActive))
 
   $: _filteredNaturalCrit = (() => {
     const sum = allCritSources.filter(s => !s.isExtra).reduce((a, b) => a + b.amount, 0)
