@@ -546,7 +546,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   }
  
   $: computedHits = typedBoostEntries && effectiveDefenses && (void starRerollSeed, () => {
-    return weaponHits.map((hit): ComputedHit => {
+    return weaponHits.flatMap((hit): ComputedHit[] => {
     const isHeal = hit.isHeal ?? false
     const basePenDecimal = (armorPen + globalArmorPenetration) / 100
     const hitPenDecimal = hit.group === 'WA' || hit.group === 'Rune' ? (armorPen + globalArmorPenetration + waArmorPenetration) / 100 : basePenDecimal
@@ -700,29 +700,6 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
 
     if (!isHeal && explosiveChargePct > 0 && hit.group === 'WA' && canProc(hit.procCoefficient)) {
       if (_hitDebuffedPreMitBase > 0) addProcEffect(_hitDebuffedPreMitBase, explosiveChargePct, { physical: 0.5, fire: 0.5 }, 'Explosive')
-    }
-
-    // Vassals Croak: on RMB (WA) hit, consume Last Croak and explode.
-    // Base = OriginalAttackDamage (WA raw pre-output damage) × potency × (1 + perkAmount) / 15.
-    // Only post-output multipliers (defense, debuff damage mults) affect the explosion.
-    if (!isHeal && vassalsCroakAmt > 0 && vassalsCroakPotency > 0 && hit.group === 'WA' && canProc(hit.procCoefficient)) {
-      const lcSourceBase = (hit.base * (hit.scalingMult ?? 1)) * vassalsCroakPotency * (1 + vassalsCroakAmt) / 15
-      if (lcSourceBase > 0) {
-        const lcInfo = DMG_TYPE_MAP.get('physical') ?? { label: 'Physical', color: '#e8e4da' }
-        const lcDefPct = defPctForType('physical')
-        const lcCrushPen = crushingPenForType('physical')
-        const lcDefMult = calcArmorMult(lcDefPct, basePenDecimal + lcCrushPen / 100, 'physical').mult
-        const lcDebuffMult = _activeDebuffTypeDamageMult['physical'] ?? 1
-        const lcRaw = lcSourceBase * lcDefMult * lcDebuffMult * _activeDebuffDamageMult * selfDebuffDamageMult
-        types.push({
-          key: 'physical', label: lcInfo.label, color: lcInfo.color,
-          typeBase: lcSourceBase, scalingMult: 1, combatMult: 1,
-          applicableBoosts: [], weaponBoostMult: 1, typeDebuffMult: lcDebuffMult,
-          defMult: lcDefMult, enemyDefPct: lcDefPct,
-          raw: lcRaw, critVal: Math.round(lcRaw * critDmgMult / 100 * 10000) / 10000,
-          isHeal: false, tag: 'Last Croak', forceCrit: false, procCoefficient: { type: 'noProc' },
-        })
-      }
     }
 
     if (!isHeal && blubBlubAmt > 0 && canProc(hit.procCoefficient)) {
@@ -1116,7 +1093,41 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       }
     }
 
-    return { group: hit.group, index: hit.index, count: hit.count, isFinisher: hit.isFinisher, label: hit.label, isHeal, types, procCount: hit.procCount, finisherGroupHitCount: hit.finisherGroupHitCount, eachHitM1M2: hit.eachHitM1M2 ?? false }
+    const result: ComputedHit = { group: hit.group, index: hit.index, count: hit.count, isFinisher: hit.isFinisher, label: hit.label, isHeal, types, procCount: hit.procCount, finisherGroupHitCount: hit.finisherGroupHitCount, eachHitM1M2: hit.eachHitM1M2 ?? false }
+
+    // Vassals Croak: on the first RMB (M2) hit, consume Last Croak and explode once as its own hit row.
+    // Triggers on any M2-type finisher: base M2 (group 'M2'), M2 finishers folded into the M1 combo
+    // (Deltabit → 'M1' with isM2, Delta Drill repeats it), and non-standard WA finishers that count as
+    // individual RMB finishers (e.g. Rapid Stabs). The Last Croak row is emitted into the triggering
+    // hit's own group so it appears directly below that hit.
+    if (!isHeal && vassalsCroakAmt > 0 && vassalsCroakPotency > 0
+      && (hit.group === 'M2' || hit.isM2 || (hit.group === 'WA' && hit.isFinisher))
+      && hit.index === 0 && canProc(hit.procCoefficient)) {
+      const lcSourceBase = hit.base * vassalsCroakPotency * (1 + vassalsCroakAmt) / 15
+      if (lcSourceBase > 0) {
+        const lcInfo = DMG_TYPE_MAP.get('physical') ?? { label: 'Physical', color: '#e8e4da' }
+        const lcDefPct = defPctForType('physical')
+        const lcCrushPen = crushingPenForType('physical')
+        const lcDefMult = calcArmorMult(lcDefPct, basePenDecimal + lcCrushPen / 100, 'physical').mult
+        const lcDebuffMult = _activeDebuffTypeDamageMult['physical'] ?? 1
+        const lcRaw = lcSourceBase * lcDefMult * lcDebuffMult * _activeDebuffDamageMult * selfDebuffDamageMult
+        const lcHit: ComputedHit = {
+          group: hit.group, index: 0, count: 1, isFinisher: false, label: 'Last Croak',
+          isHeal: false, eachHitM1M2: false,
+          types: [{
+            key: 'physical', label: lcInfo.label, color: lcInfo.color,
+            typeBase: lcSourceBase, scalingMult: 1, combatMult: 1,
+            applicableBoosts: [], weaponBoostMult: 1, typeDebuffMult: lcDebuffMult,
+            defMult: lcDefMult, enemyDefPct: lcDefPct,
+            raw: lcRaw, critVal: Math.round(lcRaw * critDmgMult / 100 * 10000) / 10000,
+            isHeal: false, tag: 'Last Croak', forceCrit: false, procCoefficient: { type: 'noProc' },
+            oncePerRmb: true,
+          }],
+        }
+        return [result, lcHit]
+      }
+    }
+    return [result]
     })
   })()
 
@@ -1162,13 +1173,14 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     const val = (t: ComputedType) => ((useCrit || t.forceCrit) ? t.critVal : t.raw) / (t.activationDivisor ?? 1)
     let perHitSum = 0
     for (const t of hit.types) {
-      if (t.isHeal || t.isCurseRip || t.oncePerGroup) continue
+      if (t.isHeal || t.isCurseRip || t.oncePerGroup || t.oncePerRmb) continue
       perHitSum += includeCount ? val(t) * (t.subHits ?? hit.count) : val(t)
     }
     const onceSum = hit.types.filter(t => t.oncePerGroup && !t.isHeal && !t.isCurseRip).reduce((s, t) => s + val(t), 0)
+    const onceRmbSum = hit.types.filter(t => t.oncePerRmb && !t.isHeal && !t.isCurseRip).reduce((s, t) => s + val(t), 0)
     const eventCount = hit.procCount ?? hit.count
     const dsCount = (hit.group === 'M1' || hit.group === 'M2') ? 1 : eventCount
-    return perHitSum + (includeCount ? onceSum * dsCount : onceSum)
+    return perHitSum + (includeCount ? onceSum * dsCount : onceSum) + onceRmbSum
   }
   function hitHealSum(hit: ComputedHit, useCrit: boolean, includeCount: boolean = false): number {
     let sum = 0
@@ -1188,12 +1200,13 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     for (const h of list) {
       if (h.isHeal) continue
       for (const t of h.types) {
-        if (t.isHeal || t.isCurseRip || t.oncePerGroup) continue
+        if (t.isHeal || t.isCurseRip || t.oncePerGroup || t.oncePerRmb) continue
         total += ((useCrit || t.forceCrit) ? t.critVal : t.raw) / (t.activationDivisor ?? 1) * (t.subHits ?? h.count)
       }
       const eventCount = h.procCount ?? h.count
       const dsCount = (h.group === 'M1' || h.group === 'M2') ? 1 : eventCount
       total += h.types.filter(t => t.oncePerGroup && !t.isHeal && !t.isCurseRip).reduce((ts, t) => ts + ((useCrit || t.forceCrit) ? t.critVal : t.raw) / (t.activationDivisor ?? 1), 0) * dsCount
+      total += h.types.filter(t => t.oncePerRmb && !t.isHeal && !t.isCurseRip).reduce((ts, t) => ts + ((useCrit || t.forceCrit) ? t.critVal : t.raw) / (t.activationDivisor ?? 1), 0)
     }
     return total
   }

@@ -2735,6 +2735,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           group, index: i, count, base, scalingMult: _scalingMult, combatMult: _m2CombatMult,
           isFinisher: true, dmgTypes: finalDmgTypes,
           baseDmgTypes: _weaponDmgTypesBase,
+          ...(group === 'M1' ? { isM2: true } : {}),
           ...(piercerRank > 0 ? { boostDmgTypes } : {}),
           ...(combinedWbMult !== 1 ? { weaponBoostMult: combinedWbMult, weaponBoostLabel: wbLabel } : {}),
           canApplyBurn: _hasSingedBurn,

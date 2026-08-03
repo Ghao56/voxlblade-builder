@@ -28,7 +28,7 @@ export const BADGE_CONFIG: Record<string, { color: string; label: string; title:
   'Sandnado': { color: '#d4a547', label: '✦ Sandnado', title: 'Ruler Of The Sands: sandnado on WA/Rune use · Reduced proc coefficient · Earth+Air damage' },
   'Blazing Finisher': { color: '#f97316', label: '✦ Blazing', title: 'Blazing Finisher: fire AoE on finisher vs burning · 2×perkAmount + 20% of finisher damage' },
   'Deathmist Slash': { color: '#818cf8', label: '✦ Deathmist', title: 'Deathmist Slash: extra Water+Hex slash on finisher · Heals allies and self · Once per finisher' },
-  'Last Croak': { color: '#94ff88', label: '✦ Last Croak', title: 'Last Croak: consumed on RMB hit · Physical explosion = WA base damage × potency × (1 + perkAmount) / 15 · Guardbreaks' },
+  'Last Croak': { color: '#94ff88', label: '✦ Last Croak', title: 'Last Croak: consumed on RMB (M2) hit · Physical explosion = M2 base damage × potency × (1 + perkAmount) / 15 · Guardbreaks' },
   'Star Struck': { color: '#fde047', label: '✦ Star', title: 'Star Struck: landed M1/M2 shoot stars · random damage type · True star deals 6 base with 0.5 Magic scaling · stars can proc other on-hit effects' },
 }
 
@@ -44,6 +44,7 @@ export interface ComputedType {
   isHeal: boolean
   tag?: string
   oncePerGroup?: boolean
+  oncePerRmb?: boolean
   isCurseRip?: boolean
   forceCrit: boolean
   isCritExempt?: boolean
