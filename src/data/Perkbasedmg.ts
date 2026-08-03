@@ -488,6 +488,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     scalingMode: 'fixed',
     scalings: { water: 1.0 },
     guardbreak: true,
+    requiredBuff: 'Bounce',
     note: 'Stuns and briefly immobilizes the target.',
   },
   // ── Bomber Charge ────────────────────────────────────────────────────────
