@@ -216,6 +216,7 @@ export interface BuildState {
   enemyHpFill: number
   summonCount: number
   vassalsCroakSummons?: number
+  lastCroakStacks?: number
   buffsConsumed: number
   sporelingsSummoned: number
   bastionBallistaArrows: number

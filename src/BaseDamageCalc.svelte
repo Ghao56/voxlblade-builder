@@ -565,6 +565,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   }
  
   $: computedHits = typedBoostEntries && effectiveDefenses && (void starRerollSeed, () => {
+    const lcConsumed = new Set<string>()
     return weaponHits.flatMap((hit): ComputedHit[] => {
     const isHeal = hit.isHeal ?? false
     const basePenDecimal = (armorPen + globalArmorPenetration) / 100
@@ -1116,14 +1117,24 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
 
     const result: ComputedHit = { group: hit.group, index: hit.index, count: hit.count, isFinisher: hit.isFinisher, label: hit.label, isHeal, types, procCount: hit.procCount, finisherGroupHitCount: hit.finisherGroupHitCount, eachHitM1M2: hit.eachHitM1M2 ?? false }
 
-    // Vassals Croak: on the first RMB (M2) hit, consume Last Croak and explode once as its own hit row.
+    // Vassals Croak: on an RMB (M2) finisher hit, consume Last Croak and explode once per RMB press.
     // Triggers on any M2-type finisher: base M2 (group 'M2'), M2 finishers folded into the M1 combo
-    // (Deltabit → 'M1' with isM2, Delta Drill repeats it), and non-standard WA finishers that count as
-    // individual RMB finishers (e.g. Rapid Stabs). The Last Croak row is emitted into the triggering
-    // hit's own group so it appears directly below that hit.
+    // (Deltabit → 'M1' with isM2, Delta Drill repeats it), non-standard WA finishers that count as
+    // individual RMB finishers (e.g. Rapid Stabs), and monk spirits (isM2, e.g. Dire Buni Spirit).
+    // M1 finishers never trigger. The Last Croak row is emitted into the triggering hit's own group
+    // so it appears directly below that hit.
     if (!isHeal && vassalsCroakAmt > 0 && vassalsCroakPotency > 0
       && (hit.group === 'M2' || hit.isM2 || (hit.group === 'WA' && hit.isFinisher))
-      && hit.index === 0 && canProc(hit.procCoefficient)) {
+      && canProc(hit.procCoefficient)) {
+      // One Last Croak per press: a Deltabit/Delta Drill combo replaces a single
+      // M1 finisher with several M2-type hits (all group 'M1') that must share one
+      // key, and M2-replacement perks share the base M2's key. WA finishers and
+      // monk spirits key off their own row label.
+      const lcKey = (hit.group === 'M1' || hit.group === 'M2')
+        ? hit.group
+        : (hit.label ?? hit.group)
+      if (lcConsumed.has(lcKey)) return [result]
+      lcConsumed.add(lcKey)
       const lcSourceBase = hit.base * vassalsCroakPotency * (1 + vassalsCroakAmt) / 15
       if (lcSourceBase > 0) {
         const lcInfo = DMG_TYPE_MAP.get('physical') ?? { label: 'Physical', color: '#e8e4da' }
@@ -1133,13 +1144,16 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
         const lcDebuffMult = _activeDebuffTypeDamageMult['physical'] ?? 1
         const lcBoosts = getApplicableBoosts('physical', false, undefined, hit.procCoefficient)
         const lcTypedMult = lcBoosts.reduce((acc, b) => acc * b.mult, 1)
-        const lcRaw = lcSourceBase * (hit.combatMult ?? 1) * lcTypedMult * sunburnUniversalDmgMult * lcDefMult * lcDebuffMult * _activeDebuffDamageMult * selfDebuffDamageMult
+        // Last Croak is not a finisher, so the finisher-scoped boosts folded into
+        // the triggering hit's combat mult must be excluded.
+        const lcCombatMult = hit.combatMultNoFinisher ?? hit.combatMult ?? 1
+        const lcRaw = lcSourceBase * lcCombatMult * lcTypedMult * sunburnUniversalDmgMult * lcDefMult * lcDebuffMult * _activeDebuffDamageMult * selfDebuffDamageMult
         const lcHit: ComputedHit = {
           group: hit.group, index: 0, count: 1, isFinisher: false, label: 'Last Croak',
           isHeal: false, eachHitM1M2: false,
           types: [{
             key: 'physical', label: lcInfo.label, color: lcInfo.color,
-            typeBase: lcSourceBase, scalingMult: 1, combatMult: hit.combatMult ?? 1,
+            typeBase: lcSourceBase, scalingMult: 1, combatMult: lcCombatMult,
             applicableBoosts: lcBoosts, weaponBoostMult: sunburnUniversalDmgMult, typeDebuffMult: lcDebuffMult,
             defMult: lcDefMult, enemyDefPct: lcDefPct,
             raw: lcRaw, critVal: Math.round(lcRaw * critDmgMult / 100 * 10000) / 10000,

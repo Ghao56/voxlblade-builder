@@ -495,7 +495,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     ? Math.max(..._activeRageBuffs.map(b => b.potency))
     : 0
   $: _vassalsCroakAmt = disabledBoosts.has('Vassals Croak') ? 0 : (perks['Vassals Croak'] ?? 0)
-  $: _lastCroakPotency = Math.max(0, ..._allActiveBuffs.filter(b => b.buffName === 'Last Croak').map(b => b.potency))
+  $: _lastCroakPotency = Math.min(Math.max($build.lastCroakStacks ?? maxSummons, 0), maxSummons)
   $: _rageAffectedTypes = (() => {
     if (_ragePotency <= 0) return new Set<string>()
     const types = new Set(['physical'])
@@ -2310,6 +2310,9 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: if ($build.vassalsCroakSummons != null && $build.vassalsCroakSummons > maxSummons) {
     build.update(s => ({ ...s, vassalsCroakSummons: maxSummons }) as any)
   }
+  $: if ($build.lastCroakStacks != null && $build.lastCroakStacks > maxSummons) {
+    build.update(s => ({ ...s, lastCroakStacks: maxSummons }) as any)
+  }
   $: _activeRuneDmgDef = (() => {
     const def = RUNE_DMG_DEFS.find(d => d.runeName === $build.rune) ?? null
     if (!def) return null
@@ -2692,6 +2695,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     base: number
     scalingMult: number
     combatMult: number
+    combatMultNoFinisher?: number
     isFinisher: boolean
     dmgTypes: Record<string, number>
     baseDmgTypes?: Record<string, number>
@@ -3128,9 +3132,11 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       // typedHits_m2 is built per (damage type x hit value), but the same hit value
       // appears once per type (rawVal is type-independent) — dedupe so each hit
       // value is pushed a single time with the full resolved type split.
+      // Monk spirits ("On RMB (Monk)") proc on an actual RMB press, not on the
+      // Deltabit M1-combo hits, so they are excluded from the Deltabit duplicates.
       const _pushPerkHit = (hitCount: number, hitBase: number, perHitCounts?: boolean) => {
         _pushBdcHit(hitCount, hitBase, perHitCounts)
-        if (entry.isM2 && _deltabitCombo) {
+        if (entry.isM2 && _deltabitCombo && !_isSpiritPerk(entry.perkName)) {
           if (_deltaDrillReps === 0) {
             _pushBdcHit(hitCount, hitBase, perHitCounts, 'M1', `${entry.displayName} (Deltabit)`)
           } else {
@@ -3327,9 +3333,12 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     // Apply finisher-scoped boosts (e.g. Deltabit) generically to every hit
     // flagged as a finisher (M2 hits are finishers by game design), folded into
     // the hit's combat multiplier so the row shows `Combat Multipliers × 2.2`.
+    // The pre-finisher mult is kept so non-finisher follow-ups (e.g. Last Croak)
+    // use it instead of the finisher-boosted value.
     if (_finisherBoostMult !== 1) {
       for (const h of result) {
         if (!(h.isFinisher || h.isM2)) continue
+        h.combatMultNoFinisher = h.combatMult ?? 1
         h.combatMult = roundMultiplier((h.combatMult ?? 1) * _finisherBoostMult)
       }
     }
@@ -4977,13 +4986,30 @@ $: _groupedSelfDamageSources = (() => {
           />
           <span class="da-sb-slider-val" style="color:#93ff87">{Math.floor(_vassalsCroakSummons)}</span>
         </div>
-        <div class="da-pbd-condition">{Math.floor(_vassalsCroakSummons)} active summon{Math.floor(_vassalsCroakSummons) === 1 ? '' : 's'} × {_vassalsCroakAmt} stack{_vassalsCroakAmt === 1 ? '' : 's'} → +{_vassalsCroakBoostPct}% damage boost. Last Croak (consume on RMB/M2 hit): M2 base × {Math.round(_lastCroakPotency * 1000) / 1000} potency × (1 + {_vassalsCroakAmt}) ÷ 15 physical — ignores the attack's output multipliers, but its own damage is affected directly by post-output multipliers (level, damage boosts, Rage, Sunburn, debuffs).</div>
+        <div class="da-sb-slider-wrap">
+          <span class="da-sb-slider-label">Last Croak Potency</span>
+          <input
+            type="range"
+            min="1"
+            max={maxSummons}
+            step="1"
+            value={_lastCroakPotency}
+            on:input={(e) => {
+              const val = Math.min(Math.max(+(e.target as HTMLInputElement).value, 1), maxSummons)
+              build.update(s => ({ ...s, lastCroakStacks: val }) as any)
+            }}
+            class="da-sb-slider"
+            style="--tc:#93ff87; --fill:{maxSummons > 0 ? (_lastCroakPotency / maxSummons) * 100 : 0}%"
+          />
+          <span class="da-sb-slider-val" style="color:#93ff87">{Math.floor(_lastCroakPotency)}</span>
+        </div>
+        <div class="da-pbd-condition">{Math.floor(_vassalsCroakSummons)} active summon{Math.floor(_vassalsCroakSummons) === 1 ? '' : 's'} × {_vassalsCroakAmt} stack{_vassalsCroakAmt === 1 ? '' : 's'} → +{_vassalsCroakBoostPct}% damage boost. Last Croak (consume on RMB/M2 hit): M2 base × {Math.round(_lastCroakPotency * 1000) / 1000} potency × (1 + {_vassalsCroakAmt}) ÷ 15 physical — ignores the attack's output multipliers, but its own damage is affected directly by post-output multipliers (damage boosts, Rage, Sunburn, debuffs).</div>
         <details class="da-pbd-details">
           <summary class="da-pbd-details-summary">Perk Details</summary>
           <div class="da-pbd-details-body">
             <p>Gain a <b>Damage Boost</b> that scales with active minions: <b>+2%</b> damage per active summon per stack (up to <b>{maxSummons}</b> summons — 15 base + Swarm). Use the slider to test with fewer active summons.</p>
-            <p>When a minion dies, gain a stack of the neutral status <b>Last Croak</b> (max <b>{maxSummons}</b> stacks). Consuming it on RMB/M2 hit explodes for <b>M2 base damage × Last Croak potency × (1 + perk amount) ÷ 15</b> physical damage.</p>
-            <p>The explosion does not inherit the triggering attack's output multipliers, but its own damage can still be affected directly by post-output multipliers (level, damage boosts, <b>Rage</b>, <b>Sunburn</b>, debuff multipliers). Last Croak also grants <b>Rage</b> on consumption.</p>
+            <p>When a minion dies, gain a stack of the neutral status <b>Last Croak</b> (max <b>{maxSummons}</b> stacks). Consuming it on RMB/M2 hit explodes for <b>M2 base damage × Last Croak potency × (1 + perk amount) ÷ 15</b> physical damage. Use the slider to test with fewer stacks.</p>
+            <p>The explosion does not inherit the triggering attack's output multipliers, but its own damage can still be affected directly by post-output multipliers (damage boosts, <b>Rage</b>, <b>Sunburn</b>, debuff multipliers). Last Croak also grants <b>Rage</b> on consumption.</p>
             <p>Granted by the <b>Boglord Ring</b>.</p>
           </div>
         </details>
