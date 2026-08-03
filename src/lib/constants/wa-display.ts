@@ -4,6 +4,7 @@ const WA_PERK_DISPLAY_NAMES: Record<string, Record<string, string>> = {
   'Wild Bolt': { 'Laser': 'Wild Bolt' },
   'Heat Drill': { 'Lunge': 'Heat Drill', 'Barrage': 'Heat Drill' },
   'Essence Ray': { 'Magical Ray': 'Essence Ray' },
+  'Solar Light': { 'Lesser Heal': 'Solar Light' },
 }
 
 export function getWADisplayName(

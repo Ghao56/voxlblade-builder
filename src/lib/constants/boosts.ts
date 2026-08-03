@@ -77,4 +77,17 @@ export const ESSENCE_RAY_BASE = 1.1
 export const ESSENCE_RAY_PER_STACK = 0.275
 export const ESSENCE_RAY_HITS = 23
 
+// ── Solar Light (converts Lesser Heal) ──────
+export const SOLAR_LIGHT_TICKS = 15
+export const SOLAR_LIGHT_HEAL_BASE = 0.5625
+export const SOLAR_LIGHT_HEAL_PER_STACK = 0.125
+export const SOLAR_LIGHT_DMG_BASE = 1.5
+export const SOLAR_LIGHT_DMG_PER_STACK = 1 / 3
+export const SOLAR_LIGHT_STAGE_1_SUN = 1.05
+export const SOLAR_LIGHT_STAGE_2_SUN = 1.1
+export const SOLAR_LIGHT_HOLY_SCALING = 0.7
+export const SOLAR_LIGHT_FIRE_SCALING = 0.7
+export const SOLAR_LIGHT_FIRE_DMG_MULT = 0.4
+export const SOLAR_LIGHT_BURN_DURATION = 5
+
 export const STEAM_POWERED_MULT_PER_AIR_BOOST = 2 / 15

@@ -76,6 +76,11 @@ import {
   HEAT_DRILL_SMALL_EXPLOSION_BASE, HEAT_DRILL_SMALL_EXPLOSION_PER_STACK,
   HEAT_DRILL_SMALL_EXPLOSION_HITS,
   ESSENCE_RAY_BASE, ESSENCE_RAY_PER_STACK, ESSENCE_RAY_HITS,
+  SOLAR_LIGHT_TICKS, SOLAR_LIGHT_HEAL_BASE, SOLAR_LIGHT_HEAL_PER_STACK,
+  SOLAR_LIGHT_DMG_BASE, SOLAR_LIGHT_DMG_PER_STACK,
+  SOLAR_LIGHT_STAGE_1_SUN, SOLAR_LIGHT_STAGE_2_SUN,
+  SOLAR_LIGHT_HOLY_SCALING, SOLAR_LIGHT_FIRE_SCALING,
+  SOLAR_LIGHT_FIRE_DMG_MULT, SOLAR_LIGHT_BURN_DURATION,
   CLOUDPUSH_PCT_PER_POTENCY, CINDERPULL_PCT_PER_POTENCY,
   CLOUDPUSH_PCT_PER_STACK, CINDERPULL_PCT_PER_STACK,
   PURSUIT_BASE_MULT, PURSUIT_MULT_PER_RANK,
@@ -171,6 +176,15 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
 }
   $: _effectiveInDarkness = _sunBlessedStacks > 0 ? false : $build.inDarkness
   $: effectiveDarknessOverride.set(_sunBlessedStacks > 0 ? false : null)
+
+  $: _solarLightAmt = perks['Solar Light'] ?? 0
+  $: _solarSunlightSource = $build.inDarkness ? 0 : 1
+  $: _solarRuneSource = $build.rune === 'False Sun Rune' ? 1 : 0
+  $: _solarSunSources = _solarSunlightSource + _solarRuneSource
+  $: _solarStage = _solarSunSources >= 2 ? SOLAR_LIGHT_STAGE_2_SUN : _solarSunSources >= 1 ? SOLAR_LIGHT_STAGE_1_SUN : 1
+  $: _solarScalingLabel = _solarSunSources >= 2
+    ? `${SOLAR_LIGHT_HOLY_SCALING} Holy + ${SOLAR_LIGHT_FIRE_SCALING} Fire`
+    : `${SOLAR_LIGHT_HOLY_SCALING} Holy`
 
   $: _healScalingCtx = {
     perks,
@@ -365,6 +379,17 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       if (wa?.cooldown) {
         baseBuffs[_exhaustIdx] = { ...baseBuffs[_exhaustIdx], duration: wa.cooldown / 2 }
       }
+    }
+
+    if (($result.perks['Solar Light'] ?? 0) > 0 && $build.selectedWeaponArt === 'Lesser Heal' && _solarSunSources >= 2) {
+      baseBuffs.push({
+        buffName: 'Burn',
+        potency: 0,
+        duration: SOLAR_LIGHT_BURN_DURATION,
+        condition: 'Solar Light · on hit · 2 sun sources',
+        sourceName: 'Solar Light',
+        sourceType: 'perk',
+      })
     }
 
     const _ffAmt = $result.perks['Fragrant Flesh'] ?? 0
@@ -1886,6 +1911,16 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   })()
 
   $: waScalingBreakdown = (() => {
+    if (_solarLightActive) {
+      const parsed: Record<string, number> = { holy: SOLAR_LIGHT_HOLY_SCALING }
+      if (_solarSunSources >= 2) parsed.fire = SOLAR_LIGHT_FIRE_SCALING
+      const rows = buildScalingRows(parsed)
+      if (!rows.length) return null
+      const totalEffectivePct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 1000) / 1000
+      return { rows, totalEffectivePct,
+        multiplier: roundMultiplier(applyScalingMult(totalEffectivePct / 100)),
+        isPerHit: false }
+    }
     if (selectedWA.hitScalings?.length) {
       const rows: ScalingRow[] = []
       for (let i = 0; i < selectedWA.hitScalings.length; i++) {
@@ -2019,6 +2054,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
 
   $: selectedWA = WEAPON_ARTS.find(wa => wa.name === $build.selectedWeaponArt) ?? WEAPON_ARTS[0]
   $: _waDisplayName = getWADisplayName(selectedWA.name, perks)
+  $: _solarLightActive = _solarLightAmt > 0 && selectedWA.name === 'Lesser Heal'
   $: _waCooldown = (_heatDrillActive) ? HEAT_DRILL_COOLDOWN : selectedWA.cooldown
   $: _runeBaseCd = getRune($build.rune)?.cooldown ?? 10
 
@@ -2065,13 +2101,20 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       const a = _essenceRayAmt
       return [{ n: ESSENCE_RAY_BASE + ESSENCE_RAY_PER_STACK * a, count: ESSENCE_RAY_HITS }]
     }
+    if (_solarLightActive) {
+      if (_solarSunSources < 1) return null
+      const a = _solarLightAmt
+      return [{ n: Math.round(((SOLAR_LIGHT_DMG_BASE + SOLAR_LIGHT_DMG_PER_STACK * a) * _solarStage) * 1000) / 1000, count: SOLAR_LIGHT_TICKS }]
+    }
     return _waAllHits.dmg.length > 0 ? _waAllHits.dmg.map(h => 
       _wildBoltAmt > 0 && selectedWA.name === 'Laser' 
         ? { ...h, n: parseWAHitsAll(selectedWA.baseDamage).dmg[0]?.n - WILD_BOLT_DMG_REDUCTION } 
         : h
     ) : null
   })()
-  $: _waHealSeq = _waAllHits.heal.length > 0 ? _waAllHits.heal : null
+  $: _waHealSeq = _solarLightActive
+    ? [{ n: Math.round(((SOLAR_LIGHT_HEAL_BASE + SOLAR_LIGHT_HEAL_PER_STACK * _solarLightAmt) * _solarStage) * 1000) / 1000, count: SOLAR_LIGHT_TICKS }]
+    : (_waAllHits.heal.length > 0 ? _waAllHits.heal : null)
   $: _waDebuffWarning = !!selectedWA.baseDamagePerDebuff && _generalActiveDebuffCount <= 0
 
   let _wildBoltElemIdx = 0
@@ -2083,7 +2126,9 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   }
   $: _wildBoltElement = _wildBoltAmt > 0 && selectedWA.name === 'Laser' ? WILD_BOLT_ELEMENTS[_wildBoltElemIdx] : null
   $: _waDmgTypes = computeEffectiveWaDmgTypes({
-    waDamageType: selectedWA.damageType,
+    waDamageType: _solarLightActive
+      ? (_solarSunSources >= 2 ? `1 Holy + ${SOLAR_LIGHT_FIRE_DMG_MULT} Fire` : '1 Holy')
+      : selectedWA.damageType,
     weaponDmgTypes: _weaponDmgTypes,
     weaponDmgTypesBase: _weaponDmgTypesBase,
     waDmgTypeBonuses: _waDmgTypeBonuses,
@@ -2098,6 +2143,9 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   })
   
   $: _waDmgTypesBase = (() => {
+    if (_solarLightActive) {
+      return { holy: 1, ...(_solarSunSources >= 2 ? { fire: SOLAR_LIGHT_FIRE_DMG_MULT } : {}) }
+    }
     if (_wildBoltElement) {
       return { [_wildBoltElement]: 1 }
     }
@@ -2151,6 +2199,15 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   })()
 
   $: _waScalingMult = (() => {
+    if (_solarLightActive) {
+      const sc: Record<string, number> = { holy: SOLAR_LIGHT_HOLY_SCALING }
+      if (_solarSunSources >= 2) sc.fire = SOLAR_LIGHT_FIRE_SCALING
+      let totalPct = 0
+      for (const [k, v] of Object.entries(sc)) {
+        totalPct += v * ((stats as Record<string, number>)[k + 'Boost'] ?? 0)
+      }
+      return applyScalingMult(totalPct / 100)
+    }
     const sc = selectedWA.scaling
     if (!sc || sc === 'Same as weapon') return _scalingMult
     if (sc === 'None') return 1
@@ -4702,7 +4759,9 @@ $: _groupedSelfDamageSources = (() => {
                   <span class="da-ww-label">WA+</span>
                 </Badge>
               {/if}
-              {#if selectedWA.scaling && selectedWA.scaling !== 'Same as weapon'}
+              {#if _solarLightActive}
+                <span class="da-range-scl">Scaling: {_solarScalingLabel}</span>
+              {:else if selectedWA.scaling && selectedWA.scaling !== 'Same as weapon'}
                 <span class="da-range-scl">{selectedWA.scaling === 'None' ? 'No Scaling' : `Scaling: ${selectedWA.scaling}`}</span>
               {/if}
             </div>
@@ -4774,6 +4833,30 @@ $: _groupedSelfDamageSources = (() => {
                 ({_wildBoltElemIdx + 1}/{WILD_BOLT_ELEMENTS.length})
               </div>
               <div class="da-wb-line">Debuff (5s, 1 of 6): Bleed · Burn · Poison · Shatter · Slowness · Weakness</div>
+            </div>
+          {/if}
+          {#if _solarLightActive}
+            <div class="da-wild-bolt-box">
+              <div class="da-wb-row">
+                <span class="da-wb-header">Solar Light ×{_solarLightAmt}</span>
+              </div>
+              <div class="da-wb-line">
+                Sun Sources: {_solarSunSources} — {_solarSunlightSource === 1 ? 'Natural Sunlight' : 'No Sunlight'}{_solarRuneSource === 1 ? ' · False Sun Rune' : ''}
+              </div>
+              <div class="da-wb-line">
+                Stage: ×{_solarStage} ({_solarSunSources >= 2 ? '2 sun sources' : _solarSunSources >= 1 ? '1 sun source' : 'no sun'})
+              </div>
+              <div class="da-wb-line">
+                Per tick: {fmtNum(Math.round(((SOLAR_LIGHT_DMG_BASE + SOLAR_LIGHT_DMG_PER_STACK * _solarLightAmt) * _solarStage) * 1000) / 1000)} Dmg · {fmtNum(Math.round(((SOLAR_LIGHT_HEAL_BASE + SOLAR_LIGHT_HEAL_PER_STACK * _solarLightAmt) * _solarStage) * 1000) / 1000)} Heal (×{SOLAR_LIGHT_TICKS})
+              </div>
+              <div class="da-wb-line">Scaling: {_solarScalingLabel}</div>
+              {#if _solarSunSources >= 2}
+                <div class="da-wb-line">Applies Burn for {SOLAR_LIGHT_BURN_DURATION}s on hit</div>
+              {/if}
+              {#if _solarSunSources < 1}
+                <div class="da-wb-line">Deals no damage without a sun source</div>
+              {/if}
+              <div class="da-wb-line">Can't move while casting · heal target locked on cast</div>
             </div>
           {/if}
           </div>
