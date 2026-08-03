@@ -380,25 +380,28 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   }
   $: _debuffTypeLabels = calcDebuffTypeLabels(resolvedDebuffs, disabledDebuffs)
 
-  // Effective enemy defenses after applying debuff reductions (e.g. Shatter strips armor)
-  function calcEffectiveDefenses(resolved: Array<any>, disabled: Set<string>, defs: Record<string, number>): Record<string, number> {
+  // Armor-reduction contributions from active enemy debuffs (e.g. Shatter strips armor), keyed by damage type
+  $: debuffDefReductions = (() => {
     const reductions: Record<string, number> = {}
-    for (const d of resolved) {
-      if (disabled.has(d.name) || !d.defReduction) continue
+    for (const d of resolvedDebuffs) {
+      if (disabledDebuffs.has(d.name) || !d.defReduction) continue
       for (const [k, v] of Object.entries(d.defReduction as Record<string, number>)) {
         // Map defense stat keys to damage type keys
         const typeKey = k.replace('Defense', '')
         reductions[typeKey] = (reductions[typeKey] ?? 0) + v
       }
     }
-    if (Object.keys(reductions).length === 0) return { ...defs }
-    const out = { ...defs }
-    for (const [k, v] of Object.entries(reductions)) {
+    return reductions
+  })()
+  // Effective enemy defenses after applying debuff reductions (e.g. Shatter strips armor)
+  $: effectiveDefenses = (() => {
+    if (Object.keys(debuffDefReductions).length === 0) return { ...defenses }
+    const out = { ...defenses }
+    for (const [k, v] of Object.entries(debuffDefReductions)) {
       out[k] = (out[k] ?? 0) - v
     }
     return out
-  }
-  $: effectiveDefenses = calcEffectiveDefenses(resolvedDebuffs, disabledDebuffs, defenses)
+  })()
 
   function calcArmorMult(defPct: number, pen: number, dmgType?: string): { mult: number; branch: 'low'|'high' } {
     if (dmgType === 'true' || dmgType === 'summon') return { mult: 1, branch: 'low' }
@@ -512,6 +515,22 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     return pct
   }
 
+  function baseDefForType(k: string): number {
+    if (k === 'true' || k === 'summon') return 0
+    let pct = defenses[k] ?? 0
+    const parentKey = DEF_INHERITANCE[k]
+    if (parentKey) pct += baseDefForType(parentKey)
+    return pct
+  }
+
+  function defReductionForType(k: string): number {
+    if (k === 'true' || k === 'summon') return 0
+    let pct = debuffDefReductions[k] ?? 0
+    const parentKey = DEF_INHERITANCE[k]
+    if (parentKey) pct += defReductionForType(parentKey)
+    return pct
+  }
+
   function crushingPenForType(dmgType: string): number {
     if (crushingPressureAmt <= 0) return 0
     const defPct = defPctForType(dmgType)
@@ -602,9 +621,11 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       })()
       const typedMultUsed = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
 
-      const enemyDefPctRaw = typeIsHeal ? 0 : defPctForType(k)
+      const baseDefPct = typeIsHeal ? 0 : baseDefForType(k)
+      const debuffDefReduction = defReductionForType(k)
       const spellPiercer = !typeIsHeal && _spellPiercerActive && (showCritValues || hit.forceCrit) && (hit.group === 'WA' || hit.group === 'Rune')
-      const enemyDefPct = spellPiercer ? Math.min(enemyDefPctRaw, 0) : enemyDefPctRaw
+      // Spell Piercer ignores the target's positive defense first; armor-reduction debuffs (e.g. Shatter) apply on top of the ignored value
+      const enemyDefPct = (spellPiercer ? Math.min(baseDefPct, 0) : baseDefPct) - debuffDefReduction
       const crushPen = typeIsHeal ? 0 : crushingPenForType(k)
 
       const weaponBoostMult = hit.weaponBoostMult ?? 1
@@ -627,7 +648,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
         typeDebuffMult,
         defMult, enemyDefPct,
         raw, critVal, isHeal: typeIsHeal, isCritExempt: typeNoCrit, forceCrit: hit.forceCrit ?? false,
-        ...(spellPiercer && enemyDefPctRaw > 0 ? { spellPiercerIgnored: true } : {}),
+        ...(spellPiercer && baseDefPct > 0 ? { spellPiercerIgnored: true } : {}),
         ...(hit.perHitCounts ? { subHits: hit.count } : {}),
       }
     })
