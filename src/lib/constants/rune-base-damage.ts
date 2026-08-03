@@ -52,3 +52,10 @@ export const ROCKY_TAIL_DIVISOR_COEFF = 0.01
 export const ROCKY_TAIL_DIVISOR_BASE = 5
 export const ROCKY_TAIL_HITS_MULT = 2
 export const ROCKY_TAIL_MIN_HITS = 1
+
+// Slayer Rage (Rage Rune / Weakening Roar Rune hold-channel)
+export const SLAYER_RAGE_HITS = 20
+export const SLAYER_RAGE_RAGE_RUNE_BASE_DMG = 0.25
+export const SLAYER_RAGE_RAGE_RUNE_DMG_PER_STACK = 0.125
+export const SLAYER_RAGE_ROAR_RUNE_BASE_DMG = 0.5
+export const SLAYER_RAGE_ROAR_RUNE_DMG_PER_STACK = 0.1875

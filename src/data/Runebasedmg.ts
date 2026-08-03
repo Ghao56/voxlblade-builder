@@ -1,7 +1,7 @@
 import type { BuildState } from '../lib/types';
 import { calculateHealBoost, type HealBoostContext } from './HealBoost';
 import { calcMaxSummonCount } from './SummonData';
-import { ANCIENT_CLERIC_BASE_DMG, ANCIENT_CLERIC_SLIDER_MAX, ANCIENT_CLERIC_SHIELD_BASE, ANCIENT_CLERIC_SHIELD_PER_VAL, BEENADE_BASE_DMG, BEENADE_MAX_POTENCY, BOOSTSHROOM_BASE_DMG, THUNDEROUS_CHARGE_BASE_DMG, SPORELING_TOSS_BASE_DMG, SPORELING_TOSS_HITS_BASE, SPORELING_TOSS_SLIDER_MAX, FOOT_DIVE_BASE_DMG, CACI_BASE_DMG, CACI_HITS, CACITROPS_BASE_DMG, CACITROPS_HITS, HEX_WEB_BASE_DMG, HEX_WEB_HITS, BRAINBLAST_BASE_DMG, BRAINBLAST_HITS, ROCKY_TAIL_BASE_DMG, ROCKY_TAIL_PROT_SCALE, ROCKY_TAIL_VS_BASE_RES, ROCKY_TAIL_VS_PER_LEVEL, ROCKY_TAIL_VS_DEFAULT_RES, ROCKY_TAIL_DIVISOR_COEFF, ROCKY_TAIL_DIVISOR_BASE, ROCKY_TAIL_HITS_MULT, ROCKY_TAIL_MIN_HITS } from '../lib/constants/rune-base-damage';
+import { ANCIENT_CLERIC_BASE_DMG, ANCIENT_CLERIC_SLIDER_MAX, ANCIENT_CLERIC_SHIELD_BASE, ANCIENT_CLERIC_SHIELD_PER_VAL, BEENADE_BASE_DMG, BEENADE_MAX_POTENCY, BOOSTSHROOM_BASE_DMG, THUNDEROUS_CHARGE_BASE_DMG, SPORELING_TOSS_BASE_DMG, SPORELING_TOSS_HITS_BASE, SPORELING_TOSS_SLIDER_MAX, FOOT_DIVE_BASE_DMG, CACI_BASE_DMG, CACI_HITS, CACITROPS_BASE_DMG, CACITROPS_HITS, HEX_WEB_BASE_DMG, HEX_WEB_HITS, BRAINBLAST_BASE_DMG, BRAINBLAST_HITS, ROCKY_TAIL_BASE_DMG, ROCKY_TAIL_PROT_SCALE, ROCKY_TAIL_VS_BASE_RES, ROCKY_TAIL_VS_PER_LEVEL, ROCKY_TAIL_VS_DEFAULT_RES, ROCKY_TAIL_DIVISOR_COEFF, ROCKY_TAIL_DIVISOR_BASE, ROCKY_TAIL_HITS_MULT, ROCKY_TAIL_MIN_HITS, SLAYER_RAGE_HITS, SLAYER_RAGE_RAGE_RUNE_BASE_DMG, SLAYER_RAGE_RAGE_RUNE_DMG_PER_STACK, SLAYER_RAGE_ROAR_RUNE_BASE_DMG, SLAYER_RAGE_ROAR_RUNE_DMG_PER_STACK } from '../lib/constants/rune-base-damage';
 
 export interface RuneDmgCtx {
   potency: number
@@ -37,6 +37,7 @@ export interface RuneDmgDef {
   potencyLabel?: string
   note?: string
   isHealOnly?: boolean
+  activeIf?: (ctx: { perks: Record<string, number> }) => boolean
   slider?: RuneSliderDef
   shield?: RuneShieldDef
 }
@@ -213,5 +214,27 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     dmgTypes: { water: 0.5, air: 0.5 },
     scalings: { water: 1.0, magic: 1.0 },
     note: 'Applies Frostbite for 5 seconds, Guardbreaks',
+  },
+  {
+    runeName: 'Rage Rune',
+    condition: 'Hold to channel (Slayer Rage) — Hex damage around you · 20 ticks',
+    activeIf: ({ perks }) => (perks['Slayer Rage'] ?? 0) > 0,
+    getBaseDamage: ({ perks = {} }) =>
+      SLAYER_RAGE_RAGE_RUNE_BASE_DMG + SLAYER_RAGE_RAGE_RUNE_DMG_PER_STACK * (perks['Slayer Rage'] ?? 0),
+    dmgTypes: { hex: 1.0 },
+    scalings: { hex: 0.75, physical: 0.75 },
+    hits: SLAYER_RAGE_HITS,
+    note: 'Guardbreaks. Can activate other effects. Counts as Rune damage. Take self damage equal to 1.5% of max HP per tick. Applies Weakness every other hit (0.2 potency, ~5s). Rage potency gained ramps +0.01 per stack per tick (up to 20 ticks).',
+  },
+  {
+    runeName: 'Weakening Roar Rune',
+    condition: 'Hold to channel (Slayer Rage) — Hex damage around you · 20 ticks',
+    activeIf: ({ perks }) => (perks['Slayer Rage'] ?? 0) > 0,
+    getBaseDamage: ({ perks = {} }) =>
+      SLAYER_RAGE_ROAR_RUNE_BASE_DMG + SLAYER_RAGE_ROAR_RUNE_DMG_PER_STACK * (perks['Slayer Rage'] ?? 0),
+    dmgTypes: { hex: 1.0 },
+    scalings: { hex: 0.75, physical: 0.75, magic: 0.3 },
+    hits: SLAYER_RAGE_HITS,
+    note: 'Guardbreaks. Can activate other effects. Counts as Rune damage. Take self damage equal to 1% of max HP per tick. Applies Weakness every other hit (0.5 base potency, ramping +0.01 per stack per tick up to 10 ticks). Grants Rage at 0.2 potency for 10 seconds.',
   },
 ]

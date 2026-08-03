@@ -58,6 +58,8 @@ import {
   BOUNCE_DURATION_BASE, BOUNCE_DURATION_PER_STACK,
   MOD_GLADIATORIAL_POTENCY, MOD_MAGE_RAGE_POTENCY, MOD_OCEANS_RAGE_POTENCY,
   MOD_SLAYER_RAGE_POTENCY, MOD_SLAYER_WEAKNESS_POTENCY,
+  SLAYER_RAGE_RAGE_RUNE_WEAK_POTENCY, SLAYER_RAGE_WEAK_DURATION,
+  SLAYER_RAGE_ROAR_WEAK_BASE_POTENCY, SLAYER_RAGE_ROAR_RAGE_POTENCY, SLAYER_RAGE_ROAR_RAGE_DURATION,
   MOD_IRON_SLAYER_POTENCY, MOD_IRON_SLAYER_DURATION,
   MOD_FURY_DURATION, MOD_TAILWIND_POTENCY, MOD_WIND_WALKER_DURATION_DIVISOR, MOD_SLOW_LEAK_DURATION,
   ENDLESS_DESPAIR_POTENCY_PER_STACK, ENDLESS_DESPAIR_FLAT_BONUS,
@@ -1047,6 +1049,33 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       condition: 'Enemies within range on roar',
       sourceName: 'Iron Slayer Spirit',
       sourceType: 'perk',
+    },
+  ],
+
+  'Slayer Rage': () => [
+    {
+      buffName: 'Weakness',
+      potency: SLAYER_RAGE_RAGE_RUNE_WEAK_POTENCY,
+      duration: SLAYER_RAGE_WEAK_DURATION,
+      condition: 'Every other hit while holding Rage Rune',
+      sourceName: 'Rage Rune',
+      sourceType: 'rune',
+    },
+    {
+      buffName: 'Weakness',
+      potency: SLAYER_RAGE_ROAR_WEAK_BASE_POTENCY,
+      duration: SLAYER_RAGE_WEAK_DURATION,
+      condition: 'Every other hit while holding Weakening Roar Rune · ramps +0.01 per stack per tick (max +0.1 per stack)',
+      sourceName: 'Weakening Roar Rune',
+      sourceType: 'rune',
+    },
+    {
+      buffName: 'Rage',
+      potency: SLAYER_RAGE_ROAR_RAGE_POTENCY,
+      duration: SLAYER_RAGE_ROAR_RAGE_DURATION,
+      condition: 'On hold (Weakening Roar Rune)',
+      sourceName: 'Weakening Roar Rune',
+      sourceType: 'rune',
     },
   ],
 

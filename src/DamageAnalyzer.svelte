@@ -2304,7 +2304,12 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   }
 
   $: maxSummons = calcMaxSummonCount(perks);
-  $: _activeRuneDmgDef = RUNE_DMG_DEFS.find(d => d.runeName === $build.rune) ?? null
+  $: _activeRuneDmgDef = (() => {
+    const def = RUNE_DMG_DEFS.find(d => d.runeName === $build.rune) ?? null
+    if (!def) return null
+    if (def.activeIf && !def.activeIf({ perks })) return null
+    return def
+  })()
   $: runePotency = _activeRuneDmgDef?.maxPotency ?? 0
   $: _runeSliderVal = _activeRuneDmgDef?.slider
     ? ((($build as any)[_activeRuneDmgDef.slider.buildKey] ?? 0) as number)
@@ -3174,7 +3179,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         count: _activeRuneDmgDef.getHits
           ? _activeRuneDmgDef.getHits({ potency: runePotency, sliderVal: _runeSliderVal, stats, perks, selfDamage: _runeSelfDamagePerHit })
           : (_activeRuneDmgDef.hits ?? 1),
-        base: _activeRuneDmgDef.getBaseDamage({ potency: runePotency, sliderVal: _runeSliderVal }),
+        base: _activeRuneDmgDef.getBaseDamage({ potency: runePotency, sliderVal: _runeSliderVal, perks }),
         scalingMult: _computePerkScalingMult(_activeRuneDmgDef.scalings),
         dmgTypes: _runeDmgTypesWithBonus,
         combatMult: _runeIsHeal ? _healFinalMultiplier : _runeCombatMult,
@@ -3261,7 +3266,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           pushFp(_waHitsSeq[0].n * _waScalingMult * _waCombatMult, selectedWA.name + ' WA')
         }
         if (_activeRuneDmgDef) {
-          pushFp(_activeRuneDmgDef.getBaseDamage({ potency: runePotency, sliderVal: _runeSliderVal })
+          pushFp(_activeRuneDmgDef.getBaseDamage({ potency: runePotency, sliderVal: _runeSliderVal, perks })
             * _computePerkScalingMult(_activeRuneDmgDef.scalings) * _runeCombatMult, 'Rune')
         }
       }
@@ -3395,7 +3400,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     const undeadMightAmt = perks['Undead Might'] ?? 0
     if (undeadMightAmt <= 0 || !_activeRuneDmgDef) return 0
 
-    const base = _activeRuneDmgDef.getBaseDamage({ potency: runePotency, sliderVal: _runeSliderVal })
+    const base = _activeRuneDmgDef.getBaseDamage({ potency: runePotency, sliderVal: _runeSliderVal, perks })
     const scalingMult = _computePerkScalingMult(_activeRuneDmgDef.scalings)
     const typeMultSum = Object.values(_activeRuneDmgDef.dmgTypes).reduce((s, m) => s + m, 0)
     const perHitDmg = base * typeMultSum * scalingMult * _levelMult
@@ -4763,7 +4768,7 @@ $: _groupedSelfDamageSources = (() => {
         {@const _runeHits = _activeRuneDmgDef.getHits
           ? _activeRuneDmgDef.getHits({ potency: runePotency, sliderVal: _runeSliderVal, stats, perks, selfDamage: _runeSelfDamagePerHit })
           : (_activeRuneDmgDef.hits ?? 1)}
-        {@const _runeBase = _activeRuneDmgDef.getBaseDamage({ potency: runePotency, sliderVal: _runeSliderVal })}
+        {@const _runeBase = _activeRuneDmgDef.getBaseDamage({ potency: runePotency, sliderVal: _runeSliderVal, perks })}
         {@const _runeScalingMult = _computePerkScalingMult(_activeRuneDmgDef.scalings)}
         {@const _runeIsHeal = _activeRuneDmgDef.isHealOnly ?? false}
         {@const _draconicRunesStacks = perks['Draconic Runes'] ?? 0}
