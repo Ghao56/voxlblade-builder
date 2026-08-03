@@ -490,6 +490,8 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: _ragePotency = _activeRageBuffs.length > 0
     ? Math.max(..._activeRageBuffs.map(b => b.potency))
     : 0
+  $: _vassalsCroakAmt = perks['Vassals Croak'] ?? 0
+  $: _lastCroakPotency = Math.max(0, ..._allActiveBuffs.filter(b => b.buffName === 'Last Croak').map(b => b.potency))
   $: _rageAffectedTypes = (() => {
     if (_ragePotency <= 0) return new Set<string>()
     const types = new Set(['physical'])
@@ -1580,6 +1582,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     { sourceName: 'Spirit Winds',   test: () => _effectiveTailwindPotency <= 0 },
     { sourceName: 'Venom Eater',    test: () => !showCritValues || !_dummyHasPoisonActive },
     { sourceName: 'Golden Crits',   test: () => !showCritValues },
+    { sourceName: 'Spell Piercer',  test: () => !showCritValues },
     { sourceName: 'Blood Thirsty',  test: () => !_dummyHasBleedActive },
     { sourceName: 'Gelid Lance',    test: () => !_dummyHasBleedActive },
     { sourceName: 'Vicious Edge',   test: () => !_dummyHasBleedActive },
@@ -1597,7 +1600,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     const s = new Set<string>()
     if (_effectiveTailwindPotency <= 0) s.add('Spirit Winds')
     if (!showCritValues || !_dummyHasPoisonActive) s.add('Venom Eater')
-    if (!showCritValues) s.add('Golden Crits')
+    if (!showCritValues) { s.add('Golden Crits'); s.add('Spell Piercer') }
     if (!_dummyHasBleedActive) { s.add('Blood Thirsty'); s.add('Gelid Lance'); s.add('Vicious Edge'); s.add('Gorecast') }
     if (!_dummyHasPoisonActive) s.add('Venom Spitter')
     if (!_dummyHasSlowActive && !_dummyHasFrostbiteActive) s.add('Frostbite')
@@ -3570,6 +3573,8 @@ $: _groupedSelfDamageSources = (() => {
     ichorSparkChainPct={_ichorSparkChainPct}
     stormRendPct={_stormRendPct}
     explosiveChargePct={_explosiveChargePct}
+    vassalsCroakAmt={_vassalsCroakAmt}
+    vassalsCroakPotency={_lastCroakPotency}
     blubBlubAmt={_blubBlubAmt}
     blazingFinisherAmt={_blazingFinisherAmt}
     dragonStateBaseDmg={_dragonStateHpGateActive ? _dragonStateBaseDmg : 0}

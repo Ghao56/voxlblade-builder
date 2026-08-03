@@ -111,7 +111,7 @@ export const BOOST_DEFS: BoostDef[] = [
   {sourceName:'Stealth',multiplierPerPerk: STEALTH_MULT_PER_STACK, type: 'dmg', condition: "against opponents not targeting you",},
   { sourceName: 'Golden Crits', multiplierPerPerk: GOLDEN_CRITS_MULT_PER_STACK, type: 'dmg', condition: '40% chance on crit', procScaling: 'positiveOnly', hasToggle: true, baseProcChance: GOLDEN_CRITS_BASE_PROC_CHANCE },
   { sourceName: 'Royal Parry', multiplierPerPerk: ROYAL_PARRY_MULT_PER_STACK, type: 'dmg', condition: 'on hits that activated Critical Boost' },
-  { sourceName: 'Spell Piercer', multiplierPerPerk: SPELL_PIERCER_MULT_PER_STACK, type: 'dmg', condition: 'on Weapon Arts and Runes that crit' },
+  { sourceName: 'Spell Piercer', multiplierPerPerk: SPELL_PIERCER_MULT_PER_STACK, type: 'dmg', condition: 'on Weapon Arts and Runes that crit', appliesTo: ['wa', 'rune'] },
   { sourceName: 'Scourge', multiplierPerPerk: SCOURGE_MULT_PER_STACK, condition: 'chance for any hit to Guardbreak', type: 'dmg', needsProcCoeff: true },
   { sourceName: 'Sharpshooter', multiplierPerPerk: SHARPSHOOTER_MULT_PER_STACK, type: 'dmg', condition: 'Hitting from afar', needsProcCoeff: true },
   { sourceName: 'Venom Eater', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Venom Eater'] ?? 0; if (a <= 0) return null; return { multiplier: 1 + VENOM_EATER_DMG_MULT_PER_STACK * a, condition: `on Crit against Poisoned opponents` } }, needsProcCoeff: true },

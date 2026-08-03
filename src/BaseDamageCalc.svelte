@@ -146,6 +146,8 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   export let luminescentPct: number = 0
   export let cloudpushPct: number = 0
   export let cinderpullPct: number = 0
+  export let vassalsCroakAmt: number = 0
+  export let vassalsCroakPotency: number = 0
   export let appliedDebuffs: Array<{
     name: string; abbr: string; color: string
     potency?: number; effectLabel?: string | null; descLabel?: string | null
@@ -431,6 +433,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   $: critDmgMult = (crit?.critDamageMultiplier ?? BASE_CRIT_DMG_PCT) - (_hasBleedOnTarget ? 0 : _splinterAmount) - (_hasBurnOnTarget ? 0 : _sparkAmount)
   $: _venomEaterActive = venomEaterStacks > 0 && showCritValues && !disabledBoosts.has('Venom Eater') && resolvedDebuffs.some(d => d.name === 'Poison')
   $: _bloodThirstyActive = bloodThirstyStacks > 0 && !disabledBoosts.has('Blood Thirsty') && resolvedDebuffs.some(d => d.name === 'Bleed')
+  $: _spellPiercerActive = !disabledBoosts.has('Spell Piercer') && (boosts?.dmgEntries ?? []).some((e: any) => e.sourceName === 'Spell Piercer')
 
   $: _activeDotTicks = dotTicks.filter(d => {
     const debuffToCheck = d.debuffName ?? d.type
@@ -599,7 +602,9 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       })()
       const typedMultUsed = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
 
-      const enemyDefPct = typeIsHeal ? 0 : defPctForType(k)
+      const enemyDefPctRaw = typeIsHeal ? 0 : defPctForType(k)
+      const spellPiercer = !typeIsHeal && _spellPiercerActive && (showCritValues || hit.forceCrit) && (hit.group === 'WA' || hit.group === 'Rune')
+      const enemyDefPct = spellPiercer ? Math.min(enemyDefPctRaw, 0) : enemyDefPctRaw
       const crushPen = typeIsHeal ? 0 : crushingPenForType(k)
 
       const weaponBoostMult = hit.weaponBoostMult ?? 1
@@ -622,6 +627,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
         typeDebuffMult,
         defMult, enemyDefPct,
         raw, critVal, isHeal: typeIsHeal, isCritExempt: typeNoCrit, forceCrit: hit.forceCrit ?? false,
+        ...(spellPiercer && enemyDefPctRaw > 0 ? { spellPiercerIgnored: true } : {}),
         ...(hit.perHitCounts ? { subHits: hit.count } : {}),
       }
     })
@@ -694,6 +700,29 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
 
     if (!isHeal && explosiveChargePct > 0 && hit.group === 'WA' && canProc(hit.procCoefficient)) {
       if (_hitDebuffedPreMitBase > 0) addProcEffect(_hitDebuffedPreMitBase, explosiveChargePct, { physical: 0.5, fire: 0.5 }, 'Explosive')
+    }
+
+    // Vassals Croak: on RMB (WA) hit, consume Last Croak and explode.
+    // Base = OriginalAttackDamage (WA raw pre-output damage) × potency × (1 + perkAmount) / 15.
+    // Only post-output multipliers (defense, debuff damage mults) affect the explosion.
+    if (!isHeal && vassalsCroakAmt > 0 && vassalsCroakPotency > 0 && hit.group === 'WA' && canProc(hit.procCoefficient)) {
+      const lcSourceBase = (hit.base * (hit.scalingMult ?? 1)) * vassalsCroakPotency * (1 + vassalsCroakAmt) / 15
+      if (lcSourceBase > 0) {
+        const lcInfo = DMG_TYPE_MAP.get('physical') ?? { label: 'Physical', color: '#e8e4da' }
+        const lcDefPct = defPctForType('physical')
+        const lcCrushPen = crushingPenForType('physical')
+        const lcDefMult = calcArmorMult(lcDefPct, basePenDecimal + lcCrushPen / 100, 'physical').mult
+        const lcDebuffMult = _activeDebuffTypeDamageMult['physical'] ?? 1
+        const lcRaw = lcSourceBase * lcDefMult * lcDebuffMult * _activeDebuffDamageMult * selfDebuffDamageMult
+        types.push({
+          key: 'physical', label: lcInfo.label, color: lcInfo.color,
+          typeBase: lcSourceBase, scalingMult: 1, combatMult: 1,
+          applicableBoosts: [], weaponBoostMult: 1, typeDebuffMult: lcDebuffMult,
+          defMult: lcDefMult, enemyDefPct: lcDefPct,
+          raw: lcRaw, critVal: Math.round(lcRaw * critDmgMult / 100 * 10000) / 10000,
+          isHeal: false, tag: 'Last Croak', forceCrit: false, procCoefficient: { type: 'noProc' },
+        })
+      }
     }
 
     if (!isHeal && blubBlubAmt > 0 && canProc(hit.procCoefficient)) {
@@ -1531,7 +1560,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
                               {#if t.defMult !== 1}
                                 {@const totalPen = armorPen + globalArmorPenetration + crushingPenForType(t.key)}
                                 <div class="bdc-fr">
-                                  <span class="bdc-fr-label">Defense ({fmt(t.enemyDefPct)}% / Pen {fmt(Math.round(totalPen * 100) / 100)})</span>
+                                  <span class="bdc-fr-label">Defense ({fmt(t.enemyDefPct)}% / Pen {fmt(Math.round(totalPen * 100) / 100)}){t.spellPiercerIgnored ? ' · Spell Piercer' : ''}</span>
                                   <span class="bdc-fr-val bdc-fr-val--def" class:bdc-fr-val--amplify={t.defMult > 1}>× {fmtMult(t.defMult)}</span>
                                 </div>
                               {/if}
@@ -2002,7 +2031,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     {#if t.defMult !== 1}
       {@const totalPen = armorPen + globalArmorPenetration + crushingPenForType(t.key)}
       <div class="bdc-fr">
-        <span class="bdc-fr-label">Defense ({fmt(t.enemyDefPct)}% / Pen {fmt(Math.round(totalPen * 100) / 100)})</span>
+        <span class="bdc-fr-label">Defense ({fmt(t.enemyDefPct)}% / Pen {fmt(Math.round(totalPen * 100) / 100)}){t.spellPiercerIgnored ? ' · Spell Piercer' : ''}</span>
         <span class="bdc-fr-val bdc-fr-val--def" class:bdc-fr-val--amplify={t.defMult > 1}>× {fmtMult(t.defMult)}</span>
       </div>
     {/if}
