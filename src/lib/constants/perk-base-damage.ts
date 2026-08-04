@@ -59,6 +59,27 @@ export const CACI_SPIRIT_THORN_HITS = 7
 export const CACI_SPIRIT_SLAM_HITS = 3
 export const CACI_SPIRIT_BLEED_DURATION = 5
 
+// Woof Spirit
+export const WOOF_SPIRIT_BASE_DMG = 24
+export const WOOF_SPIRIT_HEAL = 10
+export const WOOF_SPIRIT_WEAKNESS_POTENCY = 1
+export const WOOF_SPIRIT_WEAKNESS_DURATION = 15
+
+// Winter Woof Spirit
+export const WINTER_WOOF_SPIRIT_HOWL_DMG = 6
+export const WINTER_WOOF_SPIRIT_BITE_DMG = 2
+export const WINTER_WOOF_SPIRIT_BITES = 2
+export const WINTER_WOOF_SPIRIT_SHATTER_POTENCY = 0.2
+export const WINTER_WOOF_SPIRIT_SHATTER_DURATION = 10
+export const WINTER_WOOF_SPIRIT_BLEED_DURATION = 5
+export const WINTER_WOOF_SPIRIT_DURATION = 15
+
+// Snoeman Spirit
+export const SNOEMAN_SPIRIT_ROAR_DMG = 12
+export const SNOEMAN_SPIRIT_ICESTORM_BASE_DMG = 4.5
+export const SNOEMAN_SPIRIT_HITS = 10
+export const SNOEMAN_SPIRIT_SLOWNESS_POTENCY = 1.5
+
 // Bounce Momentum
 export const BOUNCE_MOMENTUM_BASE_DMG = 5
 export const BOUNCE_MOMENTUM_DMG_PER_STACK = 2.5

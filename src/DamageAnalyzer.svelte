@@ -89,6 +89,8 @@ import {
   ICHOR_SPARK_CHAIN_DMG_PCT,
   ICHOR_SPARK_SLASH_CHARGE_THRESHOLD,
   DEATHMIST_SLASH_SELF_HEAL_BASE,
+  WINTER_WOOF_SPIRIT_BITE_DMG,
+  WINTER_WOOF_SPIRIT_HOWL_DMG,
 } from './lib/constants'
 
 // Centralized mappings for cross-toggle relationships
@@ -3119,6 +3121,9 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           }
         }
 
+        // Woof Spirit heals 10 HP inline on its hit (counts as lifesteal,
+        // handled in BaseDamageCalc via woofSpiritHealMult).
+
       // Deathmist Slash damage attaches to finisher hit rows via
       // _perkOnHitDamages + BaseDamageCalc, so no standalone damage row here.
       // The allies heal is separated into its own standalone Perk row.
@@ -3191,8 +3196,8 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       // value is pushed a single time with the full resolved type split.
       // Monk spirits ("On RMB (Monk)") proc on an actual RMB press, not on the
       // Deltabit M1-combo hits, so they are excluded from the Deltabit duplicates.
-      const _pushPerkHit = (hitCount: number, hitBase: number, perHitCounts?: boolean) => {
-        _pushBdcHit(hitCount, hitBase, perHitCounts)
+      const _pushPerkHit = (hitCount: number, hitBase: number, perHitCounts?: boolean, labelOverride?: string) => {
+        _pushBdcHit(hitCount, hitBase, perHitCounts, undefined, labelOverride)
         if (entry.isM2 && _deltabitCombo && !_isSpiritPerk(entry.perkName)) {
           if (_deltaDrillReps === 0) {
             _pushBdcHit(hitCount, hitBase, perHitCounts, 'M1', `${entry.displayName} (Deltabit)`)
@@ -3210,7 +3215,14 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         for (const typedHit of entry.typedHits_m2) {
           if (!typedHit.count || pushedBases.has(typedHit.rawVal)) continue
           pushedBases.add(typedHit.rawVal)
-          _pushPerkHit(typedHit.count, typedHit.rawVal, true)
+          const _wwsLabelOverride = entry.perkName === 'Winter Woof Spirit'
+            ? typedHit.rawVal === WINTER_WOOF_SPIRIT_BITE_DMG
+              ? `${entry.displayName} (Bite)`
+              : typedHit.rawVal === WINTER_WOOF_SPIRIT_HOWL_DMG
+                ? `${entry.displayName} (Howl)`
+                : undefined
+            : undefined
+          _pushPerkHit(typedHit.count, typedHit.rawVal, true, _wwsLabelOverride)
         }
       } else {
         _pushPerkHit(
@@ -3709,6 +3721,7 @@ $: _groupedSelfDamageSources = (() => {
     siphoningRotAmt={perks['Siphoning Rot'] ?? 0}
     lifestealStacks={perks['Lifesteal'] ?? 0}
     lifestealHealMult={_healFinalMultiplierNoLevel}
+    woofSpiritHealMult={_healFinalMultiplierNoLevel}
     sunburnUniversalDmgMult={_sunburnEnemyBurning ? _sunburnUniversalDmgMult : 1}
     bellowingEmberMult={_activeBellowingEmberMult}
     phantomPainPct={_phantomPainPct}
