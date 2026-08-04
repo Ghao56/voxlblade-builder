@@ -25,6 +25,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     LIFESTEAL_HEAL_PCT_PER_STACK,
     LIFESTEAL_FLAT_HEAL_PER_STACK,
     CURSE_RIP_DIVISOR,
+    WOOF_SPIRIT_HEAL,
     BASE_CRIT_DMG_PCT,
     BLAZING_FINISHER_FINISHER_PCT,
   } from './lib/constants'
@@ -169,6 +170,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   export let curseRipActiveDebuffCount: number = 0
   export let curseRipHealMult: number = 1
   export let lifestealHealMult: number = 1
+  export let woofSpiritHealMult: number = 1
   export let healCritDmgMult: number = 0
   export let venomEaterStacks: number = 0
   export let bloodThirstyStacks: number = 0
@@ -1089,6 +1091,22 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
           raw: btHeal, critVal: btHeal,
           isHeal: true, isCritExempt: true, forceCrit: false,
           tag: 'Blood Thirsty',
+        })
+      }
+    }
+
+    if (!isHeal && (hit.label ?? '') === 'Woof Spirit') {
+      const healRaw = WOOF_SPIRIT_HEAL * woofSpiritHealMult * antiHealSelfMult
+      if (healRaw > 0) {
+        types.push({
+          key: 'heal', label: 'Heal', color: '#4ade80',
+          typeBase: WOOF_SPIRIT_HEAL, scalingMult: 1, combatMult: woofSpiritHealMult,
+          applicableBoosts: [], weaponBoostMult: 1, typeDebuffMult: 1,
+          defMult: 1, enemyDefPct: 0,
+          raw: healRaw, critVal: healRaw,
+          isHeal: true, isCritExempt: true, forceCrit: false,
+          tag: 'Woof Spirit',
+          healBoostMult: woofSpiritHealMult !== 1 ? woofSpiritHealMult : undefined,
         })
       }
     }

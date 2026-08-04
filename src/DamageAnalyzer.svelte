@@ -3119,6 +3119,9 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           }
         }
 
+        // Woof Spirit heals 10 HP inline on its hit (counts as lifesteal,
+        // handled in BaseDamageCalc via woofSpiritHealMult).
+
       // Deathmist Slash damage attaches to finisher hit rows via
       // _perkOnHitDamages + BaseDamageCalc, so no standalone damage row here.
       // The allies heal is separated into its own standalone Perk row.
@@ -3709,6 +3712,7 @@ $: _groupedSelfDamageSources = (() => {
     siphoningRotAmt={perks['Siphoning Rot'] ?? 0}
     lifestealStacks={perks['Lifesteal'] ?? 0}
     lifestealHealMult={_healFinalMultiplierNoLevel}
+    woofSpiritHealMult={_healFinalMultiplierNoLevel}
     sunburnUniversalDmgMult={_sunburnEnemyBurning ? _sunburnUniversalDmgMult : 1}
     bellowingEmberMult={_activeBellowingEmberMult}
     phantomPainPct={_phantomPainPct}

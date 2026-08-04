@@ -4,7 +4,7 @@ import type { GrantedBuff } from './BuffData'
 import { canProc, type ProcCoefficient } from '../lib/types'
 import { calcBaseMaxHP } from '../lib/constants/game'
 import { BASIC_DEBUFF_DURATION } from '../lib/constants/buffs'
-import { BELLOWING_EMBER_HP_GATE_THRESHOLD, BELLOWING_EMBER_HP_GATE_PER_STACK, PYRE_BLOOM_BURN_DURATION, RUNIC_BLADES_DEBUFF_DURATION_PER_STACK, CACI_SPIRIT_BLEED_DURATION, ICE_BURST_BLEED_DURATION } from '../lib/constants/perk-base-damage'
+import { BELLOWING_EMBER_HP_GATE_THRESHOLD, BELLOWING_EMBER_HP_GATE_PER_STACK, PYRE_BLOOM_BURN_DURATION, RUNIC_BLADES_DEBUFF_DURATION_PER_STACK, CACI_SPIRIT_BLEED_DURATION, ICE_BURST_BLEED_DURATION, WOOF_SPIRIT_WEAKNESS_POTENCY, WOOF_SPIRIT_WEAKNESS_DURATION } from '../lib/constants/perk-base-damage'
 import { getActiveEnemyHpDebuffs } from './enemyHpEffects'
 
 export interface AutoDebuffInput {
@@ -161,6 +161,18 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
       duration: CACI_SPIRIT_BLEED_DURATION,
       condition: 'Every hit of Caci Spirit inflicts Bleed',
       sourceName: 'Caci Spirit',
+      sourceType: 'perk',
+    })
+  }
+
+  const woofSpiritAmt = perks['Woof Spirit'] ?? 0
+  if (woofSpiritAmt > 0 && !existingBuffNames.includes('Weakness')) {
+    debuffs.push({
+      buffName: 'Weakness',
+      potency: WOOF_SPIRIT_WEAKNESS_POTENCY,
+      duration: WOOF_SPIRIT_WEAKNESS_DURATION,
+      condition: 'On RMB howl hit (Woof Spirit)',
+      sourceName: 'Woof Spirit',
       sourceType: 'perk',
     })
   }

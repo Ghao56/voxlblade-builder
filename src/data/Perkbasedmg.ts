@@ -95,6 +95,10 @@ import {
   CACI_SPIRIT_THORN_HITS,
   CACI_SPIRIT_SLAM_HITS,
   CACI_SPIRIT_BLEED_DURATION,
+  WOOF_SPIRIT_BASE_DMG,
+  WOOF_SPIRIT_HEAL,
+  WOOF_SPIRIT_WEAKNESS_POTENCY,
+  WOOF_SPIRIT_WEAKNESS_DURATION,
   DARK_HARVEST_BASE_DAMAGE,
   DARK_HARVEST_DAMAGE_PER_STACK,
   DARK_HARVEST_HP_GATE_THRESHOLD,
@@ -477,6 +481,35 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
       },
     ],
     note: `${CACI_SPIRIT_THORN_HITS} thorn hits (${CACI_SPIRIT_THORN_DMG} dmg, no guardbreak) then ${CACI_SPIRIT_SLAM_HITS} slam hits (${CACI_SPIRIT_SLAM_DMG} dmg, guardbreak). Every hit inflicts Bleed for ${CACI_SPIRIT_BLEED_DURATION}s. User can move during thorn barrage, locked in place for slams.`,
+  },
+  // ── Woof Spirit ──────────────────────────────────────────────────────────
+  {
+    perkName: 'Woof Spirit',
+    condition: 'On RMB (Monk)',
+    getBaseDamage: () => WOOF_SPIRIT_BASE_DMG,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { hex: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { physical: 1.0, hex: 1.0 },
+    isM2: true,
+    guardbreak: true,
+    secondaryEffects: [
+      {
+        label: 'Heal',
+        getValue: () => WOOF_SPIRIT_HEAL,
+        format: v => `${v} HP`,
+        condition: 'On successful hit · counts as lifesteal',
+        tone: 'utility',
+      },
+      {
+        label: 'Weakness',
+        getValue: () => WOOF_SPIRIT_WEAKNESS_POTENCY,
+        format: v => `${v} Potency`,
+        condition: `${WOOF_SPIRIT_WEAKNESS_DURATION}s`,
+        tone: 'offense',
+      },
+    ],
+    note: 'Release Spiritual Energy as a large howl on RMB. Heals 10 HP on successful hit; healing counts as lifesteal. Applies Weakness at 1 Potency for 15s.',
   },
   // ── Bounce Momentum ────────────────────────────────────────────────────────
   {
