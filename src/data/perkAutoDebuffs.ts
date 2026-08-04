@@ -4,7 +4,7 @@ import type { GrantedBuff } from './BuffData'
 import { canProc, type ProcCoefficient } from '../lib/types'
 import { calcBaseMaxHP } from '../lib/constants/game'
 import { BASIC_DEBUFF_DURATION } from '../lib/constants/buffs'
-import { BELLOWING_EMBER_HP_GATE_THRESHOLD, BELLOWING_EMBER_HP_GATE_PER_STACK, PYRE_BLOOM_BURN_DURATION, RUNIC_BLADES_DEBUFF_DURATION_PER_STACK, CACI_SPIRIT_BLEED_DURATION, ICE_BURST_BLEED_DURATION, WOOF_SPIRIT_WEAKNESS_POTENCY, WOOF_SPIRIT_WEAKNESS_DURATION } from '../lib/constants/perk-base-damage'
+import { BELLOWING_EMBER_HP_GATE_THRESHOLD, BELLOWING_EMBER_HP_GATE_PER_STACK, PYRE_BLOOM_BURN_DURATION, RUNIC_BLADES_DEBUFF_DURATION_PER_STACK, CACI_SPIRIT_BLEED_DURATION, ICE_BURST_BLEED_DURATION, WOOF_SPIRIT_WEAKNESS_POTENCY, WOOF_SPIRIT_WEAKNESS_DURATION, WINTER_WOOF_SPIRIT_SHATTER_POTENCY, WINTER_WOOF_SPIRIT_SHATTER_DURATION, WINTER_WOOF_SPIRIT_BLEED_DURATION } from '../lib/constants/perk-base-damage'
 import { getActiveEnemyHpDebuffs } from './enemyHpEffects'
 
 export interface AutoDebuffInput {
@@ -173,6 +173,28 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
       duration: WOOF_SPIRIT_WEAKNESS_DURATION,
       condition: 'On RMB howl hit (Woof Spirit)',
       sourceName: 'Woof Spirit',
+      sourceType: 'perk',
+    })
+  }
+
+  const winterWoofSpiritAmt = perks['Winter Woof Spirit'] ?? 0
+  if (winterWoofSpiritAmt > 0 && !existingBuffNames.includes('Shatter')) {
+    debuffs.push({
+      buffName: 'Shatter',
+      potency: WINTER_WOOF_SPIRIT_SHATTER_POTENCY,
+      duration: WINTER_WOOF_SPIRIT_SHATTER_DURATION,
+      condition: 'On RMB howl hit (Winter Woof Spirit)',
+      sourceName: 'Winter Woof Spirit',
+      sourceType: 'perk',
+    })
+  }
+  if (winterWoofSpiritAmt > 0 && !existingBuffNames.includes('Bleed')) {
+    debuffs.push({
+      buffName: 'Bleed',
+      potency: 0,
+      duration: WINTER_WOOF_SPIRIT_BLEED_DURATION,
+      condition: 'On each woof bite · applies once per M1/M2 (Winter Woof Spirit)',
+      sourceName: 'Winter Woof Spirit',
       sourceType: 'perk',
     })
   }

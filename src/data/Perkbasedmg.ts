@@ -99,6 +99,13 @@ import {
   WOOF_SPIRIT_HEAL,
   WOOF_SPIRIT_WEAKNESS_POTENCY,
   WOOF_SPIRIT_WEAKNESS_DURATION,
+  WINTER_WOOF_SPIRIT_HOWL_DMG,
+  WINTER_WOOF_SPIRIT_BITE_DMG,
+  WINTER_WOOF_SPIRIT_BITES,
+  WINTER_WOOF_SPIRIT_SHATTER_POTENCY,
+  WINTER_WOOF_SPIRIT_SHATTER_DURATION,
+  WINTER_WOOF_SPIRIT_BLEED_DURATION,
+  WINTER_WOOF_SPIRIT_DURATION,
   DARK_HARVEST_BASE_DAMAGE,
   DARK_HARVEST_DAMAGE_PER_STACK,
   DARK_HARVEST_HP_GATE_THRESHOLD,
@@ -510,6 +517,38 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
       },
     ],
     note: 'Release Spiritual Energy as a large howl on RMB. Heals 10 HP on successful hit; healing counts as lifesteal. Applies Weakness at 1 Potency for 15s.',
+  },
+  // ── Winter Woof Spirit ────────────────────────────────────────────────────
+  {
+    perkName: 'Winter Woof Spirit',
+    condition: 'On RMB (Monk)',
+    getBaseDamage: () => WINTER_WOOF_SPIRIT_HOWL_DMG,
+    getFinisherHitBaseDmg: ({ baseDmg, hitIndex }) =>
+      hitIndex > 0 ? WINTER_WOOF_SPIRIT_BITE_DMG : baseDmg,
+    hits: 1 + WINTER_WOOF_SPIRIT_BITES,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { physical: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { physical: 1.0, dexterity: 1.0 },
+    isM2: true,
+    guardbreak: true,
+    secondaryEffects: [
+      {
+        label: 'Shatter',
+        getValue: () => WINTER_WOOF_SPIRIT_SHATTER_POTENCY,
+        format: v => `${v} Potency`,
+        condition: `On howl · ${WINTER_WOOF_SPIRIT_SHATTER_DURATION}s`,
+        tone: 'offense',
+      },
+      {
+        label: 'Bleed',
+        getValue: () => WINTER_WOOF_SPIRIT_BLEED_DURATION,
+        format: v => `${v}s`,
+        condition: 'On each woof bite · applies once per M1/M2',
+        tone: 'offense',
+      },
+    ],
+    note: `RMB howl deals ${WINTER_WOOF_SPIRIT_HOWL_DMG} dmg, inflicts Shatter at ${WINTER_WOOF_SPIRIT_SHATTER_POTENCY} Potency for ${WINTER_WOOF_SPIRIT_SHATTER_DURATION}s and guardbreaks. Two Spiritual Winter Woofs then bite separately (${WINTER_WOOF_SPIRIT_BITE_DMG} dmg each, ~1s cooldown between bites), each bite inflicting Bleed for ${WINTER_WOOF_SPIRIT_BLEED_DURATION}s (once per M1/M2). Woofs last ${WINTER_WOOF_SPIRIT_DURATION}s. Can proc other effects.`,
   },
   // ── Bounce Momentum ────────────────────────────────────────────────────────
   {
