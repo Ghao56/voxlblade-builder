@@ -3980,6 +3980,22 @@ $: _groupedSelfDamageSources = (() => {
         </div>
       {/if}
 
+      {#if (perks['Extinguish'] ?? 0) > 0}
+        <div class="da-boost-row" style="margin-top: 6px;">
+          <button
+            class="da-boost-chip"
+            class:da-boost-chip--off={extinguishDisabled}
+            style="background:rgba(14,165,233,.08);border-color:rgba(14,165,233,.2)"
+            on:click={() => extinguishDisabled = !extinguishDisabled}
+          >
+            <span class="da-bc-name">Extinguish</span>
+            <span class="da-bc-val" style="color:#0ea5e9">{extinguishDisabled ? '—' : `×${+(1 + 0.5 * (perks['Extinguish'] ?? 0)).toFixed(4)}`}</span>
+            <span class="da-bc-cond">Water · vs Burning</span>
+            <span class="da-bc-toggle" style={extinguishDisabled ? '' : 'background:rgba(14,165,233,.15);color:#0ea5e9'}>{extinguishDisabled ? 'OFF' : 'ON'}</span>
+          </button>
+        </div>
+      {/if}
+
       {#if _procChips.length > 0}
         <div class="da-boost-row" style="margin-top: 6px;">
           {#each _procChips as chip}
@@ -3998,9 +4014,9 @@ $: _groupedSelfDamageSources = (() => {
         </div>
       {/if}
 
-      {#if _ragePotency > 0 || _glyphConduitEntry || _vampireStacks > 0 || _photosynthesisStacks > 0 || (perks['Extinguish'] ?? 0) > 0 || _lightningCloakActive || _stormRendAmt > 0 || _draconicInfusionDisplay || _allActiveBuffsRaw.some(b => !HANDLED_BUFF_NAMES.has(b.buffName))}
+      {#if _ragePotency > 0 || _glyphConduitEntry || _vampireStacks > 0 || _photosynthesisStacks > 0 || _lightningCloakActive || _stormRendAmt > 0 || _draconicInfusionDisplay || _allActiveBuffsRaw.some(b => !HANDLED_BUFF_NAMES.has(b.buffName))}
         <div class="da-buff-list" style="margin-top: 8px;">
-          {#if _ragePotency > 0 || _glyphConduitEntry || (perks['Extinguish'] ?? 0) > 0 || _lightningCloakActive || _stormRendAmt > 0 || _allActiveBuffsRaw.some(b => !HANDLED_BUFF_NAMES.has(b.buffName) && !BUFF_DEFS[b.buffName]?.isDebuff && !BUFF_DEFS[b.buffName]?.isNeutral)}
+          {#if _ragePotency > 0 || _glyphConduitEntry || _lightningCloakActive || _stormRendAmt > 0 || _allActiveBuffsRaw.some(b => !HANDLED_BUFF_NAMES.has(b.buffName) && !BUFF_DEFS[b.buffName]?.isDebuff && !BUFF_DEFS[b.buffName]?.isNeutral)}
             <span class="da-buff-divider da-buff-divider--buff">Buffs</span>
           {/if}
           {#if _ragePotency > 0}
@@ -4032,21 +4048,6 @@ $: _groupedSelfDamageSources = (() => {
                 <span class="da-bc-cond">Magic</span>
                 <span class="da-bc-toggle" style={glyphConduitDisabled ? '' : 'background:rgba(23,179,254,.15);color:#17b3fe'}>{glyphConduitDisabled ? 'OFF' : 'ON'}</span>
                 <span class="da-buff-sources">{_activeGlyphConduitBuffs.toSorted((a,b) => b.potency - a.potency).slice(0,1).map(b => `${b.sourceName} (${b.potency})`)}</span>
-              </button>
-            </span>
-          {/if}
-          {#if (perks['Extinguish'] ?? 0) > 0}
-            <span class="da-buff">
-              <button
-                class="da-boost-chip"
-                class:da-boost-chip--off={extinguishDisabled}
-                style="background:rgba(14,165,233,.08);border-color:rgba(14,165,233,.2)"
-                on:click={() => extinguishDisabled = !extinguishDisabled}
-              >
-                <span class="da-bc-name">Extinguish</span>
-                <span class="da-bc-val" style="color:#0ea5e9">{extinguishDisabled ? '—' : `×${+(1 + 0.5 * (perks['Extinguish'] ?? 0)).toFixed(4)}`}</span>
-                <span class="da-bc-cond">Water · vs Burning</span>
-                <span class="da-bc-toggle" style={extinguishDisabled ? '' : 'background:rgba(14,165,233,.15);color:#0ea5e9'}>{extinguishDisabled ? 'OFF' : 'ON'}</span>
               </button>
             </span>
           {/if}
