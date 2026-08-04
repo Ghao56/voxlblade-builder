@@ -80,6 +80,9 @@ export const CRYO_ENGINE_TAILWIND_BASE_POTENCY = 0.2
 export const CRYO_ENGINE_TAILWIND_POTENCY_PER_AMOUNT = 0.1
 export const CRYO_ENGINE_TAILWIND_DURATION_PER_AMOUNT = 6
 
+// ── Guiding Winds ────────────────────────────────
+export const GUIDING_WINDS_TAILWIND_POTENCY_PER_AMOUNT = 0.1
+
 // ── Fiery Pursuit ──────────────────────────────────
 export const FIERY_PURSUIT_BASE_DMG = 15
 export const FIERY_PURSUIT_DMG_PER_STACK = 1.5

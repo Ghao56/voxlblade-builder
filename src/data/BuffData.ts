@@ -80,6 +80,7 @@ import {
 import {
   CRYO_ENGINE_TAILWIND_BASE_POTENCY, CRYO_ENGINE_TAILWIND_POTENCY_PER_AMOUNT,
   CRYO_ENGINE_TAILWIND_DURATION_PER_AMOUNT,
+  GUIDING_WINDS_TAILWIND_POTENCY_PER_AMOUNT,
   DARKENING_HEX_POTENCY_ADD_PER_AMOUNT, DARKENING_HEX_POTENCY_MULT_PER_AMOUNT,
   DARKENING_HEX_DURATION_ADD_PER_AMOUNT, DARKENING_HEX_MAX_ACTIVATIONS,
   KINDLING_BURN_DURATION_MULT,
@@ -1361,6 +1362,16 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       duration: TAILWIND_BUFF_DURATION,
       condition: 'On weapon art activation',
       sourceName: 'Tailwind',
+      sourceType: 'perk',
+    },
+  ],
+  'Guiding Winds': (amount) => [
+    {
+      buffName: 'Tailwind',
+      potency: GUIDING_WINDS_TAILWIND_POTENCY_PER_AMOUNT * amount,
+      duration: 1,
+      condition: 'While moving (at max)',
+      sourceName: 'Guiding Winds',
       sourceType: 'perk',
     },
   ],
