@@ -14,6 +14,11 @@ export const EXTINGUISH_MULT_PER_STACK = 0.5
 
 export const EXPLOSIVE_CHARGE_PCT = 1.0
 
+export const BLUB_BLUB_PCT_PER_STACK = 0.15
+export const BLUB_BLUB_HIT_COUNT = 2
+export const BLUB_BLUB_PROC_CHANCE = 0.5
+export const BLUB_BLUB_DMG_TYPES = { water: 1.0 } as const
+
 export const WILD_BOLT_DMG_REDUCTION = 0.75
 
 export const LIGHTNING_CLOAK_FRACTION = 1 / 3

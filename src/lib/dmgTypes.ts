@@ -1,4 +1,5 @@
 ﻿import type { ProcCoefficient } from '../lib/types'
+import { BLUB_BLUB_PCT_PER_STACK, BLUB_BLUB_HIT_COUNT, BLUB_BLUB_PROC_CHANCE } from './constants'
 
 export const BADGE_CONFIG: Record<string, { color: string; label: string; title: string }> = {
   'Dragon State':  { color: '#a78bfa', label: '✦ Dragon', title: 'Dragon State: additional wave of Magic above HP threshold · Once per M1/M2' },
@@ -11,7 +12,7 @@ export const BADGE_CONFIG: Record<string, { color: string; label: string; title:
   'Curse Rip': { color: '#e879f9', label: '✦ Curse Rip', title: 'Curse Rip: 1/60 of damage dealt as lifesteal (requires debuffed opponent)' },
   'Inspiration': { color: '#ffde0f', label: '✦ Inspiration', title: 'Inspiration: pulse that slightly heals when M1/M2 land' },
   'Venom Eater': { color: '#4ade80', label: '✦ Venom Eater', title: 'Venom Eater: heal 0.1 HP per stack on crit vs poisoned target' },
-  'Blub':  { color: '#38bdf8', label: '✦ Blub', title: 'Blub Blub: 15% × perk amount of this hit\'s damage as Water · 2 hits · 50% proc chance' },
+  'Blub':  { color: '#38bdf8', label: '✦ Blub', title: `Blub Blub: ${BLUB_BLUB_PCT_PER_STACK * 100}% × perk amount of this hit\'s damage as Water · ${BLUB_BLUB_HIT_COUNT} hits · ${BLUB_BLUB_PROC_CHANCE * 100}% proc chance` },
   'Blood Thirsty': { color: '#ef4444', label: '✦ Blood Thirsty', title: 'Blood Thirsty: heal 0.3 HP per stack on hit vs Bleeding target' },
   'Echo Incineration': { color: '#f97316', label: '✦ Echo', title: 'Echo Incineration: (10+2.5×perkAmount)% for Fire+Air on hit' },
   'Venom Spitter': { color: '#a855f7', label: '✦ Venom Spitter', title: 'Venom Spitter: Finisher hits deal Hex damage + Damage Boost vs Poisoned' },

@@ -91,6 +91,7 @@ import {
   DEATHMIST_SLASH_SELF_HEAL_BASE,
   WINTER_WOOF_SPIRIT_BITE_DMG,
   WINTER_WOOF_SPIRIT_HOWL_DMG,
+  BLUB_BLUB_PROC_CHANCE,
 } from './lib/constants'
 
 // Centralized mappings for cross-toggle relationships
@@ -1009,11 +1010,12 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       })
     }
     if ((perks['Blub Blub'] ?? 0) > 0) {
+      const blubChance = Math.round(BLUB_BLUB_PROC_CHANCE * 100)
       chips.push({
         key: 'blubBlub', name: 'Blub Blub',
-        title: 'Blub Blub: 50% proc chance · normal scaling',
+        title: `Blub Blub: ${blubChance}% proc chance · normal scaling`,
         val: disabledEffects.has('blubBlub') ? '—' : `${(perks['Blub Blub'] ?? 0)}×`,
-        cond: '50% chance',
+        cond: `${blubChance}% chance`,
       })
     }
     if (_cauterizeAmt > 0) {

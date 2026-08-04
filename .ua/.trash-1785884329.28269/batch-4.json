@@ -1,0 +1,725 @@
+{
+  "nodes": [
+    {
+      "id": "file:.slim/deepwork/ui-upgrade.md",
+      "type": "document",
+      "name": "ui-upgrade.md",
+      "filePath": ".slim/deepwork/ui-upgrade.md",
+      "summary": "UI upgrade roadmap document with 8 phases: modal extraction, toast system, header modularization, CSS consolidation, responsive improvements, performance, accessibility, and build comparison. References current file sizes and design tokens.",
+      "tags": ["documentation", "roadmap", "ui", "refactoring", "planning"],
+      "complexity": "simple",
+      "languageNotes": "Markdown planning document; not executable code."
+    },
+    {
+      "id": "file:.ua/.understandignore",
+      "type": "config",
+      "name": ".understandignore",
+      "filePath": ".ua/.understandignore",
+      "summary": "Configuration file listing patterns to exclude from codebase analysis (gitignore-style syntax). All entries are currently commented out, acting as suggestions only.",
+      "tags": ["config", "ignore-patterns", "analysis-tooling"],
+      "complexity": "simple",
+      "languageNotes": "gitignore-style comment-only config; no active rules."
+    },
+    {
+      "id": "file:analyze-mounticon.mjs",
+      "type": "file",
+      "name": "analyze-mounticon.mjs",
+      "filePath": "analyze-mounticon.mjs",
+      "summary": "One-off debug script that reads MountIcon.svelte and extracts/prints the SVG path 'd' attribute. Marked with fallow-ignore-file unused-file.",
+      "tags": ["debug", "utility", "unused", "svg-analysis"],
+      "complexity": "simple",
+      "languageNotes": "ESM JavaScript; reads from src/MountIcon.svelte; standalone tool."
+    },
+    {
+      "id": "file:decode_full.mjs",
+      "type": "file",
+      "name": "decode_full.mjs",
+      "filePath": "decode_full.mjs",
+      "summary": "Standalone build decoder/debug tool that reconstructs full character stats from a hardcoded build state. Mirrors engine logic: applies upgrades, enchantments, shrine, infusion, and perk finalization. Must match constants in src/lib/constants/game.ts.",
+      "tags": ["debug", "standalone", "build-decoder", "testing", "unused"],
+      "complexity": "moderate",
+      "languageNotes": "ESM JavaScript; reads JSON data files directly; duplicates engine calculation logic for offline debugging."
+    },
+    {
+      "id": "file:docs/ONBOARDING.md",
+      "type": "document",
+      "name": "ONBOARDING.md",
+      "filePath": "docs/ONBOARDING.md",
+      "summary": "Comprehensive onboarding guide documenting all architecture layers (root config, source root, data, library, constants, engine, modals, statistics, stores), key concepts (damage pipeline, buff system, engine architecture, state management), a 10-step guided tour, and a complete file map.",
+      "tags": ["documentation", "onboarding", "architecture", "guide"],
+      "complexity": "moderate",
+      "languageNotes": "Markdown; references every major file and layer in the project."
+    },
+    {
+      "id": "file:src/app.css",
+      "type": "file",
+      "name": "app.css",
+      "filePath": "src/app.css",
+      "summary": "Global CSS file defining the design system: root CSS custom properties for colors, spacing scale (4px base), border radii, shadows, durations, font sizes, font weights, line heights, letter spacing. Also includes Draconic theme tokens, global scrollbar styles, weapon art box styles, wild bolt box styles, and drag-and-drop helpers.",
+      "tags": ["css", "design-tokens", "global-styles", "theming"],
+      "complexity": "moderate",
+      "languageNotes": "342 lines of CSS with multiple :root blocks; Phase 4.5 design token foundation. Used by all components via CSS custom properties."
+    },
+    {
+      "id": "file:src/App.svelte",
+      "type": "file",
+      "name": "App.svelte",
+      "filePath": "src/App.svelte",
+      "summary": "Root Svelte component (~4431 lines) orchestrating the entire UI. Imports store, engine, data modules, and all child components. Manages armor/ring drag-and-drop, grid mouse/touch interactions, enchantment selection, weapon art selection, race/guild modals, build state, and summary display. Uses Svelte 5 with $: reactive statements.",
+      "tags": ["svelte", "root-component", "orchestrator", "ui", "drag-and-drop", "state-management"],
+      "complexity": "complex",
+      "languageNotes": "4431 lines: ~1264 script, ~1860 template, ~1332 inline CSS. Massive monolithic component targeted for Phase 1-5 refactoring per ui-upgrade.md."
+    },
+    {
+      "id": "file:src/BaseDamageCalc.svelte",
+      "type": "file",
+      "name": "BaseDamageCalc.svelte",
+      "filePath": "src/BaseDamageCalc.svelte",
+      "summary": "Base damage calculator component (~3030 lines) computing per-hit damage with typed damage breakdowns, crit calculations, DoT ticks, defense mitigation, armor penetration, lifesteal, and perk-on-hit damage. Receives massive prop list including weapon hits, boost context, debuff data, and draconic bonuses.",
+      "tags": ["svelte", "damage-calculation", "component", "combat-mechanics"],
+      "complexity": "complex",
+      "languageNotes": "3030 lines; receives ~80+ props from DamageAnalyzer; handles tooltip rendering for damage breakdowns."
+    },
+    {
+      "id": "file:src/BuffList.svelte",
+      "type": "file",
+      "name": "BuffList.svelte",
+      "filePath": "src/BuffList.svelte",
+      "summary": "Buff/debuff display component (~945 lines) with tabbed UI (Buffs/Debuffs Applied/Neutral). Aggregates buffs from items, perks, weapon arts, potions, draconic infusion, and auto-debuffs. Groups duplicate buffs, applies perk modifiers, displays potency breakdowns per source with visual bars.",
+      "tags": ["svelte", "buff-display", "component", "ui", "buff-system"],
+      "complexity": "complex",
+      "languageNotes": "945 lines; heavy reactive $: blocks computing item/perk/weapon art/draconic buff combinations."
+    },
+    {
+      "id": "file:src/BuildSaves.svelte",
+      "type": "file",
+      "name": "BuildSaves.svelte",
+      "filePath": "src/BuildSaves.svelte",
+      "summary": "Build save/load management component (~1360 lines). Provides localStorage persistence, save slot CRUD (create/rename/delete/duplicate), import/export (base64 URL), fuzzy search across saved builds, drag-and-drop slot reordering, and touch-friendly interactions.",
+      "tags": ["svelte", "persistence", "local-storage", "import-export", "ui-component"],
+      "complexity": "complex",
+      "languageNotes": "1360 lines; includes fuzzy search, mouse/touch drag-and-drop reordering, auto-scroll, and duplicate detection modal."
+    },
+    {
+      "id": "file:src/CdrStepsCalc.svelte",
+      "type": "file",
+      "name": "CdrStepsCalc.svelte",
+      "filePath": "src/CdrStepsCalc.svelte",
+      "summary": "Small component (93 lines) displaying cooldown reduction calculation steps as a visual chain showing each multiplier step, floor operation, and minimum CD cap.",
+      "tags": ["svelte", "cdr", "calculation-display", "ui-component"],
+      "complexity": "simple",
+      "languageNotes": "93 lines; receives breakdown array and baseCd props; purely presentational."
+    },
+    {
+      "id": "file:src/CritIcon.svelte",
+      "type": "file",
+      "name": "CritIcon.svelte",
+      "filePath": "src/CritIcon.svelte",
+      "summary": "Minimal SVG icon component (14 lines) rendering a critical hit star/cross icon with a red-to-orange gradient. Accepts a size prop.",
+      "tags": ["svelte", "icon", "svg", "ui-component"],
+      "complexity": "simple",
+      "languageNotes": "14 lines; pure presentational; uses unique gradient ID for multi-instance safety."
+    },
+    {
+      "id": "file:src/DamageAnalyzer.svelte",
+      "type": "file",
+      "name": "DamageAnalyzer.svelte",
+      "filePath": "src/DamageAnalyzer.svelte",
+      "summary": "Primary damage analysis interface (~8078 lines), the largest and most complex component. Computes full damage pipeline: base damage, stat boosts, crit, defense, DoT, heals, weapon arts, runes, summons, draconic abilities, and perk interactions. Orchestrates BaseDamageCalc, ScalingBreakdownRow, and numerous toggleable options.",
+      "tags": ["svelte", "damage-analysis", "core-component", "combat-engine", "ui"],
+      "complexity": "complex",
+      "languageNotes": "8078 lines; heart of the application. Massive reactive computation graph. Imports from nearly every data module and lib module."
+    },
+    {
+      "id": "file:src/data/Boost.ts",
+      "type": "file",
+      "name": "Boost.ts",
+      "filePath": "src/data/Boost.ts",
+      "summary": "Defines all damage/heal boost calculations (454 lines). Contains BoostDef interface, ~40+ boost definitions (simple multiplier and complex calcFn variants), BoostContext interface for state inputs, and BOOST_DEF_MAP for lookup. Covers perks like Frenzy, Vampire, Spirit Winds, Primal, Queens Power, Penance, etc.",
+      "tags": ["data", "boost-calculation", "perks", "damage-modifiers"],
+      "complexity": "complex",
+      "languageNotes": "454 lines; exports BOOST_DEFS array, BOOST_DEF_MAP, calcFrenzyPct, calcMinionAbsorptionPotency, and BoostContext/BoostDef interfaces."
+    },
+    {
+      "id": "file:src/data/BuffData.ts",
+      "type": "file",
+      "name": "BuffData.ts",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Central buff/debuff system (2348 lines). Defines BUFF_DEFS (all buff/debuff definitions with colors, effects, dynamic descriptions), GrantedBuff interface, and functions: getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, calcBuffEffect, getBuffDescription, getTrueBalanceBuffs, convertTailwindToWhirlwind, applyToxinTransferDuration, applyCauterizeConversion, etc.",
+      "tags": ["data", "buff-system", "debuff-system", "game-mechanics", "core"],
+      "complexity": "complex",
+      "languageNotes": "2348 lines; most data-heavy module. Exports BUFF_DEFS, GrantedBuff, BuffDefinition, and ~15 functions. Imported by BuffList, DamageAnalyzer, App."
+    },
+    {
+      "id": "file:src/data/cdr.ts",
+      "type": "file",
+      "name": "cdr.ts",
+      "filePath": "src/data/cdr.ts",
+      "summary": "Cooldown reduction perk data (63 lines). Defines PerkCDREntry interface and CDR_PERK_DATA record mapping perk names (Caster, Channeled Weapon, Mage Rage, etc.) to their rune/WA CDR percentages or multipliers.",
+      "tags": ["data", "cooldown-reduction", "perks"],
+      "complexity": "simple",
+      "languageNotes": "63 lines; imports from lib/constants; exports CDR_PERK_DATA and PerkCDREntry interface."
+    },
+    {
+      "id": "file:src/data/debuffCombatEffects.ts",
+      "type": "file",
+      "name": "debuffCombatEffects.ts",
+      "filePath": "src/data/debuffCombatEffects.ts",
+      "summary": "Defines combat effects of debuffs (98 lines): Weakness (damage reduction), Shatter/Electrical Rend (armor loss), Sticky variants (movement slow + type damage taken increase), Despair (increased damage dealt), Frostbite (elemental vulnerability), Hypnotized (magic armor loss).",
+      "tags": ["data", "debuff-effects", "combat-mechanics"],
+      "complexity": "simple",
+      "languageNotes": "98 lines; exports DEBUFF_COMBAT_EFFECTS record and DebuffCombatEffect interface."
+    },
+    {
+      "id": "file:src/data/defensivePerks.ts",
+      "type": "file",
+      "name": "defensivePerks.ts",
+      "filePath": "src/data/defensivePerks.ts",
+      "summary": "Defensive perk damage reduction calculations (206 lines). Defines DEFENSIVE_PERK_SOURCES array (Barbskin, Stoneskin, Adaptive Plate, Protector Spirit, Air Pressure, Valor, Vampire, Frenzy, Stored Corruption, Mounted Defense, Carapace, Cursed Bark) with conditions, thresholds, and DR formulas. Exports getActiveDefensivePerkSources and calcDefensivePotencyMult.",
+      "tags": ["data", "defense", "damage-reduction", "perks"],
+      "complexity": "moderate",
+      "languageNotes": "206 lines; imports from lib/constants and draconicBuffs; exports two public functions."
+    },
+    {
+      "id": "file:src/data/DoTDamage.ts",
+      "type": "file",
+      "name": "DoTDamage.ts",
+      "filePath": "src/data/DoTDamage.ts",
+      "summary": "Damage-over-time tick calculations (74 lines). Defines DOT types (Bleed/Burn/Poison), stat scalings per type, defense type mapping, and formulas: getDotBase, getDotPotencyMult, toGamePotency, calcDotDisplayPotency (with Endless Despair modifier).",
+      "tags": ["data", "dot", "damage-calculation", "bleed", "burn", "poison"],
+      "complexity": "simple",
+      "languageNotes": "74 lines; exports DotType, DOT_SCALINGS, DOT_DMG_TYPE_MAP, and 4 functions."
+    },
+    {
+      "id": "file:src/data/draconicBuffs.ts",
+      "type": "file",
+      "name": "draconicBuffs.ts",
+      "filePath": "src/data/draconicBuffs.ts",
+      "summary": "Draconic guild buff system (111 lines). Functions for Dragon Infusion potency/duration multipliers, Dragon Infusion buff generation (with color-specific effects for fire/hex/holy/water/air/earth), and Dragon Claw/Bubble ability debuff generation.",
+      "tags": ["data", "draconic", "guild-system", "buffs", "infusion"],
+      "complexity": "moderate",
+      "languageNotes": "111 lines; imports from lib/constants and BuffData; exports 5 functions."
+    },
+    {
+      "id": "file:src/data/draconicColorEffects.ts",
+      "type": "file",
+      "name": "draconicColorEffects.ts",
+      "filePath": "src/data/draconicColorEffects.ts",
+      "summary": "Draconic color attack stat definitions (49 lines). Defines DraconicColorAttackStats for 6 colors (fire/air/earth/water/holy/hex) with damage multipliers, speed multipliers, knockback, cooldown, stun, and special effects (burn, weakness, heals).",
+      "tags": ["data", "draconic", "color-effects", "combat-stats"],
+      "complexity": "simple",
+      "languageNotes": "49 lines; exports DRACONIC_COLOR_ATTACK_STATS array, DraconicColorAttackStats interface, getDraconicColorDmgMultiplier function."
+    },
+    {
+      "id": "file:src/data/draconicRunes.ts",
+      "type": "file",
+      "name": "draconicRunes.ts",
+      "filePath": "src/data/draconicRunes.ts",
+      "summary": "Draconic rune and infusion bonus calculations (104 lines). Functions to apply dragon rune damage type bonuses (5% per stack of draconic color) and dragon infusion damage type bonuses (based on buff potency). Exports applyDraconicBonuses and getDraconicBonuses.",
+      "tags": ["data", "draconic", "runes", "damage-bonuses"],
+      "complexity": "simple",
+      "languageNotes": "104 lines; exports 2 public functions and 2 context interfaces."
+    },
+    {
+      "id": "file:src/data/enemyHpEffects.ts",
+      "type": "file",
+      "name": "enemyHpEffects.ts",
+      "filePath": "src/data/enemyHpEffects.ts",
+      "summary": "Enemy HP-gated effects (90 lines). Defines perks that trigger based on enemy HP thresholds (e.g., Mycotic Bloom: Slowness above 50% HP, Poison damage boost below 50% HP). Exports getActiveEnemyHpDebuffs and getEnemyHpDotMultiplier.",
+      "tags": ["data", "enemy-hp", "conditional-effects", "perks"],
+      "complexity": "simple",
+      "languageNotes": "90 lines; no external imports; exports 2 functions."
+    },
+    {
+      "id": "file:src/data/HealBoost.ts",
+      "type": "file",
+      "name": "HealBoost.ts",
+      "filePath": "src/data/HealBoost.ts",
+      "summary": "Healing boost calculation system (217 lines). Defines HealBoostContext, HealBoostDef, and HEAL_SCALING_DEFS (Level Healing, Emotional, Heal Boost, Oceans Rage, Vampire sunlight, Frenzy self, Dragon Infusion holy). calculateHealBoost computes final heal multiplier with Anti Heal support.",
+      "tags": ["data", "healing", "boost-calculation", "perks"],
+      "complexity": "moderate",
+      "languageNotes": "217 lines; imports from lib/constants and draconicBuffs; exports HealSource, HealBoostContext, calculateHealBoost."
+    },
+    {
+      "id": "file:src/data/mountRunes.ts",
+      "type": "file",
+      "name": "mountRunes.ts",
+      "filePath": "src/data/mountRunes.ts",
+      "summary": "Mount rune definitions (88 lines). Defines MountRuneDef interface and MOUNT_RUNE_DEFS array for 3 mounts (Winter Woof, Slizard, Glacial Snapper) with M1 attack and Weapon Art stats (base damage, damage types, scalings, cooldowns, guardbreak, secondary effects).",
+      "tags": ["data", "mount-system", "runes", "combat-stats"],
+      "complexity": "simple",
+      "languageNotes": "88 lines; imports WeaponHit from lib/types; exports MountRuneM1Def, MountRuneWADef, MountRuneDef, MOUNT_RUNE_DEFS."
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/DamageAnalyzer.svelte",
+      "type": "imports",
+      "direction": "outgoing",
+      "weight": 0.9
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/BaseDamageCalc.svelte",
+      "type": "imports",
+      "direction": "outgoing",
+      "weight": 0.3
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/BuffList.svelte",
+      "type": "imports",
+      "direction": "outgoing",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/BuildSaves.svelte",
+      "type": "imports",
+      "direction": "outgoing",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/CdrStepsCalc.svelte",
+      "type": "imports",
+      "direction": "outgoing",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/data/BuffData.ts",
+      "type": "imports",
+      "direction": "outgoing",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/data/cdr.ts",
+      "type": "imports",
+      "direction": "outgoing",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/data/draconicBuffs.ts",
+      "type": "imports",
+      "direction": "outgoing",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/data/draconicColorEffects.ts",
+      "type": "imports",
+      "direction": "outgoing",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/app.css",
+      "type": "depends_on",
+      "direction": "outgoing",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/BaseDamageCalc.svelte",
+      "type": "imports",
+      "direction": "outgoing",
+      "weight": 0.9
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/CritIcon.svelte",
+      "type": "imports",
+      "direction": "outgoing",
+      "weight": 0.4
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/data/Boost.ts",
+      "type": "imports",
+      "direction": "outgoing",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/data/BuffData.ts",
+      "type": "imports",
+      "direction": "outgoing",
+      "weight": 0.9
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/data/debuffCombatEffects.ts",
+      "type": "imports",
+      "direction": "outgoing",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/data/draconicBuffs.ts",
+      "type": "imports",
+      "direction": "outgoing",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/data/defensivePerks.ts",
+      "type": "imports",
+      "direction": "outgoing",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/data/DoTDamage.ts",
+      "type": "imports",
+      "direction": "outgoing",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/data/HealBoost.ts",
+      "type": "imports",
+      "direction": "outgoing",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/data/draconicColorEffects.ts",
+      "type": "imports",
+      "direction": "outgoing",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/data/draconicRunes.ts",
+      "type": "imports",
+      "direction": "outgoing",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/data/mountRunes.ts",
+      "type": "imports",
+      "direction": "outgoing",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/data/enemyHpEffects.ts",
+      "type": "imports",
+      "direction": "outgoing",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/app.css",
+      "type": "depends_on",
+      "direction": "outgoing",
+      "weight": 0.4
+    },
+    {
+      "source": "file:src/BaseDamageCalc.svelte",
+      "target": "file:src/CritIcon.svelte",
+      "type": "imports",
+      "direction": "outgoing",
+      "weight": 0.4
+    },
+    {
+      "source": "file:src/BaseDamageCalc.svelte",
+      "target": "file:src/data/DoTDamage.ts",
+      "type": "imports",
+      "direction": "outgoing",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/BaseDamageCalc.svelte",
+      "target": "file:src/app.css",
+      "type": "depends_on",
+      "direction": "outgoing",
+      "weight": 0.4
+    },
+    {
+      "source": "file:src/BuffList.svelte",
+      "target": "file:src/data/BuffData.ts",
+      "type": "imports",
+      "direction": "outgoing",
+      "weight": 0.9
+    },
+    {
+      "source": "file:src/BuffList.svelte",
+      "target": "file:src/data/Boost.ts",
+      "type": "imports",
+      "direction": "outgoing",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/BuffList.svelte",
+      "target": "file:src/data/draconicBuffs.ts",
+      "type": "imports",
+      "direction": "outgoing",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/BuffList.svelte",
+      "target": "file:src/data/DoTDamage.ts",
+      "type": "imports",
+      "direction": "outgoing",
+      "weight": 0.4
+    },
+    {
+      "source": "file:src/BuffList.svelte",
+      "target": "file:src/app.css",
+      "type": "depends_on",
+      "direction": "outgoing",
+      "weight": 0.4
+    },
+    {
+      "source": "file:src/BuildSaves.svelte",
+      "target": "file:src/app.css",
+      "type": "depends_on",
+      "direction": "outgoing",
+      "weight": 0.4
+    },
+    {
+      "source": "file:src/CdrStepsCalc.svelte",
+      "target": "file:src/app.css",
+      "type": "depends_on",
+      "direction": "outgoing",
+      "weight": 0.3
+    },
+    {
+      "source": "file:src/data/defensivePerks.ts",
+      "target": "file:src/data/draconicBuffs.ts",
+      "type": "imports",
+      "direction": "outgoing",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/data/HealBoost.ts",
+      "target": "file:src/data/draconicBuffs.ts",
+      "type": "imports",
+      "direction": "outgoing",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/data/draconicBuffs.ts",
+      "target": "file:src/data/BuffData.ts",
+      "type": "imports",
+      "direction": "outgoing",
+      "weight": 0.6
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "file:src/data/debuffCombatEffects.ts",
+      "type": "depends_on",
+      "direction": "outgoing",
+      "weight": 0.3
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "file:src/data/cdr.ts",
+      "type": "depends_on",
+      "direction": "outgoing",
+      "weight": 0.2
+    },
+    {
+      "source": "file:analyze-mounticon.mjs",
+      "target": "file:src/App.svelte",
+      "type": "depends_on",
+      "direction": "outgoing",
+      "weight": 0.1
+    },
+    {
+      "source": "file:decode_full.mjs",
+      "target": "file:src/data/BuffData.ts",
+      "type": "depends_on",
+      "direction": "outgoing",
+      "weight": 0.2
+    },
+    {
+      "source": "file:decode_full.mjs",
+      "target": "file:src/data/draconicColorEffects.ts",
+      "type": "depends_on",
+      "direction": "outgoing",
+      "weight": 0.1
+    },
+    {
+      "source": "file:docs/ONBOARDING.md",
+      "target": "file:src/App.svelte",
+      "type": "documents",
+      "direction": "outgoing",
+      "weight": 0.8
+    },
+    {
+      "source": "file:docs/ONBOARDING.md",
+      "target": "file:src/DamageAnalyzer.svelte",
+      "type": "documents",
+      "direction": "outgoing",
+      "weight": 0.8
+    },
+    {
+      "source": "file:docs/ONBOARDING.md",
+      "target": "file:src/BaseDamageCalc.svelte",
+      "type": "documents",
+      "direction": "outgoing",
+      "weight": 0.6
+    },
+    {
+      "source": "file:docs/ONBOARDING.md",
+      "target": "file:src/BuffList.svelte",
+      "type": "documents",
+      "direction": "outgoing",
+      "weight": 0.6
+    },
+    {
+      "source": "file:docs/ONBOARDING.md",
+      "target": "file:src/BuildSaves.svelte",
+      "type": "documents",
+      "direction": "outgoing",
+      "weight": 0.5
+    },
+    {
+      "source": "file:docs/ONBOARDING.md",
+      "target": "file:src/data/BuffData.ts",
+      "type": "documents",
+      "direction": "outgoing",
+      "weight": 0.7
+    },
+    {
+      "source": "file:docs/ONBOARDING.md",
+      "target": "file:src/data/Boost.ts",
+      "type": "documents",
+      "direction": "outgoing",
+      "weight": 0.5
+    },
+    {
+      "source": "file:docs/ONBOARDING.md",
+      "target": "file:src/data/HealBoost.ts",
+      "type": "documents",
+      "direction": "outgoing",
+      "weight": 0.4
+    },
+    {
+      "source": "file:docs/ONBOARDING.md",
+      "target": "file:src/data/DoTDamage.ts",
+      "type": "documents",
+      "direction": "outgoing",
+      "weight": 0.4
+    },
+    {
+      "source": "file:docs/ONBOARDING.md",
+      "target": "file:src/data/draconicBuffs.ts",
+      "type": "documents",
+      "direction": "outgoing",
+      "weight": 0.5
+    },
+    {
+      "source": "file:docs/ONBOARDING.md",
+      "target": "file:src/data/draconicRunes.ts",
+      "type": "documents",
+      "direction": "outgoing",
+      "weight": 0.4
+    },
+    {
+      "source": "file:docs/ONBOARDING.md",
+      "target": "file:src/data/debuffCombatEffects.ts",
+      "type": "documents",
+      "direction": "outgoing",
+      "weight": 0.3
+    },
+    {
+      "source": "file:docs/ONBOARDING.md",
+      "target": "file:src/data/mountRunes.ts",
+      "type": "documents",
+      "direction": "outgoing",
+      "weight": 0.3
+    },
+    {
+      "source": "file:docs/ONBOARDING.md",
+      "target": "file:src/app.css",
+      "type": "documents",
+      "direction": "outgoing",
+      "weight": 0.3
+    },
+    {
+      "source": "file:.slim/deepwork/ui-upgrade.md",
+      "target": "file:src/App.svelte",
+      "type": "documents",
+      "direction": "outgoing",
+      "weight": 0.9
+    },
+    {
+      "source": "file:.slim/deepwork/ui-upgrade.md",
+      "target": "file:src/DamageAnalyzer.svelte",
+      "type": "documents",
+      "direction": "outgoing",
+      "weight": 0.6
+    },
+    {
+      "source": "file:.slim/deepwork/ui-upgrade.md",
+      "target": "file:src/BuildSaves.svelte",
+      "type": "documents",
+      "direction": "outgoing",
+      "weight": 0.4
+    },
+    {
+      "source": "file:.slim/deepwork/ui-upgrade.md",
+      "target": "file:src/BuffList.svelte",
+      "type": "documents",
+      "direction": "outgoing",
+      "weight": 0.4
+    },
+    {
+      "source": "file:.slim/deepwork/ui-upgrade.md",
+      "target": "file:src/app.css",
+      "type": "documents",
+      "direction": "outgoing",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/BuffList.svelte",
+      "type": "contains",
+      "direction": "outgoing",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/BuildSaves.svelte",
+      "type": "contains",
+      "direction": "outgoing",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/DamageAnalyzer.svelte",
+      "type": "contains",
+      "direction": "outgoing",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/App.svelte",
+      "target": "file:src/CdrStepsCalc.svelte",
+      "type": "contains",
+      "direction": "outgoing",
+      "weight": 0.4
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/BaseDamageCalc.svelte",
+      "type": "contains",
+      "direction": "outgoing",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/DamageAnalyzer.svelte",
+      "target": "file:src/CritIcon.svelte",
+      "type": "contains",
+      "direction": "outgoing",
+      "weight": 0.4
+    }
+  ]
+}
