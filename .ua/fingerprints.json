@@ -1,0 +1,5860 @@
+{
+  "version": "1.0.0",
+  "gitCommitHash": "d29e715487098ad4bba90ce842ca6821b9a3365e",
+  "generatedAt": "2026-08-05T16:23:25.881Z",
+  "files": {
+    ".fallowrc.json": {
+      "filePath": ".fallowrc.json",
+      "contentHash": "9b9131d583c8d9a68819d8d3ceaf2218e88df74987dd14befd5cd4caa1197687",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 73,
+      "hasStructuralAnalysis": true
+    },
+    ".github/workflows/static.yml": {
+      "filePath": ".github/workflows/static.yml",
+      "contentHash": "b2885dcaf88293064330f138bb99982625f33442195a525b52dd5c7f7565ba1b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 54,
+      "hasStructuralAnalysis": true
+    },
+    ".slim/deepwork/ui-upgrade.md": {
+      "filePath": ".slim/deepwork/ui-upgrade.md",
+      "contentHash": "687bd6aa651be75af40512bf91fe76892378a43002aee97524c7ffc664efbc2a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 100,
+      "hasStructuralAnalysis": true
+    },
+    ".ua/.understandignore": {
+      "filePath": ".ua/.understandignore",
+      "contentHash": "d38c746be198a09fdcf3d45f3af3eded0c331860e74812459bdf19ebded6370f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 67,
+      "hasStructuralAnalysis": false
+    },
+    "AGENTS.md": {
+      "filePath": "AGENTS.md",
+      "contentHash": "f1deb1766ec56f1f0ffd3291590c6d09c5545b131047f13e76ddcb4fca431793",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 60,
+      "hasStructuralAnalysis": true
+    },
+    "analyze-mounticon.mjs": {
+      "filePath": "analyze-mounticon.mjs",
+      "contentHash": "7dfd3127dac1c80c9cfd991af527589fc7d69b826afca886ac195e7e90071336",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "fs",
+          "specifiers": [
+            "readFileSync"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 13,
+      "hasStructuralAnalysis": true
+    },
+    "build-decode.txt": {
+      "filePath": "build-decode.txt",
+      "contentHash": "3a7779c53097d89021ee3ac9ecb349287eb35d8c54fa82739a16ad458bf92861",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3,
+      "hasStructuralAnalysis": false
+    },
+    "build-decode2.json": {
+      "filePath": "build-decode2.json",
+      "contentHash": "a3d8de85527c66826b7c4c2ad33b3f5d76d2a572e11a708c15e62a3801bdf35b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": true
+    },
+    "decode_full.mjs": {
+      "filePath": "decode_full.mjs",
+      "contentHash": "044ec2ab349ff4b08169bb5711344084e4bea08b6f0918eee4a8a097ec162880",
+      "functions": [
+        {
+          "name": "getPerk",
+          "params": [
+            "name"
+          ],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "getArmorPart",
+          "params": [
+            "name",
+            "type"
+          ],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "applyUpgrade",
+          "params": [
+            "stats",
+            "level"
+          ],
+          "exported": false,
+          "lineCount": 13
+        },
+        {
+          "name": "computeSelectorBaseMult",
+          "params": [
+            "baseStats",
+            "enchantNames"
+          ],
+          "exported": false,
+          "lineCount": 24
+        },
+        {
+          "name": "applyDirectEnchantModifiers",
+          "params": [
+            "currentStats",
+            "enchantNames",
+            "basePerks"
+          ],
+          "exported": false,
+          "lineCount": 26
+        },
+        {
+          "name": "applyEnchantmentsToSlot",
+          "params": [
+            "baseStats",
+            "basePerks",
+            "enchantNames",
+            "upgradeLevel"
+          ],
+          "exported": false,
+          "lineCount": 11
+        },
+        {
+          "name": "applyShrine",
+          "params": [
+            "stats",
+            "tier"
+          ],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "applyInfusion",
+          "params": [
+            "baseStats",
+            "basePerks"
+          ],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "addStats",
+          "params": [
+            "s"
+          ],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "addPerkMap",
+          "params": [
+            "m"
+          ],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "finalizePerks",
+          "params": [
+            "raw"
+          ],
+          "exported": false,
+          "lineCount": 21
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "fs",
+          "specifiers": [
+            "readFileSync"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 277,
+      "hasStructuralAnalysis": true
+    },
+    "docs/ONBOARDING.md": {
+      "filePath": "docs/ONBOARDING.md",
+      "contentHash": "87d58b40f64180783ca9f34324537fe75ca740a209c4315364cc65e003b34bc0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 406,
+      "hasStructuralAnalysis": true
+    },
+    "fallow-output.json": {
+      "filePath": "fallow-output.json",
+      "contentHash": "9f987a8d30786376a7e6862c91558b8fac7c6de68dae6e5d88589ebfaeafd28d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 783,
+      "hasStructuralAnalysis": true
+    },
+    "fallow-security.json": {
+      "filePath": "fallow-security.json",
+      "contentHash": "6f562afbb7568ebae612ec3e88a4dcf5307a6882f0a04e6811e42707a1d0d45a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1392,
+      "hasStructuralAnalysis": true
+    },
+    "index.html": {
+      "filePath": "index.html",
+      "contentHash": "f14bcbca60df874522c299d8aa397b1d19008b6419eeaa7da21d1194ec601e9e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 14,
+      "hasStructuralAnalysis": false
+    },
+    "package.json": {
+      "filePath": "package.json",
+      "contentHash": "95c892ca46763a2c6048fda3aae10fddf81ee3fdcccf7d81dd51165c5a127b78",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 33,
+      "hasStructuralAnalysis": true
+    },
+    "README.md": {
+      "filePath": "README.md",
+      "contentHash": "21ebe097ccd0515537e2b9f6cc8ee679dcfeeb8439e5a6cac996131976fef972",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 48,
+      "hasStructuralAnalysis": true
+    },
+    "src/app.css": {
+      "filePath": "src/app.css",
+      "contentHash": "7c03fb9d5a522f27a9a02e6dee9c6e0601e6870778c51cd08535a089c2bd1012",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 343,
+      "hasStructuralAnalysis": false
+    },
+    "src/App.svelte": {
+      "filePath": "src/App.svelte",
+      "contentHash": "4b6ab930a516bee691b1b7e3cd1c59e4afa14fcb7e2e9580632497b8f6d53af9",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 4432,
+      "hasStructuralAnalysis": false
+    },
+    "src/BaseDamageCalc.svelte": {
+      "filePath": "src/BaseDamageCalc.svelte",
+      "contentHash": "c12b5f3db330a8b3535c564d98fe091d6c0a5d89708b2f4c0c8936120396baa7",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3088,
+      "hasStructuralAnalysis": false
+    },
+    "src/BuffList.svelte": {
+      "filePath": "src/BuffList.svelte",
+      "contentHash": "35313be1d1364b7f2b9f597b3e94af118af6863eb03941ba8ebedad27cacd72a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 945,
+      "hasStructuralAnalysis": false
+    },
+    "src/BuildSaves.svelte": {
+      "filePath": "src/BuildSaves.svelte",
+      "contentHash": "8c24e75f015a10c9f31f254642d562d59a879a166cca4027cdae03fda8655c7f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1360,
+      "hasStructuralAnalysis": false
+    },
+    "src/CdrStepsCalc.svelte": {
+      "filePath": "src/CdrStepsCalc.svelte",
+      "contentHash": "ed6e233a4e172ba829a8a9c706404c65ad3cf680bd893f46b4ece3a72c14e621",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 93,
+      "hasStructuralAnalysis": false
+    },
+    "src/CritIcon.svelte": {
+      "filePath": "src/CritIcon.svelte",
+      "contentHash": "14441e4e023f9a46a3821ff85ad25133478dee1fb011973c299ad05aa444baed",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 14,
+      "hasStructuralAnalysis": false
+    },
+    "src/DamageAnalyzer.svelte": {
+      "filePath": "src/DamageAnalyzer.svelte",
+      "contentHash": "37d0513b30faf6a8ae9903620ffd6cd076e6990d623ae032285a159d66e2fa0c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 8509,
+      "hasStructuralAnalysis": false
+    },
+    "src/data/armors.json": {
+      "filePath": "src/data/armors.json",
+      "contentHash": "4f6bb4ac2a9003794e2999fd908335c98b3f7520de5338e4d16caa1b3333d235",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 174,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/blades.json": {
+      "filePath": "src/data/blades.json",
+      "contentHash": "e3ceeafa96de923a4d4764476f338f7c4a24648eca2ae6fd067801d18697044a",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 108,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/Boost.ts": {
+      "filePath": "src/data/Boost.ts",
+      "contentHash": "f88bea5cb2b60bbb444e719fd982cac33fa4f1f6333a6f5c90145e3ad34414e6",
+      "functions": [
+        {
+          "name": "calcMinionAbsorptionPotency",
+          "params": [
+            "summonBoostPct",
+            "stacks"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "calcFrenzyPct",
+          "params": [
+            "ragePotency"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../lib/utils",
+          "specifiers": [
+            "roundMultiplier",
+            "applyScalingMult"
+          ]
+        },
+        {
+          "source": "../lib/constants",
+          "specifiers": [
+            "FRENZY_BASE",
+            "FRENZY_RAGE_MULT",
+            "MINION_ABSORPTION_MULT",
+            "BLOOD_THIRSTY_MULT_PER_STACK",
+            "VENOM_SPITTER_MULT_PER_STACK",
+            "PERFECTION_MULT_PER_STACK",
+            "STEALTH_MULT_PER_STACK",
+            "GOLDEN_CRITS_MULT_PER_STACK",
+            "GOLDEN_CRITS_BASE_PROC_CHANCE",
+            "ROYAL_PARRY_MULT_PER_STACK",
+            "SPELL_PIERCER_MULT_PER_STACK",
+            "SCOURGE_MULT_PER_STACK",
+            "SHARPSHOOTER_MULT_PER_STACK",
+            "VALOR_MULT_PER_STACK",
+            "GORECAST_MULT_PER_STACK",
+            "VICIOUS_EDGE_MULT_PER_STACK",
+            "UNDEAD_MIGHT_MULT_PER_STACK",
+            "HIGHLANDER_MULT_PER_STACK",
+            "QUEENS_POWER_POTENCY_PER_AMOUNT",
+            "QUEENS_POWER_SUMMON_SCALING_PER_TENTH_POTENCY",
+            "VENOM_EATER_DMG_MULT_PER_STACK",
+            "FEROCITY_TENACITY_MULT",
+            "SPIRIT_WINDS_TAILWIND_MULT",
+            "SPIRIT_WINDS_PER_STACK",
+            "STEAM_POWERED_MULT_PER_AIR_BOOST",
+            "GUARDIAN_SPIN_BASE",
+            "GUARDIAN_SPIN_MULT_PER_STACK",
+            "WILD_BOLT_MULT_PER_STACK",
+            "WEIGHTY_SLAM_MULT_PER_STACK",
+            "RIDER_MULT_PER_STACK",
+            "QUICKDRAW_MULT",
+            "SPRING_POWERED_MULT",
+            "THIEF_TRAINING_BEHIND_MULT",
+            "THIEF_TRAINING_WOULD_CRIT_MULT",
+            "VASSALS_CROAK_MULT_PER_STACK",
+            "RAGING_BOUNCE_MULT",
+            "GUIDING_WINDS_MULT_PER_STACK",
+            "GUIDING_WINDS_WA_MULT_PER_STACK",
+            "CIVILIAN_MULT_PER_STACK",
+            "VAMPIRE_DIVISOR",
+            "TOXIN_CASTER_MULT_PER_STACK",
+            "CUT_DOWN_MULT_PER_AMOUNT",
+            "EXECUTIONER_MULT_PER_AMOUNT",
+            "FREQUENT_FLIER_MULT_PER_STACK",
+            "MARSH_FLOW_MULT_PER_STACK",
+            "SERRATED_EDGE_MULT_PER_STACK",
+            "CLEAVE_MULT_PER_STACK"
+          ]
+        },
+        {
+          "source": "../lib/types",
+          "specifiers": [
+            "BoostAttackType",
+            "ProcScalingType"
+          ]
+        }
+      ],
+      "exports": [
+        "calcMinionAbsorptionPotency",
+        "calcFrenzyPct",
+        "PENANCE_HP_THRESHOLD",
+        "PENANCE_BLEED_POTENCY",
+        "PENANCE_BLEED_DURATION",
+        "BOOST_DEFS",
+        "BOOST_DEF_MAP"
+      ],
+      "totalLines": 455,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/BuffData.ts": {
+      "filePath": "src/data/BuffData.ts",
+      "contentHash": "c9aa1be9319ce8e4ca6b4620d973becb2316676f3dad824d2f5436787ea3546d",
+      "functions": [
+        {
+          "name": "formatDamageTypes",
+          "params": [
+            "types"
+          ],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "getWeaponArtBuffs",
+          "params": [
+            "weaponArtName"
+          ],
+          "returnType": "GrantedBuff[]",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "getTrueBalanceBuffs",
+          "params": [
+            "perkAmount",
+            "activeDebuffs"
+          ],
+          "returnType": "GrantedBuff[]",
+          "exported": true,
+          "lineCount": 50
+        },
+        {
+          "name": "durationMultFromStack",
+          "params": [
+            "base",
+            "perStack"
+          ],
+          "returnType": "(stacks: number) => number",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "getSpecificBuffModifiers",
+          "params": [
+            "buff",
+            "def",
+            "perks"
+          ],
+          "exported": false,
+          "lineCount": 36
+        },
+        {
+          "name": "getBastionBlessBonus",
+          "params": [
+            "buff",
+            "def",
+            "perks"
+          ],
+          "exported": false,
+          "lineCount": 20
+        },
+        {
+          "name": "getGenericDebuffModifiers",
+          "params": [
+            "buff",
+            "def",
+            "perks"
+          ],
+          "exported": false,
+          "lineCount": 43
+        },
+        {
+          "name": "getTricksterReflection",
+          "params": [
+            "buff",
+            "def",
+            "perks",
+            "wardingDebuffMult"
+          ],
+          "returnType": "number",
+          "exported": false,
+          "lineCount": 24
+        },
+        {
+          "name": "hasEligibleDarkeningHexSource",
+          "params": [
+            "perks",
+            "build",
+            "weaponDmgTypes",
+            "waDamageType"
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "isDarkeningHexPotencyExcluded",
+          "params": [
+            "buffName"
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "isDarkeningHexPotencyMultExcluded",
+          "params": [
+            "buffName"
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "applyDarkeningHexPotency",
+          "params": [
+            "potency",
+            "perkAmount",
+            "activations",
+            "multExcluded"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "applyBuffPerkModifiers",
+          "params": [
+            "buffs",
+            "perks",
+            "activeRune",
+            "wardingDebuffMult",
+            "options"
+          ],
+          "returnType": "GrantedBuff[]",
+          "exported": true,
+          "lineCount": 106
+        },
+        {
+          "name": "applyToxinTransferDuration",
+          "params": [
+            "buffs",
+            "perks"
+          ],
+          "returnType": "GrantedBuff[]",
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "convertTailwindToWhirlwind",
+          "params": [
+            "buffs",
+            "perks"
+          ],
+          "returnType": "GrantedBuff[]",
+          "exported": true,
+          "lineCount": 25
+        },
+        {
+          "name": "getBuffDescription",
+          "params": [
+            "buffName",
+            "perks",
+            "potency"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 30
+        },
+        {
+          "name": "getPerkBuffs",
+          "params": [
+            "perks",
+            "vassalsCroakStacks",
+            "channeledDepthsTime"
+          ],
+          "returnType": "GrantedBuff[]",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "getActiveBuildBuffs",
+          "params": [
+            "build"
+          ],
+          "returnType": "GrantedBuff[]",
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "getRaceBuffs",
+          "params": [
+            "race"
+          ],
+          "returnType": "GrantedBuff[]",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "applyCauterizeConversion",
+          "params": [
+            "buffs",
+            "perks"
+          ],
+          "returnType": "GrantedBuff[]",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "getBurnApplicationCount",
+          "params": [
+            "buffs"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "assembleActiveBuffs",
+          "params": [
+            "build",
+            "perks",
+            "wardingDebuffMult",
+            "darkeningHexEligible"
+          ],
+          "returnType": "GrantedBuff[]",
+          "exported": true,
+          "lineCount": 34
+        },
+        {
+          "name": "calcBuffEffect",
+          "params": [
+            "buffName",
+            "potency"
+          ],
+          "returnType": "{\r\n  value: number\r\n  unit: '%' | 'flat'\r\n  label: string\r\n}",
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "calcPotencyPercent",
+          "params": [
+            "perkAmount"
+          ],
+          "returnType": "number",
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "formatPerkDescription",
+          "params": [
+            "desc",
+            "count"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../lib/utils",
+          "specifiers": [
+            "roundMultiplier"
+          ]
+        },
+        {
+          "source": "../lib/constants",
+          "specifiers": [
+            "BASTION_BLESS_MULT",
+            "ICHOR_SPARK_BLEED_DURATION"
+          ]
+        },
+        {
+          "source": "../lib/constants/buffs",
+          "specifiers": [
+            "BUFF_EFFECT_PER_TENTH",
+            "WHIRLWIND_EFFECT_PER_TENTH",
+            "GLYPH_CONDUIT_EFFECT_PER_TENTH",
+            "DESPAIR_EFFECT_PER_TENTH",
+            "LUMINESCENT_PCT_PER_POTENCY",
+            "RAGE_RUNE_BUFF_POTENCY",
+            "RAGE_RUNE_BUFF_DURATION",
+            "TOAD_SLAM_RAGE_POTENCY",
+            "TOAD_SLAM_RAGE_DURATION",
+            "BOUNCE_RUNE_POTENCY",
+            "BOUNCE_RUNE_DURATION",
+            "BEENADE_RUNE_POTENCY",
+            "ANCIENT_CLERIC_SHIELD_POTENCY",
+            "ANCIENT_CLERIC_SHIELD_DURATION",
+            "BOOSTSHROOM_POISON_DURATION",
+            "SPORELING_POISON_DURATION",
+            "THUNDEROUS_CLOAK_POTENCY",
+            "THUNDEROUS_CLOAK_DURATION",
+            "WINTER_WOOF_SHATTER_POTENCY",
+            "WINTER_WOOF_SHATTER_DURATION",
+            "GLACIAL_SNAPPER_SLOWNESS_POTENCY",
+            "GLACIAL_SNAPPER_SLOWNESS_DURATION",
+            "GLACIAL_SNAPPER_BLEED_DURATION",
+            "CACITROPS_BLEED_DURATION",
+            "BRAINBLAST_BURN_DURATION",
+            "BRAINBLAST_STICKY_POTENCY",
+            "BRAINBLAST_STICKY_DURATION",
+            "HEX_WEB_STICKY_POTENCY",
+            "HEX_WEB_STICKY_DURATION",
+            "SNOEBALL_FROSTBITE_POTENCY",
+            "SNOEBALL_FROSTBITE_DURATION",
+            "BASIC_DEBUFF_POTENCY",
+            "BASIC_DEBUFF_DURATION",
+            "BASIC_SHATTER_POTENCY",
+            "BASIC_SLOWNESS_POTENCY",
+            "BASIC_WEAKNESS_POTENCY",
+            "WARRIOR_STOMP_RAGE_POTENCY",
+            "WARRIOR_STOMP_RAGE_DURATION",
+            "WARRIOR_STOMP_TAUNT_POTENCY",
+            "WARRIOR_STOMP_TAUNT_DURATION",
+            "JAVELIN_SLOWNESS_DURATION",
+            "JAVELIN_BLEED_DURATION",
+            "LIGHTNING_CLOAK_DURATION_WA",
+            "CURSED_GROUND_WEAKNESS_POTENCY",
+            "CURSED_GROUND_WEAKNESS_DURATION",
+            "CROSS_SLASH_SHATTER_POTENCY",
+            "CROSS_SLASH_SHATTER_DURATION",
+            "DAGGER_THROW_POISON_DURATION",
+            "SHATTER_SHATTER_DURATION",
+            "SHATTER_SHATTER_POTENCY",
+            "FLAME_SLASH_BURN_DURATION",
+            "ICICLE_WAVE_FROSTBITE_DURATION",
+            "PERFECTION_POTENCY_PER_AMOUNT",
+            "BOUNCE_MOMENTUM_BUFF_POTENCY",
+            "BOUNCE_MOMENTUM_DURATION_PER_AMOUNT",
+            "TOADZERKER_BUFF_POTENCY",
+            "TOADZERKER_BUFF_DURATION",
+            "IRON_BOUNCE_DURATION_BASE",
+            "IRON_BOUNCE_DURATION_PER_AMOUNT",
+            "SPRINGBLAST_BUFF_POTENCY_PER_AMOUNT",
+            "SPRINGBLAST_BUFF_DURATION_BASE",
+            "SPRINGBLAST_BUFF_DURATION_PER_AMOUNT",
+            "WRATHFUL_CRITS_POTENCY_PER_AMOUNT",
+            "WRATHFUL_CRITS_DURATION_BASE",
+            "WRATHFUL_CRITS_DURATION_PER_AMOUNT",
+            "BLOOD_LUST_POTENCY_PER_AMOUNT",
+            "BLOOD_LUST_DURATION_PER_AMOUNT",
+            "LUMINESCENT_BUFF_POTENCY_PER_AMOUNT",
+            "LUMINESCENT_BUFF_DURATION",
+            "BEASTIAL_RAGE_POTENCY_PER_AMOUNT",
+            "BEASTIAL_RAGE_DURATION",
+            "VASSALS_CROAK_MAX_SUMMONS_BASE",
+            "VASSALS_CROAK_RAGE_DURATION",
+            "IRON_SLAYER_POTENCY_PER_AMOUNT",
+            "IRON_SLAYER_DURATION",
+            "BASTION_REGEN_POTENCY",
+            "BASTION_REINFORCE_POTENCY",
+            "BASTION_RATE_PER_AMOUNT",
+            "BASTION_BUFF_DURATION",
+            "AIR_PRESSURE_BUFF_POTENCY_PER_AMOUNT",
+            "AIR_PRESSURE_BUFF_DURATION",
+            "APOLLO_TAUNT_POTENCY",
+            "APOLLO_TAUNT_DURATION",
+            "VALOR_TAUNT_POTENCY",
+            "VALOR_TAUNT_DURATION",
+            "CHANNELED_REINFORCE_POTENCY",
+            "CHANNELED_REINFORCE_DURATION",
+            "GLADIATORIAL_RAGE_POTENCY",
+            "GLADIATORIAL_RAGE_DURATION",
+            "GLYPH_CONDUIT_POTENCY_PER_AMOUNT",
+            "GLYPH_CONDUIT_DURATION_MULT",
+            "ROARING_WEAKNESS_POTENCY",
+            "ROARING_SHATTER_POTENCY",
+            "ROARING_ANTI_HEAL_POTENCY",
+            "ROARING_DEBUFF_DURATION",
+            "STORM_REND_POTENCY_PER_AMOUNT",
+            "STORM_REND_DURATION",
+            "EROSION_POTENCY_BASE",
+            "EROSION_POTENCY_PER_AMOUNT",
+            "EROSION_DURATION",
+            "QUICKDRAW_POTENCY_PER_AMOUNT",
+            "QUICKDRAW_DURATION",
+            "TAILWIND_BUFF_POTENCY",
+            "TAILWIND_BUFF_DURATION",
+            "TOXIN_TRANSFER_DURATION_EXTRA",
+            "GROUNDED_DESPAIR_POTENCY_PER_AMOUNT",
+            "GROUNDED_DESPAIR_DURATION_PER_AMOUNT",
+            "QUEENS_POWER_ATK_SPD_BASE",
+            "QUEENS_POWER_ATK_SPD_PER_TENTH_POTENCY",
+            "QUEENS_POWER_SUMMON_SCALING_PER_TENTH_POTENCY",
+            "QUEENS_POWER_POTENCY_PER_AMOUNT",
+            "QUEENS_POWER_DURATION",
+            "ICESTORM_POTENCY_PER_AMOUNT",
+            "ICESTORM_DURATION",
+            "SWIFT_GUARD_POTENCY_PER_AMOUNT",
+            "SWIFT_GUARD_DURATION",
+            "RUNIC_WINDS_POTENCY_PER_AMOUNT",
+            "RUNIC_WINDS_DURATION",
+            "GRANDMAGIC_GUARD_POTENCY_PER_AMOUNT",
+            "GRANDMAGIC_GUARD_DURATION",
+            "MARSH_FLOW_POTENCY",
+            "MARSH_FLOW_DURATION_BASE",
+            "MARSH_FLOW_DURATION_PER_AMOUNT",
+            "BOUNCE_DURATION_BASE",
+            "BOUNCE_DURATION_PER_STACK",
+            "MOD_GLADIATORIAL_POTENCY",
+            "MOD_MAGE_RAGE_POTENCY",
+            "MOD_OCEANS_RAGE_POTENCY",
+            "MOD_SLAYER_RAGE_POTENCY",
+            "MOD_SLAYER_WEAKNESS_POTENCY",
+            "SLAYER_RAGE_RAGE_RUNE_WEAK_POTENCY",
+            "SLAYER_RAGE_WEAK_DURATION",
+            "SLAYER_RAGE_ROAR_WEAK_BASE_POTENCY",
+            "SLAYER_RAGE_ROAR_RAGE_POTENCY",
+            "SLAYER_RAGE_ROAR_RAGE_DURATION",
+            "MOD_IRON_SLAYER_POTENCY",
+            "MOD_IRON_SLAYER_DURATION",
+            "MOD_FURY_DURATION",
+            "MOD_TAILWIND_POTENCY",
+            "MOD_WIND_WALKER_DURATION_DIVISOR",
+            "MOD_SLOW_LEAK_DURATION",
+            "ENDLESS_DESPAIR_POTENCY_PER_STACK",
+            "ENDLESS_DESPAIR_FLAT_BONUS",
+            "ENDLESS_DESPAIR_DURATION_PER_STACK",
+            "STORED_CORRUPTION_DURATION_PER_STACK",
+            "PROPELLING_FUN_POTENCY_PER_AMOUNT",
+            "PROPELLING_FUN_DURATION_MULTIPLIER",
+            "CLOUDPUSH_PCT_PER_POTENCY",
+            "CINDERPULL_PCT_PER_POTENCY",
+            "RAGE_POTION_POTENCY",
+            "RAGE_POTION_DURATION",
+            "POISON_POTION_POTENCY",
+            "POISON_POTION_DURATION",
+            "POTION_CHUGGER_POTENCY_MULT_PER_LEVEL",
+            "SHATTERING_JUSTICE_POTENCY_PER_AMOUNT",
+            "SHATTERING_JUSTICE_DURATION",
+            "CLEAVE_POTENCY",
+            "CLEAVE_DURATION",
+            "SERRATED_EDGE_DURATION",
+            "INSPIRED_POTENCY_PER_AMOUNT",
+            "INSPIRED_DURATION",
+            "INSPIRED_EFFECT_PER_TENTH",
+            "VIRULENT_CORE_DURATION",
+            "PROTO_TECH_DURATION"
+          ]
+        },
+        {
+          "source": "../lib/constants/perks",
+          "specifiers": [
+            "CRYO_ENGINE_TAILWIND_BASE_POTENCY",
+            "CRYO_ENGINE_TAILWIND_POTENCY_PER_AMOUNT",
+            "CRYO_ENGINE_TAILWIND_DURATION_PER_AMOUNT",
+            "GUIDING_WINDS_TAILWIND_POTENCY_PER_AMOUNT",
+            "DARKENING_HEX_POTENCY_ADD_PER_AMOUNT",
+            "DARKENING_HEX_POTENCY_MULT_PER_AMOUNT",
+            "DARKENING_HEX_DURATION_ADD_PER_AMOUNT",
+            "DARKENING_HEX_MAX_ACTIVATIONS",
+            "KINDLING_BURN_DURATION_MULT"
+          ]
+        },
+        {
+          "source": "../lib/types",
+          "specifiers": [
+            "canProc"
+          ]
+        },
+        {
+          "source": "./Perkbasedmg",
+          "specifiers": [
+            "findPerkDmgDef"
+          ]
+        }
+      ],
+      "exports": [
+        "BUFF_DEFS",
+        "BASIC_DEBUFF_POOL",
+        "getWeaponArtBuffs",
+        "getTrueBalanceBuffs",
+        "hasEligibleDarkeningHexSource",
+        "isDarkeningHexPotencyExcluded",
+        "isDarkeningHexPotencyMultExcluded",
+        "applyDarkeningHexPotency",
+        "applyBuffPerkModifiers",
+        "applyToxinTransferDuration",
+        "convertTailwindToWhirlwind",
+        "getBuffDescription",
+        "getPerkBuffs",
+        "getActiveBuildBuffs",
+        "applyCauterizeConversion",
+        "getBurnApplicationCount",
+        "assembleActiveBuffs",
+        "calcBuffEffect",
+        "formatPerkDescription"
+      ],
+      "totalLines": 2383,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/cdr.ts": {
+      "filePath": "src/data/cdr.ts",
+      "contentHash": "d95e5cda9c3cbdc9c80da8e9e23c9a906e637539d6e42c1f683dd0c102105885",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../lib/constants",
+          "specifiers": [
+            "CDR_CASTER_RUNE_PCT",
+            "CDR_CASTER_WA_PCT",
+            "CDR_CHANNELED_WEAPON_BASE",
+            "CDR_CHANNELED_WEAPON_PER_STACK",
+            "CDR_MAGE_RAGE_RUNE_PCT",
+            "CDR_POISON_ACCEL_RUNE_PCT",
+            "CDR_POISON_ACCEL_WA_PCT",
+            "CDR_RUNIC_WINDS_RUNE_PCT",
+            "CDR_WAVE_RIDER_WA_PCT",
+            "CDR_WHIRLWIND_WA_PCT",
+            "CDR_WHIRLWIND_RUNE_PCT",
+            "CDR_GLADIATORIAL_SET_CD",
+            "CDR_VOLTAIC_BODY_MULT"
+          ]
+        }
+      ],
+      "exports": [
+        "CDR_PERK_DATA"
+      ],
+      "totalLines": 64,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/debuffCombatEffects.ts": {
+      "filePath": "src/data/debuffCombatEffects.ts",
+      "contentHash": "01b9d905a9d952691313dde6915cbd5a7dd55b72b67a878d1eaebdd1738f53d4",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../lib/constants/debuff-effects",
+          "specifiers": [
+            "DEBUFF_STICKY_DMG_MULT",
+            "DEBUFF_DESPAIR_DISPLAY_DIVISOR",
+            "DEBUFF_DESPAIR_DISPLAY_MULT",
+            "DEBUFF_DESPAIR_DMG_COEFF"
+          ]
+        },
+        {
+          "source": "../lib/constants/perks",
+          "specifiers": [
+            "HYPNOTIST_MAGIC_ARMOR_PER_POTENCY"
+          ]
+        }
+      ],
+      "exports": [
+        "DEBUFF_COMBAT_EFFECTS"
+      ],
+      "totalLines": 99,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/defensivePerks.ts": {
+      "filePath": "src/data/defensivePerks.ts",
+      "contentHash": "bdb248b45cdb8f00e78292a015a564a3690637541e59c0088b4cf0432730e6c8",
+      "functions": [
+        {
+          "name": "getActiveDefensivePerkSources",
+          "params": [
+            "perks",
+            "hpFillPct",
+            "adaptivePlateTriggered",
+            "inDarkness",
+            "rageActive",
+            "isMounted",
+            "hasProtection",
+            "uniqueDebuffCount"
+          ],
+          "returnType": "Array<{ name: string; defPct: number; isFlat?: boolean; condition: string; potencyCapped?: boolean; grantsStunImmunity?: boolean }>",
+          "exported": true,
+          "lineCount": 41
+        },
+        {
+          "name": "calcDefensivePotencyMult",
+          "params": [
+            "perks",
+            "draconicRuneInfusion",
+            "draconicColor"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 19
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../lib/constants",
+          "specifiers": [
+            "BASTION_BLESS_MULT",
+            "BARBSKIN_DR_PER_STACK",
+            "STONESKIN_DR_PER_STACK",
+            "STONESKIN_MAX_DR",
+            "ADAPTIVE_PLATE_BASE_DR",
+            "ADAPTIVE_PLATE_TRIGGERED_DR",
+            "PROTECTOR_SPIRIT_DR_PER_STACK",
+            "PROTECTOR_SPIRIT_HP_THRESHOLD",
+            "PROTECTOR_SPIRIT_ALWAYS_ON_AT",
+            "AIR_PRESSURE_MAX_DR_PER_STACK",
+            "VALOR_SHIELD_DR_PER_STACK",
+            "VALOR_MAX_DR",
+            "VAMPIRE_DR_PER_STACK",
+            "FRENZY_DR_PER_STACK",
+            "FRENZY_FIXED_DR",
+            "STORED_CORRUPTION_DR_PER_STACK",
+            "MOUNTED_DEFENSE_DR_PER_STACK",
+            "CARAPACE_DR_PER_STACK",
+            "CURSED_BARK_DR_PER_DEBUFF"
+          ]
+        },
+        {
+          "source": "./draconicBuffs",
+          "specifiers": [
+            "getDraconicInfusionPotMult"
+          ]
+        }
+      ],
+      "exports": [
+        "getActiveDefensivePerkSources",
+        "calcDefensivePotencyMult"
+      ],
+      "totalLines": 207,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/DoTDamage.ts": {
+      "filePath": "src/data/DoTDamage.ts",
+      "contentHash": "98a5e714ac1f76bf7d2f36568c5c5eb32831b00aa29c4fded40d708a86aaee3f",
+      "functions": [
+        {
+          "name": "getDotBase",
+          "params": [
+            "inflictionPotency"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "getDotPotencyMult",
+          "params": [
+            "dotPotency"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "calcDotTick",
+          "params": [
+            "dotPotency",
+            "inflictionPotency"
+          ],
+          "returnType": "number",
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "toGamePotency",
+          "params": [
+            "builderValue"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "calcDotDisplayPotency",
+          "params": [
+            "potPerk",
+            "edAmt"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../lib/constants/dot-damage",
+          "specifiers": [
+            "DOT_BASE_DAMAGE",
+            "DOT_INFLICTION_DIVISOR",
+            "DOT_POTENCY_POWER_CAP",
+            "DOT_ROUND_FACTOR",
+            "DOT_BUILDER_TO_GAME"
+          ]
+        }
+      ],
+      "exports": [
+        "DOT_TYPE_LIST",
+        "DOT_SCALINGS",
+        "DOT_DMG_TYPE_MAP",
+        "getDotBase",
+        "getDotPotencyMult",
+        "toGamePotency",
+        "calcDotDisplayPotency"
+      ],
+      "totalLines": 75,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/draconicBuffs.ts": {
+      "filePath": "src/data/draconicBuffs.ts",
+      "contentHash": "46c8dc7c5a6ce8665ffedb0626ca31f46f30eff165e839735866e0534004a2ef",
+      "functions": [
+        {
+          "name": "getDraconicInfusionPotMult",
+          "params": [
+            "perkAmt"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "getDraconicInfusionDurMult",
+          "params": [
+            "perkAmt"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "getEffectiveDraconicInfusionPotency",
+          "params": [
+            "guildName",
+            "draconicRuneInfusion",
+            "draconicColor",
+            "draconicBloodPerkAmt",
+            "perks"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "getDraconicInfusionBuff",
+          "params": [
+            "guildName",
+            "draconicRuneInfusion",
+            "draconicColor",
+            "draconicBloodPerkAmt"
+          ],
+          "returnType": "GrantedBuff[]",
+          "exported": true,
+          "lineCount": 41
+        },
+        {
+          "name": "getDraconicAbilityDebuffs",
+          "params": [
+            "guildName",
+            "draconicRuneInfusion",
+            "draconicColor",
+            "draconicBloodPerkAmt"
+          ],
+          "returnType": "GrantedBuff[]",
+          "exported": true,
+          "lineCount": 39
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../lib/constants",
+          "specifiers": [
+            "DRACONIC_INFUSION_POT_MULT",
+            "DRACONIC_INFUSION_DUR_MULT",
+            "HOLY_INFUSION_POTENCY_MULT"
+          ]
+        },
+        {
+          "source": "./BuffData",
+          "specifiers": [
+            "applyBuffPerkModifiers",
+            "BASIC_DEBUFF_POOL",
+            "GrantedBuff"
+          ]
+        }
+      ],
+      "exports": [
+        "getDraconicInfusionPotMult",
+        "getDraconicInfusionDurMult",
+        "getEffectiveDraconicInfusionPotency",
+        "getDraconicInfusionBuff",
+        "getDraconicAbilityDebuffs"
+      ],
+      "totalLines": 112,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/draconicColorEffects.ts": {
+      "filePath": "src/data/draconicColorEffects.ts",
+      "contentHash": "3814e0b77206423bf3d989f9c933b24395d864be88b8712cfee6f1dc2eccee03",
+      "functions": [
+        {
+          "name": "getDraconicColorDmgMultiplier",
+          "params": [
+            "color"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "getDraconicColorAttackStats",
+          "params": [
+            "color"
+          ],
+          "returnType": "DraconicColorAttackStats | undefined",
+          "exported": false,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../lib/constants",
+          "specifiers": [
+            "DRACONIC_FIRE_SPEED_MULT",
+            "DRACONIC_AIR_SPEED_MULT",
+            "DRACONIC_AIR_KNOCKBACK_MULT",
+            "DRACONIC_AIR_COOLDOWN_MULT",
+            "DRACONIC_EARTH_DMG_MULT",
+            "DRACONIC_EARTH_SPEED_MULT",
+            "DRACONIC_EARTH_STUN_MULT",
+            "DRACONIC_WATER_DMG_MULT",
+            "DRACONIC_WATER_SPEED_MULT",
+            "DRACONIC_WATER_STUN_MULT",
+            "DRACONIC_HEX_STUN_MULT",
+            "DRACONIC_HEX_RANDOM_DEBUFF_CHANCES"
+          ]
+        }
+      ],
+      "exports": [
+        "DRACONIC_COLOR_ATTACK_STATS",
+        "getDraconicColorDmgMultiplier"
+      ],
+      "totalLines": 50,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/draconicRunes.ts": {
+      "filePath": "src/data/draconicRunes.ts",
+      "contentHash": "4fa3cdc51dab883f37706ca7a36f3c2df57d2608e16d48856b2091e71f536578",
+      "functions": [
+        {
+          "name": "applyDraconicRunesBonus",
+          "params": [
+            "dmgTypes",
+            "ctx"
+          ],
+          "returnType": "Record<string, number>",
+          "exported": false,
+          "lineCount": 18
+        },
+        {
+          "name": "getDraconicRunesBonus",
+          "params": [
+            "ctx"
+          ],
+          "returnType": "Record<string, number>",
+          "exported": false,
+          "lineCount": 14
+        },
+        {
+          "name": "applyDragonInfusionBonus",
+          "params": [
+            "dmgTypes",
+            "ctx"
+          ],
+          "returnType": "Record<string, number>",
+          "exported": false,
+          "lineCount": 18
+        },
+        {
+          "name": "getDragonInfusionBonus",
+          "params": [
+            "ctx"
+          ],
+          "returnType": "Record<string, number>",
+          "exported": false,
+          "lineCount": 14
+        },
+        {
+          "name": "applyDraconicBonuses",
+          "params": [
+            "dmgTypes",
+            "runesCtx",
+            "infusionCtx"
+          ],
+          "returnType": "Record<string, number>",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "getDraconicBonuses",
+          "params": [
+            "runesCtx",
+            "infusionCtx"
+          ],
+          "returnType": "Record<string, number>",
+          "exported": true,
+          "lineCount": 13
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "applyDraconicBonuses",
+        "getDraconicBonuses"
+      ],
+      "totalLines": 105,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/enchantments.json": {
+      "filePath": "src/data/enchantments.json",
+      "contentHash": "d165d40401611b0d8a4fcddcbdd2a02dc5efdcf85a27c21938054086d66a3e2c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 53,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/enemyHpEffects.ts": {
+      "filePath": "src/data/enemyHpEffects.ts",
+      "contentHash": "8e2ba3b7a05e1de803a9749fa5f4ecb2f3e707311344b62de2703d1e6a656305",
+      "functions": [
+        {
+          "name": "isEnemyHpGateActive",
+          "params": [
+            "gate",
+            "enemyHpFillPct"
+          ],
+          "returnType": "boolean",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "getActiveEnemyHpDebuffs",
+          "params": [
+            "perks",
+            "enemyHpFillPct",
+            "activeDebuffNames"
+          ],
+          "returnType": "Array<{ buffName: string; potency: number; duration: number; condition: string; sourceName: string }>",
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "getEnemyHpDotMultiplier",
+          "params": [
+            "perks",
+            "enemyHpFillPct",
+            "dotType"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 15
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "getActiveEnemyHpDebuffs",
+        "getEnemyHpDotMultiplier"
+      ],
+      "totalLines": 91,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/essences.json": {
+      "filePath": "src/data/essences.json",
+      "contentHash": "a2a34cf64d4fd0f988a902334c587d2a8ad4781dbeeb560d8141c6cb817df6f9",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 107,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/gloves.json": {
+      "filePath": "src/data/gloves.json",
+      "contentHash": "36eb67d26dc2ab2523595f4e59bf15920bf049aa7ad1be5cfbf6e678ace2f56b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 24,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/guilds.json": {
+      "filePath": "src/data/guilds.json",
+      "contentHash": "e072a14ed58c0824aee98fe98a55543d1569a87ca26aae827d10d67e19980190",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 57,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/handles.json": {
+      "filePath": "src/data/handles.json",
+      "contentHash": "fc0d9cfc687ba6e3daf23fc236d56e940a2bcb8b180df9a15fc56d62716b43c2",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 105,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/HealBoost.ts": {
+      "filePath": "src/data/HealBoost.ts",
+      "contentHash": "ef6c975c2cdd99eee0489095280f18ae901555e251d1f0d099a7c3dc557cb760",
+      "functions": [
+        {
+          "name": "calculateHealBoost",
+          "params": [
+            "ctx",
+            "appliesToType"
+          ],
+          "returnType": "HealBoostResult",
+          "exported": true,
+          "lineCount": 76
+        },
+        {
+          "name": "getHealScalingMultiplier",
+          "params": [
+            "ctx",
+            "appliesToType"
+          ],
+          "returnType": "number",
+          "exported": false,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../lib/utils",
+          "specifiers": [
+            "roundMultiplier"
+          ]
+        },
+        {
+          "source": "../lib/constants",
+          "specifiers": [
+            "EMOTIONAL_MULT_PER_STACK",
+            "HEAL_BOOST_MULT_PER_STACK",
+            "MAX_LEVEL",
+            "OCEANS_RAGE_MULT_PER_STACK",
+            "VAMPIRE_SUNLIGHT_HEAL_MULT"
+          ]
+        },
+        {
+          "source": "./draconicBuffs",
+          "specifiers": [
+            "getEffectiveDraconicInfusionPotency"
+          ]
+        }
+      ],
+      "exports": [
+        "calculateHealBoost"
+      ],
+      "totalLines": 218,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/mountRunes.ts": {
+      "filePath": "src/data/mountRunes.ts",
+      "contentHash": "18eed773850e7c82f4b5c7f04a8a108d22fb30661002eb526947c221e8f43d92",
+      "functions": [
+        {
+          "name": "getMountRuneDef",
+          "params": [
+            "runeName"
+          ],
+          "returnType": "MountRuneDef | undefined",
+          "exported": false,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../lib/types",
+          "specifiers": [
+            "WeaponHit"
+          ]
+        }
+      ],
+      "exports": [
+        "MOUNT_RUNE_DEFS"
+      ],
+      "totalLines": 89,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/perkAutoDebuffs.ts": {
+      "filePath": "src/data/perkAutoDebuffs.ts",
+      "contentHash": "8b880a1ce2d3e2291da627d93749986dd74d98b1367977dc08f8f06b7d0b7c59",
+      "functions": [
+        {
+          "name": "calcActualHpFillPct",
+          "params": [
+            "hpFill",
+            "level",
+            "protection"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "getAutoDebuffs",
+          "params": [
+            "input"
+          ],
+          "returnType": "GrantedBuff[]",
+          "exported": true,
+          "lineCount": 358
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./Boost",
+          "specifiers": [
+            "PENANCE_HP_THRESHOLD",
+            "PENANCE_BLEED_POTENCY",
+            "PENANCE_BLEED_DURATION"
+          ]
+        },
+        {
+          "source": "../lib/constants/perks",
+          "specifiers": [
+            "HYPNOTIST_POTENCY_PER_PERK",
+            "HYPNOTIST_DURATION_BASE",
+            "HYPNOTIST_DURATION_PER_PERK",
+            "FIERY_PURSUIT_BURN_DURATION",
+            "SUNBURN_BURN_BASE_CHANCE",
+            "SUNBURN_BURN_CHANCE_PER_STACK",
+            "FROSTBITE_SLOW_POTENCY_PER_STACK",
+            "FROSTBITE_CHANCE_PER_STACK",
+            "CRYO_ENGINE_PROC_CHANCE_PER_AMOUNT"
+          ]
+        },
+        {
+          "source": "./BuffData",
+          "specifiers": [
+            "GrantedBuff"
+          ]
+        },
+        {
+          "source": "../lib/types",
+          "specifiers": [
+            "canProc",
+            "ProcCoefficient"
+          ]
+        },
+        {
+          "source": "../lib/constants/game",
+          "specifiers": [
+            "calcBaseMaxHP"
+          ]
+        },
+        {
+          "source": "../lib/constants/buffs",
+          "specifiers": [
+            "BASIC_DEBUFF_DURATION"
+          ]
+        },
+        {
+          "source": "../lib/constants/perk-base-damage",
+          "specifiers": [
+            "BELLOWING_EMBER_HP_GATE_THRESHOLD",
+            "BELLOWING_EMBER_HP_GATE_PER_STACK",
+            "PYRE_BLOOM_BURN_DURATION",
+            "RUNIC_BLADES_DEBUFF_DURATION_PER_STACK",
+            "CACI_SPIRIT_BLEED_DURATION",
+            "ICE_BURST_BLEED_DURATION",
+            "WOOF_SPIRIT_WEAKNESS_POTENCY",
+            "WOOF_SPIRIT_WEAKNESS_DURATION",
+            "WINTER_WOOF_SPIRIT_SHATTER_POTENCY",
+            "WINTER_WOOF_SPIRIT_SHATTER_DURATION",
+            "WINTER_WOOF_SPIRIT_BLEED_DURATION"
+          ]
+        },
+        {
+          "source": "./enemyHpEffects",
+          "specifiers": [
+            "getActiveEnemyHpDebuffs"
+          ]
+        }
+      ],
+      "exports": [
+        "calcActualHpFillPct",
+        "getAutoDebuffs"
+      ],
+      "totalLines": 392,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/Perkbasedmg.ts": {
+      "filePath": "src/data/Perkbasedmg.ts",
+      "contentHash": "4d05a5b7180bd88c4bdf28d339648660918ef871bd8c0a545e55d1d308c66931",
+      "functions": [
+        {
+          "name": "gateThreshold",
+          "params": [
+            "gate",
+            "perkAmount"
+          ],
+          "returnType": "number | undefined",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "isHpGateActive",
+          "params": [
+            "gate",
+            "hpFillPct",
+            "perkAmount"
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "calcSpringblastBaseDamage",
+          "params": [
+            "perkAmount"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "calcBomberChargeBaseDamage",
+          "params": [
+            "perkAmount",
+            "missingHpPct"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "rollStarStruckType",
+          "params": [],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "calcIchorSparkChargeMult",
+          "params": [
+            "chargePct"
+          ],
+          "returnType": "number",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "calcIchorSparkSwipeBase",
+          "params": [
+            "perkAmount",
+            "chargePct"
+          ],
+          "returnType": "number",
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "calcIchorSparkSlashBase",
+          "params": [
+            "perkAmount",
+            "chargePct"
+          ],
+          "returnType": "number",
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "calcIchorSparkChargeTime",
+          "params": [
+            "perkAmount"
+          ],
+          "returnType": "number",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "findPerkDmgDef",
+          "params": [
+            "perkName",
+            "label"
+          ],
+          "returnType": "PerkDmgDef | undefined",
+          "exported": true,
+          "lineCount": 6
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./DoTDamage",
+          "specifiers": [
+            "getDotPotencyMult"
+          ]
+        },
+        {
+          "source": "../data/draconicColorEffects",
+          "specifiers": [
+            "getDraconicColorDmgMultiplier"
+          ]
+        },
+        {
+          "source": "../lib/types",
+          "specifiers": [
+            "BuildState",
+            "ProcCoefficient"
+          ]
+        },
+        {
+          "source": "../lib/constants",
+          "specifiers": [
+            "DRAGON_STATE_HP_BASE",
+            "DRAGON_STATE_HP_PER_STACK",
+            "DRAGON_STATE_BASE",
+            "DRAGON_STATE_PER_STACK",
+            "DRAGON_CLAW_BASE_DAMAGE",
+            "DRAGON_CLAW_DAMAGE_PER_STACK",
+            "DRAGON_CLAW_HOLY_HEAL_BASE",
+            "DRAGON_CLAW_HOLY_HEAL_PER_STACK",
+            "DRAGON_CLAW_WATER_HEAL_BASE",
+            "DRAGON_CLAW_WATER_HEAL_PER_STACK",
+            "DRAGON_CLAW_POISE_DAMAGE",
+            "DRAGON_BUBBLE_BASE_DAMAGE",
+            "DRAGON_BUBBLE_DAMAGE_PER_STACK",
+            "DRAGON_BUBBLE_HOLY_HEAL_BASE",
+            "DRAGON_BUBBLE_HOLY_HEAL_PER_STACK",
+            "DRAGON_BUBBLE_WATER_HEAL_BASE",
+            "DRAGON_BUBBLE_WATER_HEAL_PER_STACK",
+            "DRAGON_BUBBLE_POISE_DAMAGE",
+            "BELLOWING_EMBER_HP_GATE_THRESHOLD",
+            "BELLOWING_EMBER_HP_GATE_PER_STACK",
+            "SPORE_BURST_BASE",
+            "SPORE_BURST_POTENCY_MULT",
+            "SPORE_BURST_ROUND",
+            "SPRINGBLAST_BASE_HIT",
+            "SPRINGBLAST_PER_STACK_HIT",
+            "SPRINGBLAST_MULT_PER_STACK",
+            "SPRINGBLAST_DENOM_HALF",
+            "SPRINGBLAST_ROUND",
+            "BASIC_SPIRIT_BASE_DMG",
+            "BASIC_SPIRIT_HITS",
+            "BUNI_SPIRIT_BASE_DMG",
+            "BUNI_SPIRIT_HITS",
+            "MAGELING_SPIRIT_BASE_DMG",
+            "TOADZERKER_SPIRIT_BASE_DMG",
+            "DIRE_BUNI_SPIRIT_BASE_DMG",
+            "VOID_ROOT_SPIRIT_BASE_DMG",
+            "VOID_ROOT_SPIRIT_HITS",
+            "BOUNCE_MOMENTUM_BASE_DMG",
+            "BOUNCE_MOMENTUM_DMG_PER_STACK",
+            "PROTECTOR_SPIRIT_BASE_DMG",
+            "PROTECTOR_SPIRIT_DMG_PER_STACK",
+            "PROTECTOR_SPIRIT_HP_GATE",
+            "PROTECTOR_SPIRIT_ALWAYS_ACTIVE_AT",
+            "AIR_PRESSURE_DMG_PER_STACK",
+            "AIR_BARRIER_DMG_PER_STACK",
+            "APOLLO_BOOST_BASE",
+            "APOLLO_BOOST_SUB_BASE",
+            "APOLLO_BOOST_PER_STACK",
+            "APOLLO_BOOST_HITS_BASE",
+            "APOLLO_BOOST_HITS_PER_STACK",
+            "APOLLO_BOOST_TAUNT_DURATION",
+            "ROARING_HEADS_BASE_DMG",
+            "ROARING_HEADS_DMG_PER_STACK",
+            "BARBED_FLURRY_BASE_DMG",
+            "BARBED_FLURRY_DMG_PER_STACK",
+            "HONEY_ARTS_BASE_DMG",
+            "HONEY_ARTS_DMG_PER_STACK",
+            "HONEY_ARTS_STICKY_DURATION",
+            "SICKNESS_BASE_DMG",
+            "SICKNESS_DMG_PER_STACK",
+            "MELTING_SLIME_BASE_DMG",
+            "MELTING_SLIME_FIRE_SCALE_BASE",
+            "MELTING_SLIME_FIRE_SCALE_PER_STACK",
+            "MELTING_SLIME_EARTH_SCALE_BASE",
+            "MELTING_SLIME_EARTH_SCALE_PER_STACK",
+            "WHIRLWIND_BASE_DMG",
+            "WHIRLWIND_DMG_PER_STACK",
+            "VOLATILE_SHELL_BASE_DMG",
+            "VOLATILE_SHELL_DMG_PER_STACK",
+            "VOLATILE_SHELL_POISON_DURATION",
+            "ROYAL_FINISHER_BASE_DMG",
+            "ROYAL_FINISHER_DMG_PER_STACK",
+            "GROUNDED_DESPAIR_BASE_DMG",
+            "GROUNDED_DESPAIR_DMG_PER_STACK",
+            "ECHO_INCINERATION_BASE_DMG",
+            "ECHO_INCINERATION_DMG_PER_STACK",
+            "VENOM_SPITTER_BASE_DMG",
+            "VENOM_SPITTER_DMG_PER_STACK",
+            "VENOM_SPITTER_HIT_DIVISOR",
+            "FIERY_PURSUIT_BASE_DMG",
+            "FIERY_PURSUIT_DMG_PER_STACK",
+            "FIERY_PURSUIT_BURN_DURATION",
+            "BOMBER_CHARGE_BASE",
+            "BOMBER_CHARGE_PCT_PER_STACK",
+            "BOMBER_CHARGE_MISSING_HP_MULT",
+            "BOMBER_CHARGE_MISSING_HP_CAP",
+            "ROGUENT_SPIRIT_BASE_DMG",
+            "ROGUENT_SPIRIT_HITS",
+            "SNOEMAN_SPIRIT_ROAR_DMG",
+            "SNOEMAN_SPIRIT_ICESTORM_BASE_DMG",
+            "SNOEMAN_SPIRIT_HITS",
+            "SNOEMAN_SPIRIT_SLOWNESS_POTENCY",
+            "CACI_SPIRIT_THORN_DMG",
+            "CACI_SPIRIT_SLAM_DMG",
+            "CACI_SPIRIT_THORN_HITS",
+            "CACI_SPIRIT_SLAM_HITS",
+            "CACI_SPIRIT_BLEED_DURATION",
+            "WOOF_SPIRIT_BASE_DMG",
+            "WOOF_SPIRIT_HEAL",
+            "WOOF_SPIRIT_WEAKNESS_POTENCY",
+            "WOOF_SPIRIT_WEAKNESS_DURATION",
+            "WINTER_WOOF_SPIRIT_HOWL_DMG",
+            "WINTER_WOOF_SPIRIT_BITE_DMG",
+            "WINTER_WOOF_SPIRIT_BITES",
+            "WINTER_WOOF_SPIRIT_SHATTER_POTENCY",
+            "WINTER_WOOF_SPIRIT_SHATTER_DURATION",
+            "WINTER_WOOF_SPIRIT_BLEED_DURATION",
+            "WINTER_WOOF_SPIRIT_DURATION",
+            "DARK_HARVEST_BASE_DAMAGE",
+            "DARK_HARVEST_DAMAGE_PER_STACK",
+            "DARK_HARVEST_HP_GATE_THRESHOLD",
+            "DARK_HARVEST_HEAL_PER_STACK",
+            "DARK_HARVEST_COOLDOWN",
+            "PHANTOM_PAIN_BASE_PCT",
+            "PHANTOM_PAIN_PERK_MULT",
+            "PYRE_BLOOM_BASE_DMG",
+            "PYRE_BLOOM_DMG_PER_STACK",
+            "PYRE_BLOOM_CD_DMG_DIVISOR",
+            "PYRE_BLOOM_AMMO_BASE",
+            "PYRE_BLOOM_AMMO_PER_STACK",
+            "PYRE_BLOOM_AMMO_CD_DIVISOR",
+            "PYRE_BLOOM_AMMO_CD_SUBTRACT",
+            "PYRE_BLOOM_AMMO_MIN",
+            "PYRE_BLOOM_AMMO_MAX",
+            "PYRE_BLOOM_FIRERATE_DIVISOR",
+            "PYRE_BLOOM_MAX_ACTIVE_BASE",
+            "PYRE_BLOOM_MAX_ACTIVE_PER_STACK",
+            "PYRE_BLOOM_BURN_DURATION",
+            "BASTION_BALLISTA_BASE_DMG",
+            "BASTION_BALLISTA_DMG_PER_STACK",
+            "BASTION_BALLISTA_MAX_POTENCY_BASE",
+            "BASTION_BALLISTA_RESTORE_DELAY",
+            "BASTION_BALLISTA_FIRE_COOLDOWN",
+            "BASTION_BALLISTA_PROC_COEFF",
+            "RUNIC_BLADES_BASE_DMG",
+            "RUNIC_BLADES_DMG_PER_STACK",
+            "RUNIC_BLADES_DEBUFF_DURATION_PER_STACK",
+            "RUNIC_BLADES_INNER_COOLDOWN",
+            "GNAWING_POISON_BASE_DMG",
+            "GNAWING_POISON_DMG_PER_STACK",
+            "GNAWING_POISON_COOLDOWN",
+            "ICE_BURST_BASE_DMG",
+            "ICE_BURST_DMG_PER_STACK",
+            "ICE_BURST_BLEED_DURATION",
+            "PROPELLING_FUN_BASE_DMG",
+            "PROPELLING_FUN_DMG_PER_STACK",
+            "PROPELLING_FUN_COOLDOWN",
+            "QUAKE_BASE_DMG",
+            "QUAKE_DMG_PER_STACK",
+            "QUAKE_CHANCE_BASE",
+            "QUAKE_CHANCE_PER_STACK",
+            "RULER_SANDS_BASE_DMG_PER_HIT",
+            "RULER_SANDS_HITS",
+            "RULER_SANDS_CHANCE_CD_MULT",
+            "RULER_SANDS_CHANCE_PERK_MULT",
+            "ICHOR_SPARK_SWIPE_BASE_A",
+            "ICHOR_SPARK_SWIPE_BASE_B",
+            "ICHOR_SPARK_SLASH_BASE_A",
+            "ICHOR_SPARK_SLASH_BASE_B",
+            "ICHOR_SPARK_CHARGE_DMG_MULT",
+            "ICHOR_SPARK_CHARGE_TIME_BASE",
+            "ICHOR_SPARK_CHARGE_TIME_PER_STACK",
+            "ICHOR_SPARK_SLASH_HEAL_AT_MIN",
+            "ICHOR_SPARK_SLASH_CHARGE_THRESHOLD",
+            "ICHOR_SPARK_BLEED_DURATION",
+            "BLAZING_FINISHER_BASE_DMG",
+            "DEATHMIST_SLASH_BASE_DMG",
+            "DEATHMIST_SLASH_ALLIES_HEAL_BASE",
+            "DEATHMIST_SLASH_SELF_HEAL_BASE",
+            "STORM_CALLER_BASE_DMG",
+            "STORM_CALLER_DMG_PER_STACK"
+          ]
+        }
+      ],
+      "exports": [
+        "gateThreshold",
+        "isHpGateActive",
+        "DRAGON_STATE_HP_GATE",
+        "SECONDARY_TONE_COLORS",
+        "calcSpringblastBaseDamage",
+        "calcBomberChargeBaseDamage",
+        "PERK_DMG_DEFS",
+        "findPerkDmgDef"
+      ],
+      "totalLines": 1737,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/perks.json": {
+      "filePath": "src/data/perks.json",
+      "contentHash": "166ea8b2a92477af439bda902703376ee6427c042ee76155ee72c1e4acaf8380",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3687,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/potions.ts": {
+      "filePath": "src/data/potions.ts",
+      "contentHash": "e7cbba311b7314412259c79918b852800e453d4e65d374186cf569fb0ee22f7f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "POTIONS",
+        "POTION_MAP"
+      ],
+      "totalLines": 23,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/procCoefficients.ts": {
+      "filePath": "src/data/procCoefficients.ts",
+      "contentHash": "ae8a5de85420541d477b754646e4c23c9513a456fc5e75160a0c77998e4cd498",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../lib/types",
+          "specifiers": [
+            "ProcCoefficient"
+          ]
+        }
+      ],
+      "exports": [
+        "WEAPON_PROC_COEFFS",
+        "WA_PROC_COEFFS",
+        "DEFAULT_PROC_COEFF"
+      ],
+      "totalLines": 53,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/raceEffects.ts": {
+      "filePath": "src/data/raceEffects.ts",
+      "contentHash": "87e338a85df42fab3e33932269a6a15afb273faef102106807aafc500cb5975f",
+      "functions": [
+        {
+          "name": "getActiveRaceEffect",
+          "params": [
+            "raceName",
+            "hpFillPct"
+          ],
+          "returnType": "RaceConditionalEffect | undefined",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "getOrkTenacityBuffs",
+          "params": [
+            "buffs",
+            "buffDefs"
+          ],
+          "returnType": "T[]",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "calcOrkTenacityBonus",
+          "params": [
+            "buffs",
+            "buffDefs"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 6
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./Perkbasedmg",
+          "specifiers": [
+            "HpGate"
+          ]
+        },
+        {
+          "source": "./Perkbasedmg",
+          "specifiers": [
+            "isHpGateActive"
+          ]
+        }
+      ],
+      "exports": [
+        "getActiveRaceEffect",
+        "getOrkTenacityBuffs",
+        "calcOrkTenacityBonus"
+      ],
+      "totalLines": 49,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/races.json": {
+      "filePath": "src/data/races.json",
+      "contentHash": "c521d5b06b63e12359fe996496690dc6bfe8ea821996403877f81cffe0be7375",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 13,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/rings.json": {
+      "filePath": "src/data/rings.json",
+      "contentHash": "b670f99db7239663cf364be89cde1bfa6ef615d083e06fb50debe2be081970d5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 37,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/Runebasedmg.ts": {
+      "filePath": "src/data/Runebasedmg.ts",
+      "contentHash": "55dd88b559ec94db7d2f62c9e5e11eebb54f136a1f736a45ccb78e193ef8a681",
+      "functions": [
+        {
+          "name": "calculateRuneHealScaling",
+          "params": [
+            "runeDef",
+            "ctx"
+          ],
+          "returnType": "number",
+          "exported": false,
+          "lineCount": 23
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../lib/types",
+          "specifiers": [
+            "BuildState"
+          ]
+        },
+        {
+          "source": "./HealBoost",
+          "specifiers": [
+            "calculateHealBoost",
+            "HealBoostContext"
+          ]
+        },
+        {
+          "source": "./SummonData",
+          "specifiers": [
+            "calcMaxSummonCount"
+          ]
+        },
+        {
+          "source": "../lib/constants/rune-base-damage",
+          "specifiers": [
+            "ANCIENT_CLERIC_BASE_DMG",
+            "ANCIENT_CLERIC_SLIDER_MAX",
+            "ANCIENT_CLERIC_SHIELD_BASE",
+            "ANCIENT_CLERIC_SHIELD_PER_VAL",
+            "BEENADE_BASE_DMG",
+            "BEENADE_MAX_POTENCY",
+            "BOOSTSHROOM_BASE_DMG",
+            "THUNDEROUS_CHARGE_BASE_DMG",
+            "SPORELING_TOSS_BASE_DMG",
+            "SPORELING_TOSS_HITS_BASE",
+            "SPORELING_TOSS_SLIDER_MAX",
+            "FOOT_DIVE_BASE_DMG",
+            "CACI_BASE_DMG",
+            "CACI_HITS",
+            "CACITROPS_BASE_DMG",
+            "CACITROPS_HITS",
+            "HEX_WEB_BASE_DMG",
+            "HEX_WEB_HITS",
+            "BRAINBLAST_BASE_DMG",
+            "BRAINBLAST_HITS",
+            "ROCKY_TAIL_BASE_DMG",
+            "ROCKY_TAIL_PROT_SCALE",
+            "ROCKY_TAIL_VS_BASE_RES",
+            "ROCKY_TAIL_VS_PER_LEVEL",
+            "ROCKY_TAIL_VS_DEFAULT_RES",
+            "ROCKY_TAIL_DIVISOR_COEFF",
+            "ROCKY_TAIL_DIVISOR_BASE",
+            "ROCKY_TAIL_HITS_MULT",
+            "ROCKY_TAIL_MIN_HITS",
+            "SLAYER_RAGE_HITS",
+            "SLAYER_RAGE_RAGE_RUNE_BASE_DMG",
+            "SLAYER_RAGE_RAGE_RUNE_DMG_PER_STACK",
+            "SLAYER_RAGE_ROAR_RUNE_BASE_DMG",
+            "SLAYER_RAGE_ROAR_RUNE_DMG_PER_STACK"
+          ]
+        }
+      ],
+      "exports": [
+        "RUNE_DMG_DEFS"
+      ],
+      "totalLines": 241,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/runes.json": {
+      "filePath": "src/data/runes.json",
+      "contentHash": "0b8132f0a933c4fbf6c459f96fb4a1d2470e0b7f51a5a98add3061f1ebd69098",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 43,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/selfDamagePerks.ts": {
+      "filePath": "src/data/selfDamagePerks.ts",
+      "contentHash": "a3d6520f0584770489d099576b4f34a164b8bf8720214a749dc68213d0a5cc35",
+      "functions": [
+        {
+          "name": "calcSelfDamage",
+          "params": [
+            "def",
+            "perkAmount",
+            "preBoostDamageDealt",
+            "enemiesHit",
+            "defenseMultipliers",
+            "hitCount"
+          ],
+          "returnType": "{ total: number; byType: Record<string, number> }",
+          "exported": true,
+          "lineCount": 41
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "UNDEAD_MIGHT_SELF_DMG_FRACTION",
+        "UNDEAD_MIGHT_DR_PCT_PER_STACK",
+        "SELF_DAMAGE_PERK_DEFS",
+        "calcSelfDamage"
+      ],
+      "totalLines": 106,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/stanceOverlays.ts": {
+      "filePath": "src/data/stanceOverlays.ts",
+      "contentHash": "90c8f83ed4611bebf407ed9d69fc0a1b6106dbb50c23afc52628a95dad114f5c",
+      "functions": [
+        {
+          "name": "resolveStanceOverlay",
+          "params": [
+            "ctx"
+          ],
+          "returnType": "StanceOverlayResult | null",
+          "exported": true,
+          "lineCount": 6
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "resolveStanceOverlay"
+      ],
+      "totalLines": 60,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/statboost.ts": {
+      "filePath": "src/data/statboost.ts",
+      "contentHash": "49e6fb6604de1863f3d074b591311db049e2b5f16c3ea24a6198cf70114505d1",
+      "functions": [
+        {
+          "name": "r",
+          "params": [
+            "v"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "get",
+          "params": [
+            "s",
+            "key"
+          ],
+          "returnType": "number",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "add",
+          "params": [
+            "s",
+            "key",
+            "amount"
+          ],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "sub",
+          "params": [
+            "s",
+            "key",
+            "amount"
+          ],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "negMagnitude",
+          "params": [
+            "v"
+          ],
+          "returnType": "number",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "negSum",
+          "params": [
+            "s",
+            "keys"
+          ],
+          "returnType": "number",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "finalizeRounding",
+          "params": [
+            "s"
+          ],
+          "returnType": "StatMap",
+          "exported": false,
+          "lineCount": 10
+        },
+        {
+          "name": "applyStatBoostPerks",
+          "params": [
+            "stats",
+            "perks"
+          ],
+          "returnType": "StatMap",
+          "exported": true,
+          "lineCount": 19
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../lib/types",
+          "specifiers": [
+            "StatMap",
+            "StatKey",
+            "PERCENT_STATS"
+          ]
+        },
+        {
+          "source": "../lib/constants/stat-conversions",
+          "specifiers": [
+            "WEIGHT_DISTRIBUTION_SPLIT_RATIO",
+            "WEIGHT_DISTRIBUTION_MULTIPLIER",
+            "QUICK_WITTED_CONVERSION",
+            "WHIRL_FOOT_CONVERSION",
+            "CARAPACE_CONVERSION",
+            "EXTRA_LAYERS_MULT",
+            "FROZEN_HEART_CONVERSION",
+            "IMMOVABLE_MULT",
+            "RIGHTED_WRONGS_BASE_COEFF",
+            "RIGHTED_WRONGS_TENACITY_WEIGHT",
+            "RIGHTED_WRONGS_OFFENSE_WEIGHT",
+            "RIGHTED_WRONGS_SPEED_FRACTION",
+            "ROCKY_BODY_CONVERSION",
+            "SPELLSHIELD_CONVERSION",
+            "STRONG_TIDES_CONVERSION",
+            "SWIFT_GUARD_CONVERSION",
+            "TRUE_BALANCE_STAT_MULT",
+            "RAWNY_CONVERSION",
+            "RAWNY_MAX_CAP",
+            "ROARING_HEADINGS_WARDING_SUB",
+            "LUCKY_WARDING_SUB",
+            "LUCKY_PROTECTION_SUB",
+            "LUCKY_TENACITY_SUB"
+          ]
+        }
+      ],
+      "exports": [
+        "OFFENSIVE_BOOSTS",
+        "applyStatBoostPerks"
+      ],
+      "totalLines": 243,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/SummonData.ts": {
+      "filePath": "src/data/SummonData.ts",
+      "contentHash": "e6af074a1da11d964a9726f375ddf77cbbdb91c09bc1cda4a4f50058227e9141",
+      "functions": [
+        {
+          "name": "calcSummonStat",
+          "params": [
+            "base",
+            "summonBoostPct",
+            "level"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "calcMaxSummonCount",
+          "params": [
+            "perks"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../lib/constants",
+          "specifiers": [
+            "MAX_LEVEL"
+          ]
+        }
+      ],
+      "exports": [
+        "calcSummonStat",
+        "calcMaxSummonCount",
+        "SUMMON_MAP",
+        "WA_SUMMON_MAP"
+      ],
+      "totalLines": 84,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/TypedDmgBoost.ts": {
+      "filePath": "src/data/TypedDmgBoost.ts",
+      "contentHash": "83d16fc856e46f66a604a18d6c0dcbe5db64cced5d0b09eec7c8852b94a64b07",
+      "functions": [
+        {
+          "name": "getMaxBuffPotency",
+          "params": [
+            "buffName",
+            "activeBuffs"
+          ],
+          "returnType": "number",
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "calcTypedDmgBoosts",
+          "params": [
+            "perks",
+            "ctx"
+          ],
+          "returnType": "TypedDmgBoostResult",
+          "exported": true,
+          "lineCount": 42
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./BuffData",
+          "specifiers": [
+            "GrantedBuff"
+          ]
+        },
+        {
+          "source": "../lib/constants/damage-types",
+          "specifiers": [
+            "ALL_DMG_TYPES"
+          ]
+        }
+      ],
+      "exports": [
+        "calcTypedDmgBoosts"
+      ],
+      "totalLines": 138,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/weapon base dmg.ts": {
+      "filePath": "src/data/weapon base dmg.ts",
+      "contentHash": "e5972cbc695fe6ab9fb12c53708c607d1a55fb5bae5b682a6aef008641153180",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../lib/types",
+          "specifiers": [
+            "WeaponBaseDmg"
+          ]
+        }
+      ],
+      "exports": [
+        "WEAPON_BASE_DMG"
+      ],
+      "totalLines": 42,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/Weaponartcheck.ts": {
+      "filePath": "src/data/Weaponartcheck.ts",
+      "contentHash": "1417ce0de8d4ca807e01e6ca223d8656601e64b2583c7ffefd660b8c463471a4",
+      "functions": [
+        {
+          "name": "weaponTypeMatches",
+          "params": [
+            "required",
+            "actual"
+          ],
+          "returnType": "boolean",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "passesAtLeastOneScaling",
+          "params": [
+            "req",
+            "scalings"
+          ],
+          "returnType": "boolean",
+          "exported": false,
+          "lineCount": 10
+        },
+        {
+          "name": "meetsScalingReqs",
+          "params": [
+            "req",
+            "scalings"
+          ],
+          "returnType": "boolean",
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "meetsStatReqs",
+          "params": [
+            "req",
+            "stats"
+          ],
+          "returnType": "boolean",
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "buildUnmetStatReqs",
+          "params": [
+            "req",
+            "stats"
+          ],
+          "returnType": "string[]",
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "buildUnmetScalingReqs",
+          "params": [
+            "req",
+            "scalings"
+          ],
+          "returnType": "string[]",
+          "exported": false,
+          "lineCount": 22
+        },
+        {
+          "name": "checkWA",
+          "params": [
+            "wa",
+            "scalings",
+            "stats",
+            "weaponType",
+            "isMonk",
+            "bladeName",
+            "handleName"
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "lineCount": 24
+        },
+        {
+          "name": "getUnmetReqs",
+          "params": [
+            "wa",
+            "scalings",
+            "stats",
+            "weaponType",
+            "isMonk",
+            "bladeName",
+            "handleName"
+          ],
+          "returnType": "string[]",
+          "exported": true,
+          "lineCount": 29
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../data/weaponArts",
+          "specifiers": [
+            "WeaponArt",
+            "WeaponArtRequirement"
+          ]
+        }
+      ],
+      "exports": [
+        "checkWA",
+        "getUnmetReqs"
+      ],
+      "totalLines": 148,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/weaponArts.ts": {
+      "filePath": "src/data/weaponArts.ts",
+      "contentHash": "896cf24dadc3f5fcb7fe44ac837740b18d314253f495231759c5e93e0c38a309",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "WEAPON_ARTS"
+      ],
+      "totalLines": 511,
+      "hasStructuralAnalysis": true
+    },
+    "src/data/weaponConditionalBoosts.ts": {
+      "filePath": "src/data/weaponConditionalBoosts.ts",
+      "contentHash": "7b2e6d61ecb52de46f931605d57a731ec46533499150f1a580a817db4364c222",
+      "functions": [
+        {
+          "name": "getWeaponConditionalBoost",
+          "params": [
+            "perks",
+            "finalWeaponType",
+            "hitScope"
+          ],
+          "returnType": "{ mult: number; labels: string[] }",
+          "exported": true,
+          "lineCount": 19
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../lib/utils",
+          "specifiers": [
+            "roundMultiplier"
+          ]
+        }
+      ],
+      "exports": [
+        "getWeaponConditionalBoost"
+      ],
+      "totalLines": 79,
+      "hasStructuralAnalysis": true
+    },
+    "src/DidYouMean.svelte": {
+      "filePath": "src/DidYouMean.svelte",
+      "contentHash": "214ed2e27166f37403b3ec9c9d08b8f90f58d1415ca063596b6b29ffcfdab268",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 111,
+      "hasStructuralAnalysis": false
+    },
+    "src/DmgTotalTooltip.svelte": {
+      "filePath": "src/DmgTotalTooltip.svelte",
+      "contentHash": "cf1b237cc98f7183abcccf59dbc8bdb25de354629c919a8bba09f48143543ce8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 176,
+      "hasStructuralAnalysis": false
+    },
+    "src/DraconicAbilityStats.svelte": {
+      "filePath": "src/DraconicAbilityStats.svelte",
+      "contentHash": "88ba577350291f3063b1a345cbfec7c05e6f58c74fe653c280eeeffdc63ec922",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 43,
+      "hasStructuralAnalysis": false
+    },
+    "src/EmotionalTracker.svelte": {
+      "filePath": "src/EmotionalTracker.svelte",
+      "contentHash": "baf6147a304763e8c073b9abb95cf4dbf46a928ad4abb44e3cbaec55da77d180",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 237,
+      "hasStructuralAnalysis": false
+    },
+    "src/Highlight.svelte": {
+      "filePath": "src/Highlight.svelte",
+      "contentHash": "78d76c4e941c2a6b93a57b7ef66e22d88c523bb871887bbcf57953fa26efea54",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 17,
+      "hasStructuralAnalysis": false
+    },
+    "src/LevelBar.svelte": {
+      "filePath": "src/LevelBar.svelte",
+      "contentHash": "033c5e840293b3b3352d9be13ebaeb5f9fcbf41fae661d8b1d20799961148620",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 398,
+      "hasStructuralAnalysis": false
+    },
+    "src/lib/AppHeader.svelte": {
+      "filePath": "src/lib/AppHeader.svelte",
+      "contentHash": "aced38268a1be0457a80eb2a2e3e2fa75cb3b0c1791e0328c383ed4f75a20864",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 188,
+      "hasStructuralAnalysis": false
+    },
+    "src/lib/constants.ts": {
+      "filePath": "src/lib/constants.ts",
+      "contentHash": "3ecc13c5de9d047e6b2c367641cbf4829543abdc5d41e3b955dfa084b040821b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 2,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/constants/boosts.ts": {
+      "filePath": "src/lib/constants/boosts.ts",
+      "contentHash": "fc4581cf9b36cc62df7bd102aa6082f497bd273ff769f4c1be021cc3cfdbb1b4",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "FRENZY_BASE",
+        "FRENZY_RAGE_MULT",
+        "MINION_ABSORPTION_MULT",
+        "VENOM_EATER_HEAL_PER_STACK",
+        "SIPHONING_ROT_HEAL_PER_STACK",
+        "LIFESTEAL_HEAL_PCT_PER_STACK",
+        "LIFESTEAL_FLAT_HEAL_PER_STACK",
+        "HOLY_INFUSION_POTENCY_MULT",
+        "BELLOWING_EMBER_BASE_MULT",
+        "BELLOWING_EMBER_FIRE_MULT",
+        "BLOOD_THIRSTY_MULT_PER_STACK",
+        "VENOM_SPITTER_MULT_PER_STACK",
+        "PERFECTION_MULT_PER_STACK",
+        "STEALTH_MULT_PER_STACK",
+        "GOLDEN_CRITS_MULT_PER_STACK",
+        "GOLDEN_CRITS_BASE_PROC_CHANCE",
+        "ROYAL_PARRY_MULT_PER_STACK",
+        "SPELL_PIERCER_MULT_PER_STACK",
+        "SCOURGE_MULT_PER_STACK",
+        "SHARPSHOOTER_MULT_PER_STACK",
+        "VALOR_MULT_PER_STACK",
+        "GORECAST_MULT_PER_STACK",
+        "VICIOUS_EDGE_MULT_PER_STACK",
+        "FREQUENT_FLIER_MULT_PER_STACK",
+        "MARSH_FLOW_MULT_PER_STACK",
+        "SERRATED_EDGE_MULT_PER_STACK",
+        "CLEAVE_MULT_PER_STACK",
+        "UNDEAD_MIGHT_MULT_PER_STACK",
+        "HIGHLANDER_MULT_PER_STACK",
+        "EMOTIONAL_MULT_PER_STACK",
+        "HEAL_BOOST_MULT_PER_STACK",
+        "OCEANS_RAGE_MULT_PER_STACK",
+        "VENOM_EATER_DMG_MULT_PER_STACK",
+        "FEROCITY_TENACITY_MULT",
+        "SPIRIT_WINDS_TAILWIND_MULT",
+        "SPIRIT_WINDS_PER_STACK",
+        "GUARDIAN_SPIN_BASE",
+        "GUARDIAN_SPIN_MULT_PER_STACK",
+        "WILD_BOLT_MULT_PER_STACK",
+        "WEIGHTY_SLAM_MULT_PER_STACK",
+        "RIDER_MULT_PER_STACK",
+        "QUICKDRAW_MULT",
+        "SPRING_POWERED_MULT",
+        "THIEF_TRAINING_BEHIND_MULT",
+        "THIEF_TRAINING_WOULD_CRIT_MULT",
+        "VASSALS_CROAK_MULT_PER_STACK",
+        "RAGING_BOUNCE_MULT",
+        "GUIDING_WINDS_MULT_PER_STACK",
+        "GUIDING_WINDS_WA_MULT_PER_STACK",
+        "CIVILIAN_MULT_PER_STACK",
+        "VAMPIRE_DIVISOR",
+        "VAMPIRE_SUNLIGHT_HEAL_MULT",
+        "TOXIN_CASTER_MULT_PER_STACK",
+        "CUT_DOWN_MULT_PER_AMOUNT",
+        "EXECUTIONER_MULT_PER_AMOUNT",
+        "HEAT_DRILL_COOLDOWN",
+        "HEAT_DRILL_LUNGE_BASE",
+        "HEAT_DRILL_LUNGE_PER_STACK",
+        "HEAT_DRILL_EXPLOSION_BASE",
+        "HEAT_DRILL_EXPLOSION_PER_STACK",
+        "HEAT_DRILL_SMALL_EXPLOSION_BASE",
+        "HEAT_DRILL_SMALL_EXPLOSION_PER_STACK",
+        "HEAT_DRILL_SMALL_EXPLOSION_HITS",
+        "ESSENCE_RAY_BASE",
+        "ESSENCE_RAY_PER_STACK",
+        "ESSENCE_RAY_HITS",
+        "SOLAR_LIGHT_TICKS",
+        "SOLAR_LIGHT_HEAL_BASE",
+        "SOLAR_LIGHT_HEAL_PER_STACK",
+        "SOLAR_LIGHT_DMG_BASE",
+        "SOLAR_LIGHT_DMG_PER_STACK",
+        "SOLAR_LIGHT_STAGE_1_SUN",
+        "SOLAR_LIGHT_STAGE_2_SUN",
+        "SOLAR_LIGHT_HOLY_SCALING",
+        "SOLAR_LIGHT_FIRE_SCALING",
+        "SOLAR_LIGHT_FIRE_DMG_MULT",
+        "SOLAR_LIGHT_BURN_DURATION",
+        "STEAM_POWERED_MULT_PER_AIR_BOOST"
+      ],
+      "totalLines": 94,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/constants/buffs.ts": {
+      "filePath": "src/lib/constants/buffs.ts",
+      "contentHash": "f82d6de7dd716948f9876c63aec78733578310028bd0528c2303e701e79fabc0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "RAGE_POTION_POTENCY",
+        "RAGE_POTION_DURATION",
+        "POISON_POTION_POTENCY",
+        "POISON_POTION_DURATION",
+        "POTION_CHUGGER_POTENCY_MULT_PER_LEVEL",
+        "BUFF_EFFECT_PER_TENTH",
+        "WHIRLWIND_EFFECT_PER_TENTH",
+        "GLYPH_CONDUIT_EFFECT_PER_TENTH",
+        "DESPAIR_EFFECT_PER_TENTH",
+        "INSPIRED_POTENCY_PER_AMOUNT",
+        "INSPIRED_DURATION",
+        "INSPIRED_EFFECT_PER_TENTH",
+        "LUMINESCENT_PCT_PER_POTENCY",
+        "RAGE_RUNE_BUFF_POTENCY",
+        "RAGE_RUNE_BUFF_DURATION",
+        "TOAD_SLAM_RAGE_POTENCY",
+        "TOAD_SLAM_RAGE_DURATION",
+        "BOUNCE_RUNE_POTENCY",
+        "BOUNCE_RUNE_DURATION",
+        "BEENADE_RUNE_POTENCY",
+        "ANCIENT_CLERIC_SHIELD_POTENCY",
+        "ANCIENT_CLERIC_SHIELD_DURATION",
+        "BOOSTSHROOM_POISON_DURATION",
+        "SPORELING_POISON_DURATION",
+        "THUNDEROUS_CLOAK_POTENCY",
+        "THUNDEROUS_CLOAK_DURATION",
+        "WINTER_WOOF_SHATTER_POTENCY",
+        "WINTER_WOOF_SHATTER_DURATION",
+        "GLACIAL_SNAPPER_SLOWNESS_POTENCY",
+        "GLACIAL_SNAPPER_SLOWNESS_DURATION",
+        "GLACIAL_SNAPPER_BLEED_DURATION",
+        "CACITROPS_BLEED_DURATION",
+        "BRAINBLAST_BURN_DURATION",
+        "BRAINBLAST_STICKY_POTENCY",
+        "BRAINBLAST_STICKY_DURATION",
+        "HEX_WEB_STICKY_POTENCY",
+        "HEX_WEB_STICKY_DURATION",
+        "SNOEBALL_FROSTBITE_POTENCY",
+        "SNOEBALL_FROSTBITE_DURATION",
+        "BASIC_DEBUFF_POTENCY",
+        "BASIC_DEBUFF_DURATION",
+        "BASIC_SHATTER_POTENCY",
+        "BASIC_SLOWNESS_POTENCY",
+        "BASIC_WEAKNESS_POTENCY",
+        "WARRIOR_STOMP_RAGE_POTENCY",
+        "WARRIOR_STOMP_RAGE_DURATION",
+        "WARRIOR_STOMP_TAUNT_POTENCY",
+        "WARRIOR_STOMP_TAUNT_DURATION",
+        "JAVELIN_SLOWNESS_DURATION",
+        "JAVELIN_BLEED_DURATION",
+        "LIGHTNING_CLOAK_DURATION_WA",
+        "CURSED_GROUND_WEAKNESS_POTENCY",
+        "CURSED_GROUND_WEAKNESS_DURATION",
+        "CROSS_SLASH_SHATTER_POTENCY",
+        "CROSS_SLASH_SHATTER_DURATION",
+        "DAGGER_THROW_POISON_DURATION",
+        "SHATTER_SHATTER_POTENCY",
+        "SHATTER_SHATTER_DURATION",
+        "FLAME_SLASH_BURN_DURATION",
+        "ICICLE_WAVE_FROSTBITE_DURATION",
+        "PERFECTION_POTENCY_PER_AMOUNT",
+        "BOUNCE_MOMENTUM_BUFF_POTENCY",
+        "BOUNCE_MOMENTUM_DURATION_PER_AMOUNT",
+        "TOADZERKER_BUFF_POTENCY",
+        "TOADZERKER_BUFF_DURATION",
+        "IRON_BOUNCE_DURATION_BASE",
+        "IRON_BOUNCE_DURATION_PER_AMOUNT",
+        "SPRINGBLAST_BUFF_POTENCY_PER_AMOUNT",
+        "SPRINGBLAST_BUFF_DURATION_BASE",
+        "SPRINGBLAST_BUFF_DURATION_PER_AMOUNT",
+        "WRATHFUL_CRITS_POTENCY_PER_AMOUNT",
+        "WRATHFUL_CRITS_DURATION_BASE",
+        "WRATHFUL_CRITS_DURATION_PER_AMOUNT",
+        "BLOOD_LUST_POTENCY_PER_AMOUNT",
+        "BLOOD_LUST_DURATION_PER_AMOUNT",
+        "LUMINESCENT_BUFF_POTENCY_PER_AMOUNT",
+        "LUMINESCENT_BUFF_DURATION",
+        "BEASTIAL_RAGE_POTENCY_PER_AMOUNT",
+        "BEASTIAL_RAGE_DURATION",
+        "VASSALS_CROAK_MAX_SUMMONS_BASE",
+        "VASSALS_CROAK_RAGE_DURATION",
+        "IRON_SLAYER_POTENCY_PER_AMOUNT",
+        "IRON_SLAYER_DURATION",
+        "BASTION_REGEN_POTENCY",
+        "BASTION_REINFORCE_POTENCY",
+        "BASTION_RATE_PER_AMOUNT",
+        "BASTION_BUFF_DURATION",
+        "AIR_PRESSURE_BUFF_POTENCY_PER_AMOUNT",
+        "AIR_PRESSURE_BUFF_DURATION",
+        "APOLLO_TAUNT_POTENCY",
+        "APOLLO_TAUNT_DURATION",
+        "VALOR_TAUNT_POTENCY",
+        "VALOR_TAUNT_DURATION",
+        "CHANNELED_REINFORCE_POTENCY",
+        "CHANNELED_REINFORCE_DURATION",
+        "GLADIATORIAL_RAGE_POTENCY",
+        "GLADIATORIAL_RAGE_DURATION",
+        "GLYPH_CONDUIT_POTENCY_PER_AMOUNT",
+        "GLYPH_CONDUIT_DURATION_MULT",
+        "ROARING_WEAKNESS_POTENCY",
+        "ROARING_SHATTER_POTENCY",
+        "ROARING_ANTI_HEAL_POTENCY",
+        "ROARING_DEBUFF_DURATION",
+        "STORM_REND_POTENCY_PER_AMOUNT",
+        "STORM_REND_DURATION",
+        "EROSION_POTENCY_BASE",
+        "EROSION_POTENCY_PER_AMOUNT",
+        "EROSION_DURATION",
+        "QUICKDRAW_POTENCY_PER_AMOUNT",
+        "QUICKDRAW_DURATION",
+        "TAILWIND_BUFF_POTENCY",
+        "TAILWIND_BUFF_DURATION",
+        "TOXIN_TRANSFER_DURATION_EXTRA",
+        "GROUNDED_DESPAIR_POTENCY_PER_AMOUNT",
+        "GROUNDED_DESPAIR_DURATION_PER_AMOUNT",
+        "QUEENS_POWER_POTENCY_PER_AMOUNT",
+        "QUEENS_POWER_DURATION",
+        "QUEENS_POWER_ATK_SPD_BASE",
+        "QUEENS_POWER_ATK_SPD_PER_TENTH_POTENCY",
+        "QUEENS_POWER_SUMMON_SCALING_PER_TENTH_POTENCY",
+        "ICESTORM_POTENCY_PER_AMOUNT",
+        "ICESTORM_DURATION",
+        "SWIFT_GUARD_POTENCY_PER_AMOUNT",
+        "SWIFT_GUARD_DURATION",
+        "RUNIC_WINDS_POTENCY_PER_AMOUNT",
+        "RUNIC_WINDS_DURATION",
+        "GRANDMAGIC_GUARD_POTENCY_PER_AMOUNT",
+        "GRANDMAGIC_GUARD_DURATION",
+        "MARSH_FLOW_POTENCY",
+        "MARSH_FLOW_DURATION_BASE",
+        "MARSH_FLOW_DURATION_PER_AMOUNT",
+        "SHATTERING_JUSTICE_POTENCY_PER_AMOUNT",
+        "SHATTERING_JUSTICE_DURATION",
+        "SERRATED_EDGE_DURATION",
+        "CLEAVE_POTENCY",
+        "CLEAVE_DURATION",
+        "VIRULENT_CORE_DURATION",
+        "PROTO_TECH_DURATION",
+        "BOUNCE_DURATION_BASE",
+        "BOUNCE_DURATION_PER_STACK",
+        "MOD_GLADIATORIAL_POTENCY",
+        "MOD_MAGE_RAGE_POTENCY",
+        "MOD_OCEANS_RAGE_POTENCY",
+        "MOD_SLAYER_RAGE_POTENCY",
+        "MOD_SLAYER_WEAKNESS_POTENCY",
+        "SLAYER_RAGE_RAGE_RUNE_WEAK_POTENCY",
+        "SLAYER_RAGE_WEAK_DURATION",
+        "SLAYER_RAGE_ROAR_WEAK_BASE_POTENCY",
+        "SLAYER_RAGE_ROAR_RAGE_POTENCY",
+        "SLAYER_RAGE_ROAR_RAGE_DURATION",
+        "MOD_IRON_SLAYER_POTENCY",
+        "MOD_IRON_SLAYER_DURATION",
+        "MOD_FURY_DURATION",
+        "MOD_TAILWIND_POTENCY",
+        "MOD_WIND_WALKER_DURATION_DIVISOR",
+        "MOD_SLOW_LEAK_DURATION",
+        "ENDLESS_DESPAIR_POTENCY_PER_STACK",
+        "ENDLESS_DESPAIR_FLAT_BONUS",
+        "ENDLESS_DESPAIR_DURATION_PER_STACK",
+        "STORED_CORRUPTION_DURATION_PER_STACK",
+        "PROPELLING_FUN_POTENCY_PER_AMOUNT",
+        "PROPELLING_FUN_DURATION_MULTIPLIER",
+        "CLOUDPUSH_PCT_PER_POTENCY",
+        "CINDERPULL_PCT_PER_POTENCY",
+        "CLOUDPUSH_PCT_PER_STACK",
+        "CINDERPULL_PCT_PER_STACK"
+      ],
+      "totalLines": 206,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/constants/cdr.ts": {
+      "filePath": "src/lib/constants/cdr.ts",
+      "contentHash": "a2f904d953024a9ce3f5ec8f59ec4eba5a6f5a5feff39492f9cb13339550f77c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "CDR_CASTER_RUNE_PCT",
+        "CDR_CASTER_WA_PCT",
+        "CDR_CHANNELED_WEAPON_BASE",
+        "CDR_CHANNELED_WEAPON_PER_STACK",
+        "CDR_MAGE_RAGE_RUNE_PCT",
+        "CDR_POISON_ACCEL_RUNE_PCT",
+        "CDR_POISON_ACCEL_WA_PCT",
+        "CDR_RUNIC_WINDS_RUNE_PCT",
+        "CDR_WAVE_RIDER_WA_PCT",
+        "CDR_WHIRLWIND_WA_PCT",
+        "CDR_WHIRLWIND_RUNE_PCT",
+        "CDR_GLADIATORIAL_SET_CD",
+        "CDR_VOLTAIC_BODY_MULT"
+      ],
+      "totalLines": 26,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/constants/damage-types.ts": {
+      "filePath": "src/lib/constants/damage-types.ts",
+      "contentHash": "ed7d4d6d8fe2d7532ac2883c92b9fbb0f743386811cd1a7ce0933fe13e4ae165",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "DMG_TYPE_META",
+        "DEF_TRACKED_TYPES",
+        "DEF_INHERITANCE",
+        "PHYSICAL_INHERITED_TYPES",
+        "MAGIC_INHERITED_TYPES",
+        "DMG_TYPE_COLORS",
+        "DMG_TYPE_PRIORITY",
+        "FALLBACK_DMG_COLOR",
+        "ALL_DMG_TYPES",
+        "TRACKED_TYPES_WITH_TRUE"
+      ],
+      "totalLines": 42,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/constants/debuff-effects.ts": {
+      "filePath": "src/lib/constants/debuff-effects.ts",
+      "contentHash": "ec5d91b5f548d4ea48fbcb476cb31b918b02ad994bf38d6432a904a1bc5c6ab1",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "DEBUFF_STICKY_DMG_MULT",
+        "DEBUFF_DESPAIR_DISPLAY_DIVISOR",
+        "DEBUFF_DESPAIR_DISPLAY_MULT",
+        "DEBUFF_DESPAIR_DMG_COEFF"
+      ],
+      "totalLines": 10,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/constants/defensive.ts": {
+      "filePath": "src/lib/constants/defensive.ts",
+      "contentHash": "976518b1ee699d062f3d7f9bba2a52cb08f4f2d26ae21a35820be3f1d471e8c4",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "BARBSKIN_DR_PER_STACK",
+        "STONESKIN_DR_PER_STACK",
+        "STONESKIN_MAX_DR",
+        "ADAPTIVE_PLATE_BASE_DR",
+        "ADAPTIVE_PLATE_TRIGGERED_DR",
+        "PROTECTOR_SPIRIT_DR_PER_STACK",
+        "PROTECTOR_SPIRIT_HP_THRESHOLD",
+        "PROTECTOR_SPIRIT_ALWAYS_ON_AT",
+        "AIR_PRESSURE_MAX_DR_PER_STACK",
+        "VALOR_SHIELD_DR_PER_STACK",
+        "VALOR_MAX_DR",
+        "VAMPIRE_DR_PER_STACK",
+        "FRENZY_DR_PER_STACK",
+        "FRENZY_FIXED_DR",
+        "STORED_CORRUPTION_DR_PER_STACK",
+        "MOUNTED_DEFENSE_DR_PER_STACK",
+        "CARAPACE_DR_PER_STACK",
+        "CURSED_BARK_DR_PER_DEBUFF"
+      ],
+      "totalLines": 23,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/constants/dot-damage.ts": {
+      "filePath": "src/lib/constants/dot-damage.ts",
+      "contentHash": "90d888cd3fd04e794757dba4c2b489dd92e26f31099704095c33c437ab680916",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "DOT_BASE_DAMAGE",
+        "DOT_INFLICTION_DIVISOR",
+        "DOT_POTENCY_POWER_CAP",
+        "DOT_ROUND_FACTOR",
+        "DOT_BUILDER_TO_GAME"
+      ],
+      "totalLines": 11,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/constants/draconic-colors.ts": {
+      "filePath": "src/lib/constants/draconic-colors.ts",
+      "contentHash": "d6efde4ce487f1e23a89fcedf646dcb62bcf1fddf851799fc2c1347cba19f8a5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "DRACONIC_FIRE_SPEED_MULT",
+        "DRACONIC_AIR_SPEED_MULT",
+        "DRACONIC_AIR_KNOCKBACK_MULT",
+        "DRACONIC_AIR_COOLDOWN_MULT",
+        "DRACONIC_EARTH_DMG_MULT",
+        "DRACONIC_EARTH_SPEED_MULT",
+        "DRACONIC_EARTH_STUN_MULT",
+        "DRACONIC_WATER_DMG_MULT",
+        "DRACONIC_WATER_SPEED_MULT",
+        "DRACONIC_WATER_STUN_MULT",
+        "DRACONIC_HEX_STUN_MULT",
+        "DRACONIC_HEX_RANDOM_DEBUFF_CHANCES"
+      ],
+      "totalLines": 21,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/constants/draconic.ts": {
+      "filePath": "src/lib/constants/draconic.ts",
+      "contentHash": "af91f85f60c05f3cf5edca6406b9bce2db897d7ff73c6a3ffd5773e097745557",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "DRACONIC_INFUSION_POT_MULT",
+        "DRACONIC_INFUSION_DUR_MULT",
+        "DRAGON_STATE_HP_BASE",
+        "DRAGON_STATE_HP_PER_STACK",
+        "DRAGON_STATE_BASE",
+        "DRAGON_STATE_PER_STACK",
+        "BASTION_BLESS_MULT"
+      ],
+      "totalLines": 11,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/constants/game.ts": {
+      "filePath": "src/lib/constants/game.ts",
+      "contentHash": "2dc967156e9e425ef5647922ce9224311f06238a1ba91c8d22ebc06344d35628",
+      "functions": [
+        {
+          "name": "calcBaseMaxHP",
+          "params": [
+            "level"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "MAX_LEVEL",
+        "DEFAULT_LEVEL",
+        "DEFAULT_HP_FILL",
+        "DEFAULT_ENEMY_HP_FILL",
+        "calcBaseMaxHP",
+        "SAVE_DEBOUNCE_MS",
+        "UNDO_WINDOW_MS",
+        "SEARCH_BLUR_DELAY_MS",
+        "IMPORT_SUCCESS_DISPLAY_MS",
+        "FOCUS_DELAY_MS",
+        "DEFAULT_TOAST_DURATION_MS"
+      ],
+      "totalLines": 27,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/constants/heals.ts": {
+      "filePath": "src/lib/constants/heals.ts",
+      "contentHash": "438ba180cd14c53eb64cdcd105a3af299a154725919484b2d10bbd43f39db25c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "CRIT_HEALING_BASE",
+        "CRIT_HEALING_HOLY_BOOST_DIVISOR",
+        "CRIT_HEALING_PER_STACK",
+        "OCEAN_SONG_PER_STACK"
+      ],
+      "totalLines": 6,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/constants/index.ts": {
+      "filePath": "src/lib/constants/index.ts",
+      "contentHash": "3c42dd0dcbe0abc284fc18527051285a18af93e70bc60c025686b451b8fdf7a6",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 19,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/constants/perk-base-damage.ts": {
+      "filePath": "src/lib/constants/perk-base-damage.ts",
+      "contentHash": "a46a80603d47d1776cc44936fd59ad551d37a160a2cdd3bfcd1d9dbae9a6fff3",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "DRAGON_CLAW_BASE_DAMAGE",
+        "DRAGON_CLAW_DAMAGE_PER_STACK",
+        "DRAGON_CLAW_HOLY_HEAL_BASE",
+        "DRAGON_CLAW_HOLY_HEAL_PER_STACK",
+        "DRAGON_CLAW_WATER_HEAL_BASE",
+        "DRAGON_CLAW_WATER_HEAL_PER_STACK",
+        "DRAGON_CLAW_POISE_DAMAGE",
+        "DRAGON_BUBBLE_BASE_DAMAGE",
+        "DRAGON_BUBBLE_DAMAGE_PER_STACK",
+        "DRAGON_BUBBLE_HOLY_HEAL_BASE",
+        "DRAGON_BUBBLE_HOLY_HEAL_PER_STACK",
+        "DRAGON_BUBBLE_WATER_HEAL_BASE",
+        "DRAGON_BUBBLE_WATER_HEAL_PER_STACK",
+        "DRAGON_BUBBLE_POISE_DAMAGE",
+        "SPRINGBLAST_BASE_HIT",
+        "SPRINGBLAST_PER_STACK_HIT",
+        "SPRINGBLAST_MULT_PER_STACK",
+        "SPRINGBLAST_DENOM_HALF",
+        "SPRINGBLAST_ROUND",
+        "BASIC_SPIRIT_BASE_DMG",
+        "BASIC_SPIRIT_HITS",
+        "BUNI_SPIRIT_BASE_DMG",
+        "BUNI_SPIRIT_HITS",
+        "MAGELING_SPIRIT_BASE_DMG",
+        "TOADZERKER_SPIRIT_BASE_DMG",
+        "DIRE_BUNI_SPIRIT_BASE_DMG",
+        "VOID_ROOT_SPIRIT_BASE_DMG",
+        "VOID_ROOT_SPIRIT_HITS",
+        "ROGUENT_SPIRIT_BASE_DMG",
+        "ROGUENT_SPIRIT_HITS",
+        "CACI_SPIRIT_THORN_DMG",
+        "CACI_SPIRIT_SLAM_DMG",
+        "CACI_SPIRIT_THORN_HITS",
+        "CACI_SPIRIT_SLAM_HITS",
+        "CACI_SPIRIT_BLEED_DURATION",
+        "WOOF_SPIRIT_BASE_DMG",
+        "WOOF_SPIRIT_HEAL",
+        "WOOF_SPIRIT_WEAKNESS_POTENCY",
+        "WOOF_SPIRIT_WEAKNESS_DURATION",
+        "WINTER_WOOF_SPIRIT_HOWL_DMG",
+        "WINTER_WOOF_SPIRIT_BITE_DMG",
+        "WINTER_WOOF_SPIRIT_BITES",
+        "WINTER_WOOF_SPIRIT_SHATTER_POTENCY",
+        "WINTER_WOOF_SPIRIT_SHATTER_DURATION",
+        "WINTER_WOOF_SPIRIT_BLEED_DURATION",
+        "WINTER_WOOF_SPIRIT_DURATION",
+        "SNOEMAN_SPIRIT_ROAR_DMG",
+        "SNOEMAN_SPIRIT_ICESTORM_BASE_DMG",
+        "SNOEMAN_SPIRIT_HITS",
+        "SNOEMAN_SPIRIT_SLOWNESS_POTENCY",
+        "BOUNCE_MOMENTUM_BASE_DMG",
+        "BOUNCE_MOMENTUM_DMG_PER_STACK",
+        "PROTECTOR_SPIRIT_BASE_DMG",
+        "PROTECTOR_SPIRIT_DMG_PER_STACK",
+        "AIR_PRESSURE_DMG_PER_STACK",
+        "AIR_BARRIER_DMG_PER_STACK",
+        "ROARING_HEADS_BASE_DMG",
+        "ROARING_HEADS_DMG_PER_STACK",
+        "BARBED_FLURRY_BASE_DMG",
+        "BARBED_FLURRY_DMG_PER_STACK",
+        "HONEY_ARTS_BASE_DMG",
+        "HONEY_ARTS_DMG_PER_STACK",
+        "HONEY_ARTS_STICKY_DURATION",
+        "SICKNESS_BASE_DMG",
+        "SICKNESS_DMG_PER_STACK",
+        "MELTING_SLIME_BASE_DMG",
+        "MELTING_SLIME_FIRE_SCALE_BASE",
+        "MELTING_SLIME_FIRE_SCALE_PER_STACK",
+        "MELTING_SLIME_EARTH_SCALE_BASE",
+        "MELTING_SLIME_EARTH_SCALE_PER_STACK",
+        "WHIRLWIND_BASE_DMG",
+        "WHIRLWIND_DMG_PER_STACK",
+        "VOLATILE_SHELL_BASE_DMG",
+        "VOLATILE_SHELL_DMG_PER_STACK",
+        "VOLATILE_SHELL_POISON_DURATION",
+        "ROYAL_FINISHER_BASE_DMG",
+        "ROYAL_FINISHER_DMG_PER_STACK",
+        "GROUNDED_DESPAIR_BASE_DMG",
+        "GROUNDED_DESPAIR_DMG_PER_STACK",
+        "ECHO_INCINERATION_BASE_DMG",
+        "ECHO_INCINERATION_DMG_PER_STACK",
+        "VENOM_SPITTER_BASE_DMG",
+        "VENOM_SPITTER_DMG_PER_STACK",
+        "VENOM_SPITTER_HIT_DIVISOR",
+        "SPORE_BURST_POTENCY_MULT",
+        "SPORE_BURST_BASE",
+        "SPORE_BURST_ROUND",
+        "APOLLO_BOOST_BASE",
+        "APOLLO_BOOST_SUB_BASE",
+        "APOLLO_BOOST_PER_STACK",
+        "APOLLO_BOOST_HITS_BASE",
+        "APOLLO_BOOST_HITS_PER_STACK",
+        "APOLLO_BOOST_TAUNT_DURATION",
+        "BELLOWING_EMBER_HP_GATE_THRESHOLD",
+        "BELLOWING_EMBER_HP_GATE_PER_STACK",
+        "PROTECTOR_SPIRIT_HP_GATE",
+        "PROTECTOR_SPIRIT_ALWAYS_ACTIVE_AT",
+        "BOMBER_CHARGE_BASE",
+        "BOMBER_CHARGE_PCT_PER_STACK",
+        "BOMBER_CHARGE_MISSING_HP_MULT",
+        "BOMBER_CHARGE_MISSING_HP_CAP",
+        "DARK_HARVEST_BASE_DAMAGE",
+        "DARK_HARVEST_DAMAGE_PER_STACK",
+        "DARK_HARVEST_HP_GATE_THRESHOLD",
+        "DARK_HARVEST_HEAL_PER_STACK",
+        "DARK_HARVEST_COOLDOWN",
+        "PYRE_BLOOM_BASE_DMG",
+        "PYRE_BLOOM_DMG_PER_STACK",
+        "PYRE_BLOOM_CD_DMG_DIVISOR",
+        "PYRE_BLOOM_AMMO_BASE",
+        "PYRE_BLOOM_AMMO_PER_STACK",
+        "PYRE_BLOOM_AMMO_CD_DIVISOR",
+        "PYRE_BLOOM_AMMO_CD_SUBTRACT",
+        "PYRE_BLOOM_AMMO_MIN",
+        "PYRE_BLOOM_AMMO_MAX",
+        "PYRE_BLOOM_FIRERATE_DIVISOR",
+        "PYRE_BLOOM_MAX_ACTIVE_BASE",
+        "PYRE_BLOOM_MAX_ACTIVE_PER_STACK",
+        "PYRE_BLOOM_BURN_DURATION",
+        "BASTION_BALLISTA_BASE_DMG",
+        "BASTION_BALLISTA_DMG_PER_STACK",
+        "BASTION_BALLISTA_MAX_POTENCY_BASE",
+        "BASTION_BALLISTA_RESTORE_DELAY",
+        "BASTION_BALLISTA_FIRE_COOLDOWN",
+        "BASTION_BALLISTA_PROC_COEFF",
+        "RUNIC_BLADES_BASE_DMG",
+        "RUNIC_BLADES_DMG_PER_STACK",
+        "RUNIC_BLADES_DEBUFF_DURATION_PER_STACK",
+        "RUNIC_BLADES_INNER_COOLDOWN",
+        "GNAWING_POISON_BASE_DMG",
+        "GNAWING_POISON_DMG_PER_STACK",
+        "GNAWING_POISON_COOLDOWN",
+        "ICE_BURST_BASE_DMG",
+        "ICE_BURST_DMG_PER_STACK",
+        "ICE_BURST_BLEED_DURATION",
+        "PROPELLING_FUN_BASE_DMG",
+        "PROPELLING_FUN_DMG_PER_STACK",
+        "PROPELLING_FUN_COOLDOWN",
+        "QUAKE_BASE_DMG",
+        "QUAKE_DMG_PER_STACK",
+        "QUAKE_CHANCE_BASE",
+        "QUAKE_CHANCE_PER_STACK",
+        "RULER_SANDS_BASE_DMG_PER_HIT",
+        "RULER_SANDS_HITS",
+        "RULER_SANDS_CHANCE_CD_MULT",
+        "RULER_SANDS_CHANCE_PERK_MULT",
+        "ICHOR_SPARK_SWIPE_BASE_A",
+        "ICHOR_SPARK_SWIPE_BASE_B",
+        "ICHOR_SPARK_SLASH_BASE_A",
+        "ICHOR_SPARK_SLASH_BASE_B",
+        "ICHOR_SPARK_CHARGE_DMG_MULT",
+        "ICHOR_SPARK_CHARGE_TIME_BASE",
+        "ICHOR_SPARK_CHARGE_TIME_PER_STACK",
+        "ICHOR_SPARK_CHAIN_DMG_PCT",
+        "ICHOR_SPARK_CHAIN_HEAL_FLAT",
+        "ICHOR_SPARK_SLASH_HEAL_AT_MIN",
+        "ICHOR_SPARK_SLASH_CHARGE_THRESHOLD",
+        "ICHOR_SPARK_CHAIN_PROC_CHANCE",
+        "ICHOR_SPARK_BLEED_DURATION",
+        "BLAZING_FINISHER_BASE_DMG",
+        "BLAZING_FINISHER_FINISHER_PCT",
+        "DEATHMIST_SLASH_BASE_DMG",
+        "DEATHMIST_SLASH_ALLIES_HEAL_BASE",
+        "DEATHMIST_SLASH_SELF_HEAL_BASE",
+        "STORM_CALLER_BASE_DMG",
+        "STORM_CALLER_DMG_PER_STACK"
+      ],
+      "totalLines": 262,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/constants/perks.ts": {
+      "filePath": "src/lib/constants/perks.ts",
+      "contentHash": "2187e1da9c92de13da2ef35fcf76daa996d14c15bef640c518ed66cddf509da1",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "LUMINESCENT_PCT_PER_STACK",
+        "SPIRIT_WINDS_PCT_PER_STACK",
+        "DARK_MAGIC_PCT_PER_STACK",
+        "WIND_WALKER_PEN_PER_STACK",
+        "REAPER_PCT_PER_DEBUFF_PER_STACK",
+        "EXTINGUISH_MULT_PER_STACK",
+        "EXPLOSIVE_CHARGE_PCT",
+        "BLUB_BLUB_PCT_PER_STACK",
+        "BLUB_BLUB_HIT_COUNT",
+        "BLUB_BLUB_PROC_CHANCE",
+        "BLUB_BLUB_DMG_TYPES",
+        "WILD_BOLT_DMG_REDUCTION",
+        "LIGHTNING_CLOAK_FRACTION",
+        "CURSE_RIP_DIVISOR",
+        "CURSE_RIP_DMG_BOOST_CONST",
+        "CURSE_RIP_DMG_BOOST_PER_DEBUFF",
+        "TRUE_BALANCE_DMG_DIVISOR",
+        "TRUE_BALANCE_HEAL_DIVISOR",
+        "EMOTIONAL_PCT_PER_STACK",
+        "TOXIN_TRANSFER_PCT_PER_STACK",
+        "VOID_RAGE_PCT_PER_STACK",
+        "CHANNELED_WEAPON_PCT_PER_STACK",
+        "DRACONIC_BLOOD_PCT_PER_STACK",
+        "WILD_BOLT_ELEMENTS",
+        "BASE_CRIT_DAMAGE",
+        "DEX_CRIT_DIVISOR",
+        "PRIMAL_DIVISOR",
+        "FLOWING_CRITS_BOOST_MULT",
+        "SPELL_SLINGER_BOOST_MULT",
+        "SHARP_CRITS_BOOST_MULT",
+        "SEISMIC_MOMENTUM_BOOST_MULT",
+        "PERFECTION_CRIT_PER_STACK",
+        "CACI_KING_SPIRIT_CRIT_PER_STACK",
+        "THIEF_TRAINING_CRIT_DMG_MULT",
+        "THIEF_TRAINING_CRIT_DMG_SUB",
+        "VENOM_EATER_CRIT_DMG_SUB",
+        "VENOM_EATER_CRIT_DMG_MULT",
+        "VITAL_STRIKES_CRIT_DMG_PER_STACK",
+        "SPARK_CRIT_DMG_PER_STACK",
+        "CRITICAL_MASTER_CRIT_DMG_PER_STACK",
+        "SPLINTER_CRIT_DMG_PER_STACK",
+        "MORTAL_WILL_HOLY_TYPE_PER_STACK",
+        "MORTAL_WILL_DMG_PER_HOLY_BOOST_PCT",
+        "SUNBURN_UNIVERSAL_DMG_PER_STACK",
+        "SUNBURN_HOLY_EXTRA_DMG_PER_STACK",
+        "SUNBURN_BURN_BASE_CHANCE",
+        "SUNBURN_BURN_CHANCE_PER_STACK",
+        "FROSTBITE_SLOW_POTENCY_PER_STACK",
+        "FROSTBITE_CHANCE_PER_STACK",
+        "CRYO_ENGINE_PROC_CHANCE_PER_AMOUNT",
+        "CRYO_ENGINE_TAILWIND_BASE_POTENCY",
+        "CRYO_ENGINE_TAILWIND_POTENCY_PER_AMOUNT",
+        "CRYO_ENGINE_TAILWIND_DURATION_PER_AMOUNT",
+        "GUIDING_WINDS_TAILWIND_POTENCY_PER_AMOUNT",
+        "FIERY_PURSUIT_BASE_DMG",
+        "FIERY_PURSUIT_DMG_PER_STACK",
+        "FIERY_PURSUIT_BURN_DURATION",
+        "HYPNOTIST_POTENCY_PER_PERK",
+        "HYPNOTIST_DURATION_BASE",
+        "HYPNOTIST_DURATION_PER_PERK",
+        "HYPNOTIST_MAGIC_ARMOR_PER_POTENCY",
+        "PHANTOM_PAIN_BASE_PCT",
+        "PHANTOM_PAIN_PERK_MULT",
+        "PURSUIT_BASE_MULT",
+        "PURSUIT_MULT_PER_RANK",
+        "DARKENING_HEX_POTENCY_ADD_PER_AMOUNT",
+        "DARKENING_HEX_POTENCY_MULT_PER_AMOUNT",
+        "DARKENING_HEX_DURATION_ADD_PER_AMOUNT",
+        "DARKENING_HEX_MAX_ACTIVATIONS",
+        "DARKENING_HEX_PROC_CHANCE",
+        "KINDLING_BURN_DURATION_MULT",
+        "KINDLING_DMG_ADD_PER_AMOUNT",
+        "STORM_CALLER_PROC_CHANCE"
+      ],
+      "totalLines": 123,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/constants/rune-base-damage.ts": {
+      "filePath": "src/lib/constants/rune-base-damage.ts",
+      "contentHash": "8fc1cf319108bcbd2c9ac8f0cb7a5b2a65f9fb073d2216dbb7cea0ab1cde678e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "ANCIENT_CLERIC_BASE_DMG",
+        "ANCIENT_CLERIC_SLIDER_MAX",
+        "ANCIENT_CLERIC_SHIELD_BASE",
+        "ANCIENT_CLERIC_SHIELD_PER_VAL",
+        "BEENADE_BASE_DMG",
+        "BEENADE_MAX_POTENCY",
+        "BOOSTSHROOM_BASE_DMG",
+        "THUNDEROUS_CHARGE_BASE_DMG",
+        "SPORELING_TOSS_BASE_DMG",
+        "SPORELING_TOSS_HITS_BASE",
+        "SPORELING_TOSS_SLIDER_MAX",
+        "FOOT_DIVE_BASE_DMG",
+        "CACI_BASE_DMG",
+        "CACI_HITS",
+        "CACITROPS_BASE_DMG",
+        "CACITROPS_HITS",
+        "HEX_WEB_BASE_DMG",
+        "HEX_WEB_HITS",
+        "BRAINBLAST_BASE_DMG",
+        "BRAINBLAST_HITS",
+        "ROCKY_TAIL_BASE_DMG",
+        "ROCKY_TAIL_PROT_SCALE",
+        "ROCKY_TAIL_VS_BASE_RES",
+        "ROCKY_TAIL_VS_PER_LEVEL",
+        "ROCKY_TAIL_VS_DEFAULT_RES",
+        "ROCKY_TAIL_DIVISOR_COEFF",
+        "ROCKY_TAIL_DIVISOR_BASE",
+        "ROCKY_TAIL_HITS_MULT",
+        "ROCKY_TAIL_MIN_HITS",
+        "SLAYER_RAGE_HITS",
+        "SLAYER_RAGE_RAGE_RUNE_BASE_DMG",
+        "SLAYER_RAGE_RAGE_RUNE_DMG_PER_STACK",
+        "SLAYER_RAGE_ROAR_RUNE_BASE_DMG",
+        "SLAYER_RAGE_ROAR_RUNE_DMG_PER_STACK"
+      ],
+      "totalLines": 62,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/constants/stat-conversions.ts": {
+      "filePath": "src/lib/constants/stat-conversions.ts",
+      "contentHash": "a9405994837536618b5f1188a06f726cae49fcf669d2d150452d1bee91ea188e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "WEIGHT_DISTRIBUTION_SPLIT_RATIO",
+        "WEIGHT_DISTRIBUTION_MULTIPLIER",
+        "QUICK_WITTED_CONVERSION",
+        "WHIRL_FOOT_CONVERSION",
+        "CARAPACE_CONVERSION",
+        "EXTRA_LAYERS_MULT",
+        "FROZEN_HEART_CONVERSION",
+        "IMMOVABLE_MULT",
+        "RIGHTED_WRONGS_BASE_COEFF",
+        "RIGHTED_WRONGS_TENACITY_WEIGHT",
+        "RIGHTED_WRONGS_OFFENSE_WEIGHT",
+        "RIGHTED_WRONGS_SPEED_FRACTION",
+        "ROCKY_BODY_CONVERSION",
+        "SPELLSHIELD_CONVERSION",
+        "STRONG_TIDES_CONVERSION",
+        "SWIFT_GUARD_CONVERSION",
+        "TRUE_BALANCE_STAT_MULT",
+        "RAWNY_CONVERSION",
+        "RAWNY_MAX_CAP",
+        "ROARING_HEADINGS_WARDING_SUB",
+        "LUCKY_WARDING_SUB",
+        "LUCKY_PROTECTION_SUB",
+        "LUCKY_TENACITY_SUB"
+      ],
+      "totalLines": 31,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/constants/storage.ts": {
+      "filePath": "src/lib/constants/storage.ts",
+      "contentHash": "6a7ccd704cabcf9d131f39aa51ec15ce3c864508cb616f52ca9a53aa116146bf",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./game",
+          "specifiers": [
+            "DEFAULT_LEVEL",
+            "DEFAULT_HP_FILL",
+            "DEFAULT_ENEMY_HP_FILL"
+          ]
+        }
+      ],
+      "exports": [
+        "STORAGE_KEY_BUILD",
+        "STORAGE_KEY_DEFENSES",
+        "STORAGE_KEY_LEVEL",
+        "STORAGE_KEY_HP_FILL",
+        "STORAGE_KEY_SAVES",
+        "BUILD_STATE_DEFAULTS",
+        "SAVE_KEY_MAP",
+        "SAVE_KEY_UNMAP",
+        "ENCH_MAP",
+        "ENCH_UNMAP",
+        "MAX_BUILD_SLOTS",
+        "CONFIRM_TIMEOUT_MS"
+      ],
+      "totalLines": 60,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/constants/thresholds.ts": {
+      "filePath": "src/lib/constants/thresholds.ts",
+      "contentHash": "641964b510bf927bc2c52b62d44bb3be504d6090f78fc18409bf8ae56dcf9800",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "ARMOR_PEN_BRANCH_THRESHOLD",
+        "CD_MINIMUM",
+        "BASE_CRIT_DMG_PCT"
+      ],
+      "totalLines": 6,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/constants/wa-display.ts": {
+      "filePath": "src/lib/constants/wa-display.ts",
+      "contentHash": "5849ba6f711e19ed5fc6b7d8606f3c4e75fd8f75383b355f4d0dac9d0bd7376a",
+      "functions": [
+        {
+          "name": "getWADisplayName",
+          "params": [
+            "baseName",
+            "perks"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 9
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "getWADisplayName"
+      ],
+      "totalLines": 19,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/crit.ts": {
+      "filePath": "src/lib/crit.ts",
+      "contentHash": "3c89b101cf94d3a5449e1e5ed2d2a1427b04e0f07134315c43361aa7e3802fb8",
+      "functions": [
+        {
+          "name": "calcDexterity",
+          "params": [
+            "stats"
+          ],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "calcElementalBoost",
+          "params": [
+            "perks",
+            "perkName",
+            "statValue",
+            "multiplier"
+          ],
+          "exported": false,
+          "lineCount": 11
+        },
+        {
+          "name": "calcPerfection",
+          "params": [
+            "perks"
+          ],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "hasActiveGatingPerks",
+          "params": [
+            "sources",
+            "perks"
+          ],
+          "returnType": "boolean",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "round",
+          "params": [
+            "n"
+          ],
+          "returnType": "number",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "calcCrit",
+          "params": [
+            "stats",
+            "perks",
+            "hitProcCoeff"
+          ],
+          "returnType": "CritResult",
+          "exported": true,
+          "lineCount": 117
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./types",
+          "specifiers": [
+            "ProcCoefficient",
+            "StatMap"
+          ]
+        },
+        {
+          "source": "./utils",
+          "specifiers": [
+            "calcProcChance"
+          ]
+        },
+        {
+          "source": "./constants",
+          "specifiers": [
+            "BASE_CRIT_DAMAGE",
+            "DEX_CRIT_DIVISOR",
+            "PRIMAL_DIVISOR",
+            "FLOWING_CRITS_BOOST_MULT",
+            "SPELL_SLINGER_BOOST_MULT",
+            "SHARP_CRITS_BOOST_MULT",
+            "SEISMIC_MOMENTUM_BOOST_MULT",
+            "PERFECTION_CRIT_PER_STACK",
+            "CACI_KING_SPIRIT_CRIT_PER_STACK",
+            "THIEF_TRAINING_CRIT_DMG_MULT",
+            "THIEF_TRAINING_CRIT_DMG_SUB",
+            "VENOM_EATER_CRIT_DMG_SUB",
+            "VENOM_EATER_CRIT_DMG_MULT",
+            "VITAL_STRIKES_CRIT_DMG_PER_STACK",
+            "SPARK_CRIT_DMG_PER_STACK",
+            "CRITICAL_MASTER_CRIT_DMG_PER_STACK",
+            "SPLINTER_CRIT_DMG_PER_STACK"
+          ]
+        }
+      ],
+      "exports": [
+        "calcCrit"
+      ],
+      "totalLines": 341,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/damageTypeResolve.ts": {
+      "filePath": "src/lib/damageTypeResolve.ts",
+      "contentHash": "a2f24eb0a0caf7d8a86e443f77b566920d61d7332c5b3b9c55d465417ca62ac9",
+      "functions": [
+        {
+          "name": "resolveDamageTypes",
+          "params": [
+            "baseTypes",
+            "bonuses"
+          ],
+          "returnType": "Record<string, number>",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "applyFireAirConversion",
+          "params": [
+            "types"
+          ],
+          "returnType": "Record<string, number>",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "resolveWaDamageTypeKeys",
+          "params": [
+            "waDamageType",
+            "weaponDmgTypes"
+          ],
+          "returnType": "Record<string, number>",
+          "exported": true,
+          "lineCount": 31
+        },
+        {
+          "name": "getFinalWaDmgTypes",
+          "params": [
+            "waDamageType",
+            "weaponDmgTypes",
+            "dmgTypeBonuses"
+          ],
+          "returnType": "Record<string, number>",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "computeEffectiveWaDmgTypes",
+          "params": [
+            "input"
+          ],
+          "returnType": "Record<string, number>",
+          "exported": true,
+          "lineCount": 54
+        },
+        {
+          "name": "applyAirToMagicConversion",
+          "params": [
+            "types",
+            "conversionRate",
+            "darkMagicHex",
+            "echoIncinerateAmt"
+          ],
+          "returnType": "Record<string, number>",
+          "exported": true,
+          "lineCount": 29
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./engine/_utils",
+          "specifiers": [
+            "round4"
+          ]
+        },
+        {
+          "source": "./constants/damage-types",
+          "specifiers": [
+            "DMG_TYPE_PRIORITY"
+          ]
+        }
+      ],
+      "exports": [
+        "resolveDamageTypes",
+        "applyFireAirConversion",
+        "resolveWaDamageTypeKeys",
+        "getFinalWaDmgTypes",
+        "computeEffectiveWaDmgTypes",
+        "applyAirToMagicConversion"
+      ],
+      "totalLines": 176,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/defense.ts": {
+      "filePath": "src/lib/defense.ts",
+      "contentHash": "eeb46c90b32bdce5c66ccf354a5ffd74d8a6c2d092135ee2cb4fb314e6fd5e2e",
+      "functions": [
+        {
+          "name": "calcDefMultiplier",
+          "params": [
+            "defPct"
+          ],
+          "returnType": "number",
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "calcTrueDrPercent",
+          "params": [
+            "defPct"
+          ],
+          "returnType": "number",
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "resolveDefenseSources",
+          "params": [
+            "sources"
+          ],
+          "returnType": "DefenseBreakdown",
+          "exported": true,
+          "lineCount": 29
+        },
+        {
+          "name": "calcBaseArmorDefPct",
+          "params": [
+            "dmgType",
+            "stats"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 6
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./utils",
+          "specifiers": [
+            "roundMultiplier"
+          ]
+        }
+      ],
+      "exports": [
+        "resolveDefenseSources",
+        "DEF_GROUP",
+        "calcBaseArmorDefPct"
+      ],
+      "totalLines": 82,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/dmgTypes.ts": {
+      "filePath": "src/lib/dmgTypes.ts",
+      "contentHash": "765f7d65bd9952443d3170ed6f48630ecef5f5de9ea1ced1dbc0d63a094976af",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../lib/types",
+          "specifiers": [
+            "ProcCoefficient"
+          ]
+        },
+        {
+          "source": "./constants",
+          "specifiers": [
+            "BLUB_BLUB_PCT_PER_STACK",
+            "BLUB_BLUB_HIT_COUNT",
+            "BLUB_BLUB_PROC_CHANCE"
+          ]
+        }
+      ],
+      "exports": [
+        "BADGE_CONFIG"
+      ],
+      "totalLines": 94,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/EnchantSelect.svelte": {
+      "filePath": "src/lib/EnchantSelect.svelte",
+      "contentHash": "3b4912e87ebb4901a62950ce330ba0f144e9f6467513cf8886747ba8a7910560",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 465,
+      "hasStructuralAnalysis": false
+    },
+    "src/lib/enchantTooltip.ts": {
+      "filePath": "src/lib/enchantTooltip.ts",
+      "contentHash": "85bf51c6a9590ba843c094ec85e93e36b376af8c306b5da87369257c0d663246",
+      "functions": [
+        {
+          "name": "getEnchantTooltipText",
+          "params": [
+            "name",
+            "includeDescription"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 25
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./engine",
+          "specifiers": [
+            "getEnchant"
+          ]
+        }
+      ],
+      "exports": [
+        "getEnchantTooltipText"
+      ],
+      "totalLines": 27,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/engine.ts": {
+      "filePath": "src/lib/engine.ts",
+      "contentHash": "5c37caf2262e17448fba83613367a117a056546bc7bbf42652824e14e1188481",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 6,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/engine/_utils.ts": {
+      "filePath": "src/lib/engine/_utils.ts",
+      "contentHash": "bb3f3762c16acedb636580d61129420fa872567afb953892ee09ddae0bc77c0f",
+      "functions": [
+        {
+          "name": "round2",
+          "params": [
+            "v"
+          ],
+          "exported": true,
+          "lineCount": 1
+        },
+        {
+          "name": "round4",
+          "params": [
+            "v"
+          ],
+          "exported": true,
+          "lineCount": 1
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "round2",
+        "round4"
+      ],
+      "totalLines": 3,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/engine/build.ts": {
+      "filePath": "src/lib/engine/build.ts",
+      "contentHash": "e3a52f2ee17e7574a37a47d24c5a05620b7c306220fb854d8cdf18bc851ab05d",
+      "functions": [
+        {
+          "name": "calcCDR",
+          "params": [
+            "perks",
+            "raceCooldownModifiers",
+            "activeRuneName",
+            "activeRaceName",
+            "emotionalState",
+            "emotionalDisabled",
+            "cdrToggles"
+          ],
+          "returnType": "CDRResult",
+          "exported": false,
+          "lineCount": 73
+        },
+        {
+          "name": "calcBoosts",
+          "params": [
+            "perks",
+            "emotionalState",
+            "emotionalDisabled",
+            "level",
+            "naturalCritChance",
+            "jumpBoost",
+            "summonCount",
+            "vassalsCroakSummons",
+            "ragePotency",
+            "bouncePotency",
+            "tailwindPotency",
+            "airBoost",
+            "speedBoost",
+            "attackSpeed",
+            "tenacity",
+            "raceName",
+            "hpFillPct",
+            "inDarkness",
+            "mountActive",
+            "summonBoostPct",
+            "quickdrawPotency",
+            "selectedWeaponArt",
+            "burnPotency",
+            "hasBurn",
+            "selfDebuffCount",
+            "hasMagicDmg",
+            "hasMagicOrPhysicalDmg",
+            "enemyHpFillPct"
+          ],
+          "returnType": "BoostResult",
+          "exported": false,
+          "lineCount": 109
+        },
+        {
+          "name": "accumulateMonkWeapon",
+          "params": [
+            "state",
+            "perks",
+            "addStats",
+            "addPerks"
+          ],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 52
+        },
+        {
+          "name": "accumulateStandardWeapon",
+          "params": [
+            "state",
+            "perks",
+            "addStats",
+            "addPerks"
+          ],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 19
+        },
+        {
+          "name": "processEnchantedSlot",
+          "params": [
+            "itemName",
+            "getItem",
+            "upgrade",
+            "enchants",
+            "addStats",
+            "addPerkMap"
+          ],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 20
+        },
+        {
+          "name": "accumulateEquipment",
+          "params": [
+            "state"
+          ],
+          "returnType": "{ stats: StatMap; perks: Record<string, number> }",
+          "exported": false,
+          "lineCount": 84
+        },
+        {
+          "name": "finalizePerks",
+          "params": [
+            "rawPerks"
+          ],
+          "returnType": "Record<string, number>",
+          "exported": false,
+          "lineCount": 31
+        },
+        {
+          "name": "applyEmotionalAttackSpeed",
+          "params": [
+            "boostedStats",
+            "finalPerks",
+            "emotionalState",
+            "emotionalDisabled"
+          ],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "applyGladiatorialRage",
+          "params": [
+            "boostedStats",
+            "finalPerks"
+          ],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 10
+        },
+        {
+          "name": "computeBuffs",
+          "params": [
+            "state",
+            "finalPerks",
+            "wardingDebuffMult"
+          ],
+          "returnType": "{ allBuffs: any[]; orkBuffTenacity: number }",
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "maxBuffPotency",
+          "params": [
+            "allBuffs",
+            "buffName"
+          ],
+          "returnType": "number",
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "deriveResults",
+          "params": [
+            "rawStats",
+            "finalPerks",
+            "state"
+          ],
+          "returnType": "BuildResult",
+          "exported": false,
+          "lineCount": 101
+        },
+        {
+          "name": "calcBuild",
+          "params": [
+            "state"
+          ],
+          "returnType": "BuildResult",
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../types",
+          "specifiers": [
+            "StatKey",
+            "StatMap",
+            "ArmorPart",
+            "EnchantSlot",
+            "BuildState"
+          ]
+        },
+        {
+          "source": "../types",
+          "specifiers": [
+            "STAT_KEYS",
+            "applyUpgrade"
+          ]
+        },
+        {
+          "source": "../../data/cdr",
+          "specifiers": [
+            "CDR_PERK_DATA"
+          ]
+        },
+        {
+          "source": "../../data/statboost",
+          "specifiers": [
+            "applyStatBoostPerks",
+            "OFFENSIVE_BOOSTS"
+          ]
+        },
+        {
+          "source": "../../data/BuffData",
+          "specifiers": [
+            "getActiveBuildBuffs",
+            "getPerkBuffs",
+            "getWeaponArtBuffs",
+            "applyBuffPerkModifiers",
+            "convertTailwindToWhirlwind",
+            "assembleActiveBuffs",
+            "BUFF_DEFS"
+          ]
+        },
+        {
+          "source": "../../data/raceEffects",
+          "specifiers": [
+            "getActiveRaceEffect",
+            "calcOrkTenacityBonus"
+          ]
+        },
+        {
+          "source": "../../data/Boost",
+          "specifiers": [
+            "BOOST_DEFS",
+            "BoostContext"
+          ]
+        },
+        {
+          "source": "../types",
+          "specifiers": [
+            "BoostEntry",
+            "BoostResult"
+          ]
+        },
+        {
+          "source": "../crit",
+          "specifiers": [
+            "calcCrit"
+          ]
+        },
+        {
+          "source": "../crit",
+          "specifiers": [
+            "CritResult"
+          ]
+        },
+        {
+          "source": "../utils",
+          "specifiers": [
+            "roundMultiplier",
+            "calcWardingDebuffMultiplier"
+          ]
+        },
+        {
+          "source": "../constants",
+          "specifiers": [
+            "MAX_LEVEL",
+            "calcBaseMaxHP"
+          ]
+        },
+        {
+          "source": "../constants/buffs",
+          "specifiers": [
+            "QUEENS_POWER_POTENCY_PER_AMOUNT",
+            "QUEENS_POWER_ATK_SPD_BASE",
+            "QUEENS_POWER_ATK_SPD_PER_TENTH_POTENCY"
+          ]
+        },
+        {
+          "source": "./data",
+          "specifiers": [
+            "getRace",
+            "getGuild",
+            "getGuildRank",
+            "getArmorPart",
+            "getRing",
+            "getRune",
+            "getBlade",
+            "getHandle",
+            "getGlove",
+            "getEssence",
+            "isMonkGuild",
+            "getPerk"
+          ]
+        },
+        {
+          "source": "./enchant",
+          "specifiers": [
+            "applyEnchantmentsToSlot",
+            "applyPerkEffectiveness",
+            "applyInfusion"
+          ]
+        },
+        {
+          "source": "./shrine",
+          "specifiers": [
+            "applyShrineToStats",
+            "SHRINE_MULTIPLIERS"
+          ]
+        },
+        {
+          "source": "./weapon",
+          "specifiers": [
+            "MONK_RANK_MULTIPLIER",
+            "calcWeapon",
+            "calcMonkWeapon"
+          ]
+        },
+        {
+          "source": "../../data/weaponArts",
+          "specifiers": [
+            "WEAPON_ARTS"
+          ]
+        },
+        {
+          "source": "../damageTypeResolve",
+          "specifiers": [
+            "getFinalWaDmgTypes"
+          ]
+        },
+        {
+          "source": "./dmgTypeBonuses",
+          "specifiers": [
+            "buildDmgTypeBonuses"
+          ]
+        }
+      ],
+      "exports": [
+        "calcBuild"
+      ],
+      "totalLines": 570,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/engine/data.ts": {
+      "filePath": "src/lib/engine/data.ts",
+      "contentHash": "0e8c953a1fbde2d87a56b92fa6977a71204bea4fd2458a2ac914b8fb7ccf21ed",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/engine/data/character.ts": {
+      "filePath": "src/lib/engine/data/character.ts",
+      "contentHash": "926851d780d0e81b3fac1ee84ee2255923a6f8b4db885cd53df70b55c07a39ca",
+      "functions": [
+        {
+          "name": "getRace",
+          "params": [
+            "name"
+          ],
+          "returnType": "Race  | undefined",
+          "exported": true,
+          "lineCount": 1
+        },
+        {
+          "name": "getGuild",
+          "params": [
+            "name"
+          ],
+          "returnType": "Guild | undefined",
+          "exported": true,
+          "lineCount": 1
+        },
+        {
+          "name": "getPerk",
+          "params": [
+            "name"
+          ],
+          "exported": true,
+          "lineCount": 1
+        },
+        {
+          "name": "getGuildRank",
+          "params": [
+            "guild",
+            "rank"
+          ],
+          "returnType": "GuildRank | undefined",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "isMonkGuild",
+          "params": [
+            "guildName"
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../../types",
+          "specifiers": [
+            "Race",
+            "Guild",
+            "GuildRank",
+            "Perk"
+          ]
+        },
+        {
+          "source": "../../../data/races.json",
+          "specifiers": [
+            "racesRaw"
+          ]
+        },
+        {
+          "source": "../../../data/guilds.json",
+          "specifiers": [
+            "guildsRaw"
+          ]
+        },
+        {
+          "source": "../../../data/perks.json",
+          "specifiers": [
+            "perksRaw"
+          ]
+        }
+      ],
+      "exports": [
+        "races",
+        "guilds",
+        "getRace",
+        "getGuild",
+        "getPerk",
+        "getGuildRank",
+        "isMonkGuild"
+      ],
+      "totalLines": 29,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/engine/data/equipment.ts": {
+      "filePath": "src/lib/engine/data/equipment.ts",
+      "contentHash": "270182d3b6f8eb71dc8c34dbba7fd4c7048bdeaf7c0bef4a966324d9296bf043",
+      "functions": [
+        {
+          "name": "getEnchant",
+          "params": [
+            "name"
+          ],
+          "exported": true,
+          "lineCount": 1
+        },
+        {
+          "name": "getRing",
+          "params": [
+            "name"
+          ],
+          "exported": true,
+          "lineCount": 1
+        },
+        {
+          "name": "getRune",
+          "params": [
+            "name"
+          ],
+          "exported": true,
+          "lineCount": 1
+        },
+        {
+          "name": "getArmorPart",
+          "params": [
+            "name",
+            "type"
+          ],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "getArmorSlotTypes",
+          "params": [
+            "name"
+          ],
+          "returnType": "Set<ArmorPart[\"type\"]>",
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "armorSupportsSlot",
+          "params": [
+            "name",
+            "type"
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../../types",
+          "specifiers": [
+            "Armor",
+            "ArmorPart",
+            "Ring",
+            "Rune",
+            "Enchantment"
+          ]
+        },
+        {
+          "source": "../../../data/armors.json",
+          "specifiers": [
+            "armorsRaw"
+          ]
+        },
+        {
+          "source": "../../../data/rings.json",
+          "specifiers": [
+            "ringsRaw"
+          ]
+        },
+        {
+          "source": "../../../data/runes.json",
+          "specifiers": [
+            "runesRaw"
+          ]
+        },
+        {
+          "source": "../../../data/enchantments.json",
+          "specifiers": [
+            "enchantmentsRaw"
+          ]
+        }
+      ],
+      "exports": [
+        "rings",
+        "runes",
+        "enchantments",
+        "enchantmentsRaw",
+        "armors",
+        "getEnchant",
+        "getRing",
+        "getRune",
+        "getArmorPart",
+        "armorSupportsSlot"
+      ],
+      "totalLines": 58,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/engine/data/weapons.ts": {
+      "filePath": "src/lib/engine/data/weapons.ts",
+      "contentHash": "a32a60b42084cedaed7b7c4d3437c229e37461c3f8aa30eac04afcc6a7cab5f3",
+      "functions": [
+        {
+          "name": "getBlade",
+          "params": [
+            "name"
+          ],
+          "exported": true,
+          "lineCount": 1
+        },
+        {
+          "name": "getHandle",
+          "params": [
+            "name"
+          ],
+          "exported": true,
+          "lineCount": 1
+        },
+        {
+          "name": "getGlove",
+          "params": [
+            "name"
+          ],
+          "exported": true,
+          "lineCount": 1
+        },
+        {
+          "name": "getEssence",
+          "params": [
+            "name"
+          ],
+          "exported": true,
+          "lineCount": 1
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../../types",
+          "specifiers": [
+            "WeaponBlade",
+            "WeaponHandle",
+            "MonkGlove",
+            "MonkEssence"
+          ]
+        },
+        {
+          "source": "../../../data/blades.json",
+          "specifiers": [
+            "bladesRaw"
+          ]
+        },
+        {
+          "source": "../../../data/handles.json",
+          "specifiers": [
+            "handlesRaw"
+          ]
+        },
+        {
+          "source": "../../../data/gloves.json",
+          "specifiers": [
+            "glovesRaw"
+          ]
+        },
+        {
+          "source": "../../../data/essences.json",
+          "specifiers": [
+            "essencesRaw"
+          ]
+        }
+      ],
+      "exports": [
+        "blades",
+        "handles",
+        "gloves",
+        "essences",
+        "getBlade",
+        "getHandle",
+        "getGlove",
+        "getEssence"
+      ],
+      "totalLines": 21,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/engine/dmgTypeBonuses.ts": {
+      "filePath": "src/lib/engine/dmgTypeBonuses.ts",
+      "contentHash": "04c17d2f46c2c8a331105b8c0f5e298241a94d6faa4f24f4bf4e06a699b4c5b0",
+      "functions": [
+        {
+          "name": "buildDmgTypeBonuses",
+          "params": [
+            "includeNoProcExempt",
+            "ctx",
+            "excludePerks"
+          ],
+          "returnType": "Record<string, number>",
+          "exported": true,
+          "lineCount": 26
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../constants/perks",
+          "specifiers": [
+            "VOID_RAGE_PCT_PER_STACK",
+            "CHANNELED_WEAPON_PCT_PER_STACK",
+            "EMOTIONAL_PCT_PER_STACK",
+            "DRACONIC_BLOOD_PCT_PER_STACK"
+          ]
+        },
+        {
+          "source": "../../data/draconicBuffs",
+          "specifiers": [
+            "getEffectiveDraconicInfusionPotency"
+          ]
+        }
+      ],
+      "exports": [
+        "buildDmgTypeBonuses"
+      ],
+      "totalLines": 58,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/engine/enchant.ts": {
+      "filePath": "src/lib/engine/enchant.ts",
+      "contentHash": "62659499c669baec9fc92357bba39b99e4e01a3462686d67abea3e2f8f9b4fbb",
+      "functions": [
+        {
+          "name": "applyMod",
+          "params": [
+            "value",
+            "mod"
+          ],
+          "returnType": "number",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "normalizeModifiers",
+          "params": [
+            "m"
+          ],
+          "returnType": "StatModifier[]",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "applyModsToKey",
+          "params": [
+            "key",
+            "mods",
+            "mult",
+            "add"
+          ],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 11
+        },
+        {
+          "name": "applyModsWhere",
+          "params": [
+            "mods",
+            "baseStats",
+            "mult",
+            "add",
+            "predicate"
+          ],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 13
+        },
+        {
+          "name": "applyEnchantmentsToSlot",
+          "params": [
+            "baseStats",
+            "basePerks",
+            "enchantNames",
+            "upgradeLevel"
+          ],
+          "returnType": "{ stats: StatMap; perks: Record<string, number> }",
+          "exported": true,
+          "lineCount": 92
+        },
+        {
+          "name": "applyPerkEffectiveness",
+          "params": [
+            "perks",
+            "perkEffectivenessStacks",
+            "cursedStacks"
+          ],
+          "returnType": "Record<string, number>",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "applyInfusion",
+          "params": [
+            "baseStats",
+            "basePerks"
+          ],
+          "returnType": "{ stats: StatMap; perks: Record<string, number> }",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "isExclusiveEnchant",
+          "params": [
+            "e"
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "enforceEnchantSlot",
+          "params": [
+            "selections",
+            "changedIndex"
+          ],
+          "returnType": "[string, string, string]",
+          "exported": true,
+          "lineCount": 22
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../types",
+          "specifiers": [
+            "StatKey",
+            "StatModifier",
+            "StatMap",
+            "Enchantment"
+          ]
+        },
+        {
+          "source": "../types",
+          "specifiers": [
+            "STAT_KEYS",
+            "PERCENT_STATS",
+            "applyUpgrade"
+          ]
+        },
+        {
+          "source": "./data",
+          "specifiers": [
+            "getEnchant",
+            "enchantmentsRaw"
+          ]
+        },
+        {
+          "source": "./_utils",
+          "specifiers": [
+            "round2"
+          ]
+        }
+      ],
+      "exports": [
+        "applyEnchantmentsToSlot",
+        "applyPerkEffectiveness",
+        "applyInfusion",
+        "isExclusiveEnchant",
+        "enforceEnchantSlot"
+      ],
+      "totalLines": 223,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/engine/engine.ts": {
+      "filePath": "src/lib/engine/engine.ts",
+      "contentHash": "60b4e6f65b4bf14d1851fae9b33fdbd4a57f6a000080bde290e0787e8fc50053",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 6,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/engine/format.ts": {
+      "filePath": "src/lib/engine/format.ts",
+      "contentHash": "f9b5dae87ea30879bbb5ab7ad059cc4c5ae66c60a84e0bc68956c886e21d04a8",
+      "functions": [
+        {
+          "name": "formatStat",
+          "params": [
+            "key",
+            "value"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "formatLabel",
+          "params": [
+            "key"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../types",
+          "specifiers": [
+            "PERCENT_STATS"
+          ]
+        },
+        {
+          "source": "./_utils",
+          "specifiers": [
+            "round2"
+          ]
+        }
+      ],
+      "exports": [
+        "formatStat",
+        "formatLabel"
+      ],
+      "totalLines": 15,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/engine/shrine.ts": {
+      "filePath": "src/lib/engine/shrine.ts",
+      "contentHash": "175f90fa5b5a46e11c79594d0b2c1b2f3c53e65db1b896f0620a1ad18b21f8d4",
+      "functions": [
+        {
+          "name": "applyShrineToScalings",
+          "params": [
+            "scalings",
+            "tier"
+          ],
+          "returnType": "Record<string, number>",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "applyShrineToStats",
+          "params": [
+            "stats",
+            "tier"
+          ],
+          "returnType": "StatMap",
+          "exported": true,
+          "lineCount": 12
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../types",
+          "specifiers": [
+            "StatMap"
+          ]
+        },
+        {
+          "source": "../types",
+          "specifiers": [
+            "STAT_KEYS"
+          ]
+        },
+        {
+          "source": "./_utils",
+          "specifiers": [
+            "round2"
+          ]
+        }
+      ],
+      "exports": [
+        "SHRINE_MULTIPLIERS",
+        "applyShrineToScalings",
+        "applyShrineToStats"
+      ],
+      "totalLines": 34,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/engine/weapon.ts": {
+      "filePath": "src/lib/engine/weapon.ts",
+      "contentHash": "482abde959f63849e2e00feee67a850639dcfd243283bece02418d4e70dabb10",
+      "functions": [
+        {
+          "name": "checkHybrid",
+          "params": [
+            "part1",
+            "part2"
+          ],
+          "returnType": "boolean",
+          "exported": false,
+          "lineCount": 24
+        },
+        {
+          "name": "getWeaponType",
+          "params": [
+            "handleType",
+            "bladeType"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "resolveWeaponType",
+          "params": [
+            "handleType",
+            "bladeType",
+            "perks"
+          ],
+          "returnType": "{ base: string; final: string; modifier: string }",
+          "exported": false,
+          "lineCount": 19
+        },
+        {
+          "name": "getMonkWeaponType",
+          "params": [
+            "essenceType",
+            "gloveType"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "resolveMonkWeaponType",
+          "params": [
+            "essenceType",
+            "gloveType",
+            "perks"
+          ],
+          "returnType": "{ base: string; final: string; modifier: string }",
+          "exported": false,
+          "lineCount": 10
+        },
+        {
+          "name": "extractDamageAndScalings",
+          "params": [
+            "part"
+          ],
+          "exported": false,
+          "lineCount": 22
+        },
+        {
+          "name": "mergePartPerks",
+          "params": [
+            "part1",
+            "part2"
+          ],
+          "returnType": "{ perks: Record<string, number>; attackSpeed: number }",
+          "exported": false,
+          "lineCount": 29
+        },
+        {
+          "name": "applyShrineToPart",
+          "params": [
+            "data",
+            "part",
+            "shrineActive",
+            "fn"
+          ],
+          "returnType": "T",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "mergeRecords",
+          "params": [
+            "a",
+            "b"
+          ],
+          "returnType": "T",
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "mergeScalingsAndStats",
+          "params": [
+            "p1Data",
+            "p2Data",
+            "part1",
+            "part2",
+            "shrineActive"
+          ],
+          "returnType": "{\r\n  hybridActive:       boolean\r\n  scalings:           Record<string, number>\r\n  baseScalings:       Record<string, number>\r\n  stats:              StatMap\r\n  part1FinalScalings: Record<string, number>\r\n  part2FinalScalings: Record<string, number>\r\n  part1FinalStats:    StatMap\r\n  part2FinalStats:    StatMap\r\n}",
+          "exported": false,
+          "lineCount": 45
+        },
+        {
+          "name": "buildWeaponResult",
+          "params": [
+            "opts"
+          ],
+          "returnType": "WeaponResult",
+          "exported": false,
+          "lineCount": 81
+        },
+        {
+          "name": "calcWeaponGeneric",
+          "params": [
+            "part1",
+            "part2",
+            "part1TypeLabel",
+            "part2TypeLabel",
+            "part1TypeKey",
+            "part2TypeKey",
+            "isMonk",
+            "shrineActive"
+          ],
+          "returnType": "WeaponResult | null",
+          "exported": false,
+          "lineCount": 22
+        },
+        {
+          "name": "applyMonkStatBonus",
+          "params": [
+            "baseStats",
+            "shrineMult",
+            "monkPct",
+            "result",
+            "finalKey",
+            "rawKey"
+          ],
+          "returnType": "void",
+          "exported": false,
+          "lineCount": 20
+        },
+        {
+          "name": "calcWeapon",
+          "params": [
+            "bladeName",
+            "handleName",
+            "shrineActive"
+          ],
+          "returnType": "WeaponResult | null",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "calcMonkWeapon",
+          "params": [
+            "gloveName",
+            "essenceName",
+            "shrineActive",
+            "monkRank"
+          ],
+          "returnType": "WeaponResult | null",
+          "exported": true,
+          "lineCount": 24
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../types",
+          "specifiers": [
+            "StatMap",
+            "WeaponBlade",
+            "WeaponHandle",
+            "MonkGlove",
+            "MonkEssence"
+          ]
+        },
+        {
+          "source": "../types",
+          "specifiers": [
+            "STAT_KEYS"
+          ]
+        },
+        {
+          "source": "./data",
+          "specifiers": [
+            "getBlade",
+            "getHandle",
+            "getGlove",
+            "getEssence"
+          ]
+        },
+        {
+          "source": "./shrine",
+          "specifiers": [
+            "applyShrineToScalings",
+            "applyShrineToStats",
+            "SHRINE_MULTIPLIERS"
+          ]
+        },
+        {
+          "source": "./_utils",
+          "specifiers": [
+            "round2",
+            "round4"
+          ]
+        }
+      ],
+      "exports": [
+        "MONK_RANK_MULTIPLIER",
+        "calcWeapon",
+        "calcMonkWeapon"
+      ],
+      "totalLines": 444,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/Modal.svelte": {
+      "filePath": "src/lib/Modal.svelte",
+      "contentHash": "53adeb77c2009f1cb3c1f7b4423753037cd58b0760fd1a4a9e56ffc5d5f593d4",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 213,
+      "hasStructuralAnalysis": false
+    },
+    "src/lib/modals/AccessorySelectModal.svelte": {
+      "filePath": "src/lib/modals/AccessorySelectModal.svelte",
+      "contentHash": "0b130f13730a7b7122253d0996818701939cdf30411e8e935d209cdb76dd3ff5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 203,
+      "hasStructuralAnalysis": false
+    },
+    "src/lib/modals/GuildModal.svelte": {
+      "filePath": "src/lib/modals/GuildModal.svelte",
+      "contentHash": "1eceeb66abdbbbaf1c31964917989fcb43f412de2bee2b27c03a241fd4bbd9a8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 99,
+      "hasStructuralAnalysis": false
+    },
+    "src/lib/modals/index.ts": {
+      "filePath": "src/lib/modals/index.ts",
+      "contentHash": "3d990b2111d2f43f7475b10b510e8b58d58cf19b5d08b3eb2b5c96bf40e1cc7b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "RaceModal",
+        "GuildModal",
+        "AccessorySelectModal",
+        "WeaponPartModal"
+      ],
+      "totalLines": 5,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/modals/RaceModal.svelte": {
+      "filePath": "src/lib/modals/RaceModal.svelte",
+      "contentHash": "86343a935ddc41bc1954ab1b4ebd7cbd710ea0b09db5bdf642cf415c4a8f21d0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 61,
+      "hasStructuralAnalysis": false
+    },
+    "src/lib/modals/WeaponPartModal.svelte": {
+      "filePath": "src/lib/modals/WeaponPartModal.svelte",
+      "contentHash": "4c22d439ee3b0105b0b4c3088f234a6506808d5fbf93af8280d3f99518a171b8",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 138,
+      "hasStructuralAnalysis": false
+    },
+    "src/lib/StatFilterShared.svelte": {
+      "filePath": "src/lib/StatFilterShared.svelte",
+      "contentHash": "701db34f08217c9ed852d493db5e9552b9b3b533f9ebb8377b3f583329dc61cf",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 98,
+      "hasStructuralAnalysis": false
+    },
+    "src/lib/stats/elementalBoosts.ts": {
+      "filePath": "src/lib/stats/elementalBoosts.ts",
+      "contentHash": "1e98961257d49307031ac3dfd131268d5787728906e4bd2beed22b6309d4dfc3",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "ELEMENTAL_BOOST_STATS",
+        "NEGATIVE_ELEMENTAL_BOOST_STATS"
+      ],
+      "totalLines": 22,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/stats/filterActions.ts": {
+      "filePath": "src/lib/stats/filterActions.ts",
+      "contentHash": "8dba95e0e750b7131213495537984b71f3e612424051e1cdae0bb184b6d9fa4d",
+      "functions": [
+        {
+          "name": "createFilterActions",
+          "params": [
+            "getActive",
+            "setActive",
+            "notify"
+          ],
+          "exported": true,
+          "lineCount": 38
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "createFilterActions"
+      ],
+      "totalLines": 41,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/store.ts": {
+      "filePath": "src/lib/store.ts",
+      "contentHash": "c2f0be2d071678acff90de43a153c7795d02382696ee3ab74334937c4e659f9b",
+      "functions": [
+        {
+          "name": "loadBuild",
+          "params": [],
+          "returnType": "BuildState",
+          "exported": false,
+          "lineCount": 10
+        },
+        {
+          "name": "setEnchantment",
+          "params": [
+            "slot",
+            "index",
+            "value"
+          ],
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "swapEnchantments",
+          "params": [
+            "slotA",
+            "slotB"
+          ],
+          "exported": false,
+          "lineCount": 15
+        },
+        {
+          "name": "clearBuild",
+          "params": [],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "setGuild",
+          "params": [
+            "guildName",
+            "guildRank"
+          ],
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "moveArmorSlot",
+          "params": [
+            "from",
+            "to",
+            "clone"
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "lineCount": 26
+        },
+        {
+          "name": "canArmorMoveToSlot",
+          "params": [
+            "armorName",
+            "to"
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "moveRingSlot",
+          "params": [
+            "from",
+            "to",
+            "clone"
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "lineCount": 24
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "svelte/store",
+          "specifiers": [
+            "writable",
+            "derived",
+            "get"
+          ]
+        },
+        {
+          "source": "./types",
+          "specifiers": [
+            "BuildState",
+            "EnchantSlot"
+          ]
+        },
+        {
+          "source": "./engine",
+          "specifiers": [
+            "calcBuild",
+            "races",
+            "enforceEnchantSlot",
+            "armorSupportsSlot"
+          ]
+        },
+        {
+          "source": "./engine/data/character",
+          "specifiers": [
+            "isMonkGuild"
+          ]
+        },
+        {
+          "source": "./constants",
+          "specifiers": [
+            "STORAGE_KEY_BUILD",
+            "DEFAULT_LEVEL",
+            "DEFAULT_HP_FILL",
+            "DEFAULT_ENEMY_HP_FILL",
+            "SAVE_DEBOUNCE_MS"
+          ]
+        }
+      ],
+      "exports": [
+        "build",
+        "effectiveDarknessOverride",
+        "result",
+        "setEnchantment",
+        "orkBuffTenacity",
+        "clearBuild",
+        "setGuild",
+        "moveArmorSlot",
+        "canArmorMoveToSlot",
+        "moveRingSlot"
+      ],
+      "totalLines": 249,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/stores/toast.ts": {
+      "filePath": "src/lib/stores/toast.ts",
+      "contentHash": "d75bb3e406aa7ec5aade9bc5cd87f2511611dfecc7ec93b7c47be6dd031e7f70",
+      "functions": [
+        {
+          "name": "addToast",
+          "params": [
+            "message",
+            "type",
+            "duration"
+          ],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "removeToast",
+          "params": [
+            "id"
+          ],
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "svelte/store",
+          "specifiers": [
+            "writable"
+          ]
+        },
+        {
+          "source": "../constants",
+          "specifiers": [
+            "DEFAULT_TOAST_DURATION_MS"
+          ]
+        }
+      ],
+      "exports": [
+        "toasts",
+        "addToast",
+        "removeToast"
+      ],
+      "totalLines": 29,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/Toast.svelte": {
+      "filePath": "src/lib/Toast.svelte",
+      "contentHash": "781652425eb819f609fcf6bb5b047af4474c66dc2d9ddd1cad6a2f1536a6a401",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 101,
+      "hasStructuralAnalysis": false
+    },
+    "src/lib/types.ts": {
+      "filePath": "src/lib/types.ts",
+      "contentHash": "fc6003062acf8dff9daf6093054d480ac54587e1e6d3ff02b04221c111878d74",
+      "functions": [
+        {
+          "name": "applyUpgrade",
+          "params": [
+            "stats",
+            "level"
+          ],
+          "returnType": "StatMap",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "getProcCoeffValue",
+          "params": [
+            "pc"
+          ],
+          "returnType": "number",
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "canProc",
+          "params": [
+            "pc"
+          ],
+          "returnType": "boolean",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "PERCENT_STATS",
+        "STAT_KEYS",
+        "UPGRADE_MAX",
+        "applyUpgrade",
+        "canProc",
+        "DMG_TYPE_COLORS",
+        "DMG_TYPE_PRIORITY",
+        "SCALING_TO_BOOST"
+      ],
+      "totalLines": 325,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/ui/Badge.svelte": {
+      "filePath": "src/lib/ui/Badge.svelte",
+      "contentHash": "7694dee4588f4f5fb30513ac05b62595cd04e3594639fb390c4341f3651e9dcf",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 149,
+      "hasStructuralAnalysis": false
+    },
+    "src/lib/ui/Button.svelte": {
+      "filePath": "src/lib/ui/Button.svelte",
+      "contentHash": "8198470171f8719081f37c75008bb11a9c4dfd123aeec862d2a53346272a9f12",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 144,
+      "hasStructuralAnalysis": false
+    },
+    "src/lib/ui/RollValue.svelte": {
+      "filePath": "src/lib/ui/RollValue.svelte",
+      "contentHash": "d3af0614ab20055df279f33001184cf4563a15933ad6d2cf1e9137ecd4771949",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 66,
+      "hasStructuralAnalysis": false
+    },
+    "src/lib/uiConstants.ts": {
+      "filePath": "src/lib/uiConstants.ts",
+      "contentHash": "fca79668af94bbfea90544195c73662c157e8da0d61db75434a07ce3eb93d8d9",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "UI_COLORS",
+        "SOURCE_LABELS"
+      ],
+      "totalLines": 81,
+      "hasStructuralAnalysis": true
+    },
+    "src/lib/utils.ts": {
+      "filePath": "src/lib/utils.ts",
+      "contentHash": "cca57b0a0dfdc6f9e89a84187c99fa2ed067899b7edfe340eddad80a743ce1bc",
+      "functions": [
+        {
+          "name": "calculateMultiplierFromPct",
+          "params": [
+            "pct"
+          ],
+          "returnType": "number",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "multiplyMultipliers",
+          "params": [
+            "multipliers"
+          ],
+          "returnType": "number",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "roundMultiplier",
+          "params": [
+            "multiplier"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "applyScalingMult",
+          "params": [
+            "effFrac"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "scalingEq",
+          "params": [
+            "pct"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "calcWardingDebuffMultiplier",
+          "params": [
+            "warding"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "escapeHtml",
+          "params": [
+            "text"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "highlightText",
+          "params": [
+            "text",
+            "query"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 26
+        },
+        {
+          "name": "highlightTextParts",
+          "params": [
+            "text",
+            "query"
+          ],
+          "returnType": "Array<{ text: string; highlight: boolean }>",
+          "exported": true,
+          "lineCount": 26
+        },
+        {
+          "name": "calcProcChance",
+          "params": [
+            "baseChance",
+            "procCoeff",
+            "scaling"
+          ],
+          "returnType": "number",
+          "exported": true,
+          "lineCount": 16
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./types",
+          "specifiers": [
+            "ProcCoefficient",
+            "ProcScalingType"
+          ]
+        }
+      ],
+      "exports": [
+        "roundMultiplier",
+        "applyScalingMult",
+        "scalingEq",
+        "calcWardingDebuffMultiplier",
+        "highlightTextParts",
+        "calcProcChance"
+      ],
+      "totalLines": 122,
+      "hasStructuralAnalysis": true
+    },
+    "src/main.ts": {
+      "filePath": "src/main.ts",
+      "contentHash": "e890babfd165b423abc544730a8ce62a9f4ad0eeb0a02fb6d991413706d8aa12",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "svelte",
+          "specifiers": [
+            "mount"
+          ]
+        },
+        {
+          "source": "./App.svelte",
+          "specifiers": [
+            "App"
+          ]
+        },
+        {
+          "source": "./app.css",
+          "specifiers": []
+        },
+        {
+          "source": "@vercel/analytics",
+          "specifiers": [
+            "inject"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 8,
+      "hasStructuralAnalysis": true
+    },
+    "src/ModalSearchHeader.svelte": {
+      "filePath": "src/ModalSearchHeader.svelte",
+      "contentHash": "aa29e907acdc7ac1182c9f9ba92c1ff62a7efe4cae2124667e3661972e4c61fb",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 200,
+      "hasStructuralAnalysis": false
+    },
+    "src/MountIcon.svelte": {
+      "filePath": "src/MountIcon.svelte",
+      "contentHash": "c29a97b472ff37863452ed62c13ba0d5a636841db33c6b5aec01080519bdcf06",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 64,
+      "hasStructuralAnalysis": false
+    },
+    "src/PropellingFunTracker.svelte": {
+      "filePath": "src/PropellingFunTracker.svelte",
+      "contentHash": "b69ab693bfeedff331e42cf682cd579a6248d546b54908fb2fe1382100648a94",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 193,
+      "hasStructuralAnalysis": false
+    },
+    "src/ScalingBreakdownRow.svelte": {
+      "filePath": "src/ScalingBreakdownRow.svelte",
+      "contentHash": "130a8690cd559b0e2d85edd44d3c3dc839b95f7d0d933d10a8ad3b1ec474be93",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 103,
+      "hasStructuralAnalysis": false
+    },
+    "src/StatFilter.svelte": {
+      "filePath": "src/StatFilter.svelte",
+      "contentHash": "8cc07228be998cb0b0865d7db7498f6efccdbf1cdf94cd32b704bf2e7ac0dd56",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 335,
+      "hasStructuralAnalysis": false
+    },
+    "src/SuggestDrop.svelte": {
+      "filePath": "src/SuggestDrop.svelte",
+      "contentHash": "7cddedd8ea87d9089aa1fbec7832a2a09b7b7e51fcebe8f9296545ba59fe9bef",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 68,
+      "hasStructuralAnalysis": false
+    },
+    "src/TagFilter.svelte": {
+      "filePath": "src/TagFilter.svelte",
+      "contentHash": "88eaaf17f7360cb7cf0a4c7491a6c0b4dffed2f27e58497e9d41965cc9a5a2b5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 331,
+      "hasStructuralAnalysis": false
+    },
+    "src/WeaponStatFilter.svelte": {
+      "filePath": "src/WeaponStatFilter.svelte",
+      "contentHash": "6c71ed74d38c8a7c5b04b081f6c46b359f814bea794e30f4bd69915550310bb6",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 241,
+      "hasStructuralAnalysis": false
+    },
+    "src/WeaponStatsDisplay.svelte": {
+      "filePath": "src/WeaponStatsDisplay.svelte",
+      "contentHash": "e4d98b937ffb0791d4dc119e0cb0bf7bd71afba041144d1530504e6d8feb9b95",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 122,
+      "hasStructuralAnalysis": false
+    },
+    "stats-data.json": {
+      "filePath": "stats-data.json",
+      "contentHash": "67d0ce05a4b950e790ca2bc27f20eb6e0efa2e9c77a41fd602a644d0585cf43e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 2,
+      "hasStructuralAnalysis": true
+    },
+    "stats.html": {
+      "filePath": "stats.html",
+      "contentHash": "d4d4932aefb0dd686060788890e8559f65a39582a5c645560c91bd6c5f3f2ec2",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 4951,
+      "hasStructuralAnalysis": false
+    },
+    "ts-errors.txt": {
+      "filePath": "ts-errors.txt",
+      "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1,
+      "hasStructuralAnalysis": false
+    },
+    "tsconfig.app.json": {
+      "filePath": "tsconfig.app.json",
+      "contentHash": "06967167f399f17ca8f8c63d00f1f892b342edf8f6a4b8902a5ae0cefd99fa19",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 21,
+      "hasStructuralAnalysis": true
+    },
+    "tsconfig.json": {
+      "filePath": "tsconfig.json",
+      "contentHash": "b607a51c8c90040fd6c3dd9b12a0a72c089c9d19375b1c35c61b8f6f0927b9f0",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 3,
+      "hasStructuralAnalysis": true
+    },
+    "tsconfig.node.json": {
+      "filePath": "tsconfig.node.json",
+      "contentHash": "e0f1936992f77a707102795e8ea311ae74cb54de87b221bb32b44055af66ff7e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 25,
+      "hasStructuralAnalysis": true
+    },
+    "vercel.json": {
+      "filePath": "vercel.json",
+      "contentHash": "0c020311d5fcb278016e2035e6dc7b7913debf897c54bb4fe617ef6f877d9295",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 34,
+      "hasStructuralAnalysis": true
+    },
+    "vite.config.ts": {
+      "filePath": "vite.config.ts",
+      "contentHash": "8454a7864838a81db60ba26de3bd73f4517c7b9cc91e73b610e2863495ca5c7c",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "vite",
+          "specifiers": [
+            "defineConfig"
+          ]
+        },
+        {
+          "source": "@sveltejs/vite-plugin-svelte",
+          "specifiers": [
+            "svelte"
+          ]
+        },
+        {
+          "source": "vite-plugin-pwa",
+          "specifiers": [
+            "VitePWA"
+          ]
+        },
+        {
+          "source": "rollup-plugin-visualizer",
+          "specifiers": [
+            "visualizer"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 59,
+      "hasStructuralAnalysis": true
+    }
+  }
+}

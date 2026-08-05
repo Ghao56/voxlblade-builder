@@ -94,6 +94,10 @@ import {
   SNOEMAN_SPIRIT_ICESTORM_BASE_DMG,
   SNOEMAN_SPIRIT_HITS,
   SNOEMAN_SPIRIT_SLOWNESS_POTENCY,
+  DRAGIGATOR_SPIRIT_BASE_DMG,
+  DRAGIGATOR_SPIRIT_HITS,
+  DRAGIGATOR_SPIRIT_BURN_POTENCY_DMG_MULT,
+  DRAGIGATOR_SPIRIT_BURN_DURATION,
   CACI_SPIRIT_THORN_DMG,
   CACI_SPIRIT_SLAM_DMG,
   CACI_SPIRIT_THORN_HITS,
@@ -593,6 +597,31 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
       },
     ],
     note: `The ice storm conjured after the Roar: ${SNOEMAN_SPIRIT_HITS} hits of ${SNOEMAN_SPIRIT_ICESTORM_BASE_DMG} dmg each, does not guardbreak. Applies Slowness at ${SNOEMAN_SPIRIT_SLOWNESS_POTENCY} Potency on every hit. Has a Spirit Gain Multiplier of 0.75 (see Spirit Commune). Has chance to proc other effects.`,
+  },
+  // ── Dragigator Spirit ───────────────────────────────────────────────────
+  {
+    perkName: 'Dragigator Spirit',
+    label: 'Dragigator Spirit',
+    condition: 'On RMB (Monk)',
+    getBaseDamage: ({ statuses }) =>
+      DRAGIGATOR_SPIRIT_BASE_DMG * (1 + DRAGIGATOR_SPIRIT_BURN_POTENCY_DMG_MULT * (statuses?.burnPotency ?? 0)),
+    hits: DRAGIGATOR_SPIRIT_HITS,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { fire: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { fire: 1.0 },
+    isM2: true,
+    procCoefficient: { type: 'hasCoeff', value: 1.0 },
+    secondaryEffects: [
+      {
+        label: 'Burn',
+        getValue: () => DRAGIGATOR_SPIRIT_BURN_DURATION,
+        format: v => `${v}s`,
+        condition: 'Applied on every Flame Blast hit',
+        tone: 'offense',
+      },
+    ],
+    note: `RMB summons a Spiritual Dragigator performing their Flame Blast: ${DRAGIGATOR_SPIRIT_HITS} hits of ${DRAGIGATOR_SPIRIT_BASE_DMG} dmg each. Damage increases by ${DRAGIGATOR_SPIRIT_BURN_POTENCY_DMG_MULT * 100}% per Burn Potency. Applies Burn.`,
   },
   // ── Bounce Momentum ────────────────────────────────────────────────────────
   {

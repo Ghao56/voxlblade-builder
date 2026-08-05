@@ -1,0 +1,1054 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 3,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "src/data/Perkbasedmg.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 1737,
+      "nonEmptyLines": 1714,
+      "functions": [
+        {
+          "name": "gateThreshold",
+          "startLine": 207,
+          "endLine": 211,
+          "params": [
+            "gate",
+            "perkAmount"
+          ]
+        },
+        {
+          "name": "isHpGateActive",
+          "startLine": 213,
+          "endLine": 218,
+          "params": [
+            "gate",
+            "hpFillPct",
+            "perkAmount"
+          ]
+        },
+        {
+          "name": "calcSpringblastBaseDamage",
+          "startLine": 284,
+          "endLine": 286,
+          "params": [
+            "perkAmount"
+          ]
+        },
+        {
+          "name": "calcBomberChargeBaseDamage",
+          "startLine": 288,
+          "endLine": 292,
+          "params": [
+            "perkAmount",
+            "missingHpPct"
+          ]
+        },
+        {
+          "name": "rollStarStruckType",
+          "startLine": 297,
+          "endLine": 301,
+          "params": []
+        },
+        {
+          "name": "calcIchorSparkChargeMult",
+          "startLine": 303,
+          "endLine": 305,
+          "params": [
+            "chargePct"
+          ]
+        },
+        {
+          "name": "calcIchorSparkSwipeBase",
+          "startLine": 307,
+          "endLine": 310,
+          "params": [
+            "perkAmount",
+            "chargePct"
+          ]
+        },
+        {
+          "name": "calcIchorSparkSlashBase",
+          "startLine": 312,
+          "endLine": 315,
+          "params": [
+            "perkAmount",
+            "chargePct"
+          ]
+        },
+        {
+          "name": "calcIchorSparkChargeTime",
+          "startLine": 317,
+          "endLine": 319,
+          "params": [
+            "perkAmount"
+          ]
+        },
+        {
+          "name": "findPerkDmgDef",
+          "startLine": 1732,
+          "endLine": 1737,
+          "params": [
+            "perkName",
+            "label"
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "name": "gateThreshold",
+          "line": 207,
+          "isDefault": false
+        },
+        {
+          "name": "isHpGateActive",
+          "line": 213,
+          "isDefault": false
+        },
+        {
+          "name": "DRAGON_STATE_HP_GATE",
+          "line": 220,
+          "isDefault": false
+        },
+        {
+          "name": "SECONDARY_TONE_COLORS",
+          "line": 236,
+          "isDefault": false
+        },
+        {
+          "name": "calcSpringblastBaseDamage",
+          "line": 284,
+          "isDefault": false
+        },
+        {
+          "name": "calcBomberChargeBaseDamage",
+          "line": 288,
+          "isDefault": false
+        },
+        {
+          "name": "PERK_DMG_DEFS",
+          "line": 321,
+          "isDefault": false
+        },
+        {
+          "name": "findPerkDmgDef",
+          "line": 1732,
+          "isDefault": false
+        }
+      ],
+      "callGraph": [
+        {
+          "caller": "gateThreshold",
+          "callee": "gate.getThreshold",
+          "lineNumber": 210
+        },
+        {
+          "caller": "isHpGateActive",
+          "callee": "gateThreshold",
+          "lineNumber": 215
+        },
+        {
+          "caller": "calcBomberChargeBaseDamage",
+          "callee": "Math.min",
+          "lineNumber": 289
+        },
+        {
+          "caller": "calcBomberChargeBaseDamage",
+          "callee": "Math.round",
+          "lineNumber": 291
+        },
+        {
+          "caller": "rollStarStruckType",
+          "callee": "Math.floor",
+          "lineNumber": 298
+        },
+        {
+          "caller": "rollStarStruckType",
+          "callee": "Math.random",
+          "lineNumber": 298
+        },
+        {
+          "caller": "calcIchorSparkSwipeBase",
+          "callee": "calcIchorSparkChargeMult",
+          "lineNumber": 309
+        },
+        {
+          "caller": "calcIchorSparkSlashBase",
+          "callee": "calcIchorSparkChargeMult",
+          "lineNumber": 314
+        },
+        {
+          "caller": "findPerkDmgDef",
+          "callee": "_perkDmgDefMap.get",
+          "lineNumber": 1733
+        },
+        {
+          "caller": "findPerkDmgDef",
+          "callee": "defs.find",
+          "lineNumber": 1735
+        }
+      ],
+      "metrics": {
+        "importCount": 4,
+        "exportCount": 8,
+        "functionCount": 10,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/DmgTotalTooltip.svelte",
+      "language": "svelte",
+      "fileCategory": "code",
+      "totalLines": 175,
+      "nonEmptyLines": 166,
+      "metrics": {}
+    },
+    {
+      "path": "src/lib/constants/buffs.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 205,
+      "nonEmptyLines": 191,
+      "exports": [
+        {
+          "name": "RAGE_POTION_POTENCY",
+          "line": 6,
+          "isDefault": false
+        },
+        {
+          "name": "RAGE_POTION_DURATION",
+          "line": 7,
+          "isDefault": false
+        },
+        {
+          "name": "POISON_POTION_POTENCY",
+          "line": 8,
+          "isDefault": false
+        },
+        {
+          "name": "POISON_POTION_DURATION",
+          "line": 9,
+          "isDefault": false
+        },
+        {
+          "name": "POTION_CHUGGER_POTENCY_MULT_PER_LEVEL",
+          "line": 10,
+          "isDefault": false
+        },
+        {
+          "name": "BUFF_EFFECT_PER_TENTH",
+          "line": 13,
+          "isDefault": false
+        },
+        {
+          "name": "WHIRLWIND_EFFECT_PER_TENTH",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "GLYPH_CONDUIT_EFFECT_PER_TENTH",
+          "line": 17,
+          "isDefault": false
+        },
+        {
+          "name": "DESPAIR_EFFECT_PER_TENTH",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "INSPIRED_POTENCY_PER_AMOUNT",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "INSPIRED_DURATION",
+          "line": 22,
+          "isDefault": false
+        },
+        {
+          "name": "INSPIRED_EFFECT_PER_TENTH",
+          "line": 23,
+          "isDefault": false
+        },
+        {
+          "name": "LUMINESCENT_PCT_PER_POTENCY",
+          "line": 26,
+          "isDefault": false
+        },
+        {
+          "name": "RAGE_RUNE_BUFF_POTENCY",
+          "line": 33,
+          "isDefault": false
+        },
+        {
+          "name": "RAGE_RUNE_BUFF_DURATION",
+          "line": 34,
+          "isDefault": false
+        },
+        {
+          "name": "TOAD_SLAM_RAGE_POTENCY",
+          "line": 35,
+          "isDefault": false
+        },
+        {
+          "name": "TOAD_SLAM_RAGE_DURATION",
+          "line": 36,
+          "isDefault": false
+        },
+        {
+          "name": "BOUNCE_RUNE_POTENCY",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "BOUNCE_RUNE_DURATION",
+          "line": 38,
+          "isDefault": false
+        },
+        {
+          "name": "BEENADE_RUNE_POTENCY",
+          "line": 39,
+          "isDefault": false
+        },
+        {
+          "name": "ANCIENT_CLERIC_SHIELD_POTENCY",
+          "line": 40,
+          "isDefault": false
+        },
+        {
+          "name": "ANCIENT_CLERIC_SHIELD_DURATION",
+          "line": 41,
+          "isDefault": false
+        },
+        {
+          "name": "BOOSTSHROOM_POISON_DURATION",
+          "line": 42,
+          "isDefault": false
+        },
+        {
+          "name": "SPORELING_POISON_DURATION",
+          "line": 43,
+          "isDefault": false
+        },
+        {
+          "name": "THUNDEROUS_CLOAK_POTENCY",
+          "line": 44,
+          "isDefault": false
+        },
+        {
+          "name": "THUNDEROUS_CLOAK_DURATION",
+          "line": 45,
+          "isDefault": false
+        },
+        {
+          "name": "WINTER_WOOF_SHATTER_POTENCY",
+          "line": 46,
+          "isDefault": false
+        },
+        {
+          "name": "WINTER_WOOF_SHATTER_DURATION",
+          "line": 47,
+          "isDefault": false
+        },
+        {
+          "name": "GLACIAL_SNAPPER_SLOWNESS_POTENCY",
+          "line": 48,
+          "isDefault": false
+        },
+        {
+          "name": "GLACIAL_SNAPPER_SLOWNESS_DURATION",
+          "line": 49,
+          "isDefault": false
+        },
+        {
+          "name": "GLACIAL_SNAPPER_BLEED_DURATION",
+          "line": 50,
+          "isDefault": false
+        },
+        {
+          "name": "CACITROPS_BLEED_DURATION",
+          "line": 51,
+          "isDefault": false
+        },
+        {
+          "name": "BRAINBLAST_BURN_DURATION",
+          "line": 52,
+          "isDefault": false
+        },
+        {
+          "name": "BRAINBLAST_STICKY_POTENCY",
+          "line": 53,
+          "isDefault": false
+        },
+        {
+          "name": "BRAINBLAST_STICKY_DURATION",
+          "line": 54,
+          "isDefault": false
+        },
+        {
+          "name": "HEX_WEB_STICKY_POTENCY",
+          "line": 55,
+          "isDefault": false
+        },
+        {
+          "name": "HEX_WEB_STICKY_DURATION",
+          "line": 56,
+          "isDefault": false
+        },
+        {
+          "name": "SNOEBALL_FROSTBITE_POTENCY",
+          "line": 57,
+          "isDefault": false
+        },
+        {
+          "name": "SNOEBALL_FROSTBITE_DURATION",
+          "line": 58,
+          "isDefault": false
+        },
+        {
+          "name": "BASIC_DEBUFF_POTENCY",
+          "line": 61,
+          "isDefault": false
+        },
+        {
+          "name": "BASIC_DEBUFF_DURATION",
+          "line": 62,
+          "isDefault": false
+        },
+        {
+          "name": "BASIC_SHATTER_POTENCY",
+          "line": 63,
+          "isDefault": false
+        },
+        {
+          "name": "BASIC_SLOWNESS_POTENCY",
+          "line": 64,
+          "isDefault": false
+        },
+        {
+          "name": "BASIC_WEAKNESS_POTENCY",
+          "line": 65,
+          "isDefault": false
+        },
+        {
+          "name": "WARRIOR_STOMP_RAGE_POTENCY",
+          "line": 68,
+          "isDefault": false
+        },
+        {
+          "name": "WARRIOR_STOMP_RAGE_DURATION",
+          "line": 69,
+          "isDefault": false
+        },
+        {
+          "name": "WARRIOR_STOMP_TAUNT_POTENCY",
+          "line": 70,
+          "isDefault": false
+        },
+        {
+          "name": "WARRIOR_STOMP_TAUNT_DURATION",
+          "line": 71,
+          "isDefault": false
+        },
+        {
+          "name": "JAVELIN_SLOWNESS_DURATION",
+          "line": 72,
+          "isDefault": false
+        },
+        {
+          "name": "JAVELIN_BLEED_DURATION",
+          "line": 73,
+          "isDefault": false
+        },
+        {
+          "name": "LIGHTNING_CLOAK_DURATION_WA",
+          "line": 74,
+          "isDefault": false
+        },
+        {
+          "name": "CURSED_GROUND_WEAKNESS_POTENCY",
+          "line": 75,
+          "isDefault": false
+        },
+        {
+          "name": "CURSED_GROUND_WEAKNESS_DURATION",
+          "line": 76,
+          "isDefault": false
+        },
+        {
+          "name": "CROSS_SLASH_SHATTER_POTENCY",
+          "line": 77,
+          "isDefault": false
+        },
+        {
+          "name": "CROSS_SLASH_SHATTER_DURATION",
+          "line": 78,
+          "isDefault": false
+        },
+        {
+          "name": "DAGGER_THROW_POISON_DURATION",
+          "line": 79,
+          "isDefault": false
+        },
+        {
+          "name": "SHATTER_SHATTER_POTENCY",
+          "line": 80,
+          "isDefault": false
+        },
+        {
+          "name": "SHATTER_SHATTER_DURATION",
+          "line": 81,
+          "isDefault": false
+        },
+        {
+          "name": "FLAME_SLASH_BURN_DURATION",
+          "line": 82,
+          "isDefault": false
+        },
+        {
+          "name": "ICICLE_WAVE_FROSTBITE_DURATION",
+          "line": 83,
+          "isDefault": false
+        },
+        {
+          "name": "PERFECTION_POTENCY_PER_AMOUNT",
+          "line": 94,
+          "isDefault": false
+        },
+        {
+          "name": "BOUNCE_MOMENTUM_BUFF_POTENCY",
+          "line": 95,
+          "isDefault": false
+        },
+        {
+          "name": "BOUNCE_MOMENTUM_DURATION_PER_AMOUNT",
+          "line": 96,
+          "isDefault": false
+        },
+        {
+          "name": "TOADZERKER_BUFF_POTENCY",
+          "line": 97,
+          "isDefault": false
+        },
+        {
+          "name": "TOADZERKER_BUFF_DURATION",
+          "line": 98,
+          "isDefault": false
+        },
+        {
+          "name": "IRON_BOUNCE_DURATION_BASE",
+          "line": 99,
+          "isDefault": false
+        },
+        {
+          "name": "IRON_BOUNCE_DURATION_PER_AMOUNT",
+          "line": 100,
+          "isDefault": false
+        },
+        {
+          "name": "SPRINGBLAST_BUFF_POTENCY_PER_AMOUNT",
+          "line": 101,
+          "isDefault": false
+        },
+        {
+          "name": "SPRINGBLAST_BUFF_DURATION_BASE",
+          "line": 102,
+          "isDefault": false
+        },
+        {
+          "name": "SPRINGBLAST_BUFF_DURATION_PER_AMOUNT",
+          "line": 103,
+          "isDefault": false
+        },
+        {
+          "name": "WRATHFUL_CRITS_POTENCY_PER_AMOUNT",
+          "line": 104,
+          "isDefault": false
+        },
+        {
+          "name": "WRATHFUL_CRITS_DURATION_BASE",
+          "line": 105,
+          "isDefault": false
+        },
+        {
+          "name": "WRATHFUL_CRITS_DURATION_PER_AMOUNT",
+          "line": 106,
+          "isDefault": false
+        },
+        {
+          "name": "BLOOD_LUST_POTENCY_PER_AMOUNT",
+          "line": 107,
+          "isDefault": false
+        },
+        {
+          "name": "BLOOD_LUST_DURATION_PER_AMOUNT",
+          "line": 108,
+          "isDefault": false
+        },
+        {
+          "name": "LUMINESCENT_BUFF_POTENCY_PER_AMOUNT",
+          "line": 109,
+          "isDefault": false
+        },
+        {
+          "name": "LUMINESCENT_BUFF_DURATION",
+          "line": 110,
+          "isDefault": false
+        },
+        {
+          "name": "BEASTIAL_RAGE_POTENCY_PER_AMOUNT",
+          "line": 111,
+          "isDefault": false
+        },
+        {
+          "name": "BEASTIAL_RAGE_DURATION",
+          "line": 112,
+          "isDefault": false
+        },
+        {
+          "name": "VASSALS_CROAK_MAX_SUMMONS_BASE",
+          "line": 113,
+          "isDefault": false
+        },
+        {
+          "name": "VASSALS_CROAK_RAGE_DURATION",
+          "line": 114,
+          "isDefault": false
+        },
+        {
+          "name": "IRON_SLAYER_POTENCY_PER_AMOUNT",
+          "line": 115,
+          "isDefault": false
+        },
+        {
+          "name": "IRON_SLAYER_DURATION",
+          "line": 116,
+          "isDefault": false
+        },
+        {
+          "name": "BASTION_REGEN_POTENCY",
+          "line": 117,
+          "isDefault": false
+        },
+        {
+          "name": "BASTION_REINFORCE_POTENCY",
+          "line": 118,
+          "isDefault": false
+        },
+        {
+          "name": "BASTION_RATE_PER_AMOUNT",
+          "line": 119,
+          "isDefault": false
+        },
+        {
+          "name": "BASTION_BUFF_DURATION",
+          "line": 120,
+          "isDefault": false
+        },
+        {
+          "name": "AIR_PRESSURE_BUFF_POTENCY_PER_AMOUNT",
+          "line": 121,
+          "isDefault": false
+        },
+        {
+          "name": "AIR_PRESSURE_BUFF_DURATION",
+          "line": 122,
+          "isDefault": false
+        },
+        {
+          "name": "APOLLO_TAUNT_POTENCY",
+          "line": 123,
+          "isDefault": false
+        },
+        {
+          "name": "APOLLO_TAUNT_DURATION",
+          "line": 124,
+          "isDefault": false
+        },
+        {
+          "name": "VALOR_TAUNT_POTENCY",
+          "line": 125,
+          "isDefault": false
+        },
+        {
+          "name": "VALOR_TAUNT_DURATION",
+          "line": 126,
+          "isDefault": false
+        },
+        {
+          "name": "CHANNELED_REINFORCE_POTENCY",
+          "line": 127,
+          "isDefault": false
+        },
+        {
+          "name": "CHANNELED_REINFORCE_DURATION",
+          "line": 128,
+          "isDefault": false
+        },
+        {
+          "name": "GLADIATORIAL_RAGE_POTENCY",
+          "line": 129,
+          "isDefault": false
+        },
+        {
+          "name": "GLADIATORIAL_RAGE_DURATION",
+          "line": 130,
+          "isDefault": false
+        },
+        {
+          "name": "GLYPH_CONDUIT_POTENCY_PER_AMOUNT",
+          "line": 131,
+          "isDefault": false
+        },
+        {
+          "name": "GLYPH_CONDUIT_DURATION_MULT",
+          "line": 132,
+          "isDefault": false
+        },
+        {
+          "name": "ROARING_WEAKNESS_POTENCY",
+          "line": 133,
+          "isDefault": false
+        },
+        {
+          "name": "ROARING_SHATTER_POTENCY",
+          "line": 134,
+          "isDefault": false
+        },
+        {
+          "name": "ROARING_ANTI_HEAL_POTENCY",
+          "line": 135,
+          "isDefault": false
+        },
+        {
+          "name": "ROARING_DEBUFF_DURATION",
+          "line": 136,
+          "isDefault": false
+        },
+        {
+          "name": "STORM_REND_POTENCY_PER_AMOUNT",
+          "line": 137,
+          "isDefault": false
+        },
+        {
+          "name": "STORM_REND_DURATION",
+          "line": 138,
+          "isDefault": false
+        },
+        {
+          "name": "EROSION_POTENCY_BASE",
+          "line": 139,
+          "isDefault": false
+        },
+        {
+          "name": "EROSION_POTENCY_PER_AMOUNT",
+          "line": 140,
+          "isDefault": false
+        },
+        {
+          "name": "EROSION_DURATION",
+          "line": 141,
+          "isDefault": false
+        },
+        {
+          "name": "QUICKDRAW_POTENCY_PER_AMOUNT",
+          "line": 142,
+          "isDefault": false
+        },
+        {
+          "name": "QUICKDRAW_DURATION",
+          "line": 143,
+          "isDefault": false
+        },
+        {
+          "name": "TAILWIND_BUFF_POTENCY",
+          "line": 144,
+          "isDefault": false
+        },
+        {
+          "name": "TAILWIND_BUFF_DURATION",
+          "line": 145,
+          "isDefault": false
+        },
+        {
+          "name": "TOXIN_TRANSFER_DURATION_EXTRA",
+          "line": 146,
+          "isDefault": false
+        },
+        {
+          "name": "GROUNDED_DESPAIR_POTENCY_PER_AMOUNT",
+          "line": 147,
+          "isDefault": false
+        },
+        {
+          "name": "GROUNDED_DESPAIR_DURATION_PER_AMOUNT",
+          "line": 148,
+          "isDefault": false
+        },
+        {
+          "name": "QUEENS_POWER_POTENCY_PER_AMOUNT",
+          "line": 149,
+          "isDefault": false
+        },
+        {
+          "name": "QUEENS_POWER_DURATION",
+          "line": 150,
+          "isDefault": false
+        },
+        {
+          "name": "QUEENS_POWER_ATK_SPD_BASE",
+          "line": 151,
+          "isDefault": false
+        },
+        {
+          "name": "QUEENS_POWER_ATK_SPD_PER_TENTH_POTENCY",
+          "line": 152,
+          "isDefault": false
+        },
+        {
+          "name": "QUEENS_POWER_SUMMON_SCALING_PER_TENTH_POTENCY",
+          "line": 153,
+          "isDefault": false
+        },
+        {
+          "name": "ICESTORM_POTENCY_PER_AMOUNT",
+          "line": 154,
+          "isDefault": false
+        },
+        {
+          "name": "ICESTORM_DURATION",
+          "line": 155,
+          "isDefault": false
+        },
+        {
+          "name": "SWIFT_GUARD_POTENCY_PER_AMOUNT",
+          "line": 156,
+          "isDefault": false
+        },
+        {
+          "name": "SWIFT_GUARD_DURATION",
+          "line": 157,
+          "isDefault": false
+        },
+        {
+          "name": "RUNIC_WINDS_POTENCY_PER_AMOUNT",
+          "line": 158,
+          "isDefault": false
+        },
+        {
+          "name": "RUNIC_WINDS_DURATION",
+          "line": 159,
+          "isDefault": false
+        },
+        {
+          "name": "GRANDMAGIC_GUARD_POTENCY_PER_AMOUNT",
+          "line": 160,
+          "isDefault": false
+        },
+        {
+          "name": "GRANDMAGIC_GUARD_DURATION",
+          "line": 161,
+          "isDefault": false
+        },
+        {
+          "name": "MARSH_FLOW_POTENCY",
+          "line": 162,
+          "isDefault": false
+        },
+        {
+          "name": "MARSH_FLOW_DURATION_BASE",
+          "line": 163,
+          "isDefault": false
+        },
+        {
+          "name": "MARSH_FLOW_DURATION_PER_AMOUNT",
+          "line": 164,
+          "isDefault": false
+        },
+        {
+          "name": "SHATTERING_JUSTICE_POTENCY_PER_AMOUNT",
+          "line": 165,
+          "isDefault": false
+        },
+        {
+          "name": "SHATTERING_JUSTICE_DURATION",
+          "line": 166,
+          "isDefault": false
+        },
+        {
+          "name": "SERRATED_EDGE_DURATION",
+          "line": 167,
+          "isDefault": false
+        },
+        {
+          "name": "CLEAVE_POTENCY",
+          "line": 168,
+          "isDefault": false
+        },
+        {
+          "name": "CLEAVE_DURATION",
+          "line": 169,
+          "isDefault": false
+        },
+        {
+          "name": "VIRULENT_CORE_DURATION",
+          "line": 170,
+          "isDefault": false
+        },
+        {
+          "name": "PROTO_TECH_DURATION",
+          "line": 171,
+          "isDefault": false
+        },
+        {
+          "name": "BOUNCE_DURATION_BASE",
+          "line": 174,
+          "isDefault": false
+        },
+        {
+          "name": "BOUNCE_DURATION_PER_STACK",
+          "line": 175,
+          "isDefault": false
+        },
+        {
+          "name": "MOD_GLADIATORIAL_POTENCY",
+          "line": 176,
+          "isDefault": false
+        },
+        {
+          "name": "MOD_MAGE_RAGE_POTENCY",
+          "line": 177,
+          "isDefault": false
+        },
+        {
+          "name": "MOD_OCEANS_RAGE_POTENCY",
+          "line": 178,
+          "isDefault": false
+        },
+        {
+          "name": "MOD_SLAYER_RAGE_POTENCY",
+          "line": 179,
+          "isDefault": false
+        },
+        {
+          "name": "MOD_SLAYER_WEAKNESS_POTENCY",
+          "line": 180,
+          "isDefault": false
+        },
+        {
+          "name": "SLAYER_RAGE_RAGE_RUNE_WEAK_POTENCY",
+          "line": 181,
+          "isDefault": false
+        },
+        {
+          "name": "SLAYER_RAGE_WEAK_DURATION",
+          "line": 182,
+          "isDefault": false
+        },
+        {
+          "name": "SLAYER_RAGE_ROAR_WEAK_BASE_POTENCY",
+          "line": 183,
+          "isDefault": false
+        },
+        {
+          "name": "SLAYER_RAGE_ROAR_RAGE_POTENCY",
+          "line": 184,
+          "isDefault": false
+        },
+        {
+          "name": "SLAYER_RAGE_ROAR_RAGE_DURATION",
+          "line": 185,
+          "isDefault": false
+        },
+        {
+          "name": "MOD_IRON_SLAYER_POTENCY",
+          "line": 186,
+          "isDefault": false
+        },
+        {
+          "name": "MOD_IRON_SLAYER_DURATION",
+          "line": 187,
+          "isDefault": false
+        },
+        {
+          "name": "MOD_FURY_DURATION",
+          "line": 188,
+          "isDefault": false
+        },
+        {
+          "name": "MOD_TAILWIND_POTENCY",
+          "line": 189,
+          "isDefault": false
+        },
+        {
+          "name": "MOD_WIND_WALKER_DURATION_DIVISOR",
+          "line": 190,
+          "isDefault": false
+        },
+        {
+          "name": "MOD_SLOW_LEAK_DURATION",
+          "line": 191,
+          "isDefault": false
+        },
+        {
+          "name": "ENDLESS_DESPAIR_POTENCY_PER_STACK",
+          "line": 194,
+          "isDefault": false
+        },
+        {
+          "name": "ENDLESS_DESPAIR_FLAT_BONUS",
+          "line": 195,
+          "isDefault": false
+        },
+        {
+          "name": "ENDLESS_DESPAIR_DURATION_PER_STACK",
+          "line": 196,
+          "isDefault": false
+        },
+        {
+          "name": "STORED_CORRUPTION_DURATION_PER_STACK",
+          "line": 197,
+          "isDefault": false
+        },
+        {
+          "name": "PROPELLING_FUN_POTENCY_PER_AMOUNT",
+          "line": 200,
+          "isDefault": false
+        },
+        {
+          "name": "PROPELLING_FUN_DURATION_MULTIPLIER",
+          "line": 201,
+          "isDefault": false
+        },
+        {
+          "name": "CLOUDPUSH_PCT_PER_POTENCY",
+          "line": 202,
+          "isDefault": false
+        },
+        {
+          "name": "CINDERPULL_PCT_PER_POTENCY",
+          "line": 203,
+          "isDefault": false
+        },
+        {
+          "name": "CLOUDPUSH_PCT_PER_STACK",
+          "line": 204,
+          "isDefault": false
+        },
+        {
+          "name": "CINDERPULL_PCT_PER_STACK",
+          "line": 205,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 166,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    }
+  ]
+}

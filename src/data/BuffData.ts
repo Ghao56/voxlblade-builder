@@ -85,6 +85,7 @@ import {
   DARKENING_HEX_DURATION_ADD_PER_AMOUNT, DARKENING_HEX_MAX_ACTIVATIONS,
   KINDLING_BURN_DURATION_MULT,
 } from '../lib/constants/perks'
+import { DRAGIGATOR_SPIRIT_BURN_DURATION } from '../lib/constants/perk-base-damage'
 import { canProc } from '../lib/types'
 import { findPerkDmgDef } from './Perkbasedmg'
 
@@ -1327,6 +1328,9 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
   ],
   'Heat Drill': () => [
     { buffName: 'Burn', potency: 0, duration: 5, condition: 'Applies Burn on Lunge/Barrage hit', sourceName: 'Heat Drill', sourceType: 'perk' },
+  ],
+  'Dragigator Spirit': () => [
+    { buffName: 'Burn', potency: 0, duration: DRAGIGATOR_SPIRIT_BURN_DURATION, condition: 'Applies Burn on RMB Flame Blast hit', sourceName: 'Dragigator Spirit', sourceType: 'perk' },
   ],
   'Storm Rend': (amount) => [
     {

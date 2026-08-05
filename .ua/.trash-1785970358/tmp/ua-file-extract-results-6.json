@@ -1,0 +1,1327 @@
+{
+  "scriptCompleted": true,
+  "filesAnalyzed": 4,
+  "filesSkipped": [],
+  "results": [
+    {
+      "path": "src/lib/constants/perk-base-damage.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 261,
+      "nonEmptyLines": 215,
+      "exports": [
+        {
+          "name": "DRAGON_CLAW_BASE_DAMAGE",
+          "line": 6,
+          "isDefault": false
+        },
+        {
+          "name": "DRAGON_CLAW_DAMAGE_PER_STACK",
+          "line": 7,
+          "isDefault": false
+        },
+        {
+          "name": "DRAGON_CLAW_HOLY_HEAL_BASE",
+          "line": 8,
+          "isDefault": false
+        },
+        {
+          "name": "DRAGON_CLAW_HOLY_HEAL_PER_STACK",
+          "line": 9,
+          "isDefault": false
+        },
+        {
+          "name": "DRAGON_CLAW_WATER_HEAL_BASE",
+          "line": 10,
+          "isDefault": false
+        },
+        {
+          "name": "DRAGON_CLAW_WATER_HEAL_PER_STACK",
+          "line": 11,
+          "isDefault": false
+        },
+        {
+          "name": "DRAGON_CLAW_POISE_DAMAGE",
+          "line": 12,
+          "isDefault": false
+        },
+        {
+          "name": "DRAGON_BUBBLE_BASE_DAMAGE",
+          "line": 15,
+          "isDefault": false
+        },
+        {
+          "name": "DRAGON_BUBBLE_DAMAGE_PER_STACK",
+          "line": 16,
+          "isDefault": false
+        },
+        {
+          "name": "DRAGON_BUBBLE_HOLY_HEAL_BASE",
+          "line": 17,
+          "isDefault": false
+        },
+        {
+          "name": "DRAGON_BUBBLE_HOLY_HEAL_PER_STACK",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "DRAGON_BUBBLE_WATER_HEAL_BASE",
+          "line": 19,
+          "isDefault": false
+        },
+        {
+          "name": "DRAGON_BUBBLE_WATER_HEAL_PER_STACK",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "DRAGON_BUBBLE_POISE_DAMAGE",
+          "line": 21,
+          "isDefault": false
+        },
+        {
+          "name": "SPRINGBLAST_BASE_HIT",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "SPRINGBLAST_PER_STACK_HIT",
+          "line": 25,
+          "isDefault": false
+        },
+        {
+          "name": "SPRINGBLAST_MULT_PER_STACK",
+          "line": 26,
+          "isDefault": false
+        },
+        {
+          "name": "SPRINGBLAST_DENOM_HALF",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "SPRINGBLAST_ROUND",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "BASIC_SPIRIT_BASE_DMG",
+          "line": 31,
+          "isDefault": false
+        },
+        {
+          "name": "BASIC_SPIRIT_HITS",
+          "line": 32,
+          "isDefault": false
+        },
+        {
+          "name": "BUNI_SPIRIT_BASE_DMG",
+          "line": 35,
+          "isDefault": false
+        },
+        {
+          "name": "BUNI_SPIRIT_HITS",
+          "line": 36,
+          "isDefault": false
+        },
+        {
+          "name": "MAGELING_SPIRIT_BASE_DMG",
+          "line": 39,
+          "isDefault": false
+        },
+        {
+          "name": "TOADZERKER_SPIRIT_BASE_DMG",
+          "line": 42,
+          "isDefault": false
+        },
+        {
+          "name": "DIRE_BUNI_SPIRIT_BASE_DMG",
+          "line": 45,
+          "isDefault": false
+        },
+        {
+          "name": "VOID_ROOT_SPIRIT_BASE_DMG",
+          "line": 48,
+          "isDefault": false
+        },
+        {
+          "name": "VOID_ROOT_SPIRIT_HITS",
+          "line": 49,
+          "isDefault": false
+        },
+        {
+          "name": "ROGUENT_SPIRIT_BASE_DMG",
+          "line": 52,
+          "isDefault": false
+        },
+        {
+          "name": "ROGUENT_SPIRIT_HITS",
+          "line": 53,
+          "isDefault": false
+        },
+        {
+          "name": "CACI_SPIRIT_THORN_DMG",
+          "line": 56,
+          "isDefault": false
+        },
+        {
+          "name": "CACI_SPIRIT_SLAM_DMG",
+          "line": 57,
+          "isDefault": false
+        },
+        {
+          "name": "CACI_SPIRIT_THORN_HITS",
+          "line": 58,
+          "isDefault": false
+        },
+        {
+          "name": "CACI_SPIRIT_SLAM_HITS",
+          "line": 59,
+          "isDefault": false
+        },
+        {
+          "name": "CACI_SPIRIT_BLEED_DURATION",
+          "line": 60,
+          "isDefault": false
+        },
+        {
+          "name": "WOOF_SPIRIT_BASE_DMG",
+          "line": 63,
+          "isDefault": false
+        },
+        {
+          "name": "WOOF_SPIRIT_HEAL",
+          "line": 64,
+          "isDefault": false
+        },
+        {
+          "name": "WOOF_SPIRIT_WEAKNESS_POTENCY",
+          "line": 65,
+          "isDefault": false
+        },
+        {
+          "name": "WOOF_SPIRIT_WEAKNESS_DURATION",
+          "line": 66,
+          "isDefault": false
+        },
+        {
+          "name": "WINTER_WOOF_SPIRIT_HOWL_DMG",
+          "line": 69,
+          "isDefault": false
+        },
+        {
+          "name": "WINTER_WOOF_SPIRIT_BITE_DMG",
+          "line": 70,
+          "isDefault": false
+        },
+        {
+          "name": "WINTER_WOOF_SPIRIT_BITES",
+          "line": 71,
+          "isDefault": false
+        },
+        {
+          "name": "WINTER_WOOF_SPIRIT_SHATTER_POTENCY",
+          "line": 72,
+          "isDefault": false
+        },
+        {
+          "name": "WINTER_WOOF_SPIRIT_SHATTER_DURATION",
+          "line": 73,
+          "isDefault": false
+        },
+        {
+          "name": "WINTER_WOOF_SPIRIT_BLEED_DURATION",
+          "line": 74,
+          "isDefault": false
+        },
+        {
+          "name": "WINTER_WOOF_SPIRIT_DURATION",
+          "line": 75,
+          "isDefault": false
+        },
+        {
+          "name": "SNOEMAN_SPIRIT_ROAR_DMG",
+          "line": 78,
+          "isDefault": false
+        },
+        {
+          "name": "SNOEMAN_SPIRIT_ICESTORM_BASE_DMG",
+          "line": 79,
+          "isDefault": false
+        },
+        {
+          "name": "SNOEMAN_SPIRIT_HITS",
+          "line": 80,
+          "isDefault": false
+        },
+        {
+          "name": "SNOEMAN_SPIRIT_SLOWNESS_POTENCY",
+          "line": 81,
+          "isDefault": false
+        },
+        {
+          "name": "BOUNCE_MOMENTUM_BASE_DMG",
+          "line": 84,
+          "isDefault": false
+        },
+        {
+          "name": "BOUNCE_MOMENTUM_DMG_PER_STACK",
+          "line": 85,
+          "isDefault": false
+        },
+        {
+          "name": "PROTECTOR_SPIRIT_BASE_DMG",
+          "line": 88,
+          "isDefault": false
+        },
+        {
+          "name": "PROTECTOR_SPIRIT_DMG_PER_STACK",
+          "line": 89,
+          "isDefault": false
+        },
+        {
+          "name": "AIR_PRESSURE_DMG_PER_STACK",
+          "line": 92,
+          "isDefault": false
+        },
+        {
+          "name": "AIR_BARRIER_DMG_PER_STACK",
+          "line": 95,
+          "isDefault": false
+        },
+        {
+          "name": "ROARING_HEADS_BASE_DMG",
+          "line": 98,
+          "isDefault": false
+        },
+        {
+          "name": "ROARING_HEADS_DMG_PER_STACK",
+          "line": 99,
+          "isDefault": false
+        },
+        {
+          "name": "BARBED_FLURRY_BASE_DMG",
+          "line": 102,
+          "isDefault": false
+        },
+        {
+          "name": "BARBED_FLURRY_DMG_PER_STACK",
+          "line": 103,
+          "isDefault": false
+        },
+        {
+          "name": "HONEY_ARTS_BASE_DMG",
+          "line": 106,
+          "isDefault": false
+        },
+        {
+          "name": "HONEY_ARTS_DMG_PER_STACK",
+          "line": 107,
+          "isDefault": false
+        },
+        {
+          "name": "HONEY_ARTS_STICKY_DURATION",
+          "line": 108,
+          "isDefault": false
+        },
+        {
+          "name": "SICKNESS_BASE_DMG",
+          "line": 111,
+          "isDefault": false
+        },
+        {
+          "name": "SICKNESS_DMG_PER_STACK",
+          "line": 112,
+          "isDefault": false
+        },
+        {
+          "name": "MELTING_SLIME_BASE_DMG",
+          "line": 115,
+          "isDefault": false
+        },
+        {
+          "name": "MELTING_SLIME_FIRE_SCALE_BASE",
+          "line": 116,
+          "isDefault": false
+        },
+        {
+          "name": "MELTING_SLIME_FIRE_SCALE_PER_STACK",
+          "line": 117,
+          "isDefault": false
+        },
+        {
+          "name": "MELTING_SLIME_EARTH_SCALE_BASE",
+          "line": 118,
+          "isDefault": false
+        },
+        {
+          "name": "MELTING_SLIME_EARTH_SCALE_PER_STACK",
+          "line": 119,
+          "isDefault": false
+        },
+        {
+          "name": "WHIRLWIND_BASE_DMG",
+          "line": 122,
+          "isDefault": false
+        },
+        {
+          "name": "WHIRLWIND_DMG_PER_STACK",
+          "line": 123,
+          "isDefault": false
+        },
+        {
+          "name": "VOLATILE_SHELL_BASE_DMG",
+          "line": 126,
+          "isDefault": false
+        },
+        {
+          "name": "VOLATILE_SHELL_DMG_PER_STACK",
+          "line": 127,
+          "isDefault": false
+        },
+        {
+          "name": "VOLATILE_SHELL_POISON_DURATION",
+          "line": 128,
+          "isDefault": false
+        },
+        {
+          "name": "ROYAL_FINISHER_BASE_DMG",
+          "line": 131,
+          "isDefault": false
+        },
+        {
+          "name": "ROYAL_FINISHER_DMG_PER_STACK",
+          "line": 132,
+          "isDefault": false
+        },
+        {
+          "name": "GROUNDED_DESPAIR_BASE_DMG",
+          "line": 135,
+          "isDefault": false
+        },
+        {
+          "name": "GROUNDED_DESPAIR_DMG_PER_STACK",
+          "line": 136,
+          "isDefault": false
+        },
+        {
+          "name": "ECHO_INCINERATION_BASE_DMG",
+          "line": 139,
+          "isDefault": false
+        },
+        {
+          "name": "ECHO_INCINERATION_DMG_PER_STACK",
+          "line": 140,
+          "isDefault": false
+        },
+        {
+          "name": "VENOM_SPITTER_BASE_DMG",
+          "line": 143,
+          "isDefault": false
+        },
+        {
+          "name": "VENOM_SPITTER_DMG_PER_STACK",
+          "line": 144,
+          "isDefault": false
+        },
+        {
+          "name": "VENOM_SPITTER_HIT_DIVISOR",
+          "line": 145,
+          "isDefault": false
+        },
+        {
+          "name": "SPORE_BURST_POTENCY_MULT",
+          "line": 148,
+          "isDefault": false
+        },
+        {
+          "name": "SPORE_BURST_BASE",
+          "line": 149,
+          "isDefault": false
+        },
+        {
+          "name": "SPORE_BURST_ROUND",
+          "line": 150,
+          "isDefault": false
+        },
+        {
+          "name": "APOLLO_BOOST_BASE",
+          "line": 153,
+          "isDefault": false
+        },
+        {
+          "name": "APOLLO_BOOST_SUB_BASE",
+          "line": 154,
+          "isDefault": false
+        },
+        {
+          "name": "APOLLO_BOOST_PER_STACK",
+          "line": 155,
+          "isDefault": false
+        },
+        {
+          "name": "APOLLO_BOOST_HITS_BASE",
+          "line": 156,
+          "isDefault": false
+        },
+        {
+          "name": "APOLLO_BOOST_HITS_PER_STACK",
+          "line": 157,
+          "isDefault": false
+        },
+        {
+          "name": "APOLLO_BOOST_TAUNT_DURATION",
+          "line": 158,
+          "isDefault": false
+        },
+        {
+          "name": "BELLOWING_EMBER_HP_GATE_THRESHOLD",
+          "line": 161,
+          "isDefault": false
+        },
+        {
+          "name": "BELLOWING_EMBER_HP_GATE_PER_STACK",
+          "line": 162,
+          "isDefault": false
+        },
+        {
+          "name": "PROTECTOR_SPIRIT_HP_GATE",
+          "line": 163,
+          "isDefault": false
+        },
+        {
+          "name": "PROTECTOR_SPIRIT_ALWAYS_ACTIVE_AT",
+          "line": 164,
+          "isDefault": false
+        },
+        {
+          "name": "BOMBER_CHARGE_BASE",
+          "line": 167,
+          "isDefault": false
+        },
+        {
+          "name": "BOMBER_CHARGE_PCT_PER_STACK",
+          "line": 168,
+          "isDefault": false
+        },
+        {
+          "name": "BOMBER_CHARGE_MISSING_HP_MULT",
+          "line": 169,
+          "isDefault": false
+        },
+        {
+          "name": "BOMBER_CHARGE_MISSING_HP_CAP",
+          "line": 170,
+          "isDefault": false
+        },
+        {
+          "name": "DARK_HARVEST_BASE_DAMAGE",
+          "line": 173,
+          "isDefault": false
+        },
+        {
+          "name": "DARK_HARVEST_DAMAGE_PER_STACK",
+          "line": 174,
+          "isDefault": false
+        },
+        {
+          "name": "DARK_HARVEST_HP_GATE_THRESHOLD",
+          "line": 175,
+          "isDefault": false
+        },
+        {
+          "name": "DARK_HARVEST_HEAL_PER_STACK",
+          "line": 176,
+          "isDefault": false
+        },
+        {
+          "name": "DARK_HARVEST_COOLDOWN",
+          "line": 177,
+          "isDefault": false
+        },
+        {
+          "name": "PYRE_BLOOM_BASE_DMG",
+          "line": 180,
+          "isDefault": false
+        },
+        {
+          "name": "PYRE_BLOOM_DMG_PER_STACK",
+          "line": 181,
+          "isDefault": false
+        },
+        {
+          "name": "PYRE_BLOOM_CD_DMG_DIVISOR",
+          "line": 182,
+          "isDefault": false
+        },
+        {
+          "name": "PYRE_BLOOM_AMMO_BASE",
+          "line": 183,
+          "isDefault": false
+        },
+        {
+          "name": "PYRE_BLOOM_AMMO_PER_STACK",
+          "line": 184,
+          "isDefault": false
+        },
+        {
+          "name": "PYRE_BLOOM_AMMO_CD_DIVISOR",
+          "line": 185,
+          "isDefault": false
+        },
+        {
+          "name": "PYRE_BLOOM_AMMO_CD_SUBTRACT",
+          "line": 186,
+          "isDefault": false
+        },
+        {
+          "name": "PYRE_BLOOM_AMMO_MIN",
+          "line": 187,
+          "isDefault": false
+        },
+        {
+          "name": "PYRE_BLOOM_AMMO_MAX",
+          "line": 188,
+          "isDefault": false
+        },
+        {
+          "name": "PYRE_BLOOM_FIRERATE_DIVISOR",
+          "line": 189,
+          "isDefault": false
+        },
+        {
+          "name": "PYRE_BLOOM_MAX_ACTIVE_BASE",
+          "line": 190,
+          "isDefault": false
+        },
+        {
+          "name": "PYRE_BLOOM_MAX_ACTIVE_PER_STACK",
+          "line": 191,
+          "isDefault": false
+        },
+        {
+          "name": "PYRE_BLOOM_BURN_DURATION",
+          "line": 192,
+          "isDefault": false
+        },
+        {
+          "name": "BASTION_BALLISTA_BASE_DMG",
+          "line": 195,
+          "isDefault": false
+        },
+        {
+          "name": "BASTION_BALLISTA_DMG_PER_STACK",
+          "line": 196,
+          "isDefault": false
+        },
+        {
+          "name": "BASTION_BALLISTA_MAX_POTENCY_BASE",
+          "line": 197,
+          "isDefault": false
+        },
+        {
+          "name": "BASTION_BALLISTA_RESTORE_DELAY",
+          "line": 198,
+          "isDefault": false
+        },
+        {
+          "name": "BASTION_BALLISTA_FIRE_COOLDOWN",
+          "line": 199,
+          "isDefault": false
+        },
+        {
+          "name": "BASTION_BALLISTA_PROC_COEFF",
+          "line": 200,
+          "isDefault": false
+        },
+        {
+          "name": "RUNIC_BLADES_BASE_DMG",
+          "line": 203,
+          "isDefault": false
+        },
+        {
+          "name": "RUNIC_BLADES_DMG_PER_STACK",
+          "line": 204,
+          "isDefault": false
+        },
+        {
+          "name": "RUNIC_BLADES_DEBUFF_DURATION_PER_STACK",
+          "line": 205,
+          "isDefault": false
+        },
+        {
+          "name": "RUNIC_BLADES_INNER_COOLDOWN",
+          "line": 206,
+          "isDefault": false
+        },
+        {
+          "name": "GNAWING_POISON_BASE_DMG",
+          "line": 209,
+          "isDefault": false
+        },
+        {
+          "name": "GNAWING_POISON_DMG_PER_STACK",
+          "line": 210,
+          "isDefault": false
+        },
+        {
+          "name": "GNAWING_POISON_COOLDOWN",
+          "line": 211,
+          "isDefault": false
+        },
+        {
+          "name": "ICE_BURST_BASE_DMG",
+          "line": 214,
+          "isDefault": false
+        },
+        {
+          "name": "ICE_BURST_DMG_PER_STACK",
+          "line": 215,
+          "isDefault": false
+        },
+        {
+          "name": "ICE_BURST_BLEED_DURATION",
+          "line": 216,
+          "isDefault": false
+        },
+        {
+          "name": "PROPELLING_FUN_BASE_DMG",
+          "line": 219,
+          "isDefault": false
+        },
+        {
+          "name": "PROPELLING_FUN_DMG_PER_STACK",
+          "line": 220,
+          "isDefault": false
+        },
+        {
+          "name": "PROPELLING_FUN_COOLDOWN",
+          "line": 221,
+          "isDefault": false
+        },
+        {
+          "name": "QUAKE_BASE_DMG",
+          "line": 224,
+          "isDefault": false
+        },
+        {
+          "name": "QUAKE_DMG_PER_STACK",
+          "line": 225,
+          "isDefault": false
+        },
+        {
+          "name": "QUAKE_CHANCE_BASE",
+          "line": 226,
+          "isDefault": false
+        },
+        {
+          "name": "QUAKE_CHANCE_PER_STACK",
+          "line": 227,
+          "isDefault": false
+        },
+        {
+          "name": "RULER_SANDS_BASE_DMG_PER_HIT",
+          "line": 230,
+          "isDefault": false
+        },
+        {
+          "name": "RULER_SANDS_HITS",
+          "line": 231,
+          "isDefault": false
+        },
+        {
+          "name": "RULER_SANDS_CHANCE_CD_MULT",
+          "line": 232,
+          "isDefault": false
+        },
+        {
+          "name": "RULER_SANDS_CHANCE_PERK_MULT",
+          "line": 233,
+          "isDefault": false
+        },
+        {
+          "name": "ICHOR_SPARK_SWIPE_BASE_A",
+          "line": 236,
+          "isDefault": false
+        },
+        {
+          "name": "ICHOR_SPARK_SWIPE_BASE_B",
+          "line": 237,
+          "isDefault": false
+        },
+        {
+          "name": "ICHOR_SPARK_SLASH_BASE_A",
+          "line": 238,
+          "isDefault": false
+        },
+        {
+          "name": "ICHOR_SPARK_SLASH_BASE_B",
+          "line": 239,
+          "isDefault": false
+        },
+        {
+          "name": "ICHOR_SPARK_CHARGE_DMG_MULT",
+          "line": 240,
+          "isDefault": false
+        },
+        {
+          "name": "ICHOR_SPARK_CHARGE_TIME_BASE",
+          "line": 241,
+          "isDefault": false
+        },
+        {
+          "name": "ICHOR_SPARK_CHARGE_TIME_PER_STACK",
+          "line": 242,
+          "isDefault": false
+        },
+        {
+          "name": "ICHOR_SPARK_CHAIN_DMG_PCT",
+          "line": 243,
+          "isDefault": false
+        },
+        {
+          "name": "ICHOR_SPARK_CHAIN_HEAL_FLAT",
+          "line": 244,
+          "isDefault": false
+        },
+        {
+          "name": "ICHOR_SPARK_SLASH_HEAL_AT_MIN",
+          "line": 245,
+          "isDefault": false
+        },
+        {
+          "name": "ICHOR_SPARK_SLASH_CHARGE_THRESHOLD",
+          "line": 246,
+          "isDefault": false
+        },
+        {
+          "name": "ICHOR_SPARK_CHAIN_PROC_CHANCE",
+          "line": 247,
+          "isDefault": false
+        },
+        {
+          "name": "ICHOR_SPARK_BLEED_DURATION",
+          "line": 248,
+          "isDefault": false
+        },
+        {
+          "name": "BLAZING_FINISHER_BASE_DMG",
+          "line": 251,
+          "isDefault": false
+        },
+        {
+          "name": "BLAZING_FINISHER_FINISHER_PCT",
+          "line": 252,
+          "isDefault": false
+        },
+        {
+          "name": "DEATHMIST_SLASH_BASE_DMG",
+          "line": 255,
+          "isDefault": false
+        },
+        {
+          "name": "DEATHMIST_SLASH_ALLIES_HEAL_BASE",
+          "line": 256,
+          "isDefault": false
+        },
+        {
+          "name": "DEATHMIST_SLASH_SELF_HEAL_BASE",
+          "line": 257,
+          "isDefault": false
+        },
+        {
+          "name": "STORM_CALLER_BASE_DMG",
+          "line": 260,
+          "isDefault": false
+        },
+        {
+          "name": "STORM_CALLER_DMG_PER_STACK",
+          "line": 261,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 166,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/constants/perks.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 122,
+      "nonEmptyLines": 89,
+      "exports": [
+        {
+          "name": "LUMINESCENT_PCT_PER_STACK",
+          "line": 3,
+          "isDefault": false
+        },
+        {
+          "name": "SPIRIT_WINDS_PCT_PER_STACK",
+          "line": 5,
+          "isDefault": false
+        },
+        {
+          "name": "DARK_MAGIC_PCT_PER_STACK",
+          "line": 7,
+          "isDefault": false
+        },
+        {
+          "name": "WIND_WALKER_PEN_PER_STACK",
+          "line": 9,
+          "isDefault": false
+        },
+        {
+          "name": "REAPER_PCT_PER_DEBUFF_PER_STACK",
+          "line": 11,
+          "isDefault": false
+        },
+        {
+          "name": "EXTINGUISH_MULT_PER_STACK",
+          "line": 13,
+          "isDefault": false
+        },
+        {
+          "name": "EXPLOSIVE_CHARGE_PCT",
+          "line": 15,
+          "isDefault": false
+        },
+        {
+          "name": "BLUB_BLUB_PCT_PER_STACK",
+          "line": 17,
+          "isDefault": false
+        },
+        {
+          "name": "BLUB_BLUB_HIT_COUNT",
+          "line": 18,
+          "isDefault": false
+        },
+        {
+          "name": "BLUB_BLUB_PROC_CHANCE",
+          "line": 19,
+          "isDefault": false
+        },
+        {
+          "name": "BLUB_BLUB_DMG_TYPES",
+          "line": 20,
+          "isDefault": false
+        },
+        {
+          "name": "WILD_BOLT_DMG_REDUCTION",
+          "line": 22,
+          "isDefault": false
+        },
+        {
+          "name": "LIGHTNING_CLOAK_FRACTION",
+          "line": 24,
+          "isDefault": false
+        },
+        {
+          "name": "CURSE_RIP_DIVISOR",
+          "line": 26,
+          "isDefault": false
+        },
+        {
+          "name": "CURSE_RIP_DMG_BOOST_CONST",
+          "line": 27,
+          "isDefault": false
+        },
+        {
+          "name": "CURSE_RIP_DMG_BOOST_PER_DEBUFF",
+          "line": 28,
+          "isDefault": false
+        },
+        {
+          "name": "TRUE_BALANCE_DMG_DIVISOR",
+          "line": 30,
+          "isDefault": false
+        },
+        {
+          "name": "TRUE_BALANCE_HEAL_DIVISOR",
+          "line": 31,
+          "isDefault": false
+        },
+        {
+          "name": "EMOTIONAL_PCT_PER_STACK",
+          "line": 33,
+          "isDefault": false
+        },
+        {
+          "name": "TOXIN_TRANSFER_PCT_PER_STACK",
+          "line": 35,
+          "isDefault": false
+        },
+        {
+          "name": "VOID_RAGE_PCT_PER_STACK",
+          "line": 37,
+          "isDefault": false
+        },
+        {
+          "name": "CHANNELED_WEAPON_PCT_PER_STACK",
+          "line": 39,
+          "isDefault": false
+        },
+        {
+          "name": "DRACONIC_BLOOD_PCT_PER_STACK",
+          "line": 41,
+          "isDefault": false
+        },
+        {
+          "name": "WILD_BOLT_ELEMENTS",
+          "line": 43,
+          "isDefault": false
+        },
+        {
+          "name": "BASE_CRIT_DAMAGE",
+          "line": 46,
+          "isDefault": false
+        },
+        {
+          "name": "DEX_CRIT_DIVISOR",
+          "line": 47,
+          "isDefault": false
+        },
+        {
+          "name": "PRIMAL_DIVISOR",
+          "line": 48,
+          "isDefault": false
+        },
+        {
+          "name": "FLOWING_CRITS_BOOST_MULT",
+          "line": 51,
+          "isDefault": false
+        },
+        {
+          "name": "SPELL_SLINGER_BOOST_MULT",
+          "line": 52,
+          "isDefault": false
+        },
+        {
+          "name": "SHARP_CRITS_BOOST_MULT",
+          "line": 53,
+          "isDefault": false
+        },
+        {
+          "name": "SEISMIC_MOMENTUM_BOOST_MULT",
+          "line": 54,
+          "isDefault": false
+        },
+        {
+          "name": "PERFECTION_CRIT_PER_STACK",
+          "line": 55,
+          "isDefault": false
+        },
+        {
+          "name": "CACI_KING_SPIRIT_CRIT_PER_STACK",
+          "line": 56,
+          "isDefault": false
+        },
+        {
+          "name": "THIEF_TRAINING_CRIT_DMG_MULT",
+          "line": 59,
+          "isDefault": false
+        },
+        {
+          "name": "THIEF_TRAINING_CRIT_DMG_SUB",
+          "line": 60,
+          "isDefault": false
+        },
+        {
+          "name": "VENOM_EATER_CRIT_DMG_SUB",
+          "line": 61,
+          "isDefault": false
+        },
+        {
+          "name": "VENOM_EATER_CRIT_DMG_MULT",
+          "line": 62,
+          "isDefault": false
+        },
+        {
+          "name": "VITAL_STRIKES_CRIT_DMG_PER_STACK",
+          "line": 63,
+          "isDefault": false
+        },
+        {
+          "name": "SPARK_CRIT_DMG_PER_STACK",
+          "line": 64,
+          "isDefault": false
+        },
+        {
+          "name": "CRITICAL_MASTER_CRIT_DMG_PER_STACK",
+          "line": 65,
+          "isDefault": false
+        },
+        {
+          "name": "SPLINTER_CRIT_DMG_PER_STACK",
+          "line": 66,
+          "isDefault": false
+        },
+        {
+          "name": "MORTAL_WILL_HOLY_TYPE_PER_STACK",
+          "line": 69,
+          "isDefault": false
+        },
+        {
+          "name": "MORTAL_WILL_DMG_PER_HOLY_BOOST_PCT",
+          "line": 70,
+          "isDefault": false
+        },
+        {
+          "name": "SUNBURN_UNIVERSAL_DMG_PER_STACK",
+          "line": 73,
+          "isDefault": false
+        },
+        {
+          "name": "SUNBURN_HOLY_EXTRA_DMG_PER_STACK",
+          "line": 74,
+          "isDefault": false
+        },
+        {
+          "name": "SUNBURN_BURN_BASE_CHANCE",
+          "line": 75,
+          "isDefault": false
+        },
+        {
+          "name": "SUNBURN_BURN_CHANCE_PER_STACK",
+          "line": 76,
+          "isDefault": false
+        },
+        {
+          "name": "FROSTBITE_SLOW_POTENCY_PER_STACK",
+          "line": 79,
+          "isDefault": false
+        },
+        {
+          "name": "FROSTBITE_CHANCE_PER_STACK",
+          "line": 80,
+          "isDefault": false
+        },
+        {
+          "name": "CRYO_ENGINE_PROC_CHANCE_PER_AMOUNT",
+          "line": 83,
+          "isDefault": false
+        },
+        {
+          "name": "CRYO_ENGINE_TAILWIND_BASE_POTENCY",
+          "line": 84,
+          "isDefault": false
+        },
+        {
+          "name": "CRYO_ENGINE_TAILWIND_POTENCY_PER_AMOUNT",
+          "line": 85,
+          "isDefault": false
+        },
+        {
+          "name": "CRYO_ENGINE_TAILWIND_DURATION_PER_AMOUNT",
+          "line": 86,
+          "isDefault": false
+        },
+        {
+          "name": "GUIDING_WINDS_TAILWIND_POTENCY_PER_AMOUNT",
+          "line": 89,
+          "isDefault": false
+        },
+        {
+          "name": "FIERY_PURSUIT_BASE_DMG",
+          "line": 92,
+          "isDefault": false
+        },
+        {
+          "name": "FIERY_PURSUIT_DMG_PER_STACK",
+          "line": 93,
+          "isDefault": false
+        },
+        {
+          "name": "FIERY_PURSUIT_BURN_DURATION",
+          "line": 94,
+          "isDefault": false
+        },
+        {
+          "name": "HYPNOTIST_POTENCY_PER_PERK",
+          "line": 97,
+          "isDefault": false
+        },
+        {
+          "name": "HYPNOTIST_DURATION_BASE",
+          "line": 98,
+          "isDefault": false
+        },
+        {
+          "name": "HYPNOTIST_DURATION_PER_PERK",
+          "line": 99,
+          "isDefault": false
+        },
+        {
+          "name": "HYPNOTIST_MAGIC_ARMOR_PER_POTENCY",
+          "line": 100,
+          "isDefault": false
+        },
+        {
+          "name": "PHANTOM_PAIN_BASE_PCT",
+          "line": 103,
+          "isDefault": false
+        },
+        {
+          "name": "PHANTOM_PAIN_PERK_MULT",
+          "line": 104,
+          "isDefault": false
+        },
+        {
+          "name": "PURSUIT_BASE_MULT",
+          "line": 107,
+          "isDefault": false
+        },
+        {
+          "name": "PURSUIT_MULT_PER_RANK",
+          "line": 108,
+          "isDefault": false
+        },
+        {
+          "name": "DARKENING_HEX_POTENCY_ADD_PER_AMOUNT",
+          "line": 111,
+          "isDefault": false
+        },
+        {
+          "name": "DARKENING_HEX_POTENCY_MULT_PER_AMOUNT",
+          "line": 112,
+          "isDefault": false
+        },
+        {
+          "name": "DARKENING_HEX_DURATION_ADD_PER_AMOUNT",
+          "line": 113,
+          "isDefault": false
+        },
+        {
+          "name": "DARKENING_HEX_MAX_ACTIVATIONS",
+          "line": 114,
+          "isDefault": false
+        },
+        {
+          "name": "DARKENING_HEX_PROC_CHANCE",
+          "line": 115,
+          "isDefault": false
+        },
+        {
+          "name": "KINDLING_BURN_DURATION_MULT",
+          "line": 118,
+          "isDefault": false
+        },
+        {
+          "name": "KINDLING_DMG_ADD_PER_AMOUNT",
+          "line": 119,
+          "isDefault": false
+        },
+        {
+          "name": "STORM_CALLER_PROC_CHANCE",
+          "line": 122,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 0,
+        "exportCount": 73,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/constants/storage.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 59,
+      "nonEmptyLines": 54,
+      "exports": [
+        {
+          "name": "STORAGE_KEY_BUILD",
+          "line": 3,
+          "isDefault": false
+        },
+        {
+          "name": "STORAGE_KEY_DEFENSES",
+          "line": 4,
+          "isDefault": false
+        },
+        {
+          "name": "STORAGE_KEY_LEVEL",
+          "line": 5,
+          "isDefault": false
+        },
+        {
+          "name": "STORAGE_KEY_HP_FILL",
+          "line": 6,
+          "isDefault": false
+        },
+        {
+          "name": "STORAGE_KEY_SAVES",
+          "line": 7,
+          "isDefault": false
+        },
+        {
+          "name": "BUILD_STATE_DEFAULTS",
+          "line": 9,
+          "isDefault": false
+        },
+        {
+          "name": "SAVE_KEY_MAP",
+          "line": 31,
+          "isDefault": false
+        },
+        {
+          "name": "SAVE_KEY_UNMAP",
+          "line": 51,
+          "isDefault": false
+        },
+        {
+          "name": "ENCH_MAP",
+          "line": 53,
+          "isDefault": false
+        },
+        {
+          "name": "ENCH_UNMAP",
+          "line": 56,
+          "isDefault": false
+        },
+        {
+          "name": "MAX_BUILD_SLOTS",
+          "line": 58,
+          "isDefault": false
+        },
+        {
+          "name": "CONFIRM_TIMEOUT_MS",
+          "line": 59,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 1,
+        "exportCount": 12,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    },
+    {
+      "path": "src/lib/dmgTypes.ts",
+      "language": "typescript",
+      "fileCategory": "code",
+      "totalLines": 93,
+      "nonEmptyLines": 89,
+      "exports": [
+        {
+          "name": "BADGE_CONFIG",
+          "line": 4,
+          "isDefault": false
+        }
+      ],
+      "metrics": {
+        "importCount": 2,
+        "exportCount": 1,
+        "functionCount": 0,
+        "classCount": 0
+      }
+    }
+  ]
+}

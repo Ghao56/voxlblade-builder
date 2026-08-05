@@ -1,0 +1,43 @@
+{
+    "projectRoot":  "C:\\Users\\Administrator\\Downloads\\voxlblade-builder",
+    "batchImportData":  {
+                            "src/lib/constants/perk-base-damage.ts":  [
+
+                                                                      ],
+                            "src/lib/constants/perks.ts":  [
+
+                                                           ],
+                            "src/lib/constants/storage.ts":  [
+
+                                                              ],
+                            "src/lib/dmgTypes.ts":  [
+
+                                                    ]
+                        },
+    "batchFiles":  [
+                       {
+                           "fileCategory":  "code",
+                           "path":  "src/lib/constants/perk-base-damage.ts",
+                           "language":  "typescript",
+                           "sizeLines":  257
+                       },
+                       {
+                           "fileCategory":  "code",
+                           "path":  "src/lib/constants/perks.ts",
+                           "language":  "typescript",
+                           "sizeLines":  114
+                       },
+                       {
+                           "fileCategory":  "code",
+                           "path":  "src/lib/constants/storage.ts",
+                           "language":  "typescript",
+                           "sizeLines":  58
+                       },
+                       {
+                           "fileCategory":  "code",
+                           "path":  "src/lib/dmgTypes.ts",
+                           "language":  "typescript",
+                           "sizeLines":  90
+                       }
+                   ]
+}

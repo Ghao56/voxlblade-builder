@@ -1,0 +1,522 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/BaseDamageCalc.svelte",
+      "type": "file",
+      "name": "BaseDamageCalc.svelte",
+      "filePath": "src/BaseDamageCalc.svelte",
+      "summary": "Core damage calculation component for the Voxel Blade build optimizer. Computes per-hit and per-tick damage from weapon stats, damage type bonuses, boosts, crit, and proc effects (Cauterize, Echo Incineration, Stormcaller, Bombardier, Quake, Runic Blades), driven by a large set of props from DamageAnalyzer, and renders detailed breakdown tables.",
+      "tags": ["component", "damage-calculator", "simulation", "game-data"],
+      "complexity": "complex",
+      "languageNotes": "Svelte 5 component using runes-based reactivity; receives the bulk of its inputs via an ~80-prop interface."
+    },
+    {
+      "id": "file:src/BuffList.svelte",
+      "type": "file",
+      "name": "BuffList.svelte",
+      "filePath": "src/BuffList.svelte",
+      "summary": "View-only buff/debuff list component that renders the active buff set from the build store, grouping entries under headers and displaying potency, duration, and a warding debuff multiplier badge.",
+      "tags": ["component", "display", "buffs", "ui"],
+      "complexity": "complex",
+      "languageNotes": "Svelte 5 component consuming the shared build store (build/result) for its source data."
+    },
+    {
+      "id": "file:src/DamageAnalyzer.svelte",
+      "type": "file",
+      "name": "DamageAnalyzer.svelte",
+      "filePath": "src/DamageAnalyzer.svelte",
+      "summary": "Main orchestrator page of the calculator. Manages the build state and wires it into BaseDamageCalc through a large prop surface, and embeds supporting displays such as BuffList and scaling breakdown rows.",
+      "tags": ["component", "entry-point", "orchestration", "damage-calculator"],
+      "complexity": "complex",
+      "languageNotes": "Svelte 5 runes-based orchestrator; the largest component in the project at over 8k lines."
+    },
+    {
+      "id": "file:src/data/BuffData.ts",
+      "type": "file",
+      "name": "BuffData.ts",
+      "filePath": "src/data/BuffData.ts",
+      "summary": "Data module defining the buff/debuff catalog (BUFF_DEFS, BASIC_DEBUFF_POOL) and helper functions that assemble, convert, and modify active buffs based on perks, weapon arts, and build state.",
+      "tags": ["data-model", "utility", "buffs", "game-data"],
+      "complexity": "complex",
+      "languageNotes": "Large data-driven TypeScript module exporting dozens of buff definition constants alongside modifier helper functions."
+    },
+    {
+      "id": "function:src/data/BuffData.ts:getWeaponArtBuffs",
+      "type": "function",
+      "name": "getWeaponArtBuffs",
+      "filePath": "src/data/BuffData.ts",
+      "lineRange": [1673, 1675],
+      "summary": "Returns the buffs granted by the given weapon art name.",
+      "tags": ["utility", "buffs", "game-data"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:getTrueBalanceBuffs",
+      "type": "function",
+      "name": "getTrueBalanceBuffs",
+      "filePath": "src/data/BuffData.ts",
+      "lineRange": [1699, 1748],
+      "summary": "Builds the True Balance buff set by grouping eligible active debuffs, merging duplicate sources, and taking the maximum potency and duration with rounded multipliers.",
+      "tags": ["utility", "buffs", "calculation", "game-data"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:getSpecificBuffModifiers",
+      "type": "function",
+      "name": "getSpecificBuffModifiers",
+      "filePath": "src/data/BuffData.ts",
+      "lineRange": [1817, 1852],
+      "summary": "Applies perk-driven modifier functions to a specific buff definition, including duration multiplier formulas.",
+      "tags": ["utility", "buffs", "calculation"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:getBastionBlessBonus",
+      "type": "function",
+      "name": "getBastionBlessBonus",
+      "filePath": "src/data/BuffData.ts",
+      "lineRange": [1854, 1873],
+      "summary": "Computes the Bastion Bless damage reduction bonus scaled by the associated perk amount.",
+      "tags": ["utility", "buffs", "calculation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:getGenericDebuffModifiers",
+      "type": "function",
+      "name": "getGenericDebuffModifiers",
+      "filePath": "src/data/BuffData.ts",
+      "lineRange": [1875, 1917],
+      "summary": "Applies generic perk-based modifiers to debuffs, adjusting potency, duration, and multiplier values.",
+      "tags": ["utility", "buffs", "calculation"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:getTricksterReflection",
+      "type": "function",
+      "name": "getTricksterReflection",
+      "filePath": "src/data/BuffData.ts",
+      "lineRange": [1919, 1942],
+      "summary": "Computes Trickster Reflection modifiers, incorporating the warding debuff multiplier and rounding the result.",
+      "tags": ["utility", "buffs", "calculation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:hasEligibleDarkeningHexSource",
+      "type": "function",
+      "name": "hasEligibleDarkeningHexSource",
+      "filePath": "src/data/BuffData.ts",
+      "lineRange": [1953, 1975],
+      "summary": "Determines whether the build has an eligible Darkening Hex potency source by inspecting perks, build state, weapon damage types, and the weapon art damage type.",
+      "tags": ["utility", "perks", "calculation", "game-data"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:isDarkeningHexPotencyExcluded",
+      "type": "function",
+      "name": "isDarkeningHexPotencyExcluded",
+      "filePath": "src/data/BuffData.ts",
+      "lineRange": [1980, 1982],
+      "summary": "Returns whether a buff name is excluded from Darkening Hex potency scaling.",
+      "tags": ["utility", "buffs", "calculation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:isDarkeningHexPotencyMultExcluded",
+      "type": "function",
+      "name": "isDarkeningHexPotencyMultExcluded",
+      "filePath": "src/data/BuffData.ts",
+      "lineRange": [1984, 1986],
+      "summary": "Returns whether a buff name is excluded from Darkening Hex potency multiplier scaling.",
+      "tags": ["utility", "buffs", "calculation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:applyDarkeningHexPotency",
+      "type": "function",
+      "name": "applyDarkeningHexPotency",
+      "filePath": "src/data/BuffData.ts",
+      "lineRange": [1995, 2007],
+      "summary": "Scales potency by the Darkening Hex perk amount and activation count using Math.pow, then rounds the multiplier.",
+      "tags": ["utility", "buffs", "calculation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:applyBuffPerkModifiers",
+      "type": "function",
+      "name": "applyBuffPerkModifiers",
+      "filePath": "src/data/BuffData.ts",
+      "lineRange": [2009, 2114],
+      "summary": "Core orchestration function that applies Darkening Hex handling and per-buff perk modifiers across all active buffs, including stacking and rounding logic.",
+      "tags": ["utility", "buffs", "calculation", "perks"],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:applyToxinTransferDuration",
+      "type": "function",
+      "name": "applyToxinTransferDuration",
+      "filePath": "src/data/BuffData.ts",
+      "lineRange": [2116, 2134],
+      "summary": "Transfers duration from Poison self-debuffs to poison buffs based on the Toxin Transfer perk stacks.",
+      "tags": ["utility", "buffs", "perks", "calculation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:convertTailwindToWhirlwind",
+      "type": "function",
+      "name": "convertTailwindToWhirlwind",
+      "filePath": "src/data/BuffData.ts",
+      "lineRange": [2136, 2160],
+      "summary": "Converts Tailwind buffs into Whirlwind stacks using the bounce duration multiplier and rounding.",
+      "tags": ["utility", "buffs", "calculation"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:getBuffDescription",
+      "type": "function",
+      "name": "getBuffDescription",
+      "filePath": "src/data/BuffData.ts",
+      "lineRange": [2162, 2191],
+      "summary": "Generates a dynamic description for a buff from its name, perks, and potency, interpolating computed values into the description template.",
+      "tags": ["utility", "buffs", "formatting", "calculation"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:getPerkBuffs",
+      "type": "function",
+      "name": "getPerkBuffs",
+      "filePath": "src/data/BuffData.ts",
+      "lineRange": [2193, 2206],
+      "summary": "Creates buffs from perk factory definitions and applies potency percent rounding to each generated buff.",
+      "tags": ["utility", "buffs", "perks"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:getActiveBuildBuffs",
+      "type": "function",
+      "name": "getActiveBuildBuffs",
+      "filePath": "src/data/BuffData.ts",
+      "lineRange": [2208, 2227],
+      "summary": "Assembles the buffs contributed by the active build, including race buffs obtained from getRaceBuffs.",
+      "tags": ["utility", "buffs", "game-data"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:applyCauterizeConversion",
+      "type": "function",
+      "name": "applyCauterizeConversion",
+      "filePath": "src/data/BuffData.ts",
+      "lineRange": [2282, 2295],
+      "summary": "Converts applicable burn-type buffs into their Cauterize form based on the build's perks.",
+      "tags": ["utility", "buffs", "conversion", "perks"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:getBurnApplicationCount",
+      "type": "function",
+      "name": "getBurnApplicationCount",
+      "filePath": "src/data/BuffData.ts",
+      "lineRange": [2303, 2305],
+      "summary": "Counts how many buffs in the given set apply burn.",
+      "tags": ["utility", "buffs", "calculation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:assembleActiveBuffs",
+      "type": "function",
+      "name": "assembleActiveBuffs",
+      "filePath": "src/data/BuffData.ts",
+      "lineRange": [2314, 2347],
+      "summary": "Top-level buff assembly combining build, potion, perk, and weapon art buffs, then applying conversions and perk modifiers to produce the final active buff set.",
+      "tags": ["utility", "buffs", "calculation", "perks"],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:calcBuffEffect",
+      "type": "function",
+      "name": "calcBuffEffect",
+      "filePath": "src/data/BuffData.ts",
+      "lineRange": [2349, 2370],
+      "summary": "Computes a buff's numeric effect from its potency and the numeric tokens in its description.",
+      "tags": ["utility", "buffs", "calculation"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/data/BuffData.ts:formatPerkDescription",
+      "type": "function",
+      "name": "formatPerkDescription",
+      "filePath": "src/data/BuffData.ts",
+      "lineRange": [2381, 2383],
+      "summary": "Formats a perk description by replacing placeholders with the computed potency percentage.",
+      "tags": ["utility", "buffs", "formatting", "calculation"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:getWeaponArtBuffs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:getWeaponArtBuffs",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:getTrueBalanceBuffs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:getTrueBalanceBuffs",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:getSpecificBuffModifiers",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:getBastionBlessBonus",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:getGenericDebuffModifiers",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:getTricksterReflection",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:hasEligibleDarkeningHexSource",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:hasEligibleDarkeningHexSource",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:isDarkeningHexPotencyExcluded",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:isDarkeningHexPotencyExcluded",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:isDarkeningHexPotencyMultExcluded",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:isDarkeningHexPotencyMultExcluded",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:applyDarkeningHexPotency",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:applyDarkeningHexPotency",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:applyBuffPerkModifiers",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:applyBuffPerkModifiers",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:applyToxinTransferDuration",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:applyToxinTransferDuration",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:convertTailwindToWhirlwind",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:convertTailwindToWhirlwind",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:getBuffDescription",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:getBuffDescription",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:getPerkBuffs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:getPerkBuffs",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:getActiveBuildBuffs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:getActiveBuildBuffs",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:applyCauterizeConversion",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:applyCauterizeConversion",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:getBurnApplicationCount",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:getBurnApplicationCount",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:assembleActiveBuffs",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:assembleActiveBuffs",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:calcBuffEffect",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:calcBuffEffect",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:formatPerkDescription",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
+      "target": "function:src/data/BuffData.ts:formatPerkDescription",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

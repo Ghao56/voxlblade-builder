@@ -1,0 +1,801 @@
+{
+  "scriptCompleted": true,
+  "directoryGroups": {
+    ".github": [
+      "file:.github/workflows/static.yml"
+    ],
+    "root": [
+      "config:.fallowrc.json",
+      "document:AGENTS.md",
+      "document:README.md",
+      "file:build-decode.txt",
+      "file:build-decode2.json",
+      "config:fallow-output.json",
+      "config:fallow-security.json",
+      "file:index.html",
+      "config:package.json",
+      "file:stats-data.json",
+      "file:ts-errors.txt",
+      "config:tsconfig.app.json",
+      "config:tsconfig.json",
+      "config:tsconfig.node.json",
+      "config:vercel.json",
+      "file:analyze-mounticon.mjs",
+      "file:decode_full.mjs",
+      "file:vite.config.ts",
+      "file:stats.html"
+    ],
+    "src": [
+      "file:src/data/armors.json",
+      "file:src/data/blades.json",
+      "file:src/data/enchantments.json",
+      "file:src/data/essences.json",
+      "file:src/data/gloves.json",
+      "file:src/data/guilds.json",
+      "file:src/data/handles.json",
+      "file:src/data/perks.json",
+      "file:src/data/races.json",
+      "file:src/data/rings.json",
+      "file:src/data/runes.json",
+      "file:src/app.css",
+      "file:src/App.svelte",
+      "file:src/BuildSaves.svelte",
+      "file:src/CdrStepsCalc.svelte",
+      "file:src/CritIcon.svelte",
+      "file:src/data/Boost.ts",
+      "file:src/data/cdr.ts",
+      "file:src/data/debuffCombatEffects.ts",
+      "file:src/data/defensivePerks.ts",
+      "file:src/data/DoTDamage.ts",
+      "file:src/data/draconicBuffs.ts",
+      "file:src/data/draconicColorEffects.ts",
+      "file:src/data/draconicRunes.ts",
+      "file:src/data/enemyHpEffects.ts",
+      "file:src/data/HealBoost.ts",
+      "file:src/data/mountRunes.ts",
+      "file:src/data/perkAutoDebuffs.ts",
+      "file:src/data/potions.ts",
+      "file:src/data/procCoefficients.ts",
+      "file:src/data/raceEffects.ts",
+      "file:src/data/Runebasedmg.ts",
+      "file:src/data/selfDamagePerks.ts",
+      "file:src/data/stanceOverlays.ts",
+      "file:src/data/statboost.ts",
+      "file:src/data/SummonData.ts",
+      "file:src/data/TypedDmgBoost.ts",
+      "file:src/data/weapon base dmg.ts",
+      "file:src/data/Weaponartcheck.ts",
+      "file:src/data/weaponArts.ts",
+      "file:src/data/weaponConditionalBoosts.ts",
+      "file:src/DidYouMean.svelte",
+      "file:src/DraconicAbilityStats.svelte",
+      "file:src/EmotionalTracker.svelte",
+      "file:src/Highlight.svelte",
+      "file:src/LevelBar.svelte",
+      "file:src/lib/AppHeader.svelte",
+      "file:src/lib/constants.ts",
+      "file:src/lib/constants/boosts.ts",
+      "file:src/lib/constants/cdr.ts",
+      "file:src/lib/constants/damage-types.ts",
+      "file:src/lib/constants/debuff-effects.ts",
+      "file:src/lib/constants/defensive.ts",
+      "file:src/lib/constants/dot-damage.ts",
+      "file:src/lib/constants/draconic-colors.ts",
+      "file:src/lib/constants/draconic.ts",
+      "file:src/lib/constants/game.ts",
+      "file:src/lib/constants/heals.ts",
+      "file:src/lib/constants/index.ts",
+      "file:src/lib/constants/rune-base-damage.ts",
+      "file:src/lib/constants/stat-conversions.ts",
+      "file:src/lib/constants/thresholds.ts",
+      "file:src/lib/constants/wa-display.ts",
+      "file:src/lib/crit.ts",
+      "file:src/lib/damageTypeResolve.ts",
+      "file:src/lib/defense.ts",
+      "file:src/lib/EnchantSelect.svelte",
+      "file:src/lib/enchantTooltip.ts",
+      "file:src/lib/engine.ts",
+      "file:src/lib/engine/_utils.ts",
+      "file:src/lib/engine/build.ts",
+      "file:src/lib/engine/data.ts",
+      "file:src/lib/engine/data/character.ts",
+      "file:src/lib/engine/data/equipment.ts",
+      "file:src/lib/engine/data/weapons.ts",
+      "file:src/lib/engine/dmgTypeBonuses.ts",
+      "file:src/lib/engine/enchant.ts",
+      "file:src/lib/engine/engine.ts",
+      "file:src/lib/engine/format.ts",
+      "file:src/lib/engine/shrine.ts",
+      "file:src/lib/engine/weapon.ts",
+      "file:src/lib/Modal.svelte",
+      "file:src/lib/modals/AccessorySelectModal.svelte",
+      "file:src/lib/modals/GuildModal.svelte",
+      "file:src/lib/modals/index.ts",
+      "file:src/lib/modals/RaceModal.svelte",
+      "file:src/lib/modals/WeaponPartModal.svelte",
+      "file:src/lib/StatFilterShared.svelte",
+      "file:src/lib/stats/elementalBoosts.ts",
+      "file:src/lib/stats/filterActions.ts",
+      "file:src/lib/stores/toast.ts",
+      "file:src/lib/Toast.svelte",
+      "file:src/lib/ui/Badge.svelte",
+      "file:src/lib/ui/Button.svelte",
+      "file:src/lib/ui/RollValue.svelte",
+      "file:src/lib/uiConstants.ts",
+      "file:src/lib/utils.ts",
+      "file:src/main.ts",
+      "file:src/ModalSearchHeader.svelte",
+      "file:src/MountIcon.svelte",
+      "file:src/PropellingFunTracker.svelte",
+      "file:src/ScalingBreakdownRow.svelte",
+      "file:src/StatFilter.svelte",
+      "file:src/SuggestDrop.svelte",
+      "file:src/TagFilter.svelte",
+      "file:src/WeaponStatFilter.svelte",
+      "file:src/WeaponStatsDisplay.svelte",
+      "file:src/BaseDamageCalc.svelte",
+      "file:src/BuffList.svelte",
+      "file:src/DamageAnalyzer.svelte",
+      "file:src/data/BuffData.ts",
+      "file:src/data/Perkbasedmg.ts",
+      "file:src/DmgTotalTooltip.svelte",
+      "file:src/lib/constants/buffs.ts",
+      "file:src/lib/constants/perk-base-damage.ts",
+      "file:src/lib/constants/perks.ts",
+      "file:src/lib/constants/storage.ts",
+      "file:src/lib/dmgTypes.ts",
+      "file:src/lib/store.ts",
+      "file:src/lib/types.ts"
+    ],
+    ".slim": [
+      "file:.slim/deepwork/ui-upgrade.md"
+    ],
+    ".ua": [
+      "file:.ua/.understandignore"
+    ],
+    "docs": [
+      "file:docs/ONBOARDING.md"
+    ]
+  },
+  "nodeTypeGroups": {
+    "pipeline": [
+      "file:.github/workflows/static.yml"
+    ],
+    "config": [
+      "config:.fallowrc.json",
+      "config:fallow-output.json",
+      "config:fallow-security.json",
+      "config:package.json",
+      "config:tsconfig.app.json",
+      "config:tsconfig.json",
+      "config:tsconfig.node.json",
+      "config:vercel.json",
+      "file:src/data/armors.json",
+      "file:src/data/blades.json",
+      "file:src/data/enchantments.json",
+      "file:src/data/essences.json",
+      "file:src/data/gloves.json",
+      "file:src/data/guilds.json",
+      "file:src/data/handles.json",
+      "file:src/data/perks.json",
+      "file:src/data/races.json",
+      "file:src/data/rings.json",
+      "file:src/data/runes.json",
+      "file:.ua/.understandignore",
+      "file:src/lib/constants.ts",
+      "file:src/lib/constants/boosts.ts",
+      "file:src/lib/constants/cdr.ts",
+      "file:src/lib/constants/damage-types.ts",
+      "file:src/lib/constants/debuff-effects.ts",
+      "file:src/lib/constants/defensive.ts",
+      "file:src/lib/constants/dot-damage.ts",
+      "file:src/lib/constants/draconic-colors.ts",
+      "file:src/lib/constants/draconic.ts",
+      "file:src/lib/constants/game.ts",
+      "file:src/lib/constants/heals.ts",
+      "file:src/lib/constants/rune-base-damage.ts",
+      "file:src/lib/constants/stat-conversions.ts",
+      "file:src/lib/constants/thresholds.ts",
+      "file:src/lib/constants/wa-display.ts",
+      "file:vite.config.ts"
+    ],
+    "document": [
+      "document:AGENTS.md",
+      "document:README.md",
+      "file:.slim/deepwork/ui-upgrade.md",
+      "file:docs/ONBOARDING.md"
+    ],
+    "file": [
+      "file:build-decode.txt",
+      "file:build-decode2.json",
+      "file:index.html",
+      "file:stats-data.json",
+      "file:ts-errors.txt",
+      "file:analyze-mounticon.mjs",
+      "file:decode_full.mjs",
+      "file:src/app.css",
+      "file:src/App.svelte",
+      "file:src/BuildSaves.svelte",
+      "file:src/CdrStepsCalc.svelte",
+      "file:src/CritIcon.svelte",
+      "file:src/data/Boost.ts",
+      "file:src/data/cdr.ts",
+      "file:src/data/debuffCombatEffects.ts",
+      "file:src/data/defensivePerks.ts",
+      "file:src/data/DoTDamage.ts",
+      "file:src/data/draconicBuffs.ts",
+      "file:src/data/draconicColorEffects.ts",
+      "file:src/data/draconicRunes.ts",
+      "file:src/data/enemyHpEffects.ts",
+      "file:src/data/HealBoost.ts",
+      "file:src/data/mountRunes.ts",
+      "file:src/lib/EnchantSelect.svelte",
+      "file:src/lib/engine/build.ts",
+      "file:src/lib/engine/data.ts",
+      "file:src/lib/engine/data/character.ts",
+      "file:src/lib/engine/data/equipment.ts",
+      "file:src/lib/engine/data/weapons.ts",
+      "file:src/lib/engine/dmgTypeBonuses.ts",
+      "file:src/lib/engine/enchant.ts",
+      "file:src/lib/engine/engine.ts",
+      "file:src/lib/engine/format.ts",
+      "file:src/lib/engine/shrine.ts",
+      "file:src/lib/engine/weapon.ts",
+      "file:src/lib/Modal.svelte",
+      "file:src/lib/modals/AccessorySelectModal.svelte",
+      "file:src/lib/modals/GuildModal.svelte",
+      "file:src/lib/modals/index.ts",
+      "file:src/lib/modals/RaceModal.svelte",
+      "file:src/lib/modals/WeaponPartModal.svelte",
+      "file:src/lib/StatFilterShared.svelte",
+      "file:src/lib/stats/elementalBoosts.ts",
+      "file:src/lib/stats/filterActions.ts",
+      "file:src/lib/stores/toast.ts",
+      "file:src/lib/Toast.svelte",
+      "file:src/lib/ui/Badge.svelte",
+      "file:stats.html",
+      "file:src/BaseDamageCalc.svelte",
+      "file:src/BuffList.svelte",
+      "file:src/DamageAnalyzer.svelte",
+      "file:src/data/BuffData.ts",
+      "file:src/data/Perkbasedmg.ts",
+      "file:src/DmgTotalTooltip.svelte",
+      "file:src/lib/constants/buffs.ts",
+      "file:src/lib/constants/perk-base-damage.ts",
+      "file:src/lib/constants/perks.ts",
+      "file:src/lib/constants/storage.ts",
+      "file:src/lib/dmgTypes.ts",
+      "file:src/lib/store.ts",
+      "file:src/lib/types.ts"
+    ],
+    "module": [
+      "file:src/data/perkAutoDebuffs.ts",
+      "file:src/data/raceEffects.ts",
+      "file:src/data/Runebasedmg.ts",
+      "file:src/data/selfDamagePerks.ts",
+      "file:src/data/stanceOverlays.ts",
+      "file:src/data/statboost.ts",
+      "file:src/data/SummonData.ts",
+      "file:src/data/TypedDmgBoost.ts",
+      "file:src/data/Weaponartcheck.ts",
+      "file:src/data/weaponConditionalBoosts.ts",
+      "file:src/lib/constants/index.ts",
+      "file:src/lib/crit.ts",
+      "file:src/lib/damageTypeResolve.ts",
+      "file:src/lib/defense.ts",
+      "file:src/lib/enchantTooltip.ts",
+      "file:src/lib/engine.ts",
+      "file:src/lib/engine/_utils.ts",
+      "file:src/lib/uiConstants.ts",
+      "file:src/lib/utils.ts"
+    ],
+    "data": [
+      "file:src/data/potions.ts",
+      "file:src/data/procCoefficients.ts",
+      "file:src/data/weapon base dmg.ts",
+      "file:src/data/weaponArts.ts"
+    ],
+    "resource": [
+      "file:src/DidYouMean.svelte",
+      "file:src/DraconicAbilityStats.svelte",
+      "file:src/EmotionalTracker.svelte",
+      "file:src/Highlight.svelte",
+      "file:src/LevelBar.svelte",
+      "file:src/lib/AppHeader.svelte"
+    ],
+    "component": [
+      "file:src/lib/ui/Button.svelte",
+      "file:src/lib/ui/RollValue.svelte",
+      "file:src/ModalSearchHeader.svelte",
+      "file:src/MountIcon.svelte",
+      "file:src/PropellingFunTracker.svelte",
+      "file:src/ScalingBreakdownRow.svelte",
+      "file:src/StatFilter.svelte",
+      "file:src/SuggestDrop.svelte",
+      "file:src/TagFilter.svelte",
+      "file:src/WeaponStatFilter.svelte",
+      "file:src/WeaponStatsDisplay.svelte"
+    ],
+    "entry": [
+      "file:src/main.ts"
+    ]
+  },
+  "crossCategoryEdges": [
+    {
+      "fromType": "file",
+      "toType": "file",
+      "edgeType": "imports",
+      "count": 26
+    },
+    {
+      "fromType": "config",
+      "toType": "config",
+      "edgeType": "related",
+      "count": 16
+    },
+    {
+      "fromType": "config",
+      "toType": "config",
+      "edgeType": "depends_on",
+      "count": 13
+    },
+    {
+      "fromType": "document",
+      "toType": "file",
+      "edgeType": "documents",
+      "count": 13
+    },
+    {
+      "fromType": "module",
+      "toType": "config",
+      "edgeType": "exports",
+      "count": 13
+    },
+    {
+      "fromType": "file",
+      "toType": "file",
+      "edgeType": "exports",
+      "count": 13
+    },
+    {
+      "fromType": "file",
+      "toType": "file",
+      "edgeType": "depends_on",
+      "count": 7
+    },
+    {
+      "fromType": "component",
+      "toType": "component",
+      "edgeType": "imports",
+      "count": 6
+    },
+    {
+      "fromType": "component",
+      "toType": "file",
+      "edgeType": "depends_on",
+      "count": 6
+    },
+    {
+      "fromType": "file",
+      "toType": "file",
+      "edgeType": "contains",
+      "count": 5
+    },
+    {
+      "fromType": "module",
+      "toType": "component",
+      "edgeType": "depends_on",
+      "count": 5
+    },
+    {
+      "fromType": "component",
+      "toType": "module",
+      "edgeType": "imports",
+      "count": 5
+    },
+    {
+      "fromType": "module",
+      "toType": "module",
+      "edgeType": "imports",
+      "count": 4
+    },
+    {
+      "fromType": "component",
+      "toType": "component",
+      "edgeType": "contains",
+      "count": 4
+    },
+    {
+      "fromType": "config",
+      "toType": "config",
+      "edgeType": "configures",
+      "count": 3
+    },
+    {
+      "fromType": "resource",
+      "toType": "file",
+      "edgeType": "imports",
+      "count": 3
+    },
+    {
+      "fromType": "component",
+      "toType": "component",
+      "edgeType": "related",
+      "count": 3
+    },
+    {
+      "fromType": "file",
+      "toType": "config",
+      "edgeType": "depends_on",
+      "count": 2
+    },
+    {
+      "fromType": "file",
+      "toType": "config",
+      "edgeType": "related",
+      "count": 2
+    },
+    {
+      "fromType": "module",
+      "toType": "data",
+      "edgeType": "related",
+      "count": 2
+    },
+    {
+      "fromType": "resource",
+      "toType": "resource",
+      "edgeType": "related",
+      "count": 2
+    },
+    {
+      "fromType": "module",
+      "toType": "file",
+      "edgeType": "imports",
+      "count": 2
+    },
+    {
+      "fromType": "config",
+      "toType": "module",
+      "edgeType": "related",
+      "count": 2
+    },
+    {
+      "fromType": "component",
+      "toType": "component",
+      "edgeType": "depends_on",
+      "count": 2
+    },
+    {
+      "fromType": "pipeline",
+      "toType": "config",
+      "edgeType": "configures",
+      "count": 1
+    },
+    {
+      "fromType": "file",
+      "toType": "file",
+      "edgeType": "similar_to",
+      "count": 1
+    },
+    {
+      "fromType": "document",
+      "toType": "document",
+      "edgeType": "documents",
+      "count": 1
+    },
+    {
+      "fromType": "document",
+      "toType": "config",
+      "edgeType": "documents",
+      "count": 1
+    },
+    {
+      "fromType": "config",
+      "toType": "file",
+      "edgeType": "serves",
+      "count": 1
+    },
+    {
+      "fromType": "module",
+      "toType": "data",
+      "edgeType": "imports",
+      "count": 1
+    },
+    {
+      "fromType": "module",
+      "toType": "config",
+      "edgeType": "related",
+      "count": 1
+    },
+    {
+      "fromType": "module",
+      "toType": "module",
+      "edgeType": "related",
+      "count": 1
+    },
+    {
+      "fromType": "resource",
+      "toType": "config",
+      "edgeType": "imports",
+      "count": 1
+    },
+    {
+      "fromType": "config",
+      "toType": "config",
+      "edgeType": "exports",
+      "count": 1
+    },
+    {
+      "fromType": "module",
+      "toType": "config",
+      "edgeType": "imports",
+      "count": 1
+    },
+    {
+      "fromType": "module",
+      "toType": "module",
+      "edgeType": "depends_on",
+      "count": 1
+    },
+    {
+      "fromType": "file",
+      "toType": "config",
+      "edgeType": "imports",
+      "count": 1
+    },
+    {
+      "fromType": "file",
+      "toType": "module",
+      "edgeType": "imports",
+      "count": 1
+    },
+    {
+      "fromType": "module",
+      "toType": "module",
+      "edgeType": "exports",
+      "count": 1
+    },
+    {
+      "fromType": "module",
+      "toType": "config",
+      "edgeType": "depends_on",
+      "count": 1
+    },
+    {
+      "fromType": "module",
+      "toType": "file",
+      "edgeType": "related",
+      "count": 1
+    },
+    {
+      "fromType": "module",
+      "toType": "config",
+      "edgeType": "contains",
+      "count": 1
+    },
+    {
+      "fromType": "component",
+      "toType": "entry",
+      "edgeType": "depends_on",
+      "count": 1
+    },
+    {
+      "fromType": "entry",
+      "toType": "config",
+      "edgeType": "depends_on",
+      "count": 1
+    },
+    {
+      "fromType": "component",
+      "toType": "module",
+      "edgeType": "related",
+      "count": 1
+    },
+    {
+      "fromType": "component",
+      "toType": "file",
+      "edgeType": "imports",
+      "count": 1
+    },
+    {
+      "fromType": "config",
+      "toType": "entry",
+      "edgeType": "configures",
+      "count": 1
+    }
+  ],
+  "interGroupImports": [],
+  "intraGroupDensity": {
+    ".github": {
+      "internalEdges": 0,
+      "totalEdges": 0,
+      "density": 0
+    },
+    "root": {
+      "internalEdges": 0,
+      "totalEdges": 0,
+      "density": 0
+    },
+    "src": {
+      "internalEdges": 52,
+      "totalEdges": 52,
+      "density": 1
+    },
+    ".slim": {
+      "internalEdges": 0,
+      "totalEdges": 0,
+      "density": 0
+    },
+    ".ua": {
+      "internalEdges": 0,
+      "totalEdges": 0,
+      "density": 0
+    },
+    "docs": {
+      "internalEdges": 0,
+      "totalEdges": 0,
+      "density": 0
+    }
+  },
+  "patternMatches": {
+    ".github": "ci-cd",
+    "root": null,
+    "src": null,
+    ".slim": null,
+    ".ua": null,
+    "docs": "documentation"
+  },
+  "deploymentTopology": {
+    "hasDockerfile": false,
+    "hasCompose": false,
+    "hasK8s": false,
+    "hasTerraform": false,
+    "hasCI": true,
+    "infraFiles": [
+      ".github/workflows/static.yml"
+    ]
+  },
+  "dataPipeline": {
+    "schemaFiles": [],
+    "migrationFiles": [],
+    "dataModelFiles": [
+      "src/data/armors.json",
+      "src/data/blades.json",
+      "src/data/enchantments.json",
+      "src/data/essences.json",
+      "src/data/gloves.json",
+      "src/data/guilds.json",
+      "src/data/handles.json",
+      "src/data/perks.json",
+      "src/data/races.json",
+      "src/data/rings.json",
+      "src/data/runes.json",
+      "src/data/Boost.ts",
+      "src/data/cdr.ts",
+      "src/data/debuffCombatEffects.ts",
+      "src/data/defensivePerks.ts",
+      "src/data/DoTDamage.ts",
+      "src/data/draconicBuffs.ts",
+      "src/data/draconicColorEffects.ts",
+      "src/data/draconicRunes.ts",
+      "src/data/enemyHpEffects.ts",
+      "src/data/HealBoost.ts",
+      "src/data/mountRunes.ts",
+      "src/data/perkAutoDebuffs.ts",
+      "src/data/potions.ts",
+      "src/data/procCoefficients.ts",
+      "src/data/raceEffects.ts",
+      "src/data/Runebasedmg.ts",
+      "src/data/selfDamagePerks.ts",
+      "src/data/stanceOverlays.ts",
+      "src/data/statboost.ts",
+      "src/data/SummonData.ts",
+      "src/data/TypedDmgBoost.ts",
+      "src/data/weapon base dmg.ts",
+      "src/data/Weaponartcheck.ts",
+      "src/data/weaponArts.ts",
+      "src/data/weaponConditionalBoosts.ts",
+      "src/lib/engine/data/character.ts",
+      "src/lib/engine/data/equipment.ts",
+      "src/lib/engine/data/weapons.ts",
+      "src/data/BuffData.ts",
+      "src/data/Perkbasedmg.ts"
+    ],
+    "apiHandlerFiles": []
+  },
+  "docCoverage": {
+    "groupsWithDocs": 3,
+    "totalGroups": 6,
+    "coverageRatio": 0.5,
+    "undocumentedGroups": [
+      ".github",
+      "src",
+      ".ua"
+    ]
+  },
+  "dependencyDirection": [],
+  "fileStats": {
+    "totalFileNodes": 143,
+    "filesPerGroup": {
+      ".github": 1,
+      "root": 19,
+      "src": 120,
+      ".slim": 1,
+      ".ua": 1,
+      "docs": 1
+    },
+    "nodeTypeCounts": {
+      "pipeline": 1,
+      "config": 36,
+      "document": 4,
+      "file": 61,
+      "module": 19,
+      "data": 4,
+      "resource": 6,
+      "component": 11,
+      "entry": 1
+    }
+  },
+  "fileFanIn": {
+    "file:src/BuildSaves.svelte": 2,
+    "file:src/CdrStepsCalc.svelte": 1,
+    "file:src/data/cdr.ts": 1,
+    "file:src/data/draconicBuffs.ts": 3,
+    "file:src/data/draconicColorEffects.ts": 1,
+    "file:src/data/enemyHpEffects.ts": 1,
+    "file:src/data/HealBoost.ts": 1,
+    "file:src/data/SummonData.ts": 1,
+    "file:src/data/weaponArts.ts": 1,
+    "file:src/lib/constants.ts": 1,
+    "file:src/lib/constants/damage-types.ts": 1,
+    "file:src/lib/constants/game.ts": 1,
+    "file:src/lib/constants/index.ts": 2,
+    "file:src/lib/engine.ts": 1,
+    "file:src/lib/engine/_utils.ts": 1,
+    "file:src/lib/engine/data.ts": 3,
+    "file:src/lib/engine/dmgTypeBonuses.ts": 1,
+    "file:src/lib/engine/enchant.ts": 1,
+    "file:src/lib/engine/engine.ts": 4,
+    "file:src/lib/engine/shrine.ts": 2,
+    "file:src/lib/engine/weapon.ts": 1,
+    "file:src/lib/Modal.svelte": 4,
+    "file:src/lib/stores/toast.ts": 1,
+    "file:src/lib/ui/Badge.svelte": 5,
+    "file:src/lib/ui/Button.svelte": 2,
+    "file:src/lib/uiConstants.ts": 3,
+    "file:src/lib/utils.ts": 2,
+    "file:src/StatFilter.svelte": 1,
+    "file:src/SuggestDrop.svelte": 1,
+    "file:src/TagFilter.svelte": 1,
+    "file:src/WeaponStatFilter.svelte": 1
+  },
+  "fileFanOut": {
+    "file:src/App.svelte": 5,
+    "file:src/data/defensivePerks.ts": 1,
+    "file:src/data/HealBoost.ts": 1,
+    "file:src/data/perkAutoDebuffs.ts": 1,
+    "file:src/data/Runebasedmg.ts": 2,
+    "file:src/data/Weaponartcheck.ts": 1,
+    "file:src/EmotionalTracker.svelte": 1,
+    "file:src/LevelBar.svelte": 2,
+    "file:src/lib/AppHeader.svelte": 1,
+    "file:src/lib/crit.ts": 1,
+    "file:src/lib/damageTypeResolve.ts": 2,
+    "file:src/lib/EnchantSelect.svelte": 2,
+    "file:src/lib/enchantTooltip.ts": 1,
+    "file:src/lib/engine/build.ts": 5,
+    "file:src/lib/engine/enchant.ts": 1,
+    "file:src/lib/engine/weapon.ts": 2,
+    "file:src/lib/modals/AccessorySelectModal.svelte": 3,
+    "file:src/lib/modals/GuildModal.svelte": 2,
+    "file:src/lib/modals/RaceModal.svelte": 2,
+    "file:src/lib/modals/WeaponPartModal.svelte": 3,
+    "file:src/lib/Toast.svelte": 1,
+    "file:src/ModalSearchHeader.svelte": 4,
+    "file:src/ScalingBreakdownRow.svelte": 1,
+    "file:src/StatFilter.svelte": 2,
+    "file:src/SuggestDrop.svelte": 1,
+    "file:src/TagFilter.svelte": 2,
+    "file:src/WeaponStatFilter.svelte": 2
+  }
+}

@@ -17,8 +17,8 @@
       "Vitest"
     ],
     "description": "A web-based damage calculator and build optimizer for the Roblox game Voxel Blade",
-    "analyzedAt": "2026-08-05T16:23:03.814Z",
-    "gitCommitHash": "d29e715487098ad4bba90ce842ca6821b9a3365e"
+    "analyzedAt": "2026-08-05T15:50:49.761Z",
+    "gitCommitHash": "03fd4971557c3b48d96a9f7922133889d0af6160"
   },
   "nodes": [
     {
@@ -3496,6 +3496,107 @@
       "complexity": "simple"
     },
     {
+      "id": "file:src/data/Perkbasedmg.ts",
+      "type": "file",
+      "name": "Perkbasedmg.ts",
+      "filePath": "src/data/Perkbasedmg.ts",
+      "summary": "Core perk damage definition module exposing the PerkDmgDef/PerkDmgCtx/HpGate interfaces, a large PERK_DMG_DEFS array (140+ perk entries) describing base damage, scaling, hits, proc coefficients, and secondary effects, plus HP-gate helpers and the findPerkDmgDef lookup. Powers the damage calculator's per-perk behavior.",
+      "tags": [
+        "data-model",
+        "damage-calculation",
+        "game-mechanics",
+        "perk-system",
+        "type-definition"
+      ],
+      "complexity": "complex",
+      "languageNotes": "Data-driven TypeScript module: each PerkDmgDef carries function fields (getBaseDamage, getHits, getDmgTypes, getScalings) for dynamic per-build scaling; definitions are indexed at module load into a Map keyed by perkName."
+    },
+    {
+      "id": "function:src/data/Perkbasedmg.ts:gateThreshold",
+      "type": "function",
+      "name": "gateThreshold",
+      "filePath": "src/data/Perkbasedmg.ts",
+      "lineRange": [
+        207,
+        211
+      ],
+      "summary": "Resolves the effective HP-gate threshold for a perk, honoring the alwaysActiveAtPerkAmount override and falling back to a dynamic getThreshold callback or the static hpThreshold.",
+      "tags": [
+        "utility",
+        "hp-gate",
+        "game-mechanics"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/data/Perkbasedmg.ts:isHpGateActive",
+      "type": "function",
+      "name": "isHpGateActive",
+      "filePath": "src/data/Perkbasedmg.ts",
+      "lineRange": [
+        213,
+        218
+      ],
+      "summary": "Determines whether a perk's HP gate is currently active by comparing the HP fill percentage against the resolved gate threshold.",
+      "tags": [
+        "utility",
+        "hp-gate",
+        "game-mechanics"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/data/Perkbasedmg.ts:calcSpringblastBaseDamage",
+      "type": "function",
+      "name": "calcSpringblastBaseDamage",
+      "filePath": "src/data/Perkbasedmg.ts",
+      "lineRange": [
+        284,
+        286
+      ],
+      "summary": "Computes Springblast base damage from perk amount using the base/per-stack hit values and a per-stack multiplier.",
+      "tags": [
+        "damage-calculation",
+        "perk",
+        "formula"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/data/Perkbasedmg.ts:calcBomberChargeBaseDamage",
+      "type": "function",
+      "name": "calcBomberChargeBaseDamage",
+      "filePath": "src/data/Perkbasedmg.ts",
+      "lineRange": [
+        288,
+        292
+      ],
+      "summary": "Computes Bomber Charge base damage scaled by perk amount and a capped missing-health percentage, rounded to three decimals.",
+      "tags": [
+        "damage-calculation",
+        "perk",
+        "formula"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/data/Perkbasedmg.ts:findPerkDmgDef",
+      "type": "function",
+      "name": "findPerkDmgDef",
+      "filePath": "src/data/Perkbasedmg.ts",
+      "lineRange": [
+        1732,
+        1737
+      ],
+      "summary": "Looks up the PerkDmgDef entries for a perk name in the module-level Map, optionally filtering by label, and returns the matching def or undefined.",
+      "tags": [
+        "lookup",
+        "data-model",
+        "utility"
+      ],
+      "complexity": "simple"
+    },
+    {
       "id": "file:src/DmgTotalTooltip.svelte",
       "type": "file",
       "name": "DmgTotalTooltip.svelte",
@@ -3800,107 +3901,6 @@
         "validation",
         "proc",
         "helper"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "file:src/data/Perkbasedmg.ts",
-      "type": "file",
-      "name": "Perkbasedmg.ts",
-      "filePath": "src/data/Perkbasedmg.ts",
-      "summary": "Core perk damage definition module exporting PERK_DMG_DEFS, a data-driven array of 140+ PerkDmgDef entries (Springblast, Bastion Ballista, Gremlin Spirit, Ichor Spark, etc.) describing each perk's base damage, scaling, damage types, hit counts, proc coefficients, HP gates, and secondary effects, plus the PerkDmgDef/PerkDmgCtx/HpGate interfaces, HP-gate helpers, and the findPerkDmgDef lookup used by the damage calculator.",
-      "tags": [
-        "data-model",
-        "type-definition",
-        "game-data",
-        "damage-calculator",
-        "utility"
-      ],
-      "complexity": "complex",
-      "languageNotes": "Data-driven definition module: an exported const array of typed objects (PerkDmgDef) built from numeric constants in src/lib/constants.ts, with a lazily built Map keyed by perkName to power O(1) lookups."
-    },
-    {
-      "id": "function:src/data/Perkbasedmg.ts:gateThreshold",
-      "type": "function",
-      "name": "gateThreshold",
-      "filePath": "src/data/Perkbasedmg.ts",
-      "lineRange": [
-        207,
-        211
-      ],
-      "summary": "Resolves the effective HP threshold of an HP-gated perk, returning undefined when the gate is always active at the current perk amount, otherwise using the gate's dynamic getThreshold function or static hpThreshold.",
-      "tags": [
-        "utility",
-        "hp-gate",
-        "helper"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "function:src/data/Perkbasedmg.ts:isHpGateActive",
-      "type": "function",
-      "name": "isHpGateActive",
-      "filePath": "src/data/Perkbasedmg.ts",
-      "lineRange": [
-        213,
-        218
-      ],
-      "summary": "Determines whether an HP-gated perk's damage condition is active given current HP fill percentage and perk stack amount, honoring the gate's aboveThreshold direction and always-active override.",
-      "tags": [
-        "utility",
-        "hp-gate",
-        "helper"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "function:src/data/Perkbasedmg.ts:calcSpringblastBaseDamage",
-      "type": "function",
-      "name": "calcSpringblastBaseDamage",
-      "filePath": "src/data/Perkbasedmg.ts",
-      "lineRange": [
-        284,
-        286
-      ],
-      "summary": "Computes the base Springblast finisher damage from perk amount using base-hit, per-stack hit, and per-stack multiplier constants.",
-      "tags": [
-        "utility",
-        "damage",
-        "springblast"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "function:src/data/Perkbasedmg.ts:calcBomberChargeBaseDamage",
-      "type": "function",
-      "name": "calcBomberChargeBaseDamage",
-      "filePath": "src/data/Perkbasedmg.ts",
-      "lineRange": [
-        288,
-        292
-      ],
-      "summary": "Computes Bomber Charge base damage scaled by perk amount and missing HP percentage, capped by the missing-HP cap constant and rounded to three decimals.",
-      "tags": [
-        "utility",
-        "damage",
-        "bomber-charge"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "function:src/data/Perkbasedmg.ts:findPerkDmgDef",
-      "type": "function",
-      "name": "findPerkDmgDef",
-      "filePath": "src/data/Perkbasedmg.ts",
-      "lineRange": [
-        1732,
-        1737
-      ],
-      "summary": "Looks up PerkDmgDef entries by perk name (optionally disambiguated by label) from a prebuilt Map built from PERK_DMG_DEFS, returning undefined when no definition matches.",
-      "tags": [
-        "lookup",
-        "helper",
-        "damage-calculator"
       ],
       "complexity": "simple"
     }
@@ -6826,6 +6826,76 @@
       "weight": 0.8
     },
     {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "function:src/data/Perkbasedmg.ts:gateThreshold",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "function:src/data/Perkbasedmg.ts:isHpGateActive",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "function:src/data/Perkbasedmg.ts:calcSpringblastBaseDamage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "function:src/data/Perkbasedmg.ts:calcBomberChargeBaseDamage",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "function:src/data/Perkbasedmg.ts:findPerkDmgDef",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "function:src/data/Perkbasedmg.ts:gateThreshold",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "function:src/data/Perkbasedmg.ts:isHpGateActive",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "function:src/data/Perkbasedmg.ts:calcSpringblastBaseDamage",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "function:src/data/Perkbasedmg.ts:calcBomberChargeBaseDamage",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "function:src/data/Perkbasedmg.ts:findPerkDmgDef",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
       "source": "file:src/DmgTotalTooltip.svelte",
       "target": "function:src/DmgTotalTooltip.svelte:buildGroups",
       "type": "contains",
@@ -6968,6 +7038,14 @@
     },
     {
       "source": "file:src/data/BuffData.ts",
+      "target": "file:src/data/Perkbasedmg.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/data/BuffData.ts",
       "target": "file:src/lib/constants/buffs.ts",
       "type": "imports",
       "direction": "forward",
@@ -7008,6 +7086,30 @@
     },
     {
       "source": "file:src/data/mountRunes.ts",
+      "target": "file:src/lib/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "file:src/data/DoTDamage.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "file:src/data/draconicColorEffects.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
       "target": "file:src/lib/types.ts",
       "type": "imports",
       "direction": "forward",
@@ -7439,11 +7541,43 @@
     },
     {
       "source": "file:src/data/perkAutoDebuffs.ts",
+      "target": "file:src/data/Perkbasedmg.ts",
+      "type": "related",
+      "direction": "forward",
+      "weight": 0.3,
+      "note": "Perk-based debuff system is conceptually related to perk-based damage system"
+    },
+    {
+      "source": "file:src/data/perkAutoDebuffs.ts",
       "target": "file:src/lib/constants/buffs.ts",
       "type": "imports",
       "direction": "forward",
       "weight": 0.8,
       "note": "Imports BASIC_DEBUFF_DURATION from buffs constants"
+    },
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "file:src/lib/constants/boosts.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.6,
+      "note": "Indirectly uses boost constants via re-exported constants index"
+    },
+    {
+      "source": "file:src/data/Perkbasedmg.ts",
+      "target": "file:src/lib/constants/buffs.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.5,
+      "note": "Indirectly uses buff constants via re-exported constants index"
+    },
+    {
+      "source": "file:src/data/raceEffects.ts",
+      "target": "file:src/data/Perkbasedmg.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.9,
+      "note": "Imports HpGate type and isHpGateActive function from Perkbasedmg"
     },
     {
       "source": "file:src/DmgTotalTooltip.svelte",
@@ -7712,144 +7846,6 @@
       "type": "depends_on",
       "direction": "forward",
       "weight": 0.6
-    },
-    {
-      "source": "file:src/data/Perkbasedmg.ts",
-      "target": "file:src/data/DoTDamage.ts",
-      "type": "imports",
-      "direction": "forward",
-      "weight": 0.7
-    },
-    {
-      "source": "file:src/data/Perkbasedmg.ts",
-      "target": "file:src/data/draconicColorEffects.ts",
-      "type": "imports",
-      "direction": "forward",
-      "weight": 0.7
-    },
-    {
-      "source": "file:src/data/Perkbasedmg.ts",
-      "target": "file:src/lib/constants.ts",
-      "type": "imports",
-      "direction": "forward",
-      "weight": 0.7
-    },
-    {
-      "source": "file:src/data/Perkbasedmg.ts",
-      "target": "file:src/lib/types.ts",
-      "type": "imports",
-      "direction": "forward",
-      "weight": 0.7
-    },
-    {
-      "source": "file:src/data/Perkbasedmg.ts",
-      "target": "function:src/data/Perkbasedmg.ts:gateThreshold",
-      "type": "contains",
-      "direction": "forward",
-      "weight": 1
-    },
-    {
-      "source": "file:src/data/Perkbasedmg.ts",
-      "target": "function:src/data/Perkbasedmg.ts:isHpGateActive",
-      "type": "contains",
-      "direction": "forward",
-      "weight": 1
-    },
-    {
-      "source": "file:src/data/Perkbasedmg.ts",
-      "target": "function:src/data/Perkbasedmg.ts:calcSpringblastBaseDamage",
-      "type": "contains",
-      "direction": "forward",
-      "weight": 1
-    },
-    {
-      "source": "file:src/data/Perkbasedmg.ts",
-      "target": "function:src/data/Perkbasedmg.ts:calcBomberChargeBaseDamage",
-      "type": "contains",
-      "direction": "forward",
-      "weight": 1
-    },
-    {
-      "source": "file:src/data/Perkbasedmg.ts",
-      "target": "function:src/data/Perkbasedmg.ts:findPerkDmgDef",
-      "type": "contains",
-      "direction": "forward",
-      "weight": 1
-    },
-    {
-      "source": "file:src/data/Perkbasedmg.ts",
-      "target": "function:src/data/Perkbasedmg.ts:gateThreshold",
-      "type": "exports",
-      "direction": "forward",
-      "weight": 0.8
-    },
-    {
-      "source": "file:src/data/Perkbasedmg.ts",
-      "target": "function:src/data/Perkbasedmg.ts:isHpGateActive",
-      "type": "exports",
-      "direction": "forward",
-      "weight": 0.8
-    },
-    {
-      "source": "file:src/data/Perkbasedmg.ts",
-      "target": "function:src/data/Perkbasedmg.ts:calcSpringblastBaseDamage",
-      "type": "exports",
-      "direction": "forward",
-      "weight": 0.8
-    },
-    {
-      "source": "file:src/data/Perkbasedmg.ts",
-      "target": "function:src/data/Perkbasedmg.ts:calcBomberChargeBaseDamage",
-      "type": "exports",
-      "direction": "forward",
-      "weight": 0.8
-    },
-    {
-      "source": "file:src/data/Perkbasedmg.ts",
-      "target": "function:src/data/Perkbasedmg.ts:findPerkDmgDef",
-      "type": "exports",
-      "direction": "forward",
-      "weight": 0.8
-    },
-    {
-      "source": "file:src/data/BuffData.ts",
-      "target": "file:src/data/Perkbasedmg.ts",
-      "type": "imports",
-      "direction": "forward",
-      "weight": 0.7,
-      "recoveredFromImportMap": true
-    },
-    {
-      "source": "file:src/data/perkAutoDebuffs.ts",
-      "target": "file:src/data/Perkbasedmg.ts",
-      "type": "related",
-      "direction": "forward",
-      "weight": 0.3,
-      "note": "Perk-based debuff system is conceptually related to perk-based damage system"
-    },
-    {
-      "source": "file:src/data/Perkbasedmg.ts",
-      "target": "file:src/lib/constants/boosts.ts",
-      "type": "imports",
-      "direction": "forward",
-      "weight": 0.6,
-      "note": "Indirectly uses boost constants via re-exported constants index"
-    },
-    {
-      "source": "file:src/data/Perkbasedmg.ts",
-      "target": "file:src/lib/constants/buffs.ts",
-      "type": "imports",
-      "direction": "forward",
-      "weight": 0.5,
-      "note": "Indirectly uses buff constants via re-exported constants index"
-    },
-    {
-      "source": "file:src/data/raceEffects.ts",
-      "target": "file:src/data/Perkbasedmg.ts",
-      "type": "imports",
-      "direction": "forward",
-      "weight": 0.9,
-      "note": "Imports HpGate type and isHpGateActive function from Perkbasedmg"
     }
   ],
   "layers": [

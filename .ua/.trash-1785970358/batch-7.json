@@ -1,0 +1,252 @@
+{
+  "nodes": [
+    {
+      "id": "file:src/lib/store.ts",
+      "type": "file",
+      "name": "store.ts",
+      "filePath": "src/lib/store.ts",
+      "summary": "Svelte store layer managing the player build state for the Voxel Blade damage calculator. Provides a writable build store with debounced localStorage persistence, a derived damage result, and mutation functions for equipment, enchantments, guild, and armor/ring slot management.",
+      "tags": ["state-management", "svelte-store", "persistence", "build-optimizer", "utility"],
+      "complexity": "complex",
+      "languageNotes": "Uses Svelte writable/derived stores with a subscription that debounces localStorage writes for persistence."
+    },
+    {
+      "id": "function:src/lib/store.ts:loadBuild",
+      "type": "function",
+      "name": "loadBuild",
+      "filePath": "src/lib/store.ts",
+      "lineRange": [88, 97],
+      "summary": "Loads a saved build from localStorage, merging the parsed value over the default build, and falling back to a default copy on parse failure or missing data.",
+      "tags": ["persistence", "localStorage", "state-management"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lib/store.ts:setEnchantment",
+      "type": "function",
+      "name": "setEnchantment",
+      "filePath": "src/lib/store.ts",
+      "lineRange": [118, 130],
+      "summary": "Updates a single enchantment in a given equipment slot, enforcing slot constraints through enforceEnchantSlot.",
+      "tags": ["mutation", "enchantment", "state-management"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lib/store.ts:swapEnchantments",
+      "type": "function",
+      "name": "swapEnchantments",
+      "filePath": "src/lib/store.ts",
+      "lineRange": [132, 146],
+      "summary": "Swaps the three enchantment choices between two equipment slots via a build store update, no-op when the slots are identical.",
+      "tags": ["mutation", "enchantment", "state-management"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lib/store.ts:clearBuild",
+      "type": "function",
+      "name": "clearBuild",
+      "filePath": "src/lib/store.ts",
+      "lineRange": [150, 152],
+      "summary": "Resets the build store back to the default build state.",
+      "tags": ["mutation", "reset", "state-management"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lib/store.ts:setGuild",
+      "type": "function",
+      "name": "setGuild",
+      "filePath": "src/lib/store.ts",
+      "lineRange": [154, 172],
+      "summary": "Updates the guild and rank on the build store, handling race and equipment transitions for Draconic and Monk guilds by swapping weapons, gloves, and essence appropriately.",
+      "tags": ["mutation", "guild", "state-management"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lib/store.ts:moveArmorSlot",
+      "type": "function",
+      "name": "moveArmorSlot",
+      "filePath": "src/lib/store.ts",
+      "lineRange": [188, 213],
+      "summary": "Moves an armor piece between armor slots with optional cloning, swapping or resetting upgrade levels while respecting slot type compatibility.",
+      "tags": ["mutation", "armor", "slot-management"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lib/store.ts:canArmorMoveToSlot",
+      "type": "function",
+      "name": "canArmorMoveToSlot",
+      "filePath": "src/lib/store.ts",
+      "lineRange": [215, 217],
+      "summary": "Returns whether a given armor piece supports the destination slot type, used to gate armor moves.",
+      "tags": ["validation", "armor", "slot-management"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lib/store.ts:moveRingSlot",
+      "type": "function",
+      "name": "moveRingSlot",
+      "filePath": "src/lib/store.ts",
+      "lineRange": [226, 249],
+      "summary": "Moves the ring or infusion ring between ring slots with optional cloning, transferring or resetting upgrade levels.",
+      "tags": ["mutation", "ring", "slot-management"],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/lib/types.ts",
+      "type": "file",
+      "name": "types.ts",
+      "filePath": "src/lib/types.ts",
+      "summary": "Central type and constant definitions for the Voxel Blade damage calculator, covering stat maps, races, guilds, armor, rings, runes, enchantments, perks, weapons, monk gear, the build state, and proc/boost types. Also exports small helpers for upgrade multipliers and proc coefficient checks.",
+      "tags": ["type-definition", "data-model", "constants", "exports"],
+      "complexity": "complex",
+      "languageNotes": "Uses keyof/typeof and template-literal types to derive stat keys and scaling keys from a config object, plus re-exports from constants/damage-types."
+    },
+    {
+      "id": "function:src/lib/types.ts:applyUpgrade",
+      "type": "function",
+      "name": "applyUpgrade",
+      "filePath": "src/lib/types.ts",
+      "lineRange": [75, 89],
+      "summary": "Scales positive stats up and negative stats down by an upgrade multiplier based on equipment level, returning a new stat map.",
+      "tags": ["calculation", "upgrade", "scaling"],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/lib/types.ts:canProc",
+      "type": "function",
+      "name": "canProc",
+      "filePath": "src/lib/types.ts",
+      "lineRange": [264, 266],
+      "summary": "Returns true when a proc coefficient resolves to a value greater than zero, indicating the proc can trigger.",
+      "tags": ["validation", "proc", "helper"],
+      "complexity": "simple"
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "function:src/lib/store.ts:loadBuild",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "function:src/lib/store.ts:setEnchantment",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "function:src/lib/store.ts:swapEnchantments",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "function:src/lib/store.ts:clearBuild",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "function:src/lib/store.ts:setGuild",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "function:src/lib/store.ts:moveArmorSlot",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "function:src/lib/store.ts:canArmorMoveToSlot",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "function:src/lib/store.ts:moveRingSlot",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "function:src/lib/store.ts:setEnchantment",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "function:src/lib/store.ts:clearBuild",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "function:src/lib/store.ts:setGuild",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "function:src/lib/store.ts:moveArmorSlot",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "function:src/lib/store.ts:canArmorMoveToSlot",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lib/store.ts",
+      "target": "function:src/lib/store.ts:moveRingSlot",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lib/types.ts",
+      "target": "function:src/lib/types.ts:applyUpgrade",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lib/types.ts",
+      "target": "function:src/lib/types.ts:canProc",
+      "type": "contains",
+      "direction": "forward",
+      "weight": 1.0
+    },
+    {
+      "source": "file:src/lib/types.ts",
+      "target": "function:src/lib/types.ts:applyUpgrade",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/lib/types.ts",
+      "target": "function:src/lib/types.ts:canProc",
+      "type": "exports",
+      "direction": "forward",
+      "weight": 0.8
+    }
+  ]
+}

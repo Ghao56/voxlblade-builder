@@ -1,0 +1,15 @@
+{
+  "nodes": [
+    {
+      "id": "file:stats.html",
+      "type": "file",
+      "name": "stats.html",
+      "filePath": "stats.html",
+      "summary": "Generated rollup-plugin-visualizer bundle report for the voxlblade-builder production build, embedding a self-contained interactive treemap viewer (Preact + d3-hierarchy/d3-scale/d3-color) along with the full JSON module dependency tree (including Svelte 5 internals and Vite runtime helpers) so bundle composition and sizes can be inspected in the browser.",
+      "tags": ["html", "build-artifact", "bundle-visualization", "generated", "statistics"],
+      "complexity": "complex",
+      "languageNotes": "Single-file build artifact whose embedded <script> bundles minified third-party libraries (Preact, d3-treemap, d3-scale, d3-format) and a large inline JSON payload describing the module tree; it is output, not source, and is regenerated on every production build."
+    }
+  ],
+  "edges": []
+}

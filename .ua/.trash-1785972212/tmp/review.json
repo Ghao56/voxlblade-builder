@@ -1,0 +1,18 @@
+{
+  "issues": [],
+  "warnings": [
+    "Node 'file:.ua/.understandignore' has no edges (orphan)",
+    "Node 'file:src/data/potions.ts' has no edges (orphan)",
+    "Node 'file:src/data/selfDamagePerks.ts' has no edges (orphan)",
+    "Node 'file:src/data/stanceOverlays.ts' has no edges (orphan)",
+    "Node 'file:src/DraconicAbilityStats.svelte' has no edges (orphan)",
+    "Node 'file:src/MountIcon.svelte' has no edges (orphan)",
+    "Node 'file:src/WeaponStatsDisplay.svelte' has no edges (orphan)"
+  ],
+  "stats": {
+    "totalNodes": 262,
+    "totalEdges": 528,
+    "totalLayers": 7,
+    "tourSteps": 11
+  }
+}
