@@ -10,6 +10,10 @@
 
   let groups = $derived(buildGroups(hit, useCrit))
   let hitTotal = $derived(groups.reduce((s, g) => s + g.total, 0))
+
+  function fmt(n: number) {
+    return n.toFixed(4).replace(/\.?0+$/, '')
+  }
   let pieSegments = $derived(groups.map(g => ({ color: g.color, pct: g.total / hitTotal })))
   const PIE_R = 10
   const PIE_CIRC = 2 * Math.PI * PIE_R
@@ -62,7 +66,7 @@
       <div class="dtt-group-head">
         <span class="dtt-dot" style="background: {g.color}"></span>
         <span class="dtt-type-label" style="color: {g.color}">{g.label}</span>
-        <span class="dtt-type-total">{g.total.toFixed(4)}</span>
+        <span class="dtt-type-total">{fmt(g.total)}</span>
         {#if hitTotal > 0}
           <span class="dtt-type-pct">{((g.total / hitTotal) * 100).toFixed(2)}%</span>
         {/if}
@@ -70,7 +74,7 @@
       <div class="dtt-entries">
         {#each g.entries as e}
           <div class="dtt-entry">
-            <span class="dtt-entry-val">{e.val.toFixed(4)}</span>
+            <span class="dtt-entry-val">{fmt(e.val)}</span>
             {#if e.badge}
               {@const cfg = BADGE_CONFIG[e.badge]}
               {#if cfg}

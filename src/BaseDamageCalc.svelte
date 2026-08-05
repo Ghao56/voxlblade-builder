@@ -746,24 +746,24 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     }
 
     if (!isHeal && blubBlubAmt > 0 && canProc(hit.procCoefficient)) {
-      const preMitSum = Object.values(hit.baseDmgTypes ?? hit.dmgTypes)
+      const blubBase = Object.values(hit.dmgTypes ?? hit.baseDmgTypes ?? {})
         .reduce((s, m) => s + hit.base * m, 0)
-      const preMitBase = preMitSum * (hit.scalingMult ?? 1) * (hit.weaponBoostMult ?? 1) * _activeDebuffDamageMult * selfDebuffDamageMult
+      const blubOutMult = (hit.combatMult ?? 1) * (hit.weaponBoostMult ?? 1) * _activeDebuffDamageMult * selfDebuffDamageMult
+      const blubPerHit = blubBase * (hit.scalingMult ?? 1) * BLUB_BLUB_PCT_PER_STACK * blubBlubAmt
 
-      if (preMitBase > 0) {
-        const blubPerHit = preMitBase * BLUB_BLUB_PCT_PER_STACK * blubBlubAmt
+      if (blubPerHit > 0) {
         const blubResolvedTypes = resolveDamageTypes(BLUB_BLUB_DMG_TYPES, perkDmgTypeBonuses)
 
         for (const [k, mult] of Object.entries(blubResolvedTypes)) {
           const blubCrushPen = crushingPenForType(k)
           const { info, applicableBoosts, typedMultUsed, typeDebuffMult: blubDebuffMult, defPct: blubDefPct, defMult: blubDefMult } = resolveTypeInfo(k, basePenDecimal + blubCrushPen / 100, { type: 'noProc' })
           const blubTypeBase = blubPerHit * mult
-          const blubRawPerHit = blubTypeBase * typedMultUsed * blubDefMult * blubDebuffMult * BLUB_BLUB_HIT_COUNT
+          const blubRawPerHit = blubTypeBase * typedMultUsed * blubOutMult * blubDefMult * blubDebuffMult * BLUB_BLUB_HIT_COUNT
           
           types.push({
             key: k, label: info.label, color: info.color,
-            typeBase: blubTypeBase, scalingMult: 1, combatMult: 1,
-            applicableBoosts, weaponBoostMult: 1, typeDebuffMult: blubDebuffMult,
+            typeBase: blubTypeBase, scalingMult: 1, combatMult: hit.combatMult ?? 1,
+            applicableBoosts, weaponBoostMult: hit.weaponBoostMult ?? 1, typeDebuffMult: blubDebuffMult,
             defMult: blubDefMult, enemyDefPct: blubDefPct,
             raw: blubRawPerHit, critVal: Math.round(blubRawPerHit * critDmgMult / 100 * 10000) / 10000,
             isHeal: false, tag: 'Blub', forceCrit: false, procCoefficient: { type: 'noProc' }, hitCount: BLUB_BLUB_HIT_COUNT,
@@ -959,19 +959,19 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
             if (stormRendPct > 0) addProcEffect(preMitBase, stormRendPct, { air: 0.5, magic: 0.5 }, 'Chain')
             if (explosiveChargePct > 0 && hit.group === 'WA') addProcEffect(preMitBase, explosiveChargePct, { physical: 0.5, fire: 0.5 }, 'Explosive')
             if (blubBlubAmt > 0) {
-              const blubDmgSum = Object.values(ph.dmgTypes).reduce((s, m) => s + m, 0)
-              const blubPreMitBase = ph.baseDmg * blubDmgSum * ph.scalingMult * (ph.weaponBoostMult ?? 1) * debuffMult
-              const blubPerHit = blubPreMitBase * BLUB_BLUB_PCT_PER_STACK * blubBlubAmt
+              const blubDmgSum = Object.values(resolvedTypes).reduce((s, m) => s + m, 0)
+              const blubPerHit = ph.baseDmg * blubDmgSum * ph.scalingMult * BLUB_BLUB_PCT_PER_STACK * blubBlubAmt
+              const blubOutMult = ph.combatMult * (ph.weaponBoostMult ?? 1) * debuffMult
               const blubResolvedTypes = resolveDamageTypes(BLUB_BLUB_DMG_TYPES, perkDmgTypeBonuses)
               for (const [k, mult] of Object.entries(blubResolvedTypes)) {
           const blubCrushPen = crushingPenForType(k)
           const { info, applicableBoosts, typedMultUsed, typeDebuffMult: blubDebuffMult, defPct: blubDefPct, defMult: blubDefMult } = resolveTypeInfo(k, basePenDecimal + blubCrushPen / 100, { type: 'noProc' })
                 const blubTypeBase = blubPerHit * mult
-                const blubRaw = blubTypeBase * typedMultUsed * blubDefMult * blubDebuffMult * BLUB_BLUB_HIT_COUNT
+                const blubRaw = blubTypeBase * typedMultUsed * blubOutMult * blubDefMult * blubDebuffMult * BLUB_BLUB_HIT_COUNT
                 types.push({
                   key: k, label: info.label, color: info.color,
-                  typeBase: blubTypeBase, scalingMult: 1, combatMult: 1,
-                  applicableBoosts, weaponBoostMult: 1, typeDebuffMult: blubDebuffMult,
+                  typeBase: blubTypeBase, scalingMult: 1, combatMult: ph.combatMult,
+                  applicableBoosts, weaponBoostMult: ph.weaponBoostMult ?? 1, typeDebuffMult: blubDebuffMult,
                   defMult: blubDefMult, enemyDefPct: blubDefPct,
                   raw: blubRaw, critVal: Math.round(blubRaw * critDmgMult / 100 * 10000) / 10000,
                   isHeal: false, tag: 'Blub', forceCrit: false, procCoefficient: { type: 'noProc' }, hitCount: BLUB_BLUB_HIT_COUNT,
