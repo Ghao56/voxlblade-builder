@@ -75,7 +75,7 @@ import {
   CLEAVE_DURATION,
   SERRATED_EDGE_DURATION,
   INSPIRED_POTENCY_PER_AMOUNT, INSPIRED_DURATION, INSPIRED_EFFECT_PER_TENTH,
-  VIRULENT_CORE_DURATION,
+  VIRULENT_CORE_DURATION, PROTO_TECH_DURATION,
 } from '../lib/constants/buffs'
 import {
   CRYO_ENGINE_TAILWIND_BASE_POTENCY, CRYO_ENGINE_TAILWIND_POTENCY_PER_AMOUNT,
@@ -350,7 +350,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
   Bleed: {
     name: 'Bleed',
     color: '#ff0004',
-    description: 'bleeds over time.',
+    description: 'Deals physical damage overtime.',
     effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
     effectUnit: 'flat',
     isDebuff: true,
@@ -358,7 +358,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
   Burn: {
     name: 'Burn',
     color: '#fd5d00',
-    description: 'burns over time.',
+    description: 'Deals fire damage overtime.',
     effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
     effectUnit: 'flat',
     isDebuff: true,
@@ -374,7 +374,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
   Poison: {
     name: 'Poison',
     color: '#d900ff',
-    description: 'poisons over time.',
+    description: 'Deals hex damage over time.',
     effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
     effectUnit: 'flat',
     isDebuff: true,
@@ -1608,6 +1608,16 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       duration: VIRULENT_CORE_DURATION,
       condition: `on M1/M2`,
       sourceName: 'Virulent Core',
+      sourceType: 'perk',
+    },
+  ],
+  'Proto Tech': (amount) => [
+    {
+      buffName: 'Poison',
+      potency: 0,
+      duration: PROTO_TECH_DURATION,
+      condition: `on M1/M2`,
+      sourceName: 'Proto Tech',
       sourceType: 'perk',
     },
   ],
