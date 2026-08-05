@@ -1107,6 +1107,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     scalings: { physical: 1.0, dexterity: 1.0 },
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
     guardbreak: true,
+    note: 'Lands directly on top of the target. Can proc other effects. Has a Spirit Gain Multiplier of 0.5 (see Spirit Commune).',
   },
   // ── Queen Bumblz Spirit ──────────────────────────────────────────────────────
   {
