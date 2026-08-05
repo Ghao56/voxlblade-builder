@@ -1670,6 +1670,39 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     procCoefficient: { type: 'hasCoeff', value: 1 },
     note: 'Stars deal 3 base damage with 1.0 of their type and 1.0 scaling of that type. True stars instead deal 6 base with 0.5 Magic scaling. 100% activation chance. Stars can proc other on-hit effects (Chain, Luminescent, Lifesteal, etc.) at 100% proc coefficient for now. Star type is random per recalculation — actual damage appears next to M1/M2.',
   },
+  // ── Power Inhale ─────────────────────────────────────────────────
+  {
+    perkName: 'Power Inhale',
+    condition: 'when Fully Charged',
+    getBaseDamage: ({ perkAmount }) => 20 * perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { air: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { air: 1.0 },
+    isWA: true,
+    guardbreak: true,
+    procCoefficient: { type: 'hasCoeff', value: 1 },
+    note: 'roughly 3.33 second charge time at 1 of this perk, and roughly 1.66 seconds at 2 of this perk.',
+  },
+  // ── Proto Tech ─────────────────────────────────────────────────
+  {
+    perkName: 'Proto Tech',
+    condition: 'Chance to activate once per second',
+    getBaseDamage: ({ perkAmount }) => 1 + 0.75 * perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { magic: 0.5, hex: 0.5 },
+    scalingMode: 'fixed',
+    scalings: { magic: 0.5, hex: 0.5 },
+    procCoefficient: { type: 'hasCoeff', value: 1 },
+    secondaryEffects: [
+      {
+        label: 'Activation Chance',
+        getValue: ({ perkAmount }) => 10 * perkAmount,
+        format: v => `${v}%`,
+        tone: 'utility',
+      },
+    ],
+  },
 ]
 
 const _perkDmgDefMap = new Map<string, PerkDmgDef[]>()

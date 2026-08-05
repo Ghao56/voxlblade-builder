@@ -168,6 +168,7 @@ export const SERRATED_EDGE_DURATION = 5
 export const CLEAVE_POTENCY = 0.1
 export const CLEAVE_DURATION = 4
 export const VIRULENT_CORE_DURATION = 5
+export const PROTO_TECH_DURATION = 4
 
 // BUFF_POTENCY_MODIFIERS
 export const BOUNCE_DURATION_BASE = 1.0
