@@ -99,7 +99,7 @@ import { SPIRIT_WINDS_PCT_PER_STACK, DARK_MAGIC_PCT_PER_STACK, EMOTIONAL_PCT_PER
   })()
 
   $: perkBuffs = (() => {
-    const buffs = getPerkBuffs($result.perks, $build.lastCroakStacks)
+    const buffs = getPerkBuffs($result.perks, $build.lastCroakStacks, $build.channeledDepthsTime)
     const idx = buffs.findIndex(b => b.buffName === 'Exhaust')
     if (idx !== -1) {
       const wa = WEAPON_ARTS.find(wa => wa.name === $build.selectedWeaponArt)

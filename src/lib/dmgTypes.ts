@@ -78,6 +78,7 @@ export interface PerkOnHitDmg {
   canApplyBurn?: boolean
   weaponBoostMult?: number
   weaponBoostLabel?: string
+  cdWater?: number
 }
 
 export interface ComputedHit {

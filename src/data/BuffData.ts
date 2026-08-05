@@ -609,6 +609,14 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectUnit: 'flat',
     isNeutral: true,
   },
+  'Channeled Depths': {
+    name: 'Channeled Depths',
+    color: '#2a49ff',
+    description: 'Ramping neutral status. Above 0.2 potency, the next attack gains 0.5 additional Water Damage Type per 0.1 potency, then the status is consumed. Half of this effect is not converted by Piercer.',
+    effectPerTenthPotency: 0,
+    effectUnit: 'flat',
+    isNeutral: true,
+  },
   'Sun Blessed': {
     name: 'Sun Blessed',
     color: '#fbbf24',
@@ -788,7 +796,7 @@ export const BASIC_DEBUFF_POOL: Array<{ buffName: string; potency: number; durat
   { buffName: 'Weakness', potency: BASIC_WEAKNESS_POTENCY, duration: BASIC_DEBUFF_DURATION },
 ]
 
-type PerkBuffFactory = (amount: number, allPerks: Record<string, number>, vassalsCroakStacks?: number) => GrantedBuff[]
+type PerkBuffFactory = (amount: number, allPerks: Record<string, number>, vassalsCroakStacks?: number, channeledDepthsTime?: number) => GrantedBuff[]
 
 const PERK_BUFFS: Record<string, PerkBuffFactory> = {
 
@@ -835,6 +843,22 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       sourceType: 'perk',
     },
   ],
+
+  'Channeled Depths': (amount, _allPerks, _vassalsCroakStacks, channeledDepthsTime) => {
+    const cap = 0.1 + 0.1 * amount
+    const time = channeledDepthsTime ?? 0
+    const potency = Math.round(Math.min(cap, 0.01 * amount * time) * 10000) / 10000
+    return [
+      {
+        buffName: 'Channeled Depths',
+        potency,
+        duration: 0,
+        condition: `+0.01 potency/s per perk · cap ${Math.round(cap * 10000) / 10000} · at or above 0.2 potency, next attack gains 0.5 Water Damage Type per 0.1 potency (half not converted by Piercer)`,
+        sourceName: 'Channeled Depths',
+        sourceType: 'perk',
+      },
+    ]
+  },
 
   'Toadzerker Spirit': () => {
     return [
@@ -2156,14 +2180,14 @@ export function getBuffDescription(
   return desc.replace(/x%/g, `${+(pct).toFixed(4).replace(/\.?0+$/, '')}%`)
 }
 
-export function getPerkBuffs(perks: Record<string, number>, vassalsCroakStacks?: number): GrantedBuff[] {
+export function getPerkBuffs(perks: Record<string, number>, vassalsCroakStacks?: number, channeledDepthsTime?: number): GrantedBuff[] {
   const buffs: GrantedBuff[] = []
 
   for (const [perkName, amount] of Object.entries(perks)) {
     if (amount <= 0) continue
     const factory = PERK_BUFFS[perkName]
     if (!factory) continue
-    for (const b of factory(amount, perks, vassalsCroakStacks)) {
+    for (const b of factory(amount, perks, vassalsCroakStacks, channeledDepthsTime)) {
       buffs.push({ ...b, duration: Math.round(b.duration * 100) / 100 })
     }
   }
@@ -2237,6 +2261,7 @@ export interface ActiveBuffsBuildInput {
   draconicColor?: string
   inDarkness?: boolean
   lastCroakStacks?: number
+  channeledDepthsTime?: number
 }
 
 /**
@@ -2299,7 +2324,7 @@ export function assembleActiveBuffs(
   }
 
   const buffs = convertTailwindToWhirlwind(applyBuffPerkModifiers(
-    [...itemBuffs, ...potionBuffs, ...getPerkBuffs(perks, build.lastCroakStacks), ...getWeaponArtBuffs(build.selectedWeaponArt)],
+    [...itemBuffs, ...potionBuffs, ...getPerkBuffs(perks, build.lastCroakStacks, build.channeledDepthsTime), ...getWeaponArtBuffs(build.selectedWeaponArt)],
     perks,
     build.rune || undefined,
     wardingDebuffMult,

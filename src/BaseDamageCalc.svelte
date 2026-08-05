@@ -5,6 +5,7 @@
   const dispatch = createEventDispatcher()
   import DmgTotalTooltip from './DmgTotalTooltip.svelte'
   import { resolveDamageTypes, applyFireAirConversion } from './lib/damageTypeResolve'
+  import { roundMultiplier } from './lib/utils'
   import type { TypedDmgBoostEntry } from './data/TypedDmgBoost'
   import { BADGE_CONFIG, type ComputedType, type ComputedHit, type PerkOnHitDmg } from './lib/dmgTypes'
   import Badge from './lib/ui/Badge.svelte'
@@ -146,6 +147,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     perHitCounts?: boolean
     finisherHitIndex?: number
     eachHitM1M2?: boolean
+    cdWater?: number
   }> = []
   export let typedBoostEntries: TypedDmgBoostEntry[] = []
   export let luminescentPct: number = 0
@@ -572,6 +574,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
  
   $: computedHits = typedBoostEntries && effectiveDefenses && (void starRerollSeed, () => {
     const lcConsumed = new Set<string>()
+    const cdPerkConsumed = new Set<string>()
     return weaponHits.flatMap((hit): ComputedHit[] => {
     const isHeal = hit.isHeal ?? false
     const basePenDecimal = (armorPen + globalArmorPenetration) / 100
@@ -608,7 +611,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     const _hitPreMitBase = computePreMitigationBase(hit)
     const _hitDebuffedPreMitBase = _hitPreMitBase * _activeDebuffDamageMult * selfDebuffDamageMult
 
-    const types: ComputedType[] = Object.entries(hit.dmgTypes ?? {}).map(([k, mult]) => {
+    const buildTypeChunk = (k: string, mult: number, labelOverride?: string): ComputedType => {
       const info = DMG_TYPE_MAP.get(k) ?? { label: k, color: '#e8e4da' }
       const typeIsHeal   = hit.dmgTypeIsHeal?.[k] ?? isHeal
       const typeCombat   = hit.dmgTypeCombatMults?.[k] ?? hit.combatMult
@@ -649,7 +652,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       const critVal = typeNoCrit ? raw : raw * effectiveCrit / 100
 
       return {
-        key: k, label: info.label, color: info.color,
+        key: k, label: labelOverride ?? info.label, color: info.color,
         typeBase, scalingMult: hit.scalingMult, combatMult: typeCombat,
         applicableBoosts, weaponBoostMult, weaponBoostLabel: hit.weaponBoostLabel,
         typeDebuffMult,
@@ -658,6 +661,18 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
         ...(spellPiercer && baseDefPct > 0 ? { spellPiercerIgnored: true } : {}),
         ...(hit.perHitCounts ? { subHits: hit.count } : {}),
       }
+    }
+
+    const types: ComputedType[] = Object.entries(hit.dmgTypes ?? {}).flatMap(([k, mult]) => {
+      if (k === 'water' && (hit.cdWater ?? 0) > 0 && mult > 0) {
+        // Split Channeled Depths' water (perk water) from the weapon's own water.
+        const weaponWater = roundMultiplier(Math.max(0, mult - (hit.cdWater ?? 0)))
+        const chunks: ComputedType[] = []
+        if (weaponWater > 0) chunks.push(buildTypeChunk('water', weaponWater))
+        chunks.push(buildTypeChunk('water', hit.cdWater ?? 0, 'Water (Channeled Depths)'))
+        return chunks
+      }
+      return [buildTypeChunk(k, mult)]
     })
 
     const _finisherMainTypesEnd = types.length
@@ -898,6 +913,34 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
               isHeal: false, tag: ph.tag, oncePerGroup: (ph.oncePerFinisher ?? true) && !hit.eachHitM1M2, forceCrit: false,
               ...(ph.halfActivations ? { activationDivisor: 2 } : {}),
               ...(ph.weaponBoostLabel != null ? { weaponBoostLabel: ph.weaponBoostLabel } : {}),
+            })
+          }
+
+          if ((ph.cdWater ?? 0) > 0 && !cdPerkConsumed.has(ph.tag)) {
+            cdPerkConsumed.add(ph.tag)
+            const cdInfo = DMG_TYPE_MAP.get('water') ?? { label: 'water', color: '#38bdf8' }
+            let cdBase = ph.baseDmg
+            if (ph.getFinisherHitBaseDmg) {
+              cdBase = ph.getFinisherHitBaseDmg({ baseDmg: ph.baseDmg, hitIndex: hit.finisherHitIndex ?? hit.index })
+            } else if (ph.rawFinisherNumerator != null) {
+              const fh = hit.finisherGroupHitCount ?? hit.count
+              cdBase = Math.round(ph.rawFinisherNumerator / (0.5 + fh / 2) * 1000) / 1000
+            }
+            const cdTypeBase = cdBase * (ph.cdWater ?? 0)
+            const cdBoosts = getApplicableBoosts('water', false, undefined, hit.procCoefficient)
+            const cdTypedMult = cdBoosts.reduce((acc, b) => acc * b.mult, 1)
+            const cdDebuffMult = _activeDebuffTypeDamageMult['water'] ?? 1
+            const cdDefPct = defPctForType('water')
+            const cdDefMult = calcArmorMult(cdDefPct, basePenDecimal + crushingPenForType('water') / 100, 'water').mult
+            const cdWbMult = ph.weaponBoostMult ?? 1
+            const cdRaw = cdTypeBase * ph.scalingMult * ph.combatMult * cdWbMult * debuffMult * cdTypedMult * cdDefMult * cdDebuffMult
+            types.push({
+              key: 'water', label: 'Water (Channeled Depths)', color: cdInfo.color,
+              typeBase: cdTypeBase, scalingMult: ph.scalingMult, combatMult: ph.combatMult,
+              applicableBoosts: cdBoosts, weaponBoostMult: cdWbMult, typeDebuffMult: cdDebuffMult,
+              defMult: cdDefMult, enemyDefPct: cdDefPct,
+              raw: cdRaw, critVal: Math.round(cdRaw * critDmgMult / 100 * 10000) / 10000,
+              isHeal: false, tag: ph.tag, forceCrit: false,
             })
           }
 

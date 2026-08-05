@@ -860,6 +860,20 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     ? _dragonStateBaseDmg * _dragonStateScalingMult * _dragonStateCombatMult
     : 0
   $: _waveRiderAmt = perks['Wave Rider'] ?? 0
+  $: _cdAmt = (disabledBuffKeys.has('Channeled Depths:Channeled Depths') ? 0 : (perks['Channeled Depths'] ?? 0))
+  $: _cdCap = 0.1 + 0.1 * _cdAmt
+  $: _cdPotency = _cdAmt > 0
+    ? Math.round(Math.min(_cdCap, 0.01 * _cdAmt * ($build.channeledDepthsTime ?? 0)) * 10000) / 10000
+    : 0
+  $: _cdActive = _cdPotency >= 0.2
+  $: _cdWaterBonus = _cdActive ? Math.round(0.5 * (_cdPotency / 0.1) * 10000) / 10000 : 0
+  $: _cdTarget = $build.channeledDepthsTarget ?? 'WA'
+  $: _cdTimeToCap = _cdAmt > 0 ? Math.round((_cdCap / (0.01 * _cdAmt)) * 100) / 100 : 0
+  $: _cdTimeToThreshold = _cdAmt > 0 ? Math.round((0.2 / (0.01 * _cdAmt)) * 100) / 100 : 0
+  $: _cdFillPct = _cdTimeToCap > 0 ? Math.min(100, (($build.channeledDepthsTime ?? 0) / _cdTimeToCap) * 100) : 0
+  $: if (_cdAmt > 0 && $build.channeledDepthsTime != null && $build.channeledDepthsTime > _cdTimeToCap) {
+    build.update(s => ({ ...s, channeledDepthsTime: _cdTimeToCap }) as any)
+  }
   $: _oceanSongAmt = perks['Ocean Song'] ?? 0
   $: _wildBoltAmt = perks['Wild Bolt'] ?? 0
   $: _weightySlamAmt = perks['Weighty Slam'] ?? 0
@@ -1121,6 +1135,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: _generalActiveDebuffCount = _dummyDebuffs.filter(d => !disabledDebuffs.has(d.name)).length
 
   $: _disabledKeysArr = [...disabledBuffKeys]
+  $: _disabledPerkKeySet = new Set($build.disabledPerkEntries ?? [])
   function _isBuffDisabled(buff: { buffName: string; sourceName: string }): boolean {
     return disabledBuffKeys.has(`${buff.buffName}:${buff.sourceName}`)
   }
@@ -1130,6 +1145,12 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     _allActiveBuffs.reduce((m, b) => b.buffName === 'Magic Reinforce' ? Math.max(m, b.potency) : m, 0))
 
 
+  function togglePerkEntry(key: string) {
+    const nextKeys = new Set($build.disabledPerkEntries ?? [])
+    if (nextKeys.has(key)) nextKeys.delete(key)
+    else nextKeys.add(key)
+    build.update(s => ({ ...s, disabledPerkEntries: [...nextKeys] }))
+  }
   function toggleBuffKey(key: string) {
     const nextKeys = new Set(disabledBuffKeys)
     if (nextKeys.has(key)) nextKeys.delete(key)
@@ -1456,9 +1477,17 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     return row.m1 ? hitIndex === row.m1.length - 1 : false
   }
 
-  function applyPiercerTrueConversion(types: Record<string, number>, piercerRank: number): Record<string, number> {
+  function applyPiercerTrueConversion(types: Record<string, number>, piercerRank: number, exemptWater = 0): Record<string, number> {
     if (piercerRank <= 0) return { ...types }
-    return { true: roundMultiplier(1 + 0.1 * piercerRank) }
+    const trueMult = roundMultiplier(1 + 0.1 * piercerRank)
+    if (exemptWater > 0) {
+      // Half of Channeled Depths' water is not converted by Piercer and stays as Water.
+      return {
+        true: roundMultiplier(trueMult * (1 + exemptWater / 2)),
+        water: roundMultiplier(exemptWater / 2),
+      }
+    }
+    return { true: trueMult }
   }
 
   $: natSources = crit.naturalBreakdown
@@ -2481,6 +2510,8 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     perkName: string
     displayName: string
     perkAmount: number
+    key: string
+    manualOff: boolean
     condition?: string
     hits?: number
     isM1?: boolean; isM2?: boolean; isFinisher?: boolean;     isWA?: boolean; isRune?: boolean; isProcHit?: boolean
@@ -2634,7 +2665,10 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       const halfActivations = hasHalfActivations || undefined
       const oncePerFinisher = isSpringblast ? false : (def.finisherOnly ? true : undefined)
 
-      const isActive = isHpGateActive(def.hpGate, _hpFillPct, perkAmount) && isHpGateActive(def.enemyHpGate, _enemyHpFillPct, perkAmount) && (!isSpringblast || _allActiveBuffs.some(b => b.buffName === 'Bounce')) && (!def.requiredBuff || _allActiveBuffs.some(b => b.buffName === def.requiredBuff)) && (!def.requiredEnemyDebuff || (_dummyDebuffs.some(d => d.name === def.requiredEnemyDebuff) && !disabledDebuffs.has(def.requiredEnemyDebuff!))) && !(_sliderDef && _perkSliderVal <= 0) && !(def.label === 'Ranged Slash' && _sliderDef && _perkSliderVal < ICHOR_SPARK_SLASH_CHARGE_THRESHOLD * 100)
+      const perkKey = `${def.perkName}:${def.label ?? def.perkName}`
+      const manualOff = _disabledPerkKeySet.has(perkKey)
+
+      const isActive = !manualOff && isHpGateActive(def.hpGate, _hpFillPct, perkAmount) && isHpGateActive(def.enemyHpGate, _enemyHpFillPct, perkAmount) && (!isSpringblast || _allActiveBuffs.some(b => b.buffName === 'Bounce')) && (!def.requiredBuff || _allActiveBuffs.some(b => b.buffName === def.requiredBuff)) && (!def.requiredEnemyDebuff || (_dummyDebuffs.some(d => d.name === def.requiredEnemyDebuff) && !disabledDebuffs.has(def.requiredEnemyDebuff!))) && !(_sliderDef && _perkSliderVal <= 0) && !(def.label === 'Ranged Slash' && _sliderDef && _perkSliderVal < ICHOR_SPARK_SLASH_CHARGE_THRESHOLD * 100)
 
       const secondaryEffects = (def.secondaryEffects ?? []).filter(se => !se.showIf || se.showIf({ draconicColor: _effDraconicColor })).map(se => {
         let raw = Math.round(se.getValue({ perkAmount, draconicColor: _effDraconicColor, statuses: _perkCtxStatuses, sliderVal: _perkSliderVal }) * 1000) / 1000
@@ -2666,6 +2700,8 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         perkName: def.perkName,
         displayName: def.label ?? def.perkName,
         perkAmount,
+        key: perkKey,
+        manualOff,
         condition: def.condition,
         hits: entryHits,
         isM1: def.isM1, isM2: def.isM2, isFinisher: def.isFinisher,
@@ -2705,6 +2741,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       dmgTypes: Record<string, number>; procCoefficient?: ProcCoefficient; isProcHit?: boolean; canApplyBurn?: boolean
       rawFinisherNumerator?: number; halfActivations?: boolean; oncePerFinisher?: boolean; alwaysOnHit?: boolean; finisherOnly?: boolean
       weaponBoostMult?: number; weaponBoostLabel?: string
+      cdWater?: number
       getFinisherHitBaseDmg?: (ctx: { baseDmg: number; hitIndex: number }) => number
     }> = []
     for (const e of _activePerkDmgEntries) {
@@ -2739,6 +2776,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         ...(e.isProcHit && !e.finisherOnly ? { alwaysOnHit: true } : {}),
         ...(e.finisherOnly ? { finisherOnly: true } : {}),
         ...(perkDef?.getFinisherHitBaseDmg ? { getFinisherHitBaseDmg: perkDef.getFinisherHitBaseDmg } : {}),
+        ...(_cdActive && _cdTarget === e.displayName ? { cdWater: _cdWaterBonus } : {}),
       })
     }
     return out
@@ -2749,6 +2787,12 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     const [modified] = applyBuffPerkModifiers(raw, $result.perks, $build.rune || undefined)
     return modified
   })()
+  $: _cdPerkTargets = [...new Set([
+    ..._perkOnHitDamages.map(ph => ph.tag),
+    ..._activePerkDmgEntries
+      .filter(e => e.isActive && e.typedHits_m2.length > 0 && e.perkName !== 'Cauterize' && e.perkName !== 'Blazing Finisher' && e.perkName !== 'Draconic Blood' && !_isSpiritPerk(e.perkName) && !e.isWA && !e.isRune && !e.isM1 && !e.isM2)
+      .map(e => e.displayName),
+  ])]
   interface BDCHit {
     group: string
     index: number
@@ -2778,6 +2822,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     finisherHitIndex?: number
     weaponBoostMult?: number
     weaponBoostLabel?: string
+    cdWater?: number
   }
 
   $: _bdcWeaponHits = (() => {
@@ -2791,15 +2836,23 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       const gunLabel = (row as any).gunLabel as string | undefined
       const m1Types = (gunLabel && !(row as any).m2Only)   ? _gunDmgTypes : _convertedWeaponDmgTypes
       const m2Types = (gunLabel && !(row as any).m2NoLock) ? _gunDmgTypes : _convertedWeaponDmgTypes
+      let cdM2Applied = false
+      let cdM1Applied = false
       const pushM2Hit = (h: any, i: number, label?: string, group: 'M1' | 'M2' = 'M2', finMult = 1, finisherIndex?: number) => {
         const rawBase = typeof h === 'number' ? h : h.n
         const count = typeof h === 'number' ? 1 : h.count
         const base = finMult !== 1 ? roundMultiplier(applyWeaponCharge(rawBase) * finMult) : applyWeaponCharge(rawBase)
-        const hitDmgTypes = _mortalWillHolyTypeBonus > 0
-          ? { ...m2Types, holy: Math.round(((m2Types.holy ?? 0) + _mortalWillHolyTypeBonus) * 10000) / 10000 }
+        const cdTargetHit = _cdActive && _cdTarget === 'M2' && !cdM2Applied
+        if (cdTargetHit) cdM2Applied = true
+        const cdWater = cdTargetHit ? _cdWaterBonus : 0
+        const hitDmgTypesWithCd = cdWater > 0
+          ? { ...m2Types, water: roundMultiplier((m2Types.water ?? 0) + cdWater) }
           : m2Types
+        const hitDmgTypes = _mortalWillHolyTypeBonus > 0
+          ? { ...hitDmgTypesWithCd, holy: Math.round(((hitDmgTypesWithCd.holy ?? 0) + _mortalWillHolyTypeBonus) * 10000) / 10000 }
+          : hitDmgTypesWithCd
         const piercerRank = disableWeaponBoost ? 0 : (perks['Piercer'] ?? 0)
-        const finalDmgTypes = piercerRank > 0 ? applyPiercerTrueConversion(hitDmgTypes, piercerRank) : hitDmgTypes
+        const finalDmgTypes = piercerRank > 0 ? applyPiercerTrueConversion(hitDmgTypes, piercerRank, cdWater) : hitDmgTypes
         const boostDmgTypes = piercerRank > 0 ? { ...hitDmgTypes } : undefined
         const mwMult = _mortalWillFinisherDmgMult !== 1 ? _mortalWillFinisherDmgMult : 1
         const sunburnMult = _sunburnActive && _sunburnEnemyBurning
@@ -2811,6 +2864,24 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           sunburnMult !== 1 ? 'Sunburn' : '',
           _activeBellowingEmberMult !== 1 ? 'Bellowing Ember' : '',
         ].filter(Boolean).join(', ')
+        const finalLabel = cdTargetHit ? (label ? `${label} · Channeled Depths` : 'Channeled Depths') : label
+        if (cdTargetHit && count > 1) {
+          result.push({
+            group, index: i, count: 1, base, scalingMult: _scalingMult, combatMult: _m2CombatMult,
+            isFinisher: true, dmgTypes: finalDmgTypes,
+            baseDmgTypes: _weaponDmgTypesBase,
+            ...(group === 'M1' ? { isM2: true } : {}),
+            ...(piercerRank > 0 ? { boostDmgTypes } : {}),
+            ...(combinedWbMult !== 1 ? { weaponBoostMult: combinedWbMult, weaponBoostLabel: wbLabel } : {}),
+            canApplyBurn: _hasSingedBurn,
+            finisherGroupHitCount: _m2FinisherHits,
+            ...(cdWater > 0 ? { cdWater } : {}),
+            ...(finalLabel ? { label: finalLabel } : {}),
+            ...(finisherIndex != null ? { finisherIndex } : {}),
+          })
+          pushM2Hit({ n: rawBase, count: count - 1 }, i, label, group, finMult, finisherIndex)
+          return
+        }
         result.push({
           group, index: i, count, base, scalingMult: _scalingMult, combatMult: _m2CombatMult,
           isFinisher: true, dmgTypes: finalDmgTypes,
@@ -2820,7 +2891,8 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           ...(combinedWbMult !== 1 ? { weaponBoostMult: combinedWbMult, weaponBoostLabel: wbLabel } : {}),
           canApplyBurn: _hasSingedBurn,
           finisherGroupHitCount: _m2FinisherHits,
-          ...(label ? { label } : {}),
+          ...(cdWater > 0 ? { cdWater } : {}),
+          ...(finalLabel ? { label: finalLabel } : {}),
           ...(finisherIndex != null ? { finisherIndex } : {}),
         })
       }
@@ -2850,11 +2922,17 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           const pushM1Hit = (finMult: number, finLabel?: string) => {
             const wb = finisherHit ? _m1FinisherWeaponBoost : null
             const mwMult = finisherHit && _mortalWillFinisherDmgMult !== 1 ? _mortalWillFinisherDmgMult : 1
-            const hitDmgTypes = finisherHit && _mortalWillHolyTypeBonus > 0
-              ? { ...m1Types, holy: Math.round(((m1Types.holy ?? 0) + _mortalWillHolyTypeBonus) * 10000) / 10000 }
+            const cdTargetHit = _cdActive && _cdTarget === 'M1' && !cdM1Applied
+            if (cdTargetHit) cdM1Applied = true
+            const cdWater = cdTargetHit ? _cdWaterBonus : 0
+            const hitDmgTypesWithCd = cdWater > 0
+              ? { ...m1Types, water: roundMultiplier((m1Types.water ?? 0) + cdWater) }
               : m1Types
+            const hitDmgTypes = finisherHit && _mortalWillHolyTypeBonus > 0
+              ? { ...hitDmgTypesWithCd, holy: Math.round(((hitDmgTypesWithCd.holy ?? 0) + _mortalWillHolyTypeBonus) * 10000) / 10000 }
+              : hitDmgTypesWithCd
             const piercerRank = (finisherHit && !disableWeaponBoost) ? (perks['Piercer'] ?? 0) : 0
-            const finalDmgTypes = piercerRank > 0 ? applyPiercerTrueConversion(hitDmgTypes, piercerRank) : hitDmgTypes
+            const finalDmgTypes = piercerRank > 0 ? applyPiercerTrueConversion(hitDmgTypes, piercerRank, cdWater) : hitDmgTypes
             const boostDmgTypes = piercerRank > 0 ? { ...hitDmgTypes } : undefined
             const sunburnMult = _sunburnActive && _sunburnEnemyBurning
               ? ((hitDmgTypes.holy ?? 0) > 0 ? _sunburnHolyDmgMult : _sunburnUniversalDmgMult) : 1
@@ -2866,6 +2944,23 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
               _pursuitMult !== 1 ? 'Pursuit' : '',
               _activeBellowingEmberMult !== 1 ? 'Bellowing Ember' : '',
             ].filter(Boolean).join(', ')
+            if (cdTargetHit && count > 1) {
+              result.push({
+                group: 'M1', index: i, count: 1,
+                base: finMult !== 1 ? roundMultiplier(base * finMult) : base,
+                scalingMult: _scalingMult, combatMult: _m1CombatMult,
+                isFinisher: finisherHit, dmgTypes: finalDmgTypes,
+                baseDmgTypes: _weaponDmgTypesBase,
+                ...(piercerRank > 0 ? { boostDmgTypes } : {}),
+                ...(combinedWbMult !== 1 ? { weaponBoostMult: combinedWbMult, weaponBoostLabel: wbLabel } : {}),
+                canApplyBurn: _hasSingedBurn,
+                finisherGroupHitCount: finisherHit ? _m1FinisherHits : undefined,
+                ...(cdWater > 0 ? { cdWater } : {}),
+                label: finLabel ? `${finLabel} · Channeled Depths` : 'Channeled Depths',
+              })
+              pushM1Hit(finMult, finLabel)
+              return
+            }
             result.push({
               group: 'M1', index: i, count,
               base: finMult !== 1 ? roundMultiplier(base * finMult) : base,
@@ -2876,7 +2971,8 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
               ...(combinedWbMult !== 1 ? { weaponBoostMult: combinedWbMult, weaponBoostLabel: wbLabel } : {}),
               canApplyBurn: _hasSingedBurn,
               finisherGroupHitCount: finisherHit ? _m1FinisherHits : undefined,
-              ...(finLabel ? { label: finLabel } : {}),
+              ...(cdWater > 0 ? { cdWater } : {}),
+              ...(cdTargetHit ? { label: finLabel ? `${finLabel} · Channeled Depths` : 'Channeled Depths' } : finLabel ? { label: finLabel } : {}),
             })
           }
           if (finisherHit && _deltaDrillReps > 0) {
@@ -2991,23 +3087,32 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         const hitDmgTypesForMw = waIsFinisher && _mortalWillHolyTypeBonus > 0
           ? { ...hitDt, holy: Math.round(((hitDt.holy ?? 0) + _mortalWillHolyTypeBonus) * 10000) / 10000 }
           : hitDt
+        const cdWa = _cdActive && _cdTarget === 'WA' && i === 0
+        const waDmgTypesForCd = cdWa
+          ? { ...hitDmgTypesForMw, water: roundMultiplier((hitDmgTypesForMw.water ?? 0) + _cdWaterBonus) }
+          : hitDmgTypesForMw
         const waSunburnMult = _sunburnActive && _sunburnEnemyBurning
-          ? ((hitDmgTypesForMw.holy ?? 0) > 0 ? _sunburnHolyDmgMult : _sunburnUniversalDmgMult) : 1
+          ? ((waDmgTypesForCd.holy ?? 0) > 0 ? _sunburnHolyDmgMult : _sunburnUniversalDmgMult) : 1
         const combinedWbMult = roundMultiplier(mwMult * waSunburnMult * _activeBellowingEmberMult)
         const wbLabel = [
           _mortalWillFinisherDmgMult !== 1 ? 'Mortal Will' : '',
           waSunburnMult !== 1 ? 'Sunburn' : '',
           _activeBellowingEmberMult !== 1 ? 'Bellowing Ember' : '',
         ].filter(Boolean).join(', ')
-        result.push({
-          group: 'WA', index: i, count: h.count, base: h.n, scalingMult: sc, combatMult: _waCombatMult,
-          isFinisher: waIsFinisher, dmgTypes: hitDmgTypesForMw,
-          baseDmgTypes: hitDtBase,           label: _waDisplayName,
+        const waHitBase = {
+          group: 'WA' as const, index: i, base: h.n, scalingMult: sc, combatMult: _waCombatMult,
+          isFinisher: waIsFinisher, baseDmgTypes: hitDtBase,
           ...(selectedWA.hits?.[i]?.isCrit ? { forceCrit: true } : {}),
           ...(combinedWbMult !== 1 ? { weaponBoostMult: combinedWbMult, weaponBoostLabel: wbLabel } : {}),
           canApplyBurn: _hasSingedBurn,
           ...(waIsFinisher ? { finisherGroupHitCount: h.count } : {}),
-        })
+        }
+        if (cdWa && h.count > 1) {
+          result.push({ ...waHitBase, count: 1, cdWater: _cdWaterBonus, dmgTypes: waDmgTypesForCd, label: `${_waDisplayName} · Channeled Depths` })
+          result.push({ ...waHitBase, count: h.count - 1, dmgTypes: hitDmgTypesForMw, label: _waDisplayName })
+        } else {
+          result.push({ ...waHitBase, count: h.count, ...(cdWa ? { cdWater: _cdWaterBonus } : {}), dmgTypes: cdWa ? waDmgTypesForCd : hitDmgTypesForMw, label: cdWa ? `${_waDisplayName} · Channeled Depths` : _waDisplayName })
+        }
       })
     }
     if (_waHealSeq && !(_activeMountRuneDef && mountActive) && !((perks['Bomber Charge'] ?? 0) > 0 && selectedWA.name === 'Retaliate')) {
@@ -3159,38 +3264,54 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         ? getDraconicColorDmgMultiplier(_effDraconicColor)
         : 1
 
-      const _pushBdcHit = (hitCount: number, hitBase: number, perHitCounts?: boolean, groupOverride?: string, labelOverride?: string, finisherIndex?: number) => result.push({
-        group: groupOverride ?? (entry.perkName === 'Draconic Blood' ? 'Rune' : _isSpiritPerk(entry.perkName) ? 'Spirit' : entry.isWA ? 'WA' : entry.isRune ? 'Rune' : entry.isM2 ? 'M2' : entry.isM1 ? 'M1' : 'Perk'),
-        index: result.length,
-        count: hitCount,
-        base: hitBase,
-        scalingMult: entry.scalingMult,
-        combatMult: entry.combatMult,
-        isFinisher: entry.isFinisher ?? false,
-        dmgTypes: entry.resolvedDmgTypes,
-        baseDmgTypes: entry.baseDmgTypes,
-        label: labelOverride ?? entry.displayName,
-        isM1: entry.isM1,
-        isM2: entry.isM2,
-        procCoefficient: entry.procCoefficient,
-        ...(perHitCounts ? { perHitCounts: true } : {}),
-        ...(entry.eachHitM1M2 ? { eachHitM1M2: true } : {}),
-        ...(entry.isM2 && entry.isFinisher && entry.procCoefficient?.type !== 'noProc' ? { procCount: 1 } : {}),
-        canApplyBurn: _hasSingedBurn,
-        ...(entry.forceCrit ? { forceCrit: true } : {}),
-        ...(finisherIndex != null ? { finisherIndex } : {}),
-        ...((() => {
-          const perkSunburnMult = _sunburnActive && _sunburnEnemyBurning
-            ? ((entry.resolvedDmgTypes.holy ?? 0) > 0 ? _sunburnHolyDmgMult : _sunburnUniversalDmgMult) : 1
-          const combined = roundMultiplier(_colorMult * perkSunburnMult * _activeBellowingEmberMult)
-          const label = [
-            _colorMult !== 1 ? `${_effDraconicColor.charAt(0).toUpperCase()}${_effDraconicColor.slice(1)} Color Bonus` : '',
-            perkSunburnMult !== 1 ? 'Sunburn' : '',
-            _activeBellowingEmberMult !== 1 ? 'Bellowing Ember' : '',
-          ].filter(Boolean).join(', ')
-          return combined !== 1 ? { weaponBoostMult: combined, weaponBoostLabel: label } : {}
-        })()),
-      })
+      const _pushBdcHit = (hitCount: number, hitBase: number, perHitCounts?: boolean, groupOverride?: string, labelOverride?: string, finisherIndex?: number) => {
+        const group = groupOverride ?? (entry.perkName === 'Draconic Blood' ? 'Rune' : _isSpiritPerk(entry.perkName) ? 'Spirit' : entry.isWA ? 'WA' : entry.isRune ? 'Rune' : entry.isM2 ? 'M2' : entry.isM1 ? 'M1' : 'Perk')
+        const cdPerkHit = group === 'Perk' && _cdActive && _cdTarget === entry.displayName
+        const cdPerkTypes = cdPerkHit
+          ? { ...entry.resolvedDmgTypes, water: roundMultiplier((entry.resolvedDmgTypes.water ?? 0) + _cdWaterBonus) }
+          : entry.resolvedDmgTypes
+        const pushRow = (count: number, label: string, cdWater?: number) => result.push({
+          group,
+          index: result.length,
+          count,
+          base: hitBase,
+          scalingMult: entry.scalingMult,
+          combatMult: entry.combatMult,
+          isFinisher: entry.isFinisher ?? false,
+          dmgTypes: cdPerkTypes,
+          baseDmgTypes: entry.baseDmgTypes,
+          label,
+          isM1: entry.isM1,
+          isM2: entry.isM2,
+          procCoefficient: entry.procCoefficient,
+          ...(cdWater != null ? { cdWater } : {}),
+          ...(perHitCounts ? { perHitCounts: true } : {}),
+          ...(entry.eachHitM1M2 ? { eachHitM1M2: true } : {}),
+          ...(entry.isM2 && entry.isFinisher && entry.procCoefficient?.type !== 'noProc' ? { procCount: 1 } : {}),
+          canApplyBurn: _hasSingedBurn,
+          ...(entry.forceCrit ? { forceCrit: true } : {}),
+          ...(finisherIndex != null ? { finisherIndex } : {}),
+          ...((() => {
+            const perkSunburnMult = _sunburnActive && _sunburnEnemyBurning
+              ? ((entry.resolvedDmgTypes.holy ?? 0) > 0 ? _sunburnHolyDmgMult : _sunburnUniversalDmgMult) : 1
+            const combined = roundMultiplier(_colorMult * perkSunburnMult * _activeBellowingEmberMult)
+            const label2 = [
+              _colorMult !== 1 ? `${_effDraconicColor.charAt(0).toUpperCase()}${_effDraconicColor.slice(1)} Color Bonus` : '',
+              perkSunburnMult !== 1 ? 'Sunburn' : '',
+              _activeBellowingEmberMult !== 1 ? 'Bellowing Ember' : '',
+            ].filter(Boolean).join(', ')
+            return combined !== 1 ? { weaponBoostMult: combined, weaponBoostLabel: label2 } : {}
+          })()),
+        })
+        if (cdPerkHit && hitCount > 1) {
+          pushRow(1, labelOverride ?? `${entry.displayName} · Channeled Depths`, _cdWaterBonus)
+          pushRow(hitCount - 1, labelOverride ?? entry.displayName)
+        } else if (cdPerkHit) {
+          pushRow(hitCount, labelOverride ?? `${entry.displayName} · Channeled Depths`, _cdWaterBonus)
+        } else {
+          pushRow(hitCount, labelOverride ?? entry.displayName)
+        }
+      }
 
       // Per-hit grouping (e.g. Caci Spirit: 7 thorns + 3 slams).
       // typedHits_m2 is built per (damage type x hit value), but the same hit value
@@ -3256,24 +3377,32 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           )
       const runeSunburnMult = _sunburnActive && _sunburnEnemyBurning && !_runeIsHeal
         ? ((_runeDmgTypesWithBonus.holy ?? 0) > 0 ? _sunburnHolyDmgMult : _sunburnUniversalDmgMult) : 1
-      result.push({
-        group: 'Rune',
+      const cdRune = _cdActive && _cdTarget === 'Rune' && !_runeIsHeal
+      const runeDmgTypesForCd = cdRune
+        ? { ..._runeDmgTypesWithBonus, water: roundMultiplier((_runeDmgTypesWithBonus.water ?? 0) + _cdWaterBonus) }
+        : _runeDmgTypesWithBonus
+      const runeCount = _activeRuneDmgDef.getHits
+        ? _activeRuneDmgDef.getHits({ potency: runePotency, sliderVal: _runeSliderVal, stats, perks, selfDamage: _runeSelfDamagePerHit })
+        : (_activeRuneDmgDef.hits ?? 1)
+      const runeHitBase = {
+        group: 'Rune' as const,
         index: result.length,
-        count: _activeRuneDmgDef.getHits
-          ? _activeRuneDmgDef.getHits({ potency: runePotency, sliderVal: _runeSliderVal, stats, perks, selfDamage: _runeSelfDamagePerHit })
-          : (_activeRuneDmgDef.hits ?? 1),
         base: _activeRuneDmgDef.getBaseDamage({ potency: runePotency, sliderVal: _runeSliderVal, perks }),
         scalingMult: _computePerkScalingMult(_activeRuneDmgDef.scalings),
-        dmgTypes: _runeDmgTypesWithBonus,
         combatMult: _runeIsHeal ? _healFinalMultiplier : _runeCombatMult,
         isFinisher: false,
-        label: _activeRuneDmgDef.runeName,
         isHeal: _runeIsHeal,
         ...(_activeBellowingEmberMult !== 1
           ? { weaponBoostMult: roundMultiplier(runeSunburnMult * _activeBellowingEmberMult), weaponBoostLabel: ['Sunburn', 'Bellowing Ember'].filter(Boolean).join(', ') }
           : runeSunburnMult !== 1 ? { weaponBoostMult: runeSunburnMult, weaponBoostLabel: 'Sunburn' } : {}),
         canApplyBurn: _hasSingedBurn,
-      })
+      }
+      if (cdRune && runeCount > 1) {
+        result.push({ ...runeHitBase, count: 1, cdWater: _cdWaterBonus, dmgTypes: runeDmgTypesForCd, label: `${_activeRuneDmgDef.runeName} · Channeled Depths` })
+        result.push({ ...runeHitBase, count: runeCount - 1, dmgTypes: _runeDmgTypesWithBonus, label: _activeRuneDmgDef.runeName })
+      } else {
+        result.push({ ...runeHitBase, count: runeCount, ...(cdRune ? { cdWater: _cdWaterBonus } : {}), dmgTypes: runeDmgTypesForCd, label: cdRune ? `${_activeRuneDmgDef.runeName} · Channeled Depths` : _activeRuneDmgDef.runeName })
+      }
     }
 
     // Water draconic color pulse heal (Dragon Infusion)
@@ -5014,7 +5143,7 @@ $: _groupedSelfDamageSources = (() => {
 </div><!-- end da-section--wbd -->
 
 <!-- ── Perk Base Damage ── -->
-{#if _nonDraconicPerkEntries.length > 0 || darkeningHexAmt > 0 || _vassalsCroakAmt > 0}
+{#if _nonDraconicPerkEntries.length > 0 || darkeningHexAmt > 0 || _vassalsCroakAmt > 0 || _cdAmt > 0}
 <div class="da-section da-section--pbd">
   <div class="da-section-title-row">
     <span class="da-section-title">Perk Base Damage</span>
@@ -5114,12 +5243,76 @@ $: _groupedSelfDamageSources = (() => {
         </details>
       </div>
     {/if}
+    {#if _cdAmt > 0}
+      <div class="da-pbd-card da-pbd-card--hex">
+        <div class="da-pbd-head">
+          <span class="da-pbd-name">Channeled Depths</span>
+          <span class="da-pbd-amt">+{_cdAmt}</span>
+        </div>
+        <div class="da-sb-slider-wrap">
+          <span class="da-sb-slider-label">Elapsed Time (s)</span>
+          <input
+            type="range"
+            min="0"
+            max={_cdTimeToCap}
+            step="0.5"
+            value={$build.channeledDepthsTime ?? 0}
+            on:input={(e) => {
+              const val = +(e.target as HTMLInputElement).value
+              build.update(s => ({ ...s, channeledDepthsTime: val }) as any)
+            }}
+            class="da-sb-slider"
+            style="--tc:#2a49ff; --fill:{_cdFillPct}%"
+          />
+          <span class="da-sb-slider-val" style="color:#2a49ff">{+($build.channeledDepthsTime ?? 0)}s</span>
+        </div>
+        <div class="da-cd-targets">
+          {#each [{ k: 'M1', l: 'M1' }, { k: 'M2', l: 'M2' }, { k: 'WA', l: 'WA' }, { k: 'Rune', l: 'Rune' }] as t}
+            <button
+              type="button"
+              class="da-cd-target"
+              class:da-cd-target--on={_cdTarget === t.k}
+              on:click={() => build.update(s => ({ ...s, channeledDepthsTarget: t.k }) as any)}
+            >{t.l}</button>
+          {/each}
+          {#each _cdPerkTargets as t}
+            <button
+              type="button"
+              class="da-cd-target da-cd-target--perk"
+              class:da-cd-target--on={_cdTarget === t}
+              on:click={() => build.update(s => ({ ...s, channeledDepthsTarget: t }) as any)}
+            >{t}</button>
+          {/each}
+        </div>
+        <div class="da-pbd-condition">
+          {#if !_cdActive}
+            Potency <b>{_cdPotency}</b> / cap <b>{Math.round(_cdCap * 10000) / 10000}</b> — below 0.2 potency (reaches it after <b>{Math.round(_cdTimeToThreshold * 10) / 10}s</b>), not yet armed.
+          {:else}
+            Armed at <b>{_cdPotency}</b> potency — the first <b>{_cdTarget}</b> hit gains <b>+{_cdWaterBonus}</b> Water Damage Type ({Math.round(_cdWaterBonus / 2 * 10000) / 10000} not converted by Piercer, {Math.round(_cdWaterBonus / 2 * 10000) / 10000} converted).
+          {/if}
+        </div>
+        <details class="da-pbd-details">
+          <summary class="da-pbd-details-summary">Perk Details</summary>
+          <div class="da-pbd-details-body">
+            <p>Gains <b>+0.01</b> Channeled Depths potency per second per perk amount, capped at <b>0.1 + 0.1 × amount</b> ({Math.round(_cdCap * 10000) / 10000}). The status is neutral and does not count as a buff or debuff.</p>
+            <p>At or above <b>0.2</b> potency, the next attack gains <b>+0.5</b> additional Water Damage Type per <b>0.1</b> potency, then the status is consumed. Half of this additional damage type is <b>not</b> converted by <b>Piercer</b>.</p>
+          </div>
+        </details>
+      </div>
+    {/if}
     {#each _nonDraconicPerkEntries as entry}
       <div class="da-pbd-card">
         <!-- Header row -->
         <div class="da-pbd-head">
           <span class="da-pbd-name">{entry.displayName}</span>
           <span class="da-pbd-amt">+{Math.round(entry.perkAmount * 1000) / 1000}</span>
+          <button
+            type="button"
+            class="da-pbd-toggle"
+            class:da-pbd-toggle--off={entry.manualOff}
+            on:click={() => togglePerkEntry(entry.key)}
+            title="Bật/tắt hit damage của perk này"
+          >{entry.manualOff ? 'OFF' : 'ON'}</button>
         </div>
         <!-- Badges -->
         <div class="da-pbd-badges">
@@ -7189,6 +7382,65 @@ $: _groupedSelfDamageSources = (() => {
   display: flex;
   flex-direction: column;
   gap: 7px;
+}
+
+.da-cd-targets {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.da-cd-target {
+  flex: 1;
+  min-width: 44px;
+  padding: 4px 8px;
+  border-radius: 7px;
+  border: 1px solid rgba(42,73,255,.22);
+  background: rgba(42,73,255,.06);
+  color: var(--ink, #e8e4da);
+  font-size: .72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--duration-fast, .15s) var(--ease-out, ease-out), border-color var(--duration-fast, .15s) var(--ease-out, ease-out), box-shadow var(--duration-fast, .15s) var(--ease-out, ease-out);
+}
+.da-cd-target:hover {
+  border-color: rgba(42,73,255,.5);
+}
+.da-cd-target--on {
+  background: rgba(56,189,248,.2);
+  border-color: rgba(56,189,248,.7);
+  box-shadow: 0 0 8px rgba(56,189,248,.25);
+}
+.da-cd-target--perk {
+  flex: 0 0 auto;
+  min-width: 0;
+  white-space: nowrap;
+  font-size: .68rem;
+  padding: 4px 7px;
+}
+
+.da-pbd-toggle {
+  margin-left: auto;
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(74,222,128,.35);
+  background: rgba(74,222,128,.12);
+  color: #4ade80;
+  font-size: .62rem;
+  font-weight: 800;
+  letter-spacing: .04em;
+  cursor: pointer;
+  transition: background var(--duration-fast, .15s) var(--ease-out, ease-out), border-color var(--duration-fast, .15s) var(--ease-out, ease-out);
+}
+.da-pbd-toggle:hover {
+  border-color: rgba(74,222,128,.7);
+}
+.da-pbd-toggle--off {
+  border-color: rgba(248,113,113,.4);
+  background: rgba(248,113,113,.1);
+  color: #f87171;
+}
+.da-pbd-toggle--off:hover {
+  border-color: rgba(248,113,113,.8);
 }
 
 .da-pbd-head {

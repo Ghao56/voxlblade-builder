@@ -222,6 +222,8 @@ export interface BuildState {
   bastionBallistaArrows: number
   ichorSparkCharge: number
   divineCrashDistance: number
+  channeledDepthsTime: number
+  channeledDepthsTarget: string
   inDarkness: boolean
   cdrToggles: Record<string, boolean>
   // Potion slots
@@ -231,6 +233,7 @@ export interface BuildState {
   disabledBoosts: string[]
   disabledEffects: string[]
   disabledBuffKeys: string[]
+  disabledPerkEntries: string[]
   disabledHealBoosts: string[]
   rageDisabled: boolean
   glyphConduitDisabled: boolean
