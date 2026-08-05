@@ -60,6 +60,7 @@ const DEFAULT_BUILD: BuildState = {
   divineCrashDistance: 250,
   channeledDepthsTime: 0,
   channeledDepthsTarget: 'WA',
+  channeledDepthsHit: 1,
   inDarkness: true,
   cdrToggles: {},
   potion1: "",

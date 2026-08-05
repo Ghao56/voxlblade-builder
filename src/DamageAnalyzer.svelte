@@ -868,7 +868,20 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: _cdActive = _cdPotency >= 0.2
   $: _cdWaterBonus = _cdActive ? Math.round(0.5 * (_cdPotency / 0.1) * 10000) / 10000 : 0
   $: _cdTarget = $build.channeledDepthsTarget ?? 'WA'
-  $: _cdTimeToCap = _cdAmt > 0 ? Math.round((_cdCap / (0.01 * _cdAmt)) * 100) / 100 : 0
+  $: _cdMaxHit = (() => {
+    switch (_cdTarget) {
+      case 'WA':
+        return _waHitsSeq ? _waHitsSeq.reduce<number>((s, h) => s + (typeof h === 'number' ? 1 : (h.count ?? 1)), 0) : 1
+      case 'M1':
+        return (_displayRows[0]?.m1 ?? []).reduce<number>((s, h) => s + (typeof h === 'number' ? 1 : (h.count ?? 1)), 0) || 1
+      case 'M2':
+        return (_displayRows[0]?.m2 ?? []).reduce<number>((s, h) => s + (typeof h === 'number' ? 1 : (h.count ?? 1)), 0) || 1
+      default:
+        return 1
+    }
+  })()
+  $: _cdHit = Math.max(1, Math.min(_cdMaxHit, Math.floor($build.channeledDepthsHit ?? 1)))
+  $: _cdTimeToCap = _cdAmt > 0 ? Math.ceil(_cdCap / (0.01 * _cdAmt)) : 0
   $: _cdTimeToThreshold = _cdAmt > 0 ? Math.round((0.2 / (0.01 * _cdAmt)) * 100) / 100 : 0
   $: _cdFillPct = _cdTimeToCap > 0 ? Math.min(100, (($build.channeledDepthsTime ?? 0) / _cdTimeToCap) * 100) : 0
   $: if (_cdAmt > 0 && $build.channeledDepthsTime != null && $build.channeledDepthsTime > _cdTimeToCap) {
@@ -2838,12 +2851,15 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       const m2Types = (gunLabel && !(row as any).m2NoLock) ? _gunDmgTypes : _convertedWeaponDmgTypes
       let cdM2Applied = false
       let cdM1Applied = false
+      let m1HitsLanded = 0
+      let m2HitsLanded = 0
       const pushM2Hit = (h: any, i: number, label?: string, group: 'M1' | 'M2' = 'M2', finMult = 1, finisherIndex?: number) => {
         const rawBase = typeof h === 'number' ? h : h.n
         const count = typeof h === 'number' ? 1 : h.count
         const base = finMult !== 1 ? roundMultiplier(applyWeaponCharge(rawBase) * finMult) : applyWeaponCharge(rawBase)
-        const cdTargetHit = _cdActive && _cdTarget === 'M2' && !cdM2Applied
+        const cdTargetHit = _cdActive && _cdTarget === 'M2' && !cdM2Applied && m2HitsLanded < _cdHit && m2HitsLanded + count >= _cdHit
         if (cdTargetHit) cdM2Applied = true
+        m2HitsLanded += count
         const cdWater = cdTargetHit ? _cdWaterBonus : 0
         const hitDmgTypesWithCd = cdWater > 0
           ? { ...m2Types, water: roundMultiplier((m2Types.water ?? 0) + cdWater) }
@@ -2922,8 +2938,9 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           const pushM1Hit = (finMult: number, finLabel?: string) => {
             const wb = finisherHit ? _m1FinisherWeaponBoost : null
             const mwMult = finisherHit && _mortalWillFinisherDmgMult !== 1 ? _mortalWillFinisherDmgMult : 1
-            const cdTargetHit = _cdActive && _cdTarget === 'M1' && !cdM1Applied
+            const cdTargetHit = _cdActive && _cdTarget === 'M1' && !cdM1Applied && m1HitsLanded < _cdHit && m1HitsLanded + count >= _cdHit
             if (cdTargetHit) cdM1Applied = true
+            m1HitsLanded += count
             const cdWater = cdTargetHit ? _cdWaterBonus : 0
             const hitDmgTypesWithCd = cdWater > 0
               ? { ...m1Types, water: roundMultiplier((m1Types.water ?? 0) + cdWater) }
@@ -3042,6 +3059,8 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       })
     }
     if (_waHitsSeq && Object.keys(_waDmgTypes).length > 0 && !(_activeMountRuneDef && mountActive)) {
+      let waHitsLanded = 0
+      let cdWaApplied = false
       _waHitsSeq.forEach((h, i) => {
         const hss = selectedWA.hitScalings?.[Math.min(i, (selectedWA.hitScalings?.length ?? 1) - 1)]
         let sc = _waScalingMult
@@ -3087,7 +3106,10 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         const hitDmgTypesForMw = waIsFinisher && _mortalWillHolyTypeBonus > 0
           ? { ...hitDt, holy: Math.round(((hitDt.holy ?? 0) + _mortalWillHolyTypeBonus) * 10000) / 10000 }
           : hitDt
-        const cdWa = _cdActive && _cdTarget === 'WA' && i === 0
+        const hCount = typeof h === 'number' ? 1 : h.count
+        const cdWa = _cdActive && _cdTarget === 'WA' && !cdWaApplied && waHitsLanded < _cdHit && waHitsLanded + hCount >= _cdHit
+        if (cdWa) cdWaApplied = true
+        waHitsLanded += hCount
         const waDmgTypesForCd = cdWa
           ? { ...hitDmgTypesForMw, water: roundMultiplier((hitDmgTypesForMw.water ?? 0) + _cdWaterBonus) }
           : hitDmgTypesForMw
@@ -3266,7 +3288,8 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
 
       const _pushBdcHit = (hitCount: number, hitBase: number, perHitCounts?: boolean, groupOverride?: string, labelOverride?: string, finisherIndex?: number) => {
         const group = groupOverride ?? (entry.perkName === 'Draconic Blood' ? 'Rune' : _isSpiritPerk(entry.perkName) ? 'Spirit' : entry.isWA ? 'WA' : entry.isRune ? 'Rune' : entry.isM2 ? 'M2' : entry.isM1 ? 'M1' : 'Perk')
-        const cdPerkHit = group === 'Perk' && _cdActive && _cdTarget === entry.displayName
+        const cdDracoHit = entry.perkName === 'Draconic Blood' && _cdTarget === 'Draco'
+        const cdPerkHit = _cdActive && (group === 'Perk' ? _cdTarget === entry.displayName : cdDracoHit)
         const cdPerkTypes = cdPerkHit
           ? { ...entry.resolvedDmgTypes, water: roundMultiplier((entry.resolvedDmgTypes.water ?? 0) + _cdWaterBonus) }
           : entry.resolvedDmgTypes
@@ -5255,7 +5278,7 @@ $: _groupedSelfDamageSources = (() => {
             type="range"
             min="0"
             max={_cdTimeToCap}
-            step="0.5"
+            step="1"
             value={$build.channeledDepthsTime ?? 0}
             on:input={(e) => {
               const val = +(e.target as HTMLInputElement).value
@@ -5267,7 +5290,7 @@ $: _groupedSelfDamageSources = (() => {
           <span class="da-sb-slider-val" style="color:#2a49ff">{+($build.channeledDepthsTime ?? 0)}s</span>
         </div>
         <div class="da-cd-targets">
-          {#each [{ k: 'M1', l: 'M1' }, { k: 'M2', l: 'M2' }, { k: 'WA', l: 'WA' }, { k: 'Rune', l: 'Rune' }] as t}
+          {#each [{ k: 'M1', l: 'M1' }, { k: 'M2', l: 'M2' }, { k: 'WA', l: 'WA' }, { k: 'Rune', l: 'Rune' }, { k: 'Draco', l: 'Draco' }] as t}
             <button
               type="button"
               class="da-cd-target"
@@ -5284,11 +5307,45 @@ $: _groupedSelfDamageSources = (() => {
             >{t}</button>
           {/each}
         </div>
+        <div class="da-cd-hit-row">
+          <span class="da-sb-slider-label">Hit #</span>
+          {#if _cdMaxHit <= 10}
+            <div class="da-cd-hit-chips" role="group" aria-label="Targeted hit number">
+              {#each Array.from({ length: _cdMaxHit }, (_, i) => i + 1) as n}
+                <button
+                  type="button"
+                  class="da-cd-hit-chip"
+                  class:da-cd-hit-chip--on={n === _cdHit}
+                  class:da-cd-hit-chip--last={n === _cdMaxHit && _cdMaxHit > 1}
+                  on:click={() => build.update(s => ({ ...s, channeledDepthsHit: n }) as any)}
+                  title={n === _cdMaxHit && _cdMaxHit > 1 ? 'Final hit' : `Hit #${n}`}
+                >{n}</button>
+              {/each}
+            </div>
+          {:else}
+            <div class="da-cd-hit-slider-wrap">
+              <input
+                type="range"
+                min="1"
+                max={_cdMaxHit}
+                step="1"
+                value={_cdHit}
+                on:input={(e) => {
+                  const val = +(e.target as HTMLInputElement).value
+                  build.update(s => ({ ...s, channeledDepthsHit: val }) as any)
+                }}
+                class="da-cd-hit-slider"
+                style="--fill: {(_cdHit - 1) / Math.max(1, _cdMaxHit - 1) * 100}%"
+              />
+              <span class="da-cd-hit-val">{_cdHit}<span class="da-cd-hit-max">/{_cdMaxHit}</span></span>
+            </div>
+          {/if}
+        </div>
         <div class="da-pbd-condition">
           {#if !_cdActive}
             Potency <b>{_cdPotency}</b> / cap <b>{Math.round(_cdCap * 10000) / 10000}</b> — below 0.2 potency (reaches it after <b>{Math.round(_cdTimeToThreshold * 10) / 10}s</b>), not yet armed.
           {:else}
-            Armed at <b>{_cdPotency}</b> potency — the first <b>{_cdTarget}</b> hit gains <b>+{_cdWaterBonus}</b> Water Damage Type ({Math.round(_cdWaterBonus / 2 * 10000) / 10000} not converted by Piercer, {Math.round(_cdWaterBonus / 2 * 10000) / 10000} converted).
+            Armed at <b>{_cdPotency}</b> potency — hit <b>#{_cdHit}</b> of <b>{_cdTarget}</b> gains <b>+{_cdWaterBonus}</b> Water Damage Type ({Math.round(_cdWaterBonus / 2 * 10000) / 10000} not converted by Piercer, {Math.round(_cdWaterBonus / 2 * 10000) / 10000} converted).
           {/if}
         </div>
         <details class="da-pbd-details">
@@ -7416,6 +7473,106 @@ $: _groupedSelfDamageSources = (() => {
   white-space: nowrap;
   font-size: .68rem;
   padding: 4px 7px;
+}
+.da-cd-hit-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+}
+.da-cd-hit-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 4px;
+}
+.da-cd-hit-chip {
+  min-width: 30px;
+  height: 27px;
+  padding: 0 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border-radius: 8px;
+  border: 1px solid rgba(42,73,255,.22);
+  background: rgba(42,73,255,.06);
+  color: var(--ink, #e8e4da);
+  font-family: 'Courier New', monospace;
+  font-size: .74rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--duration-fast, .15s) var(--ease-out, ease-out), border-color var(--duration-fast, .15s) var(--ease-out, ease-out), box-shadow var(--duration-fast, .15s) var(--ease-out, ease-out), transform var(--duration-fast, .15s) var(--ease-out, ease-out);
+}
+.da-cd-hit-chip:hover {
+  border-color: rgba(56,189,248,.7);
+  background: rgba(56,189,248,.15);
+  transform: translateY(-1px);
+}
+.da-cd-hit-chip--on {
+  background: linear-gradient(180deg, rgba(56,189,248,.38), rgba(42,73,255,.38));
+  border-color: rgba(56,189,248,.95);
+  color: #fff;
+  box-shadow: 0 0 12px rgba(56,189,248,.45), 0 1px 4px rgba(0,0,0,.35);
+}
+.da-cd-hit-chip--last:not(.da-cd-hit-chip--on) {
+  border-color: rgba(250,204,21,.4);
+  background: rgba(250,204,21,.08);
+}
+.da-cd-hit-slider-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+.da-cd-hit-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  flex: 1;
+  height: 5px;
+  border-radius: 999px;
+  background: linear-gradient(to right, #38bdf8 var(--fill, 50%), rgba(255,255,255,.06) var(--fill, 50%));
+  outline: none;
+  cursor: pointer;
+}
+.da-cd-hit-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #38bdf8;
+  border: 2px solid rgba(0,0,0,.45);
+  box-shadow: 0 0 8px rgba(56,189,248,.45);
+  cursor: grab;
+}
+.da-cd-hit-slider::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 12px rgba(56,189,248,.6);
+}
+.da-cd-hit-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #38bdf8;
+  border: 2px solid rgba(0,0,0,.45);
+  box-shadow: 0 0 8px rgba(56,189,248,.45);
+  cursor: grab;
+}
+.da-cd-hit-val {
+  min-width: 44px;
+  text-align: center;
+  font-family: 'Courier New', monospace;
+  font-size: .85rem;
+  font-weight: 900;
+  color: #38bdf8;
+  text-shadow: 0 0 8px rgba(56,189,248,.35);
+  flex-shrink: 0;
+}
+.da-cd-hit-max {
+  color: var(--ink-muted, #8a8d85);
+  font-size: .68rem;
+  font-weight: 700;
+  text-shadow: none;
 }
 
 .da-pbd-toggle {
