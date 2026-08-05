@@ -117,3 +117,6 @@ export const DARKENING_HEX_PROC_CHANCE = 0.2
 // ── Kindling ─────────────────────────────────────
 export const KINDLING_BURN_DURATION_MULT = 0.2
 export const KINDLING_DMG_ADD_PER_AMOUNT = 0.5
+
+// ── Stormcaller ──────────────────────────────────
+export const STORM_CALLER_PROC_CHANCE = 0.025

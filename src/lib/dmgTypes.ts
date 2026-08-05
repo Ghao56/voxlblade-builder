@@ -15,6 +15,7 @@ export const BADGE_CONFIG: Record<string, { color: string; label: string; title:
   'Blub':  { color: '#38bdf8', label: '✦ Blub', title: `Blub Blub: ${BLUB_BLUB_PCT_PER_STACK * 100}% × perk amount of this hit\'s damage as Water · ${BLUB_BLUB_HIT_COUNT} hits · ${BLUB_BLUB_PROC_CHANCE * 100}% proc chance` },
   'Blood Thirsty': { color: '#ef4444', label: '✦ Blood Thirsty', title: 'Blood Thirsty: heal 0.3 HP per stack on hit vs Bleeding target' },
   'Echo Incineration': { color: '#f97316', label: '✦ Echo', title: 'Echo Incineration: (10+2.5×perkAmount)% for Fire+Air on hit' },
+  'Stormcaller': { color: '#67e8f9', label: '✦ Storm', title: 'Stormcaller: 2.5% proc chance for Air+Magic lightning on hit · Guardbreaks · Can proc other effects · Can proc itself' },
   'Venom Spitter': { color: '#a855f7', label: '✦ Venom Spitter', title: 'Venom Spitter: Finisher hits deal Hex damage + Damage Boost vs Poisoned' },
   'Cauterize': { color: '#fd5d00', label: '✦ Cauterize', title: 'Cauterize: Burn bursts as instant Fire (Singed) on any hit that can proc' },
   'Bombardier': { color: '#f97316', label: '✦ Bombardier', title: 'Bombardier: explosion on any hit · RNG chance · Cannot proc other effects' },

@@ -92,6 +92,7 @@ import {
   WINTER_WOOF_SPIRIT_BITE_DMG,
   WINTER_WOOF_SPIRIT_HOWL_DMG,
   BLUB_BLUB_PROC_CHANCE,
+  STORM_CALLER_PROC_CHANCE,
 } from './lib/constants'
 
 // Centralized mappings for cross-toggle relationships
@@ -923,6 +924,14 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: _echoIncinerationScalings = _echoIncinerationDef?.scalings ?? {}
   $: _echoIncinerationScalingMult = _echoIncinerationAmt > 0 ? _computePerkScalingMult(_echoIncinerationScalings) : 1
 
+  $: _stormcallerAmt = perks['Stormcaller'] ?? 0
+  $: _stormcallerDef = findPerkDmgDef('Stormcaller')
+  $: _stormcallerBaseDmg = (_stormcallerAmt > 0 && !disabledEffects.has('stormcaller') && _stormcallerDef)
+    ? _stormcallerDef.getBaseDamage({ perkAmount: _stormcallerAmt })
+    : 0
+  $: _stormcallerScalings = _stormcallerDef?.scalings ?? {}
+  $: _stormcallerScalingMult = _stormcallerAmt > 0 ? _computePerkScalingMult(_stormcallerScalings) : 1
+
   $: _bombardierAmt = perks['Bombardier'] ?? 0
   $: _bombardierDef = _bombardierAmt > 0 ? findPerkDmgDef('Bombardier') : undefined
   $: _bombardierBaseDmg = (_bombardierAmt > 0 && !disabledEffects.has('bombardier') && _bombardierDef)
@@ -1016,6 +1025,15 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         val: disabledEffects.has('echoIncineration') ? '—'
           : `+${(_echoIncinerationDef?.getBaseDamage({ perkAmount: _echoIncinerationAmt }) ?? 0).toFixed(2)}`,
         cond: `${(10 + 2.5 * _echoIncinerationAmt)}% chance`,
+      })
+    }
+    if (_stormcallerAmt > 0) {
+      chips.push({
+        key: 'stormcaller', name: 'Stormcaller',
+        title: 'Stormcaller: 2.5% proc chance (unaffected by perk amount) · Air+Magic · Guardbreaks · Can proc other effects · Can proc itself',
+        val: disabledEffects.has('stormcaller') ? '—'
+          : `+${(_stormcallerDef?.getBaseDamage({ perkAmount: _stormcallerAmt }) ?? 0).toFixed(2)}`,
+        cond: `${Math.round(STORM_CALLER_PROC_CHANCE * 1000) / 10}% chance`,
       })
     }
     if (_bombardierAmt > 0) {
@@ -2760,7 +2778,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     for (const e of _activePerkDmgEntries) {
       if (!e.isActive) continue
       if (!e.isProcHit && e.perkName !== 'Springblast' && e.perkName !== 'Blazing Finisher' && e.perkName !== 'Deathmist Slash') continue
-      if (e.perkName === 'Echo Incineration' || e.perkName === 'Bombardier' || e.perkName === 'Runic Blades' || e.perkName === 'Quake' || e.perkName === 'Star Struck') continue
+      if (e.perkName === 'Echo Incineration' || e.perkName === 'Bombardier' || e.perkName === 'Runic Blades' || e.perkName === 'Quake' || e.perkName === 'Star Struck' || e.perkName === 'Stormcaller') continue
       const perkDef = findPerkDmgDef(e.perkName)
 
       const perkSunburnMult = _sunburnActive && _sunburnEnemyBurning
@@ -3836,6 +3854,8 @@ $: _groupedSelfDamageSources = (() => {
     crushingPressureAmt={_crushingPressureAmt}
     echoIncinerationBaseDmg={_echoIncinerationBaseDmg}
     echoIncinerationScalingMult={_echoIncinerationScalingMult}
+    stormcallerBaseDmg={_stormcallerBaseDmg}
+    stormcallerScalingMult={_stormcallerScalingMult}
     bombardierBaseDmg={_bombardierBaseDmg}
     bombardierScalingMult={_bombardierScalingMult}
     quakeBaseDmg={_quakeBaseDmg}

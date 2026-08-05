@@ -67,6 +67,8 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   export let crushingPressureAmt: number = 0
   export let echoIncinerationBaseDmg: number = 0
   export let echoIncinerationScalingMult: number = 1
+  export let stormcallerBaseDmg: number = 0
+  export let stormcallerScalingMult: number = 1
   export let bombardierBaseDmg: number = 0
   export let bombardierScalingMult: number = 1
   export let quakeBaseDmg: number = 0
@@ -711,6 +713,10 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       }
     }
 
+    if (!isHeal && stormcallerBaseDmg > 0 && canProc(hit.procCoefficient)) {
+      addProcEffect(stormcallerBaseDmg, 1, { air: 0.5, magic: 0.5 }, 'Stormcaller', stormcallerScalingMult, hit.combatMult)
+    }
+
     if (!isHeal && bombardierBaseDmg > 0 && canProc(hit.procCoefficient)) {
       addProcEffect(bombardierBaseDmg, 1, { magic: 0.5, holy: 0.5 }, 'Bombardier', bombardierScalingMult, hit.combatMult)
     }
@@ -853,6 +859,9 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
         if (echoIncinerationBaseDmg > 0) {
           addProcEffect(echoIncinerationBaseDmg, 1, { fire: 0.5, air: 0.5 }, 'Echo Incineration', echoIncinerationScalingMult, dragonStateCombatMult)
         }
+        if (stormcallerBaseDmg > 0) {
+          addProcEffect(stormcallerBaseDmg, 1, { air: 0.5, magic: 0.5 }, 'Stormcaller', stormcallerScalingMult, dragonStateCombatMult)
+        }
         if (bombardierBaseDmg > 0) {
           addProcEffect(bombardierBaseDmg, 1, { magic: 0.5, holy: 0.5 }, 'Bombardier', bombardierScalingMult, dragonStateCombatMult)
         }
@@ -949,6 +958,9 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
             if (echoIncinerationBaseDmg > 0) {
               addProcEffect(echoIncinerationBaseDmg, 1, { fire: 0.5, air: 0.5 }, 'Echo Incineration', echoIncinerationScalingMult, ph.combatMult)
               if (cauterizeBaseDmg > 0 && ph.canApplyBurn) addProcEffect(cauterizeBaseDmg, 1, { fire: 1.0 }, 'Cauterize', cauterizeScalingMult, ph.combatMult)
+            }
+            if (stormcallerBaseDmg > 0) {
+              addProcEffect(stormcallerBaseDmg, 1, { air: 0.5, magic: 0.5 }, 'Stormcaller', stormcallerScalingMult, ph.combatMult)
             }
             if (bombardierBaseDmg > 0) {
               addProcEffect(bombardierBaseDmg, 1, { magic: 0.5, holy: 0.5 }, 'Bombardier', bombardierScalingMult, ph.combatMult)

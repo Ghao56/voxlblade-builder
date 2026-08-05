@@ -172,6 +172,8 @@ import {
   DEATHMIST_SLASH_BASE_DMG,
   DEATHMIST_SLASH_ALLIES_HEAL_BASE,
   DEATHMIST_SLASH_SELF_HEAL_BASE,
+  STORM_CALLER_BASE_DMG,
+  STORM_CALLER_DMG_PER_STACK,
 } from '../lib/constants'
 
 export interface PerkSliderDef {
@@ -942,6 +944,20 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     guardbreak: true,
     isProcHit: true,
     procCoefficient: { type: 'noProc' },
+  },
+  // ── Stormcaller ────────────────────────────────────────────────
+  {
+    perkName: 'Stormcaller',
+    condition: 'On hit · 2.5% proc chance (unaffected by perk amount)',
+    getBaseDamage: ({ perkAmount }) => STORM_CALLER_BASE_DMG + STORM_CALLER_DMG_PER_STACK * perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { air: 0.5, magic: 0.5 },
+    scalingMode: 'fixed',
+    scalings: { air: 1.0, magic: 1.0 },
+    guardbreak: true,
+    isProcHit: true,
+    procCoefficient: { type: 'hasCoeff', value: 1.0 },
+    note: 'Can proc other effects · Can also proc itself.',
   },
   // ── Bombardier ───────────────────────────────────────────────────
   {
