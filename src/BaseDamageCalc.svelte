@@ -611,20 +611,67 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       }
     }
 
-    // Instance-derived procs: every chance effect scaled off a damage instance's
-    // own pre-mitigation damage (Luminescent, Chain lightning, Ichor Spark,
-    // Blub, Explosive). Shared by the main hit AND the spawned Star Struck
-    // instances, so stars proc effects consistently through the registry with
-    // their own Proc Coefficient (currently DEFAULT_PROC_COEFF).
-    const procsForInstance = (opts: {
+    // Instance procs: the complete data-driven set of per-instance effects,
+    // gated entirely through the Proc Registry (lib/procRegistry.ts) with the
+    // instance's own ProcCoefficient. Shared by the main hit AND any spawned
+    // Star Struck stars, so stars proc the SAME effects as normal hits — no
+    // per-effect hardcoding or reduced "star" subsets.
+    const runInstanceProcs = (opts: {
       preMitBase: number
       coeff: ProcCoefficient | undefined
       group?: string
       count?: number
+      canApplyBurn?: boolean
+      phantomBase?: number
+      flatCombatMult?: number
       blub?: { base: number; scalingMult: number; combatMult: number; weaponBoostMult: number }
     }) => {
       if (isHeal || opts.preMitBase <= 0) return
       const active = (tag: string) => procChanceScale(tag, opts.coeff) > 0
+      const fcm = opts.flatCombatMult ?? 1
+      if ((opts.phantomBase ?? 0) > 0 && active('Phantom Pain')) {
+        const ppAmount = opts.phantomBase! * phantomPainPct
+        const ppResolvedTypes = resolveDamageTypes({ hex: 1.0 }, perkDmgTypeBonuses)
+        for (const [k, mult] of Object.entries(ppResolvedTypes)) {
+          const ppCrushPen = crushingPenForType(k)
+          const { info, applicableBoosts, typedMultUsed, typeDebuffMult: ppTypeDebuffMult, defPct: ppDefPct, defMult: ppDefMult } = resolveTypeInfo(k, basePenDecimal + ppCrushPen / 100)
+          const ppTypeBase = ppAmount * mult
+          const ppRaw = ppTypeBase * typedMultUsed * ppDefMult * ppTypeDebuffMult * (opts.count ?? 1)
+          types.push({
+            key: k, label: info.label, color: info.color,
+            typeBase: ppTypeBase / phantomPainPct, scalingMult: 1, combatMult: 1,
+            applicableBoosts, weaponBoostMult: 1, typeDebuffMult: ppTypeDebuffMult,
+            defMult: ppDefMult, enemyDefPct: ppDefPct,
+            raw: ppRaw, critVal: Math.round(ppRaw * critDmgMult / 100 * 10000) / 10000,
+            isHeal: false, tag: 'Phantom Pain', forceCrit: false, procCoefficient: { type: 'noProc' }, ungroup: true,
+            phantomPainPct,
+          })
+        }
+      }
+      if (cauterizeBaseDmg > 0 && opts.canApplyBurn && active('Cauterize')) {
+        addProcEffect(cauterizeBaseDmg, 1, { fire: 1.0 }, 'Cauterize', cauterizeScalingMult, fcm, opts.count)
+      }
+      if (echoIncinerationBaseDmg > 0 && active('Echo Incineration')) {
+        addProcEffect(echoIncinerationBaseDmg, 1, { fire: 0.5, air: 0.5 }, 'Echo Incineration', echoIncinerationScalingMult, fcm, opts.count)
+        if (cauterizeBaseDmg > 0 && opts.canApplyBurn && active('Cauterize')) {
+        addProcEffect(cauterizeBaseDmg, 1, { fire: 1.0 }, 'Cauterize', cauterizeScalingMult, fcm, opts.count)
+        }
+      }
+      if (stormcallerBaseDmg > 0 && active('Stormcaller')) {
+        addProcEffect(stormcallerBaseDmg, 1, { air: 0.5, magic: 0.5 }, 'Stormcaller', stormcallerScalingMult, fcm, opts.count)
+      }
+      if (bombardierBaseDmg > 0 && active('Bombardier')) {
+        addProcEffect(bombardierBaseDmg, 1, { magic: 0.5, holy: 0.5 }, 'Bombardier', bombardierScalingMult, fcm, opts.count)
+      }
+      if (quakeBaseDmg > 0 && active('Quake')) {
+        addProcEffect(quakeBaseDmg, 1, { earth: 1.0 }, 'Quake', quakeScalingMult, fcm, opts.count)
+      }
+      if (runicBladesBaseDmg > 0 && active('Runic Blades')) {
+        const rbDebuffActive = appliedDebuffs.some(d => d.name === 'Runic Blades' && !disabledDebuffs.has(d.name))
+        if (rbDebuffActive) {
+          addProcEffect(runicBladesBaseDmg, 1, { magic: 1.0 }, 'Runic Blades', runicBladesScalingMult, fcm, opts.count)
+        }
+      }
       if (luminescentPct > 0 && active('Luminescent')) {
         addProcEffect(opts.preMitBase, luminescentPct, { holy: 1.0 }, 'Luminescent', 1, 1, opts.count)
       }
@@ -736,66 +783,21 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
 
     const _finisherMainTypesEnd = types.length
 
-    if (!isHeal && phantomPainPct > 0 && gate('Phantom Pain')) {
-      const ppHitBase = types.filter(t => !t.isHeal).reduce((s, t) => s + t.raw / (t.defMult || 1), 0)
-      if (ppHitBase > 0) {
-        const ppAmount = ppHitBase * phantomPainPct
-        const ppResolvedTypes = resolveDamageTypes({ hex: 1.0 }, perkDmgTypeBonuses)
-        for (const [k, mult] of Object.entries(ppResolvedTypes)) {
-          const ppCrushPen = crushingPenForType(k)
-          const { info, applicableBoosts, typedMultUsed, typeDebuffMult: ppTypeDebuffMult, defPct: ppDefPct, defMult: ppDefMult } = resolveTypeInfo(k, basePenDecimal + ppCrushPen / 100)
-          const ppTypeBase = ppAmount * mult
-          const ppRaw = ppTypeBase * typedMultUsed * ppDefMult * ppTypeDebuffMult
-          types.push({
-            key: k, label: info.label, color: info.color,
-            typeBase: ppTypeBase / phantomPainPct, scalingMult: 1, combatMult: 1,
-            applicableBoosts, weaponBoostMult: 1, typeDebuffMult: ppTypeDebuffMult,
-            defMult: ppDefMult, enemyDefPct: ppDefPct,
-            raw: ppRaw, critVal: Math.round(ppRaw * critDmgMult / 100 * 10000) / 10000,
-            isHeal: false, tag: 'Phantom Pain', forceCrit: false, procCoefficient: { type: 'noProc' }, ungroup: true,
-            phantomPainPct,
-          })
-        }
-      }
-    }
-
-    if (!isHeal && cauterizeBaseDmg > 0 && hit.canApplyBurn && gate('Cauterize')) {
-      addProcEffect(cauterizeBaseDmg, 1, { fire: 1.0 }, 'Cauterize', cauterizeScalingMult, hit.combatMult)
-    }
-
-    if (!isHeal && echoIncinerationBaseDmg > 0 && gate('Echo Incineration')) {
-      addProcEffect(echoIncinerationBaseDmg, 1, { fire: 0.5, air: 0.5 }, 'Echo Incineration', echoIncinerationScalingMult, hit.combatMult)
-      if (cauterizeBaseDmg > 0 && hit.canApplyBurn && gate('Cauterize')) {
-        addProcEffect(cauterizeBaseDmg, 1, { fire: 1.0 }, 'Cauterize', cauterizeScalingMult, hit.combatMult)
-      }
-    }
-
-    if (!isHeal && stormcallerBaseDmg > 0 && gate('Stormcaller')) {
-      addProcEffect(stormcallerBaseDmg, 1, { air: 0.5, magic: 0.5 }, 'Stormcaller', stormcallerScalingMult, hit.combatMult)
-    }
-
-    if (!isHeal && bombardierBaseDmg > 0 && gate('Bombardier')) {
-      addProcEffect(bombardierBaseDmg, 1, { magic: 0.5, holy: 0.5 }, 'Bombardier', bombardierScalingMult, hit.combatMult)
-    }
-
-    if (!isHeal && quakeBaseDmg > 0 && gate('Quake')) {
-      addProcEffect(quakeBaseDmg, 1, { earth: 1.0 }, 'Quake', quakeScalingMult, hit.combatMult)
-    }
-
-    if (!isHeal && runicBladesBaseDmg > 0 && gate('Runic Blades')) {
-      const rbDebuffActive = appliedDebuffs.some(d => d.name === 'Runic Blades' && !disabledDebuffs.has(d.name))
-      if (rbDebuffActive) {
-        addProcEffect(runicBladesBaseDmg, 1, { magic: 1.0 }, 'Runic Blades', runicBladesScalingMult, hit.combatMult)
-      }
-    }
-
     if (!isHeal) {
-      // All instance-derived chance procs (Luminescent, Chain, Ichor Spark,
-      // Explosive, Blub) — gated through the Proc Registry with THIS hit's coeff.
-      procsForInstance({
+      // The complete data-driven instance-proc set (Phantom Pain, Cauterize,
+      // Echo Incineration, Stormcaller, Bombardier, Quake, Runic Blades,
+      // Luminescent, Chain, Ichor Spark, Explosive, Blub) — gated through the
+      // Proc Registry with THIS hit's own coeff. Spawned stars run the same set.
+      const ppBase = phantomPainPct > 0
+        ? types.filter(t => !t.isHeal).reduce((s, t) => s + t.raw / (t.defMult || 1), 0)
+        : 0
+      runInstanceProcs({
         preMitBase: _hitDebuffedPreMitBase,
         coeff: hit.procCoefficient,
         group: hit.group,
+        canApplyBurn: hit.canApplyBurn,
+        phantomBase: ppBase,
+        flatCombatMult: hit.combatMult ?? 1,
         blub: {
           base: Object.values(hit.dmgTypes ?? hit.baseDmgTypes ?? {}).reduce((s, m) => s + hit.base * m, 0),
           scalingMult: hit.scalingMult ?? 1,
@@ -836,14 +838,19 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
             isHeal: false, tag: 'Star Struck', forceCrit: false, procCoefficient: DEFAULT_PROC_COEFF,
             ...(count > 1 ? { hitCount: count } : {}),
           })
-          // Spawned stars RUN the same registry-driven instance procs as a normal
-          // hit (Luminescent, Chain, Ichor, Explosive, Blub, ...) — each star
-          // carries its own Proc Coefficient, so no per-effect hardcoding here.
-          procsForInstance({
+// Spawned stars RUN the SAME complete registry-driven instance procs
+          // as a normal hit (Phantom Pain, Cauterize, Echo, Stormcaller,
+          // Bombardier, Quake, Runic Blades, Luminescent, Chain, Ichor,
+          // Explosive, Blub) — each star carries its own Proc Coefficient
+          // (DEFAULT_PROC_COEFF), so no per-effect hardcoding here.
+          runInstanceProcs({
             preMitBase: starPreMitBase,
             coeff: DEFAULT_PROC_COEFF,
             group: hit.group,
             count,
+            canApplyBurn: hit.canApplyBurn,
+            phantomBase: starPreMitBase,
+            flatCombatMult: hit.combatMult ?? 1,
             blub: {
               base: starBase,
               scalingMult: starScalingMult,
