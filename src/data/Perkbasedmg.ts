@@ -1714,7 +1714,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     isM2: true,
     isProcHit: true,
     procCoefficient: { type: 'hasCoeff', value: 1 },
-    note: 'Stars deal 3 base damage with 1.0 of their type and 1.0 scaling of that type. True stars instead deal 6 base with 0.5 Magic scaling. 100% activation chance. Stars can proc other on-hit effects (Chain, Luminescent, Lifesteal, etc.) — verified through the Proc Registry (lib/procRegistry.ts) with the stars\' own coefficient, currently 1 (the sim does not reduce/increase damage by proc coefficient). Star type is random per recalculation — actual damage appears next to M1/M2.',
+    note: 'Stars deal 3 base damage with 1.0 of their type and 1.0 scaling of that type. True stars instead deal 6 base with 0.5 Magic scaling. 100% activation chance. Stars can proc other on-hit effects (Chain, Luminescent, Lifesteal, etc.). Star type is random per recalculation — actual damage appears next to M1/M2.',
   },
   // ── Power Inhale ─────────────────────────────────────────────────
   {
