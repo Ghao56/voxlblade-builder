@@ -2606,6 +2606,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         burnPotency: _perkCtxBurnPotency,
         missingHpPct: Math.min(50, Math.max(0, 100 - (_hpFillPct ?? 100))),
         waCooldown: _waCooldown,
+        waCdrMult: $result.cdr.waCDR,
         runeCooldown: _runeBaseCd,
         fellRushAmt: perks['Fell Rush'] ?? 0,
       }

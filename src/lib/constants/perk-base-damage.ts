@@ -265,3 +265,11 @@ export const DEATHMIST_SLASH_SELF_HEAL_BASE = 0.16
 // Stormcaller
 export const STORM_CALLER_BASE_DMG = 20
 export const STORM_CALLER_DMG_PER_STACK = 4
+
+// Voltaic Body
+export const VOLTAIC_BODY_BASE_DMG = 8
+export const VOLTAIC_BODY_DMG_PER_STACK = 4
+export const VOLTAIC_BODY_POTENCY_DMG_MULT = 0.85
+export const VOLTAIC_BODY_ACTIVATION_WINDOW = 3
+export const VOLTAIC_BODY_DURATION_WA_CD_DIVISOR = 2
+export const VOLTAIC_BODY_DURATION_PER_STACK = 3

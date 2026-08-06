@@ -178,6 +178,12 @@ import {
   DEATHMIST_SLASH_SELF_HEAL_BASE,
   STORM_CALLER_BASE_DMG,
   STORM_CALLER_DMG_PER_STACK,
+  VOLTAIC_BODY_BASE_DMG,
+  VOLTAIC_BODY_DMG_PER_STACK,
+  VOLTAIC_BODY_POTENCY_DMG_MULT,
+  VOLTAIC_BODY_ACTIVATION_WINDOW,
+  VOLTAIC_BODY_DURATION_WA_CD_DIVISOR,
+  VOLTAIC_BODY_DURATION_PER_STACK,
 } from '../lib/constants'
 
 export interface PerkSliderDef {
@@ -1747,6 +1753,42 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
         tone: 'utility',
       },
     ],
+  },
+  // ── Voltaic Body ───────────────────────────────────────────────
+  {
+    perkName: 'Voltaic Body',
+    condition: 'On Weapon Art use',
+    getBaseDamage: ({ perkAmount }) => VOLTAIC_BODY_BASE_DMG + VOLTAIC_BODY_DMG_PER_STACK * perkAmount,
+    getHits: ({ statuses }) => {
+      const waCd = Math.max(1, (statuses?.waCooldown ?? 10) * (statuses?.waCdrMult ?? 1))
+      return Math.floor(VOLTAIC_BODY_ACTIVATION_WINDOW / waCd) + 1
+    },
+    getFinisherHitBaseDmg: ({ baseDmg, hitIndex }) =>
+      Math.round(baseDmg * Math.pow(VOLTAIC_BODY_POTENCY_DMG_MULT, hitIndex + 1) * 1000) / 1000,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { air: 0.5, magic: 0.5 },
+    scalingMode: 'fixed',
+    scalings: { air: 1.0, magic: 1.0 },
+    guardbreak: true,
+    procCoefficient: { type: 'hasCoeff', value: 1.0 },
+    secondaryEffects: [
+      {
+        label: 'Buff duration',
+        getValue: ({ perkAmount, statuses }) =>
+          (statuses?.waCooldown ?? 10) / VOLTAIC_BODY_DURATION_WA_CD_DIVISOR + VOLTAIC_BODY_DURATION_PER_STACK * perkAmount,
+        format: v => `${Math.round(v * 100) / 100}s`,
+        condition: 'Unaffected by cooldown modifiers',
+        tone: 'utility',
+      },
+      {
+        label: 'Rune Cooldown Increase',
+        getValue: () => 20,
+        format: v => `${v}%`,
+        condition: 'Regardless of perk amount',
+        tone: 'utility',
+      },
+    ],
+    note: 'First hit (1 Buff Potency) deals full damage; each activation within the 3s window adds +1 potency, reducing that hit to 0.85^potency. Can proc other effects. Guardbreaks.',
   },
 ]
 

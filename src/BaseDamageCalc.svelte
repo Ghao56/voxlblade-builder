@@ -629,7 +629,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       if (isHeal || opts.preMitBase <= 0) return
       const active = (tag: string) => procChanceScale(tag, opts.coeff) > 0
       const fcm = opts.flatCombatMult ?? 1
-      if ((opts.phantomBase ?? 0) > 0 && active('Phantom Pain')) {
+      if (phantomPainPct > 0 && (opts.phantomBase ?? 0) > 0 && active('Phantom Pain')) {
         const ppAmount = opts.phantomBase! * phantomPainPct
         const ppResolvedTypes = resolveDamageTypes({ hex: 1.0 }, perkDmgTypeBonuses)
         for (const [k, mult] of Object.entries(ppResolvedTypes)) {
