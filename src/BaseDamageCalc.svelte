@@ -11,6 +11,7 @@
   import Badge from './lib/ui/Badge.svelte'
   import type { ProcCoefficient } from './lib/types'
   import { SCALING_TO_BOOST, PERCENT_STATS, canProc } from './lib/types'
+  import { procChanceScale } from './lib/procRegistry'
 import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   import {
     DMG_TYPE_META,
@@ -33,6 +34,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     BLUB_BLUB_HIT_COUNT,
     BLUB_BLUB_DMG_TYPES,
   } from './lib/constants'
+  import { DEFAULT_PROC_COEFF } from './data/procCoefficients'
 
   const _LIFESTEAL_EXCLUDED = new Set(['Barbed Flurry', 'Hex Ray', 'Ice Burst', 'Cauterize', 'Lightning Cloak'])
 
@@ -609,9 +611,64 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       }
     }
 
+    // Instance-derived procs: every chance effect scaled off a damage instance's
+    // own pre-mitigation damage (Luminescent, Chain lightning, Ichor Spark,
+    // Blub, Explosive). Shared by the main hit AND the spawned Star Struck
+    // instances, so stars proc effects consistently through the registry with
+    // their own Proc Coefficient (currently DEFAULT_PROC_COEFF).
+    const procsForInstance = (opts: {
+      preMitBase: number
+      coeff: ProcCoefficient | undefined
+      group?: string
+      count?: number
+      blub?: { base: number; scalingMult: number; combatMult: number; weaponBoostMult: number }
+    }) => {
+      if (isHeal || opts.preMitBase <= 0) return
+      const active = (tag: string) => procChanceScale(tag, opts.coeff) > 0
+      if (luminescentPct > 0 && active('Luminescent')) {
+        addProcEffect(opts.preMitBase, luminescentPct, { holy: 1.0 }, 'Luminescent', 1, 1, opts.count)
+      }
+      if (lightningCloakPct > 0 && active('Chain')) {
+        addProcEffect(opts.preMitBase, lightningCloakPct, { air: 0.5, magic: 0.5 }, 'Chain', 1, 1, opts.count)
+      }
+      if (ichorSparkChainPct > 0 && active('Ichor Spark')) {
+        addProcEffect(opts.preMitBase, ichorSparkChainPct, { air: 0.5, physical: 0.5 }, 'Ichor Spark', 1, 1, opts.count)
+      }
+      if (stormRendPct > 0 && active('Chain')) {
+        addProcEffect(opts.preMitBase, stormRendPct, { air: 0.5, magic: 0.5 }, 'Chain', 1, 1, opts.count)
+      }
+      if (opts.group === 'WA' && explosiveChargePct > 0 && active('Explosive')) {
+        addProcEffect(opts.preMitBase, explosiveChargePct, { physical: 0.5, fire: 0.5 }, 'Explosive', 1, 1, opts.count)
+      }
+      if (opts.blub && blubBlubAmt > 0 && active('Blub')) {
+        const blubOutMult = opts.blub.combatMult * opts.blub.weaponBoostMult * _activeDebuffDamageMult * selfDebuffDamageMult
+        const blubPerHit = opts.blub.base * opts.blub.scalingMult * BLUB_BLUB_PCT_PER_STACK * blubBlubAmt * (opts.count ?? 1)
+        if (blubPerHit > 0) {
+          const blubResolvedTypes = resolveDamageTypes(BLUB_BLUB_DMG_TYPES, perkDmgTypeBonuses)
+          for (const [k, mult] of Object.entries(blubResolvedTypes)) {
+            const blubCrushPen = crushingPenForType(k)
+            const { info, applicableBoosts, typedMultUsed, typeDebuffMult: blubDebuffMult, defPct: blubDefPct, defMult: blubDefMult } = resolveTypeInfo(k, basePenDecimal + blubCrushPen / 100, { type: 'noProc' })
+            const blubTypeBase = blubPerHit * mult
+            const blubRawPerHit = blubTypeBase * typedMultUsed * blubOutMult * blubDefMult * blubDebuffMult * BLUB_BLUB_HIT_COUNT
+            types.push({
+              key: k, label: info.label, color: info.color,
+              typeBase: blubTypeBase, scalingMult: 1, combatMult: opts.blub.combatMult,
+              applicableBoosts, weaponBoostMult: opts.blub.weaponBoostMult, typeDebuffMult: blubDebuffMult,
+              defMult: blubDefMult, enemyDefPct: blubDefPct,
+              raw: blubRawPerHit, critVal: Math.round(blubRawPerHit * critDmgMult / 100 * 10000) / 10000,
+              isHeal: false, tag: 'Blub', forceCrit: false, procCoefficient: { type: 'noProc' }, hitCount: BLUB_BLUB_HIT_COUNT,
+            })
+          }
+        }
+      }
+    }
+
     // Cache pre-mitigation base for this hit (used by all proc effects below)
     const _hitPreMitBase = computePreMitigationBase(hit)
     const _hitDebuffedPreMitBase = _hitPreMitBase * _activeDebuffDamageMult * selfDebuffDamageMult
+    // Data-driven proc gate: decides per tag whether the effect can activate for
+    // this hit, powered by the Proc Registry (see lib/procRegistry.ts).
+    const gate = (tag: string) => procChanceScale(tag, hit.procCoefficient) > 0
 
     const buildTypeChunk = (k: string, mult: number, labelOverride?: string): ComputedType => {
       const info = DMG_TYPE_MAP.get(k) ?? { label: k, color: '#e8e4da' }
@@ -679,7 +736,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
 
     const _finisherMainTypesEnd = types.length
 
-    if (!isHeal && phantomPainPct > 0 && canProc(hit.procCoefficient)) {
+    if (!isHeal && phantomPainPct > 0 && gate('Phantom Pain')) {
       const ppHitBase = types.filter(t => !t.isHeal).reduce((s, t) => s + t.raw / (t.defMult || 1), 0)
       if (ppHitBase > 0) {
         const ppAmount = ppHitBase * phantomPainPct
@@ -702,83 +759,53 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       }
     }
 
-    if (!isHeal && cauterizeBaseDmg > 0 && hit.canApplyBurn && canProc(hit.procCoefficient)) {
+    if (!isHeal && cauterizeBaseDmg > 0 && hit.canApplyBurn && gate('Cauterize')) {
       addProcEffect(cauterizeBaseDmg, 1, { fire: 1.0 }, 'Cauterize', cauterizeScalingMult, hit.combatMult)
     }
 
-    if (!isHeal && echoIncinerationBaseDmg > 0 && canProc(hit.procCoefficient)) {
+    if (!isHeal && echoIncinerationBaseDmg > 0 && gate('Echo Incineration')) {
       addProcEffect(echoIncinerationBaseDmg, 1, { fire: 0.5, air: 0.5 }, 'Echo Incineration', echoIncinerationScalingMult, hit.combatMult)
-      if (cauterizeBaseDmg > 0 && hit.canApplyBurn) {
+      if (cauterizeBaseDmg > 0 && hit.canApplyBurn && gate('Cauterize')) {
         addProcEffect(cauterizeBaseDmg, 1, { fire: 1.0 }, 'Cauterize', cauterizeScalingMult, hit.combatMult)
       }
     }
 
-    if (!isHeal && stormcallerBaseDmg > 0 && canProc(hit.procCoefficient)) {
+    if (!isHeal && stormcallerBaseDmg > 0 && gate('Stormcaller')) {
       addProcEffect(stormcallerBaseDmg, 1, { air: 0.5, magic: 0.5 }, 'Stormcaller', stormcallerScalingMult, hit.combatMult)
     }
 
-    if (!isHeal && bombardierBaseDmg > 0 && canProc(hit.procCoefficient)) {
+    if (!isHeal && bombardierBaseDmg > 0 && gate('Bombardier')) {
       addProcEffect(bombardierBaseDmg, 1, { magic: 0.5, holy: 0.5 }, 'Bombardier', bombardierScalingMult, hit.combatMult)
     }
 
-    if (!isHeal && quakeBaseDmg > 0 && canProc(hit.procCoefficient)) {
+    if (!isHeal && quakeBaseDmg > 0 && gate('Quake')) {
       addProcEffect(quakeBaseDmg, 1, { earth: 1.0 }, 'Quake', quakeScalingMult, hit.combatMult)
     }
 
-    if (!isHeal && runicBladesBaseDmg > 0 && canProc(hit.procCoefficient)) {
+    if (!isHeal && runicBladesBaseDmg > 0 && gate('Runic Blades')) {
       const rbDebuffActive = appliedDebuffs.some(d => d.name === 'Runic Blades' && !disabledDebuffs.has(d.name))
       if (rbDebuffActive) {
         addProcEffect(runicBladesBaseDmg, 1, { magic: 1.0 }, 'Runic Blades', runicBladesScalingMult, hit.combatMult)
       }
     }
 
-    if (!isHeal && luminescentPct > 0 && canProc(hit.procCoefficient)) {
-      if (_hitDebuffedPreMitBase > 0) addProcEffect(_hitDebuffedPreMitBase, luminescentPct, { holy: 1.0 }, 'Luminescent')
-    }
-    if (!isHeal && lightningCloakPct > 0 && canProc(hit.procCoefficient)) {
-      if (_hitDebuffedPreMitBase > 0) addProcEffect(_hitDebuffedPreMitBase, lightningCloakPct, { air: 0.5, magic: 0.5 }, 'Chain')
-    }
-
-    if (!isHeal && ichorSparkChainPct > 0 && canProc(hit.procCoefficient)) {
-      if (_hitDebuffedPreMitBase > 0) addProcEffect(_hitDebuffedPreMitBase, ichorSparkChainPct, { air: 0.5, physical: 0.5 }, 'Ichor Spark')
-    }
-
-    if (!isHeal && stormRendPct > 0 && canProc(hit.procCoefficient)) {
-      if (_hitDebuffedPreMitBase > 0) addProcEffect(_hitDebuffedPreMitBase, stormRendPct, { air: 0.5, magic: 0.5 }, 'Chain')
-    }
-
-    if (!isHeal && explosiveChargePct > 0 && hit.group === 'WA' && canProc(hit.procCoefficient)) {
-      if (_hitDebuffedPreMitBase > 0) addProcEffect(_hitDebuffedPreMitBase, explosiveChargePct, { physical: 0.5, fire: 0.5 }, 'Explosive')
+    if (!isHeal) {
+      // All instance-derived chance procs (Luminescent, Chain, Ichor Spark,
+      // Explosive, Blub) — gated through the Proc Registry with THIS hit's coeff.
+      procsForInstance({
+        preMitBase: _hitDebuffedPreMitBase,
+        coeff: hit.procCoefficient,
+        group: hit.group,
+        blub: {
+          base: Object.values(hit.dmgTypes ?? hit.baseDmgTypes ?? {}).reduce((s, m) => s + hit.base * m, 0),
+          scalingMult: hit.scalingMult ?? 1,
+          combatMult: hit.combatMult ?? 1,
+          weaponBoostMult: hit.weaponBoostMult ?? 1,
+        },
+      })
     }
 
-    if (!isHeal && blubBlubAmt > 0 && canProc(hit.procCoefficient)) {
-      const blubBase = Object.values(hit.dmgTypes ?? hit.baseDmgTypes ?? {})
-        .reduce((s, m) => s + hit.base * m, 0)
-      const blubOutMult = (hit.combatMult ?? 1) * (hit.weaponBoostMult ?? 1) * _activeDebuffDamageMult * selfDebuffDamageMult
-      const blubPerHit = blubBase * (hit.scalingMult ?? 1) * BLUB_BLUB_PCT_PER_STACK * blubBlubAmt
-
-      if (blubPerHit > 0) {
-        const blubResolvedTypes = resolveDamageTypes(BLUB_BLUB_DMG_TYPES, perkDmgTypeBonuses)
-
-        for (const [k, mult] of Object.entries(blubResolvedTypes)) {
-          const blubCrushPen = crushingPenForType(k)
-          const { info, applicableBoosts, typedMultUsed, typeDebuffMult: blubDebuffMult, defPct: blubDefPct, defMult: blubDefMult } = resolveTypeInfo(k, basePenDecimal + blubCrushPen / 100, { type: 'noProc' })
-          const blubTypeBase = blubPerHit * mult
-          const blubRawPerHit = blubTypeBase * typedMultUsed * blubOutMult * blubDefMult * blubDebuffMult * BLUB_BLUB_HIT_COUNT
-          
-          types.push({
-            key: k, label: info.label, color: info.color,
-            typeBase: blubTypeBase, scalingMult: 1, combatMult: hit.combatMult ?? 1,
-            applicableBoosts, weaponBoostMult: hit.weaponBoostMult ?? 1, typeDebuffMult: blubDebuffMult,
-            defMult: blubDefMult, enemyDefPct: blubDefPct,
-            raw: blubRawPerHit, critVal: Math.round(blubRawPerHit * critDmgMult / 100 * 10000) / 10000,
-            isHeal: false, tag: 'Blub', forceCrit: false, procCoefficient: { type: 'noProc' }, hitCount: BLUB_BLUB_HIT_COUNT,
-          })
-        }
-      }
-    }
-
-    if (!isHeal && starStruckAmt > 0 && canProc(hit.procCoefficient) && (hit.group === 'M1' || hit.group === 'M2' || hit.isM1 || hit.isM2 || hit.isFinisher)) {
+    if (!isHeal && starStruckAmt > 0 && gate('Star Struck') && (hit.group === 'M1' || hit.group === 'M2' || hit.isM1 || hit.isM2 || hit.isFinisher)) {
       const stars = Math.round(2 * starStruckAmt)
       if (stars > 0) {
         const starCounts = new Map<string, number>()
@@ -806,12 +833,24 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
             applicableBoosts, weaponBoostMult: sunburnUniversalDmgMult, typeDebuffMult,
             defMult, enemyDefPct: defPct,
             raw, critVal: Math.round(raw * critDmgMult / 100 * 10000) / 10000,
-            isHeal: false, tag: 'Star Struck', forceCrit: false, procCoefficient: { type: 'hasCoeff', value: 1 },
+            isHeal: false, tag: 'Star Struck', forceCrit: false, procCoefficient: DEFAULT_PROC_COEFF,
             ...(count > 1 ? { hitCount: count } : {}),
           })
-          if (lightningCloakPct > 0 && starPreMitBase > 0) {
-            addProcEffect(starPreMitBase, lightningCloakPct, { air: 0.5, magic: 0.5 }, 'Chain', 1, 1, count)
-          }
+          // Spawned stars RUN the same registry-driven instance procs as a normal
+          // hit (Luminescent, Chain, Ichor, Explosive, Blub, ...) — each star
+          // carries its own Proc Coefficient, so no per-effect hardcoding here.
+          procsForInstance({
+            preMitBase: starPreMitBase,
+            coeff: DEFAULT_PROC_COEFF,
+            group: hit.group,
+            count,
+            blub: {
+              base: starBase,
+              scalingMult: starScalingMult,
+              combatMult: hit.combatMult ?? 1,
+              weaponBoostMult: sunburnUniversalDmgMult,
+            },
+          })
         }
       }
     }
@@ -837,38 +876,38 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
             raw: dsRaw, critVal: Math.round(dsRaw * critDmgMult / 100 * 10000) / 10000,
             isHeal: false, tag: 'Dragon State', forceCrit: false, oncePerGroup: true,
           })
-          if (luminescentPct > 0) {
+          if (luminescentPct > 0 && gate('Luminescent')) {
             if (_dsPreMitBase > 0) addProcEffect(_dsPreMitBase, luminescentPct, { holy: 1.0 }, 'Luminescent')
           }
-          if (cloudpushPct > 0) {
+          if (cloudpushPct > 0 && gate('Cloudpush')) {
             if (_dsPreMitBase > 0) addProcEffect(_dsPreMitBase, cloudpushPct, { air: 1.0 }, 'Cloudpush')
           }
-          if (cinderpullPct > 0) {
+          if (cinderpullPct > 0 && gate('Cinderpull')) {
             if (_dsPreMitBase > 0) addProcEffect(_dsPreMitBase, cinderpullPct, { fire: 1.0 }, 'Cinderpull')
           }
-          if (lightningCloakPct > 0) {
+          if (lightningCloakPct > 0 && gate('Chain')) {
             if (_dsPreMitBase > 0) addProcEffect(_dsPreMitBase, lightningCloakPct, { air: 0.5, magic: 0.5 }, 'Chain')
           }
-          if (ichorSparkChainPct > 0) {
+          if (ichorSparkChainPct > 0 && gate('Ichor Spark')) {
             if (_dsPreMitBase > 0) addProcEffect(_dsPreMitBase, ichorSparkChainPct, { air: 0.5, physical: 0.5 }, 'Ichor Spark')
           }
-          if (stormRendPct > 0) {
+          if (stormRendPct > 0 && gate('Chain')) {
             if (_dsPreMitBase > 0) addProcEffect(_dsPreMitBase, stormRendPct, { air: 0.5, magic: 0.5 }, 'Chain')
           }
         }
-        if (echoIncinerationBaseDmg > 0) {
+        if (echoIncinerationBaseDmg > 0 && gate('Echo Incineration')) {
           addProcEffect(echoIncinerationBaseDmg, 1, { fire: 0.5, air: 0.5 }, 'Echo Incineration', echoIncinerationScalingMult, dragonStateCombatMult)
         }
-        if (stormcallerBaseDmg > 0) {
+        if (stormcallerBaseDmg > 0 && gate('Stormcaller')) {
           addProcEffect(stormcallerBaseDmg, 1, { air: 0.5, magic: 0.5 }, 'Stormcaller', stormcallerScalingMult, dragonStateCombatMult)
         }
-        if (bombardierBaseDmg > 0) {
+        if (bombardierBaseDmg > 0 && gate('Bombardier')) {
           addProcEffect(bombardierBaseDmg, 1, { magic: 0.5, holy: 0.5 }, 'Bombardier', bombardierScalingMult, dragonStateCombatMult)
         }
-        if (quakeBaseDmg > 0) {
+        if (quakeBaseDmg > 0 && gate('Quake')) {
           addProcEffect(quakeBaseDmg, 1, { earth: 1.0 }, 'Quake', quakeScalingMult, dragonStateCombatMult)
         }
-        if (_bloodThirstyActive) {
+        if (_bloodThirstyActive && gate('Blood Thirsty')) {
           const btHeal = 0.3 * bloodThirstyStacks
           if (btHeal > 0) {
             types.push({
@@ -953,24 +992,24 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
             })
           }
 
-          if (canProc(ph.procCoefficient)) {
-            const preMitBase = ph.totalDmg * (ph.weaponBoostMult ?? 1) * debuffMult
-            if (echoIncinerationBaseDmg > 0) {
-              addProcEffect(echoIncinerationBaseDmg, 1, { fire: 0.5, air: 0.5 }, 'Echo Incineration', echoIncinerationScalingMult, ph.combatMult)
-              if (cauterizeBaseDmg > 0 && ph.canApplyBurn) addProcEffect(cauterizeBaseDmg, 1, { fire: 1.0 }, 'Cauterize', cauterizeScalingMult, ph.combatMult)
-            }
-            if (stormcallerBaseDmg > 0) {
-              addProcEffect(stormcallerBaseDmg, 1, { air: 0.5, magic: 0.5 }, 'Stormcaller', stormcallerScalingMult, ph.combatMult)
-            }
-            if (bombardierBaseDmg > 0) {
-              addProcEffect(bombardierBaseDmg, 1, { magic: 0.5, holy: 0.5 }, 'Bombardier', bombardierScalingMult, ph.combatMult)
-            }
-            if (luminescentPct > 0) addProcEffect(preMitBase, luminescentPct, { holy: 1.0 }, 'Luminescent')
-            if (lightningCloakPct > 0) addProcEffect(preMitBase, lightningCloakPct, { air: 0.5, magic: 0.5 }, 'Chain')
-            if (ichorSparkChainPct > 0) addProcEffect(preMitBase, ichorSparkChainPct, { air: 0.5, physical: 0.5 }, 'Ichor Spark')
-            if (stormRendPct > 0) addProcEffect(preMitBase, stormRendPct, { air: 0.5, magic: 0.5 }, 'Chain')
-            if (explosiveChargePct > 0 && hit.group === 'WA') addProcEffect(preMitBase, explosiveChargePct, { physical: 0.5, fire: 0.5 }, 'Explosive')
-            if (blubBlubAmt > 0) {
+          const preMitBase = ph.totalDmg * (ph.weaponBoostMult ?? 1) * debuffMult
+          const pGate = (tag: string) => procChanceScale(tag, ph.procCoefficient) > 0
+          if (echoIncinerationBaseDmg > 0 && pGate('Echo Incineration')) {
+            addProcEffect(echoIncinerationBaseDmg, 1, { fire: 0.5, air: 0.5 }, 'Echo Incineration', echoIncinerationScalingMult, ph.combatMult)
+            if (cauterizeBaseDmg > 0 && ph.canApplyBurn && pGate('Cauterize')) addProcEffect(cauterizeBaseDmg, 1, { fire: 1.0 }, 'Cauterize', cauterizeScalingMult, ph.combatMult)
+          }
+          if (stormcallerBaseDmg > 0 && pGate('Stormcaller')) {
+            addProcEffect(stormcallerBaseDmg, 1, { air: 0.5, magic: 0.5 }, 'Stormcaller', stormcallerScalingMult, ph.combatMult)
+          }
+          if (bombardierBaseDmg > 0 && pGate('Bombardier')) {
+            addProcEffect(bombardierBaseDmg, 1, { magic: 0.5, holy: 0.5 }, 'Bombardier', bombardierScalingMult, ph.combatMult)
+          }
+          if (luminescentPct > 0 && pGate('Luminescent')) addProcEffect(preMitBase, luminescentPct, { holy: 1.0 }, 'Luminescent')
+          if (lightningCloakPct > 0 && pGate('Chain')) addProcEffect(preMitBase, lightningCloakPct, { air: 0.5, magic: 0.5 }, 'Chain')
+          if (ichorSparkChainPct > 0 && pGate('Ichor Spark')) addProcEffect(preMitBase, ichorSparkChainPct, { air: 0.5, physical: 0.5 }, 'Ichor Spark')
+          if (stormRendPct > 0 && pGate('Chain')) addProcEffect(preMitBase, stormRendPct, { air: 0.5, magic: 0.5 }, 'Chain')
+          if (explosiveChargePct > 0 && hit.group === 'WA' && pGate('Explosive')) addProcEffect(preMitBase, explosiveChargePct, { physical: 0.5, fire: 0.5 }, 'Explosive')
+            if (blubBlubAmt > 0 && pGate('Blub')) {
               const blubDmgSum = Object.values(resolvedTypes).reduce((s, m) => s + m, 0)
               const blubPerHit = ph.baseDmg * blubDmgSum * ph.scalingMult * BLUB_BLUB_PCT_PER_STACK * blubBlubAmt
               const blubOutMult = ph.combatMult * (ph.weaponBoostMult ?? 1) * debuffMult
@@ -990,7 +1029,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
                 })
               }
             }
-            if (_venomEaterActive) {
+            if (_venomEaterActive && pGate('Venom Eater')) {
               const veHeal = VENOM_EATER_HEAL_PER_STACK * venomEaterStacks
               if (veHeal > 0) {
                 types.push({
@@ -1004,7 +1043,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
                 })
               }
             }
-            if (_bloodThirstyActive) {
+            if (_bloodThirstyActive && pGate('Blood Thirsty')) {
               const btHeal = 0.3 * bloodThirstyStacks
               if (btHeal > 0) {
                 types.push({
@@ -1018,7 +1057,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
                 })
               }
             }
-            if (phantomPainPct > 0) {
+            if (phantomPainPct > 0 && pGate('Phantom Pain')) {
               const ppPhBase = types.slice(_typesStartIdx).filter(t => !t.isHeal).reduce((s, t) => s + t.raw / (t.defMult || 1), 0)
               if (ppPhBase > 0) {
                 const ppAmount = ppPhBase * phantomPainPct
@@ -1038,10 +1077,9 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
                   phantomPainPct,
                 })
               }
-              }
             }
           }
-          if (cauterizeBaseDmg > 0 && ph.canApplyBurn && canProc(ph.procCoefficient)) {
+          if (cauterizeBaseDmg > 0 && ph.canApplyBurn && procChanceScale('Cauterize', ph.procCoefficient) > 0) {
             addProcEffect(cauterizeBaseDmg, 1, { fire: 1.0 }, 'Cauterize', cauterizeScalingMult, ph.combatMult)
           }
 
@@ -1070,7 +1108,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       }
     }
 
-    if (!isHeal && curseRipPerkAmount > 0 && curseRipActiveDebuffCount > 0 && !disableCurseRip && canProc(hit.procCoefficient)) {
+    if (!isHeal && curseRipPerkAmount > 0 && curseRipActiveDebuffCount > 0 && !disableCurseRip && gate('Curse Rip')) {
       const preMitSum  = computePreMitigationBase(hit)
       const preMitBase = preMitSum * _activeDebuffDamageMult * selfDebuffDamageMult
 
@@ -1123,7 +1161,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       })
     }
 
-    if (!isHeal && _venomEaterActive && canProc(hit.procCoefficient)) {
+    if (!isHeal && _venomEaterActive && gate('Venom Eater')) {
       const veHeal = VENOM_EATER_HEAL_PER_STACK * venomEaterStacks
       if (veHeal > 0) {
         types.push({
@@ -1138,7 +1176,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       }
     }
 
-    if (!isHeal && _bloodThirstyActive && canProc(hit.procCoefficient)) {
+    if (!isHeal && _bloodThirstyActive && gate('Blood Thirsty')) {
       const btHeal = 0.3 * bloodThirstyStacks
       if (btHeal > 0) {
         types.push({
@@ -1202,7 +1240,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     // so it appears directly below that hit.
     if (!isHeal && vassalsCroakAmt > 0 && vassalsCroakPotency > 0
       && (hit.group === 'M2' || hit.isM2 || (hit.group === 'WA' && hit.isFinisher))
-      && canProc(hit.procCoefficient)) {
+      && gate('Last Croak')) {
       // One Last Croak per press: a Deltabit/Delta Drill combo replaces a single
       // M1 finisher with several M2-type hits (all group 'M1') that must share one
       // key, and M2-replacement perks share the base M2's key. WA finishers and
