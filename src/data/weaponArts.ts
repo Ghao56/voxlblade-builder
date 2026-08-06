@@ -66,7 +66,7 @@ export const WEAPON_ARTS: WeaponArt[] = [
     baseDamage: "3.5 × 5 Hits + 17.5",
     damageType: "Same as weapon",
     scaling: "Same as weapon",
-    requirements: { weaponType: ["Two Handed Sword", "Greatsword", "Unbalanced Sword"] },
+    requirements: { weaponType: ["2-Handed Sword", "Greatsword", "Unbalanced Sword"] },
   },
   {
     name: "Rapid Stabs",

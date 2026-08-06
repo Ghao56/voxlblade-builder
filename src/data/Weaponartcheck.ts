@@ -1,7 +1,7 @@
 import type { WeaponArt, WeaponArtRequirement } from '../data/weaponArts'
 
-function weaponTypeMatches(required: string, actual: string): boolean {
-  return required === actual
+function weaponTypeMatches(required: string, actuals: string[]): boolean {
+  return actuals.includes(required)
 }
 
 const SCALE_MAP: Record<string, string> = {
@@ -96,7 +96,7 @@ export function checkWA(
   wa: WeaponArt,
   scalings: Record<string, number>,
   stats: Record<string, number>,
-  weaponType: string,
+  weaponTypes: string[],
   isMonk: boolean,
   bladeName: string,
   handleName: string,
@@ -109,10 +109,10 @@ export function checkWA(
   if (req.bothParts && !req.bothParts.every(p => p === bladeName || p === handleName)) return false
   if (!passesAtLeastOneScaling(req, scalings)) return false
 
-  const isScalingExempt = req.scalingExemptWeaponTypes?.some(t => weaponTypeMatches(t, weaponType)) ?? false
+  const isScalingExempt = req.scalingExemptWeaponTypes?.some(t => weaponTypeMatches(t, weaponTypes)) ?? false
   if (!isScalingExempt && !meetsScalingReqs(req, scalings)) return false
   if (!meetsStatReqs(req, stats)) return false
-  if (req.weaponType?.length && !req.weaponType.some(t => weaponTypeMatches(t, weaponType))) return false
+  if (req.weaponType?.length && !req.weaponType.some(t => weaponTypeMatches(t, weaponTypes))) return false
 
   return true
 }
@@ -121,7 +121,7 @@ export function getUnmetReqs(
   wa: WeaponArt,
   scalings: Record<string, number>,
   stats: Record<string, number>,
-  weaponType: string,
+  weaponTypes: string[],
   isMonk: boolean,
   bladeName: string,
   handleName: string,
@@ -132,12 +132,12 @@ export function getUnmetReqs(
   const unmet: string[] = []
 
   if (req.guild && !isMonk) unmet.push(`Guild: ${req.guild}`)
-  if (req.weaponType?.length && !req.weaponType.some(t => weaponTypeMatches(t, weaponType)))
+  if (req.weaponType?.length && !req.weaponType.some(t => weaponTypeMatches(t, weaponTypes)))
     unmet.push(`Weapon: ${req.weaponType.join(' / ')}`)
   if (req.bothParts && !req.bothParts.every(p => p === bladeName || p === handleName))
     unmet.push(`Requires both: ${req.bothParts.join(' + ')}`)
 
-  const isScalingExempt = req.scalingExemptWeaponTypes?.some(t => weaponTypeMatches(t, weaponType)) ?? false
+  const isScalingExempt = req.scalingExemptWeaponTypes?.some(t => weaponTypeMatches(t, weaponTypes)) ?? false
   if (!isScalingExempt) {
     unmet.push(...buildUnmetScalingReqs(req, scalings))
   }

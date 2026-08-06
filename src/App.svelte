@@ -1618,13 +1618,13 @@ $: highestDamageType = (() => {
   // ── Weapon Art helpers ─────────────────────────────────────────────────────
   $: _waScalings = weaponResult?.baseScalings ?? {} as Record<string, number>
   $: _waStats = weaponResult?.stats ?? {} as Record<string, number>
-  $: _waWeaponType = weaponResult?.weaponType ?? ''
+  $: _waWeaponTypes = [...new Set([weaponResult?.weaponType, weaponResult?.finalWeaponType].filter((t): t is string => !!t))]
   $: _waBlade = $build.weaponBlade
   $: _waHandle = $build.weaponHandle
 
   $: availableWeaponArts = (() => {
     const validWAs = WEAPON_ARTS.filter(wa =>
-      checkWA(wa, _waScalings, _waStats, _waWeaponType, isMonk, _waBlade, _waHandle)
+      checkWA(wa, _waScalings, _waStats, _waWeaponTypes, isMonk, _waBlade, _waHandle)
     )
     const activeReplacements = new Set(
       validWAs.map(wa => wa.replaces).filter(Boolean)
@@ -1639,10 +1639,10 @@ $: highestDamageType = (() => {
     }
   }
 
-  $: waAvailable = checkWA(selectedWA, _waScalings, _waStats, _waWeaponType, isMonk, _waBlade, _waHandle)
+  $: waAvailable = checkWA(selectedWA, _waScalings, _waStats, _waWeaponTypes, isMonk, _waBlade, _waHandle)
   $: waReq = selectedWA.requirements
 
-  $: waUnmetReqs = getUnmetReqs(selectedWA, _waScalings, _waStats, _waWeaponType, isMonk, _waBlade, _waHandle)
+  $: waUnmetReqs = getUnmetReqs(selectedWA, _waScalings, _waStats, _waWeaponTypes, isMonk, _waBlade, _waHandle)
 
 // ── Weapon stat groups ──────────────────────────────────────────────────────
 const DMG_TYPE_KEYS = new Set(['physicalType','magicType','fireType','waterType','earthType','airType','hexType','holyType','trueType','summonType'])
