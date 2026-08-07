@@ -31,7 +31,7 @@
 import { FEROCITY_TENACITY_MULT, DARKENING_HEX_MAX_ACTIVATIONS, DARKENING_HEX_POTENCY_ADD_PER_AMOUNT, DARKENING_HEX_POTENCY_MULT_PER_AMOUNT, DARKENING_HEX_DURATION_ADD_PER_AMOUNT, KINDLING_DMG_ADD_PER_AMOUNT, VASSALS_CROAK_MULT_PER_STACK } from './lib/constants'
 import { calcTypedDmgBoosts } from './data/TypedDmgBoost'
 import { TRACKED_TYPES_WITH_TRUE } from './lib/constants/damage-types'
-import { RUNIC_GLASS_DURATION } from './lib/constants/rune-base-damage'
+import { getRunicGlassDuration } from './lib/constants/rune-base-damage'
 import { resolveStanceOverlay } from './data/stanceOverlays'
 import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
 import Badge from './lib/ui/Badge.svelte'
@@ -371,7 +371,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       baseBuffs.push({
         buffName: 'Runic Glass',
         potency: 0,
-        duration: RUNIC_GLASS_DURATION,
+        duration: getRunicGlassDuration($result.perks),
         condition: 'One-Handed Sword hit applies Runic Glass',
         sourceName: 'Enchanted Sword Rune',
         sourceType: 'rune',

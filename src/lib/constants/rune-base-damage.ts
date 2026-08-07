@@ -76,3 +76,14 @@ export const ENCHANTED_SWORD_GREATSWORD_COOLDOWN = 20
 export const RUNIC_GLASS_BASE_DMG = 1.5
 export const RUNIC_GLASS_DURATION = 5
 export const RUNIC_GLASS_TICKS = 5
+
+import { ENDLESS_DESPAIR_DURATION_PER_STACK } from './buffs'
+
+/**
+ * Effective Runic Glass duration as a debuff: Endless Despair's debuff-duration
+ * multiplier applies like any other enemy debuff (1 tick per second).
+ */
+export function getRunicGlassDuration(perks: Record<string, number>): number {
+  const edAmt = perks['Endless Despair'] ?? 0
+  return Math.round(RUNIC_GLASS_DURATION * (1 + ENDLESS_DESPAIR_DURATION_PER_STACK * edAmt))
+}

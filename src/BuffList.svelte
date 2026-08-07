@@ -30,7 +30,7 @@ import { isMonkGuild } from './lib/engine/data/character'
   import { UI_COLORS, SOURCE_LABELS } from './lib/uiConstants'
 import { getAutoDebuffs } from './data/perkAutoDebuffs'
 import { RUNE_DMG_DEFS } from './data/Runebasedmg'
-import { RUNIC_GLASS_DURATION } from './lib/constants/rune-base-damage'
+import { getRunicGlassDuration } from './lib/constants/rune-base-damage'
 import { findPerkDmgDef } from './data/Perkbasedmg'
 import { WA_PROC_COEFFS, DEFAULT_PROC_COEFF } from './data/procCoefficients'
 import { canProc } from './lib/types'
@@ -292,7 +292,7 @@ import { SPIRIT_WINDS_PCT_PER_STACK, DARK_MAGIC_PCT_PER_STACK, EMOTIONAL_PCT_PER
       modified.push({
         buffName: 'Runic Glass',
         potency: 0,
-        duration: RUNIC_GLASS_DURATION,
+        duration: getRunicGlassDuration($result.perks),
         condition: 'One-Handed Sword hit applies Runic Glass',
         sourceName: 'Enchanted Sword Rune',
         sourceType: 'rune',
