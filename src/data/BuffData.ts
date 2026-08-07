@@ -76,6 +76,10 @@ import {
   SERRATED_EDGE_DURATION,
   INSPIRED_POTENCY_PER_AMOUNT, INSPIRED_DURATION, INSPIRED_EFFECT_PER_TENTH,
   VIRULENT_CORE_DURATION, PROTO_TECH_DURATION,
+  PROTO_GRAPPLER_POISON_DURATION,
+  REINFORCE_RUNE_POTENCY,
+  REINFORCE_RUNE_DURATION,
+  TAUNTING_RUNE_DURATION,
 } from '../lib/constants/buffs'
 import {
   CRYO_ENGINE_TAILWIND_BASE_POTENCY, CRYO_ENGINE_TAILWIND_POTENCY_PER_AMOUNT,
@@ -785,6 +789,30 @@ const ITEM_BUFF_MAP: GrantedBuff[] = [
     sourceName: 'Poison Potion',
     sourceType: 'item',
     isSelfDebuff: true,
+  },
+  {
+    buffName: 'Poison',
+    potency: 0,
+    duration: PROTO_GRAPPLER_POISON_DURATION,
+    condition: 'On hit',
+    sourceName: 'Proto Grappler Rune',
+    sourceType: 'rune',
+  },
+  {
+    buffName: 'Reinforce',
+    potency: REINFORCE_RUNE_POTENCY,
+    duration: REINFORCE_RUNE_DURATION,
+    condition: 'On cast',
+    sourceName: 'Reinforce Rune',
+    sourceType: 'rune',
+  },
+  {
+    buffName: 'Taunt',
+    potency: 0,
+    duration: TAUNTING_RUNE_DURATION,
+    condition: 'On cast',
+    sourceName: 'Taunting Rune',
+    sourceType: 'rune',
   },
 ]
 

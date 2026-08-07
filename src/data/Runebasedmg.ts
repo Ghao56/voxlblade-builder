@@ -237,4 +237,45 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     hits: SLAYER_RAGE_HITS,
     note: 'Guardbreaks. Can activate other effects. Counts as Rune damage. Take self damage equal to 1% of max HP per tick. Applies Weakness every other hit (0.5 base potency, ramping +0.01 per stack per tick up to 10 ticks). Grants Rage at 0.2 potency for 10 seconds.',
   },
+  {
+    runeName: 'Heal Rune',
+    condition: 'Casts a weak heal',
+    getBaseDamage: () => 8,
+    dmgTypes: { heal: 1.0 },
+    scalings: { holy: 0.7 },
+    isHealOnly: true,
+  },
+  {
+    runeName: 'Proto Grappler Rune',
+    condition: 'Using will launch the grapple hook in the direction your facing. Hold down to aim the grapple hook.',
+    getBaseDamage: () => 7,
+    dmgTypes: { hex: 0.5, physical: 0.5 },
+    scalings: { hex: 0.5, physical: 0.5, dexterity: 0.5 },
+    note: 'Guardbreaks. Applies Poison for 5 seconds. Grappling onto a small enemy will bring them to you, grappling onto a larger enemy will bring you to them.'
+  },
+  {
+    runeName: 'Rune of Cleansing',
+    condition: 'Cast to cleanse debuffs.',
+    getBaseDamage: () => 1,
+    dmgTypes: { heal: 1.0 },
+    scalings: { water: 0.5 },
+    isHealOnly: true,
+    note: 'Cleanses',
+  },
+  {
+    runeName: 'Rubble Rune',
+    condition: 'Toss a handful of rocks at the opponent.',
+    getBaseDamage: () => 18,
+    dmgTypes: { earth: 1.0 },
+    scalings: { earth: 0.7, physical: 0.3 },
+    note: 'Guardbreaks'
+  },
+  {
+    runeName: 'Toad Slam Rune',
+    condition: 'Slam into the floor and become enraged',
+    getBaseDamage: () => 20,
+    dmgTypes: { physical: 1.0 },
+    scalings: { physical: 1.0 },
+    note: 'Grants Rage for 10 seconds. Guardbreaks'
+  },
 ]
