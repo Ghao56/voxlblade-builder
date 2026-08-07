@@ -2038,7 +2038,16 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   })()
   $: runeScalingBreakdown = (() => {
     if (!_activeRuneDmgDef) return null
-    const scalings = _activeRuneDmgDef.scalings
+    const scalings = _activeRuneDmgDef.resolveScalings
+      ? _activeRuneDmgDef.resolveScalings({
+          potency: runePotency,
+          sliderVal: _runeSliderVal,
+          stats,
+          perks,
+          weaponDmgTypes: _weaponDmgTypes,
+          weaponDmgTypesBase: _weaponDmgTypesBase,
+        })
+      : _activeRuneDmgDef.scalings
     if (!scalings || Object.keys(scalings).length === 0) return null
 
     const rows = buildScalingRows(scalings)
@@ -3397,13 +3406,24 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       }
     }
 
-    if (_activeRuneDmgDef && Object.keys(_activeRuneDmgDef.dmgTypes).length > 0) {
+    if (_activeRuneDmgDef && (Object.keys(_activeRuneDmgDef.dmgTypes).length > 0 || _activeRuneDmgDef.resolveDmgTypes)) {
       const _runeIsHeal = _activeRuneDmgDef.isHealOnly ?? false
+      const _runeCtx = {
+        potency: runePotency,
+        sliderVal: _runeSliderVal,
+        stats,
+        perks,
+        selfDamage: _runeSelfDamagePerHit,
+        weaponDmgTypes: _weaponDmgTypes,
+        weaponDmgTypesBase: _weaponDmgTypesBase,
+      }
+      const _runeDmgTypesBase = _activeRuneDmgDef.resolveDmgTypes ? _activeRuneDmgDef.resolveDmgTypes(_runeCtx) : _activeRuneDmgDef.dmgTypes
+      const _runeScalings = _activeRuneDmgDef.resolveScalings ? _activeRuneDmgDef.resolveScalings(_runeCtx) : _activeRuneDmgDef.scalings
       const _runeDmgTypesWithBonus = _runeIsHeal
-        ? _activeRuneDmgDef.dmgTypes
+        ? _runeDmgTypesBase
         : applyAirToMagicConversion(
             _applyDmgBonuses(
-              applyDraconicBonuses(_activeRuneDmgDef.dmgTypes, {
+              applyDraconicBonuses(_runeDmgTypesBase, {
                 draconicRunesStacks: perks['Draconic Runes'] ?? 0,
                 draconicColor: _effDraconicColor,
               }, {
@@ -3424,16 +3444,19 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         ? { ..._runeDmgTypesWithBonus, water: roundMultiplier((_runeDmgTypesWithBonus.water ?? 0) + _cdWaterBonus) }
         : _runeDmgTypesWithBonus
       const runeCount = _activeRuneDmgDef.getHits
-        ? _activeRuneDmgDef.getHits({ potency: runePotency, sliderVal: _runeSliderVal, stats, perks, selfDamage: _runeSelfDamagePerHit })
+        ? _activeRuneDmgDef.getHits(_runeCtx)
         : (_activeRuneDmgDef.hits ?? 1)
+      const runeForceCrit = _activeRuneDmgDef.getForceCrit ? _activeRuneDmgDef.getForceCrit(_runeCtx) : (_activeRuneDmgDef.forceCrit ?? false)
       const runeHitBase = {
         group: 'Rune' as const,
         index: result.length,
-        base: _activeRuneDmgDef.getBaseDamage({ potency: runePotency, sliderVal: _runeSliderVal, perks }),
-        scalingMult: _computePerkScalingMult(_activeRuneDmgDef.scalings),
+        base: _activeRuneDmgDef.getBaseDamage(_runeCtx),
+        scalingMult: _computePerkScalingMult(_runeScalings),
         combatMult: _runeIsHeal ? _healFinalMultiplier : _runeCombatMult,
-        isFinisher: false,
+        isFinisher: _activeRuneDmgDef.isFinisher ?? false,
         isHeal: _runeIsHeal,
+        ...(runeForceCrit ? { forceCrit: true } : {}),
+        ...(_activeRuneDmgDef.guardbreak ? { guardbreak: true } : {}),
         ...(_activeBellowingEmberMult !== 1
           ? { weaponBoostMult: roundMultiplier(runeSunburnMult * _activeBellowingEmberMult), weaponBoostLabel: ['Sunburn', 'Bellowing Ember'].filter(Boolean).join(', ') }
           : runeSunburnMult !== 1 ? { weaponBoostMult: runeSunburnMult, weaponBoostLabel: 'Sunburn' } : {}),
@@ -3444,6 +3467,42 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         result.push({ ...runeHitBase, count: runeCount - 1, dmgTypes: _runeDmgTypesWithBonus, label: _activeRuneDmgDef.runeName })
       } else {
         result.push({ ...runeHitBase, count: runeCount, ...(cdRune ? { cdWater: _cdWaterBonus } : {}), dmgTypes: runeDmgTypesForCd, label: cdRune ? `${_activeRuneDmgDef.runeName} · Channeled Depths` : _activeRuneDmgDef.runeName })
+      }
+      const _runeSecondary = _activeRuneDmgDef.secondary
+      if (_runeSecondary && (!_runeSecondary.activeIf || _runeSecondary.activeIf(_runeCtx))) {
+        const _secDmgTypesBase = _runeSecondary.resolveDmgTypes ? _runeSecondary.resolveDmgTypes(_runeCtx) : _runeSecondary.dmgTypes
+        const _secScalings = _runeSecondary.resolveScalings ? _runeSecondary.resolveScalings(_runeCtx) : _runeSecondary.scalings
+        const _secDmgTypesWithBonus = applyAirToMagicConversion(
+          _applyDmgBonuses(
+            applyDraconicBonuses(_secDmgTypesBase, {
+              draconicRunesStacks: perks['Draconic Runes'] ?? 0,
+              draconicColor: _effDraconicColor,
+            }, {
+              isActive: $build.draconicRuneInfusion === 'infusion',
+              buffPotency: getEffectiveDraconicInfusionPotency($build.guild, $build.draconicRuneInfusion, _effDraconicColor, perks['Draconic Blood'] ?? 0, perks),
+              draconicColor: _effDraconicColor,
+            }),
+            _perkDmgTypeBonuses
+          ),
+          _spiritWindsConversionRate,
+          _darkMagicHexBonus,
+          _echoIncinerationAmt
+        )
+        const _secCount = _runeSecondary.getHits ? _runeSecondary.getHits(_runeCtx) : (_runeSecondary.hits ?? 1)
+        if (Object.keys(_secDmgTypesWithBonus).length > 0) {
+          result.push({
+            group: 'Rune',
+            index: result.length,
+            count: _secCount,
+            base: _runeSecondary.getBaseDamage(_runeCtx),
+            scalingMult: _computePerkScalingMult(_secScalings),
+            combatMult: _runeCombatMult,
+            isFinisher: false,
+            isHeal: false,
+            dmgTypes: _secDmgTypesWithBonus,
+            label: _runeSecondary.label ?? `${_activeRuneDmgDef.runeName} · DoT`,
+          })
+        }
       }
     }
 
@@ -3520,8 +3579,18 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           pushFp(_waHitsSeq[0].n * _waScalingMult * _waCombatMult, selectedWA.name + ' WA')
         }
         if (_activeRuneDmgDef) {
-          pushFp(_activeRuneDmgDef.getBaseDamage({ potency: runePotency, sliderVal: _runeSliderVal, perks })
-            * _computePerkScalingMult(_activeRuneDmgDef.scalings) * _runeCombatMult, 'Rune')
+          const _fpRuneCtx = {
+            potency: runePotency,
+            sliderVal: _runeSliderVal,
+            stats,
+            perks,
+            selfDamage: _runeSelfDamagePerHit,
+            weaponDmgTypes: _weaponDmgTypes,
+            weaponDmgTypesBase: _weaponDmgTypesBase,
+          }
+          const _fpRuneScalings = _activeRuneDmgDef.resolveScalings ? _activeRuneDmgDef.resolveScalings(_fpRuneCtx) : _activeRuneDmgDef.scalings
+          pushFp(_activeRuneDmgDef.getBaseDamage(_fpRuneCtx)
+            * _computePerkScalingMult(_fpRuneScalings) * _runeCombatMult, 'Rune')
         }
       }
     }
@@ -3657,9 +3726,18 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     const undeadMightAmt = perks['Undead Might'] ?? 0
     if (undeadMightAmt <= 0 || !_activeRuneDmgDef) return 0
 
-    const base = _activeRuneDmgDef.getBaseDamage({ potency: runePotency, sliderVal: _runeSliderVal, perks })
-    const scalingMult = _computePerkScalingMult(_activeRuneDmgDef.scalings)
-    const typeMultSum = Object.values(_activeRuneDmgDef.dmgTypes).reduce((s, m) => s + m, 0)
+    const runeCtx = {
+      potency: runePotency,
+      sliderVal: _runeSliderVal,
+      stats,
+      perks,
+      weaponDmgTypes: _weaponDmgTypes,
+      weaponDmgTypesBase: _weaponDmgTypesBase,
+    }
+    const base = _activeRuneDmgDef.getBaseDamage(runeCtx)
+    const scalingMult = _computePerkScalingMult(_activeRuneDmgDef.resolveScalings ? _activeRuneDmgDef.resolveScalings(runeCtx) : _activeRuneDmgDef.scalings)
+    const runeDmgTypes = _activeRuneDmgDef.resolveDmgTypes ? _activeRuneDmgDef.resolveDmgTypes(runeCtx) : _activeRuneDmgDef.dmgTypes
+    const typeMultSum = Object.values(runeDmgTypes).reduce((s, m) => s + m, 0)
     const perHitDmg = base * typeMultSum * scalingMult * _levelMult
 
     const selfDmgPct = UNDEAD_MIGHT_SELF_DMG_FRACTION
@@ -5052,11 +5130,20 @@ $: _groupedSelfDamageSources = (() => {
         </div>
       {/if}
       {#if _activeRuneDmgDef && isActive}
-        {@const _runeHits = _activeRuneDmgDef.getHits
-          ? _activeRuneDmgDef.getHits({ potency: runePotency, sliderVal: _runeSliderVal, stats, perks, selfDamage: _runeSelfDamagePerHit })
-          : (_activeRuneDmgDef.hits ?? 1)}
-        {@const _runeBase = _activeRuneDmgDef.getBaseDamage({ potency: runePotency, sliderVal: _runeSliderVal, perks })}
-        {@const _runeScalingMult = _computePerkScalingMult(_activeRuneDmgDef.scalings)}
+        {@const _runeCtx = {
+          potency: runePotency,
+          sliderVal: _runeSliderVal,
+          stats,
+          perks,
+          selfDamage: _runeSelfDamagePerHit,
+          weaponDmgTypes: _weaponDmgTypes,
+          weaponDmgTypesBase: _weaponDmgTypesBase,
+        }}
+        {@const _runeDmgTypesBase = _activeRuneDmgDef.resolveDmgTypes ? _activeRuneDmgDef.resolveDmgTypes(_runeCtx) : _activeRuneDmgDef.dmgTypes}
+        {@const _runeHits = _activeRuneDmgDef.getHits ? _activeRuneDmgDef.getHits(_runeCtx) : (_activeRuneDmgDef.hits ?? 1)}
+        {@const _runeBase = _activeRuneDmgDef.getBaseDamage(_runeCtx)}
+        {@const _runeScalings = _activeRuneDmgDef.resolveScalings ? _activeRuneDmgDef.resolveScalings(_runeCtx) : _activeRuneDmgDef.scalings}
+        {@const _runeScalingMult = _computePerkScalingMult(_runeScalings)}
         {@const _runeIsHeal = _activeRuneDmgDef.isHealOnly ?? false}
         {@const _draconicRunesStacks = perks['Draconic Runes'] ?? 0}
         {@const _draconicColor = _effDraconicColor}
@@ -5071,9 +5158,9 @@ $: _groupedSelfDamageSources = (() => {
           draconicColor: _draconicColor,
         })}
         {@const _runeDmgTypesWithBonus = _runeIsHeal
-          ? _activeRuneDmgDef.dmgTypes
+          ? _runeDmgTypesBase
           : (() => {
-              const base = applyDraconicBonuses(_activeRuneDmgDef.dmgTypes, {
+              const base = applyDraconicBonuses(_runeDmgTypesBase, {
                 draconicRunesStacks: _draconicRunesStacks,
                 draconicColor: _draconicColor,
               }, {
@@ -5088,29 +5175,54 @@ $: _groupedSelfDamageSources = (() => {
         
         <div class="da-wbd-section">
           {#if _activeRuneDmgDef.slider}
-            <div class="da-sb-slider-wrap" style="margin-bottom:6px">
-              <span class="da-sb-slider-label">{_activeRuneDmgDef.slider.label}</span>
-              <input
-                type="range"
-                min={_activeRuneDmgDef.slider.min}
-                max={_runeSliderMax}
-                step={_activeRuneDmgDef.slider.step ?? 1}
-                value={_runeSliderVal}
-                on:input={(e) => {
-                  const sliderDef = _activeRuneDmgDef?.slider
-                  if (!sliderDef) return
-                  const val = +(e.target as HTMLInputElement).value
-                  build.update(s => ({ ...s, [sliderDef.buildKey]: val }) as any)
-                }}
-                class="da-sb-slider"
-                style="--fill:{((_runeSliderVal - _activeRuneDmgDef.slider.min) / (_runeSliderMax - _activeRuneDmgDef.slider.min || 1)) * 100}%"
-              />
-              <span class="da-sb-slider-val">{_runeSliderVal}</span>
-            </div>
+            {#if _activeRuneDmgDef.slider.valueLabels}
+              <div class="da-sb-slider-wrap da-sb-slider-wrap--stack" style="margin-bottom:6px">
+                <span class="da-sb-slider-label">{_activeRuneDmgDef.slider.label}</span>
+                <div class="da-sb-seg">
+                  {#each _activeRuneDmgDef.slider.valueLabels as label, li}
+                    <button
+                      type="button"
+                      class="da-sb-seg-btn"
+                      class:active={_runeSliderVal === li}
+                      on:click={() => {
+                        const sliderDef = _activeRuneDmgDef?.slider
+                        if (!sliderDef) return
+                        build.update(s => ({ ...s, [sliderDef.buildKey]: li }) as any)
+                      }}
+                    >{label}</button>
+                  {/each}
+                </div>
+              </div>
+            {:else}
+              <div class="da-sb-slider-wrap" style="margin-bottom:6px">
+                <span class="da-sb-slider-label">{_activeRuneDmgDef.slider.label}</span>
+                <input
+                  type="range"
+                  min={_activeRuneDmgDef.slider.min}
+                  max={_runeSliderMax}
+                  step={_activeRuneDmgDef.slider.step ?? 1}
+                  value={_runeSliderVal}
+                  on:input={(e) => {
+                    const sliderDef = _activeRuneDmgDef?.slider
+                    if (!sliderDef) return
+                    const val = +(e.target as HTMLInputElement).value
+                    build.update(s => ({ ...s, [sliderDef.buildKey]: val }) as any)
+                  }}
+                  class="da-sb-slider"
+                  style="--fill:{((_runeSliderVal - _activeRuneDmgDef.slider.min) / (_runeSliderMax - _activeRuneDmgDef.slider.min || 1)) * 100}%"
+                />
+                <span class="da-sb-slider-val">{_runeSliderVal}</span>
+              </div>
+            {/if}
           {/if}
           <div class="da-wbd-row-label da-wbd-row-label--rune">
             <Badge color="#38bdf8" square size="xs">Rune</Badge>
             <span class="da-wbd-lbl-text">{_activeRuneDmgDef.runeName}</span>
+            {#if _activeRuneDmgDef.isFinisher}<Badge color="#fbbf24" square size="xs">Finisher</Badge>{/if}
+            {#if _activeRuneDmgDef.guardbreak}<Badge color="#f87171" square size="xs">Guardbreak</Badge>{/if}
+            {#if _activeRuneDmgDef.getForceCrit ? _activeRuneDmgDef.getForceCrit(_runeCtx) : (_activeRuneDmgDef.forceCrit ?? false)}
+              <Badge color="#f59e0b" square size="xs">Guaranteed Crit</Badge>
+            {/if}
             {#if !_runeIsHeal && Object.keys(_draconicBonuses).length > 0}
               {@const totalBonus = Object.values(_draconicBonuses).reduce((a, b) => a + b, 0)}
               {@const bonusTypes = Object.keys(_draconicBonuses).map(t => t.charAt(0).toUpperCase() + t.slice(1)).join(' + ')}
@@ -5131,6 +5243,26 @@ $: _groupedSelfDamageSources = (() => {
               {/if}
             </div>
           </div>
+          {#if _activeRuneDmgDef.secondary && (!_activeRuneDmgDef.secondary.activeIf || _activeRuneDmgDef.secondary.activeIf(_runeCtx))}
+            {@const _secDmgTypesBase = _activeRuneDmgDef.secondary.resolveDmgTypes ? _activeRuneDmgDef.secondary.resolveDmgTypes(_runeCtx) : _activeRuneDmgDef.secondary.dmgTypes}
+            {@const _secHits = _activeRuneDmgDef.secondary.getHits ? _activeRuneDmgDef.secondary.getHits(_runeCtx) : (_activeRuneDmgDef.secondary.hits ?? 1)}
+            {@const _secBase = _activeRuneDmgDef.secondary.getBaseDamage(_runeCtx)}
+            <div class="da-hits-row" style="margin-top:6px">
+              <div class="da-hit-card">
+                <span class="da-hit-type" style="--tc:#a78bfa">{_activeRuneDmgDef.secondary.label ?? 'Secondary'}</span>
+                {#each Object.entries(_secDmgTypesBase) as [type, mult], ti}
+                  {#if ti > 0}<span class="da-hit-plus">+</span>{/if}
+                  <div class="da-hit-chunk" style="--tc:{DMG_TYPE_COLORS[type] ?? '#e8e4da'}">
+                    <span class="da-hit-num" style="--tc:{DMG_TYPE_COLORS[type] ?? '#e8e4da'}">{fmtNum(_secBase * mult)}</span>
+                    <span class="da-hit-type">{type.charAt(0).toUpperCase() + type.slice(1)}</span>
+                  </div>
+                {/each}
+                {#if _secHits > 1}
+                  <span class="da-hit-repeat">×{_secHits}<span class="da-hit-repeat-label">ticks</span></span>
+                {/if}
+              </div>
+            </div>
+          {/if}
         </div>
          {/if}
      </div>
@@ -8449,62 +8581,152 @@ $: _groupedSelfDamageSources = (() => {
 .da-sb-slider-wrap {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 4px 0;
+  gap: 10px;
+  padding: 7px 11px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+  border: 1px solid rgba(255,255,255,.08);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 2px 8px rgba(0,0,0,.18);
 }
 .da-sb-slider-label {
-  font-size: .6rem;
+  font-size: .58rem;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: .12em;
-  color: var(--ink-muted, #8a8d85);
+  letter-spacing: .14em;
+  color: var(--ink-muted, #9a9d95);
   flex-shrink: 0;
-  min-width: 48px;
+  min-width: 44px;
+  white-space: nowrap;
 }
 .da-sb-slider {
   -webkit-appearance: none;
   appearance: none;
   flex: 1;
-  height: 5px;
+  height: 6px;
   border-radius: 999px;
-  background: linear-gradient(to right, var(--tc, #a78bfa) var(--fill, 50%), rgba(255,255,255,.06) var(--fill, 50%));
+  background: linear-gradient(to right, var(--tc, #a78bfa) var(--fill, 50%), rgba(255,255,255,.07) var(--fill, 50%));
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,.04);
   outline: none;
   cursor: pointer;
+  transition: filter .15s;
+}
+.da-sb-slider:hover {
+  filter: brightness(1.2);
 }
 .da-sb-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 16px;
-  height: 16px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
-  background: var(--tc, #a78bfa);
-  border: 2px solid rgba(0,0,0,.45);
-  box-shadow: 0 0 6px rgba(167,139,250,.35), 0 1px 4px rgba(0,0,0,.4);
+  background: radial-gradient(circle at 35% 30%, #fff, var(--tc, #a78bfa) 50%);
+  border: 1px solid rgba(0,0,0,.55);
+  box-shadow: 0 0 8px var(--tc, #a78bfa), 0 1px 3px rgba(0,0,0,.5);
   cursor: grab;
-  transition: transform .1s, box-shadow .15s;
+  transition: transform .12s, box-shadow .15s;
 }
 .da-sb-slider::-webkit-slider-thumb:hover {
-  box-shadow: 0 0 10px rgba(167,139,250,.5), 0 2px 6px rgba(0,0,0,.5);
+  transform: scale(1.12);
 }
 .da-sb-slider::-webkit-slider-thumb:active {
   cursor: grabbing;
-  transform: scale(1.15);
+  transform: scale(1.3);
+  box-shadow: 0 0 15px var(--tc, #a78bfa), 0 1px 3px rgba(0,0,0,.5);
+}
+.da-sb-slider:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px rgba(255,255,255,.22), 0 0 12px var(--tc, #a78bfa);
+}
+.da-sb-slider::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.07);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.4);
+}
+.da-sb-slider::-moz-range-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--tc, #a78bfa);
+  box-shadow: 0 0 6px var(--tc, #a78bfa);
 }
 .da-sb-slider::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
-  background: var(--tc, #a78bfa);
-  border: 2px solid rgba(0,0,0,.45);
-  box-shadow: 0 0 6px rgba(167,139,250,.35);
+  background: radial-gradient(circle at 35% 30%, #fff, var(--tc, #a78bfa) 50%);
+  border: 1px solid rgba(0,0,0,.55);
+  box-shadow: 0 0 8px var(--tc, #a78bfa), 0 1px 3px rgba(0,0,0,.5);
   cursor: grab;
 }
+.da-sb-slider::-moz-range-thumb:hover {
+  transform: scale(1.12);
+}
+.da-sb-slider::-moz-range-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.3);
+}
+.da-sb-slider:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 3px rgba(255,255,255,.22), 0 0 12px var(--tc, #a78bfa);
+}
 .da-sb-slider-val {
-  font-size: .75rem;
-  font-weight: 900;
+  font-size: .72rem;
+  font-weight: 800;
   color: var(--tc, #a78bfa);
   font-family: 'Courier New', monospace;
-  min-width: 24px;
-  text-align: right;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, currentColor 14%, transparent);
+  border: 1px solid color-mix(in srgb, currentColor 32%, transparent);
+  box-shadow: 0 0 8px color-mix(in srgb, currentColor 18%, transparent), inset 0 1px 0 rgba(255,255,255,.08);
+  min-width: 32px;
+  max-width: 100%;
+  text-align: center;
   flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* ── Segmented control (valueLabels sliders) ────────────────────────── */
+.da-sb-slider-wrap--stack {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 7px;
+}
+.da-sb-slider-wrap--stack .da-sb-slider-label {
+  min-width: 0;
+}
+.da-sb-seg {
+  display: flex;
+  gap: 6px;
+}
+.da-sb-seg-btn {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.09);
+  background: rgba(255,255,255,.04);
+  color: var(--ink-muted, #9a9d95);
+  font-size: .62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s, box-shadow .15s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.da-sb-seg-btn:hover {
+  background: rgba(255,255,255,.09);
+  color: #e8e4da;
+}
+.da-sb-seg-btn.active {
+  background: color-mix(in srgb, #a78bfa 24%, transparent);
+  border-color: color-mix(in srgb, #a78bfa 60%, transparent);
+  color: #fff;
+  box-shadow: 0 0 10px color-mix(in srgb, #a78bfa 32%, transparent), inset 0 1px 0 rgba(255,255,255,.12);
+}
+.da-sb-seg-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, #a78bfa 55%, transparent);
 }
 </style>

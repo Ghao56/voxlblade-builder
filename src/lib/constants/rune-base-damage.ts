@@ -59,3 +59,20 @@ export const SLAYER_RAGE_RAGE_RUNE_BASE_DMG = 0.25
 export const SLAYER_RAGE_RAGE_RUNE_DMG_PER_STACK = 0.125
 export const SLAYER_RAGE_ROAR_RUNE_BASE_DMG = 0.5
 export const SLAYER_RAGE_ROAR_RUNE_DMG_PER_STACK = 0.1875
+
+// Enchanted Sword Rune (Dagger -> One-Handed Sword -> Greatsword)
+export const ENCHANTED_SWORD_WEAPON_TYPES = ['Dagger', 'One-Handed Sword', 'Greatsword'] as const
+export const ENCHANTED_SWORD_DAGGER_BASE_DMG = 7
+export const ENCHANTED_SWORD_SWORD_BASE_DMG = 15
+export const ENCHANTED_SWORD_GREATSWORD_BASE_DMG = 40
+export const ENCHANTED_SWORD_DAGGER_POISE = 10
+export const ENCHANTED_SWORD_SWORD_POISE = 12
+export const ENCHANTED_SWORD_GREATSWORD_POISE = 65
+export const ENCHANTED_SWORD_DAGGER_COOLDOWN = 10
+export const ENCHANTED_SWORD_SWORD_COOLDOWN = 15
+export const ENCHANTED_SWORD_GREATSWORD_COOLDOWN = 20
+
+// Runic Glass (One-Handed Sword secondary effect)
+export const RUNIC_GLASS_BASE_DMG = 1.5
+export const RUNIC_GLASS_DURATION = 5
+export const RUNIC_GLASS_TICKS = 5

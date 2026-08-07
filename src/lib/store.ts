@@ -55,6 +55,7 @@ const DEFAULT_BUILD: BuildState = {
   lastCroakStacks: undefined,
   buffsConsumed: 0,
   sporelingsSummoned: 0,
+  enchantedSwordType: 0,
   bastionBallistaArrows: 0,
   ichorSparkCharge: 100,
   divineCrashDistance: 250,

@@ -245,7 +245,11 @@ import { SPIRIT_WINDS_PCT_PER_STACK, DARK_MAGIC_PCT_PER_STACK, EMOTIONAL_PCT_PER
           : false
         if (!_hasWaterDmg && $build.rune && $build.rune !== 'None') {
           const rd = RUNE_DMG_DEFS.find(d => d.runeName === $build.rune)
-          _hasWaterDmg = rd ? (rd.dmgTypes['water'] ?? 0) > 0 : false
+          _hasWaterDmg = rd
+            ? Object.entries(rd.resolveDmgTypes
+                ? rd.resolveDmgTypes({ potency: 0, weaponDmgTypes: _weaponDmgTypes, weaponDmgTypesBase: _weaponDmgTypesBase })
+                : rd.dmgTypes).some(([dt, mult]) => dt === 'water' && mult > 0)
+            : false
         }
         if (!_hasWaterDmg) {
           for (const [pname, amt] of Object.entries($result.perks)) {

@@ -1,7 +1,8 @@
 import type { BuildState } from '../lib/types';
+import { DMG_TYPE_PRIORITY } from '../lib/constants/damage-types';
 import { calculateHealBoost, type HealBoostContext } from './HealBoost';
 import { calcMaxSummonCount } from './SummonData';
-import { ANCIENT_CLERIC_BASE_DMG, ANCIENT_CLERIC_SLIDER_MAX, ANCIENT_CLERIC_SHIELD_BASE, ANCIENT_CLERIC_SHIELD_PER_VAL, BEENADE_BASE_DMG, BEENADE_MAX_POTENCY, BOOSTSHROOM_BASE_DMG, THUNDEROUS_CHARGE_BASE_DMG, SPORELING_TOSS_BASE_DMG, SPORELING_TOSS_HITS_BASE, SPORELING_TOSS_SLIDER_MAX, FOOT_DIVE_BASE_DMG, CACI_BASE_DMG, CACI_HITS, CACITROPS_BASE_DMG, CACITROPS_HITS, HEX_WEB_BASE_DMG, HEX_WEB_HITS, BRAINBLAST_BASE_DMG, BRAINBLAST_HITS, ROCKY_TAIL_BASE_DMG, ROCKY_TAIL_PROT_SCALE, ROCKY_TAIL_VS_BASE_RES, ROCKY_TAIL_VS_PER_LEVEL, ROCKY_TAIL_VS_DEFAULT_RES, ROCKY_TAIL_DIVISOR_COEFF, ROCKY_TAIL_DIVISOR_BASE, ROCKY_TAIL_HITS_MULT, ROCKY_TAIL_MIN_HITS, SLAYER_RAGE_HITS, SLAYER_RAGE_RAGE_RUNE_BASE_DMG, SLAYER_RAGE_RAGE_RUNE_DMG_PER_STACK, SLAYER_RAGE_ROAR_RUNE_BASE_DMG, SLAYER_RAGE_ROAR_RUNE_DMG_PER_STACK } from '../lib/constants/rune-base-damage';
+import { ANCIENT_CLERIC_BASE_DMG, ANCIENT_CLERIC_SLIDER_MAX, ANCIENT_CLERIC_SHIELD_BASE, ANCIENT_CLERIC_SHIELD_PER_VAL, BEENADE_BASE_DMG, BEENADE_MAX_POTENCY, BOOSTSHROOM_BASE_DMG, THUNDEROUS_CHARGE_BASE_DMG, SPORELING_TOSS_BASE_DMG, SPORELING_TOSS_HITS_BASE, SPORELING_TOSS_SLIDER_MAX, FOOT_DIVE_BASE_DMG, CACI_BASE_DMG, CACI_HITS, CACITROPS_BASE_DMG, CACITROPS_HITS, HEX_WEB_BASE_DMG, HEX_WEB_HITS, BRAINBLAST_BASE_DMG, BRAINBLAST_HITS, ROCKY_TAIL_BASE_DMG, ROCKY_TAIL_PROT_SCALE, ROCKY_TAIL_VS_BASE_RES, ROCKY_TAIL_VS_PER_LEVEL, ROCKY_TAIL_VS_DEFAULT_RES, ROCKY_TAIL_DIVISOR_COEFF, ROCKY_TAIL_DIVISOR_BASE, ROCKY_TAIL_HITS_MULT, ROCKY_TAIL_MIN_HITS, SLAYER_RAGE_HITS, SLAYER_RAGE_RAGE_RUNE_BASE_DMG, SLAYER_RAGE_RAGE_RUNE_DMG_PER_STACK, SLAYER_RAGE_ROAR_RUNE_BASE_DMG, SLAYER_RAGE_ROAR_RUNE_DMG_PER_STACK, ENCHANTED_SWORD_WEAPON_TYPES, ENCHANTED_SWORD_DAGGER_BASE_DMG, ENCHANTED_SWORD_SWORD_BASE_DMG, ENCHANTED_SWORD_GREATSWORD_BASE_DMG, ENCHANTED_SWORD_DAGGER_POISE, ENCHANTED_SWORD_SWORD_POISE, ENCHANTED_SWORD_GREATSWORD_POISE, ENCHANTED_SWORD_DAGGER_COOLDOWN, ENCHANTED_SWORD_SWORD_COOLDOWN, ENCHANTED_SWORD_GREATSWORD_COOLDOWN, RUNIC_GLASS_BASE_DMG, RUNIC_GLASS_DURATION, RUNIC_GLASS_TICKS } from '../lib/constants/rune-base-damage';
 
 export interface RuneDmgCtx {
   potency: number
@@ -9,6 +10,8 @@ export interface RuneDmgCtx {
   stats?: Record<string, number>
   perks?: Record<string, number>
   selfDamage?: number
+  weaponDmgTypes?: Record<string, number>
+  weaponDmgTypesBase?: Record<string, number>
 }
 
 export interface RuneSliderDef {
@@ -17,12 +20,26 @@ export interface RuneSliderDef {
   min: number
   max: number
   step?: number
+  valueLabels?: string[]
   getMax?: (ctx: { perks: Record<string, number> }) => number
 }
 
 export interface RuneShieldDef {
   getShieldHp: (sliderVal: number) => number
   label?: string
+}
+
+export interface RuneSecondaryDmgDef {
+  getBaseDamage: (ctx: RuneDmgCtx) => number
+  dmgTypes: Record<string, number>
+  scalings: Record<string, number>
+  hits?: number
+  getHits?: (ctx: RuneDmgCtx) => number
+  resolveDmgTypes?: (ctx: RuneDmgCtx) => Record<string, number>
+  resolveScalings?: (ctx: RuneDmgCtx) => Record<string, number>
+  activeIf?: (ctx: RuneDmgCtx) => boolean
+  label?: string
+  note?: string
 }
 
 export interface RuneDmgDef {
@@ -38,8 +55,52 @@ export interface RuneDmgDef {
   note?: string
   isHealOnly?: boolean
   activeIf?: (ctx: { perks: Record<string, number> }) => boolean
+  resolveDmgTypes?: (ctx: RuneDmgCtx) => Record<string, number>
+  resolveScalings?: (ctx: RuneDmgCtx) => Record<string, number>
+  isFinisher?: boolean
+  guardbreak?: boolean
+  forceCrit?: boolean
+  getForceCrit?: (ctx: RuneDmgCtx) => boolean
+  secondary?: RuneSecondaryDmgDef
   slider?: RuneSliderDef
   shield?: RuneShieldDef
+}
+
+/**
+ * Picks the weapon's highest damage type (ties broken by DMG_TYPE_PRIORITY),
+ * mirroring computeEffectiveWaDmgTypes. Returns null when the weapon has no
+ * positive damage types.
+ */
+function resolveHighestWeaponDmgType(types: Record<string, number> | undefined): string | null {
+  const entries = Object.entries(types ?? {}).filter(([, v]) => v > 0)
+  if (entries.length === 0) return null
+  const priority = DMG_TYPE_PRIORITY as readonly string[]
+  const [highestKey] = entries.reduce((a, b) => {
+    if (b[1] > a[1]) return b
+    if (b[1] === a[1]) {
+      const ia = priority.indexOf(a[0])
+      const ib = priority.indexOf(b[0])
+      return (ib === -1 ? 999 : ib) < (ia === -1 ? 999 : ia) ? b : a
+    }
+    return a
+  })
+  return highestKey
+}
+
+const ENCHANTED_SWORD_BASE_DMG_BY_TYPE: Record<number, number> = {
+  0: ENCHANTED_SWORD_DAGGER_BASE_DMG,
+  1: ENCHANTED_SWORD_SWORD_BASE_DMG,
+  2: ENCHANTED_SWORD_GREATSWORD_BASE_DMG,
+}
+const ENCHANTED_SWORD_CD_BY_TYPE: Record<number, number> = {
+  0: ENCHANTED_SWORD_DAGGER_COOLDOWN,
+  1: ENCHANTED_SWORD_SWORD_COOLDOWN,
+  2: ENCHANTED_SWORD_GREATSWORD_COOLDOWN,
+}
+const ENCHANTED_SWORD_POISE_BY_TYPE: Record<number, number> = {
+  0: ENCHANTED_SWORD_DAGGER_POISE,
+  1: ENCHANTED_SWORD_SWORD_POISE,
+  2: ENCHANTED_SWORD_GREATSWORD_POISE,
 }
 
 function calculateRuneHealScaling(
@@ -277,5 +338,52 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     dmgTypes: { physical: 1.0 },
     scalings: { physical: 1.0 },
     note: 'Grants Rage for 10 seconds. Guardbreaks'
+  },
+  {
+    runeName: 'Enchanted Sword Rune',
+    condition: 'On release (M2 of the conjured weapon)',
+    getBaseDamage: ({ sliderVal = 0 }) => ENCHANTED_SWORD_BASE_DMG_BY_TYPE[sliderVal] ?? ENCHANTED_SWORD_DAGGER_BASE_DMG,
+    dmgTypes: {},
+    scalings: {},
+    hits: 1,
+    resolveDmgTypes: ({ weaponDmgTypesBase, weaponDmgTypes }) => {
+      const highest = resolveHighestWeaponDmgType(weaponDmgTypesBase ?? weaponDmgTypes)
+      return highest ? { [highest]: 1 } : {}
+    },
+    resolveScalings: ({ weaponDmgTypesBase, weaponDmgTypes }) => {
+      const highest = resolveHighestWeaponDmgType(weaponDmgTypesBase ?? weaponDmgTypes)
+      if (!highest) return {}
+      return highest === 'true' ? { magic: 1.0 } : { [highest]: 1.0 }
+    },
+    isFinisher: true,
+    guardbreak: true,
+    getForceCrit: ({ sliderVal = 0 }) => sliderVal === 0,
+    slider: {
+      buildKey: 'enchantedSwordType',
+      label: 'Weapon Type',
+      min: 0,
+      max: ENCHANTED_SWORD_WEAPON_TYPES.length - 1,
+      step: 1,
+      valueLabels: [...ENCHANTED_SWORD_WEAPON_TYPES],
+    },
+    secondary: {
+      label: 'Runic Glass',
+      getBaseDamage: () => RUNIC_GLASS_BASE_DMG,
+      dmgTypes: {},
+      scalings: {},
+      hits: RUNIC_GLASS_TICKS,
+      activeIf: ({ sliderVal = 0 }) => sliderVal === 1,
+      resolveDmgTypes: ({ weaponDmgTypesBase, weaponDmgTypes }) => {
+        const highest = resolveHighestWeaponDmgType(weaponDmgTypesBase ?? weaponDmgTypes)
+        return highest ? { [highest]: 1 } : {}
+      },
+      resolveScalings: ({ weaponDmgTypesBase, weaponDmgTypes }) => {
+        const highest = resolveHighestWeaponDmgType(weaponDmgTypesBase ?? weaponDmgTypes)
+        if (!highest) return {}
+        return highest === 'true' ? { magic: 1.0 } : { [highest]: 1.0 }
+      },
+      note: `Applies Runic Glass for ${RUNIC_GLASS_DURATION}s (${RUNIC_GLASS_TICKS} ticks, ${RUNIC_GLASS_BASE_DMG} base dmg/tick). Counts as Rune damage. Potency does not affect its damage; debuff-duration increases do. Works with Life Drinker and Melting Shred, but not Wildfire.`,
+    },
+    note: `Hold the rune key to cycle the weapon: ${ENCHANTED_SWORD_WEAPON_TYPES.join(' → ')}. Dagger (${ENCHANTED_SWORD_DAGGER_BASE_DMG} dmg · ${ENCHANTED_SWORD_CD_BY_TYPE[0]}s CD · poise ${ENCHANTED_SWORD_DAGGER_POISE} · guaranteed crit) → One-Handed Sword (${ENCHANTED_SWORD_SWORD_BASE_DMG} dmg · ${ENCHANTED_SWORD_CD_BY_TYPE[1]}s CD · poise ${ENCHANTED_SWORD_SWORD_POISE} · applies Runic Glass) → Greatsword (${ENCHANTED_SWORD_GREATSWORD_BASE_DMG} dmg · ${ENCHANTED_SWORD_CD_BY_TYPE[2]}s CD · poise ${ENCHANTED_SWORD_GREATSWORD_POISE}). All guardbreak, count as finishers, and deal 1.0 of the weapon's highest damage type and scaling (magic scaling if that type is True).`,
   },
 ]
