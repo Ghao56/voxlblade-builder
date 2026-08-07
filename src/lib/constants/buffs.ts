@@ -56,6 +56,10 @@ export const HEX_WEB_STICKY_POTENCY = 0.1
 export const HEX_WEB_STICKY_DURATION = 5
 export const SNOEBALL_FROSTBITE_POTENCY = 0.1
 export const SNOEBALL_FROSTBITE_DURATION = 0.5
+export const PROTO_GRAPPLER_POISON_DURATION = 5
+export const REINFORCE_RUNE_POTENCY = 0.5
+export const REINFORCE_RUNE_DURATION = 20
+export const TAUNTING_RUNE_DURATION = 10
 
 // Basic debuff pool
 export const BASIC_DEBUFF_POTENCY = 0
