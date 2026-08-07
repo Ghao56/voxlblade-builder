@@ -40,6 +40,7 @@ export interface RuneSecondaryDmgDef {
   activeIf?: (ctx: RuneDmgCtx) => boolean
   label?: string
   note?: string
+  debuffName?: string
 }
 
 export interface RuneDmgDef {
@@ -368,6 +369,7 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     },
     secondary: {
       label: 'Runic Glass',
+      debuffName: 'Runic Glass',
       getBaseDamage: () => RUNIC_GLASS_BASE_DMG,
       dmgTypes: {},
       scalings: {},

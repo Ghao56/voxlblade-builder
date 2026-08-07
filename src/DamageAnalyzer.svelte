@@ -31,6 +31,7 @@
 import { FEROCITY_TENACITY_MULT, DARKENING_HEX_MAX_ACTIVATIONS, DARKENING_HEX_POTENCY_ADD_PER_AMOUNT, DARKENING_HEX_POTENCY_MULT_PER_AMOUNT, DARKENING_HEX_DURATION_ADD_PER_AMOUNT, KINDLING_DMG_ADD_PER_AMOUNT, VASSALS_CROAK_MULT_PER_STACK } from './lib/constants'
 import { calcTypedDmgBoosts } from './data/TypedDmgBoost'
 import { TRACKED_TYPES_WITH_TRUE } from './lib/constants/damage-types'
+import { RUNIC_GLASS_DURATION } from './lib/constants/rune-base-damage'
 import { resolveStanceOverlay } from './data/stanceOverlays'
 import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
 import Badge from './lib/ui/Badge.svelte'
@@ -365,6 +366,17 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
 
   $: _allActiveBuffsRaw = (() => {
     const baseBuffs = assembleActiveBuffs($build, $result.perks, wardingDebuffMult, darkeningHexEligible)
+
+    if ($build.rune === 'Enchanted Sword Rune' && $build.enchantedSwordType === 1) {
+      baseBuffs.push({
+        buffName: 'Runic Glass',
+        potency: 0,
+        duration: RUNIC_GLASS_DURATION,
+        condition: 'One-Handed Sword hit applies Runic Glass',
+        sourceName: 'Enchanted Sword Rune',
+        sourceType: 'rune',
+      })
+    }
 
     const _minionAbsAmt = $result.perks['Minion Absorption'] ?? 0
     const _minionAbsSB  = (($result.stats as Record<string, number>).summonBoost ?? 0)
@@ -3469,7 +3481,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         result.push({ ...runeHitBase, count: runeCount, ...(cdRune ? { cdWater: _cdWaterBonus } : {}), dmgTypes: runeDmgTypesForCd, label: cdRune ? `${_activeRuneDmgDef.runeName} · Channeled Depths` : _activeRuneDmgDef.runeName })
       }
       const _runeSecondary = _activeRuneDmgDef.secondary
-      if (_runeSecondary && (!_runeSecondary.activeIf || _runeSecondary.activeIf(_runeCtx))) {
+      if (_runeSecondary && (!_runeSecondary.activeIf || _runeSecondary.activeIf(_runeCtx)) && !(_runeSecondary.debuffName && disabledDebuffs.has(_runeSecondary.debuffName))) {
         const _secDmgTypesBase = _runeSecondary.resolveDmgTypes ? _runeSecondary.resolveDmgTypes(_runeCtx) : _runeSecondary.dmgTypes
         const _secScalings = _runeSecondary.resolveScalings ? _runeSecondary.resolveScalings(_runeCtx) : _runeSecondary.scalings
         const _secDmgTypesWithBonus = applyAirToMagicConversion(

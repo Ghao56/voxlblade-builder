@@ -392,7 +392,14 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectUnit: 'flat',
     isDebuff: true,
   },
-  Sticky: {
+  'Runic Glass': {
+    name: 'Runic Glass',
+    color: '#a78bfa',
+    description: 'Deals 1.5 base damage as rune damage per tick',
+    effectPerTenthPotency: 0,
+    effectUnit: 'flat',
+    isDebuff: true,
+  },  Sticky: {
     name: 'Sticky',
     color: '#ff9349',
     description: 'Move x% slower and take 20% more magic damage.',
