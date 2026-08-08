@@ -1705,9 +1705,9 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
                       {#if hit.label != null}
                         <span class="bdc-hit-row-label">{hit.label}</span>
                       {/if}
-                      {#if hit.vcBuffed !== undefined}
-                        <Badge color={hit.vcBuffed ? '#c084fc' : '#57534e'} size="xs" square mono title=                          {hit.vcBuffed ? 'Buffed by Void Contract mark (covered hit)' : 'Not covered by Void Contract mark'}>
-                          {hit.vcBuffed ? '✦ Void Contract' : '· Void Contract'}
+                      {#if hit.vcBuffed === true}
+                        <Badge color="#c084fc" size="xs" square mono title="Buffed by Void Contract mark (covered hit)">
+                          ✦ Void Contract
                         </Badge>
                       {/if}
                       <div class="bdc-hit-row-types">

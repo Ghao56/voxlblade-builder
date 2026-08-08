@@ -86,7 +86,10 @@ export const DEBUFF_COMBAT_EFFECTS: Record<string, DebuffCombatEffect> = {
     damageMult: (p: number) => 1 + (p / DEBUFF_DESPAIR_DISPLAY_DIVISOR) * DEBUFF_DESPAIR_DMG_COEFF,
   },
   'Void Contract': {
-    descFn: (p: number) => `Marked enemies take ${Math.round(p * 30 * 100) / 100}% more damage · covers the next ${1 + Math.floor(p)} hits`,
+    descFn: (p: number, perks?: Record<string, number>) => {
+      const amt = Math.floor(perks?.['Void Contract'] ?? p)
+      return `Marked enemies take ${amt * 30}% more damage · covers the next ${1 + amt} hit${amt === 0 ? '' : 's'}`
+    },
   },
   Frostbite: {
     descFn: () => `+10% Water & Air Dmg Taken`,

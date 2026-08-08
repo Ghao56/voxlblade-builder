@@ -516,7 +516,10 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     name: 'Void Contract',
     color: '#ff20ac',
     description: 'Marked enemies take 30% more damage per 1 of the Void Contract perk. The mark covers the next 1 + perkAmount hits.',
-    dynamicDescription: (_perks, potency) => `Marked enemies take ${Math.round(potency * 30 * 100) / 100}% more damage · covers the next ${1 + Math.floor(potency)} hits.`,
+    dynamicDescription: (perks, potency) => {
+      const amt = Math.floor(perks['Void Contract'] ?? potency)
+      return `Marked enemies take ${amt * 30}% more damage · covers the next ${1 + amt} hit${amt === 0 ? '' : 's'}.`
+    },
     effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
     effectUnit: 'flat',
     isDebuff: true,
@@ -2077,6 +2080,11 @@ export function applyBuffPerkModifiers(
   return buffs.map(buff => {
     const def = BUFF_DEFS[buff.buffName]
     const isSelfDebuff = buff.isSelfDebuff || def?.isSelfDebuff
+
+    // Void Contract's "potency" is its raw perk amount (+30% damage taken per
+    // amount, covering 1 + amount hits) and is never scaled by debuff potency
+    // modifiers (Endless Despair, Darkening Hex, Bastion, etc.).
+    if (buff.buffName === 'Void Contract') return buff
 
     let darkeningHexPotency = buff.potency
     let darkeningHexDurationAdd = 0
