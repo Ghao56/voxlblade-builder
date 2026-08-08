@@ -512,6 +512,15 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectUnit: 'flat',
     isDebuff: true,
   },
+  'Void Contract': {
+    name: 'Void Contract',
+    color: '#ff20ac',
+    description: 'Marked enemies take 30% more damage per 1 of the Void Contract perk. The mark covers the next 1 + perkAmount hits.',
+    dynamicDescription: (_perks, potency) => `Marked enemies take ${Math.round(potency * 30 * 100) / 100}% more damage · covers the next ${1 + Math.floor(potency)} hits.`,
+    effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
+    effectUnit: 'flat',
+    isDebuff: true,
+  },
 
   'Minion Absorbed': {
     name: 'Minion Absorbed',

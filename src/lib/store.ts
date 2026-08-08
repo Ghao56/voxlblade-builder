@@ -62,6 +62,8 @@ const DEFAULT_BUILD: BuildState = {
   channeledDepthsTime: 0,
   channeledDepthsTarget: 'WA',
   channeledDepthsHit: 1,
+  voidContractTarget: 'M1',
+  voidContractHit: 1,
   inDarkness: true,
   cdrToggles: {},
   potion1: "",

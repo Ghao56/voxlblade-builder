@@ -226,6 +226,8 @@ export interface BuildState {
   channeledDepthsTime: number
   channeledDepthsTarget: string
   channeledDepthsHit: number
+  voidContractTarget: string
+  voidContractHit: number
   inDarkness: boolean
   cdrToggles: Record<string, boolean>
   // Potion slots

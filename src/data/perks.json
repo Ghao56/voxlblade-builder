@@ -3453,7 +3453,7 @@
   },
   {
     "name": "Void Contract",
-    "description": "Occasionally mark a random mob nearby, which expires after a short period or a couple of hits. Can only be consumed by the applicant, but counts as a Debuff for others.",
+    "description": "Occasionally mark a random mob nearby. Marked enemies take 30% more damage per 1 of the Void Contract perk; the mark covers the next 1 + perkAmount hits, then expires (or after 5s at 1 of this perk). Counts as a Debuff for others.",
     "tags": [
       "Debuff",
       "RNG",

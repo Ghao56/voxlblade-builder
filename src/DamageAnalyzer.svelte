@@ -900,6 +900,25 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: if (_cdAmt > 0 && $build.channeledDepthsTime != null && $build.channeledDepthsTime > _cdTimeToCap) {
     build.update(s => ({ ...s, channeledDepthsTime: _cdTimeToCap }) as any)
   }
+  // Void Contract — the mark buffs the first N hits of the chosen target
+  // (N = 1 + floor(perkAmount), in-game it expires after those hits or its 5s duration).
+  $: _vcAmt = disabledDebuffs.has('Void Contract') ? 0 : (perks['Void Contract'] ?? 0)
+  $: _vcTarget = $build.voidContractTarget ?? 'M1'
+  $: _vcCharges = Math.max(1, 1 + Math.floor(_vcAmt))
+  $: _vcMult = 1 + 0.3 * Math.floor(_vcAmt)
+  $: _vcMaxHit = (() => {
+    switch (_vcTarget) {
+      case 'WA':
+        return _waHitsSeq ? _waHitsSeq.reduce<number>((s, h) => s + (typeof h === 'number' ? 1 : (h.count ?? 1)), 0) : 1
+      case 'M1':
+        return (_displayRows[0]?.m1 ?? []).reduce<number>((s, h) => s + (typeof h === 'number' ? 1 : (h.count ?? 1)), 0) || 1
+      case 'M2':
+        return (_displayRows[0]?.m2 ?? []).reduce<number>((s, h) => s + (typeof h === 'number' ? 1 : (h.count ?? 1)), 0) || 1
+      default:
+        return 1
+    }
+  })()
+  $: _vcDisplayHits = Math.min(_vcCharges, _vcMaxHit)
   $: _oceanSongAmt = perks['Ocean Song'] ?? 0
   $: _wildBoltAmt = perks['Wild Bolt'] ?? 0
   $: _weightySlamAmt = perks['Weighty Slam'] ?? 0
@@ -2893,6 +2912,8 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       const m2Types = (gunLabel && !(row as any).m2NoLock) ? _gunDmgTypes : _convertedWeaponDmgTypes
       let cdM2Applied = false
       let cdM1Applied = false
+      let vcM2Consumed = 0
+      let vcM1Consumed = 0
       let m1HitsLanded = 0
       let m2HitsLanded = 0
       const pushM2Hit = (h: any, i: number, label?: string, group: 'M1' | 'M2' = 'M2', finMult = 1, finisherIndex?: number) => {
@@ -2901,6 +2922,9 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         const base = finMult !== 1 ? roundMultiplier(applyWeaponCharge(rawBase) * finMult) : applyWeaponCharge(rawBase)
         const cdTargetHit = _cdActive && _cdTarget === 'M2' && !cdM2Applied && m2HitsLanded < _cdHit && m2HitsLanded + count >= _cdHit
         if (cdTargetHit) cdM2Applied = true
+        const vcPool = _vcTarget === group ? _vcCharges : 0
+        const vcConsumed = group === 'M1' ? vcM1Consumed : vcM2Consumed
+        const vcBuffed = _vcAmt > 0 ? Math.min(count, Math.max(0, vcPool - vcConsumed)) : 0
         m2HitsLanded += count
         const cdWater = cdTargetHit ? _cdWaterBonus : 0
         const hitDmgTypesWithCd = cdWater > 0
@@ -2924,6 +2948,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         ].filter(Boolean).join(', ')
         const finalLabel = cdTargetHit ? (label ? `${label} · Channeled Depths` : 'Channeled Depths') : label
         if (cdTargetHit && count > 1) {
+          if (group === 'M1') vcM1Consumed += Math.min(1, vcBuffed); else vcM2Consumed += Math.min(1, vcBuffed)
           result.push({
             group, index: i, count: 1, base, scalingMult: _scalingMult, combatMult: _m2CombatMult,
             isFinisher: true, dmgTypes: finalDmgTypes,
@@ -2934,12 +2959,14 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
             canApplyBurn: _hasSingedBurn,
             finisherGroupHitCount: _m2FinisherHits,
             ...(cdWater > 0 ? { cdWater } : {}),
+            ...(vcBuffed > 0 ? { vcBuffedCount: 1 } : {}),
             ...(finalLabel ? { label: finalLabel } : {}),
             ...(finisherIndex != null ? { finisherIndex } : {}),
           })
           pushM2Hit({ n: rawBase, count: count - 1 }, i, label, group, finMult, finisherIndex)
           return
         }
+        if (group === 'M1') vcM1Consumed += vcBuffed; else vcM2Consumed += vcBuffed
         result.push({
           group, index: i, count, base, scalingMult: _scalingMult, combatMult: _m2CombatMult,
           isFinisher: true, dmgTypes: finalDmgTypes,
@@ -2950,6 +2977,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           canApplyBurn: _hasSingedBurn,
           finisherGroupHitCount: _m2FinisherHits,
           ...(cdWater > 0 ? { cdWater } : {}),
+          ...(vcBuffed > 0 ? { vcBuffedCount: vcBuffed } : {}),
           ...(finalLabel ? { label: finalLabel } : {}),
           ...(finisherIndex != null ? { finisherIndex } : {}),
         })
@@ -2982,6 +3010,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
             const mwMult = finisherHit && _mortalWillFinisherDmgMult !== 1 ? _mortalWillFinisherDmgMult : 1
             const cdTargetHit = _cdActive && _cdTarget === 'M1' && !cdM1Applied && m1HitsLanded < _cdHit && m1HitsLanded + count >= _cdHit
             if (cdTargetHit) cdM1Applied = true
+            const vcBuffed = _vcAmt > 0 && _vcTarget === 'M1' ? Math.min(count, Math.max(0, _vcCharges - vcM1Consumed)) : 0
             m1HitsLanded += count
             const cdWater = cdTargetHit ? _cdWaterBonus : 0
             const hitDmgTypesWithCd = cdWater > 0
@@ -3004,6 +3033,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
               _activeBellowingEmberMult !== 1 ? 'Bellowing Ember' : '',
             ].filter(Boolean).join(', ')
             if (cdTargetHit && count > 1) {
+              vcM1Consumed += Math.min(1, vcBuffed)
               result.push({
                 group: 'M1', index: i, count: 1,
                 base: finMult !== 1 ? roundMultiplier(base * finMult) : base,
@@ -3015,11 +3045,13 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
                 canApplyBurn: _hasSingedBurn,
                 finisherGroupHitCount: finisherHit ? _m1FinisherHits : undefined,
                 ...(cdWater > 0 ? { cdWater } : {}),
+                ...(vcBuffed > 0 ? { vcBuffedCount: 1 } : {}),
                 label: finLabel ? `${finLabel} · Channeled Depths` : 'Channeled Depths',
               })
               pushM1Hit(finMult, finLabel)
               return
             }
+            vcM1Consumed += vcBuffed
             result.push({
               group: 'M1', index: i, count,
               base: finMult !== 1 ? roundMultiplier(base * finMult) : base,
@@ -3031,6 +3063,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
               canApplyBurn: _hasSingedBurn,
               finisherGroupHitCount: finisherHit ? _m1FinisherHits : undefined,
               ...(cdWater > 0 ? { cdWater } : {}),
+              ...(vcBuffed > 0 ? { vcBuffedCount: vcBuffed } : {}),
               ...(cdTargetHit ? { label: finLabel ? `${finLabel} · Channeled Depths` : 'Channeled Depths' } : finLabel ? { label: finLabel } : {}),
             })
           }
@@ -3103,6 +3136,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     if (_waHitsSeq && Object.keys(_waDmgTypes).length > 0 && !(_activeMountRuneDef && mountActive)) {
       let waHitsLanded = 0
       let cdWaApplied = false
+      let vcWaConsumed = 0
       _waHitsSeq.forEach((h, i) => {
         const hss = selectedWA.hitScalings?.[Math.min(i, (selectedWA.hitScalings?.length ?? 1) - 1)]
         let sc = _waScalingMult
@@ -3151,6 +3185,8 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         const hCount = typeof h === 'number' ? 1 : h.count
         const cdWa = _cdActive && _cdTarget === 'WA' && !cdWaApplied && waHitsLanded < _cdHit && waHitsLanded + hCount >= _cdHit
         if (cdWa) cdWaApplied = true
+        const vcBuffed = _vcAmt > 0 && _vcTarget === 'WA' ? Math.min(hCount, Math.max(0, _vcCharges - vcWaConsumed)) : 0
+        const vcBuffedFirst = Math.min(1, vcBuffed)
         waHitsLanded += hCount
         const waDmgTypesForCd = cdWa
           ? { ...hitDmgTypesForMw, water: roundMultiplier((hitDmgTypesForMw.water ?? 0) + _cdWaterBonus) }
@@ -3172,10 +3208,13 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           ...(waIsFinisher ? { finisherGroupHitCount: h.count } : {}),
         }
         if (cdWa && h.count > 1) {
-          result.push({ ...waHitBase, count: 1, cdWater: _cdWaterBonus, dmgTypes: waDmgTypesForCd, label: `${_waDisplayName} · Channeled Depths` })
-          result.push({ ...waHitBase, count: h.count - 1, dmgTypes: hitDmgTypesForMw, label: _waDisplayName })
+          vcWaConsumed += vcBuffedFirst
+          result.push({ ...waHitBase, count: 1, cdWater: _cdWaterBonus, ...(vcBuffed > 0 ? { vcBuffedCount: 1 } : {}), dmgTypes: waDmgTypesForCd, label: `${_waDisplayName} · Channeled Depths` })
+          vcWaConsumed += vcBuffed - vcBuffedFirst
+          result.push({ ...waHitBase, count: h.count - 1, ...(vcBuffed > 1 ? { vcBuffedCount: vcBuffed - 1 } : {}), dmgTypes: hitDmgTypesForMw, label: _waDisplayName })
         } else {
-          result.push({ ...waHitBase, count: h.count, ...(cdWa ? { cdWater: _cdWaterBonus } : {}), dmgTypes: cdWa ? waDmgTypesForCd : hitDmgTypesForMw, label: cdWa ? `${_waDisplayName} · Channeled Depths` : _waDisplayName })
+          vcWaConsumed += vcBuffed
+          result.push({ ...waHitBase, count: h.count, ...(cdWa ? { cdWater: _cdWaterBonus } : {}), ...(vcBuffed > 0 ? { vcBuffedCount: vcBuffed } : {}), dmgTypes: cdWa ? waDmgTypesForCd : hitDmgTypesForMw, label: cdWa ? `${_waDisplayName} · Channeled Depths` : _waDisplayName })
         }
       })
     }
@@ -5333,7 +5372,7 @@ $: _groupedSelfDamageSources = (() => {
 </div><!-- end da-section--wbd -->
 
 <!-- ── Perk Base Damage ── -->
-{#if _nonDraconicPerkEntries.length > 0 || darkeningHexAmt > 0 || _vassalsCroakAmt > 0 || _cdAmt > 0}
+{#if _nonDraconicPerkEntries.length > 0 || darkeningHexAmt > 0 || _vassalsCroakAmt > 0 || _cdAmt > 0 || _vcAmt > 0}
 <div class="da-section da-section--pbd">
   <div class="da-section-title-row">
     <span class="da-section-title">Perk Base Damage</span>
@@ -5520,6 +5559,41 @@ $: _groupedSelfDamageSources = (() => {
           <div class="da-pbd-details-body">
             <p>Gains <b>+0.01</b> Channeled Depths potency per second per perk amount, capped at <b>0.1 + 0.1 × amount</b> ({Math.round(_cdCap * 10000) / 10000}). The status is neutral and does not count as a buff or debuff.</p>
             <p>At or above <b>0.2</b> potency, the next attack gains <b>+0.5</b> additional Water Damage Type per <b>0.1</b> potency, then the status is consumed. Half of this additional damage type is <b>not</b> converted by <b>Piercer</b>.</p>
+          </div>
+        </details>
+      </div>
+    {/if}
+    {#if _vcAmt > 0}
+      <div class="da-pbd-card da-pbd-card--hex">
+        <div class="da-pbd-head">
+          <span class="da-pbd-name">Void Contract</span>
+          <span class="da-pbd-amt">+{Math.floor(_vcAmt)}</span>
+        </div>
+        <div class="da-cd-targets">
+          {#each [{ k: 'M1', l: 'M1' }, { k: 'M2', l: 'M2' }, { k: 'WA', l: 'WA' }] as t}
+            <button
+              type="button"
+              class="da-cd-target"
+              class:da-cd-target--on={_vcTarget === t.k}
+              on:click={() => build.update(s => ({ ...s, voidContractTarget: t.k }) as any)}
+            >{t.l}</button>
+          {/each}
+        </div>
+        <div class="da-cd-hit-row">
+          <span class="da-sb-slider-label">Covered hits</span>
+          <div class="da-cd-hit-chips" role="group" aria-label="Covered hit count">
+            {#each Array.from({ length: _vcDisplayHits }, (_, i) => i + 1) as n}
+              <span class="da-cd-hit-chip da-cd-hit-chip--on" title={`Hit #${n}`}>{n}</span>
+            {/each}
+          </div>
+        </div>
+        <div class="da-pbd-condition">
+          The first <b>{_vcDisplayHits}</b> hit{_vcDisplayHits === 1 ? '' : 's'} of <b>{_vcTarget}</b> are marked — each deals <b>×{Math.round(_vcMult * 100) / 100}</b> damage. Procs, blub, stars and on-hit perks of marked hits inherit the buff.
+        </div>
+        <details class="da-pbd-details">
+          <summary class="da-pbd-details-summary">Perk Details</summary>
+          <div class="da-pbd-details-body">
+            <p>Marked enemies take <b>+30%</b> more damage per 1 of the Void Contract perk (perk amount rounds down to the nearest whole number). The mark lasts <b>1 + perkAmount</b> hits ({_vcCharges} hit{_vcCharges === 1 ? '' : 's'} at your current amount), then expires — or expires naturally after its duration (<b>5s</b> at 1 of this perk).</p>
           </div>
         </details>
       </div>

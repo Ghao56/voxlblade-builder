@@ -354,6 +354,18 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
     })
   }
 
+  const voidContractAmt = perks['Void Contract'] ?? 0
+  if (voidContractAmt > 0 && !existingBuffNames.includes('Void Contract')) {
+    debuffs.push({
+      buffName: 'Void Contract',
+      potency: voidContractAmt,
+      duration: 5,
+      condition: `5% chance per second per 1 of this perk · marks a random nearby enemy · +${voidContractAmt * 30}% Damage Taken for the next ${1 + Math.floor(voidContractAmt)} hit(s)`,
+      sourceName: 'Void Contract',
+      sourceType: 'perk',
+    })
+  }
+
   const enemyHpDebuffs = getActiveEnemyHpDebuffs(perks, enemyHpFillPct, existingBuffNames)
   for (const d of enemyHpDebuffs) {
     if (existingBuffNames.includes(d.buffName)) continue

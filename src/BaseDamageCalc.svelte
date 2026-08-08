@@ -152,6 +152,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     finisherHitIndex?: number
     eachHitM1M2?: boolean
     cdWater?: number
+    vcBuffedCount?: number
   }> = []
   export let typedBoostEntries: TypedDmgBoostEntry[] = []
   export let luminescentPct: number = 0
@@ -450,6 +451,20 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   $: _bloodThirstyActive = bloodThirstyStacks > 0 && !disabledBoosts.has('Blood Thirsty') && resolvedDebuffs.some(d => d.name === 'Bleed')
   $: _spellPiercerActive = !disabledBoosts.has('Spell Piercer') && (boosts?.dmgEntries ?? []).some((e: any) => e.sourceName === 'Spell Piercer')
 
+  // Void Contract state — the mark fully buffs the designated hit instance (target
+  // group + hit # chosen in the analyzer UI), mirroring Channeled Depths' designation.
+  $: _vcState = (() => {
+    const d = resolvedDebuffs.find(r => r.name === 'Void Contract')
+    const active = !!d && !disabledDebuffs.has('Void Contract')
+    const perkAmount = active ? Math.floor(d.potency ?? 0) : 0
+    return {
+      active: perkAmount > 0,
+      perkAmount,
+      charges: 1 + perkAmount,
+      mult: 1 + 0.3 * perkAmount,
+    }
+  })()
+
   $: _activeDotTicks = dotTicks.filter(d => {
     const debuffToCheck = d.debuffName ?? d.type
     const isOnDummy = resolvedDebuffs.some(r => r.name === debuffToCheck) && !disabledDebuffs.has(debuffToCheck)
@@ -579,6 +594,10 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   $: computedHits = typedBoostEntries && effectiveDefenses && (void starRerollSeed, () => {
     const lcConsumed = new Set<string>()
     const cdPerkConsumed = new Set<string>()
+    // Void Contract — mirrors Channeled Depths: the user designates ONE hit instance
+    // (target group + hit #, see DamageAnalyzer). That hit and everything it spawns
+    // (procs, blub, stars, on-hit perks, DS, LC) inherits the buff via vcDilution / vcContext.
+    const VC_MULT = _vcState.mult
     return weaponHits.flatMap((hit): ComputedHit[] => {
     const isHeal = hit.isHeal ?? false
     const basePenDecimal = (armorPen + globalArmorPenetration) / 100
@@ -598,7 +617,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
         const crushPen = crushingPenForType(k)
         const defMult  = calcArmorMult(defPct, basePenDecimal + crushPen / 100, k).mult
         const typeBase = amount * mult
-        const raw = typeBase * scalingMult * typedMultUsed * sunburnUniversalDmgMult * combatMult * defMult * debuffMult * (hitCount ?? 1)
+        const raw = typeBase * scalingMult * typedMultUsed * sunburnUniversalDmgMult * combatMult * defMult * debuffMult * (hitCount ?? 1) * vcContext
         types.push({
           key: k, label: info.label, color: info.color,
           typeBase, scalingMult, combatMult,
@@ -696,7 +715,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
             const blubCrushPen = crushingPenForType(k)
             const { info, applicableBoosts, typedMultUsed, typeDebuffMult: blubDebuffMult, defPct: blubDefPct, defMult: blubDefMult } = resolveTypeInfo(k, basePenDecimal + blubCrushPen / 100, { type: 'noProc' })
             const blubTypeBase = blubPerHit * mult
-            const blubRawPerHit = blubTypeBase * typedMultUsed * blubOutMult * blubDefMult * blubDebuffMult * BLUB_BLUB_HIT_COUNT
+            const blubRawPerHit = blubTypeBase * typedMultUsed * blubOutMult * blubDefMult * blubDebuffMult * BLUB_BLUB_HIT_COUNT * vcContext
             types.push({
               key: k, label: info.label, color: info.color,
               typeBase: blubTypeBase, scalingMult: 1, combatMult: opts.blub.combatMult,
@@ -713,6 +732,14 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     // Cache pre-mitigation base for this hit (used by all proc effects below)
     const _hitPreMitBase = computePreMitigationBase(hit)
     const _hitDebuffedPreMitBase = _hitPreMitBase * _activeDebuffDamageMult * selfDebuffDamageMult
+    // Void Contract: the mark (set by DamageAnalyzer) buffs the first N hits of the
+    // chosen target, N = 1 + floor(perkAmount). Each marked hit's vcBuffedCount tells
+    // how many of its sub-hits are buffed; everything the hit spawns (procs, blub,
+    // stars, on-hit perks, DS, LC) inherits the buff via vcDilution / vcContext.
+    const vcBuffedCount = !isHeal ? Math.max(0, hit.vcBuffedCount ?? 0) : 0
+    const vcDilution = vcBuffedCount > 0 ? VC_MULT : 1
+    // Sub-source inheritance factor for every proc/blub/star/perk spawned by this hit.
+    let vcContext = vcDilution
     // Data-driven proc gate: decides per tag whether the effect can activate for
     // this hit, powered by the Proc Registry (see lib/procRegistry.ts).
     const gate = (tag: string) => procChanceScale(tag, hit.procCoefficient) > 0
@@ -749,13 +776,15 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       const typeBase = hit.base * mult
 
       const typeDebuffMult = _activeDebuffTypeDamageMult[k] ?? 1
-      const raw = typeBase * hit.scalingMult * typedMultUsed *
+      const rawNoVC = typeBase * hit.scalingMult * typedMultUsed *
         typeCombat * weaponBoostMult * defMult *
         (typeIsHeal ? 1 : _activeDebuffDamageMult * typeDebuffMult) * (typeIsHeal ? 1 : selfDebuffDamageMult) *
         (typeIsHeal ? antiHealSelfMult : 1)
+      const raw = typeIsHeal ? rawNoVC : rawNoVC * vcDilution
 
       const effectiveCrit = healCritDmgMult > 0 && typeIsHeal ? healCritDmgMult : critDmgMult
       const critVal = typeNoCrit ? raw : raw * effectiveCrit / 100
+      const critValNoVC = typeNoCrit ? rawNoVC : rawNoVC * effectiveCrit / 100
 
       return {
         key: k, label: labelOverride ?? info.label, color: info.color,
@@ -764,6 +793,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
         typeDebuffMult,
         defMult, enemyDefPct,
         raw, critVal, isHeal: typeIsHeal, isCritExempt: typeNoCrit, forceCrit: hit.forceCrit ?? false,
+        rawNoVC, critValNoVC,
         ...(spellPiercer && baseDefPct > 0 ? { spellPiercerIgnored: true } : {}),
         ...(hit.perHitCounts ? { subHits: hit.count } : {}),
       }
@@ -826,7 +856,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
           const defPct = defPctForType(starType)
           const crushPen = crushingPenForType(starType)
           const defMult = calcArmorMult(defPct, hitPenDecimal + crushPen / 100, starType).mult
-          const rawPerStar = starBase * starScalingMult * typedMultUsed * sunburnUniversalDmgMult * (hit.combatMult ?? 1) * defMult * typeDebuffMult * _activeDebuffDamageMult * selfDebuffDamageMult
+          const rawPerStar = starBase * starScalingMult * typedMultUsed * sunburnUniversalDmgMult * (hit.combatMult ?? 1) * defMult * typeDebuffMult * _activeDebuffDamageMult * selfDebuffDamageMult * vcContext
           const raw = rawPerStar * count
           const starPreMitBase = starBase * starScalingMult * sunburnUniversalDmgMult * (hit.combatMult ?? 1) * _activeDebuffDamageMult * selfDebuffDamageMult
           types.push({
@@ -864,6 +894,8 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
 
     if (!isHeal && dragonStateTotalDmg > 0 && (hit.group === 'M1' || hit.group === 'M2' || hit.isM1 || hit.isM2 || hit.isFinisher)) {
       const dsDebuffMult = _activeDebuffDamageMult * selfDebuffDamageMult
+      const vcDsFactor = vcDilution
+      vcContext = vcDsFactor
       const dsSunburnMult = sunburnUniversalDmgMult
       // Cache Dragon State pre-mit base for proc effects below
       const _dsPreMitBase = dragonStateBaseDmg * dragonStateScalingMult * dragonStateCombatMult * dsSunburnMult * dsDebuffMult
@@ -873,7 +905,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
           const dsCrushPen = crushingPenForType(k)
           const { info, applicableBoosts, typedMultUsed, typeDebuffMult: dsTypeDebuffMult, defPct: dsDefPct, defMult: dsDefMult } = resolveTypeInfo(k, basePenDecimal + dsCrushPen / 100)
           const dsTypeBase = dragonStateBaseDmg * mult
-          const dsRaw = dsTypeBase * dragonStateScalingMult * dragonStateCombatMult * dsSunburnMult * dsDebuffMult * typedMultUsed * dsDefMult * dsTypeDebuffMult
+          const dsRaw = dsTypeBase * dragonStateScalingMult * dragonStateCombatMult * dsSunburnMult * dsDebuffMult * typedMultUsed * dsDefMult * dsTypeDebuffMult * vcDsFactor
 
           types.push({
             key: k, label: info.label, color: info.color,
@@ -934,6 +966,9 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     for (const ph of perkOnHitDamages) {
       if (!isHeal && ph.totalDmg > 0 && (ph.alwaysOnHit || hit.isFinisher) && ph.tag !== 'Dragon State') {
         const debuffMult = _activeDebuffDamageMult * selfDebuffDamageMult
+        const phOncePerGroup = (ph.oncePerFinisher ?? true) && !hit.eachHitM1M2
+        const vcPhFactor = vcDilution
+        vcContext = vcPhFactor
         if (debuffMult > 0) {
           const _typesStartIdx = types.length
           let resolvedTypes = withDarkMagicHex(resolveDamageTypes(ph.dmgTypes, perkDmgTypeBonuses))
@@ -957,7 +992,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
             }
             const typeBase = baseForType * mult
             const phWbMult = ph.weaponBoostMult ?? 1
-            const raw = typeBase * ph.scalingMult * ph.combatMult * phWbMult * debuffMult * typedMultUsed * defMult * typeDebuffMult
+            const raw = typeBase * ph.scalingMult * ph.combatMult * phWbMult * debuffMult * typedMultUsed * defMult * typeDebuffMult * vcPhFactor
 
             types.push({
               key: k, label: info.label, color: info.color,
@@ -1025,7 +1060,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
           const blubCrushPen = crushingPenForType(k)
           const { info, applicableBoosts, typedMultUsed, typeDebuffMult: blubDebuffMult, defPct: blubDefPct, defMult: blubDefMult } = resolveTypeInfo(k, basePenDecimal + blubCrushPen / 100, { type: 'noProc' })
                 const blubTypeBase = blubPerHit * mult
-                const blubRaw = blubTypeBase * typedMultUsed * blubOutMult * blubDefMult * blubDebuffMult * BLUB_BLUB_HIT_COUNT
+                const blubRaw = blubTypeBase * typedMultUsed * blubOutMult * blubDefMult * blubDebuffMult * BLUB_BLUB_HIT_COUNT * vcPhFactor
                 types.push({
                   key: k, label: info.label, color: info.color,
                   typeBase: blubTypeBase, scalingMult: 1, combatMult: ph.combatMult,
@@ -1108,6 +1143,11 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
         if (bfEntry) {
           bfEntry.typeBase += inheritedBase
           bfEntry.raw += inheritedRawAdd
+          // Keep the unbuffed snapshot in sync so the Void Contract display split
+          // doesn't drop the finisher bonus (inheritedBase already carries the VC dilution).
+          const noVcBonus = vcDilution !== 1 ? inheritedRawAdd / vcDilution : inheritedRawAdd
+          bfEntry.rawNoVC = (bfEntry.rawNoVC ?? bfEntry.raw) + noVcBonus
+          bfEntry.critValNoVC = (bfEntry.critValNoVC ?? bfEntry.critVal) + noVcBonus * critDmgMult / 100
           bfEntry.critVal = Math.round(bfEntry.raw * critDmgMult / 100 * 10000) / 10000
           bfEntry._bfBonusBase = inheritedBase
           bfEntry._bfBonusRaw = inheritedRawAdd
@@ -1237,7 +1277,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       }
     }
 
-    const result: ComputedHit = { group: hit.group, index: hit.index, count: hit.count, isFinisher: hit.isFinisher, label: hit.label, isHeal, types, procCount: hit.procCount, finisherGroupHitCount: hit.finisherGroupHitCount, eachHitM1M2: hit.eachHitM1M2 ?? false }
+    const result: ComputedHit = { group: hit.group, index: hit.index, count: hit.count, isFinisher: hit.isFinisher, label: hit.label, isHeal, types, procCount: hit.procCount, finisherGroupHitCount: hit.finisherGroupHitCount, eachHitM1M2: hit.eachHitM1M2 ?? false, vcBuffedCount, vcMult: VC_MULT }
 
     // Vassals Croak: on an RMB (M2) finisher hit, consume Last Croak and explode once per RMB press.
     // Triggers on any M2-type finisher: base M2 (group 'M2'), M2 finishers folded into the M1 combo
@@ -1269,7 +1309,8 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
         // Last Croak is not a finisher, so the finisher-scoped boosts folded into
         // the triggering hit's combat mult must be excluded.
         const lcCombatMult = hit.combatMultNoFinisher ?? hit.combatMult ?? 1
-        const lcRaw = lcSourceBase * lcCombatMult * lcTypedMult * sunburnUniversalDmgMult * lcDefMult * lcDebuffMult * _activeDebuffDamageMult * selfDebuffDamageMult
+        const vcLcFactor = vcDilution
+        const lcRaw = lcSourceBase * lcCombatMult * lcTypedMult * sunburnUniversalDmgMult * lcDefMult * lcDebuffMult * _activeDebuffDamageMult * selfDebuffDamageMult * vcLcFactor
         const lcHit: ComputedHit = {
           group: hit.group, index: 0, count: 1, isFinisher: false, label: 'Last Croak',
           isHeal: false, eachHitM1M2: false,
@@ -1318,13 +1359,58 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     const allHits = _mergeLabeledHits(perkHits).flatMap(g => g.list)
     return allHits.length > 0 ? [{ label: 'Perk', list: allHits }] : []
   })()
+
+  // Void Contract display split: a partially-buffed hit renders as two rows so the
+  // buffed (Void Contract) and unbuffed portions are shown separately. Totals are
+  // preserved because the diluted type raws already reflect the buffed pool.
+  function _splitVcHits(list: ComputedHit[]): ComputedHit[] {
+    if (!_vcState.active) return list
+    const out: ComputedHit[] = []
+    for (const hit of list) {
+      const b = hit.vcBuffedCount ?? 0
+      if (!(b > 0 && b < hit.count) || !hit.types.some(t => t.rawNoVC != null)) {
+        // Fully covered or not covered at all — tag the row so the mark's reach is
+        // visible even without a split (heals never consume charges).
+        out.push(hit.isHeal ? hit : { ...hit, vcBuffed: b > 0 })
+        continue
+      }
+      const vc = hit.vcMult ?? _vcState.mult
+      const unbuffedCount = hit.count - b
+      const onceTypes = hit.types.filter(t => t.oncePerGroup || t.oncePerRmb || t.isCurseRip)
+      const perHitTypes = hit.types.filter(t => !t.oncePerGroup && !t.oncePerRmb && !t.isCurseRip)
+      const scaleType = (t: ComputedType, buffed: boolean, subHits: number | undefined): ComputedType => {
+        const copy: ComputedType = { ...t }
+        if (t.subHits != null) copy.subHits = subHits
+        if (t.isHeal || t.rawNoVC == null) return copy
+        const m = buffed ? vc : 1
+        copy.raw = t.rawNoVC * m
+        copy.critVal = (t.critValNoVC ?? t.critVal) * m
+        return copy
+      }
+      const buffed: ComputedHit = {
+        ...hit,
+        count: b,
+        types: [...onceTypes, ...perHitTypes.map(t => scaleType(t, true, b))],
+        vcBuffed: true,
+      }
+      const unbuffed: ComputedHit = {
+        ...hit,
+        count: unbuffedCount,
+        types: perHitTypes.filter(t => t.isHeal || t.rawNoVC != null).map(t => scaleType(t, false, unbuffedCount)),
+        vcBuffed: false,
+      }
+      out.push(buffed, unbuffed)
+    }
+    return out
+  }
+
   $: hitGroups = [
-    { label: m1Label, list: m1Hits },
-    { label: 'M2', list: m2Hits },
-    { label: 'WA', list: waHits },
-    ...(runeHits.length > 0 ? [{ label: 'Rune', list: runeHits }] : []),
-    ...(spiritHits.length > 0 ? [{ label: 'Spirit', list: spiritHits }] : []),
-    ..._groupedPerks,
+    { label: m1Label, list: _splitVcHits(m1Hits) },
+    { label: 'M2', list: _splitVcHits(m2Hits) },
+    { label: 'WA', list: _splitVcHits(waHits) },
+    ...(runeHits.length > 0 ? [{ label: 'Rune', list: _splitVcHits(runeHits) }] : []),
+    ...(spiritHits.length > 0 ? [{ label: 'Spirit', list: _splitVcHits(spiritHits) }] : []),
+    ..._groupedPerks.map(g => ({ ...g, list: _splitVcHits(g.list) })),
   ]
 
   // ── Totals ──────────────────────────────────────────────────
@@ -1618,6 +1704,11 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
                     <div class="bdc-hit-row" class:bdc-hit-row--finisher={hit.isFinisher}>
                       {#if hit.label != null}
                         <span class="bdc-hit-row-label">{hit.label}</span>
+                      {/if}
+                      {#if hit.vcBuffed !== undefined}
+                        <Badge color={hit.vcBuffed ? '#c084fc' : '#57534e'} size="xs" square mono title=                          {hit.vcBuffed ? 'Buffed by Void Contract mark (covered hit)' : 'Not covered by Void Contract mark'}>
+                          {hit.vcBuffed ? '✦ Void Contract' : '· Void Contract'}
+                        </Badge>
                       {/if}
                       <div class="bdc-hit-row-types">
                         {#each hit.types as t, ti}

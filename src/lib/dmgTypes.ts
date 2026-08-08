@@ -59,6 +59,8 @@ export interface ComputedType {
   subHits?: number
   _bfBonusBase?: number
   _bfBonusRaw?: number
+  rawNoVC?: number
+  critValNoVC?: number
 }
 
 export interface PerkOnHitDmg {
@@ -90,4 +92,7 @@ export interface ComputedHit {
     procCount?: number
     finisherGroupHitCount?: number
     eachHitM1M2?: boolean
+    vcBuffedCount?: number
+    vcMult?: number
+    vcBuffed?: boolean
 }
