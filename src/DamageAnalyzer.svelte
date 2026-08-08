@@ -31,7 +31,7 @@
 import { FEROCITY_TENACITY_MULT, DARKENING_HEX_MAX_ACTIVATIONS, DARKENING_HEX_POTENCY_ADD_PER_AMOUNT, DARKENING_HEX_POTENCY_MULT_PER_AMOUNT, DARKENING_HEX_DURATION_ADD_PER_AMOUNT, KINDLING_DMG_ADD_PER_AMOUNT, VASSALS_CROAK_MULT_PER_STACK } from './lib/constants'
 import { calcTypedDmgBoosts } from './data/TypedDmgBoost'
 import { TRACKED_TYPES_WITH_TRUE } from './lib/constants/damage-types'
-import { getRunicGlassDuration } from './lib/constants/rune-base-damage'
+import { getRunicGlassDuration, ENCHANTED_SWORD_CD_BY_TYPE } from './lib/constants/rune-base-damage'
 import { resolveStanceOverlay } from './data/stanceOverlays'
 import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
 import Badge from './lib/ui/Badge.svelte'
@@ -2141,7 +2141,9 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: _waDisplayName = getWADisplayName(selectedWA.name, perks)
   $: _solarLightActive = _solarLightAmt > 0 && selectedWA.name === 'Lesser Heal'
   $: _waCooldown = (_heatDrillActive) ? HEAT_DRILL_COOLDOWN : selectedWA.cooldown
-  $: _runeBaseCd = getRune($build.rune)?.cooldown ?? 10
+  $: _runeBaseCd = $build.rune === 'Enchanted Sword Rune'
+    ? ENCHANTED_SWORD_CD_BY_TYPE[$build.enchantedSwordType] ?? 10
+    : getRune($build.rune)?.cooldown ?? 10
 
   function parseWAHitsAll(baseDamage: string | undefined): {
     dmg: Array<{ n: number; count: number }>

@@ -50,6 +50,7 @@
   import { getEffectiveDraconicInfusionPotency } from './data/draconicBuffs'
   import { getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, convertTailwindToWhirlwind, formatPerkDescription } from './data/BuffData'
   import { CDR_PERK_DATA } from './data/cdr'
+  import { ENCHANTED_SWORD_CD_BY_TYPE } from './lib/constants/rune-base-damage'
   import { calcMaxSummonCount } from './data/SummonData'
   import { POTIONS } from './data/potions'
   import CdrStepsCalc from './CdrStepsCalc.svelte'
@@ -784,6 +785,10 @@ $: statRows = Object.entries($result.stats).filter(([k, v]) => {
   $: hasRuneCDR = cdr.runeCDR !== 1.0 || cdr.runeSetCD != null
   $: hasWACDR = cdr.waCDR !== 1.0
 
+  $: effRuneCd = $build.rune === 'Enchanted Sword Rune'
+    ? ENCHANTED_SWORD_CD_BY_TYPE[$build.enchantedSwordType] ?? 10
+    : getRune($build.rune)?.cooldown ?? 10
+
   $: shrineActive = $build.shrineActive
   $: selectedWA = (() => {
     const found = WEAPON_ARTS.find(wa => wa.name === $build.selectedWeaponArt)
@@ -1469,7 +1474,7 @@ $: highestDamageType = (() => {
         const bp: Record<string, number> = rune.perkName ? { [rune.perkName]: rune.perkAmount ?? 1 } : {}
         const cdExtras = rune.name === 'Foot Dive Rune'
           ? [`CD: 25s (miss) / 5s (hit)`]
-          : (hasRuneCDR ? [`Base CD: ${rune.cooldown}s → ${formatCD(rune.cooldown, cdr)}`] : [`Cooldown: ${rune.cooldown}s`])
+          : (hasRuneCDR ? [`Base CD: ${effRuneCd}s → ${formatCD(effRuneCd, cdr)}`] : [`Cooldown: ${effRuneCd}s`])
         groups.push({ main: buildSlotCard('Rune', buildEnchantLabel(rune.name, 'rune'), rune.description, rune.stats, bp, 'rune', cdExtras, $build.upgradeRune ?? 0), infusion: null })
       }
     }
@@ -2085,12 +2090,12 @@ $: _appWaAvgTotal = (() => {
                       {#if hasRuneCDR}
                         <span class="sg-cd-row">
                           <span class="sg-sub">CD:</span>
-                          <span class="sg-cd-base">{rune.cooldown}s</span>
+                          <span class="sg-cd-base">{effRuneCd}s</span>
                           <span class="sg-cd-arrow">→</span>
-                          <span class="sg-cd-final">{formatCD(rune.cooldown, cdr)}</span>
+                          <span class="sg-cd-final">{formatCD(effRuneCd, cdr)}</span>
                         </span>
                       {:else}
-                        <span class="sg-sub">CD: {rune.cooldown}s</span>
+                        <span class="sg-sub">CD: {effRuneCd}s</span>
                       {/if}
                     {/if}
                     <button class="sg-upgrade-btn"
@@ -2607,7 +2612,7 @@ $: _appWaAvgTotal = (() => {
                                   {:else}
                                     <CdrStepsCalc
                                       breakdown={cdr.runeBreakdown}
-                                      baseCd={rune.cooldown}
+                                      baseCd={effRuneCd}
                                       setCD={cdr.runeSetCD ?? null}
                                     />
                                   {/if}
