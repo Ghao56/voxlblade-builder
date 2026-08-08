@@ -1278,7 +1278,16 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     scalings: { water: 1.0, physical: 1.0 },
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
     guardbreak: true,
-    note: 'Roughly 8 second cooldown at 1 of this perk, and 7 seconds at 2 of this perk. Activates even when guardbroken. Size scales with perk amount.',
+    note: 'Activates even when guardbroken. Size scales with perk amount.',
+    secondaryEffects: [
+      {
+        label: 'Cooldown',
+        getValue: ({ perkAmount }) => 10 / (1 + 0.2 * perkAmount),
+        format: v => `${v}s`,
+        condition: 'Cooldown is equal to 10 / (1 + 0.2 * perkAmount',
+        tone: 'utility',
+      },
+    ],
   },
   // ── Gravity Well ──────────────────────────────────────────────────────
   {
