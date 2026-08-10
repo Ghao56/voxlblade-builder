@@ -15,6 +15,7 @@ const DEFAULT_BUILD: BuildState = {
   leggings: "",
   ring: "",
   rune: "",
+  footDiveHit: true,
   enchantments: {
     helmet: ["","",""],
     chestplate: ["","",""],

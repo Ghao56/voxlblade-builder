@@ -185,6 +185,7 @@ export interface BuildState {
   leggings: string
   ring: string
   rune: string
+  footDiveHit: boolean
   enchantments: Record<EnchantSlot, [string, string, string]>
   infusionHelmet: string
   infusionChestplate: string

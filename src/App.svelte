@@ -787,7 +787,9 @@ $: statRows = Object.entries($result.stats).filter(([k, v]) => {
 
   $: effRuneCd = $build.rune === 'Enchanted Sword Rune'
     ? ENCHANTED_SWORD_CD_BY_TYPE[$build.enchantedSwordType] ?? 10
-    : getRune($build.rune)?.cooldown ?? 10
+    : $build.rune === 'Foot Dive Rune'
+      ? ($build.footDiveHit ? 5 : 25)
+      : getRune($build.rune)?.cooldown ?? 10
 
   $: shrineActive = $build.shrineActive
   $: selectedWA = (() => {
@@ -1473,7 +1475,7 @@ $: highestDamageType = (() => {
       if (rune) {
         const bp: Record<string, number> = rune.perkName ? { [rune.perkName]: rune.perkAmount ?? 1 } : {}
         const cdExtras = rune.name === 'Foot Dive Rune'
-          ? [`CD: 25s (miss) / 5s (hit)`]
+          ? [`CD: ${effRuneCd}s (${$build.footDiveHit ? 'hit' : 'miss'})`]
           : (hasRuneCDR ? [`Base CD: ${effRuneCd}s → ${formatCD(effRuneCd, cdr)}`] : [`Cooldown: ${effRuneCd}s`])
         groups.push({ main: buildSlotCard('Rune', buildEnchantLabel(rune.name, 'rune'), rune.description, rune.stats, bp, 'rune', cdExtras, $build.upgradeRune ?? 0), infusion: null })
       }
@@ -2086,18 +2088,33 @@ $: _appWaAvgTotal = (() => {
                   {/if}
                   {#if $build.rune}
                   {@const rune = runes.find(r => r.name === $build.rune)}
-                    {#if rune}
-                      {#if hasRuneCDR}
-                        <span class="sg-cd-row">
-                          <span class="sg-sub">CD:</span>
-                          <span class="sg-cd-base">{effRuneCd}s</span>
-                          <span class="sg-cd-arrow">→</span>
-                          <span class="sg-cd-final">{formatCD(effRuneCd, cdr)}</span>
-                        </span>
-                      {:else}
-                        <span class="sg-sub">CD: {effRuneCd}s</span>
+                      {#if rune}
+                        {#if rune.name === 'Foot Dive Rune'}
+                          <span class="sg-cd-row">
+                            <span class="sg-sub">CD:</span>
+                            {#if hasRuneCDR}
+                              <span class="sg-cd-base">{effRuneCd}s</span>
+                              <span class="sg-cd-arrow">→</span>
+                            {/if}
+                            <span class="sg-cd-final">{formatCD(effRuneCd, cdr)}s ({$build.footDiveHit ? 'hit' : 'miss'})</span>
+                          </span>
+                          <span class="sg-hitmiss">
+                            <button class="sg-hm-btn" class:sg-hm-btn--active={$build.footDiveHit}
+                              on:click|stopPropagation={() => build.update(s => ({...s, footDiveHit: true}))}>Hit</button>
+                            <button class="sg-hm-btn" class:sg-hm-btn--active={!$build.footDiveHit}
+                              on:click|stopPropagation={() => build.update(s => ({...s, footDiveHit: false}))}>Miss</button>
+                          </span>
+                        {:else if hasRuneCDR}
+                          <span class="sg-cd-row">
+                            <span class="sg-sub">CD:</span>
+                            <span class="sg-cd-base">{effRuneCd}s</span>
+                            <span class="sg-cd-arrow">→</span>
+                            <span class="sg-cd-final">{formatCD(effRuneCd, cdr)}</span>
+                          </span>
+                        {:else}
+                          <span class="sg-sub">CD: {effRuneCd}s</span>
+                        {/if}
                       {/if}
-                    {/if}
                     <button class="sg-upgrade-btn"
                       class:sg-upgrade-btn--maxed={$build.upgradeRune === 5}
                       on:click|stopPropagation={() => toggleUpgrade('upgradeRune')}
@@ -2597,16 +2614,10 @@ $: _appWaAvgTotal = (() => {
                                 {/each}
                                 {#each runes.filter(r => r.name === $build.rune).slice(0,1) as rune}
                                   {#if rune.name === 'Foot Dive Rune'}
-                                    <div class="cdr-dual-label">Miss</div>
+                                    <div class="cdr-dual-label">{$build.footDiveHit ? 'Hit' : 'Miss'}</div>
                                     <CdrStepsCalc
                                       breakdown={cdr.runeBreakdown}
-                                      baseCd={25}
-                                      setCD={cdr.runeSetCD ?? null}
-                                    />
-                                    <div class="cdr-dual-label" style="margin-top:6px">Hit</div>
-                                    <CdrStepsCalc
-                                      breakdown={cdr.runeBreakdown}
-                                      baseCd={5}
+                                      baseCd={effRuneCd}
                                       setCD={cdr.runeSetCD ?? null}
                                     />
                                   {:else}
@@ -3503,6 +3514,10 @@ $: _appWaAvgTotal = (() => {
   .sg-cd-base { font-size:.65rem; color:var(--ink-muted); text-decoration:line-through; opacity:.45; }
   .sg-cd-arrow { font-size:.6rem; color:var(--ink-muted); opacity:.35; }
   .sg-cd-final { font-size:.8rem; font-weight:800; color:#34d399; }
+  .sg-hitmiss { display:flex; align-items:center; gap:4px; margin-top:3px; }
+  .sg-hm-btn { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:6px; padding:2px 8px; cursor:pointer; color:var(--ink-muted); font-family:var(--font-body); font-size:.62rem; font-weight:700; transition:all .15s; }
+  .sg-hm-btn:hover { border-color:rgba(251,191,36,.4); color:var(--weapon-combined); }
+  .sg-hm-btn--active { background:rgba(251,191,36,.1); border-color:rgba(251,191,36,.35); color:var(--weapon-combined); }
 
   .sg-weapon-inner { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; width:100%; }
   .sg-weapon-left { display:flex; flex-direction:column; gap:2px; flex:1; min-width:0; }

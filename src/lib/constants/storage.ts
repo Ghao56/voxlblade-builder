@@ -8,7 +8,7 @@ export const STORAGE_KEY_SAVES = 'voxlbuilder_saves'
 
 export const BUILD_STATE_DEFAULTS: Record<string, any> = {
   race: '', guild: '', guildRank: 1, helmet: '', chestplate: '', leggings: '',
-  ring: '', rune: '', infusionHelmet: '', infusionChestplate: '', infusionLeggings: '',
+  ring: '', rune: '', footDiveHit: true, infusionHelmet: '', infusionChestplate: '', infusionLeggings: '',
   infusionRing: '', weaponBlade: '', weaponHandle: '', monkGlove: '', monkEssence: '',
   shrineActive: false, upgradeHelmet: 0, upgradeChestplate: 0, upgradeLeggings: 0,
   upgradeRing: 0, upgradeRune: 0, upgradeInfusionHelmet: 0, upgradeInfusionChestplate: 0,
@@ -30,7 +30,7 @@ export const BUILD_STATE_DEFAULTS: Record<string, any> = {
 
 export const SAVE_KEY_MAP: Record<string, string> = {
   race:'ra', guild:'gu', guildRank:'gr', helmet:'he', chestplate:'cp',
-  leggings:'le', ring:'ri', rune:'ru', enchantments:'en',
+  leggings:'le', ring:'ri', rune:'ru', footDiveHit:'fdh', enchantments:'en',
   infusionHelmet:'ih', infusionChestplate:'ic', infusionLeggings:'il', infusionRing:'ir',
   weaponBlade:'wb', weaponHandle:'wh', monkGlove:'mg', monkEssence:'me',
   shrineActive:'sh', upgradeHelmet:'uh', upgradeChestplate:'uc',
