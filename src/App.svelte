@@ -2096,7 +2096,7 @@ $: _appWaAvgTotal = (() => {
                               <span class="sg-cd-base">{effRuneCd}s</span>
                               <span class="sg-cd-arrow">→</span>
                             {/if}
-                            <span class="sg-cd-final">{formatCD(effRuneCd, cdr)}s ({$build.footDiveHit ? 'hit' : 'miss'})</span>
+                            <span class="sg-cd-final">{formatCD(effRuneCd, cdr)} ({$build.footDiveHit ? 'hit' : 'miss'})</span>
                           </span>
                           <span class="sg-hitmiss">
                             <button class="sg-hm-btn" class:sg-hm-btn--active={$build.footDiveHit}
