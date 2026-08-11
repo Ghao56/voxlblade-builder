@@ -80,6 +80,9 @@ import {
   REINFORCE_RUNE_POTENCY,
   REINFORCE_RUNE_DURATION,
   TAUNTING_RUNE_DURATION,
+  THORNS_BLEED_DURATION,
+  STICKY_SWINGS_POTENCY_PER_AMOUNT,
+  STICKY_SWINGS_DURATION,
 } from '../lib/constants/buffs'
 import {
   CRYO_ENGINE_TAILWIND_BASE_POTENCY, CRYO_ENGINE_TAILWIND_POTENCY_PER_AMOUNT,
@@ -1669,6 +1672,26 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       duration: PROTO_TECH_DURATION,
       condition: `on M1/M2`,
       sourceName: 'Proto Tech',
+      sourceType: 'perk',
+    },
+  ],
+  'Thorns': (amount) => [
+    {
+      buffName: 'Bleed',
+      potency: 0,
+      duration: THORNS_BLEED_DURATION,
+      condition: `When Hit`,
+      sourceName: 'Thorns',
+      sourceType: 'perk',
+    },
+  ],
+  'Sticky Swings': (amount) => [
+    {
+      buffName: 'Sticky',
+      potency: STICKY_SWINGS_POTENCY_PER_AMOUNT * amount,
+      duration: STICKY_SWINGS_DURATION,
+      condition: `on Hit`,
+      sourceName: 'Sticky Swings',
       sourceType: 'perk',
     },
   ],

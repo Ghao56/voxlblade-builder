@@ -1799,6 +1799,33 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     ],
     note: 'First hit (1 Buff Potency) deals full damage; each activation within the 3s window adds +1 potency, reducing that hit to 0.85^potency. Can proc other effects. Guardbreaks.',
   },
+  // ── Thorns ───────────────────────────────────────────────
+  {
+    perkName: 'Thorns',
+    condition: 'When Hit',
+    getBaseDamage: ({ perkAmount }) => 2 + perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { physical: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { dexterity: 1.0 },
+    procCoefficient: { type: 'noProc' },
+    secondaryEffects: [
+      {
+        label: 'Activation Chance',
+        getValue: ({ perkAmount }) => 20 + 5 * perkAmount,
+        format: v => `${v}%`,
+        condition: 'Guaranteed when blocking',
+        tone: 'utility',
+      },
+      {
+        label: 'Cooldown',
+        getValue: () => 0.5,
+        format: v => `${v}s`,
+        tone: 'utility',
+      },
+    ],
+    note: 'Activates in an area around the user, but will always hit the target that cused the user to activate this perk regardless of distance.'
+  },
 ]
 
 const _perkDmgDefMap = new Map<string, PerkDmgDef[]>()

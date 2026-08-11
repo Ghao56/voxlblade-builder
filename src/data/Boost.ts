@@ -26,6 +26,7 @@ import {
   MARSH_FLOW_MULT_PER_STACK,
   SERRATED_EDGE_MULT_PER_STACK,
   CLEAVE_MULT_PER_STACK,
+  STICKY_SWINGS_MULT_PER_STACK,
 } from '../lib/constants'
 import type { BoostAttackType, ProcScalingType } from '../lib/types'
 
@@ -107,6 +108,7 @@ export const BOOST_DEFS: BoostDef[] = [
   {sourceName: 'Frequent Flier', multiplierPerPerk: FREQUENT_FLIER_MULT_PER_STACK, type: 'dmg', condition: 'while mid-air'},
   {sourceName: 'Marsh Flow', multiplierPerPerk: MARSH_FLOW_MULT_PER_STACK, type: 'dmg', condition: 'while you have Regen'},
   {sourceName: 'Cleave', multiplierPerPerk: CLEAVE_MULT_PER_STACK, type: 'dmg', condition: 'against opponents with Shatter'},
+  {sourceName: 'Sticky Swings', multiplierPerPerk: STICKY_SWINGS_MULT_PER_STACK, type: 'dmg', condition: 'against opponents with Sticky'},
   {sourceName: 'Serrated Edge', multiplierPerPerk: SERRATED_EDGE_MULT_PER_STACK, type: 'dmg', condition: 'on Finisher', appliesTo: ['finisher'] },
   {sourceName:'Perfection',multiplierPerPerk: PERFECTION_MULT_PER_STACK, type: 'dmg', condition: 'at max potency',},
   {sourceName:'Stealth',multiplierPerPerk: STEALTH_MULT_PER_STACK, type: 'dmg', condition: "against opponents not targeting you",},
