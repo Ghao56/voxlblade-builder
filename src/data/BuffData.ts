@@ -83,6 +83,7 @@ import {
   THORNS_BLEED_DURATION,
   STICKY_SWINGS_POTENCY_PER_AMOUNT,
   STICKY_SWINGS_DURATION,
+  AGGRESSIVE_PERSONALITY_TAUNT_DURATION_PER_AMOUNT,
 } from '../lib/constants/buffs'
 import {
   CRYO_ENGINE_TAILWIND_BASE_POTENCY, CRYO_ENGINE_TAILWIND_POTENCY_PER_AMOUNT,
@@ -1217,7 +1218,7 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
     {
       buffName: 'Taunt',
       potency: 0,
-      duration: 0,
+      duration: AGGRESSIVE_PERSONALITY_TAUNT_DURATION_PER_AMOUNT * amount,
       condition: 'On Warhammer/Dual Mallets M1 Finisher or Mallet M2 hit',
       sourceName: 'Aggressive Personality',
       sourceType: 'perk',
