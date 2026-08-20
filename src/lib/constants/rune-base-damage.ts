@@ -82,6 +82,11 @@ export const RUNIC_GLASS_BASE_DMG = 1.5
 export const RUNIC_GLASS_DURATION = 5
 export const RUNIC_GLASS_TICKS = 5
 
+// Sanguine Bolt
+export const SANGUINE_BOLT_BASE_DMG = 3.45
+export const SANGUINE_BOLT_HITS = 11
+export const SANGUINE_BOLT_SELF_DMG = 2.4
+
 import { ENDLESS_DESPAIR_DURATION_PER_STACK } from './buffs'
 
 /**

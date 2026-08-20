@@ -10,7 +10,7 @@ import {
   THUNDEROUS_CLOAK_POTENCY, THUNDEROUS_CLOAK_DURATION,
   WINTER_WOOF_SHATTER_POTENCY, WINTER_WOOF_SHATTER_DURATION,
   GLACIAL_SNAPPER_SLOWNESS_POTENCY, GLACIAL_SNAPPER_SLOWNESS_DURATION,
-  GLACIAL_SNAPPER_BLEED_DURATION, CACITROPS_BLEED_DURATION,
+  GLACIAL_SNAPPER_BLEED_DURATION, CACITROPS_BLEED_DURATION, SANGUINE_BOLT_BLEED_DURATION,
   BRAINBLAST_BURN_DURATION, BRAINBLAST_STICKY_POTENCY, BRAINBLAST_STICKY_DURATION,
   HEX_WEB_STICKY_POTENCY, HEX_WEB_STICKY_DURATION,
   SNOEBALL_FROSTBITE_POTENCY, SNOEBALL_FROSTBITE_DURATION,
@@ -745,6 +745,14 @@ const ITEM_BUFF_MAP: GrantedBuff[] = [
     duration: CACITROPS_BLEED_DURATION,
     condition: 'On hit',
     sourceName: 'Cacitrops Rune',
+    sourceType: 'rune',
+  },
+  {
+    buffName: 'Bleed',
+    potency: 0,
+    duration: SANGUINE_BOLT_BLEED_DURATION,
+    condition: 'On every hit',
+    sourceName: 'Sanguine Bolt Rune',
     sourceType: 'rune',
   },
   {
@@ -1888,6 +1896,10 @@ const BUFFS_BY_ITEM_SOURCE = ITEM_BUFF_MAP.reduce((acc, buff) => {
   (acc[buff.sourceName] ??= []).push(buff)
   return acc
 }, {} as Record<string, GrantedBuff[]>)
+
+export function getItemBuffs(itemName: string): GrantedBuff[] {
+  return BUFFS_BY_ITEM_SOURCE[itemName] ?? []
+}
 
 function getSpecificBuffModifiers(
   buff: GrantedBuff,
