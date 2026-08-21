@@ -1,6 +1,8 @@
 import { roundMultiplier, applyScalingMult } from '../lib/utils'
 import {
   FRENZY_BASE, FRENZY_RAGE_MULT, MINION_ABSORPTION_MULT,
+  HEMORRHAGE_DMG_BASE, HEMORRHAGE_DMG_PER_STACK,
+  HEMORRHAGE_STUN_PCT_PER_STACK, HEMORRHAGE_POISE_PCT_PER_STACK,
   BLOOD_THIRSTY_MULT_PER_STACK, VENOM_SPITTER_MULT_PER_STACK,
   PERFECTION_MULT_PER_STACK, STEALTH_MULT_PER_STACK,
   GOLDEN_CRITS_MULT_PER_STACK, GOLDEN_CRITS_BASE_PROC_CHANCE,
@@ -100,6 +102,7 @@ export interface BoostDef {
 
 export const BOOST_DEFS: BoostDef[] = [
   // Simple dmg boosts
+  { sourceName: 'Hemorrhage', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Hemorrhage'] ?? 0; if (a <= 0) return null; return { multiplier: roundMultiplier(1 + HEMORRHAGE_DMG_BASE + HEMORRHAGE_DMG_PER_STACK * a), condition: `against Bleeding opponents · +${HEMORRHAGE_STUN_PCT_PER_STACK}% Stun · +${HEMORRHAGE_POISE_PCT_PER_STACK}% Poise Dmg per stack` } }, needsProcCoeff: true },
   {sourceName: 'Blood Thirsty', multiplierPerPerk: BLOOD_THIRSTY_MULT_PER_STACK, type: 'dmg', condition: 'against Bleeding opponents', needsProcCoeff: true},
   {sourceName: 'Venom Spitter', multiplierPerPerk: VENOM_SPITTER_MULT_PER_STACK, type: 'dmg', condition: 'against Poisoned opponents'},
   {sourceName: 'Frostbite', multiplierPerPerk: 0.10, type: 'dmg', condition: 'against Slowed or Frostbitten opponents'},

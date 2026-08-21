@@ -12,7 +12,7 @@
   import { getDraconicInfusionBuff, getDraconicAbilityDebuffs, getEffectiveDraconicInfusionPotency, getDraconicInfusionPotMult, getDraconicInfusionDurMult } from './data/draconicBuffs'  
   import { WA_SUMMON_MAP, SUMMON_MAP, calcSummonStat, calcMaxSummonCount } from './data/SummonData'
   import CritIcon from './CritIcon.svelte'
-  import { PERK_DMG_DEFS, findPerkDmgDef, SECONDARY_TONE_COLORS, isHpGateActive, DRAGON_STATE_HP_GATE, calcSpringblastBaseDamage, calcBomberChargeBaseDamage, type TriggerChainEntry } from './data/Perkbasedmg'
+  import { PERK_DMG_DEFS, findPerkDmgDef, SECONDARY_TONE_COLORS, isHpGateActive, DRAGON_STATE_HP_GATE, calcSpringblastBaseDamage, type TriggerChainEntry } from './data/Perkbasedmg'
   import { resolveDefenseSources, calcBaseArmorDefPct, DEF_GROUP, type DefenseSource } from './lib/defense'
   import { getActiveRaceEffect, getOrkTenacityBuffs, calcOrkTenacityBonus } from './data/raceEffects'
   import { getActiveDefensivePerkSources, calcDefensivePotencyMult } from './data/defensivePerks'
@@ -25,7 +25,7 @@
   import { applyDraconicBonuses, getDraconicBonuses } from './data/draconicRunes'
   import { calculateHealBoost, type HealSource } from './data/HealBoost'
   import { roundMultiplier, calcWardingDebuffMultiplier, calcProcChance, applyScalingMult, scalingEq } from './lib/utils'
-  import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage, UNDEAD_MIGHT_SELF_DMG_FRACTION, UNDEAD_MIGHT_DR_PCT_PER_STACK, type SelfDamagePerkDef } from './data/selfDamagePerks'
+  import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage, calcInoculationHeal, UNDEAD_MIGHT_SELF_DMG_FRACTION, UNDEAD_MIGHT_DR_PCT_PER_STACK, type SelfDamagePerkDef } from './data/selfDamage'
   import { resolveDamageTypes, resolveWaDamageTypeKeys, applyAirToMagicConversion, computeEffectiveWaDmgTypes } from './lib/damageTypeResolve'
   import { buildDmgTypeBonuses } from './lib/engine/dmgTypeBonuses'
 import { FEROCITY_TENACITY_MULT, DARKENING_HEX_MAX_ACTIVATIONS, DARKENING_HEX_POTENCY_ADD_PER_AMOUNT, DARKENING_HEX_POTENCY_MULT_PER_AMOUNT, DARKENING_HEX_DURATION_ADD_PER_AMOUNT, KINDLING_DMG_ADD_PER_AMOUNT, VASSALS_CROAK_MULT_PER_STACK } from './lib/constants'
@@ -94,6 +94,7 @@ import {
   WINTER_WOOF_SPIRIT_HOWL_DMG,
   BLUB_BLUB_PROC_CHANCE,
   STORM_CALLER_PROC_CHANCE,
+  DOT_EXCLUDED_PERK_BONUSES,
 } from './lib/constants'
 
 // Centralized mappings for cross-toggle relationships
@@ -626,8 +627,11 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       protection: __daResultVal.stats.protection ?? 0,
       selectedWAProcCoefficient: WA_PROC_COEFFS[selectedWA.name] ?? DEFAULT_PROC_COEFF,
       enemyHpFillPct: _enemyHpFillPct,
-      hasMagicDmg: Object.entries(_waDmgTypes).some(([dt, mult]) => dt === 'magic' && mult > 0),
-      hasMagicOrPhysicalDmg: Object.entries(_waDmgTypes).some(([dt, mult]) => (dt === 'magic' || dt === 'physical') && mult > 0),
+      // Bleed-agnostic mirror of _waDmgTypes: differs only by the Hemorrhage 'true'
+      // weight, which these magic/physical flags never inspect, so results are
+      // identical while keeping this edge out of the bleeding-gated bonus chain.
+      hasMagicDmg: Object.entries(_waDmgTypesForDebuffFlags).some(([dt, mult]) => dt === 'magic' && mult > 0),
+      hasMagicOrPhysicalDmg: Object.entries(_waDmgTypesForDebuffFlags).some(([dt, mult]) => (dt === 'magic' || dt === 'physical') && mult > 0),
 
     }), perks, $build.rune || undefined, wardingDebuffMult, darkeningHexModifierOptions)
     for (const d of autoDebuffs) {
@@ -734,6 +738,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: _dummyHasBurnActive = _dummyDebuffs.some(d => d.name === 'Burn' && !disabledDebuffs.has(d.name))
   $: _dummyHasSlowActive = _dummyDebuffs.some(d => d.name === 'Slowness' && !disabledDebuffs.has(d.name))
   $: _dummyHasFrostbiteActive = _dummyDebuffs.some(d => d.name === 'Frostbite' && !disabledDebuffs.has(d.name))
+
   $: _venomEaterCanShow = (perks['Venom Eater'] ?? 0) > 0 && _dummyHasPoisonActive
 
   // ── Mycotic Bloom: below 50% enemy HP → Poison DoT multiplier ──
@@ -1389,24 +1394,22 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     ? `${_baseWeaponType} + ${_gunOverlay.type}`
     : _gunOverlay?.type ?? _baseWeaponType
 
-  $: _perkDmgTypeBonuses = buildDmgTypeBonuses(true, {
+  // Shared context for every buildDmgTypeBonuses variant below; the variants
+  // differ only by their gating flags. Kept as its own reactive statement so
+  // every field read stays inline in a $: statement (Svelte-tracked).
+  $: _dmgTypeBonusCtx = {
     perks, ragePotency: _ragePotency, draconicRuneInfusion: $build.draconicRuneInfusion,
     emotionalState: $build.emotionalState, draconicColor: _effDraconicColor,
     guild: $build.guild, draconicInfusionDisabled, toxinTransferHexBonus: _toxinTransferHexBonus,
     rageDisabled, emotionalDisabled,
-  })
-  $: _perkDmgTypeBonusesNoProc = buildDmgTypeBonuses(false, {
-    perks, ragePotency: _ragePotency, draconicRuneInfusion: $build.draconicRuneInfusion,
-    emotionalState: $build.emotionalState, draconicColor: _effDraconicColor,
-    guild: $build.guild, draconicInfusionDisabled, toxinTransferHexBonus: _toxinTransferHexBonus,
-    rageDisabled, emotionalDisabled,
-  })
-  $: _perkDmgTypeBonusesDoT = buildDmgTypeBonuses(false, {
-    perks, ragePotency: _ragePotency, draconicRuneInfusion: $build.draconicRuneInfusion,
-    emotionalState: $build.emotionalState, draconicColor: _effDraconicColor,
-    guild: $build.guild, draconicInfusionDisabled, toxinTransferHexBonus: _toxinTransferHexBonus,
-    rageDisabled, emotionalDisabled,
-  }, new Set(['Channeled Weapon']))
+  }
+  $: _perkDmgTypeBonuses = buildDmgTypeBonuses(true, { ..._dmgTypeBonusCtx, targetBleeding: _dummyHasBleedActive })
+  // Bleed-agnostic variant (no targetBleeding): feeds the auto-debuff requirement
+  // flags via _waDmgTypesForDebuffFlags so the debuff graph never depends on the
+  // bleeding-gated bonus chain below (mirrors build.ts's _perkDmgTypeBonusesForBoost).
+  $: _perkDmgTypeBonusesPre = buildDmgTypeBonuses(true, _dmgTypeBonusCtx)
+  $: _perkDmgTypeBonusesNoProc = buildDmgTypeBonuses(false, { ..._dmgTypeBonusCtx, targetBleeding: _dummyHasBleedActive })
+  $: _perkDmgTypeBonusesDoT = buildDmgTypeBonuses(false, { ..._dmgTypeBonusCtx, targetBleeding: _dummyHasBleedActive }, DOT_EXCLUDED_PERK_BONUSES)
 
   $: _emotionalHexBonus = (() => {
     const amt = perks['Emotional'] ?? 0
@@ -1430,27 +1433,38 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     return Math.round(amt * EMOTIONAL_PCT_PER_STACK * 10000) / 10000
   })()
 
-  $: _waDmgTypeBonuses = (() => {
-    const bonuses = { ..._perkDmgTypeBonuses }
-    if (_emotionalHexBonus > 0) {
-      bonuses.hex = Math.round(((bonuses.hex ?? 0) + _emotionalHexBonus) * 10000) / 10000
+  function _computeWaDmgTypeBonuses(
+    perkBonuses: Record<string, number>,
+    emotionalHexBonus: number,
+    hasTailwindOrWhirlwind: boolean,
+    windWalkerAmt: number
+  ): Record<string, number> {
+    const bonuses = { ...perkBonuses }
+    if (emotionalHexBonus > 0) {
+      bonuses.hex = Math.round(((bonuses.hex ?? 0) + emotionalHexBonus) * 10000) / 10000
     }
-    if (_hasTailwindOrWhirlwind) {
-      const wwAmt = perks['Wind Walker'] ?? 0
-      if (wwAmt > 0) {
-        bonuses.air = Math.round(((bonuses.air ?? 0) + wwAmt * 0.15) * 10000) / 10000
-      }
+    if (hasTailwindOrWhirlwind && windWalkerAmt > 0) {
+      bonuses.air = Math.round(((bonuses.air ?? 0) + windWalkerAmt * 0.15) * 10000) / 10000
     }
     return bonuses
-  })()
-  $: _waOnlyBonuses = (() => {
+  }
+  function _computeWaOnlyBonuses(
+    waBonuses: Record<string, number>,
+    perkBonuses: Record<string, number>
+  ): Record<string, number> {
     const result: Record<string, number> = {}
-    for (const [k, v] of Object.entries(_waDmgTypeBonuses)) {
-      const bv = _perkDmgTypeBonuses[k] ?? 0
+    for (const [k, v] of Object.entries(waBonuses)) {
+      const bv = perkBonuses[k] ?? 0
       if (v !== bv) result[k] = Math.round((v - bv) * 10000) / 10000
     }
     return result
-  })()
+  }
+  $: _waDmgTypeBonuses = _computeWaDmgTypeBonuses(_perkDmgTypeBonuses, _emotionalHexBonus, _hasTailwindOrWhirlwind, perks['Wind Walker'] ?? 0)
+  $: _waOnlyBonuses = _computeWaOnlyBonuses(_waDmgTypeBonuses, _perkDmgTypeBonuses)
+  // Bleed-agnostic mirrors (Pre) consumed only by _waDmgTypesForDebuffFlags;
+  // identical resolution except they never carry the Hemorrhage 'true' weight.
+  $: _waDmgTypeBonusesPre = _computeWaDmgTypeBonuses(_perkDmgTypeBonusesPre, _emotionalHexBonus, _hasTailwindOrWhirlwind, perks['Wind Walker'] ?? 0)
+  $: _waOnlyBonusesPre = _computeWaOnlyBonuses(_waDmgTypeBonusesPre, _perkDmgTypeBonusesPre)
 
   function _applyDmgBonuses(base: Record<string, number>, bonuses: Record<string, number>): Record<string, number> {
     return resolveDamageTypes(base, bonuses)
@@ -1486,14 +1500,19 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     return types
   }
 
-  $: _weaponDmgTypes = (() => {
-    const base: Record<string, number> = { ...(_weaponResult?.damageTypes ?? {}) }
-    const stoneWeapon = ($result.perks['Stone Weapon'] ?? 0)
-    if (stoneWeapon > 0) {
-      base['earth'] = Math.round(((base['earth'] ?? 0) + stoneWeapon * 0.3) * 10000) / 10000
+  function _computeWeaponDmgTypes(
+    baseTypes: Record<string, number>,
+    stoneWeaponAmt: number,
+    perkBonuses: Record<string, number>
+  ): Record<string, number> {
+    const base = { ...baseTypes }
+    if (stoneWeaponAmt > 0) {
+      base['earth'] = Math.round(((base['earth'] ?? 0) + stoneWeaponAmt * 0.3) * 10000) / 10000
     }
-    return _applyDmgBonuses(base, _perkDmgTypeBonuses)
-  })()
+    return _applyDmgBonuses(base, perkBonuses)
+  }
+  $: _weaponDmgTypes = _computeWeaponDmgTypes(_weaponResult?.damageTypes ?? {}, $result.perks['Stone Weapon'] ?? 0, _perkDmgTypeBonuses)
+  $: _weaponDmgTypesPre = _computeWeaponDmgTypes(_weaponResult?.damageTypes ?? {}, $result.perks['Stone Weapon'] ?? 0, _perkDmgTypeBonusesPre)
   $: _weaponDmgTypesBase = (() => {
     return { ...(_weaponResult?.damageTypes ?? {}) }
   })()
@@ -1707,6 +1726,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     { sourceName: 'Venom Eater',    test: () => !showCritValues || !_dummyHasPoisonActive },
     { sourceName: 'Golden Crits',   test: () => !showCritValues },
     { sourceName: 'Spell Piercer',  test: () => !showCritValues },
+    { sourceName: 'Hemorrhage',     test: () => !_dummyHasBleedActive },
     { sourceName: 'Blood Thirsty',  test: () => !_dummyHasBleedActive },
     { sourceName: 'Gelid Lance',    test: () => !_dummyHasBleedActive },
     { sourceName: 'Vicious Edge',   test: () => !_dummyHasBleedActive },
@@ -1725,7 +1745,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     if (_effectiveTailwindPotency <= 0) s.add('Spirit Winds')
     if (!showCritValues || !_dummyHasPoisonActive) s.add('Venom Eater')
     if (!showCritValues) { s.add('Golden Crits'); s.add('Spell Piercer') }
-    if (!_dummyHasBleedActive) { s.add('Blood Thirsty'); s.add('Gelid Lance'); s.add('Vicious Edge'); s.add('Gorecast') }
+    if (!_dummyHasBleedActive) { s.add('Hemorrhage'); s.add('Blood Thirsty'); s.add('Gelid Lance'); s.add('Vicious Edge'); s.add('Gorecast') }
     if (!_dummyHasPoisonActive) s.add('Venom Spitter')
     if (!_dummyHasSlowActive && !_dummyHasFrostbiteActive) s.add('Frostbite')
     return s
@@ -2231,14 +2251,13 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     _wildBoltElemIdx = Math.floor(Math.random() * WILD_BOLT_ELEMENTS.length)
   }
   $: _wildBoltElement = _wildBoltAmt > 0 && selectedWA.name === 'Laser' ? WILD_BOLT_ELEMENTS[_wildBoltElemIdx] : null
-  $: _waDmgTypes = computeEffectiveWaDmgTypes({
+  // Shared args for computeEffectiveWaDmgTypes; the two consumers below differ
+  // only in which dmg-type maps they feed (bleeding-gated vs bleed-agnostic Pre).
+  $: _waDmgTypesSharedArgs = {
     waDamageType: _solarLightActive
       ? (_solarSunSources >= 2 ? `1 Holy + ${SOLAR_LIGHT_FIRE_DMG_MULT} Fire` : '1 Holy')
       : selectedWA.damageType,
-    weaponDmgTypes: _weaponDmgTypes,
     weaponDmgTypesBase: _weaponDmgTypesBase,
-    waDmgTypeBonuses: _waDmgTypeBonuses,
-    waOnlyBonuses: _waOnlyBonuses,
     airToMagicConversionRate: _spiritWindsConversionRate,
     darkMagicHexBonus: _darkMagicHexBonus,
     echoIncinerateAmt: _echoIncinerationAmt,
@@ -2246,8 +2265,50 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     weightySlamActive: _weightySlamAmt > 0 && selectedWA.name === 'Slam',
     heatDrillActive: _heatDrillActive,
     essenceRayActive: _essenceRayActive,
+  }
+  $: _waDmgTypes = computeEffectiveWaDmgTypes({
+    ..._waDmgTypesSharedArgs,
+    weaponDmgTypes: _weaponDmgTypes,
+    waDmgTypeBonuses: _waDmgTypeBonuses,
+    waOnlyBonuses: _waOnlyBonuses,
   })
-  
+
+  // Bleed-agnostic mirror of _waDmgTypes for the auto-debuff requirement flags
+  // (see _perkDmgTypeBonusesPre). Same resolution, so the magic/physical flags
+  // match _waDmgTypes exactly while keeping this edge cycle-free.
+  $: _waDmgTypesForDebuffFlags = computeEffectiveWaDmgTypes({
+    ..._waDmgTypesSharedArgs,
+    weaponDmgTypes: _weaponDmgTypesPre,
+    waDmgTypeBonuses: _waDmgTypeBonusesPre,
+    waOnlyBonuses: _waOnlyBonusesPre,
+  })
+
+  // Bomber Charge WA override (Retaliate): single data-driven source shared by
+  // the hit list and the breakdown panels. Base/types/scalings all come from
+  // the PERK_DMG_DEFS entry; only the bonus pipeline is applied here.
+  $: _bomberChargeWaHit = (() => {
+    const amt = perks['Bomber Charge'] ?? 0
+    if (amt <= 0 || selectedWA.name !== 'Retaliate') return null
+    const def = findPerkDmgDef('Bomber Charge')
+    if (!def) return null
+    const base = def.getBaseDamage({ perkAmount: amt, statuses: { missingHpPct: Math.max(0, 100 - (_hpFillPct ?? 100)) } })
+    const baseDmgTypes = { ...(def.dmgTypes ?? {}) }
+    const dmgTypes = applyAirToMagicConversion(
+      _applyDmgBonuses({ ...baseDmgTypes }, _waDmgTypeBonuses),
+      _spiritWindsConversionRate,
+      _darkMagicHexBonus,
+      _echoIncinerationAmt
+    )
+    const scalings = def.scalings ?? {}
+    return {
+      base,
+      dmgTypes,
+      baseDmgTypes,
+      scalings,
+      scalingMult: Object.keys(scalings).length > 0 ? _computePerkScalingMult(scalings) : 1,
+    }
+  })()
+
   $: _waDmgTypesBase = (() => {
     if (_solarLightActive) {
       return { holy: 1, ...(_solarSunSources >= 2 ? { fire: SOLAR_LIGHT_FIRE_DMG_MULT } : {}) }
@@ -3123,12 +3184,10 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         }
     }
     // Bomber Charge: override Retaliate WA hits
-    if ((perks['Bomber Charge'] ?? 0) > 0 && selectedWA.name === 'Retaliate') {
-      const base = calcBomberChargeBaseDamage(perks['Bomber Charge'], Math.max(0, 100 - (_hpFillPct ?? 100)))
-      const sc = _computePerkScalingMult({ holy: 0.4, magic: 0.4 })
+    if (_bomberChargeWaHit) {
       result.push({
-        group: 'WA', index: 0, count: 1, base, scalingMult: sc, combatMult: _waCombatMult,
-        isFinisher: false, dmgTypes: { holy: 0.5, true: 0.5 },
+        group: 'WA', index: 0, count: 1, base: _bomberChargeWaHit.base, scalingMult: _bomberChargeWaHit.scalingMult, combatMult: _waCombatMult,
+        isFinisher: false, dmgTypes: _bomberChargeWaHit.dmgTypes, baseDmgTypes: _bomberChargeWaHit.baseDmgTypes,
         label: 'Retaliate (modified by Bomber Charge)',
         canApplyBurn: _hasSingedBurn,
       })
@@ -3611,7 +3670,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         result.push({
           group: 'Perk', index: result.length, count: 10, base: fpPerTick,
           scalingMult: 1, combatMult: 1,
-          isFinisher: false, dmgTypes: _applyDmgBonuses({ hex: 1.0 }, _perkDmgTypeBonusesNoProc),
+          isFinisher: false, dmgTypes: _applyDmgBonuses({ hex: 1.0 }, _perkDmgTypeBonusesDoT),
           label: 'Fungal Prototype (' + label + ' →)',
           procCoefficient: { type: 'noProc' },
           canApplyBurn: _hasSingedBurn,
@@ -3817,7 +3876,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     group: string
     label: string
     preBoostDmg: number
-    result: { total: number; byType: Record<string, number> }
+    result: { total: number; byType: Record<string, number>; totalBeforeDefense: number }
   }
 
   $: _bombardierSelfDmgBase = (() => {
@@ -3829,7 +3888,10 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: _selfDamageSources = (() => {
     const sources: SelfDamageSourceEntry[] = []
     for (const def of SELF_DAMAGE_PERK_DEFS) {
-      const amount = perks[def.perkName] ?? 0
+      if (def.sourceType === 'rune') {
+        if ($build.rune !== def.runeName) continue
+      }
+      const amount = def.sourceType === 'rune' ? 1 : (perks[def.perkName] ?? 0)
       if (amount <= 0) continue
 
       for (const key of def.appliesTo) {
@@ -3960,6 +4022,7 @@ $: _groupedSelfDamageSources = (() => {
     weaponHits={_bdcWeaponHits}
     perkDmgTypeBonuses={_perkDmgTypeBonuses}
     perkDmgTypeBonusesDoT={_perkDmgTypeBonusesDoT}
+    perkDmgTypeBonusesOnHit={_perkDmgTypeBonusesNoProc}
     typedBoostEntries={_typedBoostEntries}
     luminescentPct={_luminescentPct}
     cloudpushPct={_cloudpushPct}
@@ -4952,19 +5015,15 @@ $: _groupedSelfDamageSources = (() => {
             <span class="da-wbd-lbl-text da-wbd-lbl-text--wa">{_waDisplayName}</span>
           </div>
           <div class="da-hits-row">
-          {#if (perks['Bomber Charge'] ?? 0) > 0 && selectedWA.name === 'Retaliate'}
-            {@const _bcAmt = perks['Bomber Charge'] ?? 0}
-            {@const _bcBase = calcBomberChargeBaseDamage(_bcAmt, Math.max(0, 100 - (_hpFillPct ?? 100)))}
+          {#if _bomberChargeWaHit}
             <div class="da-hit-card">
-              <div class="da-hit-chunk" style="--tc:{DMG_TYPE_COLORS['holy']}">
-                <span class="da-hit-num">{fmtNum(Math.round(_bcBase * 0.5 * 10000) / 10000)}</span>
-                <span class="da-hit-type">Holy</span>
-              </div>
-              <span class="da-hit-plus">+</span>
-              <div class="da-hit-chunk" style="--tc:{DMG_TYPE_COLORS['true']}">
-                <span class="da-hit-num">{fmtNum(Math.round(_bcBase * 0.5 * 10000) / 10000)}</span>
-                <span class="da-hit-type">True</span>
-              </div>
+              {#each Object.entries(_bomberChargeWaHit.dmgTypes) as [bcKey, bcWeight], bcTi}
+                {#if bcTi > 0}<span class="da-hit-plus">+</span>{/if}
+                <div class="da-hit-chunk" style="--tc:{DMG_TYPE_COLORS[bcKey]}">
+                  <span class="da-hit-num">{fmtNum(Math.round(_bomberChargeWaHit.base * (bcWeight as number) * 10000) / 10000)}</span>
+                  <span class="da-hit-type">{bcKey.charAt(0).toUpperCase() + bcKey.slice(1)}</span>
+                </div>
+              {/each}
             </div>
 
           {:else if _waTyped}
@@ -5804,6 +5863,19 @@ $: _groupedSelfDamageSources = (() => {
             {#if i < Object.entries(activeSrc.result.byType).length - 1}<span class="da-hit-plus">+</span>{/if}
           {/each}
         </div>
+        {#if (perks['Inoculation'] ?? 0) > 0}
+          <div class="da-pbd-dmg-row">
+            <span class="da-pbd-ctx-label">Inoculation Heal</span>
+            <div class="da-hits-row">
+              <div class="da-hit-card">
+                <div class="da-hit-chunk" style="--tc:#4ade80">
+                  <span class="da-hit-num" style="--tc:#4ade80">{fmtNum(calcInoculationHeal(activeSrc.result.totalBeforeDefense, perks['Inoculation'] ?? 0))}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="da-pbd-note">Heals before the self-damage lands · damage counted before defense</div>
+        {/if}
         <div class="da-pbd-dmg-row">
           <span class="da-pbd-ctx-label">Self Damage</span>
           <div class="da-hits-row">
@@ -5977,10 +6049,7 @@ $: _groupedSelfDamageSources = (() => {
         <p class="ds-warn">⚠ Some WA scalings have no matching boost stat — those contribute 0%</p>
       {/if}
   {/if}
-  {#if (perks['Bomber Charge'] ?? 0) > 0 && selectedWA.name === 'Retaliate'}
-    {@const bcHolyBoost = (stats as Record<string, number>)['holyBoost'] ?? 0}
-    {@const bcMagicBoost = (stats as Record<string, number>)['magicBoost'] ?? 0}
-    {@const bcTotalPct = Math.round((Math.round(0.4 * bcHolyBoost * 1000) / 1000 + Math.round(0.4 * bcMagicBoost * 1000) / 1000) * 100) / 100}
+  {#if _bomberChargeWaHit}
     <div class="ds-wa-subsection" style="border-color:rgba(249,115,22,.3);margin-top:8px">
       <div class="ds-wa-header">
         <Badge color="#4ade80">WA</Badge>
@@ -5995,16 +6064,16 @@ $: _groupedSelfDamageSources = (() => {
           <div class="ds-col ds-col--op"></div>
           <div class="ds-col ds-col--contrib">Contribution</div>
         </div>
-        {#each ['holy', 'magic'] as key}
+        {#each Object.entries(_bomberChargeWaHit.scalings) as [key, scVal]}
           {@const statVal = (stats as Record<string, number>)[key + 'Boost'] ?? 0}
-          {@const contribution = Math.round(0.4 * statVal * 1000) / 1000}
+          {@const contribution = Math.round((scVal as number) * statVal * 1000) / 1000}
           <div class="ds-row">
             <div class="ds-col ds-col--type">
               <span class="ds-dot" style="background:{DMG_TYPE_COLORS[key]}"></span>
               <span style="color:{DMG_TYPE_COLORS[key]}">{key.charAt(0).toUpperCase() + key.slice(1)}</span>
             </div>
             <div class="ds-col ds-col--val">
-              <span class="ds-num" style="color:{DMG_TYPE_COLORS[key]}">+0.4</span>
+              <span class="ds-num" style="color:{DMG_TYPE_COLORS[key]}">{scVal}</span>
             </div>
             <div class="ds-col ds-col--op">×</div>
             <div class="ds-col ds-col--boost">
@@ -6022,8 +6091,8 @@ $: _groupedSelfDamageSources = (() => {
           <span class="ds-result-label">Scaling Multiplier</span>
           <span class="ds-applies-to">Weapon Art (Bomber Charge)</span>
         </div>
-        <span class="ds-result-eq">{scalingEq(bcTotalPct)} =</span>
-        <span class="ds-result-val">×{+applyScalingMult(bcTotalPct / 100).toFixed(4)}</span>
+        <span class="ds-result-eq">{scalingEq(Math.round(Object.entries(_bomberChargeWaHit.scalings).reduce((s, [k, v]) => s + (v as number) * ((stats as Record<string, number>)[k + 'Boost'] ?? 0), 0) * 100) / 100)} =</span>
+        <span class="ds-result-val">×{+_bomberChargeWaHit.scalingMult.toFixed(4)}</span>
       </div>
     </div>
   {/if}
