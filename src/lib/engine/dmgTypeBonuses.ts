@@ -35,7 +35,7 @@ export function buildDmgTypeBonuses(includeNoProcExempt: boolean, ctx: {
   emotionalState: string; draconicColor: string; guild: string;
   draconicInfusionDisabled: boolean; toxinTransferHexBonus: number; rageDisabled: boolean;
   emotionalDisabled: boolean; targetBleeding?: boolean;
-}, excludePerks?: Set<string>): Record<string, number> {
+}, excludePerks?: ReadonlySet<string>): Record<string, number> {
   const bonus: Record<string, number> = {}
   for (const def of PERK_DMG_TYPE_BONUS_DEFS) {
     if (excludePerks?.has(def.perkName)) continue

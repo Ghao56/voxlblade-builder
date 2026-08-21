@@ -2,6 +2,7 @@ export const UNDEAD_MIGHT_SELF_DMG_FRACTION = 1 / 15
 export const UNDEAD_MIGHT_DR_PCT_PER_STACK = 15
 
 import { SANGUINE_BOLT_SELF_DMG } from '../lib/constants/rune-base-damage'
+import { INOCULATION_HEAL_FRACTION, INOCULATION_FLAT_HEAL_PER_STACK } from '../lib/constants/perks'
 
 export interface SelfDamagePerkDef {
   perkName: string
@@ -86,7 +87,8 @@ export function calcSelfDamage(
   enemiesHit: number = 1,
   defenseMultipliers: Record<string, number> = {},
   hitCount: number = 1,
-): { total: number; byType: Record<string, number> } {
+): { total: number; byType: Record<string, number>; totalBeforeDefense: number } {
+  const weightSum = Object.values(def.dmgTypes).reduce((s, m) => s + m, 0)
   if (def.flatSelfDmg) {
     const base = def.flatSelfDmg * (def.procChance ?? 1) * hitCount * enemiesHit
     const byType: Record<string, number> = {}
@@ -95,13 +97,13 @@ export function calcSelfDamage(
       byType[type] = base * mult * defMult
     }
     const total = Object.values(byType).reduce((sum, v) => sum + v, 0)
-    return { total, byType }
+    return { total, byType, totalBeforeDefense: base * weightSum }
   }
-  if (perkAmount <= 0 || preBoostDamageDealt <= 0) return { total: 0, byType: {} }
+  if (perkAmount <= 0 || preBoostDamageDealt <= 0) return { total: 0, byType: {}, totalBeforeDefense: 0 }
 
   const base = preBoostDamageDealt * def.selfDmgPct
   const perkDrMult = 1 / (1 + (def.drPctPerStack * perkAmount) / 100)
-  
+
   let multiTargetMult = 1
   if (!def.noMultiTargetFalloff) {
     multiTargetMult = 0
@@ -109,7 +111,7 @@ export function calcSelfDamage(
       multiTargetMult += 1 / i
     }
   }
-  
+
   const baseTotal = base * perkDrMult * multiTargetMult
 
   const byType: Record<string, number> = {}
@@ -118,5 +120,10 @@ export function calcSelfDamage(
     byType[type] = baseTotal * mult * defMult
   }
   const total = Object.values(byType).reduce((sum, v) => sum + v, 0)
-  return { total, byType }
+  return { total, byType, totalBeforeDefense: baseTotal * weightSum }
+}
+
+export function calcInoculationHeal(damageTakenBeforeDefense: number, perkAmount: number): number {
+  if (perkAmount <= 0 || damageTakenBeforeDefense <= 0) return 0
+  return (INOCULATION_HEAL_FRACTION * damageTakenBeforeDefense + INOCULATION_FLAT_HEAL_PER_STACK) * perkAmount
 }

@@ -72,6 +72,10 @@ export const MORTAL_WILL_DMG_PER_HOLY_BOOST_PCT = 0.0015
 // ── Hemorrhage ───────────────────────────────────
 export const HEMORRHAGE_TRUE_TYPE_PER_STACK = 0.1
 
+// ── Inoculation ──────────────────────────────────
+export const INOCULATION_HEAL_FRACTION = 0.3
+export const INOCULATION_FLAT_HEAL_PER_STACK = 0.1
+
 // ── Sunburn ──────────────────────────────────────
 export const SUNBURN_UNIVERSAL_DMG_PER_STACK = 0.10
 export const SUNBURN_HOLY_EXTRA_DMG_PER_STACK = 0.15

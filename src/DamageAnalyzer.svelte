@@ -25,7 +25,7 @@
   import { applyDraconicBonuses, getDraconicBonuses } from './data/draconicRunes'
   import { calculateHealBoost, type HealSource } from './data/HealBoost'
   import { roundMultiplier, calcWardingDebuffMultiplier, calcProcChance, applyScalingMult, scalingEq } from './lib/utils'
-  import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage, UNDEAD_MIGHT_SELF_DMG_FRACTION, UNDEAD_MIGHT_DR_PCT_PER_STACK, type SelfDamagePerkDef } from './data/selfDamage'
+  import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage, calcInoculationHeal, UNDEAD_MIGHT_SELF_DMG_FRACTION, UNDEAD_MIGHT_DR_PCT_PER_STACK, type SelfDamagePerkDef } from './data/selfDamage'
   import { resolveDamageTypes, resolveWaDamageTypeKeys, applyAirToMagicConversion, computeEffectiveWaDmgTypes } from './lib/damageTypeResolve'
   import { buildDmgTypeBonuses } from './lib/engine/dmgTypeBonuses'
 import { FEROCITY_TENACITY_MULT, DARKENING_HEX_MAX_ACTIVATIONS, DARKENING_HEX_POTENCY_ADD_PER_AMOUNT, DARKENING_HEX_POTENCY_MULT_PER_AMOUNT, DARKENING_HEX_DURATION_ADD_PER_AMOUNT, KINDLING_DMG_ADD_PER_AMOUNT, VASSALS_CROAK_MULT_PER_STACK } from './lib/constants'
@@ -94,6 +94,7 @@ import {
   WINTER_WOOF_SPIRIT_HOWL_DMG,
   BLUB_BLUB_PROC_CHANCE,
   STORM_CALLER_PROC_CHANCE,
+  DOT_EXCLUDED_PERK_BONUSES,
 } from './lib/constants'
 
 // Centralized mappings for cross-toggle relationships
@@ -1408,7 +1409,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   // bleeding-gated bonus chain below (mirrors build.ts's _perkDmgTypeBonusesForBoost).
   $: _perkDmgTypeBonusesPre = buildDmgTypeBonuses(true, _dmgTypeBonusCtx)
   $: _perkDmgTypeBonusesNoProc = buildDmgTypeBonuses(false, { ..._dmgTypeBonusCtx, targetBleeding: _dummyHasBleedActive })
-  $: _perkDmgTypeBonusesDoT = buildDmgTypeBonuses(false, { ..._dmgTypeBonusCtx, targetBleeding: _dummyHasBleedActive }, new Set(['Channeled Weapon']))
+  $: _perkDmgTypeBonusesDoT = buildDmgTypeBonuses(false, { ..._dmgTypeBonusCtx, targetBleeding: _dummyHasBleedActive }, DOT_EXCLUDED_PERK_BONUSES)
 
   $: _emotionalHexBonus = (() => {
     const amt = perks['Emotional'] ?? 0
@@ -2291,8 +2292,9 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     const def = findPerkDmgDef('Bomber Charge')
     if (!def) return null
     const base = def.getBaseDamage({ perkAmount: amt, statuses: { missingHpPct: Math.max(0, 100 - (_hpFillPct ?? 100)) } })
+    const baseDmgTypes = { ...(def.dmgTypes ?? {}) }
     const dmgTypes = applyAirToMagicConversion(
-      _applyDmgBonuses({ ...(def.dmgTypes ?? {}) }, _waDmgTypeBonuses),
+      _applyDmgBonuses({ ...baseDmgTypes }, _waDmgTypeBonuses),
       _spiritWindsConversionRate,
       _darkMagicHexBonus,
       _echoIncinerationAmt
@@ -2301,6 +2303,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     return {
       base,
       dmgTypes,
+      baseDmgTypes,
       scalings,
       scalingMult: Object.keys(scalings).length > 0 ? _computePerkScalingMult(scalings) : 1,
     }
@@ -3184,7 +3187,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     if (_bomberChargeWaHit) {
       result.push({
         group: 'WA', index: 0, count: 1, base: _bomberChargeWaHit.base, scalingMult: _bomberChargeWaHit.scalingMult, combatMult: _waCombatMult,
-        isFinisher: false, dmgTypes: _bomberChargeWaHit.dmgTypes,
+        isFinisher: false, dmgTypes: _bomberChargeWaHit.dmgTypes, baseDmgTypes: _bomberChargeWaHit.baseDmgTypes,
         label: 'Retaliate (modified by Bomber Charge)',
         canApplyBurn: _hasSingedBurn,
       })
@@ -3667,7 +3670,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         result.push({
           group: 'Perk', index: result.length, count: 10, base: fpPerTick,
           scalingMult: 1, combatMult: 1,
-          isFinisher: false, dmgTypes: _applyDmgBonuses({ hex: 1.0 }, _perkDmgTypeBonusesNoProc),
+          isFinisher: false, dmgTypes: _applyDmgBonuses({ hex: 1.0 }, _perkDmgTypeBonusesDoT),
           label: 'Fungal Prototype (' + label + ' →)',
           procCoefficient: { type: 'noProc' },
           canApplyBurn: _hasSingedBurn,
@@ -3873,7 +3876,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     group: string
     label: string
     preBoostDmg: number
-    result: { total: number; byType: Record<string, number> }
+    result: { total: number; byType: Record<string, number>; totalBeforeDefense: number }
   }
 
   $: _bombardierSelfDmgBase = (() => {
@@ -4019,6 +4022,7 @@ $: _groupedSelfDamageSources = (() => {
     weaponHits={_bdcWeaponHits}
     perkDmgTypeBonuses={_perkDmgTypeBonuses}
     perkDmgTypeBonusesDoT={_perkDmgTypeBonusesDoT}
+    perkDmgTypeBonusesOnHit={_perkDmgTypeBonusesNoProc}
     typedBoostEntries={_typedBoostEntries}
     luminescentPct={_luminescentPct}
     cloudpushPct={_cloudpushPct}
@@ -5859,6 +5863,19 @@ $: _groupedSelfDamageSources = (() => {
             {#if i < Object.entries(activeSrc.result.byType).length - 1}<span class="da-hit-plus">+</span>{/if}
           {/each}
         </div>
+        {#if (perks['Inoculation'] ?? 0) > 0}
+          <div class="da-pbd-dmg-row">
+            <span class="da-pbd-ctx-label">Inoculation Heal</span>
+            <div class="da-hits-row">
+              <div class="da-hit-card">
+                <div class="da-hit-chunk" style="--tc:#4ade80">
+                  <span class="da-hit-num" style="--tc:#4ade80">{fmtNum(calcInoculationHeal(activeSrc.result.totalBeforeDefense, perks['Inoculation'] ?? 0))}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="da-pbd-note">Heals before the self-damage lands · damage counted before defense</div>
+        {/if}
         <div class="da-pbd-dmg-row">
           <span class="da-pbd-ctx-label">Self Damage</span>
           <div class="da-hits-row">

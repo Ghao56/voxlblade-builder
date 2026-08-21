@@ -26,6 +26,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     SIPHONING_ROT_HEAL_PER_STACK,
     LIFESTEAL_HEAL_PCT_PER_STACK,
     LIFESTEAL_FLAT_HEAL_PER_STACK,
+    ON_HIT_EXCLUDED_SOURCES,
     CURSE_RIP_DIVISOR,
     WOOF_SPIRIT_HEAL,
     BASE_CRIT_DMG_PCT,
@@ -36,10 +37,12 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   } from './lib/constants'
   import { DEFAULT_PROC_COEFF } from './data/procCoefficients'
 
-  const _LIFESTEAL_EXCLUDED = new Set(['Barbed Flurry', 'Hex Ray', 'Ice Burst', 'Cauterize', 'Lightning Cloak'])
-
   export let perkDmgTypeBonuses: Record<string, number> = {}
   export let perkDmgTypeBonusesDoT: Record<string, number> = {}
+  // Bonus map for tagged proc-effect entries (Explosive Charge, Bombardier, …).
+  // Sources in ON_HIT_EXCLUDED_SOURCES (Cauterize, Lightning Cloak/Chain) fall back
+  // to the DoT map — same exclusion list as Lifesteal.
+  export let perkDmgTypeBonusesOnHit: Record<string, number> = {}
   export let boosts: any
   export let crit: any
   export let stats: any
@@ -606,7 +609,8 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     const addProcEffect = (baseAmount: number, pct: number, dmgTypes: Record<string, number>, tag: string, scalingMult = 1, combatMult = 1, hitCount?: number) => {
       const amount = baseAmount * pct
       if (amount <= 0) return
-      let resolvedTypes = withDarkMagicHex(resolveDamageTypes(dmgTypes, perkDmgTypeBonusesDoT))
+      const procBonusMap = ON_HIT_EXCLUDED_SOURCES.has(tag) ? perkDmgTypeBonusesDoT : perkDmgTypeBonusesOnHit
+      let resolvedTypes = withDarkMagicHex(resolveDamageTypes(dmgTypes, procBonusMap))
       if (echoIncinerationBaseDmg > 0) resolvedTypes = applyFireAirConversion(resolvedTypes)
       for (const [k, mult] of Object.entries(resolvedTypes)) {
         const info = DMG_TYPE_MAP.get(k) ?? { label: k, color: '#e8e4da' }
@@ -1254,7 +1258,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       }
     }
 
-    if (!isHeal && lifestealStacks > 0 && !_LIFESTEAL_EXCLUDED.has(hit.label ?? '')) {
+    if (!isHeal && lifestealStacks > 0 && !ON_HIT_EXCLUDED_SOURCES.has(hit.label ?? '')) {
       const damageDealt = types.filter(t => !t.isHeal).reduce((s, t) => s + t.raw, 0)
       const critDamageDealt = types.filter(t => !t.isHeal).reduce((s, t) => s + t.critVal, 0)
       if (damageDealt > 0) {
