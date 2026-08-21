@@ -14,6 +14,10 @@ export const BELLOWING_EMBER_BASE_MULT = 1.10
 export const BELLOWING_EMBER_FIRE_MULT = 1.23
 
 // ── Simple multiplier-per-stack boosts ────────────
+export const HEMORRHAGE_DMG_BASE = 0.10
+export const HEMORRHAGE_DMG_PER_STACK = 0.10
+export const HEMORRHAGE_STUN_PCT_PER_STACK = 20
+export const HEMORRHAGE_POISE_PCT_PER_STACK = 15
 export const BLOOD_THIRSTY_MULT_PER_STACK = 0.20
 export const VENOM_SPITTER_MULT_PER_STACK = 0.10
 export const PERFECTION_MULT_PER_STACK = 0.10

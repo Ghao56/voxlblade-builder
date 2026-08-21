@@ -1,4 +1,4 @@
-import { VOID_RAGE_PCT_PER_STACK, CHANNELED_WEAPON_PCT_PER_STACK, EMOTIONAL_PCT_PER_STACK, DRACONIC_BLOOD_PCT_PER_STACK } from '../constants/perks'
+import { VOID_RAGE_PCT_PER_STACK, CHANNELED_WEAPON_PCT_PER_STACK, EMOTIONAL_PCT_PER_STACK, DRACONIC_BLOOD_PCT_PER_STACK, HEMORRHAGE_TRUE_TYPE_PER_STACK } from '../constants/perks'
 import { getEffectiveDraconicInfusionPotency } from '../../data/draconicBuffs'
 
 interface PerkDmgTypeBonusDef {
@@ -7,7 +7,7 @@ interface PerkDmgTypeBonusDef {
   getType?: (ctx: { draconicColor: string }) => string
   amountPerStack: number
   getAmountPerStack?: (ctx: { draconicColor: string; perkAmount: number; guild: string; draconicRuneInfusion: string; perks: Record<string, number> }) => number
-  condition?: (ctx: { ragePotency: number; draconicRuneInfusion: string; emotionalState: string; rageDisabled: boolean; emotionalDisabled: boolean }) => boolean
+  condition?: (ctx: { ragePotency: number; draconicRuneInfusion: string; emotionalState: string; rageDisabled: boolean; emotionalDisabled: boolean; targetBleeding?: boolean }) => boolean
   appliesWithoutProc?: boolean
 }
 
@@ -27,13 +27,14 @@ const PERK_DMG_TYPE_BONUS_DEFS: PerkDmgTypeBonusDef[] = [
     condition: ctx => ctx.draconicRuneInfusion === 'infusion',
     appliesWithoutProc: false,
   },
+  { perkName: 'Hemorrhage', type: 'true', amountPerStack: HEMORRHAGE_TRUE_TYPE_PER_STACK, condition: ctx => !!ctx.targetBleeding, appliesWithoutProc: false },
 ]
 
 export function buildDmgTypeBonuses(includeNoProcExempt: boolean, ctx: {
   perks: Record<string, number>; ragePotency: number; draconicRuneInfusion: string;
   emotionalState: string; draconicColor: string; guild: string;
   draconicInfusionDisabled: boolean; toxinTransferHexBonus: number; rageDisabled: boolean;
-  emotionalDisabled: boolean;
+  emotionalDisabled: boolean; targetBleeding?: boolean;
 }, excludePerks?: Set<string>): Record<string, number> {
   const bonus: Record<string, number> = {}
   for (const def of PERK_DMG_TYPE_BONUS_DEFS) {
@@ -41,7 +42,7 @@ export function buildDmgTypeBonuses(includeNoProcExempt: boolean, ctx: {
     if (!includeNoProcExempt && def.appliesWithoutProc === false) continue
     const amt = ctx.perks[def.perkName] ?? 0
     if (amt <= 0) continue
-    if (def.condition && !def.condition({ ragePotency: ctx.ragePotency, draconicRuneInfusion: ctx.draconicRuneInfusion, emotionalState: ctx.emotionalState, rageDisabled: ctx.rageDisabled, emotionalDisabled: ctx.emotionalDisabled })) continue
+    if (def.condition && !def.condition({ ragePotency: ctx.ragePotency, draconicRuneInfusion: ctx.draconicRuneInfusion, emotionalState: ctx.emotionalState, rageDisabled: ctx.rageDisabled, emotionalDisabled: ctx.emotionalDisabled, targetBleeding: ctx.targetBleeding })) continue
     if (def.perkName === 'Draconic Blood' && ctx.draconicInfusionDisabled) continue
     const type = def.getType ? def.getType({ draconicColor: ctx.draconicColor }) : def.type
     if (!type) continue
