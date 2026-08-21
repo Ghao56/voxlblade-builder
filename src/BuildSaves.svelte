@@ -833,8 +833,8 @@
     }
   }
 
-  function copyCode() {
-    navigator.clipboard.writeText(shareCode)
+  function copyCode(text = shareCode) {
+    navigator.clipboard.writeText(text)
     addToast('Code copied', 'success')
   }
   function focusOnMount(node: HTMLInputElement) {
@@ -1000,7 +1000,7 @@
           <label for="current-build-code" class="sr-only">Current Build Code</label>
           <input id="current-build-code" class="share-code" value={currentExportCode} readonly
             onclick={e => (e.target as HTMLInputElement).select()} />
-          <button class="btn btn-copy" onclick={() => navigator.clipboard.writeText(currentExportCode)}>Copy</button>
+          <button class="btn btn-copy" onclick={() => copyCode(currentExportCode)}>Copy</button>
         {/if}
       </div>
 
@@ -1010,7 +1010,7 @@
           <label for="slot-build-code" class="sr-only">Slot {exportingSlot + 1} Code</label>
           <input id="slot-build-code" class="share-code" value={shareCode} readonly
             onclick={e => (e.target as HTMLInputElement).select()} />
-          <button class="btn btn-copy" onclick={copyCode}>Copy</button>
+          <button class="btn btn-copy" onclick={() => copyCode()}>Copy</button>
         </div>
       {/if}
 
