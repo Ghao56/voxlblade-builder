@@ -242,6 +242,7 @@ export interface BuildState {
   disabledHealBoosts: string[]
   rageDisabled: boolean
   glyphConduitDisabled: boolean
+  ponderReinforceDisabled: boolean
   extinguishDisabled: boolean
   lightningCloakState: 'off' | 'third' | 'twoThirds'
   stormRendState: 'off' | 'third' | 'twoThirds'

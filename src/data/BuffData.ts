@@ -62,6 +62,7 @@ import {
   SLAYER_RAGE_ROAR_WEAK_BASE_POTENCY, SLAYER_RAGE_ROAR_RAGE_POTENCY, SLAYER_RAGE_ROAR_RAGE_DURATION,
   MOD_IRON_SLAYER_POTENCY, MOD_IRON_SLAYER_DURATION,
   MOD_FURY_DURATION, MOD_TAILWIND_POTENCY, MOD_WIND_WALKER_DURATION_DIVISOR, MOD_SLOW_LEAK_DURATION,
+  MOD_VAPOR_AEGIS_REINFORCE_DURATION,
   ENDLESS_DESPAIR_POTENCY_PER_STACK, ENDLESS_DESPAIR_FLAT_BONUS,
   ENDLESS_DESPAIR_DURATION_PER_STACK, STORED_CORRUPTION_DURATION_PER_STACK,
   PROPELLING_FUN_POTENCY_PER_AMOUNT, PROPELLING_FUN_DURATION_MULTIPLIER,
@@ -1858,6 +1859,7 @@ const BUFF_POTENCY_MODIFIERS: BuffPotencyModifier[] = [
   { buffName: 'Tailwind', potencyPerStack: MOD_TAILWIND_POTENCY, label: 'Tailwind' },
   { buffName: 'Tailwind', potencyPerStack: 0, label: 'Wind Walker', durationMultiplierFormula: stacks => 1 + stacks / MOD_WIND_WALKER_DURATION_DIVISOR },
   { buffName: 'Bleed', potencyPerStack: 0, label: 'Slow Leak', durationMultiplierPerStack: MOD_SLOW_LEAK_DURATION },
+  { buffName: 'Reinforce', potencyPerStack: 0, label: 'Vapor Aegis', durationMultiplierPerStack: MOD_VAPOR_AEGIS_REINFORCE_DURATION },
   // Potion Chugger modifiers (20% of base potency per stack)
   { buffName: 'Rage', potencyPerStack: RAGE_POTION_POTENCY * POTION_CHUGGER_POTENCY_MULT_PER_LEVEL, label: 'Potion Chugger', runeFilter: 'Rage Potion' },
   { buffName: 'Poison', potencyPerStack: POISON_POTION_POTENCY * POTION_CHUGGER_POTENCY_MULT_PER_LEVEL, label: 'Potion Chugger', runeFilter: 'Poison Potion' },

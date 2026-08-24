@@ -25,6 +25,7 @@ export const BUILD_STATE_DEFAULTS: Record<string, any> = {
   lightningCloakState: 'third', stormRendState: 'third',
   disabledBoosts: [],
   disabledEffects: [], disabledBuffKeys: [], disabledPerkEntries: [], disabledHealBoosts: [],
+  ponderReinforceDisabled: true,
   enemiesHit: 1, weaponCharge: 100,
 }
 
@@ -45,6 +46,7 @@ export const SAVE_KEY_MAP: Record<string, string> = {
   draconicInfusionDisabled:'did', disableCurseRip:'dcr', disableReaper:'drp',
   disableWeaponBoost:'dwb', mycoticBloomDotDisabled:'mbd', showCritValues:'scv',
   lightningCloakState:'lcs', stormRendState:'srs',
+  ponderReinforceDisabled:'prd',
   disabledBoosts:'dbo', disabledEffects:'def', disabledBuffKeys:'dbk', disabledPerkEntries:'dpe', disabledHealBoosts:'dhb',
   enemiesHit:'eh', weaponCharge:'wc',
 }

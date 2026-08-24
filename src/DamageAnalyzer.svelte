@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fade } from 'svelte/transition'
-  import { build, result, effectiveDarknessOverride, orkBuffTenacity } from './lib/store'
+  import { build, result, effectiveDarknessOverride, orkBuffTenacity, buildReplaceSeq } from './lib/store'
   import { calcWeapon, calcMonkWeapon, isMonkGuild } from './lib/engine'
   import BaseDamageCalc from './BaseDamageCalc.svelte'
   import ScalingBreakdownRow from './ScalingBreakdownRow.svelte'
@@ -95,6 +95,7 @@ import {
   BLUB_BLUB_PROC_CHANCE,
   STORM_CALLER_PROC_CHANCE,
   DOT_EXCLUDED_PERK_BONUSES,
+  VAPOR_AEGIS_FIRE_WATER_DR_PCT,
 } from './lib/constants'
 
 // Centralized mappings for cross-toggle relationships
@@ -325,6 +326,14 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       if (_activeReinforcePotency > 0) {
         const defPct = Math.round(_activeReinforcePotency * 100 * 1000) / 1000
         sources.push({ name: 'Reinforce', defPct })
+        if ((type === 'fire' || type === 'water') && (perks['Vapor Aegis'] ?? 0) > 0) {
+          sources.push({
+            name: 'Vapor Aegis',
+            defPct: VAPOR_AEGIS_FIRE_WATER_DR_PCT,
+            isFlat: true,
+            condition: 'While you have Reinforce · +10% Reinforce duration per 1 of this perk'
+          })
+        }
       }
       if (_activeMagicReinforcePotency > 0) {
         const P = _activeMagicReinforcePotency
@@ -513,10 +522,10 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     if (!hasSelfDebuff) return infusedBuffs.filter(b => b.buffName !== 'Converted Energy')
     return infusedBuffs
   })()
-  $: _allActiveBuffs = (_disabledKeysArr.length, _allActiveBuffsRaw.filter(b => !_isBuffDisabled(b)))
+  $: _allActiveBuffs = (_dep(ponderReinforceDisabled), _disabledKeysArr.length, _allActiveBuffsRaw.filter(b => !_isBuffDisabled(b)))
   $: _hasCritBoostBuff = _allActiveBuffs.some(b => b.buffName === 'Critical Boost')
 
-  $: _dedupedActiveBuffs = (_disabledKeysArr.length, (() => {
+  $: _dedupedActiveBuffs = (_dep(ponderReinforceDisabled), _disabledKeysArr.length, (() => {
     const map = new Map<string, typeof _allActiveBuffsRaw[0] & { _isOff: boolean; _allSources: string[] }>()
     for (const b of _allActiveBuffsRaw) {
       const key = b.buffName
@@ -1204,8 +1213,10 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: _disabledKeysArr = [...disabledBuffKeys]
   $: _disabledPerkKeySet = new Set($build.disabledPerkEntries ?? [])
   function _isBuffDisabled(buff: { buffName: string; sourceName: string }): boolean {
+    if (buff.buffName === 'Magic Reinforce' && buff.sourceName === 'PONDER(Scholar cantrip)' && ponderReinforceDisabled) return true
     return disabledBuffKeys.has(`${buff.buffName}:${buff.sourceName}`)
   }
+  function _dep(_v: unknown): void {}
   $: _activeReinforcePotency      = (_disabledKeysArr.length,
     _allActiveBuffs.reduce((m, b) => b.buffName === 'Reinforce'       ? Math.max(m, b.potency) : m, 0))
   $: _activeMagicReinforcePotency = (_disabledKeysArr.length,
@@ -1254,6 +1265,22 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     }
 
     build.update(s => ({ ...s, disabledBuffKeys: [...nextKeys], disabledBoosts: [...disabledBoosts] }))
+  }
+  function toggleMagicReinforceChip(sources: string[]) {
+    const ponderIdx = sources.indexOf('PONDER(Scholar cantrip)')
+    if (ponderIdx === -1) {
+      toggleBuffByName('Magic Reinforce')
+      return
+    }
+    ponderReinforceDisabled = !ponderReinforceDisabled
+    const otherSources = sources.filter((_, i) => i !== ponderIdx)
+    const nextKeys = new Set(disabledBuffKeys)
+    for (const s of otherSources) {
+      const k = `Magic Reinforce:${s}`
+      if (ponderReinforceDisabled) nextKeys.add(k)
+      else nextKeys.delete(k)
+    }
+    disabledBuffKeys = nextKeys
   }
   const HANDLED_BUFF_NAMES = new Set(['Rage', 'Glyph Conduit', 'Extinguish', 'Lightning Cloak', 'Storm Rend'])
 
@@ -1616,6 +1643,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   let disabledEffects = new Set<string>()
   let disabledHealBoosts = new Set<string>(['Extinguish'])
   let disabledBuffKeys = new Set<string>()
+  let ponderReinforceDisabled = true
   let draconicInfusionDisabled = false
   let disableCurseRip = false
   let disableReaper = false
@@ -1637,13 +1665,15 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     return true
   }
   let _togglesInited = false
+  let _lastReplaceSeq = 0
   let _prevEmotionalDisabled = false
 
-  $: if ($build && !_togglesInited) {
+  $: if ($build && (!_togglesInited || $buildReplaceSeq !== _lastReplaceSeq)) {
     disabledBoosts = new Set($build.disabledBoosts ?? ['Thief Training (would-crit bonus)'])
     disabledEffects = new Set($build.disabledEffects ?? [])
     disabledHealBoosts = new Set($build.disabledHealBoosts ?? ['Extinguish'])
     disabledBuffKeys = new Set($build.disabledBuffKeys ?? [])
+    ponderReinforceDisabled = $build.ponderReinforceDisabled ?? true
     draconicInfusionDisabled = $build.draconicInfusionDisabled ?? false
     disableCurseRip = $build.disableCurseRip ?? false
     disableReaper = $build.disableReaper ?? false
@@ -1659,6 +1689,15 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     weaponCharge = $build.weaponCharge ?? 100
     enemiesHit = Math.max(1, $build.enemiesHit ?? 1)
     _togglesInited = true
+    _lastReplaceSeq = $buildReplaceSeq
+    _prevGuild = $build.guild
+  }
+
+  let _prevGuild: string | undefined = undefined
+  $: if (_togglesInited && $build && $build.guild !== _prevGuild) {
+    const isFirstLoad = _prevGuild === undefined
+    _prevGuild = $build.guild
+    if (!isFirstLoad && $build.guild === 'Scholar') ponderReinforceDisabled = true
   }
 
   $: if (_togglesInited && $build) {
@@ -1671,6 +1710,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       if (s.weaponCharge !== weaponCharge) next = { ...next, weaponCharge }
       if (s.mycoticBloomDotDisabled !== mycoticBloomDotDisabled) next = { ...next, mycoticBloomDotDisabled }
       if (s.rageDisabled !== rageDisabled) next = { ...next, rageDisabled }
+      if (s.ponderReinforceDisabled !== ponderReinforceDisabled) next = { ...next, ponderReinforceDisabled }
       if (s.glyphConduitDisabled !== glyphConduitDisabled) next = { ...next, glyphConduitDisabled }
       if (s.extinguishDisabled !== extinguishDisabled) next = { ...next, extinguishDisabled }
       if (s.draconicInfusionDisabled !== draconicInfusionDisabled) next = { ...next, draconicInfusionDisabled }
@@ -4485,7 +4525,7 @@ $: _groupedSelfDamageSources = (() => {
               <span class="da-buff" transition:fade={{ duration: 200 }}>
                 <button class="da-boost-chip" class:da-boost-chip--off={isOff}
                   style="background:color-mix(in srgb,{def.color} 10%,transparent);border-color:color-mix(in srgb,{def.color} 35%,transparent)"
-                  on:click={() => toggleBuffByName(buff.buffName)}>
+                  on:click={() => buff.buffName === 'Magic Reinforce' ? toggleMagicReinforceChip(buff._allSources) : toggleBuffByName(buff.buffName)}>
                   <span class="da-bc-name">{def.name}</span>
                   <span class="da-bc-val" style="color:{def.color}">{isOff ? '—' : roundMultiplier(buff.potency)}</span>
                   <span class="da-bc-cond">{getBuffDescription(buff.buffName, $result.perks, buff.potency)}</span>

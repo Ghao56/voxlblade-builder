@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fade } from 'svelte/transition'
-  import { build, result, clearBuild, orkBuffTenacity } from './lib/store'
+  import { build, result, clearBuild, orkBuffTenacity, replaceBuild } from './lib/store'
   import DraconicAbilityStats from './DraconicAbilityStats.svelte'
   import {
     races, guilds, armors, rings, runes, blades, handles, gloves, essences,
@@ -543,7 +543,7 @@ function weaponMatchesFilter(item: any): boolean {
 
   function handleUndo() {
     if (!_previousBuild) return
-    build.set(_previousBuild)
+    replaceBuild(_previousBuild)
     _previousBuild = null
     _undoVisible = false
     if (_undoTimer) { clearTimeout(_undoTimer); _undoTimer = null }

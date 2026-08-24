@@ -4,7 +4,7 @@
   import { highlightTextParts } from './lib/utils'
   import EmotionalTracker from './EmotionalTracker.svelte';
   import Modal from './lib/Modal.svelte'
-  import { build } from './lib/store'
+  import { build, replaceBuild } from './lib/store'
   import { addToast } from './lib/stores/toast'
   import Button from './lib/ui/Button.svelte'
   import type { BuildState } from './lib/types'
@@ -530,7 +530,7 @@
     if (confirmLoad === i) {
       const slot = slots[i]
       if (slot) {
-        build.set(structuredClone(slot.state))
+        replaceBuild(structuredClone(slot.state))
         addToast(`Loaded build from slot ${i + 1}`, 'success')
       }
       confirmLoad = null
@@ -822,7 +822,7 @@
         addToast('Invalid build data', 'error')
         return
       }
-      build.set(state)
+      replaceBuild(state)
       importError = ''
       importSuccess = true
       setTimeout(() => importSuccess = false, IMPORT_SUCCESS_DISPLAY_MS)

@@ -72,6 +72,7 @@ const DEFAULT_BUILD: BuildState = {
   disabledBoosts: ['Thief Training (would-crit bonus)'],
   disabledEffects: [],
   disabledBuffKeys: [],
+  ponderReinforceDisabled: true,
   disabledPerkEntries: [],
   disabledHealBoosts: ['Extinguish'],
   rageDisabled: false,
@@ -151,8 +152,14 @@ function swapEnchantments(slotA: EnchantSlot, slotB: EnchantSlot) {
 
 export const orkBuffTenacity = writable(0)
 
+export const buildReplaceSeq = writable(0)
+export function replaceBuild(state: BuildState) {
+  build.set(state)
+  buildReplaceSeq.update(n => n + 1)
+}
+
 export function clearBuild() {
-  build.set({ ...DEFAULT_BUILD })
+  replaceBuild({ ...DEFAULT_BUILD })
 }
 
 export function setGuild(guildName: string, guildRank: number) {
