@@ -240,6 +240,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     style: string
     preMitBase: number
     meltingShredFactor: number
+    trueBoosts: Array<{ perkName: string; label: string; mult: number }>
     typedMult: number
     typeDebuffMult: number
     debuffMult: number
@@ -251,6 +252,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     style: string
     preMitBase: number
     woundPotency: number
+    trueBoosts: Array<{ perkName: string; label: string; mult: number }>
     trueDmg: number
   } | null = null
 
@@ -511,19 +513,22 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
         const bTypeDebuffMult = _activeDebuffTypeDamageMult[k] ?? 1
         const raw = preMitBase * dotWbMult * mult * bTypedMult * bDefMult * bTypeDebuffMult * debuffMult * selfDebuffDamageMult
         const info = DMG_TYPE_MAP.get(k) ?? { label: k, color: '#e8e4da' }
-        return { key: k, label: info.label, color: info.color, raw }
+        return { key: k, label: info.label, color: info.color, raw, applicableBoosts: bApplicable }
       })
 
     const finalDmg = finalDmgPrimary + bonusTypes.reduce((s, b) => s + b.raw, 0)
 
+    const trueApplicableBoosts = getApplicableBoosts('true', false, undefined, { type: 'noProc' as const })
+    const trueTypedMult = trueApplicableBoosts.reduce((acc, b) => acc * b.mult, 1)
+
     const trueDmg = d.meltingShredFactor != null
-      ? preMitBase * dotWbMult * d.meltingShredFactor
+      ? preMitBase * dotWbMult * d.meltingShredFactor * trueTypedMult
       : 0
 
     const woundPotency = d.type === 'Bleed'
       ? (resolvedDebuffs.find(r => r.name === 'Wound' && !disabledDebuffs.has(r.name))?.potency ?? 0)
       : 0
-    const woundTrueDmg = woundPotency > 0 ? preMitBase * dotWbMult * woundPotency : 0
+    const woundTrueDmg = woundPotency > 0 ? preMitBase * dotWbMult * woundPotency * trueTypedMult : 0
     const woundAmt = woundPotency > 0 ? Math.round(woundPotency * 10) : 0
 
     const lifeDrinkerHeal = lifeDrinkerAmt > 0
@@ -534,7 +539,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       ? SIPHONING_ROT_HEAL_PER_STACK * siphoningRotAmt
       : 0
 
-    return { ...d, dmgType, scalingMult, combatMult, preMitBase, applicableBoosts, typedMult, defPct, defMult, typeDebuffMult, debuffMult, finalDmg, finalDmgPrimary, bonusTypes, trueDmg, woundTrueDmg, woundPotency, woundAmt, lifeDrinkerHeal, siphoningRotHeal, weaponBoostMult: dotWbMult, weaponBoostLabel: dotWbLabel }
+    return { ...d, dmgType, scalingMult, combatMult, preMitBase, applicableBoosts, typedMult, trueApplicableBoosts, trueTypedMult, defPct, defMult, typeDebuffMult, debuffMult, finalDmg, finalDmgPrimary, bonusTypes, trueDmg, woundTrueDmg, woundPotency, woundAmt, lifeDrinkerHeal, siphoningRotHeal, weaponBoostMult: dotWbMult, weaponBoostLabel: dotWbLabel }
   })
 
   function defPctForType(k: string): number {
@@ -1937,6 +1942,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
                   <div class="bdc-hit-row-types">
                     <!-- svelte-ignore a11y_no_static_element_interactions -->
                     <div class="bdc-hit-type-chunk" style="--tc:{_dc}"
+                      class:bdc-hit-type-chunk--rage={dot.applicableBoosts?.some(b => b.perkName === 'Rage')}
                       on:mouseenter={(e) => {
                         const r = (e.currentTarget as HTMLElement).getBoundingClientRect()
                         const spaceBelow = window.innerHeight - r.bottom
@@ -1987,7 +1993,8 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
                     </div>
                     {#each dot.bonusTypes ?? [] as bt}
                       <span class="bdc-hit-plus">+</span>
-                      <div class="bdc-hit-type-chunk" style="--tc:{bt.color}">
+                      <div class="bdc-hit-type-chunk" style="--tc:{bt.color}"
+                        class:bdc-hit-type-chunk--rage={bt.applicableBoosts?.some(b => b.perkName === 'Rage')}>
                         <div class="bdc-hit-type-top">
                           <div class="bdc-hit-type-val-row">
                             <span class="bdc-hit-type-val">{fmt(bt.raw)}</span>
@@ -2002,6 +2009,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
                       <span class="bdc-hit-plus">+</span>
                       <!-- svelte-ignore a11y_no_static_element_interactions -->
                       <div class="bdc-hit-type-chunk" style="--tc:{BADGE_COLORS['true'] ?? '#52525b'}"
+                        class:bdc-hit-type-chunk--rage={dot.trueApplicableBoosts?.some(b => b.perkName === 'Rage')}
                         on:mouseenter={(e) => {
                           const r = (e.currentTarget as HTMLElement).getBoundingClientRect()
                           const spaceBelow = window.innerHeight - r.bottom
@@ -2009,6 +2017,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
                           _meltingTooltip = {
                             preMitBase: dot.preMitBase,
                             meltingShredFactor: dot.meltingShredFactor ?? 0.15,
+                            trueBoosts: dot.trueApplicableBoosts ?? [],
                             typedMult: dot.typedMult,
                             typeDebuffMult: dot.typeDebuffMult,
                             debuffMult: dot.debuffMult,
@@ -2035,6 +2044,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
                       <span class="bdc-hit-plus">+</span>
                       <!-- svelte-ignore a11y_no_static_element_interactions -->
                       <div class="bdc-hit-type-chunk" style="--tc:{BADGE_COLORS['true'] ?? '#52525b'}"
+                        class:bdc-hit-type-chunk--rage={dot.trueApplicableBoosts?.some(b => b.perkName === 'Rage')}
                         on:mouseenter={(e) => {
                           const r = (e.currentTarget as HTMLElement).getBoundingClientRect()
                           const spaceBelow = window.innerHeight - r.bottom
@@ -2042,6 +2052,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
                           _woundTooltip = {
                             preMitBase: dot.preMitBase,
                             woundPotency: dot.woundPotency ?? 0,
+                            trueBoosts: dot.trueApplicableBoosts ?? [],
                             trueDmg: dot.woundTrueDmg!,
                             style: spaceBelow > 180
                               ? `left:${left}px;top:${r.bottom + 4}px;`
@@ -2163,7 +2174,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       {#each _dotTooltip.applicableBoosts.filter(b => b.label !== 'Converted Energy') as boost}
         <div class="bdc-fr">
           <span class="bdc-fr-label">{boost.label}</span>
-          <span class="bdc-fr-val bdc-fr-val--typedboost">× {fmtMult(boost.mult)}</span>
+          <span class="bdc-fr-val bdc-fr-val--typedboost" class:bdc-fr-val--rage={boost.perkName === 'Rage'}>× {fmtMult(boost.mult)}</span>
         </div>
       {/each}
     {/if}
@@ -2214,6 +2225,14 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       <span class="bdc-fr-label">Melting Shred Factor <span class="bdc-tt-muted">(15% × perk)</span></span>
       <span class="bdc-fr-val bdc-fr-val--scaling">× {fmtMult(mt.meltingShredFactor)}</span>
     </div>
+    {#if mt.trueBoosts.filter(b => b.label !== 'Converted Energy').length > 0}
+      {#each mt.trueBoosts.filter(b => b.label !== 'Converted Energy') as boost}
+        <div class="bdc-fr">
+          <span class="bdc-fr-label">{boost.label}</span>
+          <span class="bdc-fr-val bdc-fr-val--typedboost" class:bdc-fr-val--rage={boost.perkName === 'Rage'}>× {fmtMult(boost.mult)}</span>
+        </div>
+      {/each}
+    {/if}
     <div class="bdc-fr-divider"></div>
     <div class="bdc-fr bdc-fr--result">
       <span class="bdc-fr-label">Melting Shred True</span>
@@ -2233,6 +2252,14 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       <span class="bdc-fr-label">Wound Potency <span class="bdc-tt-muted">(10% per stack)</span></span>
       <span class="bdc-fr-val bdc-fr-val--scaling">× {fmtMult(wt.woundPotency)}</span>
     </div>
+    {#if wt.trueBoosts.filter(b => b.label !== 'Converted Energy').length > 0}
+      {#each wt.trueBoosts.filter(b => b.label !== 'Converted Energy') as boost}
+        <div class="bdc-fr">
+          <span class="bdc-fr-label">{boost.label}</span>
+          <span class="bdc-fr-val bdc-fr-val--typedboost" class:bdc-fr-val--rage={boost.perkName === 'Rage'}>× {fmtMult(boost.mult)}</span>
+        </div>
+      {/each}
+    {/if}
     <div class="bdc-fr-divider"></div>
     <div class="bdc-fr bdc-fr--result">
       <span class="bdc-fr-label">Wound True Damage</span>
