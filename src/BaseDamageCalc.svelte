@@ -35,6 +35,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     BLUB_BLUB_HIT_COUNT,
     BLUB_BLUB_DMG_TYPES,
   } from './lib/constants'
+  import { RADIANCE_LABEL } from './lib/constants/perk-base-damage'
   import { DEFAULT_PROC_COEFF } from './data/procCoefficients'
 
   export let perkDmgTypeBonuses: Record<string, number> = {}
@@ -156,6 +157,8 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     eachHitM1M2?: boolean
     cdWater?: number
     vcBuffedCount?: number
+    isRadianceProc?: boolean
+    note?: string
   }> = []
   export let typedBoostEntries: TypedDmgBoostEntry[] = []
   export let luminescentPct: number = 0
@@ -608,8 +611,13 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     const VC_MULT = _vcState.mult
     return weaponHits.flatMap((hit): ComputedHit[] => {
     const isHeal = hit.isHeal ?? false
+    // Radiance bursts inherit their source's group purely for rendering
+    // adjacency. Computationally they are perk procs, not weapon strikes:
+    // an empty bdcGroup strips WA/Rune-specific treatment (WA armor pen,
+    // group-restricted typed boosts, Spell Piercer).
+    const bdcGroup = hit.isRadianceProc ? '' : hit.group
     const basePenDecimal = (armorPen + globalArmorPenetration) / 100
-    const hitPenDecimal = hit.group === 'WA' || hit.group === 'Rune' ? (armorPen + globalArmorPenetration + waArmorPenetration) / 100 : basePenDecimal
+    const hitPenDecimal = bdcGroup === 'WA' || bdcGroup === 'Rune' ? (armorPen + globalArmorPenetration + waArmorPenetration) / 100 : basePenDecimal
 
     const addProcEffect = (baseAmount: number, pct: number, dmgTypes: Record<string, number>, tag: string, scalingMult = 1, combatMult = 1, hitCount?: number) => {
       const amount = baseAmount * pct
@@ -761,21 +769,21 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       const applicableBoosts = (() => {
         if (hit.boostDmgTypes) {
           if (k in hit.boostDmgTypes) {
-            return getApplicableBoosts(k, typeIsHeal, hit.group, hit.procCoefficient)
+            return getApplicableBoosts(k, typeIsHeal, bdcGroup, hit.procCoefficient)
           }
           const allBoosts = Object.keys(hit.boostDmgTypes).flatMap(bk =>
-            getApplicableBoosts(bk, typeIsHeal, hit.group, hit.procCoefficient)
+            getApplicableBoosts(bk, typeIsHeal, bdcGroup, hit.procCoefficient)
           )
           const seen = new Set<string>()
           return allBoosts.filter(e => !seen.has(e.perkName) && seen.add(e.perkName))
         }
-        return getApplicableBoosts(k, typeIsHeal, hit.group, hit.procCoefficient)
+        return getApplicableBoosts(k, typeIsHeal, bdcGroup, hit.procCoefficient)
       })()
       const typedMultUsed = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
 
       const baseDefPct = typeIsHeal ? 0 : baseDefForType(k)
       const debuffDefReduction = defReductionForType(k)
-      const spellPiercer = !typeIsHeal && _spellPiercerActive && (showCritValues || hit.forceCrit) && (hit.group === 'WA' || hit.group === 'Rune')
+      const spellPiercer = !typeIsHeal && !hit.isRadianceProc && _spellPiercerActive && (showCritValues || hit.forceCrit) && (bdcGroup === 'WA' || bdcGroup === 'Rune')
       // Spell Piercer ignores the target's positive defense first; armor-reduction debuffs (e.g. Shatter) apply on top of the ignored value
       const enemyDefPct = (spellPiercer ? Math.min(baseDefPct, 0) : baseDefPct) - debuffDefReduction
       const crushPen = typeIsHeal ? 0 : crushingPenForType(k)
@@ -803,6 +811,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
         defMult, enemyDefPct,
         raw, critVal, isHeal: typeIsHeal, isCritExempt: typeNoCrit, forceCrit: hit.forceCrit ?? false,
         rawNoVC, critValNoVC,
+        ...(hit.isRadianceProc ? { tag: RADIANCE_LABEL } : {}),
         ...(spellPiercer && baseDefPct > 0 ? { spellPiercerIgnored: true } : {}),
         ...(hit.perHitCounts ? { subHits: hit.count } : {}),
       }
@@ -1186,7 +1195,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       }
     }
 
-    if (!isHeal && inspirationPerkAmount > 0 && (hit.group === 'M1' || hit.group === 'M2' || hit.eachHitM1M2)) {
+    if (!isHeal && !hit.isRadianceProc && inspirationPerkAmount > 0 && (hit.group === 'M1' || hit.group === 'M2' || hit.eachHitM1M2)) {
       const inspBase = inspirationBaseHeal
       const inspScaled = inspBase * inspirationScalingMult
       if (inspScaled > 0) {
@@ -1263,7 +1272,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       }
     }
 
-    if (!isHeal && lifestealStacks > 0 && !ON_HIT_EXCLUDED_SOURCES.has(hit.label ?? '')) {
+    if (!isHeal && !hit.isRadianceProc && lifestealStacks > 0 && !ON_HIT_EXCLUDED_SOURCES.has(hit.label ?? '')) {
       const damageDealt = types.filter(t => !t.isHeal).reduce((s, t) => s + t.raw, 0)
       const critDamageDealt = types.filter(t => !t.isHeal).reduce((s, t) => s + t.critVal, 0)
       if (damageDealt > 0) {
@@ -1286,7 +1295,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       }
     }
 
-    const result: ComputedHit = { group: hit.group, index: hit.index, count: hit.count, isFinisher: hit.isFinisher, label: hit.label, isHeal, types, procCount: hit.procCount, finisherGroupHitCount: hit.finisherGroupHitCount, eachHitM1M2: hit.eachHitM1M2 ?? false, vcBuffedCount, vcMult: VC_MULT }
+    const result: ComputedHit = { group: hit.group, index: hit.index, count: hit.count, isFinisher: hit.isFinisher, label: hit.label, isHeal, types, procCount: hit.procCount, finisherGroupHitCount: hit.finisherGroupHitCount, eachHitM1M2: hit.eachHitM1M2 ?? false, vcBuffedCount, vcMult: VC_MULT, ...(hit.isRadianceProc ? { isRadianceProc: true as const } : {}) }
 
     // Vassals Croak: on an RMB (M2) finisher hit, consume Last Croak and explode once per RMB press.
     // Triggers on any M2-type finisher: base M2 (group 'M2'), M2 finishers folded into the M1 combo
@@ -1770,7 +1779,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
                                     <span class="bdc-dragon-count">×{t.activationDivisor ? Math.round(hit.count / t.activationDivisor) : hit.count}</span>
                                   {/if}
                                 {/if}
-                                {#if hit.group === 'Rune' && !t.procCoefficient && draconicRunesBonus[t.label.toLowerCase()]}
+                                {#if hit.group === 'Rune' && !hit.isRadianceProc && !t.procCoefficient && draconicRunesBonus[t.label.toLowerCase()]}
                                   <Badge color="#c084fc" size="xs" square mono title="Draconic Bonus: +{fmt((draconicRunesBonus[t.label.toLowerCase()] || 0))} {t.label} damage type">
                                     ✦ +{fmt((draconicRunesBonus[t.label.toLowerCase()] || 0))}
                                   </Badge>

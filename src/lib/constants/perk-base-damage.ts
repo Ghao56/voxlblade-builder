@@ -273,3 +273,28 @@ export const VOLTAIC_BODY_POTENCY_DMG_MULT = 0.85
 export const VOLTAIC_BODY_ACTIVATION_WINDOW = 3
 export const VOLTAIC_BODY_DURATION_WA_CD_DIVISOR = 2
 export const VOLTAIC_BODY_DURATION_PER_STACK = 3
+
+// Radiance
+export const RADIANCE_LABEL = 'Radiance'
+export const RADIANCE_COLOR = '#ffe9a8'
+export const RADIANCE_NOTE = 'Triggered by proccable healing'
+export const RADIANCE_BASE = 1
+export const RADIANCE_HEAL_RATIO = 4 / 45
+export const RADIANCE_HOLY_TYPE_MULT = 1.0
+export const RADIANCE_HOLY_SCALING = 10.0
+// Heal sources that never trigger Radiance (self-sustain, HoTs, self-only heals).
+// Matched against the source hit's label.
+export const RADIANCE_EXCLUDED_SOURCE_PATTERNS: RegExp[] = [
+  /dark harvest/i,
+  /inspiration/i,
+  /curse rip/i,
+  /lifesteal/i,
+  /regen/i,
+  /inoculation/i,
+  /vital mist/i,
+  /rejuvenating flame/i,
+  /hex shield/i,
+  /deepcrystal/i,
+  /cleansed blade/i,
+  /deathmist/i,
+]

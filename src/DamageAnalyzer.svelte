@@ -24,6 +24,8 @@
   import { getDraconicColorDmgMultiplier } from './data/draconicColorEffects'
   import { applyDraconicBonuses, getDraconicBonuses } from './data/draconicRunes'
   import { calculateHealBoost, type HealSource } from './data/HealBoost'
+  import { buildRadianceProcHit, isRadianceEligible, radianceSourceHealing } from './data/radianceProcs'
+  import { RADIANCE_HOLY_SCALING, RADIANCE_LABEL, RADIANCE_COLOR } from './lib/constants/perk-base-damage'
   import { roundMultiplier, calcWardingDebuffMultiplier, calcProcChance, applyScalingMult, scalingEq } from './lib/utils'
   import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage, calcInoculationHeal, UNDEAD_MIGHT_SELF_DMG_FRACTION, UNDEAD_MIGHT_DR_PCT_PER_STACK, type SelfDamagePerkDef } from './data/selfDamage'
   import { resolveDamageTypes, resolveWaDamageTypeKeys, applyAirToMagicConversion, computeEffectiveWaDmgTypes } from './lib/damageTypeResolve'
@@ -934,6 +936,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   })()
   $: _vcDisplayHits = Math.min(_vcCharges, _vcMaxHit)
   $: _oceanSongAmt = perks['Ocean Song'] ?? 0
+  $: _radianceAmt = perks['Radiance'] ?? 0
   $: _wildBoltAmt = perks['Wild Bolt'] ?? 0
   $: _weightySlamAmt = perks['Weighty Slam'] ?? 0
   $: _heatDrillAmt = perks['Heat Drill'] ?? 0
@@ -2195,13 +2198,42 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     if (!rows.length) return null
     
     const totalEffectivePct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 1000) / 1000
-    return { 
-      rows, 
-      totalEffectivePct, 
+    return {
+      rows,
+      totalEffectivePct,
       multiplier: roundMultiplier(applyScalingMult(totalEffectivePct / 100)),
       label: `${_draconicBloodEntry.displayName} Heal`
     }
   })()
+
+  // Radiance Holy-scaling breakdown (10.0 Holy Scaling)
+  $: _radianceScalingBreakdown = (() => {
+    if (!(_radianceAmt > 0)) return null
+    const rows = buildScalingRows({ holy: RADIANCE_HOLY_SCALING })
+    if (!rows.length) return null
+    const totalEffectivePct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 1000) / 1000
+    return {
+      rows,
+      totalEffectivePct,
+      multiplier: roundMultiplier(applyScalingMult(totalEffectivePct / 100)),
+      label: RADIANCE_LABEL,
+    }
+  })()
+
+  // One entry per spawned Radiance burst; its healing source is the hit
+  // immediately preceding it in _bdcWeaponHits (post-pass splices in place).
+  $: _radianceProcCards = _bdcWeaponHits.reduce<Array<{ sourceName: string; sourceGroup: string; healing: number; burstBase: number; count: number }>>((acc, h, i) => {
+    if (!h.isRadianceProc || i === 0) return acc
+    const src = _bdcWeaponHits[i - 1]
+    acc.push({
+      sourceName: src?.label ?? src?.group ?? '?',
+      sourceGroup: h.group,
+      healing: src ? radianceSourceHealing(src) ?? 0 : 0,
+      burstBase: h.base,
+      count: h.count ?? 1,
+    })
+    return acc
+  }, [])
 
   $: _scalingMult = (() => {
     if (!_weaponResult) return 1
@@ -2998,6 +3030,8 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     weaponBoostMult?: number
     weaponBoostLabel?: string
     cdWater?: number
+    isRadianceProc?: boolean
+    note?: string
   }
 
   $: _bdcWeaponHits = (() => {
@@ -3806,6 +3840,35 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       }
     }
 
+    // ── Radiance ────────────────────────────────────────────────
+    // Each proccable healing source emits its own Holy-damage burst, spliced
+    // directly AFTER the source hit so it renders adjacent to it. Healing is
+    // never aggregated across sources — every burst keys off its own source's
+    // healing only. The burst itself cannot proc other effects (noProc
+    // coefficient + 'Radiance' blockedOnNoProc in the proc registry).
+    // Runs last so it sees fully-resolved source hits (finisher boosts,
+    // combat mults, reorderings) and never feeds back into itself.
+    if (_radianceAmt > 0) {
+      const insertions: Array<{ at: number; hit: BDCHit }> = []
+      const radianceScalingMult = _computePerkScalingMult({ holy: RADIANCE_HOLY_SCALING })
+      for (let i = 0; i < result.length; i++) {
+        const src = result[i]
+        if (!isRadianceEligible(src)) continue
+        insertions.push({
+          at: i + 1,
+          hit: buildRadianceProcHit(src, {
+            amt: _radianceAmt,
+            scalingMult: radianceScalingMult,
+            group: src.group,
+            index: i + 1,
+          }).hit,
+        })
+      }
+      for (let k = insertions.length - 1; k >= 0; k--) {
+        result.splice(insertions[k].at, 0, insertions[k].hit)
+      }
+    }
+
     return result
   })()
 
@@ -4363,11 +4426,11 @@ $: _groupedSelfDamageSources = (() => {
               {/if}
 
               <span class="da-cat-total">= ×{+grp.totalMult.toFixed(4)}</span>
-            </div>
-          {/each}
-        </div>
       </div>
-    {/if}
+    {/each}
+  </div>
+</div>
+{/if}
 
       {#if _mycoticBloomBelow50Active}
         <div class="da-boost-row" style="margin-top:6px">
@@ -5458,8 +5521,7 @@ $: _groupedSelfDamageSources = (() => {
       {/if}
     </div>
   {/if}
-</div><!-- end da-wbd-cards (current weapon) -->
-{/if}
+</div><!-- end da-wbd-cards (current weapon) -->{/if}
 
 
 
@@ -5471,7 +5533,7 @@ $: _groupedSelfDamageSources = (() => {
 </div><!-- end da-section--wbd -->
 
 <!-- ── Perk Base Damage ── -->
-{#if _nonDraconicPerkEntries.length > 0 || darkeningHexAmt > 0 || _vassalsCroakAmt > 0 || _cdAmt > 0 || _vcAmt > 0}
+{#if _nonDraconicPerkEntries.length > 0 || darkeningHexAmt > 0 || _vassalsCroakAmt > 0 || _cdAmt > 0 || _vcAmt > 0 || _radianceAmt > 0}
 <div class="da-section da-section--pbd">
   <div class="da-section-title-row">
     <span class="da-section-title">Perk Base Damage</span>
@@ -5836,6 +5898,35 @@ $: _groupedSelfDamageSources = (() => {
         {/if}
       </div>
     {/each}
+    {#if _radianceAmt > 0}
+      <div class="da-pbd-card">
+        <div class="da-pbd-head">
+          <span class="da-pbd-name">{RADIANCE_LABEL}</span>
+          <span class="da-pbd-amt">+{_radianceAmt}</span>
+        </div>
+        <div class="da-pbd-badges">
+          <Badge color={RADIANCE_COLOR} square size="xs">Perk</Badge>
+          <Badge color="#facc15" square size="xs">Holy</Badge>
+        </div>
+        <div class="da-pbd-condition">Triggered by proccable healing · one Holy burst per source</div>
+        <div class="da-pbd-secondary-list">
+          {#if _radianceProcCards.length === 0}
+            <div class="da-pbd-secondary da-pbd-secondary--inactive" style="--sc:{RADIANCE_COLOR}">
+              <span class="da-pbd-secondary-label">No proccable healing sources</span>
+            </div>
+          {:else}
+            {#each _radianceProcCards as rc}
+              <div class="da-pbd-secondary" style="--sc:{RADIANCE_COLOR}">
+                <span class="da-pbd-secondary-label">{rc.sourceName}</span>
+                <span class="da-pbd-secondary-val">{fmtNum(rc.burstBase)}</span>
+                <span class="da-pbd-secondary-cond">= 1 + {fmtNum(rc.healing)} × 4/45 × {_radianceAmt}{rc.count > 1 ? ` · ×${rc.count} bursts` : ''}</span>
+              </div>
+            {/each}
+          {/if}
+        </div>
+        <div class="da-pbd-note">Each proccable healing source emits its own Holy burst: base = 1 + healing × 4/45 × perkAmount. Healing-dealt modifiers (Emotional, Heal Boost, …) flow in once through the source's healing; Holy Boost applies via the 10.0 Holy scaling. Bursts cannot proc other effects.</div>
+      </div>
+    {/if}
   </div>
 </div>
 {/if}
@@ -6155,8 +6246,8 @@ $: _groupedSelfDamageSources = (() => {
   {/if}
 </div>
 {/if}
-{#if _weaponResult && scalingBreakdown.rows.length > 0
-  && _nonDraconicPerkEntries.some(e =>(e.dmgTypeMode === 'fixed' ||e.dmgTypeMode === 'dynamic')&& Object.keys(e.resolvedScalings ?? {}).length > 0|| e.dmgTypeMode === 'weapon')}
+{#if (_weaponResult && scalingBreakdown.rows.length > 0
+  && _nonDraconicPerkEntries.some(e =>(e.dmgTypeMode === 'fixed' ||e.dmgTypeMode === 'dynamic')&& Object.keys(e.resolvedScalings ?? {}).length > 0|| e.dmgTypeMode === 'weapon')) || _radianceScalingBreakdown}
   <div class="da-section da-section--scaling">
     <div class="da-section-title">📐 Damage Scaling</div>
     <div class="ds-formula-hint">Effective Boost = Σ (Scaling × Boost%) → ×(1 + Effective%) when ≥ 0, × 1/(1 + |Effective%|) when &lt; 0</div>
@@ -6255,6 +6346,65 @@ $: _groupedSelfDamageSources = (() => {
           </div>
         {/if}
       {/each}
+
+      <!-- Radiance: perk damage whose base derives from healing (10.0 Holy Scaling) -->
+      {#if _radianceScalingBreakdown}
+        <div class="da-perk-scaling-divider">
+          <span class="da-perk-scaling-label">{RADIANCE_LABEL}</span>
+        </div>
+        <div class="ds-table ds-table--perk" style="margin-top: 5px; font-size: 0.75rem; opacity: 0.9;">
+          {#each _radianceScalingBreakdown.rows as row}
+            <div class="ds-row">
+              <div class="ds-col ds-col--type">
+                <span class="ds-dot" style="background:{row.color}"></span>
+                <span style="color:{row.color}">{row.key.charAt(0).toUpperCase() + row.key.slice(1)}</span>
+              </div>
+              <div class="ds-col ds-col--val">
+                <span class="ds-num" style="color:{row.color}">{roundMultiplier(row.scalingVal)}</span>
+              </div>
+              <div class="ds-col ds-col--op">×</div>
+              <div class="ds-col ds-col--boost">
+                {#if row.boostPct !== 0}
+                  <span class="ds-boost" style={row.boostPct < 0 ? 'color: #cf6679;' : ''}>
+                    {row.boostPct > 0 ? '+' : ''}{roundMultiplier(row.boostPct)}%
+                  </span>
+                {:else}
+                  <span class="ds-boost ds-boost--zero">+0%</span>
+                {/if}
+              </div>
+              <div class="ds-col ds-col--op">=</div>
+              <div class="ds-col ds-col--contrib">
+                <span class="ds-contrib"
+                      class:ds-contrib--zero={row.contribution === 0}
+                      style={row.contribution > 0 ? `color:${row.color}` : row.contribution < 0 ? 'color: #cf6679;' : ''}>
+                  {row.contribution > 0 ? '+' : ''}{row.contribution}%
+                </span>
+              </div>
+            </div>
+          {/each}
+          <div class="ds-row">
+            <div class="ds-col ds-col--type">
+              <span class="ds-dot" style="background:#34d399"></span>
+              <span style="color:#34d399">Total</span>
+            </div>
+            <div class="ds-col ds-col--val"></div>
+            <div class="ds-col ds-col--op"></div>
+            <div class="ds-col ds-col--boost"></div>
+            <div class="ds-col ds-col--op">=</div>
+            <div class="ds-col ds-col--contrib">
+              <span class="ds-contrib" class:ds-contrib--zero={_radianceScalingBreakdown.totalEffectivePct === 0} style={_radianceScalingBreakdown.totalEffectivePct < 0 ? 'color:#cf6679' : 'color:#34d399'}>{_radianceScalingBreakdown.totalEffectivePct > 0 ? '+' : ''}{_radianceScalingBreakdown.totalEffectivePct}%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ds-result-row ds-result-row--perk" style="background: rgba(251, 146, 60, 0.05); border-color: rgba(251, 146, 60, 0.15);">
+          <div style="display:flex;flex-direction:column;gap:2px;flex:1;">
+            <span class="ds-result-label" style="color: {RADIANCE_COLOR};">Perk: {RADIANCE_LABEL} Scaling</span>
+          </div>
+          <span class="ds-result-eq">Multiplier =</span>
+          <span class="ds-result-val">×{+_radianceScalingBreakdown.multiplier.toFixed(4)}</span>
+        </div>
+      {/if}
     </div>
   </div>
 {/if}

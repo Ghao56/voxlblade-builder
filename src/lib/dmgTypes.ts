@@ -1,5 +1,6 @@
 ﻿import type { ProcCoefficient } from '../lib/types'
 import { BLUB_BLUB_PCT_PER_STACK, BLUB_BLUB_HIT_COUNT, BLUB_BLUB_PROC_CHANCE } from './constants'
+import { RADIANCE_COLOR } from './constants/perk-base-damage'
 
 export const BADGE_CONFIG: Record<string, { color: string; label: string; title: string }> = {
   'Dragon State':  { color: '#a78bfa', label: '✦ Dragon', title: 'Dragon State: additional wave of Magic above HP threshold · Once per M1/M2' },
@@ -32,6 +33,7 @@ export const BADGE_CONFIG: Record<string, { color: string; label: string; title:
   'Deathmist Slash': { color: '#818cf8', label: '✦ Deathmist', title: 'Deathmist Slash: extra Water+Hex slash on finisher · Heals allies and self · Once per finisher' },
   'Last Croak': { color: '#94ff88', label: '✦ Last Croak', title: 'Last Croak: consumed on RMB (M2) hit · Physical explosion = M2 base damage × potency × (1 + perkAmount) / 15 · Guardbreaks' },
   'Star Struck': { color: '#fde047', label: '✦ Star', title: 'Star Struck: landed M1/M2 shoot stars · random damage type · True star deals 6 base with 0.5 Magic scaling · stars can proc other on-hit effects' },
+  'Radiance': { color: RADIANCE_COLOR, label: '✦ Radiance', title: 'Radiance: proccable heals emit a Holy burst = 1 + healing × 4/45 × perkAmount · Per source · Cannot proc other effects' },
 }
 
 export interface ComputedType {
@@ -95,4 +97,5 @@ export interface ComputedHit {
     vcBuffedCount?: number
     vcMult?: number
     vcBuffed?: boolean
+    isRadianceProc?: boolean
 }

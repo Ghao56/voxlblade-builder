@@ -56,6 +56,7 @@ export const PROC_EFFECT_DEFS: Readonly<Record<string, ProcEffectDef>> = {
   'Deathmist Slash': { blockedOnNoProc: true },
   'Inspiration': { blockedOnNoProc: true },
   'Sandnado': { blockedOnNoProc: true },
+  'Radiance': { blockedOnNoProc: true },
 
   // Chance-based damage effects: blocked on NoProc, otherwise active.
   // baseChance mirrors the game's actual roll chances (reference only — the
