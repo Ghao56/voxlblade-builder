@@ -897,6 +897,11 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: _cdActive = _cdPotency >= 0.2
   $: _cdWaterBonus = _cdActive ? Math.round(0.5 * (_cdPotency / 0.1) * 10000) / 10000 : 0
   $: _cdTarget = $build.channeledDepthsTarget ?? 'WA'
+  $: _cdHasRuneTarget = _activeRuneDmgDef != null && !(_activeRuneDmgDef.isHealOnly ?? false)
+  $: _cdHasDracoTarget = (perks['Draconic Blood'] ?? 0) > 0
+  $: if ((_cdTarget === 'Rune' && !_cdHasRuneTarget) || (_cdTarget === 'Draco' && !_cdHasDracoTarget)) {
+    build.update(s => ({ ...s, channeledDepthsTarget: 'WA' }) as any)
+  }
   $: _cdMaxHit = (() => {
     switch (_cdTarget) {
       case 'WA':
@@ -5657,7 +5662,7 @@ $: _groupedSelfDamageSources = (() => {
           <span class="da-sb-slider-val" style="color:#2a49ff">{+($build.channeledDepthsTime ?? 0)}s</span>
         </div>
         <div class="da-cd-targets">
-          {#each [{ k: 'M1', l: 'M1' }, { k: 'M2', l: 'M2' }, { k: 'WA', l: 'WA' }, { k: 'Rune', l: 'Rune' }, { k: 'Draco', l: 'Draco' }] as t}
+          {#each [{ k: 'M1', l: 'M1', ok: true }, { k: 'M2', l: 'M2', ok: true }, { k: 'WA', l: 'WA', ok: true }, { k: 'Rune', l: 'Rune', ok: _cdHasRuneTarget }, { k: 'Draco', l: 'Draco', ok: _cdHasDracoTarget }].filter(t => t.ok) as t}
             <button
               type="button"
               class="da-cd-target"
