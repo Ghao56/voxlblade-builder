@@ -254,6 +254,7 @@ export interface BuildState {
   showCritValues: boolean
   enemiesHit: number
   weaponCharge: number
+  retaliateCharge: number
 }
 
 export type ProcCoefficient =

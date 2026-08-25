@@ -26,7 +26,7 @@ export const BUILD_STATE_DEFAULTS: Record<string, any> = {
   disabledBoosts: [],
   disabledEffects: [], disabledBuffKeys: [], disabledPerkEntries: [], disabledHealBoosts: [],
   ponderReinforceDisabled: true,
-  enemiesHit: 1, weaponCharge: 100,
+  enemiesHit: 1, weaponCharge: 100, retaliateCharge: 100,
 }
 
 export const SAVE_KEY_MAP: Record<string, string> = {
@@ -48,7 +48,7 @@ export const SAVE_KEY_MAP: Record<string, string> = {
   lightningCloakState:'lcs', stormRendState:'srs',
   ponderReinforceDisabled:'prd',
   disabledBoosts:'dbo', disabledEffects:'def', disabledBuffKeys:'dbk', disabledPerkEntries:'dpe', disabledHealBoosts:'dhb',
-  enemiesHit:'eh', weaponCharge:'wc',
+  enemiesHit:'eh', weaponCharge:'wc', retaliateCharge:'rc',
 }
 export const SAVE_KEY_UNMAP = Object.fromEntries(Object.entries(SAVE_KEY_MAP).map(([k,v])=>[v,k]))
 

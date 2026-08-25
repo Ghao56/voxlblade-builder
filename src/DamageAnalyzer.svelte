@@ -1665,6 +1665,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   let showCritValues = false
   let emotionalDisabled = false
   let weaponCharge = 100
+  let retaliateCharge = 100
   let enemiesHit = 1
   function arraysEqual(a: string[], b: string[]): boolean {
     if (a.length !== b.length) return false
@@ -1695,6 +1696,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     showCritValues = $build.showCritValues ?? false
     emotionalDisabled = $build.emotionalDisabled ?? false
     weaponCharge = $build.weaponCharge ?? 100
+    retaliateCharge = $build.retaliateCharge ?? 100
     enemiesHit = Math.max(1, $build.enemiesHit ?? 1)
     _togglesInited = true
     _lastReplaceSeq = $buildReplaceSeq
@@ -1716,6 +1718,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       if (s.emotionalDisabled !== emotionalDisabled) next = { ...next, emotionalDisabled }
       if (s.enemiesHit !== enemiesHit) next = { ...next, enemiesHit }
       if (s.weaponCharge !== weaponCharge) next = { ...next, weaponCharge }
+      if (s.retaliateCharge !== retaliateCharge) next = { ...next, retaliateCharge }
       if (s.mycoticBloomDotDisabled !== mycoticBloomDotDisabled) next = { ...next, mycoticBloomDotDisabled }
       if (s.rageDisabled !== rageDisabled) next = { ...next, rageDisabled }
       if (s.ponderReinforceDisabled !== ponderReinforceDisabled) next = { ...next, ponderReinforceDisabled }
@@ -2596,6 +2599,26 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     return { minEnds: toEnds(min), minLabel, maxEnds: toEnds(max), maxLabel }
   })()
 
+  $: _isRetaliateChargeWA = selectedWA.name === 'Retaliate' && !_bomberChargeWaHit && !!_waRangeDamage
+
+  $: _retaliateInterpolatedBase = (() => {
+    if (!_isRetaliateChargeWA || !_waRangeDamage) return 0
+    const { min, max } = _waRangeDamage
+    return min + (max - min) * (retaliateCharge / 100)
+  })()
+
+  $: _retaliateInterpolatedTyped = (() => {
+    if (!_isRetaliateChargeWA || Object.keys(_waDmgTypes).length === 0) return null
+    const base = _retaliateInterpolatedBase
+    return Object.entries(_waDmgTypes).map(([k, mult]) => ({
+      label: k.charAt(0).toUpperCase() + k.slice(1),
+      rawVal: Math.round(base * 10000) / 10000,
+      val: Math.round(base * mult * 10000) / 10000,
+      scalingMult: _waScalingMult * _waCombatMult,
+      color: DMG_TYPE_COLORS[k] ?? '#e8e4da',
+    }))
+  })()
+
   $: selectedWeaponData = WEAPON_BASE_DMG.find(w => w.type === (_gunOverlay?.type ?? _baseWeaponType))
 
   function applyWeaponCharge(dmg: number) {
@@ -3270,6 +3293,16 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         group: 'WA', index: 0, count: 1, base: _bomberChargeWaHit.base, scalingMult: _bomberChargeWaHit.scalingMult, combatMult: _waCombatMult,
         isFinisher: false, dmgTypes: _bomberChargeWaHit.dmgTypes, baseDmgTypes: _bomberChargeWaHit.baseDmgTypes,
         label: 'Retaliate (modified by Bomber Charge)',
+        canApplyBurn: _hasSingedBurn,
+      })
+    }
+    // Retaliate charge-interpolated hit (when not overridden by Bomber Charge)
+    if (_isRetaliateChargeWA && Object.keys(_waDmgTypes).length > 0 && !(_activeMountRuneDef && mountActive)) {
+      result.push({
+        group: 'WA', index: 0, count: 1, base: _retaliateInterpolatedBase,
+        scalingMult: _waScalingMult, combatMult: _waCombatMult,
+        isFinisher: false, dmgTypes: _waDmgTypes, baseDmgTypes: _waDmgTypesBase,
+        label: _waDisplayName,
         canApplyBurn: _hasSingedBurn,
       })
     }
@@ -5171,6 +5204,50 @@ $: _groupedSelfDamageSources = (() => {
             {_waHitsSeq.map(h => h.count > 1 ? `${h.n}×${h.count}` : String(h.n)).join(', ')}
 
           {:else if _waRangeTyped}
+            {#if _isRetaliateChargeWA && _retaliateInterpolatedTyped}
+              <div class="da-range-row">
+                <div class="da-hit-card">
+                  <div class="da-range-end">
+                    {#each _retaliateInterpolatedTyped as t, ti}
+                      {#if ti > 0}
+                        <span class="da-hit-plus">+</span>
+                      {/if}
+                      <div class="da-hit-chunk" style="--tc:{t.color}">
+                        <span class="da-hit-num" style="--tc:{t.color}">
+                          {fmtNum(showCritValues ? Math.round(t.val * _critMult * 10000) / 10000 : t.val)}
+                        </span>
+                        <span class="da-hit-type">{t.label}</span>
+                      </div>
+                    {/each}
+                  </div>
+                </div>
+                {#if selectedWA.scaling && selectedWA.scaling !== 'Same as weapon'}
+                  <span class="da-range-scl">
+                    {selectedWA.scaling === 'None'
+                      ? 'No Scaling'
+                      : `Scaling: ${selectedWA.scaling}`}
+                  </span>
+                {/if}
+              </div>
+              <div class="da-rifle-charge-wrap" style="margin-top:8px">
+                <div class="da-rifle-charge-label">
+                  <span class="da-rcl-name">Charge</span>
+                  <span class="da-rcl-pct">{retaliateCharge}%</span>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  step="1"
+                  bind:value={retaliateCharge}
+                  class="da-rifle-charge-slider"
+                  style="--fill:{retaliateCharge}%"
+                />
+                <div class="da-rifle-marks">
+                  <span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span>
+                </div>
+              </div>
+            {:else}
             <div class="da-range-row">
               <div class="da-hit-card">
                 <div class="da-range-end">
@@ -5228,6 +5305,7 @@ $: _groupedSelfDamageSources = (() => {
                 </span>
               {/if}
             </div>
+            {/if}
 
           {:else if _waDebuffWarning}
             <div class="da-range-row">
