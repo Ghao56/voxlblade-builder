@@ -1967,6 +1967,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: _runeCombatMult = (void activeEntries, _categoryMult('rune'))
   $: _perkCombatMult = (void activeEntries, _categoryMult('perk'))
   $: _dotCombatMult = (void activeEntries, _categoryMult('perk', false))
+  $: _radianceCombatMult = (void activeEntries, _categoryMult('perk', false))
 
   $: _hasSpecificBoosts = boosts.dmgEntries.some(e => !!(e as any).appliesTo)
 
@@ -3036,6 +3037,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     weaponBoostLabel?: string
     cdWater?: number
     isRadianceProc?: boolean
+    sourceLabel?: string
     note?: string
   }
 
@@ -3849,8 +3851,10 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     // Each proccable healing source emits its own Holy-damage burst, spliced
     // directly AFTER the source hit so it renders adjacent to it. Healing is
     // never aggregated across sources — every burst keys off its own source's
-    // healing only. The burst itself cannot proc other effects (noProc
-    // coefficient + 'Radiance' blockedOnNoProc in the proc registry).
+    // healing only. Damage bonuses apply via the perk-category combat mult
+    // (proc-gated boosts excluded — the burst cannot proc effects). The burst
+    // itself cannot proc other effects (noProc coefficient + 'Radiance'
+    // blockedOnNoProc in the proc registry).
     // Runs last so it sees fully-resolved source hits (finisher boosts,
     // combat mults, reorderings) and never feeds back into itself.
     if (_radianceAmt > 0) {
@@ -3864,6 +3868,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           hit: buildRadianceProcHit(src, {
             amt: _radianceAmt,
             scalingMult: radianceScalingMult,
+            combatMult: _radianceCombatMult,
             group: src.group,
             index: i + 1,
           }).hit,

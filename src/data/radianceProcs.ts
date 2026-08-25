@@ -65,6 +65,7 @@ export function isRadianceEligible(src: RadianceHealSource): boolean {
 export interface RadianceProcOptions {
   amt: number
   scalingMult: number
+  combatMult?: number
   group: string
   index: number
 }
@@ -87,6 +88,8 @@ export interface RadianceProcResult {
     label: string
     procCoefficient: ProcCoefficient
     isRadianceProc: true
+    /** Label of the healing source that spawned this burst — used for UI grouping. */
+    sourceLabel: string
     note: string
   }
 }
@@ -100,6 +103,8 @@ export interface RadianceProcResult {
  * source's actual heal output. Holy Boost applies afterwards through the
  * 10.0 Holy scaling (`opts.scalingMult`); outgoing-healing modifiers already
  * sit inside `healing`, so the burst carries NO extra heal combat multiplier.
+ * Damage bonuses flow in via `opts.combatMult` (the perk-category multiplier,
+ * proc-gated boosts excluded — the burst itself cannot proc effects).
  */
 export function buildRadianceProcHit(
   src: RadianceHealSource,
@@ -120,13 +125,14 @@ export function buildRadianceProcHit(
       count: src.count ?? 1,
       base: baseDamage,
       scalingMult: opts.scalingMult,
-      combatMult: 1,
+      combatMult: opts.combatMult ?? 1,
       isFinisher: false,
       dmgTypes: { holy: RADIANCE_HOLY_TYPE_MULT },
       label: RADIANCE_LABEL,
       // The burst itself can never proc other effects.
       procCoefficient: { type: 'noProc' },
       isRadianceProc: true,
+      sourceLabel: sourceName,
       note: RADIANCE_NOTE,
     },
   }

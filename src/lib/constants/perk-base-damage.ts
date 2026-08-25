@@ -296,5 +296,4 @@ export const RADIANCE_EXCLUDED_SOURCE_PATTERNS: RegExp[] = [
   /hex shield/i,
   /deepcrystal/i,
   /cleansed blade/i,
-  /deathmist/i,
 ]

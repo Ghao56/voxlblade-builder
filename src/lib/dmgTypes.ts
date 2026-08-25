@@ -98,4 +98,5 @@ export interface ComputedHit {
     vcMult?: number
     vcBuffed?: boolean
     isRadianceProc?: boolean
+    sourceLabel?: string
 }

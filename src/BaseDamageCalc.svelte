@@ -158,6 +158,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     cdWater?: number
     vcBuffedCount?: number
     isRadianceProc?: boolean
+    sourceLabel?: string
     note?: string
   }> = []
   export let typedBoostEntries: TypedDmgBoostEntry[] = []
@@ -1295,7 +1296,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       }
     }
 
-    const result: ComputedHit = { group: hit.group, index: hit.index, count: hit.count, isFinisher: hit.isFinisher, label: hit.label, isHeal, types, procCount: hit.procCount, finisherGroupHitCount: hit.finisherGroupHitCount, eachHitM1M2: hit.eachHitM1M2 ?? false, vcBuffedCount, vcMult: VC_MULT, ...(hit.isRadianceProc ? { isRadianceProc: true as const } : {}) }
+    const result: ComputedHit = { group: hit.group, index: hit.index, count: hit.count, isFinisher: hit.isFinisher, label: hit.label, isHeal, types, procCount: hit.procCount, finisherGroupHitCount: hit.finisherGroupHitCount, eachHitM1M2: hit.eachHitM1M2 ?? false, vcBuffedCount, vcMult: VC_MULT, ...(hit.isRadianceProc ? { isRadianceProc: true as const, sourceLabel: hit.sourceLabel } : {}) }
 
     // Vassals Croak: on an RMB (M2) finisher hit, consume Last Croak and explode once per RMB press.
     // Triggers on any M2-type finisher: base M2 (group 'M2'), M2 finishers folded into the M1 combo
@@ -1356,26 +1357,22 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   $: spiritHits = computedHits.filter(h => h.group === 'Spirit')
   $: perkHits = computedHits.filter(h => h.group !== 'M1' && h.group !== 'M2' && h.group !== 'WA' && h.group !== 'Rune' && h.group !== 'Spirit' && h.label !== 'Springblast')
 
-  function _mergeLabeledHits(list: ComputedHit[]): Array<{ label: string; list: ComputedHit[] }> {
-    const map = new Map<string, ComputedHit[]>()
-    for (const h of list) {
-      const key = (h.label ?? 'Perk').replace(/ Heal$/, '')
-      if (!map.has(key)) map.set(key, [])
-      map.get(key)!.push(h)
-    }
-    return [...map.entries()].map(([label, grouped]) => {
-      if (grouped.length <= 1) return { label, list: grouped }
-      const base = grouped.find(h => !h.isHeal) ?? grouped[0]
-      const ungroupedTypes = grouped.flatMap(h => h.types.filter(t => t.ungroup))
-      const healTypes = grouped.filter(h => h.isHeal).flatMap(h => h.types.filter(t => !t.ungroup))
-      const dmgTypes = grouped.filter(h => !h.isHeal).flatMap(h => h.types.filter(t => !t.ungroup))
-      return { label, list: [{ ...base, types: [...dmgTypes, ...healTypes, ...ungroupedTypes], isHeal: false }] }
-    })
+  /** Perk hits are grouped one section per source perk: trigger-context suffixes
+   *  like "(M2)"/"(WA)" collapse into the perk's name, and Radiance bursts nest
+   *  under the perk whose healing spawned them (via their sourceLabel). */
+  function _perkGroupKey(h: ComputedHit): string {
+    const raw = h.isRadianceProc && h.sourceLabel ? h.sourceLabel : (h.label ?? 'Perk')
+    return raw.replace(/ Heal$/, '').replace(/\s*\((M1|M2|WA)\)$/, '')
   }
 
   $: _groupedPerks = (() => {
-    const allHits = _mergeLabeledHits(perkHits).flatMap(g => g.list)
-    return allHits.length > 0 ? [{ label: 'Perk', list: allHits }] : []
+    const map = new Map<string, ComputedHit[]>()
+    for (const h of perkHits) {
+      const key = _perkGroupKey(h)
+      if (!map.has(key)) map.set(key, [])
+      map.get(key)!.push(h)
+    }
+    return [...map.entries()].map(([label, list]) => ({ label, list }))
   })()
 
   // Void Contract display split: a partially-buffed hit renders as two rows so the
