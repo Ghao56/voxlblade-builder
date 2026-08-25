@@ -123,7 +123,16 @@ export function calcSelfDamage(
   return { total, byType, totalBeforeDefense: baseTotal * weightSum }
 }
 
-export function calcInoculationHeal(damageTakenBeforeDefense: number, perkAmount: number): number {
+/**
+ * Inoculation heals for 30% of the self-damage taken (before defense) plus a
+ * small flat amount per stack. Affected by every outgoing-heal boost EXCEPT
+ * Level Healing — pass `_healFinalMultiplierNoLevel` as `healMult`.
+ */
+export function calcInoculationHeal(
+  damageTakenBeforeDefense: number,
+  perkAmount: number,
+  healMult: number = 1,
+): number {
   if (perkAmount <= 0 || damageTakenBeforeDefense <= 0) return 0
-  return (INOCULATION_HEAL_FRACTION * damageTakenBeforeDefense + INOCULATION_FLAT_HEAL_PER_STACK) * perkAmount
+  return (INOCULATION_HEAL_FRACTION * damageTakenBeforeDefense + INOCULATION_FLAT_HEAL_PER_STACK) * perkAmount * healMult
 }

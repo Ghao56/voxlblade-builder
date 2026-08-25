@@ -6010,12 +6010,12 @@ $: _groupedSelfDamageSources = (() => {
             <div class="da-hits-row">
               <div class="da-hit-card">
                 <div class="da-hit-chunk" style="--tc:#4ade80">
-                  <span class="da-hit-num" style="--tc:#4ade80">{fmtNum(calcInoculationHeal(activeSrc.result.totalBeforeDefense, perks['Inoculation'] ?? 0))}</span>
+                  <span class="da-hit-num" style="--tc:#4ade80">{fmtNum(calcInoculationHeal(activeSrc.result.totalBeforeDefense, perks['Inoculation'] ?? 0, _healFinalMultiplierNoLevel))}</span>
                 </div>
               </div>
             </div>
           </div>
-          <div class="da-pbd-note">Heals before the self-damage lands · damage counted before defense</div>
+          <div class="da-pbd-note">Heals before the self-damage lands · damage counted before defense · boosted by Heal Boosts except Level Healing</div>
         {/if}
         <div class="da-pbd-dmg-row">
           <span class="da-pbd-ctx-label">Self Damage</span>
