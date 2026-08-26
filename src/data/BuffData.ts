@@ -655,6 +655,17 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectPerTenthPotency: 0,
     effectUnit: 'flat',
   },
+  'Star Mode': {
+    name: 'Star Mode',
+    color: '#fde047',
+    description: 'Gain x% attack speed.',
+    dynamicDescription: (_perks, potency) => {
+      const pct = +(20 + potency * 250).toFixed(4)
+      return `Gain ${pct}% attack speed.`
+    },
+    effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
+    effectUnit: 'flat',
+  },
 }
 
 const ITEM_BUFF_MAP: GrantedBuff[] = [
@@ -1452,6 +1463,16 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       duration: TAILWIND_BUFF_DURATION,
       condition: 'On weapon art activation',
       sourceName: 'Tailwind',
+      sourceType: 'perk',
+    },
+  ],
+  'Star Barrage': (amount) => [
+    {
+      buffName: 'Star Mode',
+      potency: 0.1 * amount,
+      duration: 5,
+      condition: 'On Weapon Art use',
+      sourceName: 'Star Barrage',
       sourceType: 'perk',
     },
   ],

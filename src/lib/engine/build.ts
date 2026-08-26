@@ -518,6 +518,14 @@ function deriveResults(
     boostedStats.attackSpeed = (boostedStats.attackSpeed ?? 0) + atkSpdBonus
   }
 
+  const starModePotency = allBuffs
+    .filter((b: any) => b.buffName === 'Star Mode')
+    .reduce((max: number, b: any) => Math.max(max, b.potency), 0)
+  if (starModePotency > 0) {
+    const atkSpdBonus = 20 + starModePotency * 250
+    boostedStats.attackSpeed = (boostedStats.attackSpeed ?? 0) + atkSpdBonus
+  }
+
   const _rawFill = state.hpFill ?? 100
   const _protection = boostedStats.protection ?? 0
   let _actualHpFill = _rawFill
