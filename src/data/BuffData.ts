@@ -96,7 +96,8 @@ import {
 } from '../lib/constants/perks'
 import { DRAGIGATOR_SPIRIT_BURN_DURATION } from '../lib/constants/perk-base-damage'
 import { canProc } from '../lib/types'
-import { findPerkDmgDef } from './Perkbasedmg'
+import { findPerkDmgDef, isHpGateActive } from './Perkbasedmg'
+import type { HpGate } from './Perkbasedmg'
 
 export interface BuffDefinition {
   name: string
@@ -129,6 +130,7 @@ export interface GrantedBuff {
   sourceType: 'perk' | 'weaponArt' | 'rune' | 'cantrip' | 'race' | 'item'
   isSelfDebuff?: boolean
   burnMode?: 'dot' | 'singed'
+  hpGate?: HpGate
 }
 
 
@@ -1089,10 +1091,10 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
     },
   ],
   'Cursed Experiment': (amount) => [
-    { buffName: 'Rage',           potency: 0.3 + 0.1 * amount, duration: 5 + 2 * amount, condition: 'Rune used below 50% HP', sourceName: 'Cursed Experiment', sourceType: 'perk' },
-    { buffName: 'Critical Boost', potency: 1.0,                 duration: 5 + 2 * amount, condition: 'Rune used below 50% HP', sourceName: 'Cursed Experiment', sourceType: 'perk' },
-    { buffName: 'Hexigen',        potency: 1.0,                 duration: 7 + 2 * amount, condition: 'Rune used below 50% HP', sourceName: 'Cursed Experiment', sourceType: 'perk' },
-    { buffName: 'Regen',          potency: 1.0,                 duration: 5 + 2 * amount, condition: 'Rune used below 50% HP', sourceName: 'Cursed Experiment', sourceType: 'perk' },
+    { buffName: 'Rage',           potency: 0.3 + 0.1 * amount, duration: 5 + 2 * amount, condition: 'Rune used below 50% HP', sourceName: 'Cursed Experiment', sourceType: 'perk', hpGate: { hpThreshold: 50, aboveThreshold: false } },
+    { buffName: 'Critical Boost', potency: 1.0,                 duration: 5 + 2 * amount, condition: 'Rune used below 50% HP', sourceName: 'Cursed Experiment', sourceType: 'perk', hpGate: { hpThreshold: 50, aboveThreshold: false } },
+    { buffName: 'Hexigen',        potency: 1.0,                 duration: 7 + 2 * amount, condition: 'Rune used below 50% HP', sourceName: 'Cursed Experiment', sourceType: 'perk', hpGate: { hpThreshold: 50, aboveThreshold: false } },
+    { buffName: 'Regen',          potency: 1.0,                 duration: 5 + 2 * amount, condition: 'Rune used below 50% HP', sourceName: 'Cursed Experiment', sourceType: 'perk', hpGate: { hpThreshold: 50, aboveThreshold: false } },
     { buffName: 'Slowness',       potency: 1.0,                 duration: 10,             condition: 'After buff expires',     sourceName: 'Cursed Experiment', sourceType: 'perk',
     isSelfDebuff: true },
   ],
@@ -2366,6 +2368,7 @@ export interface ActiveBuffsBuildInput {
   inDarkness?: boolean
   lastCroakStacks?: number
   channeledDepthsTime?: number
+  hpFill?: number
 }
 
 /**
@@ -2437,7 +2440,10 @@ export function assembleActiveBuffs(
       darkeningHexEligible: darkeningHexEligible ?? hasEligibleDarkeningHexSource(perks, build),
     },
   ), perks)
-  return applyCauterizeConversion(buffs, perks)
+  const hpGated = build.hpFill != null
+    ? applyCauterizeConversion(buffs, perks).filter(b => isHpGateActive(b.hpGate, build.hpFill!, 0))
+    : applyCauterizeConversion(buffs, perks)
+  return hpGated
 }
 
 export function calcBuffEffect(

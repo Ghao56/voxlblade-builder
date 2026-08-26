@@ -31,7 +31,7 @@ import { isMonkGuild } from './lib/engine/data/character'
 import { getAutoDebuffs } from './data/perkAutoDebuffs'
 import { RUNE_DMG_DEFS } from './data/Runebasedmg'
 import { getRunicGlassDuration } from './lib/constants/rune-base-damage'
-import { findPerkDmgDef } from './data/Perkbasedmg'
+import { findPerkDmgDef, isHpGateActive } from './data/Perkbasedmg'
 import { WA_PROC_COEFFS, DEFAULT_PROC_COEFF } from './data/procCoefficients'
 import { canProc } from './lib/types'
 import { resolveWaDamageTypeKeys, resolveDamageTypes, computeEffectiveWaDmgTypes } from './lib/damageTypeResolve'
@@ -109,9 +109,9 @@ import { SPIRIT_WINDS_PCT_PER_STACK, DARK_MAGIC_PCT_PER_STACK, EMOTIONAL_PCT_PER
       }
     }
     if ($build.selectedWeaponArt !== 'Laser') {
-      return buffs.filter(b => b.sourceName !== 'Wild Bolt')
+      return buffs.filter(b => b.sourceName !== 'Wild Bolt').filter(b => isHpGateActive(b.hpGate, $build.hpFill ?? 100, 0))
     }
-    return buffs
+    return buffs.filter(b => isHpGateActive(b.hpGate, $build.hpFill ?? 100, 0))
   })()
 
   $: weaponArtBuffs = getWeaponArtBuffs($build.selectedWeaponArt)
