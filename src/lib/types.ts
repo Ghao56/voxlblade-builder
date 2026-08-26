@@ -1,3 +1,7 @@
+// ── Core Types ─────────────────────────────────────────────────────────────
+// Central type definitions for the entire codebase: stats, equipment, build state, damage types.
+// Import from here rather than defining locally — keeps types consistent across files.
+
 const STAT_CONFIG = {
   dexterityBoost: "percent", physicalBoost: "percent", airBoost: "percent",
   earthBoost: "percent", fireBoost: "percent", waterBoost: "percent",

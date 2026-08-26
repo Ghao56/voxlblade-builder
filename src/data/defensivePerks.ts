@@ -1,3 +1,8 @@
+// ── Defensive Perks ────────────────────────────────────────────────────────
+// Defines damage-reduction sources from perks (Barbskin, Stoneskin, Adaptive Plate, etc.)
+// Consumed by DamageAnalyzer via getActiveDefensivePerkSources().
+// See also: src/data/defensivePerks.ts → calcDefensivePotencyMult for potency scaling.
+
 import {
   BASTION_BLESS_MULT,
   BARBSKIN_DR_PER_STACK,
@@ -21,6 +26,7 @@ import {
 } from '../lib/constants'
 import { getDraconicInfusionPotMult } from './draconicBuffs'
 
+// ── Context ────────────────────────────────────────────────────────────────
 interface DefensivePerkSourceContext {
   hpFillPct: number
   adaptivePlateTriggered: boolean
@@ -31,6 +37,7 @@ interface DefensivePerkSourceContext {
   uniqueDebuffCount: number
 }
 
+// ── Def definitions ────────────────────────────────────────────────────────
 interface DefensivePerkSource {
   perkName: string
   drPctPerStack?: number
@@ -48,6 +55,7 @@ interface DefensivePerkSource {
   drPctFn?: (amt: number, ctx: DefensivePerkSourceContext) => number
 }
 
+// ── Active sources ─────────────────────────────────────────────────────────
 const DEFENSIVE_PERK_SOURCES: DefensivePerkSource[] = [
   {
     perkName: 'Barbskin',
@@ -144,6 +152,7 @@ const DEFENSIVE_PERK_SOURCES: DefensivePerkSource[] = [
   },
 ]
 
+// ── Exports ────────────────────────────────────────────────────────────────
 export function getActiveDefensivePerkSources(
   perks: Record<string, number>,
   hpFillPct: number = 100,

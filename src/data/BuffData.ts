@@ -1,3 +1,9 @@
+// ── Buff Data ──────────────────────────────────────────────────────────────
+// Master definitions for all buffs, debuffs, neutral statuses, and potions.
+// GrantedBuff = { buffName, potency, duration, condition, sourceName, sourceType }
+// Each section below groups one category. See also: GetBuffPotencyModifier for debuff scaling.
+// Dragged into DamageAnalyzer for display; consumed by calcAutoDebuffs for perk-triggered debuffs.
+
 import { roundMultiplier } from '../lib/utils'
 import { BASTION_BLESS_MULT, ICHOR_SPARK_BLEED_DURATION } from '../lib/constants'
 import {
@@ -135,7 +141,7 @@ export interface GrantedBuff {
 
 
 export const BUFF_DEFS: Record<string, BuffDefinition> = {
-  //buffs
+  // ── Buffs ──────────────────────────────────────────────────────────────
   Rage: {
     name: 'Rage',
     color: '#f70201',
@@ -334,7 +340,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     statKey: 'attackSpeed',
   },
 
-  //Debuffs
+  // ── Debuffs ────────────────────────────────────────────────────────────
   Slowness: {
     name: 'Slowness',
     color: '#7eb4ad',
@@ -543,7 +549,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
 
 
 
-  //Neutral
+  // ── Neutral ────────────────────────────────────────────────────────────
   'Last Croak': {
     name: 'Last Croak',
     color: '#94ff88',
@@ -817,7 +823,7 @@ const ITEM_BUFF_MAP: GrantedBuff[] = [
     sourceName: 'Snoeball Rune',
     sourceType: 'rune',
   },
-  // Potions
+  // ── Potions ────────────────────────────────────────────────────────────
   {
     buffName: 'Rage',
     potency: RAGE_POTION_POTENCY,
@@ -870,6 +876,7 @@ export const BASIC_DEBUFF_POOL: Array<{ buffName: string; potency: number; durat
   { buffName: 'Weakness', potency: BASIC_WEAKNESS_POTENCY, duration: BASIC_DEBUFF_DURATION },
 ]
 
+// ── Perk-triggered buffs ────────────────────────────────────────────────────
 type PerkBuffFactory = (amount: number, allPerks: Record<string, number>, vassalsCroakStacks?: number, channeledDepthsTime?: number) => GrantedBuff[]
 
 const PERK_BUFFS: Record<string, PerkBuffFactory> = {
@@ -1869,6 +1876,7 @@ function durationMultFromStack(base: number, perStack: number): (stacks: number)
 
 const BOUNCE_DURATION_MULT = durationMultFromStack(BOUNCE_DURATION_BASE, BOUNCE_DURATION_PER_STACK)
 
+// ── Buff potency modifiers ─────────────────────────────────────────────────
 const BUFF_POTENCY_MODIFIERS: BuffPotencyModifier[] = [
   { buffName: 'Bounce', potencyPerStack: 0, label: 'Bounce Momentum', durationMultiplierFormula: BOUNCE_DURATION_MULT },
 

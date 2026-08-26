@@ -100,6 +100,7 @@ import {
   VAPOR_AEGIS_FIRE_WATER_DR_PCT,
 } from './lib/constants'
 
+// ── Cross-Toggle Mappings ──────────────────────────────────────────────────
 // Centralized mappings for cross-toggle relationships
 const _isSpiritPerk = (name: string) => name === 'Deathmist Slash' || name.endsWith(' Spirit')
 
@@ -127,6 +128,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: _pursuitRank = disableWeaponBoost ? 0 : (perks['Pursuit'] ?? 0)
   $: _pursuitActive = _pursuitRank > 0 && ((_displayRows[0] as any)?.m1Finisher ?? true)
 
+  // ── Defensive Perk Sources ────────────────────────────────────────────────
   $: _activeRaceEffect = getActiveRaceEffect($build.race, _hpFillPct)
   const _DEF_TYPE_LIST = TRACKED_TYPES_WITH_TRUE
   
@@ -195,6 +197,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     ? `${SOLAR_LIGHT_HOLY_SCALING} Holy + ${SOLAR_LIGHT_FIRE_SCALING} Fire`
     : `${SOLAR_LIGHT_HOLY_SCALING} Holy`
 
+  // ── Heal Scaling ──────────────────────────────────────────────────────────
   $: _healScalingCtx = {
     perks,
     emotionalState: $build.emotionalState,
@@ -275,6 +278,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     return 1 / (1 + effectivePotency)
   })()
 
+  // ── Defense Calculation ───────────────────────────────────────────────────
   $: _selfDebuffDefenseEffects = (() => {
     const effects: Partial<Record<string, number>> = {}
     for (const b of _allActiveBuffs) {
@@ -376,6 +380,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     }
   })()
 
+  // ── Active Buffs Assembly ──────────────────────────────────────────────────
   $: _allActiveBuffsRaw = (() => {
     const baseBuffs = assembleActiveBuffs($build, $result.perks, wardingDebuffMult, darkeningHexEligible)
 

@@ -894,7 +894,7 @@ function applyEnchantToAll(slot: EnchantSlot) {
   $: iepS0 = iepSlot ? $build.enchantments[iepSlot][0] : ''
   $: iepS1 = iepSlot ? $build.enchantments[iepSlot][1] : ''
   $: iepS2 = iepSlot ? $build.enchantments[iepSlot][2] : ''
-  // Reactive exclusive map (same pattern as old code)
+  // ── Reactive exclusive map ─────────────────────────
   $: exclMap = {
     helmet:     isExclusiveEnchant(ge($build.enchantments.helmet[0])),
     chestplate: isExclusiveEnchant(ge($build.enchantments.chestplate[0])),

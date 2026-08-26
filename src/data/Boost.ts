@@ -1,3 +1,10 @@
+// ── Boost Definitions ──────────────────────────────────────────────────────
+// Defines damage/heal multipliers from perks (Hemorrhage, Stealth, Serrated Edge, etc.)
+// Simple boosts: multiplierPerPerk × perkAmount (no context needed).
+// Complex boosts: calcFn(ctx) → { multiplier, condition } (reads BoostContext for dynamic state).
+// Consumed by engine/build.ts calcBoosts() → BuildResult.boostEntries[].
+// UI toggles in DamageAnalyzer._condDisabledSources gate debuff-conditional boosts.
+
 import { roundMultiplier, applyScalingMult } from '../lib/utils'
 import {
   FRENZY_BASE, FRENZY_RAGE_MULT, MINION_ABSORPTION_MULT,
@@ -41,12 +48,13 @@ export function calcFrenzyPct(ragePotency: number): number {
   return FRENZY_BASE + FRENZY_RAGE_MULT * ragePotency
 }
 
-/** Penance: damage boost scales with missing HP. Bleed procs at ≤35% HP. */
+// ── Constants ──────────────────────────────────────────────────────────────
 export const PENANCE_HP_THRESHOLD = 35       // percent (≤35% HP → max boost + bleed proc)
 const PENANCE_MAX_BOOST = 0.25
 export const PENANCE_BLEED_POTENCY = 0       // status-only bleed, no damage
 export const PENANCE_BLEED_DURATION = 5      // seconds
 
+// ── Context ────────────────────────────────────────────────────────────────
 export interface BoostContext {
   perks: Record<string, number>
   naturalCritChance: number
@@ -77,32 +85,24 @@ export interface BoostContext {
   enemyHpFillPct?: number
 }
 
+// ── Boost definitions ──────────────────────────────────────────────────────
 export interface BoostDef {
   sourceName: string
   type: 'dmg' | 'heal'
   
-  // For simple boosts
   multiplierPerPerk?: number
   condition?: string
   isLevel?: boolean
-  
-  // For complex boosts - custom calculation function
   calcFn?: (ctx: BoostContext) => { multiplier: number; condition: string } | null
-  
-  // For boost that only applies to specific attack types
   appliesTo?: BoostAttackType[]
   needsProcCoeff?: boolean
-
-  // How this boost scales with proc coefficient
   procScaling?: ProcScalingType
-  // Whether this boost has a user-facing toggle to enable/disable it
   hasToggle?: boolean
-  // Base chance (0..1) before proc-coefficient scaling, for boosts with chance-based triggers
   baseProcChance?: number
 }
 
+// ── Simple dmg boosts ──────────────────────────────────────────────────────
 export const BOOST_DEFS: BoostDef[] = [
-  // Simple dmg boosts
   { sourceName: 'Hemorrhage', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Hemorrhage'] ?? 0; if (a <= 0) return null; return { multiplier: roundMultiplier(1 + HEMORRHAGE_DMG_BASE + HEMORRHAGE_DMG_PER_STACK * a), condition: `against Bleeding opponents · +${HEMORRHAGE_STUN_PCT_PER_STACK}% Stun · +${HEMORRHAGE_POISE_PCT_PER_STACK}% Poise Dmg per stack` } }, needsProcCoeff: true },
   {sourceName: 'Blood Thirsty', multiplierPerPerk: BLOOD_THIRSTY_MULT_PER_STACK, type: 'dmg', condition: 'against Bleeding opponents', needsProcCoeff: true},
   {sourceName: 'Venom Spitter', multiplierPerPerk: VENOM_SPITTER_MULT_PER_STACK, type: 'dmg', condition: 'against Poisoned opponents'},
@@ -182,7 +182,7 @@ export const BOOST_DEFS: BoostDef[] = [
   },
 
 
-  // Complex dmg boosts (moved from engine.ts applySpecialBoosts)
+  // ── Complex dmg boosts ─────────────────────────────
   {
     sourceName: 'Primal',
     type: 'dmg',
