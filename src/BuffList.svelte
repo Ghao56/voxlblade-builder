@@ -160,6 +160,7 @@ import { SPIRIT_WINDS_PCT_PER_STACK, DARK_MAGIC_PCT_PER_STACK, EMOTIONAL_PCT_PER
       toxinTransferHexBonus: _toxinTransferHexBonus,
       rageDisabled: $build.rageDisabled ?? false,
       emotionalDisabled: $build.emotionalDisabled ?? false,
+      inDarkness: $build.inDarkness ?? true,
     })
     const _waDmgTypeBonuses = (() => {
       const bonuses = { ..._perkDmgTypeBonuses }

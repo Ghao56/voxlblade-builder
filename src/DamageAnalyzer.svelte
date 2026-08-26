@@ -1436,7 +1436,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     perks, ragePotency: _ragePotency, draconicRuneInfusion: $build.draconicRuneInfusion,
     emotionalState: $build.emotionalState, draconicColor: _effDraconicColor,
     guild: $build.guild, draconicInfusionDisabled, toxinTransferHexBonus: _toxinTransferHexBonus,
-    rageDisabled, emotionalDisabled,
+    rageDisabled, emotionalDisabled, inDarkness: _effectiveInDarkness,
   }
   $: _perkDmgTypeBonuses = buildDmgTypeBonuses(true, { ..._dmgTypeBonusCtx, targetBleeding: _dummyHasBleedActive })
   // Bleed-agnostic variant (no targetBleeding): feeds the auto-debuff requirement

@@ -536,6 +536,7 @@ function deriveResults(
     emotionalState: state.emotionalState, draconicColor: state.draconicColor,
     guild: state.guild, draconicInfusionDisabled: false, toxinTransferHexBonus: 0,
     rageDisabled: false, emotionalDisabled: state.emotionalDisabled ?? false,
+    inDarkness: state.inDarkness ?? true,
   })
   const _waDmgTypesForBoost = (() => {
     if (!_weaponResult) return {} as Record<string, number>
