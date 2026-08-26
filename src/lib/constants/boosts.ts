@@ -9,7 +9,7 @@ export const LIFESTEAL_HEAL_PCT_PER_STACK = 0.005
 export const LIFESTEAL_FLAT_HEAL_PER_STACK = 0.1
 
 // ── On-hit exclusion ──────────────────────────────
-// Damage sources that on-hit effects (Lifesteal, Channeled Weapon) do NOT apply to.
+// Damage sources that on-hit effects (Lifesteal, Channeled Weapon, Curse Rip) do NOT apply to.
 export const ON_HIT_EXCLUDED_SOURCES: ReadonlySet<string> = new Set([
   'Barbed Flurry',
   'Hex Ray',

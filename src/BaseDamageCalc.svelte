@@ -42,7 +42,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   export let perkDmgTypeBonusesDoT: Record<string, number> = {}
   // Bonus map for tagged proc-effect entries (Explosive Charge, Bombardier, …).
   // Sources in ON_HIT_EXCLUDED_SOURCES (Cauterize, Lightning Cloak/Chain) fall back
-  // to the DoT map — same exclusion list as Lifesteal.
+  // to the DoT map — same exclusion list as Lifesteal and Curse Rip.
   export let perkDmgTypeBonusesOnHit: Record<string, number> = {}
   export let boosts: any
   export let crit: any
@@ -1174,7 +1174,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
       }
     }
 
-    if (!isHeal && curseRipPerkAmount > 0 && curseRipActiveDebuffCount > 0 && !disableCurseRip && gate('Curse Rip')) {
+    if (!isHeal && curseRipPerkAmount > 0 && curseRipActiveDebuffCount > 0 && !disableCurseRip && !ON_HIT_EXCLUDED_SOURCES.has(hit.label ?? '')) {
       const preMitSum  = computePreMitigationBase(hit)
       const preMitBase = preMitSum * _activeDebuffDamageMult * selfDebuffDamageMult
 

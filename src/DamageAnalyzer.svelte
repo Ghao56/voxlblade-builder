@@ -1838,7 +1838,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     const entries: Array<{ sourceName: string; rawMultiplier: number; condition: string; type: 'dmg'; needsProcCoeff?: boolean }> = []
 
     const cr = _curseRipPerkAmount > 0 && _curseRipActiveDebuffCount > 0
-    if (cr) entries.push({ sourceName: 'Curse Rip', rawMultiplier: _curseRipDamageBoost, condition: `${_curseRipActiveDebuffCount} unique debuff${_curseRipActiveDebuffCount > 1 ? 's' : ''} · ${_curseRipPerkAmount} stack`, type: 'dmg', needsProcCoeff: true })
+    if (cr) entries.push({ sourceName: 'Curse Rip', rawMultiplier: _curseRipDamageBoost, condition: `${_curseRipActiveDebuffCount} unique debuff${_curseRipActiveDebuffCount > 1 ? 's' : ''} · ${_curseRipPerkAmount} stack`, type: 'dmg' })
 
     const rp = _reaperPerkAmount > 0 && _reaperActiveDebuffCount > 0
     if (rp) entries.push({ sourceName: 'Reaper', rawMultiplier: _reaperDamageBoost, condition: `${_reaperActiveDebuffCount} unique debuff${_reaperActiveDebuffCount > 1 ? 's' : ''} · ${_reaperPerkAmount} stack`, type: 'dmg' })
