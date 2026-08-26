@@ -749,6 +749,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: _dummyHasBurnActive = _dummyDebuffs.some(d => d.name === 'Burn' && !disabledDebuffs.has(d.name))
   $: _dummyHasSlowActive = _dummyDebuffs.some(d => d.name === 'Slowness' && !disabledDebuffs.has(d.name))
   $: _dummyHasFrostbiteActive = _dummyDebuffs.some(d => d.name === 'Frostbite' && !disabledDebuffs.has(d.name))
+  $: _dummyHasStickyActive = _dummyDebuffs.some(d => d.name === 'Sticky' && !disabledDebuffs.has(d.name))
 
   $: _venomEaterCanShow = (perks['Venom Eater'] ?? 0) > 0 && _dummyHasPoisonActive
 
@@ -1799,6 +1800,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     if (!_dummyHasBleedActive) { s.add('Hemorrhage'); s.add('Blood Thirsty'); s.add('Gelid Lance'); s.add('Vicious Edge'); s.add('Gorecast') }
     if (!_dummyHasPoisonActive) s.add('Venom Spitter')
     if (!_dummyHasSlowActive && !_dummyHasFrostbiteActive) s.add('Frostbite')
+    if (!_dummyHasStickyActive) { s.add('Sticky Swings'); s.add('Explosive Honey') }
     return s
   })()
   type LightningCloakState = 'off' | 'third' | 'twoThirds'

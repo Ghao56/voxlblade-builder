@@ -297,3 +297,6 @@ export const RADIANCE_EXCLUDED_SOURCE_PATTERNS: RegExp[] = [
   /deepcrystal/i,
   /cleansed blade/i,
 ]
+
+// ── Explosive Honey ─────────────────────────────────────
+export const EXPLOSIVE_HONEY_BASE_DMG = 3

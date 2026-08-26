@@ -184,6 +184,7 @@ import {
   VOLTAIC_BODY_ACTIVATION_WINDOW,
   VOLTAIC_BODY_DURATION_WA_CD_DIVISOR,
   VOLTAIC_BODY_DURATION_PER_STACK,
+  EXPLOSIVE_HONEY_BASE_DMG,
 } from '../lib/constants'
 
 export interface PerkSliderDef {
@@ -1798,6 +1799,33 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
       },
     ],
     note: 'First hit (1 Buff Potency) deals full damage; each activation within the 3s window adds +1 potency, reducing that hit to 0.85^potency. Can proc other effects. Guardbreaks.',
+  },
+  // ── Explosive Honey ──────────────────────────────────────
+  // Damage: base 3 × perkAmt, magic 1.0 type, magic+physical 1.0 scaling.
+  // Boost vs Sticky: in Boost.ts (multiplierPerPerk), toggled by DamageAnalyzer._condDisabledSources.
+  // Sticky apply: in perkAutoDebuffs.ts (no proc-coeff gate — same as other finisher debuffs).
+  {
+    perkName: 'Explosive Honey',
+    condition: 'On Finisher hit (first hit only)',
+    getBaseDamage: ({ perkAmount }) => EXPLOSIVE_HONEY_BASE_DMG * perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { magic: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { magic: 1.0, physical: 1.0 },
+    isFinisher: true,
+    finisherOnly: true,
+    isProcHit: true,
+    procCoefficient: { type: 'noProc' }, // cannot proc other on-hit effects
+    secondaryEffects: [
+      {
+        label: 'Sticky',
+        getValue: () => 6,
+        format: v => `${v}s`,
+        condition: 'Applied on first hit',
+        tone: 'utility',
+      },
+    ],
+    note: 'Honey ring burst on first finisher hit. Applies Sticky. Cannot proc other effects.',
   },
   // ── Thorns ───────────────────────────────────────────────
   {

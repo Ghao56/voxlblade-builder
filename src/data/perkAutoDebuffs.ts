@@ -3,7 +3,7 @@ import { HYPNOTIST_POTENCY_PER_PERK, HYPNOTIST_DURATION_BASE, HYPNOTIST_DURATION
 import type { GrantedBuff } from './BuffData'
 import { canProc, type ProcCoefficient } from '../lib/types'
 import { calcBaseMaxHP } from '../lib/constants/game'
-import { BASIC_DEBUFF_DURATION } from '../lib/constants/buffs'
+import { BASIC_DEBUFF_DURATION, EXPLOSIVE_HONEY_STICKY_POTENCY, EXPLOSIVE_HONEY_STICKY_DURATION } from '../lib/constants/buffs'
 import { BELLOWING_EMBER_HP_GATE_THRESHOLD, BELLOWING_EMBER_HP_GATE_PER_STACK, PYRE_BLOOM_BURN_DURATION, RUNIC_BLADES_DEBUFF_DURATION_PER_STACK, CACI_SPIRIT_BLEED_DURATION, ICE_BURST_BLEED_DURATION, WOOF_SPIRIT_WEAKNESS_POTENCY, WOOF_SPIRIT_WEAKNESS_DURATION, WINTER_WOOF_SPIRIT_SHATTER_POTENCY, WINTER_WOOF_SPIRIT_SHATTER_DURATION, WINTER_WOOF_SPIRIT_BLEED_DURATION } from '../lib/constants/perk-base-damage'
 import { getActiveEnemyHpDebuffs } from './enemyHpEffects'
 
@@ -101,6 +101,19 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
       duration: 0,
       condition: 'Venom Spitter finisher applies Poison',
       sourceName: 'Venom Spitter',
+      sourceType: 'perk',
+    })
+  }
+
+  // Explosive Honey: applies Sticky on finisher hit (not gated by proc coeff — finisher-only debuffs don't need it)
+  const explosiveHoneyAmt = perks['Explosive Honey'] ?? 0
+  if (explosiveHoneyAmt > 0 && !existingBuffNames.includes('Sticky')) {
+    debuffs.push({
+      buffName: 'Sticky',
+      potency: EXPLOSIVE_HONEY_STICKY_POTENCY * explosiveHoneyAmt,
+      duration: EXPLOSIVE_HONEY_STICKY_DURATION,
+      condition: `First finisher hit · Potency = ${EXPLOSIVE_HONEY_STICKY_POTENCY} × ${explosiveHoneyAmt}`,
+      sourceName: 'Explosive Honey',
       sourceType: 'perk',
     })
   }
