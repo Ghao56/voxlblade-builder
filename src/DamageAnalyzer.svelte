@@ -1633,7 +1633,6 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     const sum = allCritSources.filter(s => !s.isExtra).reduce((a, b) => a + b.amount, 0)
     return crit.primalActive ? Math.round(sum / 1.5 * 100) / 100 : sum
   })()
-  $: _filteredNatCritRaw = allCritSources.filter(s => !s.isExtra).reduce((a, b) => a + b.amount, 0)
   $: _filteredNatCritTrueRaw = natSources.filter(s => !_isCritSourceDisabled(s.gatingPerks)).reduce((a, b) => a + b.amount, 0)
   $: _filteredExtraCrits = allCritSources.filter(s => s.isExtra).map(s => s.amount)
   $: _filteredEffCritChance = (() => {
