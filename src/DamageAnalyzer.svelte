@@ -1634,6 +1634,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     return crit.primalActive ? Math.round(sum / 1.5 * 100) / 100 : sum
   })()
   $: _filteredNatCritRaw = allCritSources.filter(s => !s.isExtra).reduce((a, b) => a + b.amount, 0)
+  $: _filteredNatCritTrueRaw = natSources.filter(s => !_isCritSourceDisabled(s.gatingPerks)).reduce((a, b) => a + b.amount, 0)
   $: _filteredExtraCrits = allCritSources.filter(s => s.isExtra).map(s => s.amount)
   $: _filteredEffCritChance = (() => {
     const chances = [
@@ -1910,7 +1911,17 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
 
     return entries
   })()
-  $: activeEntries = [...boosts.dmgEntries.filter(e => !disabledBoosts.has(e.sourceName) && !_condDisabledSources.has(e.sourceName) && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance' && e.sourceName !== 'Frenzy' && e.sourceName !== 'Dark One' && e.sourceName !== 'Ferocity'), ..._syntheticDmgBoostEntries.filter(e => {
+  $: _primalAdjustedDmgEntries = boosts.dmgEntries.map((e) => {
+    if (e.sourceName === 'Primal' && _critDisabledPerkNames.size > 0) {
+      const stacks = perks['Primal'] ?? 0
+      const natCrit = _filteredNatCritTrueRaw
+      if (stacks > 0 && natCrit > 0) {
+        return { ...e, rawMultiplier: roundMultiplier(1 + (natCrit * stacks) / 100), condition: `${natCrit.toFixed(1)}% nat. crit × ${stacks} stack` }
+      }
+    }
+    return e
+  })
+  $: activeEntries = [..._primalAdjustedDmgEntries.filter(e => !disabledBoosts.has(e.sourceName) && !_condDisabledSources.has(e.sourceName) && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance' && e.sourceName !== 'Frenzy' && e.sourceName !== 'Dark One' && e.sourceName !== 'Ferocity'), ..._syntheticDmgBoostEntries.filter(e => {
     if (e.sourceName === 'Curse Rip' && disableCurseRip) return false
     if (e.sourceName === 'Reaper' && disableReaper) return false
     if (disabledBoosts.has(e.sourceName)) return false
@@ -1995,7 +2006,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   ) / 10000
 
   $: _catGroups = (() => {
-    const finisherChips = boosts.dmgEntries.filter(e => (e as any).appliesTo?.includes('finisher'))
+    const finisherChips = _primalAdjustedDmgEntries.filter(e => (e as any).appliesTo?.includes('finisher'))
     const CAT_DEFS: Array<{ key: BoostAttackType; label: string }> = [
       { key: 'm1',   label: 'M1'   },
       { key: 'm2',   label: 'M2'   },
@@ -2007,7 +2018,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     type CatGroup = { labels: string[]; allChips: typeof boosts.dmgEntries; totalMult: number }
     const groups: CatGroup[] = []
 
-    const allEntries = boosts.dmgEntries
+    const allEntries = _primalAdjustedDmgEntries
 
     for (const { key, label } of CAT_DEFS) {
       const allChips   = allEntries.filter(e => (e as any).appliesTo?.includes(key))
@@ -2689,18 +2700,9 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       disabledBoosts = next
     }
   }
-  $: _visibleDmgEntries = boosts.dmgEntries.filter(e =>
+  $: _visibleDmgEntries = _primalAdjustedDmgEntries.filter(e =>
     (e.sourceName !== 'Rider' || mountActive) && e.sourceName !== 'Frenzy' && e.sourceName !== 'Curse Rip' && e.sourceName !== 'Reaper' && e.sourceName !== 'True Balance' && e.sourceName !== 'Dark One' && e.sourceName !== 'Ferocity' && !_condDisabledSources.has(e.sourceName)
-  ).map(e => {
-    if (e.sourceName === 'Primal' && _critDisabledPerkNames.size > 0) {
-      const stacks = perks['Primal'] ?? 0
-      const natCrit = _filteredNatCritRaw
-      if (stacks > 0 && natCrit > 0) {
-        return { ...e, rawMultiplier: roundMultiplier(1 + (natCrit * stacks) / 100), condition: `${natCrit.toFixed(1)}% nat. crit × ${stacks} stack` }
-      }
-    }
-    return e
-  })
+  )
 
   $: _goldenCritsBaseChance = BOOST_DEF_MAP.get('Golden Crits')?.baseProcChance ?? 0.40
   $: _goldenCritsEffectiveChance = (() => {
@@ -4394,7 +4396,6 @@ $: _groupedSelfDamageSources = (() => {
             title={entry.condition ?? ''}
             on:click={() => {
               if (_isCondDisabled) return
-              if (_critDisabledPerkNames.has(entry.sourceName)) return
               if (entry.sourceName === 'Curse Rip') disableCurseRip = !disableCurseRip
               else if (entry.sourceName === 'Reaper') disableReaper = !disableReaper
               else toggleBoost(entry.sourceName)
@@ -4430,7 +4431,6 @@ $: _groupedSelfDamageSources = (() => {
               title={entry.condition ?? ''}
               on:click={() => {
                 if (_isCondDisabled) return
-                if (_critDisabledPerkNames.has(entry.sourceName)) return
                 if (entry.sourceName === 'Curse Rip') disableCurseRip = !disableCurseRip
                 else if (entry.sourceName === 'Reaper') disableReaper = !disableReaper
                 else toggleBoost(entry.sourceName)
@@ -4464,7 +4464,7 @@ $: _groupedSelfDamageSources = (() => {
                     class="da-boost-chip da-boost-chip--sm"
                     class:da-boost-chip--off={disabled}
                     title={entry.condition ?? ''}
-                    on:click={() => { if (_isCondDisabled) return; if (_critDisabledPerkNames.has(entry.sourceName)) return; toggleBoost(entry.sourceName) }}
+                    on:click={() => { if (_isCondDisabled) return; toggleBoost(entry.sourceName) }}
                   >
                     <span class="da-bc-name">{entry.sourceName}</span>
                     <span class="da-bc-val">{disabled ? '—' : `×${+entry.rawMultiplier.toFixed(4)}`}</span>
