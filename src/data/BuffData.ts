@@ -337,7 +337,6 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     },
     effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
     effectUnit: 'flat',
-    statKey: 'attackSpeed',
   },
 
   // ── Debuffs ────────────────────────────────────────────────────────────

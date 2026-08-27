@@ -33,6 +33,7 @@ export const BADGE_CONFIG: Record<string, { color: string; label: string; title:
   'Deathmist Slash': { color: '#818cf8', label: '✦ Deathmist', title: 'Deathmist Slash: extra Water+Hex slash on finisher · Heals allies and self · Once per finisher' },
   'Last Croak': { color: '#94ff88', label: '✦ Last Croak', title: 'Last Croak: consumed on RMB (M2) hit · Physical explosion = M2 base damage × potency × (1 + perkAmount) / 15 · Guardbreaks' },
   'Star Struck': { color: '#fde047', label: '✦ Star', title: 'Star Struck: landed M1/M2 shoot stars · random damage type · True star deals 6 base with 0.5 Magic scaling · stars can proc other on-hit effects' },
+  'Explosive Honey': { color: '#fbbf24', label: '✦ Explosive Honey', title: 'Explosive Honey: magic burst on finisher · Applies Sticky · Cannot proc other effects' },
   'Radiance': { color: RADIANCE_COLOR, label: '✦ Radiance', title: 'Radiance: proccable heals emit a Holy burst = 1 + healing × 4/45 × perkAmount · Per source · Cannot proc other effects' },
 }
 

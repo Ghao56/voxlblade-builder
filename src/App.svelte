@@ -681,7 +681,7 @@ $: _effectiveTenacity = ($result.stats.tenacity ?? 0) + $orkBuffTenacity
 $: statRows = Object.entries($result.stats).filter(([k, v]) => {
     if (k === 'armorPenetration') {
       const displayVal = (v as number) - raceArmorPen - gladRageArmorPen
-      return displayVal !== 0
+      return Math.round(displayVal * 100) !== 0
     }
     return v !== 0
   }).map(([k, v]) => {
