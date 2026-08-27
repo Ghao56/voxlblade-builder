@@ -98,6 +98,7 @@ import {
   STORM_CALLER_PROC_CHANCE,
   DOT_EXCLUDED_PERK_BONUSES,
   VAPOR_AEGIS_FIRE_WATER_DR_PCT,
+  QUEENS_POWER_ATK_SPD_BASE, QUEENS_POWER_ATK_SPD_PER_TENTH_POTENCY,
 } from './lib/constants'
 
 // ── Cross-Toggle Mappings ──────────────────────────────────────────────────
@@ -963,6 +964,37 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     _allActiveBuffs.some(b => (b.buffName === 'Tailwind' || b.buffName === 'Whirlwind')))
   $: _effectiveTailwindPotency = (_disabledKeysArr.length,
     Math.max(0, ..._allActiveBuffs.filter(b => b.buffName === 'Tailwind' || b.buffName === 'Whirlwind').map(b => b.potency)))
+  $: _perkAtkSpdEntries = (() => {
+    const pots = new Map<string, number>()
+    for (const b of _allActiveBuffs) {
+      if (!(b.buffName === 'Bloodlust' || b.buffName === 'Queens Power' || b.buffName === 'Star Mode')) continue
+      pots.set(b.buffName, (pots.get(b.buffName) ?? 0) + (b.potency ?? 0))
+    }
+    return [...pots.entries()].map(([name, p]) => {
+      let pct: number
+      if (name === 'Bloodlust') pct = p * 20
+      else if (name === 'Star Mode') pct = 20 + p * 250
+      else pct = QUEENS_POWER_ATK_SPD_BASE + p * QUEENS_POWER_ATK_SPD_PER_TENTH_POTENCY * 10
+      return { name, pct: +pct.toFixed(4) }
+    }).concat((() => {
+      const engineAmt = perks['Engine'] ?? 0
+      if (engineAmt <= 0) return []
+      const out: { name: string; pct: number }[] = []
+      const engineSpeedBoost = (stats as Record<string, number>).speedBoost ?? 0
+      if (engineSpeedBoost !== 0) out.push({ name: 'Engine · Speed', pct: +(0.25 * engineSpeedBoost * engineAmt).toFixed(4) })
+      if (_hasTailwindOrWhirlwind && _effectiveTailwindPotency > 0) out.push({ name: 'Engine · Tailwind', pct: +(30 * _effectiveTailwindPotency * engineAmt).toFixed(4) })
+      return out
+    })())
+  })()
+  $: _perkAtkSpdMult = (() => {
+    let pos = 0
+    let neg = 0
+    for (const e of _perkAtkSpdEntries) {
+      if (e.pct >= 0) pos += e.pct / 100
+      else neg += Math.abs(e.pct) / 100
+    }
+    return (1 + pos) / (1 + neg)
+  })()
   $: _spiritWindsAmt = perks['Spirit Winds'] ?? 0
   $: _spiritWindsConversionRate = _spiritWindsAmt > 0 && _hasTailwindOrWhirlwind ? SPIRIT_WINDS_PCT_PER_STACK * _spiritWindsAmt : 0
   $: _darkMagicAmt = perks['Dark Magic'] ?? 0
@@ -4376,6 +4408,24 @@ $: _groupedSelfDamageSources = (() => {
       </div>
     {/if}
 
+    {#if _perkAtkSpdEntries.length > 0}
+      <div class="da-section da-section--top da-section--paspd">
+        <div class="da-section-title"><i class="fa fa-tachometer"></i> Perk Attack Speed</div>
+        <div class="da-apen-inner">
+          <span class="da-apen-val">×{_perkAtkSpdMult.toFixed(4)}</span>
+          <span class="da-apen-sub">Attack Speed Multiplier</span>
+          <div class="da-sources">
+            {#each _perkAtkSpdEntries as e (e.name)}
+              <div class="da-source-row">
+                <span class="da-source-name">{e.name}</span>
+                <span class="da-source-val" style="color:{e.pct < 0 ? '#f87171' : '#86efac'}">{e.pct >= 0 ? '+' : ''}{e.pct.toFixed(2)}%</span>
+              </div>
+            {/each}
+          </div>
+        </div>
+      </div>
+    {/if}
+
   </div>
 
 <!-- ══════════════════ COMBAT MULTIPLIERS ══════════════════ -->
@@ -7158,6 +7208,7 @@ $: _groupedSelfDamageSources = (() => {
 .da-section--crit { flex: 2 1 300px; }
 .da-section--env  { flex: 1 1 200px; }
 .da-section--apen { flex: 0 1 160px; text-align: center; }
+.da-section--paspd { flex: 0 1 160px; text-align: center; }
 
 /* ── Crit stat cards ── */
 .da-section--top .da-stat-card {
@@ -7186,7 +7237,9 @@ $: _groupedSelfDamageSources = (() => {
   font-family: 'Courier New', monospace;
   line-height: 1;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
+.da-section--paspd .da-apen-val { font-size: 1.85rem; }
 .da-apen-sub {
   font-size: .62rem;
   text-transform: uppercase;
