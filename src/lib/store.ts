@@ -89,6 +89,7 @@ const DEFAULT_BUILD: BuildState = {
   enemiesHit: 1,
   weaponCharge: 100,
   retaliateCharge: 100,
+  perfectionStacks: 5,
 }
 
 function loadBuild(): BuildState {

@@ -8,7 +8,6 @@ import {
   SPELL_SLINGER_BOOST_MULT,
   SHARP_CRITS_BOOST_MULT,
   SEISMIC_MOMENTUM_BOOST_MULT,
-  PERFECTION_CRIT_PER_STACK,
   CACI_KING_SPIRIT_CRIT_PER_STACK,
   THIEF_TRAINING_CRIT_DMG_MULT,
   THIEF_TRAINING_CRIT_DMG_SUB,
@@ -24,7 +23,7 @@ const CRIT_DISABLED_PERKS = ['Seismic Momentum', 'Fractured Energy'] as const
 
 interface CritSource {
   label: string
-  calc: (stats: StatMap, perks: Record<string, number>) => number
+  calc: (stats: StatMap, perks: Record<string, number>, perfectionStacks?: number) => number
   gatingPerks?: string[]
   naturalEquivalent?: boolean
 }
@@ -46,9 +45,10 @@ const calcElementalBoost = (
   return boost > 0 ? round(multiplier * boost * stacks) : 0
 }
 
-const calcPerfection = (perks: Record<string, number>) => {
-  const stacks = perks['Perfection'] ?? 0
-  return stacks > 0 ? stacks * PERFECTION_CRIT_PER_STACK : 0
+const calcPerfection = (perks: Record<string, number>, perfectionStacks: number) => {
+  const amount = perks['Perfection'] ?? 0
+  if (amount <= 0) return 0
+  return perfectionStacks * amount
 }
 
 const ELEMENTAL_CRIT_SOURCES: Array<CritSource> = [
@@ -71,9 +71,9 @@ const ELEMENTAL_CRIT_SOURCES: Array<CritSource> = [
     gatingPerks: ['Sharp Crits'],
   },
   {
-    label: 'Perfection (max stack)',
+    label: 'Perfection',
     naturalEquivalent: true,
-    calc: (_stats, perks) => calcPerfection(perks),
+    calc: (_stats, perks, perfectionStacks = 5) => calcPerfection(perks, perfectionStacks),
     gatingPerks: ['Perfection'],
   },
 ]
@@ -178,6 +178,12 @@ const CRIT_DMG_SOURCES: Array<CritSource> = [
     },
     gatingPerks: ['Splinter'],
   },
+  {
+    label: 'Perfection',
+    naturalEquivalent: true,
+    calc: (_stats, perks, perfectionStacks = 5) => calcPerfection(perks, perfectionStacks),
+    gatingPerks: ['Perfection'],
+  },
 ]
 
 const ALL_CRIT_SOURCES = [
@@ -222,10 +228,10 @@ function round(n: number): number {
   return Math.round(n * 100) / 100
 }
 
-export function calcCrit(stats: StatMap, perks: Record<string, number>, hitProcCoeff?: ProcCoefficient): CritResult {
+export function calcCrit(stats: StatMap, perks: Record<string, number>, hitProcCoeff?: ProcCoefficient, perfectionStacks?: number): CritResult {
   const naturalBreakdown: Array<{ source: string; amount: number; gatingPerks?: readonly string[] }> = []
   for (const src of NATURAL_CRIT_SOURCES) {
-    const amount = src.calc(stats, perks)
+    const amount = src.calc(stats, perks, perfectionStacks)
     if (amount !== 0) naturalBreakdown.push({ source: src.label, amount, gatingPerks: src.gatingPerks })
   }
   const naturalCritChance = round(naturalBreakdown.reduce((a, b) => a + b.amount, 0))
@@ -288,7 +294,7 @@ export function calcCrit(stats: StatMap, perks: Record<string, number>, hitProcC
     { source: 'Base', amount: BASE_CRIT_DAMAGE },
   ]
   for (const src of CRIT_DMG_SOURCES) {
-    const amount = src.calc(stats, perks)
+    const amount = src.calc(stats, perks, perfectionStacks)
     if (amount !== 0) critDmgBreakdown.push({ source: src.label, amount, naturalEquivalent: src.naturalEquivalent, gatingPerks: src.gatingPerks })
   }
 

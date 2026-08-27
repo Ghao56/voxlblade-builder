@@ -115,6 +115,7 @@ const BUFF_NAME_BOOST_LINKS: Record<string, string> = {
 const BOOST_BUFF_KEY_LINKS: Record<string, string[]> = {
   'Smoldering': ['Burn:Smoldering'],
   'Queens Power': ['Queens Power:Queens Power'],
+  'Perfection': ['Perfection:Perfection'],
 }
 const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   'Emotional': 'emotionalDisabled',
@@ -1757,7 +1758,6 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     if (next.has(name)) next.delete(name)
     else next.add(name)
     disabledBoosts = next
-    build.update(s => ({ ...s, disabledBoosts: [...next] }))
 
     const linkedKeys = BOOST_BUFF_KEY_LINKS[name]
     if (linkedKeys) {
@@ -1768,6 +1768,8 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       }
       disabledBuffKeys = nextKeys
     }
+
+    build.update(s => ({ ...s, disabledBoosts: [...next], disabledBuffKeys: [...disabledBuffKeys] }))
   }
 
   function toggleEffect(name: string) {

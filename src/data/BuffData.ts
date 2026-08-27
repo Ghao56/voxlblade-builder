@@ -876,16 +876,16 @@ export const BASIC_DEBUFF_POOL: Array<{ buffName: string; potency: number; durat
 ]
 
 // ── Perk-triggered buffs ────────────────────────────────────────────────────
-type PerkBuffFactory = (amount: number, allPerks: Record<string, number>, vassalsCroakStacks?: number, channeledDepthsTime?: number) => GrantedBuff[]
+type PerkBuffFactory = (amount: number, allPerks: Record<string, number>, vassalsCroakStacks?: number, channeledDepthsTime?: number, perfectionStacks?: number) => GrantedBuff[]
 
 const PERK_BUFFS: Record<string, PerkBuffFactory> = {
 
-  'Perfection': (amount) => [
+  'Perfection': (amount, _allPerks, _vassalsCroakStacks, _channeledDepthsTime, perfectionStacks = 5) => [
     {
       buffName: 'Perfection',
-      potency: PERFECTION_POTENCY_PER_AMOUNT * amount,
+      potency: perfectionStacks * amount,
       duration: 0,
-      condition: `On dodge/parry · +${amount}/dodge · max ${amount * 5} · −${amount} on unblocked hit`,
+      condition: `On dodge/parry · +${amount}/dodge · ${perfectionStacks}/${5} stacks · −${amount} on unblocked hit`,
       sourceName: 'Perfection',
       sourceType: 'perk',
     },
@@ -2314,14 +2314,14 @@ export function getBuffDescription(
   return desc.replace(/x%/g, `${+(pct).toFixed(4).replace(/\.?0+$/, '')}%`)
 }
 
-export function getPerkBuffs(perks: Record<string, number>, vassalsCroakStacks?: number, channeledDepthsTime?: number): GrantedBuff[] {
+export function getPerkBuffs(perks: Record<string, number>, vassalsCroakStacks?: number, channeledDepthsTime?: number, perfectionStacks?: number): GrantedBuff[] {
   const buffs: GrantedBuff[] = []
 
   for (const [perkName, amount] of Object.entries(perks)) {
     if (amount <= 0) continue
     const factory = PERK_BUFFS[perkName]
     if (!factory) continue
-    for (const b of factory(amount, perks, vassalsCroakStacks, channeledDepthsTime)) {
+    for (const b of factory(amount, perks, vassalsCroakStacks, channeledDepthsTime, perfectionStacks)) {
       buffs.push({ ...b, duration: Math.round(b.duration * 100) / 100 })
     }
   }
@@ -2396,6 +2396,7 @@ export interface ActiveBuffsBuildInput {
   inDarkness?: boolean
   lastCroakStacks?: number
   channeledDepthsTime?: number
+  perfectionStacks?: number
   hpFill?: number
 }
 
@@ -2459,7 +2460,7 @@ export function assembleActiveBuffs(
   }
 
   const buffs = convertTailwindToWhirlwind(applyBuffPerkModifiers(
-    [...itemBuffs, ...potionBuffs, ...getPerkBuffs(perks, build.lastCroakStacks, build.channeledDepthsTime), ...getWeaponArtBuffs(build.selectedWeaponArt)],
+    [...itemBuffs, ...potionBuffs, ...getPerkBuffs(perks, build.lastCroakStacks, build.channeledDepthsTime, build.perfectionStacks), ...getWeaponArtBuffs(build.selectedWeaponArt)],
     perks,
     build.rune || undefined,
     wardingDebuffMult,

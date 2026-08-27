@@ -83,6 +83,7 @@ export interface BoostContext {
   hasMagicDmg?: boolean
   hasMagicOrPhysicalDmg?: boolean
   enemyHpFillPct?: number
+  perfectionStacks?: number
 }
 
 // ── Boost definitions ──────────────────────────────────────────────────────
@@ -115,7 +116,7 @@ export const BOOST_DEFS: BoostDef[] = [
   {sourceName: 'Sticky Swings', multiplierPerPerk: STICKY_SWINGS_MULT_PER_STACK, type: 'dmg', condition: 'against opponents with Sticky', needsProcCoeff: true},
   {sourceName: 'Explosive Honey', multiplierPerPerk: EXPLOSIVE_HONEY_MULT_PER_STACK, type: 'dmg', condition: 'against opponents with Sticky', needsProcCoeff: true}, // see also: DamageAnalyzer._condDisabledSources toggles this off when Sticky is inactive
   {sourceName: 'Serrated Edge', multiplierPerPerk: SERRATED_EDGE_MULT_PER_STACK, type: 'dmg', condition: 'on Finisher', appliesTo: ['finisher'] },
-  {sourceName:'Perfection',multiplierPerPerk: PERFECTION_MULT_PER_STACK, type: 'dmg', condition: 'at max potency',},
+  {sourceName:'Perfection',calcFn:(ctx)=>{const a=ctx.perks['Perfection']??0;const s=ctx.perfectionStacks??5;if(a<=0||s<=0)return null;return{multiplier:1+PERFECTION_MULT_PER_STACK*a*(s/5),condition:`${s}/5 stacks`}}, type: 'dmg',},
   {sourceName:'Stealth',multiplierPerPerk: STEALTH_MULT_PER_STACK, type: 'dmg', condition: "against opponents not targeting you",},
   { sourceName: 'Golden Crits', multiplierPerPerk: GOLDEN_CRITS_MULT_PER_STACK, type: 'dmg', condition: '40% chance on crit', procScaling: 'positiveOnly', hasToggle: true, baseProcChance: GOLDEN_CRITS_BASE_PROC_CHANCE },
   { sourceName: 'Royal Parry', multiplierPerPerk: ROYAL_PARRY_MULT_PER_STACK, type: 'dmg', condition: 'on hits that activated Critical Boost' },

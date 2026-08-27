@@ -40,6 +40,7 @@
   import { DRACONIC_COLOR_ATTACK_STATS } from './data/draconicColorEffects'
   import EmotionalTracker from './EmotionalTracker.svelte'
   import PropellingFunTracker from './PropellingFunTracker.svelte'
+  import PerfectionTracker from './PerfectionTracker.svelte'
   import LevelBar from './LevelBar.svelte'
   import DamageAnalyzer from './DamageAnalyzer.svelte'
   import TagFilter from './TagFilter.svelte'
@@ -2333,6 +2334,9 @@ $: _appWaAvgTotal = (() => {
                     {/if}
                     {#if name === 'Propelling Fun'}
                       <PropellingFunTracker />
+                    {/if}
+                    {#if name === 'Perfection'}
+                      <PerfectionTracker />
                     {/if}
                     {#if name === 'Cursed'}
                        <div class="corruption-widget">

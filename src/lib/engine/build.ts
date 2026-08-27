@@ -131,6 +131,7 @@ function calcBoosts(
   hasMagicDmg:       boolean = false,
   hasMagicOrPhysicalDmg: boolean = false,
   enemyHpFillPct:    number = 100,
+  perfectionStacks:  number = 5,
 ): BoostResult {
   const dmgMap = new Map<string, BoostEntry>()
 
@@ -147,7 +148,7 @@ function calcBoosts(
     ragePotency, bouncePotency, quickdrawPotency,
     tailwindPotency, airBoost, speedBoost, attackSpeed, tenacity, inDarkness, emotionalState, level,
     mountActive, summonBoostPct, selectedWeaponArt, hpFillPct, burnPotency, hasBurn, selfDebuffCount,
-    hasMagicDmg, hasMagicOrPhysicalDmg, enemyHpFillPct,
+    hasMagicDmg, hasMagicOrPhysicalDmg, enemyHpFillPct, perfectionStacks,
   }
 
   for (const def of BOOST_DEFS) {
@@ -494,7 +495,7 @@ function deriveResults(
     }
   }
 
-  const crit = calcCrit(boostedStats, finalPerks)
+  const crit = calcCrit(boostedStats, finalPerks, undefined, state.perfectionStacks)
 
   const wardingDebuffMult = calcWardingDebuffMultiplier(boostedStats.warding ?? 0)
   const { allBuffs, orkBuffTenacity } = computeBuffs(state, finalPerks, wardingDebuffMult)
@@ -551,6 +552,7 @@ function deriveResults(
     hasMagicDmg,
     hasMagicOrPhysicalDmg,
     state.enemyHpFill ?? 100,
+    state.perfectionStacks ?? 5,
   )
   return { stats: boostedStats, perks: finalPerks, cdr, boosts, crit }
 }
