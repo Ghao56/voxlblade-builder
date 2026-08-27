@@ -112,8 +112,8 @@ export const BOOST_DEFS: BoostDef[] = [
   {sourceName: 'Frequent Flier', multiplierPerPerk: FREQUENT_FLIER_MULT_PER_STACK, type: 'dmg', condition: 'while mid-air'},
   {sourceName: 'Marsh Flow', multiplierPerPerk: MARSH_FLOW_MULT_PER_STACK, type: 'dmg', condition: 'while you have Regen'},
   {sourceName: 'Cleave', multiplierPerPerk: CLEAVE_MULT_PER_STACK, type: 'dmg', condition: 'against opponents with Shatter'},
-  {sourceName: 'Sticky Swings', multiplierPerPerk: STICKY_SWINGS_MULT_PER_STACK, type: 'dmg', condition: 'against opponents with Sticky'},
-  {sourceName: 'Explosive Honey', multiplierPerPerk: EXPLOSIVE_HONEY_MULT_PER_STACK, type: 'dmg', condition: 'against opponents with Sticky'}, // see also: DamageAnalyzer._condDisabledSources toggles this off when Sticky is inactive
+  {sourceName: 'Sticky Swings', multiplierPerPerk: STICKY_SWINGS_MULT_PER_STACK, type: 'dmg', condition: 'against opponents with Sticky', needsProcCoeff: true},
+  {sourceName: 'Explosive Honey', multiplierPerPerk: EXPLOSIVE_HONEY_MULT_PER_STACK, type: 'dmg', condition: 'against opponents with Sticky', needsProcCoeff: true}, // see also: DamageAnalyzer._condDisabledSources toggles this off when Sticky is inactive
   {sourceName: 'Serrated Edge', multiplierPerPerk: SERRATED_EDGE_MULT_PER_STACK, type: 'dmg', condition: 'on Finisher', appliesTo: ['finisher'] },
   {sourceName:'Perfection',multiplierPerPerk: PERFECTION_MULT_PER_STACK, type: 'dmg', condition: 'at max potency',},
   {sourceName:'Stealth',multiplierPerPerk: STEALTH_MULT_PER_STACK, type: 'dmg', condition: "against opponents not targeting you",},
@@ -288,6 +288,7 @@ export const BOOST_DEFS: BoostDef[] = [
       return null
     },
     appliesTo: ['m1', 'm2', 'perk'],
+    needsProcCoeff: true,
   },
   {
     sourceName: 'Guiding Winds (WA/Rune)',
@@ -300,6 +301,7 @@ export const BOOST_DEFS: BoostDef[] = [
       return null
     },
     appliesTo: ['wa', 'rune'],
+    needsProcCoeff: true,
   },
   {
     sourceName: 'Civilian',
@@ -423,6 +425,7 @@ export const BOOST_DEFS: BoostDef[] = [
         condition: `${enemyHp}% enemy HP → +${pct.toFixed(2)}% dmg`,
       }
     },
+    needsProcCoeff: true,
   },
   {
     sourceName: 'Executioner',
