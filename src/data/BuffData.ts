@@ -1695,6 +1695,24 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       sourceType: 'perk',
     },
   ],
+  'Saw Heart': () => [
+    {
+      buffName: 'Shatter',
+      potency: BASIC_SHATTER_POTENCY,
+      duration: BASIC_DEBUFF_DURATION,
+      condition: `Innate chance on LMB/RMB (Chain Fists) · Incompatible with shield · overridden by Locked And Loaded`,
+      sourceName: 'Saw Heart',
+      sourceType: 'perk',
+    },
+    {
+      buffName: 'Bleed',
+      potency: BASIC_DEBUFF_POTENCY,
+      duration: BASIC_DEBUFF_DURATION,
+      condition: `Innate chance on LMB/RMB (Chain Fists) · Incompatible with shield · overridden by Locked And Loaded`,
+      sourceName: 'Saw Heart',
+      sourceType: 'perk',
+    },
+  ],
   'Serrated Edge': (amount) => [
     {
       buffName: 'Bleed',
