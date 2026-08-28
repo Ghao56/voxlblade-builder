@@ -1713,6 +1713,24 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       sourceType: 'perk',
     },
   ],
+  'Saw Stance': () => [
+    {
+      buffName: 'Shatter',
+      potency: BASIC_SHATTER_POTENCY,
+      duration: BASIC_DEBUFF_DURATION,
+      condition: `30% innate chance on LMB/RMB (Chainsaw) · requires unmodified two-handed sword`,
+      sourceName: 'Saw Stance',
+      sourceType: 'perk',
+    },
+    {
+      buffName: 'Bleed',
+      potency: BASIC_DEBUFF_POTENCY,
+      duration: BASIC_DEBUFF_DURATION,
+      condition: `Innate chance on LMB/RMB (Chainsaw) · requires unmodified two-handed sword`,
+      sourceName: 'Saw Stance',
+      sourceType: 'perk',
+    },
+  ],
   'Serrated Edge': (amount) => [
     {
       buffName: 'Bleed',
