@@ -392,6 +392,17 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     name: 'Poison',
     color: '#d900ff',
     description: 'Deals hex damage over time.',
+    dynamicDescription: (perks) => (perks['Ghastly Rot'] ?? 0) > 0
+      ? 'Deals true damage over time (Ghastly Rot).'
+      : 'Deals hex damage over time.',
+    effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
+    effectUnit: 'flat',
+    isDebuff: true,
+  },
+  'Ghastly Rot': {
+    name: 'Ghastly Rot',
+    color: '#7ab648',
+    description: 'When hit, have a high chance to be inflicted with Poison.',
     effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
     effectUnit: 'flat',
     isDebuff: true,

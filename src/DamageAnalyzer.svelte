@@ -38,7 +38,7 @@ import { resolveStanceOverlay } from './data/stanceOverlays'
 import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
 import Badge from './lib/ui/Badge.svelte'
 import { getEnemyHpDotMultiplier } from './data/enemyHpEffects'
-import { getDotBase, getDotPotencyMult, toGamePotency, calcDotDisplayPotency, DOT_TYPE_LIST, DOT_SCALINGS } from './data/DoTDamage'
+import { getDotBase, getDotPotencyMult, toGamePotency, calcDotDisplayPotency, DOT_TYPE_LIST, DOT_SCALINGS, applyGhastlyRotScalings } from './data/DoTDamage'
 import { WEAPON_PROC_COEFFS, DEFAULT_PROC_COEFF, WA_PROC_COEFFS } from './data/procCoefficients'
 import { BOOST_DEF_MAP, calcFrenzyPct, calcMinionAbsorptionPotency } from './data/Boost'
 import {
@@ -768,10 +768,10 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: _slowPotency = Math.max(0, ..._slowActive.map(b => b.potency ?? 0))
   $: _slowDuration = Math.max(0, ..._slowActive.map(b => b.duration ?? 0))
   function getEffectiveDotScalings(type: string): Record<string, number> {
-    const base = { ...(DOT_SCALINGS[type] ?? {}) }
+    let base = applyGhastlyRotScalings(type, { ...(DOT_SCALINGS[type] ?? {}) }, perks['Ghastly Rot'] ?? 0)
     if (type === 'Bleed') {
       const glAmt = perks['Gelid Lance'] ?? 0
-      if (glAmt > 0) base['water'] = (base['water'] ?? 0) + 0.5 * glAmt
+      if (glAmt > 0) base = { ...base, water: (base['water'] ?? 0) + 0.5 * glAmt }
     }
     return base
   }
@@ -4226,6 +4226,7 @@ $: _groupedSelfDamageSources = (() => {
     vassalsCroakPotency={_lastCroakPotency}
     blubBlubAmt={_blubBlubAmt}
     blazingFinisherAmt={_blazingFinisherAmt}
+    ghastlyRotAmt={perks['Ghastly Rot'] ?? 0}
     dragonStateBaseDmg={_dragonStateHpGateActive ? _dragonStateBaseDmg : 0}
     dragonStateScalingMult={_dragonStateScalingMult}
     dragonStateCombatMult={_dragonStateCombatMult}

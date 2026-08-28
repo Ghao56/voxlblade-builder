@@ -137,6 +137,28 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
     })
   }
 
+  const ghastlyRotAmt = perks['Ghastly Rot'] ?? 0
+  if (ghastlyRotAmt > 0 && !existingBuffNames.includes('Ghastly Rot')) {
+    debuffs.push({
+      buffName: 'Ghastly Rot',
+      potency: 0,
+      duration: BASIC_DEBUFF_DURATION,
+      condition: 'High chance on hit',
+      sourceName: 'Ghastly Rot',
+      sourceType: 'perk',
+    })
+  }
+  if (ghastlyRotAmt > 0 && !existingBuffNames.includes('Poison')) {
+    debuffs.push({
+      buffName: 'Poison',
+      potency: 0,
+      duration: BASIC_DEBUFF_DURATION,
+      condition: 'High chance when the target is hit with Ghastly Rot active',
+      sourceName: 'Ghastly Rot',
+      sourceType: 'perk',
+    })
+  }
+
   const gorecastAmt = perks['Gorecast'] ?? 0
   if (gorecastAmt > 0 && input.hasMagicOrPhysicalDmg && !existingBuffNames.includes('Bleed')) {
     debuffs.push({

@@ -12,7 +12,7 @@
   import type { ProcCoefficient } from './lib/types'
   import { SCALING_TO_BOOST, PERCENT_STATS, canProc } from './lib/types'
   import { procChanceScale } from './lib/procRegistry'
-import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
+import { getDotDmgType } from './data/DoTDamage'
   import {
     DMG_TYPE_META,
     DEF_TRACKED_TYPES,
@@ -62,6 +62,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
   export let explosiveChargePct: number = 0
   export let blubBlubAmt: number = 0
   export let blazingFinisherAmt: number = 0
+  export let ghastlyRotAmt: number = 0
   export let dragonStateBaseDmg: number = 0
   export let dragonStateScalingMult: number = 1
   export let dragonStateCombatMult: number = 1
@@ -479,7 +480,7 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
     const isOnDummy = resolvedDebuffs.some(r => r.name === debuffToCheck) && !disabledDebuffs.has(debuffToCheck)
     return isOnDummy && d.tickDamage > 0
   }).map(d => {
-    const dmgType = DOT_DMG_TYPE_MAP[d.type] ?? 'hex'
+    const dmgType = getDotDmgType(d.type, ghastlyRotAmt)
     const scalingMult = d.scalingMult
     const combatMult = d.combatMult
     const sunburnMult = sunburnUniversalDmgMult
@@ -1943,7 +1944,9 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
             </div>
             <div class="bdc-hit-list-rows">
               {#each _activeDotTicks as dot}
-                {@const _dc = DOT_COLORS[dot.type] ?? '#e8e4da'}
+                {@const _dc = dot.dmgType === 'true' && dot.type === 'Poison'
+                  ? (BADGE_COLORS['true'] ?? '#f87171')
+                  : (DOT_COLORS[dot.type] ?? '#e8e4da')}
                 <div class="bdc-hit-row">
                   <div class="bdc-hit-row-types">
                     <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -2132,7 +2135,9 @@ import { DOT_DMG_TYPE_MAP } from './data/DoTDamage'
 {/if}
 
 {#if _dotTooltip}
-  {@const _dtc = DOT_COLORS[_dotTooltip.type] ?? '#e8e4da'}
+  {@const _dtc = (_dotTooltip.dmgType === 'true' && _dotTooltip.type === 'Poison')
+    ? (BADGE_COLORS['true'] ?? '#f87171')
+    : (DOT_COLORS[_dotTooltip.type] ?? '#e8e4da')}
   {@const _hasBoosts = _dotTooltip.applicableBoosts.filter(b => b.label !== 'Converted Energy').length > 0 && _dotTooltip.typedMult !== 1}
   {@const _hasTypeDebuff = _dotTooltip.typeDebuffMult !== 1}
   {@const _hasDebuffMult = _dotTooltip.debuffMult !== 1}

@@ -20,6 +20,26 @@ export const DOT_DMG_TYPE_MAP: Record<string, string> = {
   'Caustic Slow': 'true',
 }
 
+/** Ghastly Rot converts Poison to the True damage type while owned. */
+export function isPoisonConvertedToTrue(ghastlyRotAmt: number): boolean {
+  return ghastlyRotAmt > 0
+}
+
+/** Returns the mitigation damage type for a DoT, applying Ghastly Rot's Poison hex→true conversion. */
+export function getDotDmgType(type: string, ghastlyRotAmt: number): string {
+  if (type === 'Poison' && isPoisonConvertedToTrue(ghastlyRotAmt)) return 'true'
+  return DOT_DMG_TYPE_MAP[type] ?? 'hex'
+}
+
+/** Applies Ghastly Rot's Poison scaling conversion (hex→true) to a scalar map. */
+export function applyGhastlyRotScalings(type: string, scalings: Record<string, number>, ghastlyRotAmt: number): Record<string, number> {
+  if (type !== 'Poison' || !isPoisonConvertedToTrue(ghastlyRotAmt) || scalings.hex == null) return scalings
+  const out = { ...scalings }
+  out['true'] = (out['true'] ?? 0) + scalings.hex
+  delete out.hex
+  return out
+}
+
 /**
  * Returns the flat base damage before potency multiplier.
  * Formula: 1.75 × (1 + inflictionPotency / 1.1)
