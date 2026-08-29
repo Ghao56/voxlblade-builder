@@ -887,7 +887,7 @@ export const BASIC_DEBUFF_POOL: Array<{ buffName: string; potency: number; durat
 ]
 
 // ── Perk-triggered buffs ────────────────────────────────────────────────────
-type PerkBuffFactory = (amount: number, allPerks: Record<string, number>, vassalsCroakStacks?: number, channeledDepthsTime?: number, perfectionStacks?: number) => GrantedBuff[]
+type PerkBuffFactory = (amount: number, allPerks: Record<string, number>, vassalsCroakStacks?: number, channeledDepthsTime?: number, perfectionStacks?: number, weaponModifier?: string) => GrantedBuff[]
 
 const PERK_BUFFS: Record<string, PerkBuffFactory> = {
 
@@ -1695,42 +1695,48 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       sourceType: 'perk',
     },
   ],
-  'Saw Heart': () => [
-    {
-      buffName: 'Shatter',
-      potency: BASIC_SHATTER_POTENCY,
-      duration: BASIC_DEBUFF_DURATION,
-      condition: `Innate chance on LMB/RMB (Chain Fists) · Incompatible with shield · overridden by Locked And Loaded`,
-      sourceName: 'Saw Heart',
-      sourceType: 'perk',
-    },
-    {
-      buffName: 'Bleed',
-      potency: BASIC_DEBUFF_POTENCY,
-      duration: BASIC_DEBUFF_DURATION,
-      condition: `Innate chance on LMB/RMB (Chain Fists) · Incompatible with shield · overridden by Locked And Loaded`,
-      sourceName: 'Saw Heart',
-      sourceType: 'perk',
-    },
-  ],
-  'Saw Stance': () => [
-    {
-      buffName: 'Shatter',
-      potency: BASIC_SHATTER_POTENCY,
-      duration: BASIC_DEBUFF_DURATION,
-      condition: `30% innate chance on LMB/RMB (Chainsaw) · requires unmodified two-handed sword`,
-      sourceName: 'Saw Stance',
-      sourceType: 'perk',
-    },
-    {
-      buffName: 'Bleed',
-      potency: BASIC_DEBUFF_POTENCY,
-      duration: BASIC_DEBUFF_DURATION,
-      condition: `Innate chance on LMB/RMB (Chainsaw) · requires unmodified two-handed sword`,
-      sourceName: 'Saw Stance',
-      sourceType: 'perk',
-    },
-  ],
+  'Saw Heart': (_amount, _allPerks, _vassals, _cdt, _perf, weaponModifier) => {
+    if (weaponModifier !== 'Saw Heart') return []
+    return [
+      {
+        buffName: 'Shatter',
+        potency: BASIC_SHATTER_POTENCY,
+        duration: BASIC_DEBUFF_DURATION,
+        condition: `Innate chance on LMB/RMB (Chain Fists) · Incompatible with shield · overridden by Locked And Loaded`,
+        sourceName: 'Saw Heart',
+        sourceType: 'perk',
+      },
+      {
+        buffName: 'Bleed',
+        potency: BASIC_DEBUFF_POTENCY,
+        duration: BASIC_DEBUFF_DURATION,
+        condition: `Innate chance on LMB/RMB (Chain Fists) · Incompatible with shield · overridden by Locked And Loaded`,
+        sourceName: 'Saw Heart',
+        sourceType: 'perk',
+      },
+    ]
+  },
+  'Saw Stance': (_amount, _allPerks, _vassals, _cdt, _perf, weaponModifier) => {
+    if (weaponModifier !== 'Saw Stance') return []
+    return [
+      {
+        buffName: 'Shatter',
+        potency: BASIC_SHATTER_POTENCY,
+        duration: BASIC_DEBUFF_DURATION,
+        condition: `30% innate chance on LMB/RMB (Chainsaw) · requires unmodified two-handed sword`,
+        sourceName: 'Saw Stance',
+        sourceType: 'perk',
+      },
+      {
+        buffName: 'Bleed',
+        potency: BASIC_DEBUFF_POTENCY,
+        duration: BASIC_DEBUFF_DURATION,
+        condition: `Innate chance on LMB/RMB (Chainsaw) · requires unmodified two-handed sword`,
+        sourceName: 'Saw Stance',
+        sourceType: 'perk',
+      },
+    ]
+  },
   'Serrated Edge': (amount) => [
     {
       buffName: 'Bleed',
@@ -2361,14 +2367,14 @@ export function getBuffDescription(
   return desc.replace(/x%/g, `${+(pct).toFixed(4).replace(/\.?0+$/, '')}%`)
 }
 
-export function getPerkBuffs(perks: Record<string, number>, vassalsCroakStacks?: number, channeledDepthsTime?: number, perfectionStacks?: number): GrantedBuff[] {
+export function getPerkBuffs(perks: Record<string, number>, vassalsCroakStacks?: number, channeledDepthsTime?: number, perfectionStacks?: number, weaponModifier?: string): GrantedBuff[] {
   const buffs: GrantedBuff[] = []
 
   for (const [perkName, amount] of Object.entries(perks)) {
     if (amount <= 0) continue
     const factory = PERK_BUFFS[perkName]
     if (!factory) continue
-    for (const b of factory(amount, perks, vassalsCroakStacks, channeledDepthsTime, perfectionStacks)) {
+    for (const b of factory(amount, perks, vassalsCroakStacks, channeledDepthsTime, perfectionStacks, weaponModifier)) {
       buffs.push({ ...b, duration: Math.round(b.duration * 100) / 100 })
     }
   }
@@ -2489,6 +2495,7 @@ export function assembleActiveBuffs(
   perks: Record<string, number>,
   wardingDebuffMult?: number,
   darkeningHexEligible?: boolean,
+  weaponModifier?: string,
 ): GrantedBuff[] {
   const itemBuffs = getActiveBuildBuffs({
     rune: build.rune, ring: build.ring, infusionRing: build.infusionRing,
@@ -2507,7 +2514,7 @@ export function assembleActiveBuffs(
   }
 
   const buffs = convertTailwindToWhirlwind(applyBuffPerkModifiers(
-    [...itemBuffs, ...potionBuffs, ...getPerkBuffs(perks, build.lastCroakStacks, build.channeledDepthsTime, build.perfectionStacks), ...getWeaponArtBuffs(build.selectedWeaponArt)],
+    [...itemBuffs, ...potionBuffs, ...getPerkBuffs(perks, build.lastCroakStacks, build.channeledDepthsTime, build.perfectionStacks, weaponModifier), ...getWeaponArtBuffs(build.selectedWeaponArt)],
     perks,
     build.rune || undefined,
     wardingDebuffMult,

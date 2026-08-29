@@ -384,7 +384,10 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
 
   // ── Active Buffs Assembly ──────────────────────────────────────────────────
   $: _allActiveBuffsRaw = (() => {
-    const baseBuffs = assembleActiveBuffs($build, $result.perks, wardingDebuffMult, darkeningHexEligible)
+    const _weaponModifier = isMonkGuild($build.guild)
+      ? (($build.monkGlove || $build.monkEssence) ? calcMonkWeapon($build.monkGlove, $build.monkEssence, $build.shrineActive, $build.guildRank) : null)?.weaponModifier
+      : (($build.weaponBlade || $build.weaponHandle) ? calcWeapon($build.weaponBlade, $build.weaponHandle, $build.shrineActive) : null)?.weaponModifier
+    const baseBuffs = assembleActiveBuffs($build, $result.perks, wardingDebuffMult, darkeningHexEligible, _weaponModifier)
 
     if ($build.rune === 'Enchanted Sword Rune' && $build.enchantedSwordType === 1) {
       baseBuffs.push({

@@ -75,7 +75,7 @@ const WEAPON_OVERRIDES: WeaponOverride[] = [
   { perk: "Dual Wielding",  bladeTypes:  ["Hammer Head"],                    result: "Dual Mallets" },
   { perk: "Lance",          handleTypes: ["Long Handle", "Medium Handle"],   result: "Lance" },
   { perk: "Duelist Stance", bladeTypes:  ["Medium Blade"],                   result: "Rapier" },
-  { perk: "Saw Stance",     bladeTypes:  ["Medium Blade"],                   result: "Chainsaw" },
+  { perk: "Saw Stance",     handleTypes: ["Long Handle"], bladeTypes: ["Medium Blade"], result: "Chainsaw" },
 ]
 
 function resolveWeaponType(
@@ -115,8 +115,8 @@ function resolveMonkWeaponType(
   perks:       Record<string, number>,
 ): { base: string; final: string; modifier: string } {
   const base = getMonkWeaponType(essenceType, gloveType)
-  if ((perks["Saw Heart"]         ?? 0) > 0 && base === "Fists") return { base, final: "Chain Fists",  modifier: "Saw Heart" }
   if ((perks["Locked And Loaded"] ?? 0) > 0 && base === "Fists") return { base, final: "Fists + Gun",  modifier: "Locked And Loaded" }
+  if ((perks["Saw Heart"]         ?? 0) > 0 && base === "Fists") return { base, final: "Chain Fists",  modifier: "Saw Heart" }
   return { base, final: base, modifier: "" }
 }
 

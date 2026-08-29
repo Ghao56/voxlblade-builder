@@ -448,8 +448,8 @@ function applyGladiatorialRage(boostedStats: StatMap, finalPerks: Record<string,
   if (armorPen > 0) boostedStats['armorPenetration'] = (boostedStats['armorPenetration'] ?? 0) + armorPen
 }
 
-function computeBuffs(state: BuildState, finalPerks: Record<string, number>, wardingDebuffMult: number): { allBuffs: any[]; orkBuffTenacity: number } {
-  const allBuffs = assembleActiveBuffs(state, finalPerks, wardingDebuffMult)
+function computeBuffs(state: BuildState, finalPerks: Record<string, number>, wardingDebuffMult: number, weaponModifier?: string): { allBuffs: any[]; orkBuffTenacity: number } {
+  const allBuffs = assembleActiveBuffs(state, finalPerks, wardingDebuffMult, undefined, weaponModifier)
 
   const orkBuffTenacity = state.race === 'ORK' ? calcOrkTenacityBonus(allBuffs, BUFF_DEFS) : 0
   return { allBuffs, orkBuffTenacity }
@@ -498,7 +498,11 @@ function deriveResults(
   const crit = calcCrit(boostedStats, finalPerks, undefined, state.perfectionStacks)
 
   const wardingDebuffMult = calcWardingDebuffMultiplier(boostedStats.warding ?? 0)
-  const { allBuffs, orkBuffTenacity } = computeBuffs(state, finalPerks, wardingDebuffMult)
+  const isMountRune = state.rune.endsWith('Mount Rune')
+  const _weaponResult = isMonkGuild(state.guild)
+    ? ((state.monkGlove || state.monkEssence) ? calcMonkWeapon(state.monkGlove, state.monkEssence, state.shrineActive, state.guildRank) : null)
+    : ((state.weaponBlade || state.weaponHandle) ? calcWeapon(state.weaponBlade, state.weaponHandle, state.shrineActive) : null)
+  const { allBuffs, orkBuffTenacity } = computeBuffs(state, finalPerks, wardingDebuffMult, _weaponResult?.weaponModifier)
   const ragePotency      = maxBuffPotency(allBuffs, 'Rage')
   const bouncePotency    = maxBuffPotency(allBuffs, 'Bounce')
   const quickdrawPotency = maxBuffPotency(allBuffs, 'Quickdraw')
@@ -519,10 +523,6 @@ function deriveResults(
     _actualHpFill = Math.min(100, Math.round(_rawFill * _effMaxHP / _baseMaxHP * 100) / 100)
   }
 
-  const isMountRune = state.rune.endsWith('Mount Rune')
-  const _weaponResult = isMonkGuild(state.guild)
-    ? ((state.monkGlove || state.monkEssence) ? calcMonkWeapon(state.monkGlove, state.monkEssence, state.shrineActive, state.guildRank) : null)
-    : ((state.weaponBlade || state.weaponHandle) ? calcWeapon(state.weaponBlade, state.weaponHandle, state.shrineActive) : null)
   const _perkDmgTypeBonusesForBoost = buildDmgTypeBonuses(true, {
     perks: finalPerks, ragePotency, draconicRuneInfusion: state.draconicRuneInfusion,
     emotionalState: state.emotionalState, draconicColor: state.draconicColor,
