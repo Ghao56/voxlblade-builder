@@ -12,7 +12,7 @@
   import type { ProcCoefficient } from './lib/types'
   import { SCALING_TO_BOOST, PERCENT_STATS, canProc } from './lib/types'
   import { procChanceScale } from './lib/procRegistry'
-import { getDotDmgType } from './data/DoTDamage'
+import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
   import {
     DMG_TYPE_META,
     DEF_TRACKED_TYPES,
@@ -63,6 +63,7 @@ import { getDotDmgType } from './data/DoTDamage'
   export let blubBlubAmt: number = 0
   export let blazingFinisherAmt: number = 0
   export let ghastlyRotAmt: number = 0
+  export let cursedFlamesAmt: number = 0
   export let dragonStateBaseDmg: number = 0
   export let dragonStateScalingMult: number = 1
   export let dragonStateCombatMult: number = 1
@@ -241,6 +242,39 @@ import { getDotDmgType } from './data/DoTDamage'
     finalDmg: number
     weaponBoostLabel?: string
   } | null = null
+
+  function showDotTooltip(dot: any, e: MouseEvent) {
+    const r = (e.currentTarget as HTMLElement).getBoundingClientRect()
+    const spaceBelow = window.innerHeight - r.bottom
+    const left = Math.max(8, Math.min(r.left, window.innerWidth - 260))
+    _dotTooltip = {
+      type: dot.type,
+      tickDamage: dot.tickDamage,
+      dotPotency: dot.dotPotency ?? 0,
+      inflictionPotency: dot.inflictionPotency ?? 0,
+      slowDuration: dot.slowDuration,
+      baseTick: dot.baseTick,
+      dotBase: dot.dotBase,
+      potencyMult: dot.potencyMult,
+      kindlingMult: dot.kindlingMult,
+      dmgType: dot.dmgType,
+      scalingMult: dot.scalingMult,
+      combatMult: dot.combatMult,
+      preMitBase: dot.preMitBase,
+      applicableBoosts: dot.applicableBoosts ?? [],
+      typedMult: dot.typedMult,
+      defPct: dot.defPct,
+      defMult: dot.defMult,
+      typeDebuffMult: dot.typeDebuffMult,
+      debuffMult: dot.debuffMult,
+      sunburnMult: dot.weaponBoostMult ?? 1,
+      weaponBoostLabel: dot.weaponBoostLabel,
+      finalDmg: dot.finalDmg,
+      style: spaceBelow > 180
+        ? `left:${left}px;top:${r.bottom + 4}px;`
+        : `left:${left}px;bottom:${window.innerHeight - r.top + 4}px;`,
+    }
+  }
 
   let _meltingTooltip: {
     style: string
@@ -481,7 +515,7 @@ import { getDotDmgType } from './data/DoTDamage'
     const isOnDummy = resolvedDebuffs.some(r => r.name === debuffToCheck) && !disabledDebuffs.has(debuffToCheck)
     return isOnDummy && d.tickDamage > 0
   }).map(d => {
-    const dmgType = getDotDmgType(d.type, ghastlyRotAmt)
+    const dmgType = d.type === 'Burn' && cursedFlamesAmt > 0 ? 'fire' : getDotDmgType(d.type, ghastlyRotAmt)
     const scalingMult = d.scalingMult
     const combatMult = d.combatMult
     const sunburnMult = sunburnUniversalDmgMult
@@ -492,7 +526,7 @@ import { getDotDmgType } from './data/DoTDamage'
     ].filter(Boolean).join(', ') || undefined
     const preMitBase = d.tickDamage * scalingMult * combatMult
 
-    const resolvedTypes = resolveDamageTypes({ [dmgType]: 1.0 }, perkDmgTypeBonusesDoT)
+    const resolvedTypes = resolveDamageTypes(getDotBaseDmgTypes(d.type, ghastlyRotAmt, cursedFlamesAmt), perkDmgTypeBonusesDoT)
 
     const applicableBoosts = getApplicableBoosts(dmgType, false, undefined, { type: 'noProc' as const })
     const typedMult = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
@@ -1594,6 +1628,7 @@ import { getDotDmgType } from './data/DoTDamage'
               <div class="bdc-debuff-group">
                 <button
                   class="bdc-debuff-pill"
+                  class:bdc-debuff-pill--burn-cursed={d.name === 'Burn' && cursedFlamesAmt > 0}
                   class:bdc-debuff-pill--off={isOff}
                   style="--dc:{d.color}"
                   title="{(d.variants ?? [])[activeVariants.get(d.name) ?? 0]?.sourceName ?? d.name}{d.effectLabel ? ` · ${d.effectLabel}` : ''} — click to toggle"
@@ -1623,7 +1658,7 @@ import { getDotDmgType } from './data/DoTDamage'
           {#if activeDescs.length > 0}
             <div class="bdc-debuff-descs">
               {#each activeDescs as d}
-                <span class="bdc-debuff-desc" style="--dc:{d.color}">{d.descLabel}</span>
+                <span class="bdc-debuff-desc" class:bdc-debuff-desc--burn-cursed={d.name === 'Burn' && cursedFlamesAmt > 0} style="--dc:{d.color}">{d.descLabel}</span>
               {/each}
             </div>
           {/if}
@@ -1954,38 +1989,7 @@ import { getDotDmgType } from './data/DoTDamage'
                     <!-- svelte-ignore a11y_no_static_element_interactions -->
                     <div class="bdc-hit-type-chunk" style="--tc:{_dc}"
                       class:bdc-hit-type-chunk--rage={dot.applicableBoosts?.some(b => b.perkName === 'Rage')}
-                      on:mouseenter={(e) => {
-                        const r = (e.currentTarget as HTMLElement).getBoundingClientRect()
-                        const spaceBelow = window.innerHeight - r.bottom
-                        const left = Math.max(8, Math.min(r.left, window.innerWidth - 260))
-                        _dotTooltip = {
-                          type: dot.type,
-                          tickDamage: dot.tickDamage,
-                          dotPotency: dot.dotPotency ?? 0,
-                          inflictionPotency: dot.inflictionPotency ?? 0,
-                          slowDuration: dot.slowDuration,
-                          baseTick: dot.baseTick,
-                          dotBase: dot.dotBase,
-                          potencyMult: dot.potencyMult,
-                          kindlingMult: dot.kindlingMult,
-                          dmgType: dot.dmgType,
-                          scalingMult: dot.scalingMult,
-                          combatMult: dot.combatMult,
-                          preMitBase: dot.preMitBase,
-                          applicableBoosts: dot.applicableBoosts ?? [],
-                          typedMult: dot.typedMult,
-                          defPct: dot.defPct,
-                          defMult: dot.defMult,
-                          typeDebuffMult: dot.typeDebuffMult,
-                          debuffMult: dot.debuffMult,
-                          sunburnMult: dot.weaponBoostMult ?? 1,
-                          weaponBoostLabel: dot.weaponBoostLabel,
-                          finalDmg: dot.finalDmg,
-                          style: spaceBelow > 180
-                            ? `left:${left}px;top:${r.bottom + 4}px;`
-                            : `left:${left}px;bottom:${window.innerHeight - r.top + 4}px;`,
-                        }
-                      }}
+                      on:mouseenter={(e) => showDotTooltip(dot, e)}
                       on:mouseleave={() => { _dotTooltip = null }}>
                       <div class="bdc-hit-type-top">
                         <div class="bdc-hit-type-val-row">
@@ -2004,8 +2008,11 @@ import { getDotDmgType } from './data/DoTDamage'
                     </div>
                     {#each dot.bonusTypes ?? [] as bt}
                       <span class="bdc-hit-plus">+</span>
+                      <!-- svelte-ignore a11y_no_static_element_interactions -->
                       <div class="bdc-hit-type-chunk" style="--tc:{bt.color}"
-                        class:bdc-hit-type-chunk--rage={bt.applicableBoosts?.some(b => b.perkName === 'Rage')}>
+                        class:bdc-hit-type-chunk--rage={bt.applicableBoosts?.some(b => b.perkName === 'Rage')}
+                        on:mouseenter={(e) => showDotTooltip(dot, e)}
+                        on:mouseleave={() => { _dotTooltip = null }}>
                         <div class="bdc-hit-type-top">
                           <div class="bdc-hit-type-val-row">
                             <span class="bdc-hit-type-val">{fmt(bt.raw)}</span>
@@ -2568,6 +2575,18 @@ import { getDotDmgType } from './data/DoTDamage'
   font-family: inherit;
   transition: opacity .15s, filter .15s, box-shadow .15s;
   line-height: 1;
+}
+.bdc-debuff-pill--burn-cursed {
+  background: linear-gradient(120deg, rgba(249,115,22,.22), rgba(232,121,249,.22));
+  border-color: color-mix(in srgb, #e879f9 50%, #f97316);
+  box-shadow: 0 0 10px color-mix(in srgb, #e879f9 28%, transparent);
+}
+.bdc-debuff-pill--burn-cursed .bdc-dp-abbr,
+.bdc-debuff-pill--burn-cursed .bdc-dp-val {
+  background: linear-gradient(90deg, #f97316 0%, #e879f9 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 .bdc-debuff-pill:hover {
   box-shadow: 0 0 8px color-mix(in srgb, var(--dc) 40%, transparent);
@@ -3213,6 +3232,13 @@ import { getDotDmgType } from './data/DoTDamage'
   opacity: .75;
   text-align: center;
   letter-spacing: .03em;
+}
+.bdc-debuff-desc--burn-cursed {
+  background: linear-gradient(90deg, #f97316 0%, #e879f9 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  opacity: 1;
 }
 .bdc-hit-type-sum-holder {
   position: relative;

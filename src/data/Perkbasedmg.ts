@@ -283,6 +283,7 @@ export interface PerkDmgDef {
   guardbreak?: boolean
   boostCat?: 'm1' | 'm2' | 'perk' | 'rune' | 'wa'
   procCoefficient?: ProcCoefficient
+  noGeneralDmgBoosts?: boolean
   note?: string
   hpGate?: HpGate
   enemyHpGate?: HpGate
@@ -916,6 +917,22 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
       { perk: 'Dark Magic', trigger: 'always' },
       { perk: 'Bombardier', trigger: 'chance' },
     ],
+  },
+  // ── Ignition ────────────────────────────────────────────────────────────────
+  {
+    perkName: 'Ignition',
+    condition: '10% × perk chance on hit',
+    getBaseDamage: ({ perkAmount }) => perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { fire: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { fire: 1.0 },
+    isProcHit: true,
+    workOnM1: true,
+    workOnM2: true,
+    procCoefficient: { type: 'noProc' },
+    noGeneralDmgBoosts: true,
+    note: 'Bonus Fire damage on hit. Cannot proc other effects. Unaffected by most general damage bonuses (Smoldering, Ferocity, Dark One). Inflicts Burn for 5 + 0.5 × perk seconds.',
   },
   // ── Volatile Shell ──────────────────────────────────────────────────────────
   {

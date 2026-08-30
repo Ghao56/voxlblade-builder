@@ -2,7 +2,7 @@
   import { fade } from 'svelte/transition'
   import { build, result } from './lib/store'
   import { calcWardingDebuffMultiplier, roundMultiplier } from './lib/utils'
-  import { calcDotDisplayPotency } from './data/DoTDamage'
+  import { calcDotDisplayPotency, getCursedFlamesBurnGradient } from './data/DoTDamage'
   import { calcWeapon, calcMonkWeapon } from './lib/engine/weapon'
 import { isMonkGuild } from './lib/engine/data/character'
   import Badge from './lib/ui/Badge.svelte'
@@ -553,7 +553,10 @@ $: groupedBuffs = (() => {
           {@const topPotency = group.strongest.potency}
           
           {#if def}
-            <div class="bl-card" class:bl-card--debuff={def.isDebuff} style="--c:{def.color}" transition:fade={{ duration: 200 }}>
+            {@const burnGrad = ($result.perks['Cursed Flames'] ?? 0) > 0 && group.buffName === 'Burn'
+              ? getCursedFlamesBurnGradient($result.perks['Cursed Flames'] ?? 0)
+              : null}
+            <div class="bl-card" class:bl-card--debuff={def.isDebuff} class:bl-card--burn-grad={burnGrad !== null} style="--c:{def.color}" transition:fade={{ duration: 200 }}>
               <div class="bl-accent-bar"></div>
 
               <div class="bl-body">
@@ -756,6 +759,17 @@ $: groupedBuffs = (() => {
   }
   .bl-card--debuff .bl-accent-bar {
     background: linear-gradient(180deg, var(--c, #f87171) 0%, color-mix(in srgb, var(--c, #f87171) 25%, transparent) 100%);
+  }
+
+  .bl-card--burn-grad .bl-accent-bar {
+    background: linear-gradient(180deg, #f97316 0%, #e879f9 100%) !important;
+  }
+  .bl-card--burn-grad .bl-buff-name,
+  .bl-card--burn-grad .bl-value {
+    background: linear-gradient(90deg, #f97316 0%, #e879f9 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent !important;
   }
 
   .bl-body {

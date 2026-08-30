@@ -99,6 +99,7 @@ import {
   DARKENING_HEX_POTENCY_ADD_PER_AMOUNT, DARKENING_HEX_POTENCY_MULT_PER_AMOUNT,
   DARKENING_HEX_DURATION_ADD_PER_AMOUNT, DARKENING_HEX_MAX_ACTIVATIONS,
   KINDLING_BURN_DURATION_MULT,
+  CURSED_FLAMES_BURN_DURATION_PER_AMOUNT,
 } from '../lib/constants/perks'
 import { DRAGIGATOR_SPIRIT_BURN_DURATION } from '../lib/constants/perk-base-damage'
 import { canProc } from '../lib/types'
@@ -376,6 +377,9 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     name: 'Burn',
     color: '#fd5d00',
     description: 'Deals fire damage overtime.',
+    dynamicDescription: (perks) => (perks['Cursed Flames'] ?? 0) > 0
+      ? 'Deals 0.5 Fire + 0.5 Hex damage over time and weakens the target (they deal less damage).'
+      : 'Deals fire damage overtime.',
     effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
     effectUnit: 'flat',
     isDebuff: true,
@@ -2198,6 +2202,8 @@ export function applyBuffPerkModifiers(
   const kindlingAmt = perks['Kindling'] ?? 0
   const kindlingEnabled = options?.kindlingEnabled !== false
 
+  const cursedFlamesAmt = perks['Cursed Flames'] ?? 0
+
   return buffs.map(buff => {
     const def = BUFF_DEFS[buff.buffName]
     const isSelfDebuff = buff.isSelfDebuff || def?.isSelfDebuff
@@ -2240,9 +2246,15 @@ export function applyBuffPerkModifiers(
         ? KINDLING_BURN_DURATION_MULT
         : 1
 
+    // Cursed Flames: enemy Burn lasts 10% longer per 1 of the perk.
+    const cursedFlamesBurnDurationMult =
+      cursedFlamesAmt > 0 && def?.isDebuff && !isSelfDebuff && buff.buffName === 'Burn'
+        ? 1 + CURSED_FLAMES_BURN_DURATION_PER_AMOUNT * cursedFlamesAmt
+        : 1
+
     const bonus = specific.bonus + bastionBonus + tricksterBonus
     const durationMult =
-      specific.durationMult * generic.durationMult * containedMult * darkOneDurationMult * kindlingBurnDurationMult
+      specific.durationMult * generic.durationMult * containedMult * darkOneDurationMult * kindlingBurnDurationMult * cursedFlamesBurnDurationMult
 
     if (
       bonus === 0 &&

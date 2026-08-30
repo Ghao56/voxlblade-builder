@@ -25,10 +25,32 @@ export function isPoisonConvertedToTrue(ghastlyRotAmt: number): boolean {
   return ghastlyRotAmt > 0
 }
 
+/** Cursed Flames splits Burn into 0.5 Fire / 0.5 Hex while owned. */
+export function isBurnSplitByCursedFlames(cursedFlamesAmt: number): boolean {
+  return cursedFlamesAmt > 0
+}
+
+/** Returns a fire→hex CSS gradient for Burn's display when Cursed Flames is active, or null to keep the default. */
+export function getCursedFlamesBurnGradient(cursedFlamesAmt: number): string | null {
+  return isBurnSplitByCursedFlames(cursedFlamesAmt) ? 'linear-gradient(120deg, #f97316 0%, #e879f9 100%)' : null
+}
+
 /** Returns the mitigation damage type for a DoT, applying Ghastly Rot's Poison hex→true conversion. */
 export function getDotDmgType(type: string, ghastlyRotAmt: number): string {
   if (type === 'Poison' && isPoisonConvertedToTrue(ghastlyRotAmt)) return 'true'
   return DOT_DMG_TYPE_MAP[type] ?? 'hex'
+}
+
+/**
+ * Returns the base mitigation damage-type weights for a DoT debuff.
+ * Defaults to a single type at weight 1.0, but Burns affected by Cursed
+ * Flames resolve as 0.5 Fire / 0.5 Hex.
+ */
+export function getDotBaseDmgTypes(type: string, ghastlyRotAmt: number, cursedFlamesAmt: number): Record<string, number> {
+  if (type === 'Burn' && isBurnSplitByCursedFlames(cursedFlamesAmt)) {
+    return { fire: 0.5, hex: 0.5 }
+  }
+  return { [getDotDmgType(type, ghastlyRotAmt)]: 1.0 }
 }
 
 /** Applies Ghastly Rot's Poison scaling conversion (hex→true) to a scalar map. */
@@ -38,6 +60,15 @@ export function applyGhastlyRotScalings(type: string, scalings: Record<string, n
   out['true'] = (out['true'] ?? 0) + scalings.hex
   delete out.hex
   return out
+}
+
+/**
+ * Applies Cursed Flames' Burn scaling conversion to a scalar map.
+ * Changes Burn scaling from 1.5 Fire to 1 Fire + 1 Hex.
+ */
+export function applyCursedFlamesBurnScalings(type: string, scalings: Record<string, number>, cursedFlamesAmt: number): Record<string, number> {
+  if (type !== 'Burn' || !isBurnSplitByCursedFlames(cursedFlamesAmt)) return scalings
+  return { fire: 1.0, hex: 1.0 }
 }
 
 /**

@@ -30,7 +30,7 @@
   import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage, calcInoculationHeal, UNDEAD_MIGHT_SELF_DMG_FRACTION, UNDEAD_MIGHT_DR_PCT_PER_STACK, type SelfDamagePerkDef } from './data/selfDamage'
   import { resolveDamageTypes, resolveWaDamageTypeKeys, applyAirToMagicConversion, computeEffectiveWaDmgTypes } from './lib/damageTypeResolve'
   import { buildDmgTypeBonuses } from './lib/engine/dmgTypeBonuses'
-import { FEROCITY_TENACITY_MULT, DARKENING_HEX_MAX_ACTIVATIONS, DARKENING_HEX_POTENCY_ADD_PER_AMOUNT, DARKENING_HEX_POTENCY_MULT_PER_AMOUNT, DARKENING_HEX_DURATION_ADD_PER_AMOUNT, KINDLING_DMG_ADD_PER_AMOUNT, VASSALS_CROAK_MULT_PER_STACK } from './lib/constants'
+import { FEROCITY_TENACITY_MULT, DARKENING_HEX_MAX_ACTIVATIONS, DARKENING_HEX_POTENCY_ADD_PER_AMOUNT, DARKENING_HEX_POTENCY_MULT_PER_AMOUNT, DARKENING_HEX_DURATION_ADD_PER_AMOUNT, KINDLING_DMG_ADD_PER_AMOUNT, CURSED_FLAMES_BURN_DMG_PER_AMOUNT, CURSED_FLAMES_DR_BASE, CURSED_FLAMES_DR_PER_BURN_POTENCY, VASSALS_CROAK_MULT_PER_STACK } from './lib/constants'
 import { calcTypedDmgBoosts } from './data/TypedDmgBoost'
 import { TRACKED_TYPES_WITH_TRUE } from './lib/constants/damage-types'
 import { getRunicGlassDuration, ENCHANTED_SWORD_CD_BY_TYPE } from './lib/constants/rune-base-damage'
@@ -38,7 +38,7 @@ import { resolveStanceOverlay } from './data/stanceOverlays'
 import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
 import Badge from './lib/ui/Badge.svelte'
 import { getEnemyHpDotMultiplier } from './data/enemyHpEffects'
-import { getDotBase, getDotPotencyMult, toGamePotency, calcDotDisplayPotency, DOT_TYPE_LIST, DOT_SCALINGS, applyGhastlyRotScalings } from './data/DoTDamage'
+import { getDotBase, getDotPotencyMult, toGamePotency, calcDotDisplayPotency, DOT_TYPE_LIST, DOT_SCALINGS, applyGhastlyRotScalings, applyCursedFlamesBurnScalings, getCursedFlamesBurnGradient } from './data/DoTDamage'
 import { WEAPON_PROC_COEFFS, DEFAULT_PROC_COEFF, WA_PROC_COEFFS } from './data/procCoefficients'
 import { BOOST_DEF_MAP, calcFrenzyPct, calcMinionAbsorptionPotency } from './data/Boost'
 import {
@@ -749,6 +749,14 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
             effectLabel: debuff.effectLabel,
           }))
         }
+        if (debuff.name === 'Burn' && (perks['Cursed Flames'] ?? 0) > 0) {
+          const burnPotency = debuff.potency ?? 0
+          const dr = CURSED_FLAMES_DR_BASE + CURSED_FLAMES_DR_PER_BURN_POTENCY * burnPotency
+          const pct = Math.round((1 - 1 / (1 + dr)) * 10000) / 100
+          const weakeningDesc = `Enemies deal ${pct}% less dmg (Cursed Flames)`
+          debuff.descLabel = weakeningDesc
+          debuff.variants = debuff.variants.map(v => ({ ...v, descLabel: weakeningDesc }))
+        }
       }
     }
     return result
@@ -772,6 +780,9 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: _slowDuration = Math.max(0, ..._slowActive.map(b => b.duration ?? 0))
   function getEffectiveDotScalings(type: string): Record<string, number> {
     let base = applyGhastlyRotScalings(type, { ...(DOT_SCALINGS[type] ?? {}) }, perks['Ghastly Rot'] ?? 0)
+    if (type === 'Burn') {
+      base = applyCursedFlamesBurnScalings(type, base, perks['Cursed Flames'] ?? 0)
+    }
     if (type === 'Bleed') {
       const glAmt = perks['Gelid Lance'] ?? 0
       if (glAmt > 0) base = { ...base, water: (base['water'] ?? 0) + 0.5 * glAmt }
@@ -797,6 +808,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
 
   $: _dotTicks = (() => {
     const kindlingAmt = perks['Kindling'] ?? 0
+    const cursedFlamesAmt = perks['Cursed Flames'] ?? 0
     const ticks: Array<{
       type: string; tickDamage: number; dotPotency?: number; inflictionPotency?: number
       debuffName?: string; slowDuration?: number; baseTick?: number
@@ -804,6 +816,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       scalingMult: number; combatMult: number
       meltingShredFactor?: number
       kindlingMult?: number
+      cursedFlamesMult?: number
       scalingRows: ScalingRow[]; totalEffectivePct: number
     }> = (_hasSingedBurn ? DOT_TYPE_LIST.filter(t => t !== 'Burn') : DOT_TYPE_LIST).filter(type => (perks[`${type} Potency`] ?? 0) > 0 || _dummyDebuffs.some(d => d.name === type && !disabledDebuffs.has(type))).map(type => {
       let dotPot = perks[`${type} Potency`] ?? 0
@@ -827,7 +840,8 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       const base = getDotBase(inflictionPot)
       const mult = getDotPotencyMult(gamePot)
       const kindlingMult = type === 'Burn' && kindlingAmt > 0 && !disabledEffects.has('kindling') ? 1 + KINDLING_DMG_ADD_PER_AMOUNT * kindlingAmt : 1
-      const tick = base * mult * kindlingMult
+      const cursedFlamesMult = type === 'Burn' && cursedFlamesAmt > 0 && !disabledEffects.has('cursed-flames') ? 1 + CURSED_FLAMES_BURN_DMG_PER_AMOUNT * cursedFlamesAmt : 1
+      const tick = base * mult * kindlingMult * cursedFlamesMult
       const rows = buildScalingRows(getEffectiveDotScalings(type))
       const totalPct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 1000) / 1000
       return {
@@ -835,6 +849,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         dotBase: base, potencyMult: mult, levelMult: 1,
         baseTick: tick,
         kindlingMult: kindlingMult !== 1 ? kindlingMult : undefined,
+        cursedFlamesMult: cursedFlamesMult !== 1 ? cursedFlamesMult : undefined,
         scalingMult: dotScalingMult(type), combatMult: roundMultiplier(_dotCombatMult * getEnemyHpDotMultiplier(perks, _enemyHpFillPct, type) / (type === 'Poison' && mycoticBloomDotDisabled && _mycoticBloomDotMult !== 1 ? _mycoticBloomDotMult : 1)),
         scalingRows: rows, totalEffectivePct: totalPct,
       }
@@ -2011,9 +2026,10 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: activeFinalMult = activeEntries.reduce((acc, e) => acc * e.rawMultiplier, 1.0)
   $: activeFinalMultRounded = roundMultiplier(activeFinalMult)
 
-  function _categoryMult(type: BoostAttackType, procAllowed: boolean = true): number {
+  function _categoryMult(type: BoostAttackType, procAllowed: boolean = true, excludeGeneral: boolean = false): number {
     return activeEntries
       .filter(e => !(e as any).appliesTo || (e as any).appliesTo.includes(type))
+      .filter(e => !excludeGeneral || (e as any).appliesTo?.includes(type))
       .filter(e => procAllowed || !(e as any).needsProcCoeff)
       .reduce((acc, e) => acc * e.rawMultiplier, 1.0)
   }
@@ -2840,7 +2856,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
                       : def.countAsM2 ? 'm2'
                       : def.countAsM1  ? 'm1'
                       : 'perk')
-      const combatMult = _categoryMult(hitType, canProc(def.procCoefficient))
+      const combatMult = _categoryMult(hitType, canProc(def.procCoefficient), !!def.noGeneralDmgBoosts)
       const mwMult = def.countAsM2 && _mortalWillFinisherDmgMult !== 1 ? _mortalWillFinisherDmgMult : 1
       const finalCombatMult = combatMult * mwMult
 
@@ -4234,6 +4250,7 @@ $: _groupedSelfDamageSources = (() => {
     blubBlubAmt={_blubBlubAmt}
     blazingFinisherAmt={_blazingFinisherAmt}
     ghastlyRotAmt={perks['Ghastly Rot'] ?? 0}
+    cursedFlamesAmt={perks['Cursed Flames'] ?? 0}
     dragonStateBaseDmg={_dragonStateHpGateActive ? _dragonStateBaseDmg : 0}
     dragonStateScalingMult={_dragonStateScalingMult}
     dragonStateCombatMult={_dragonStateCombatMult}
@@ -6574,12 +6591,13 @@ $: _groupedSelfDamageSources = (() => {
     {#if _dotCollapsed}
       {#if _topDotTick && _topDotTick.totalEffectivePct !== 0}
         {#each [_topDotTick] as dt}
-        {@const _dc = DOT_COLORS[dt.type] ?? '#e8e4da'}
+        {@const _dc = (dt.type === 'Burn' && (perks['Cursed Flames'] ?? 0) > 0) ? (getCursedFlamesBurnGradient(perks['Cursed Flames'] ?? 0) ?? DOT_COLORS[dt.type]) : (DOT_COLORS[dt.type] ?? '#e8e4da')}
+        {@const _tc = DOT_COLORS[dt.type] ?? '#e8e4da'}
         <div class="ds-table ds-table--perk" style="margin-top:6px;">
           <div class="ds-head">
             <div class="ds-col ds-col--type" style="flex:1.2;">
               <span class="ds-dot" style="background:{_dc}"></span>
-              <span style="color:{_dc}">{dt.type}</span>
+              <span style="color:{_tc}">{dt.type}</span>
             </div>
             <div class="ds-col ds-col--val" style="flex:1;">Scaling</div>
             <div class="ds-col ds-col--op" style="flex:0.3;"></div>
@@ -6640,13 +6658,14 @@ $: _groupedSelfDamageSources = (() => {
     {:else}
       {#each _dotTicks as dt, i}
         {#if dt.totalEffectivePct !== 0}
-        {@const _dc = DOT_COLORS[dt.type] ?? '#e8e4da'}
+        {@const _dc = (dt.type === 'Burn' && (perks['Cursed Flames'] ?? 0) > 0) ? (getCursedFlamesBurnGradient(perks['Cursed Flames'] ?? 0) ?? DOT_COLORS[dt.type]) : (DOT_COLORS[dt.type] ?? '#e8e4da')}
+        {@const _tc = DOT_COLORS[dt.type] ?? '#e8e4da'}
         {#if i > 0}<div class="da-perk-scaling-divider"></div>{/if}
         <div class="ds-table ds-table--perk" style="margin-top:6px;">
           <div class="ds-head">
             <div class="ds-col ds-col--type" style="flex:1.2;">
               <span class="ds-dot" style="background:{_dc}"></span>
-              <span style="color:{_dc}">{dt.type}</span>
+              <span style="color:{_tc}">{dt.type}</span>
             </div>
             <div class="ds-col ds-col--val" style="flex:1;">Scaling</div>
             <div class="ds-col ds-col--op" style="flex:0.3;"></div>

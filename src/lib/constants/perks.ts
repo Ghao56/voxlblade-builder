@@ -125,6 +125,17 @@ export const DARKENING_HEX_PROC_CHANCE = 0.2
 export const KINDLING_BURN_DURATION_MULT = 0.2
 export const KINDLING_DMG_ADD_PER_AMOUNT = 0.5
 
+// ── Cursed Flames ────────────────────────────────
+export const CURSED_FLAMES_BURN_DURATION_PER_AMOUNT = 0.1
+export const CURSED_FLAMES_BURN_DMG_PER_AMOUNT = 0.1
+export const CURSED_FLAMES_DR_BASE = 0.1
+export const CURSED_FLAMES_DR_PER_BURN_POTENCY = 1.0
+
+// ── Ignition ─────────────────────────────────────
+export const IGNITION_BURN_DURATION_BASE = 5
+export const IGNITION_BURN_DURATION_PER_AMOUNT = 0.5
+export const IGNITION_PROC_CHANCE_PER_AMOUNT = 0.1
+
 // ── Concealed Edge ───────────────────────────────
 export const CONCEALED_EDGE_HEX_PER_STACK = 0.25
 

@@ -22,6 +22,7 @@ export const BADGE_CONFIG: Record<string, { color: string; label: string; title:
   'Bombardier': { color: '#f97316', label: '✦ Bombardier', title: 'Bombardier: explosion on any hit · RNG chance · Cannot proc other effects' },
   'Phantom Pain': { color: '#e879f9', label: '✦ Phantom Pain', title: 'Phantom Pain: repeats a portion of the hit\'s damage as Hex after a short delay · Cannot proc other effects' },
   'Ichor Spark': { color: '#AAFFDB', label: '✦ Ichor Spark', title: 'Ichor Spark Chain Lightning: 20% × perk amount of this hit\'s damage as Air+Physical chain lightning (up to ? targets) · 12.5% chance at 1 perk' },
+  'Ignition': { color: '#f97316', label: '✦ Ignition', title: 'Ignition: small chance to deal bonus Fire damage on hit and inflict Burn · 10% × perk proc chance · 1.0 Fire damage & scaling · Cannot proc other effects · Grants Burn Potency' },
   'Lifesteal': { color: '#4ade80', label: '✦ Lifesteal', title: 'Lifesteal: heal 0.5% of damage dealt per stack + 0.1 flat HP per stack' },
   'Runic Blades': { color: '#43d8ff', label: '✦ Runic Blades', title: 'Runic Blades: magic proc on any hit vs Runic Blades target · Scales with weapon' },
   'Gnawing Poison': { color: '#22c55e', label: '✦ Gnawing Poison', title: 'Gnawing Poison: bites all Poisoned enemies on finisher · Burst of Hex+Physical · Grants Poison Potency' },

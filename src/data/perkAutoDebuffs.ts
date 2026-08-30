@@ -4,7 +4,7 @@
 // Each entry checks perk presence, existing debuffs, and optional proc coefficient gates.
 
 import { PENANCE_HP_THRESHOLD, PENANCE_BLEED_POTENCY, PENANCE_BLEED_DURATION } from './Boost'
-import { HYPNOTIST_POTENCY_PER_PERK, HYPNOTIST_DURATION_BASE, HYPNOTIST_DURATION_PER_PERK, FIERY_PURSUIT_BURN_DURATION, SUNBURN_BURN_BASE_CHANCE, SUNBURN_BURN_CHANCE_PER_STACK, FROSTBITE_SLOW_POTENCY_PER_STACK, FROSTBITE_CHANCE_PER_STACK, CRYO_ENGINE_PROC_CHANCE_PER_AMOUNT } from '../lib/constants/perks'
+import { HYPNOTIST_POTENCY_PER_PERK, HYPNOTIST_DURATION_BASE, HYPNOTIST_DURATION_PER_PERK, FIERY_PURSUIT_BURN_DURATION, SUNBURN_BURN_BASE_CHANCE, SUNBURN_BURN_CHANCE_PER_STACK, FROSTBITE_SLOW_POTENCY_PER_STACK, FROSTBITE_CHANCE_PER_STACK, CRYO_ENGINE_PROC_CHANCE_PER_AMOUNT, IGNITION_BURN_DURATION_BASE, IGNITION_BURN_DURATION_PER_AMOUNT, IGNITION_PROC_CHANCE_PER_AMOUNT } from '../lib/constants/perks'
 import type { GrantedBuff } from './BuffData'
 import { canProc, type ProcCoefficient } from '../lib/types'
 import { calcBaseMaxHP } from '../lib/constants/game'
@@ -439,6 +439,21 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
         sourceType: 'perk',
       })
     }
+  }
+
+  // Ignition: on-hit chance to inflict Burn for 5 + 0.5×perk seconds.
+  const ignitionAmt = perks['Ignition'] ?? 0
+  if (ignitionAmt > 0 && !existingBuffNames.includes('Burn')) {
+    const ignDuration = IGNITION_BURN_DURATION_BASE + IGNITION_BURN_DURATION_PER_AMOUNT * ignitionAmt
+    const ignChance = (IGNITION_PROC_CHANCE_PER_AMOUNT * ignitionAmt) * 100
+    debuffs.push({
+      buffName: 'Burn',
+      potency: 0,
+      duration: ignDuration,
+      condition: `${Math.round(ignChance * 100) / 100}% chance on hit`,
+      sourceName: 'Ignition',
+      sourceType: 'perk',
+    })
   }
 
   return debuffs
