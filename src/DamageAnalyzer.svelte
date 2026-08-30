@@ -2794,7 +2794,9 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     manualOff: boolean
     condition?: string
     hits?: number
-    isM1?: boolean; isM2?: boolean; isFinisher?: boolean;     isWA?: boolean; isRune?: boolean; isProcHit?: boolean
+    workOnM1?: boolean; workOnM2?: boolean
+    countAsM1?: boolean; countAsM2?: boolean; isFinisher?: boolean;     isWA?: boolean; isRune?: boolean; isProcHit?: boolean
+    boostCat: BoostAttackType
     finisherOnly?: boolean
     guardbreak?: boolean
     procCoefficient?: ProcCoefficient
@@ -2835,11 +2837,11 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
 
       const hitType: BoostAttackType = def.boostCat ?? (def.isWA   ? 'wa'
                       : def.isRune ? 'rune'
-                      : (def.isM2 || def.isFinisher) ? 'm2'
-                      : def.isM1  ? 'm1'
+                      : def.countAsM2 ? 'm2'
+                      : def.countAsM1  ? 'm1'
                       : 'perk')
       const combatMult = _categoryMult(hitType, canProc(def.procCoefficient))
-      const mwMult = (def.isFinisher || def.isM2) && _mortalWillFinisherDmgMult !== 1 ? _mortalWillFinisherDmgMult : 1
+      const mwMult = def.countAsM2 && _mortalWillFinisherDmgMult !== 1 ? _mortalWillFinisherDmgMult : 1
       const finalCombatMult = combatMult * mwMult
 
       const _perkCtxBurnPotency = (() => {
@@ -2887,7 +2889,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           ? _applyDmgBonuses(baseDmgTypes, _waDmgTypeBonuses)
           : _applyDmgBonuses(baseDmgTypes, canProc(def.procCoefficient) ? _perkDmgTypeBonuses : _perkDmgTypeBonusesDoT)
       const resolvedDmgTypes = applyAirToMagicConversion(baseResolvedDmgTypes, _spiritWindsConversionRate, _darkMagicHexBonus, _echoIncinerationAmt)
-      const resolvedDmgTypesWithMw = (def.isFinisher || def.isM2) && _mortalWillHolyTypeBonus > 0
+      const resolvedDmgTypesWithMw = def.countAsM2 && _mortalWillHolyTypeBonus > 0
         ? { ...resolvedDmgTypes, holy: Math.round(((resolvedDmgTypes.holy ?? 0) + _mortalWillHolyTypeBonus) * 10000) / 10000 }
         : resolvedDmgTypes
 
@@ -2985,8 +2987,10 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         manualOff,
         condition: def.condition,
         hits: entryHits,
-        isM1: def.isM1, isM2: def.isM2, isFinisher: def.isFinisher,
+        workOnM1: def.workOnM1, workOnM2: def.workOnM2,
+        countAsM1: def.countAsM1, countAsM2: def.countAsM2, isFinisher: def.isFinisher,
         isWA: def.isWA, isRune: def.isRune, isProcHit: def.isProcHit, finisherOnly: def.finisherOnly, guardbreak: def.guardbreak,
+        boostCat: hitType,
         procCoefficient: def.procCoefficient,
         note: def.note,
         getFinisherHitBaseDmg: def.getFinisherHitBaseDmg,
@@ -3033,7 +3037,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
 
       const perkSunburnMult = _sunburnActive && _sunburnEnemyBurning
         ? ((e.resolvedDmgTypes.holy ?? 0) > 0 ? _sunburnHolyDmgMult : _sunburnUniversalDmgMult) : 1
-      const finisherMult = e.perkName === 'Deathmist Slash' ? 1 : ((e.isFinisher || e.isM2) && _finisherBoostMult !== 1 ? _finisherBoostMult : 1)
+      const finisherMult = e.boostCat === 'perk' ? 1 : ((e.isFinisher || e.countAsM2) && _finisherBoostMult !== 1 ? _finisherBoostMult : 1)
       const perkWbMult = roundMultiplier(perkSunburnMult * _activeBellowingEmberMult)
       const perkLabel = [
         perkSunburnMult !== 1 ? 'Sunburn' : '',
@@ -3071,7 +3075,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: _cdPerkTargets = [...new Set([
     ..._perkOnHitDamages.map(ph => ph.tag),
     ..._activePerkDmgEntries
-      .filter(e => e.isActive && e.typedHits_m2.length > 0 && e.perkName !== 'Cauterize' && e.perkName !== 'Blazing Finisher' && e.perkName !== 'Draconic Blood' && !_isSpiritPerk(e.perkName) && !e.isWA && !e.isRune && !e.isM1 && !e.isM2)
+      .filter(e => e.isActive && e.typedHits_m2.length > 0 && e.perkName !== 'Cauterize' && e.perkName !== 'Blazing Finisher' && e.perkName !== 'Draconic Blood' && !_isSpiritPerk(e.perkName) && !e.isWA && !e.isRune && !e.countAsM1 && !e.countAsM2)
       .map(e => e.displayName),
   ])]
   interface BDCHit {
@@ -3586,7 +3590,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         : 1
 
       const _pushBdcHit = (hitCount: number, hitBase: number, perHitCounts?: boolean, groupOverride?: string, labelOverride?: string, finisherIndex?: number) => {
-        const group = groupOverride ?? (entry.perkName === 'Draconic Blood' ? 'Rune' : _isSpiritPerk(entry.perkName) ? 'Spirit' : entry.isWA ? 'WA' : entry.isRune ? 'Rune' : entry.isM2 ? 'M2' : entry.isM1 ? 'M1' : 'Perk')
+        const group = groupOverride ?? (entry.perkName === 'Draconic Blood' ? 'Rune' : _isSpiritPerk(entry.perkName) ? 'Spirit' : entry.isWA ? 'WA' : entry.isRune ? 'Rune' : entry.workOnM2 ? 'M2' : entry.workOnM1 ? 'M1' : 'Perk')
         const cdDracoHit = entry.perkName === 'Draconic Blood' && _cdTarget === 'Draco'
         const cdPerkHit = _cdActive && (group === 'Perk' ? _cdTarget === entry.displayName : cdDracoHit)
         const cdPerkTypes = cdPerkHit
@@ -3603,13 +3607,13 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           dmgTypes: cdPerkTypes,
           baseDmgTypes: entry.baseDmgTypes,
           label,
-          isM1: entry.isM1,
-          isM2: entry.isM2,
+          isM1: entry.workOnM1,
+          isM2: entry.workOnM2,
           procCoefficient: entry.procCoefficient,
           ...(cdWater != null ? { cdWater } : {}),
           ...(perHitCounts ? { perHitCounts: true } : {}),
           ...(entry.eachHitM1M2 ? { eachHitM1M2: true } : {}),
-          ...(entry.isM2 && entry.isFinisher && entry.procCoefficient?.type !== 'noProc' ? { procCount: 1 } : {}),
+          ...(entry.workOnM2 && entry.isFinisher && entry.procCoefficient?.type !== 'noProc' ? { procCount: 1 } : {}),
           canApplyBurn: _hasSingedBurn,
           ...(entry.forceCrit ? { forceCrit: true } : {}),
           ...(finisherIndex != null ? { finisherIndex } : {}),
@@ -3643,7 +3647,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       // Deltabit M1-combo hits, so they are excluded from the Deltabit duplicates.
       const _pushPerkHit = (hitCount: number, hitBase: number, perHitCounts?: boolean, labelOverride?: string) => {
         _pushBdcHit(hitCount, hitBase, perHitCounts, undefined, labelOverride)
-        if (entry.isM2 && _deltabitCombo && !_isSpiritPerk(entry.perkName)) {
+        if (entry.workOnM2 && _deltabitCombo && !_isSpiritPerk(entry.perkName)) {
           if (_deltaDrillReps === 0) {
             _pushBdcHit(hitCount, hitBase, perHitCounts, 'M1', `${entry.displayName} (Deltabit)`)
           } else {
@@ -4254,6 +4258,7 @@ $: _groupedSelfDamageSources = (() => {
     starStruckAmt={_starStruckAmt}
     starStruckScalingMults={_starStruckScalingMults}
     starRerollSeed={starRerollSeed}
+    perkCombatMult={_perkCombatMult}
     m1Label={_activeMountRuneDef && mountActive ? 'M1/M2' : 'M1'}
     draconicRunesBonus={getDraconicBonuses({
       draconicRunesStacks: perks['Draconic Runes'] ?? 0,
@@ -5926,8 +5931,8 @@ $: _groupedSelfDamageSources = (() => {
         <!-- Badges -->
         <div class="da-pbd-badges">
           {#if entry.isFinisher}<Badge color="#facc15" square size="xs">Finisher</Badge>{/if}
-          {#if entry.isM1}<Badge color="#fb923c" square size="xs">M1</Badge>{/if}
-          {#if entry.isM2}<Badge color="#fbbf24" square size="xs">M2</Badge>{/if}
+          {#if entry.workOnM1}<Badge color="#fb923c" square size="xs">M1</Badge>{/if}
+          {#if entry.workOnM2}<Badge color="#fbbf24" square size="xs">M2</Badge>{/if}
           {#if entry.isWA}<Badge color="#a78bfa" square size="xs">WA</Badge>{/if}
           {#if entry.isRune}<Badge color="#38bdf8" square size="xs">Rune</Badge>{/if}
           {#if entry.guardbreak}<Badge color="#f87171" square size="xs">Guardbreak</Badge>{/if}
@@ -6005,7 +6010,7 @@ $: _groupedSelfDamageSources = (() => {
           {/if}
         </div>
         <!-- M1 finisher context (only when different from M2) -->
-        {#if entry.isFinisher && !entry.isM2 && !entry.typedHitsSameM2 && Number(_m1FinisherHits) !== Number(_m2FinisherHits)}
+        {#if entry.isFinisher && !entry.countAsM2 && !entry.typedHitsSameM2 && Number(_m1FinisherHits) !== Number(_m2FinisherHits)}
           <div class="da-pbd-dmg-row">
             <span class="da-pbd-ctx-label">M1 fin ({_m1FinisherHits} hit{_m1FinisherHits > 1 ? 's' : ''})</span>
             <div class="da-hits-row">

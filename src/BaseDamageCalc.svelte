@@ -197,6 +197,7 @@ import { getDotDmgType } from './data/DoTDamage'
   export let lifestealStacks: number = 0
   export let sunburnUniversalDmgMult: number = 1
   export let bellowingEmberMult: number = 1
+  export let perkCombatMult: number = 1
   export let phantomPainPct: number = 0
   export let enemyHpFill: number = 100
   export let dotTicks: Array<{
@@ -876,12 +877,13 @@ import { getDotDmgType } from './data/DoTDamage'
           const defPct = defPctForType(starType)
           const crushPen = crushingPenForType(starType)
           const defMult = calcArmorMult(defPct, hitPenDecimal + crushPen / 100, starType).mult
-          const rawPerStar = starBase * starScalingMult * typedMultUsed * sunburnUniversalDmgMult * (hit.combatMult ?? 1) * defMult * typeDebuffMult * _activeDebuffDamageMult * selfDebuffDamageMult * vcContext
+          const starCombatMult = perkCombatMult
+          const rawPerStar = starBase * starScalingMult * typedMultUsed * sunburnUniversalDmgMult * starCombatMult * defMult * typeDebuffMult * _activeDebuffDamageMult * selfDebuffDamageMult * vcContext
           const raw = rawPerStar * count
-          const starPreMitBase = starBase * starScalingMult * sunburnUniversalDmgMult * (hit.combatMult ?? 1) * _activeDebuffDamageMult * selfDebuffDamageMult
+          const starPreMitBase = starBase * starScalingMult * sunburnUniversalDmgMult * starCombatMult * _activeDebuffDamageMult * selfDebuffDamageMult
           types.push({
             key: starType, label: info.label, color: info.color,
-            typeBase: starBase, scalingMult: starScalingMult, combatMult: hit.combatMult ?? 1,
+            typeBase: starBase, scalingMult: starScalingMult, combatMult: starCombatMult,
             applicableBoosts, weaponBoostMult: sunburnUniversalDmgMult, typeDebuffMult,
             defMult, enemyDefPct: defPct,
             raw, critVal: Math.round(raw * critDmgMult / 100 * 10000) / 10000,
@@ -900,11 +902,11 @@ import { getDotDmgType } from './data/DoTDamage'
             count,
             canApplyBurn: hit.canApplyBurn,
             phantomBase: starPreMitBase,
-            flatCombatMult: hit.combatMult ?? 1,
+            flatCombatMult: starCombatMult,
             blub: {
               base: starBase,
               scalingMult: starScalingMult,
-              combatMult: hit.combatMult ?? 1,
+              combatMult: starCombatMult,
               weaponBoostMult: sunburnUniversalDmgMult,
             },
           })

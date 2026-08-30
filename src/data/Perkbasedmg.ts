@@ -269,8 +269,10 @@ export interface PerkDmgDef {
   scalingMode: 'weapon' | 'fixed' | 'none' | 'dynamic'
   scalings?: Record<string, number>
    getScalings?: (ctx: { draconicColor: string; perkAmount?: number; propellingFunElement?: 'air' | 'fire'; sliderVal?: number; statuses?: Record<string, number> }) => Record<string, number>
-  isM1?: boolean
-  isM2?: boolean
+  workOnM1?: boolean
+  workOnM2?: boolean
+  countAsM1?: boolean
+  countAsM2?: boolean
   isFinisher?: boolean
   isWA?: boolean
   isRune?: boolean
@@ -384,7 +386,8 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     hits: BASIC_SPIRIT_HITS,
     dmgTypeMode: 'weapon',
     scalingMode: 'weapon',
-    isM2: true,
+    workOnM2: true,
+    countAsM2: true,
     isFinisher: true,
     guardbreak: true,
     note: 'Each hit counts as individual M1/M2 and procs related effects.',
@@ -397,7 +400,8 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     hits: BUNI_SPIRIT_HITS,
     dmgTypeMode: 'weapon',
     scalingMode: 'weapon',
-    isM2: true,
+    workOnM2: true,
+    countAsM2: true,
     isFinisher: true,
     note: 'Each hit counts as individual M1/M2 and procs related effects.',
   },
@@ -434,7 +438,8 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     dmgTypeMode: 'fixed',
     dmgTypes: { physical: 1.0 },
     scalingMode: 'weapon',
-    isM2: true,
+    workOnM2: true,
+    countAsM2: true,
     isFinisher: true,
     guardbreak: true,
     note: 'Counts as an M1/M2 and will proc related effects.',
@@ -449,7 +454,8 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     dmgTypes: { hex: 0.5, physical: 0.5 },
     scalingMode: 'fixed',
     scalings: { hex: 1.0, physical: 1.0 },
-    isM2: true,
+    workOnM2: true,
+    countAsM2: true,
     note: 'Each hit has a chance to inflict random debuffs.',
   },
   // ── Bomber Spirit ──────────────────────────────────────────────────────────
@@ -462,7 +468,8 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     dmgTypes: { holy: 0.5, magic: 0.5 },
     scalingMode: 'fixed',
     scalings: { holy: 1.0, magic: 1.0 },
-    isM2: true,
+    workOnM2: true,
+    countAsM2: true,
     guardbreak: true,
     note: 'Each hit counts as individual M1/M2 and procs related effects. Grants Bursting for 10s on activation (Bombardier proc rate 40% → 80% while active — proc-rate logic itself not modeled, see P2).',
   },
@@ -476,7 +483,8 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     dmgTypes: { physical: 1.0 },
     scalingMode: 'fixed',
     scalings: { dexterity: 1.0 },
-    isM2: true,
+    workOnM2: true,
+    countAsM2: true,
     isFinisher: true,
     forceCrit: true,
     note: 'All hits are guaranteed crits. Throws 4 individual projectiles. Only requires 50% Spiritual Energy to activate.',
@@ -493,7 +501,8 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     dmgTypes: { physical: 1.0 },
     scalingMode: 'fixed',
     scalings: { dexterity: 1.0, physical: 1.0 },
-    isM2: true,
+    workOnM2: true,
+    countAsM2: true,
     guardbreak: true,
     secondaryEffects: [
       {
@@ -515,7 +524,8 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     dmgTypes: { hex: 1.0 },
     scalingMode: 'fixed',
     scalings: { physical: 1.0, hex: 1.0 },
-    isM2: true,
+    workOnM2: true,
+    countAsM2: true,
     guardbreak: true,
     secondaryEffects: [
       {
@@ -547,7 +557,8 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     dmgTypes: { physical: 1.0 },
     scalingMode: 'fixed',
     scalings: { physical: 1.0, dexterity: 1.0 },
-    isM2: true,
+    workOnM2: true,
+    countAsM2: true,
     guardbreak: true,
     secondaryEffects: [
       {
@@ -577,7 +588,8 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     dmgTypes: { water: 0.5, magic: 0.5 },
     scalingMode: 'fixed',
     scalings: { water: 1.0, magic: 1.0 },
-    isM2: true,
+    workOnM2: true,
+    countAsM2: true,
     guardbreak: true,
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
     note: `The Snoeman Roar is the opening hit of the RMB release: ${SNOEMAN_SPIRIT_ROAR_DMG} dmg, guardbreaks. Followed by the ice storm.`,
@@ -592,7 +604,8 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     dmgTypes: { water: 0.5, magic: 0.5 },
     scalingMode: 'fixed',
     scalings: { water: 1.0, magic: 1.0 },
-    isM2: true,
+    workOnM2: true,
+    countAsM2: true,
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
     secondaryEffects: [
       {
@@ -617,7 +630,8 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     dmgTypes: { fire: 1.0 },
     scalingMode: 'fixed',
     scalings: { fire: 1.0 },
-    isM2: true,
+    workOnM2: true,
+    countAsM2: true,
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
     secondaryEffects: [
       {
@@ -1031,6 +1045,8 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     isProcHit: true,
     finisherOnly: true,
     isFinisher: true,
+    workOnM2: true,
+    countAsM2: true,
     procCoefficient: { type: 'noProc' },
     halfActivations: true,
     note: 'Cannot proc other effects. Half activations on Dual Guns or Storm Caster. Grants +10% damage vs Poisoned per 1 of this perk.',
@@ -1062,7 +1078,8 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     dmgTypes: { fire: 0.5, air: 0.5 },
     scalingMode: 'fixed',
     scalings: { fire: 1.0, air: 1.0 },
-    isM2: true,
+    workOnM2: true,
+    countAsM2: true,
     isFinisher: true,
     guardbreak: true,
     procCoefficient: { type: 'hasCoeff', value: 0.5 },
@@ -1310,7 +1327,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     dmgTypes: { earth: 0.5, magic: 0.5 },
     scalingMode: 'fixed',
     scalings: { earth: 1.0, magic: 1.0 },
-    isM2: true,
+    workOnM2: true,
     guardbreak: true,
     boostCat: 'perk',
     secondaryEffects: [
@@ -1512,7 +1529,8 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     dmgTypeMode: 'weapon',
     scalingMode: 'fixed',
     scalings: { physical: 1.0, air: 1.0 },
-    isM2: true,
+    workOnM2: true,
+    countAsM2: true,
     isFinisher: true,
     guardbreak: true,
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
@@ -1603,6 +1621,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     scalingMode: 'fixed',
     scalings: { water: 1.0, hex: 1.0 },
     isFinisher: true,
+    workOnM2: true,
     finisherOnly: true,
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
     secondaryEffects: [
@@ -1652,7 +1671,8 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     },
     isFinisher: true,
     guardbreak: true,
-    isM2: true,
+    workOnM2: true,
+    countAsM2: true,
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
     slider: {
       buildKey: 'divineCrashDistance',
@@ -1725,8 +1745,8 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     getDmgTypes: () => ({ [rollStarStruckType()]: 1.0 }),
     getScalings: () => _starStruckRoll?.scalings ?? { magic: 1.0 },
     scalingMode: 'dynamic',
-    isM1: true,
-    isM2: true,
+    workOnM1: true,
+    workOnM2: true,
     isProcHit: true,
     procCoefficient: { type: 'hasCoeff', value: 1 },
     note: 'Stars deal 3 base damage with 1.0 of their type and 1.0 scaling of that type. True stars instead deal 6 base with 0.5 Magic scaling. 100% activation chance. Stars can proc other on-hit effects (Chain, Luminescent, Lifesteal, etc.). Star type is random per recalculation — actual damage appears next to M1/M2.',
@@ -1813,6 +1833,8 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     scalingMode: 'fixed',
     scalings: { magic: 1.0, physical: 1.0 },
     isFinisher: true,
+    workOnM2: true,
+    countAsM2: true,
     finisherOnly: true,
     isProcHit: true,
     procCoefficient: { type: 'noProc' }, // cannot proc other on-hit effects
