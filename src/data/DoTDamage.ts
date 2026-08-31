@@ -119,7 +119,7 @@ export function toGamePotency(builderValue: number): number {
  * @param edAmt - The player's Endless Despair perk amount (0 if none)
  */
 export function calcDotDisplayPotency(potPerk: number, edAmt: number): number {
-  const gamePot = Math.round(potPerk * DOT_BUILDER_TO_GAME * DOT_ROUND_FACTOR) / DOT_ROUND_FACTOR
+  const gamePot = potPerk * DOT_BUILDER_TO_GAME
   if (edAmt <= 0) return gamePot
-  return Math.round((gamePot * (1 + 0.35 * edAmt) + 0.1) * DOT_ROUND_FACTOR) / DOT_ROUND_FACTOR
+  return gamePot * (1 + 0.35 * edAmt) + 0.1
 }

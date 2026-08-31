@@ -1021,7 +1021,7 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
 
     for (const ph of perkOnHitDamages) {
       if (!isHeal && ph.totalDmg > 0 && (ph.alwaysOnHit || hit.isFinisher) && ph.tag !== 'Dragon State') {
-        const debuffMult = _activeDebuffDamageMult * selfDebuffDamageMult
+        const debuffMult = _activeDebuffDamageMult * (ph.noSelfDebuff ? 1 : selfDebuffDamageMult)
         const phOncePerGroup = (ph.oncePerFinisher ?? true) && !hit.eachHitM1M2
         const vcPhFactor = vcDilution
         vcContext = vcPhFactor
@@ -1057,6 +1057,7 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
               defMult, enemyDefPct: defPct,
               raw, critVal: Math.round(raw * critDmgMult / 100 * 10000) / 10000,
               isHeal: false, tag: ph.tag, oncePerGroup: (ph.oncePerFinisher ?? true) && !hit.eachHitM1M2, forceCrit: false,
+              noSelfDebuff: !!ph.noSelfDebuff,
               ...(ph.halfActivations ? { activationDivisor: 2 } : {}),
               ...(ph.weaponBoostLabel != null ? { weaponBoostLabel: ph.weaponBoostLabel } : {}),
             })
@@ -1086,7 +1087,7 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
               applicableBoosts: cdBoosts, weaponBoostMult: cdWbMult, typeDebuffMult: cdDebuffMult,
               defMult: cdDefMult, enemyDefPct: cdDefPct,
               raw: cdRaw, critVal: Math.round(cdRaw * critDmgMult / 100 * 10000) / 10000,
-              isHeal: false, tag: ph.tag, forceCrit: false,
+              isHeal: false, tag: ph.tag, forceCrit: false, noSelfDebuff: !!ph.noSelfDebuff,
             })
           }
 
@@ -1124,6 +1125,7 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
                   defMult: blubDefMult, enemyDefPct: blubDefPct,
                   raw: blubRaw, critVal: Math.round(blubRaw * critDmgMult / 100 * 10000) / 10000,
                   isHeal: false, tag: 'Blub', forceCrit: false, procCoefficient: { type: 'noProc' }, hitCount: BLUB_BLUB_HIT_COUNT,
+                  noSelfDebuff: !!ph.noSelfDebuff,
                 })
               }
             }
@@ -1860,7 +1862,7 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
                                   <span class="bdc-fr-val bdc-fr-val--debuff">× {fmtMult(t.typeDebuffMult)}</span>
                                 </div>
                               {/if}
-                              {#if selfDebuffDamageMult !== 1 && !t.isHeal}
+                              {#if selfDebuffDamageMult !== 1 && !t.isHeal && !t.noSelfDebuff}
                                 <div class="bdc-fr">
                                   <span class="bdc-fr-label">Self-Debuff ({selfDebuffNames.join(', ')})</span>
                                   <span class="bdc-fr-val bdc-fr-val--selfdebuff">× {fmtMult(selfDebuffDamageMult)}</span>
@@ -2329,7 +2331,7 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
         <span class="bdc-fr-val bdc-fr-val--debuff">× {fmtMult(t.typeDebuffMult)}</span>
       </div>
     {/if}
-    {#if selfDebuffDamageMult !== 1 && !t.isHeal}
+    {#if selfDebuffDamageMult !== 1 && !t.isHeal && !t.noSelfDebuff}
       <div class="bdc-fr">
         <span class="bdc-fr-label">Self-Debuff ({selfDebuffNames.join(', ')})</span>
         <span class="bdc-fr-val bdc-fr-val--selfdebuff">× {fmtMult(selfDebuffDamageMult)}</span>

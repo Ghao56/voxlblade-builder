@@ -2001,9 +2001,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       const combatFx = DEBUFF_COMBAT_EFFECTS[b.buffName]
       if (!combatFx?.damageMult) continue
 
-      const effectivePotency = wardingDebuffMult !== 1
-        ? Math.round(b.potency * wardingDebuffMult * 1000) / 1000
-        : b.potency
+      const effectivePotency = wardingDebuffMult !== 1 ? b.potency * wardingDebuffMult : b.potency
 
       mult *= combatFx.damageMult(effectivePotency)
     }
@@ -3039,7 +3037,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: _perkOnHitDamages = (() => {
     const out: Array<{
       tag: string; baseDmg: number; scalingMult: number; combatMult: number; totalDmg: number
-      dmgTypes: Record<string, number>; procCoefficient?: ProcCoefficient; isProcHit?: boolean; canApplyBurn?: boolean
+      dmgTypes: Record<string, number>; procCoefficient?: ProcCoefficient; isProcHit?: boolean; canApplyBurn?: boolean; noSelfDebuff?: boolean
       rawFinisherNumerator?: number; halfActivations?: boolean; oncePerFinisher?: boolean; alwaysOnHit?: boolean; finisherOnly?: boolean
       weaponBoostMult?: number; weaponBoostLabel?: string
       cdWater?: number
@@ -3054,6 +3052,8 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       const perkSunburnMult = _sunburnActive && _sunburnEnemyBurning
         ? ((e.resolvedDmgTypes.holy ?? 0) > 0 ? _sunburnHolyDmgMult : _sunburnUniversalDmgMult) : 1
       const finisherMult = e.boostCat === 'perk' ? 1 : ((e.isFinisher || e.countAsM2) && _finisherBoostMult !== 1 ? _finisherBoostMult : 1)
+      const isIgnition = e.perkName === 'Ignition'
+      const ignitionLevelMult = isIgnition ? _levelMult : 1
       const perkWbMult = roundMultiplier(perkSunburnMult * _activeBellowingEmberMult)
       const perkLabel = [
         perkSunburnMult !== 1 ? 'Sunburn' : '',
@@ -3064,12 +3064,13 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         tag: e.displayName,
         baseDmg: e.baseDmg,
         scalingMult: e.scalingMult,
-        combatMult: roundMultiplier(e.combatMult * finisherMult),
-        totalDmg: roundMultiplier(e.totalDmg * finisherMult),
+        combatMult: roundMultiplier(e.combatMult * finisherMult * ignitionLevelMult),
+        totalDmg: roundMultiplier(e.totalDmg * finisherMult * ignitionLevelMult),
         dmgTypes: e.resolvedDmgTypes,
         procCoefficient: e.perkName === 'Blazing Finisher' ? { type: 'noProc' } : e.procCoefficient,
         isProcHit: e.isProcHit,
         canApplyBurn: _hasSingedBurn,
+        ...(isIgnition ? { noSelfDebuff: true } : {}),
         ...(perkWbMult !== 1 ? { weaponBoostMult: perkWbMult, weaponBoostLabel: perkLabel } : {}),
         ...(e.rawFinisherNumerator != null ? { rawFinisherNumerator: e.rawFinisherNumerator } : {}),
         ...(e.halfActivations != null ? { halfActivations: e.halfActivations } : {}),

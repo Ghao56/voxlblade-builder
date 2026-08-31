@@ -49,6 +49,7 @@ export interface ComputedType {
   raw: number; critVal: number
   isHeal: boolean
   tag?: string
+  noSelfDebuff?: boolean
   oncePerGroup?: boolean
   oncePerRmb?: boolean
   isCurseRip?: boolean
@@ -83,6 +84,7 @@ export interface PerkOnHitDmg {
   finisherOnly?: boolean
   getFinisherHitBaseDmg?: (ctx: { baseDmg: number; hitIndex: number }) => number
   canApplyBurn?: boolean
+  noSelfDebuff?: boolean
   weaponBoostMult?: number
   weaponBoostLabel?: string
   cdWater?: number

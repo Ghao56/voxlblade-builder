@@ -2281,7 +2281,7 @@ export function applyBuffPerkModifiers(
     if (isDespairWithTrickster) {
       const preTricksterDisplayed = (darkeningHexPotency + specific.bonus + bastionBonus) * generic.potencyMult * wMult + generic.flatBonus
       const tricksterDisplayed = (tricksterStacks / 10) * (1 + preTricksterDisplayed)
-      finalPotency = roundMultiplier((preTricksterDisplayed + tricksterDisplayed) / wMult)
+      finalPotency = (preTricksterDisplayed + tricksterDisplayed) / wMult
     } else {
       finalPotency = roundMultiplier(
         (darkeningHexPotency + bonus) * generic.potencyMult +
