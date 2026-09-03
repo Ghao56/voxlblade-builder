@@ -37,6 +37,7 @@ import {
   CLEAVE_MULT_PER_STACK,
   STICKY_SWINGS_MULT_PER_STACK,
   EXPLOSIVE_HONEY_MULT_PER_STACK,
+  MAX_INVENTORY_ITEMS,
 } from '../lib/constants'
 import type { BoostAttackType, ProcScalingType } from '../lib/types'
 
@@ -84,6 +85,7 @@ export interface BoostContext {
   hasMagicOrPhysicalDmg?: boolean
   enemyHpFillPct?: number
   perfectionStacks?: number
+  inventoryItems?: number
 }
 
 // ── Boost definitions ──────────────────────────────────────────────────────
@@ -427,6 +429,22 @@ export const BOOST_DEFS: BoostDef[] = [
       }
     },
     needsProcCoeff: true,
+  },
+  {
+    sourceName: 'Packaged Power',
+    type: 'dmg',
+    calcFn: (ctx) => {
+      const amount = ctx.perks['Packaged Power'] ?? 0
+      if (amount <= 0) return null
+      const items = ctx.inventoryItems ?? 0
+      const fullness = Math.min(items / MAX_INVENTORY_ITEMS, 1)
+      const multiplier = 1 + 0.15 * fullness * amount
+      const pct = Math.round((0.15 * fullness * amount) * 10000) / 100
+      return {
+        multiplier,
+        condition: `${fullness * 100}% inventory (${items}/${MAX_INVENTORY_ITEMS}) → +${pct}% dmg`,
+      }
+    },
   },
   {
     sourceName: 'Executioner',

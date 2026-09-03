@@ -6,6 +6,8 @@ export const MAX_LEVEL = 80
 export const DEFAULT_LEVEL = 80
 export const DEFAULT_HP_FILL = 100
 export const DEFAULT_ENEMY_HP_FILL = 100
+export const DEFAULT_INVENTORY_FILL = 0
+export const MAX_INVENTORY_ITEMS = 250
 
 const BASE_HP = 120
 const HP_PER_LEVEL = 0.0125

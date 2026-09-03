@@ -3,12 +3,14 @@ import {
   EMOTIONAL_MULT_PER_STACK,
   HEAL_BOOST_MULT_PER_STACK,
   MAX_LEVEL,
+  MAX_INVENTORY_ITEMS,
   OCEANS_RAGE_MULT_PER_STACK,
   VAMPIRE_SUNLIGHT_HEAL_MULT,
 } from '../lib/constants'
 import { getEffectiveDraconicInfusionPotency } from './draconicBuffs'
 
 export type HealSource = 'perk' | 'rune' | 'weaponArt' | 'passive'
+export type HealDirection = 'dealt' | 'received'
 
 export interface HealBoostContext {
   perks: Record<string, number>
@@ -21,6 +23,7 @@ export interface HealBoostContext {
   guild?: string
   draconicRuneInfusion?: string
   ragePotency?: number
+  inventoryItems?: number
   activeBuffs?: Array<{ buffName: string; potency: number; isSelfDebuff?: boolean }>
 }
 
@@ -35,6 +38,9 @@ interface HealBoostDef {
   calcFn?: (ctx: HealBoostContext) => { multiplier: number; condition: string } | null
   
   appliesTo?: HealSource[]
+  
+  /** Whether this modifies healing the caster DEALS (default) or RECEIVES. */
+  direction?: HealDirection
   
   activeIf?: (ctx: HealBoostContext) => boolean
 }
@@ -61,6 +67,23 @@ const HEAL_SCALING_DEFS: HealBoostDef[] = [
     condition: '10% per perk'
   },
   {
+    sourceName: 'Packaged Power',
+    sourceType: 'perk',
+    direction: 'received',
+    calcFn: (ctx) => {
+      const stacks = ctx.perks['Packaged Power'] ?? 0
+      if (stacks <= 0) return null
+      const items = ctx.inventoryItems ?? 0
+      const fullness = Math.min(items / MAX_INVENTORY_ITEMS, 1)
+      const multiplier = roundMultiplier(1 + 0.10 * fullness * stacks)
+      const pct = Math.round((0.10 * fullness * stacks) * 10000) / 100
+      return {
+        multiplier,
+        condition: `${fullness * 100}% inventory (${items}/${MAX_INVENTORY_ITEMS}) → +${pct}% outgoing heal`,
+      }
+    },
+  },
+  {
     sourceName: 'Oceans Rage',
     sourceType: 'perk',
     calcFn: (ctx) => {
@@ -77,6 +100,7 @@ const HEAL_SCALING_DEFS: HealBoostDef[] = [
   {
     sourceName: 'Vampire (Sunlight)',
     sourceType: 'perk',
+    direction: 'received',
     calcFn: (ctx) => {
       const stacks = ctx.perks['Vampire'] ?? 0
       if (stacks > 0 && !ctx.inDarkness) {
@@ -88,6 +112,7 @@ const HEAL_SCALING_DEFS: HealBoostDef[] = [
   {
     sourceName: 'Frenzy (Self)',
     sourceType: 'perk',
+    direction: 'received',
     calcFn: (ctx) => {
       const stacks = ctx.perks['Frenzy'] ?? 0
       if (stacks > 0 && (ctx.ragePotency ?? 0) > 0) {
@@ -127,6 +152,7 @@ export interface HealBoostResult {
     rawMultiplier: number
     condition?: string
     sourceType: HealSource
+    direction: HealDirection
   }>
   finalMultiplier: number
 }
@@ -135,7 +161,7 @@ export function calculateHealBoost(
   ctx: HealBoostContext,
   appliesToType?: HealSource
 ): HealBoostResult {
-  const entriesMap = new Map<string, { rawMultiplier: number; condition?: string; sourceType: HealSource }>()
+  const entriesMap = new Map<string, { rawMultiplier: number; condition?: string; sourceType: HealSource; direction: HealDirection }>()
   
   // Calculate level healing
   const level = ctx.level ?? 0
@@ -143,7 +169,8 @@ export function calculateHealBoost(
   entriesMap.set('Level Healing', {
     rawMultiplier: lvlMult,
     condition: `1.25% per level`,
-    sourceType: 'passive'
+    sourceType: 'passive',
+    direction: 'dealt'
   })
   
   for (const def of HEAL_SCALING_DEFS) {
@@ -163,7 +190,8 @@ export function calculateHealBoost(
         entriesMap.set(def.sourceName, {
           rawMultiplier: result.multiplier,
           condition: result.condition,
-          sourceType: def.sourceType
+          sourceType: def.sourceType,
+          direction: def.direction ?? 'dealt'
         })
       }
       continue
@@ -176,7 +204,8 @@ export function calculateHealBoost(
       entriesMap.set(def.sourceName, {
         rawMultiplier: roundMultiplier(multiplier),
         condition: def.condition,
-        sourceType: def.sourceType
+        sourceType: def.sourceType,
+        direction: def.direction ?? 'dealt'
       })
     }
   }

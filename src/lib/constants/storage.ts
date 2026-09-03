@@ -1,4 +1,4 @@
-import { DEFAULT_LEVEL, DEFAULT_HP_FILL, DEFAULT_ENEMY_HP_FILL } from './game'
+import { DEFAULT_LEVEL, DEFAULT_HP_FILL, DEFAULT_ENEMY_HP_FILL, DEFAULT_INVENTORY_FILL } from './game'
 
 export const STORAGE_KEY_BUILD = 'voxlbuilder_build_v1'
 export const STORAGE_KEY_DEFENSES = 'voxlbuilder_defenses_v1'
@@ -14,7 +14,7 @@ export const BUILD_STATE_DEFAULTS: Record<string, any> = {
   upgradeRing: 0, upgradeRune: 0, upgradeInfusionHelmet: 0, upgradeInfusionChestplate: 0,
   upgradeInfusionLeggings: 0, upgradeInfusionRing: 0, selectedWeaponArt: 'Lunge', draconicColor: '',
   draconicRuneInfusion: '', emotionalState: 'buffs', propellingFunElement: 'air', propellingFunBuffMode: 'both',
-  level: DEFAULT_LEVEL, hpFill: DEFAULT_HP_FILL, enemyHpFill: DEFAULT_ENEMY_HP_FILL, summonCount: 0, vassalsCroakSummons: undefined, lastCroakStacks: undefined, buffsConsumed: 0, sporelingsSummoned: 0, enchantedSwordType: 0, bastionBallistaArrows: 0, ichorSparkCharge: 100, divineCrashDistance: 250, channeledDepthsTime: 0, channeledDepthsTarget: 'WA', channeledDepthsHit: 1, voidContractTarget: 'M1', voidContractHit: 1,
+  level: DEFAULT_LEVEL, hpFill: DEFAULT_HP_FILL, enemyHpFill: DEFAULT_ENEMY_HP_FILL, inventoryFill: DEFAULT_INVENTORY_FILL, summonCount: 0, vassalsCroakSummons: undefined, lastCroakStacks: undefined, buffsConsumed: 0, sporelingsSummoned: 0, enchantedSwordType: 0, bastionBallistaArrows: 0, ichorSparkCharge: 100, divineCrashDistance: 250, channeledDepthsTime: 0, channeledDepthsTarget: 'WA', channeledDepthsHit: 1, voidContractTarget: 'M1', voidContractHit: 1,
   inDarkness: true, cdrToggles: {},
   potion1: '', potion2: '',
   storedCorruptionAmount: 0,
@@ -41,7 +41,7 @@ export const SAVE_KEY_MAP: Record<string, string> = {
   bastionBallistaArrows:'bba', ichorSparkCharge:'isc', divineCrashDistance:'dcd', vassalsCroakSummons:'vcs', lastCroakStacks:'lks', enchantedSwordType:'est',
   channeledDepthsTime:'cdt', channeledDepthsTarget:'cdtg', channeledDepthsHit:'cdth', voidContractTarget:'vctg', voidContractHit:'vcth',
   potion1:'p1', potion2:'p2',
-  storedCorruptionAmount:'sca', darkeningHexActivations:'dha', enemyHpFill:'ehf',
+  storedCorruptionAmount:'sca', darkeningHexActivations:'dha', enemyHpFill:'ehf', inventoryFill:'invf',
   emotionalDisabled:'ed', rageDisabled:'rd', glyphConduitDisabled:'gcd', extinguishDisabled:'exd',
   draconicInfusionDisabled:'did', disableCurseRip:'dcr', disableReaper:'drp',
   disableWeaponBoost:'dwb', mycoticBloomDotDisabled:'mbd', showCritValues:'scv',

@@ -2,7 +2,7 @@ import { writable, derived, get } from 'svelte/store'
 import type { BuildState, EnchantSlot } from './types'
 import { calcBuild, races, enforceEnchantSlot, armorSupportsSlot } from './engine'
 import { isMonkGuild } from './engine/data/character'
-import { STORAGE_KEY_BUILD, DEFAULT_LEVEL, DEFAULT_HP_FILL, DEFAULT_ENEMY_HP_FILL, SAVE_DEBOUNCE_MS } from './constants'
+import { STORAGE_KEY_BUILD, DEFAULT_LEVEL, DEFAULT_HP_FILL, DEFAULT_ENEMY_HP_FILL, DEFAULT_INVENTORY_FILL, SAVE_DEBOUNCE_MS } from './constants'
 
 const DEFAULT_BUILD: BuildState = {
   race: races[0]?.name ?? "",
@@ -51,6 +51,7 @@ const DEFAULT_BUILD: BuildState = {
   level: DEFAULT_LEVEL,
   hpFill: DEFAULT_HP_FILL,
   enemyHpFill: DEFAULT_ENEMY_HP_FILL,
+  inventoryFill: DEFAULT_INVENTORY_FILL,
   summonCount: 0,
   vassalsCroakSummons: undefined,
   lastCroakStacks: undefined,

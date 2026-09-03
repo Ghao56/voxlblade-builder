@@ -27,6 +27,14 @@ export interface RadianceHealSource {
   dmgTypeIsHeal?: Record<string, boolean>
   dmgTypeCombatMults?: Record<string, number>
   procCoefficient?: ProcCoefficient
+  /**
+   * Healing-DEALT-only multiplier for the Radiance source healing. Radiance
+   * must ignore "healing received" modifiers (e.g. Packaged Power, Vampire
+   * Sunlight, Frenzy) while still honouring "healing dealt" modifiers
+   * (Emotional, Heal Boost, …). When present it overrides the full heal
+   * combatMult (`combatMult` / `dmgTypeCombatMults.heal`) used for display.
+   */
+  radianceHealMult?: number
 }
 
 /**
@@ -38,11 +46,12 @@ export interface RadianceHealSource {
 export function radianceSourceHealing(src: RadianceHealSource): number | null {
   if (src.isRadianceProc) return null
   const scale = src.scalingMult ?? 1
-  if (src.isHeal) return src.base * scale * (src.combatMult ?? 1)
+  const radianceMult = src.radianceHealMult
+  if (src.isHeal) return src.base * scale * (radianceMult ?? src.combatMult ?? 1)
   if (src.dmgTypeIsHeal?.heal === true) {
     const healFraction = src.dmgTypes.heal ?? 0
     if (healFraction > 0) {
-      return src.base * healFraction * scale * (src.dmgTypeCombatMults?.heal ?? src.combatMult ?? 1)
+      return src.base * healFraction * scale * (radianceMult ?? src.dmgTypeCombatMults?.heal ?? src.combatMult ?? 1)
     }
   }
   return null

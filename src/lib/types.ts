@@ -219,6 +219,7 @@ export interface BuildState {
   level: number
   hpFill: number
   enemyHpFill: number
+  inventoryFill: number
   summonCount: number
   vassalsCroakSummons?: number
   lastCroakStacks?: number

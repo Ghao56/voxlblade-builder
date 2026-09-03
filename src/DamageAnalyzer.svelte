@@ -30,7 +30,7 @@
   import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage, calcInoculationHeal, UNDEAD_MIGHT_SELF_DMG_FRACTION, UNDEAD_MIGHT_DR_PCT_PER_STACK, type SelfDamagePerkDef } from './data/selfDamage'
   import { resolveDamageTypes, resolveWaDamageTypeKeys, applyAirToMagicConversion, computeEffectiveWaDmgTypes } from './lib/damageTypeResolve'
   import { buildDmgTypeBonuses } from './lib/engine/dmgTypeBonuses'
-import { FEROCITY_TENACITY_MULT, DARKENING_HEX_MAX_ACTIVATIONS, DARKENING_HEX_POTENCY_ADD_PER_AMOUNT, DARKENING_HEX_POTENCY_MULT_PER_AMOUNT, DARKENING_HEX_DURATION_ADD_PER_AMOUNT, KINDLING_DMG_ADD_PER_AMOUNT, CURSED_FLAMES_BURN_DMG_PER_AMOUNT, CURSED_FLAMES_DR_BASE, CURSED_FLAMES_DR_PER_BURN_POTENCY, VASSALS_CROAK_MULT_PER_STACK } from './lib/constants'
+import { FEROCITY_TENACITY_MULT, DARKENING_HEX_MAX_ACTIVATIONS, DARKENING_HEX_POTENCY_ADD_PER_AMOUNT, DARKENING_HEX_POTENCY_MULT_PER_AMOUNT, DARKENING_HEX_DURATION_ADD_PER_AMOUNT, KINDLING_DMG_ADD_PER_AMOUNT, CURSED_FLAMES_BURN_DMG_PER_AMOUNT, CURSED_FLAMES_DR_BASE, CURSED_FLAMES_DR_PER_BURN_POTENCY, VASSALS_CROAK_MULT_PER_STACK, MAX_INVENTORY_ITEMS } from './lib/constants'
 import { calcTypedDmgBoosts } from './data/TypedDmgBoost'
 import { TRACKED_TYPES_WITH_TRUE } from './lib/constants/damage-types'
 import { getRunicGlassDuration, ENCHANTED_SWORD_CD_BY_TYPE } from './lib/constants/rune-base-damage'
@@ -210,6 +210,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     guild: $build.guild,
     draconicRuneInfusion: $build.draconicRuneInfusion,
     ragePotency: _ragePotency,
+    inventoryItems,
     activeBuffs: _allActiveBuffs,
   }
 
@@ -252,6 +253,12 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: darkeningHexPotencyMult = Math.round((Math.pow(1 + DARKENING_HEX_POTENCY_MULT_PER_AMOUNT * darkeningHexAmt, darkeningHexActivations) - 1) * 10000) / 100
   $: darkeningHexDurationAdd = Math.round(DARKENING_HEX_DURATION_ADD_PER_AMOUNT * darkeningHexAmt * darkeningHexActivations * 100) / 100
   $: darkeningHexFillPct = (darkeningHexActivations / DARKENING_HEX_MAX_ACTIVATIONS) * 100
+  $: packagedPowerAmt = perks['Packaged Power'] ?? 0
+  $: inventoryItems = Math.min(Math.max(Math.round($build.inventoryFill ?? 0), 0), MAX_INVENTORY_ITEMS)
+  $: inventoryFillPct = (inventoryItems / MAX_INVENTORY_ITEMS) * 100
+  $: inventoryFullness = inventoryItems / MAX_INVENTORY_ITEMS
+  $: packagedPowerDmgPct = Math.round(packagedPowerAmt * 0.15 * inventoryFullness * 10000) / 100
+  $: packagedPowerHealPct = Math.round(packagedPowerAmt * 0.10 * inventoryFullness * 10000) / 100
   $: _healFinalMultiplier = (() => {
     const baseMult = _allHealEntries.reduce((acc, e) => acc * e.rawMultiplier, 1.0)
     return baseMult
@@ -259,6 +266,17 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: _healFinalMultiplierNoLevel = (() => {
     const baseMult = _allHealEntries
       .filter(e => e.sourceName !== 'Level Healing')
+      .reduce((acc, e) => acc * e.rawMultiplier, 1.0)
+    return baseMult
+  })()
+
+  // Healing-DEALT-only multiplier. Radiance keys off its source's healing but
+  // must ignore "healing received" modifiers (Packaged Power, Vampire Sunlight,
+  // Frenzy Self, Anti Heal) while still honouring "healing dealt" modifiers
+  // (Emotional, Heal Boost, Level Healing, …).
+  $: _healDealtMultiplier = (() => {
+    const baseMult = _allHealEntries
+      .filter(e => (e as { direction?: string }).direction !== 'received')
       .reduce((acc, e) => acc * e.rawMultiplier, 1.0)
     return baseMult
   })()
@@ -3346,6 +3364,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
             base: m1Def.healFlat,
             scalingMult: 1,
             combatMult: _healFinalMultiplier,
+            radianceHealMult: _healDealtMultiplier,
             isFinisher: false,
             dmgTypes: { heal: 1.0 },
             label: `${_activeMountRuneDef.mountLabel} Heal`,
@@ -3466,6 +3485,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           base: h.n,
           scalingMult: _waScalingMult,
           combatMult: _healFinalMultiplier,
+          radianceHealMult: _healDealtMultiplier,
           isFinisher: false,
           dmgTypes: { heal: 1.0 },
           label: _waDisplayName,
@@ -3539,6 +3559,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
               base: baseHeal,
               scalingMult: colorScaling,
               combatMult: _healFinalMultiplier,
+              radianceHealMult: _healDealtMultiplier,
               isFinisher: false,
               dmgTypes: { heal: 1.0 },
               label: `${entry.displayName} Heal`,
@@ -3562,6 +3583,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
               base: baseHeal,
               scalingMult: 1,
               combatMult: _healFinalMultiplier,
+              radianceHealMult: _healDealtMultiplier,
               isFinisher: false,
               dmgTypes: { heal: 1.0 },
               label: 'Dark Harvest Heal',
@@ -3590,6 +3612,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
             base: baseHeal,
             scalingMult: 1,
             combatMult: _healFinalMultiplier,
+            radianceHealMult: _healDealtMultiplier,
             isFinisher: false,
             dmgTypes: { heal: 1.0 },
             label: 'Deathmist Slash Heal (Allies)',
@@ -3811,6 +3834,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         scalingMult: waterScaling,
         dmgTypes: { heal: 1.0 },
         combatMult: _healFinalMultiplier,
+        radianceHealMult: _healDealtMultiplier,
         isFinisher: false,
         label: `Water Pulse (every ${pulseInterval}s)`,
         isHeal: true,
@@ -3823,6 +3847,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           group: 'Perk', index: result.length, count: 1, base: baseDmg, scalingMult: wrScaling, combatMult: _perkCombatMult,
           isFinisher: false, dmgTypes: { water: 1.0, heal: 0.2 }, baseDmgTypes: { water: 1.0 },
           dmgTypeCombatMults: { heal: _healFinalMultiplier },
+          radianceHealMult: _healDealtMultiplier,
           dmgTypeIsHeal: { heal: true },
           dmgTypeIsCritExempt: { heal: true },
           label: `Wave Rider (${labelSuffix})`,
@@ -3838,6 +3863,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       const baseHeal = (1 + OCEAN_SONG_PER_STACK * _oceanSongAmt) * (1 + _waCooldown / 30)
       result.push({
         group: 'Perk', index: result.length, count: 1, base: baseHeal, scalingMult: osScaling, combatMult: _healFinalMultiplier,
+        radianceHealMult: _healDealtMultiplier,
         isFinisher: false, dmgTypes: { heal: 1.0 }, label: 'Ocean Song', isHeal: true,
       })
     }
@@ -5752,6 +5778,38 @@ $: _groupedSelfDamageSources = (() => {
             </div>
           </details>
         {/if}
+      </div>
+    {/if}
+    {#if packagedPowerAmt > 0}
+      <div class="da-pbd-card da-pbd-card--hex">
+        <div class="da-pbd-head">
+          <span class="da-pbd-name">Packaged Power</span>
+          <span class="da-pbd-amt">+{packagedPowerAmt}</span>
+        </div>
+        <div class="da-sb-slider-wrap">
+          <span class="da-sb-slider-label">Inventory</span>
+          <input
+            type="range"
+            min="0"
+            max={MAX_INVENTORY_ITEMS}
+            step="1"
+            value={inventoryItems}
+            on:input={(e) => {
+              const val = Math.min(Math.max(+(e.target as HTMLInputElement).value, 0), MAX_INVENTORY_ITEMS)
+              build.update(s => ({ ...s, inventoryFill: val }) as any)
+            }}
+            class="da-sb-slider"
+            style="--tc:#7a9ef0; --fill:{inventoryFillPct}%"
+          />
+          <span class="da-sb-slider-val" style="color:#7a9ef0">{inventoryItems}</span>
+        </div>
+        <div class="da-pbd-condition">{Math.round(inventoryFullness * 100)}% inventory ({inventoryItems}/{MAX_INVENTORY_ITEMS} items) from Backpack Berserker → +{packagedPowerDmgPct}% dmg, +{packagedPowerHealPct}% outgoing heal (cap {MAX_INVENTORY_ITEMS}).</div>
+        <details class="da-pbd-details">
+          <summary class="da-pbd-details-summary">Perk Details</summary>
+          <div class="da-pbd-details-body">
+            <p>Grants <b>+15% damage</b> and <b>+10% outgoing healing</b> scaled by inventory fullness (items / {MAX_INVENTORY_ITEMS}). Full inventory grants the full bonus.</p>
+          </div>
+        </details>
       </div>
     {/if}
     {#if _vassalsCroakAmt > 0}
