@@ -69,7 +69,7 @@ const HEAL_SCALING_DEFS: HealBoostDef[] = [
   {
     sourceName: 'Packaged Power',
     sourceType: 'perk',
-    direction: 'received',
+    direction: 'dealt',
     calcFn: (ctx) => {
       const stacks = ctx.perks['Packaged Power'] ?? 0
       if (stacks <= 0) return null

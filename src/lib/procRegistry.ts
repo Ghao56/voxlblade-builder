@@ -2,7 +2,7 @@ import type { ProcCoefficient, ProcScalingType } from './types'
 import { canProc } from './types'
 import { BLUB_BLUB_PROC_CHANCE } from './constants/perks'
 import { ICHOR_SPARK_CHAIN_PROC_CHANCE, QUAKE_CHANCE_BASE } from './constants/perk-base-damage'
-import { STORM_CALLER_PROC_CHANCE } from './constants/perks'
+import { STORM_CALLER_PROC_CHANCE, LIGHT_BEARER_PROC_CHANCE } from './constants/perks'
 
 /**
  * Data-driven registry of proc-capable effects.
@@ -56,6 +56,7 @@ export const PROC_EFFECT_DEFS: Readonly<Record<string, ProcEffectDef>> = {
   'Inspiration': { blockedOnNoProc: true },
   'Sandnado': { blockedOnNoProc: true },
   'Radiance': { blockedOnNoProc: true },
+  'Light Bearer': { blockedOnNoProc: true, baseChance: LIGHT_BEARER_PROC_CHANCE },
 
   // Chance-based damage effects: blocked on NoProc, otherwise active.
   // baseChance mirrors the game's actual roll chances (reference only — the

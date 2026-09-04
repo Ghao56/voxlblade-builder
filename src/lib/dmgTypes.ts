@@ -12,6 +12,7 @@ export const BADGE_CONFIG: Record<string, { color: string; label: string; title:
   'Royal Finisher': { color: '#60a5fa', label: '✦ Royal Finisher', title: 'Royal Finisher: damaging wave of Magic on finisher · Once per finisher' },
   'Curse Rip': { color: '#e879f9', label: '✦ Curse Rip', title: 'Curse Rip: 1/60 of damage dealt as lifesteal (requires debuffed opponent)' },
   'Inspiration': { color: '#ffde0f', label: '✦ Inspiration', title: 'Inspiration: pulse that slightly heals when M1/M2 land' },
+  'Light Bearer': { color: '#facc15', label: '✦ Light Bearer', title: 'Light Bearer: M1/M2 hits release a Holy healing pulse · Proc Coefficient gated · 50% proc chance per perk' },
   'Venom Eater': { color: '#4ade80', label: '✦ Venom Eater', title: 'Venom Eater: heal 0.1 HP per stack on crit vs poisoned target' },
   'Blub':  { color: '#38bdf8', label: '✦ Blub', title: `Blub Blub: ${BLUB_BLUB_PCT_PER_STACK * 100}% × perk amount of this hit\'s damage as Water · ${BLUB_BLUB_HIT_COUNT} hits · ${BLUB_BLUB_PROC_CHANCE * 100}% proc chance` },
   'Blood Thirsty': { color: '#ef4444', label: '✦ Blood Thirsty', title: 'Blood Thirsty: heal 0.3 HP per stack on hit vs Bleeding target' },

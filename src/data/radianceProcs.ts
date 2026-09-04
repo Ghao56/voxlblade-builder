@@ -2,7 +2,7 @@ import { canProc, type ProcCoefficient } from '../lib/types'
 import { roundMultiplier } from '../lib/utils'
 import {
   RADIANCE_BASE,
-  RADIANCE_EXCLUDED_SOURCE_PATTERNS,
+  RADIANCE_ALLOWED_SOURCE_PATTERNS,
   RADIANCE_HEAL_RATIO,
   RADIANCE_HOLY_TYPE_MULT,
   RADIANCE_LABEL,
@@ -29,10 +29,10 @@ export interface RadianceHealSource {
   procCoefficient?: ProcCoefficient
   /**
    * Healing-DEALT-only multiplier for the Radiance source healing. Radiance
-   * must ignore "healing received" modifiers (e.g. Packaged Power, Vampire
-   * Sunlight, Frenzy) while still honouring "healing dealt" modifiers
-   * (Emotional, Heal Boost, …). When present it overrides the full heal
-   * combatMult (`combatMult` / `dmgTypeCombatMults.heal`) used for display.
+   * must ignore "healing received" modifiers (e.g. Vampire Sunlight, Frenzy)
+   * while still honouring "healing dealt" modifiers (Emotional, Heal Boost,
+   * Packaged Power, …). When present it overrides the full heal combatMult
+   * (`combatMult` / `dmgTypeCombatMults.heal`) used for display.
    */
   radianceHealMult?: number
 }
@@ -58,16 +58,18 @@ export function radianceSourceHealing(src: RadianceHealSource): number | null {
 }
 
 /**
- * Radiance only triggers on heals that can themselves proc effects:
- * noProc heal instances (e.g. DoT-style or explicitly gated heals) and
- * game-design-excluded sources (Lifesteal, Regen, Dark Harvest, …) never do.
+ * Radiance only triggers on the game spec's closed "List of Compatible Heals —
+ * able to proc effects" whitelist. Any heal source whose label does not match
+ * (e.g. mount heals, lifesteal, regen, Frenzy, Curse Rip, Dark Harvest, …)
+ * never procs Radiance. Vampire is a compatible healer and can trigger a burst,
+ * but its "healing received" modifier is still ignored via radianceHealMult.
  */
 export function isRadianceEligible(src: RadianceHealSource): boolean {
   const healing = radianceSourceHealing(src)
   if (healing == null || healing <= 0) return false
   if (!canProc(src.procCoefficient)) return false
   const label = src.label ?? ''
-  if (RADIANCE_EXCLUDED_SOURCE_PATTERNS.some(rx => rx.test(label))) return false
+  if (!RADIANCE_ALLOWED_SOURCE_PATTERNS.some(rx => rx.test(label))) return false
   return true
 }
 

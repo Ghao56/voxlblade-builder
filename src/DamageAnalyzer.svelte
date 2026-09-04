@@ -96,6 +96,9 @@ import {
   WINTER_WOOF_SPIRIT_HOWL_DMG,
   BLUB_BLUB_PROC_CHANCE,
   STORM_CALLER_PROC_CHANCE,
+  LIGHT_BEARER_PROC_CHANCE,
+  LIGHT_BEARER_BASE_HEAL,
+  LIGHT_BEARER_HEAL_PER_AMOUNT,
   DOT_EXCLUDED_PERK_BONUSES,
   VAPOR_AEGIS_FIRE_WATER_DR_PCT,
   QUEENS_POWER_ATK_SPD_BASE, QUEENS_POWER_ATK_SPD_PER_TENTH_POTENCY,
@@ -271,9 +274,9 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   })()
 
   // Healing-DEALT-only multiplier. Radiance keys off its source's healing but
-  // must ignore "healing received" modifiers (Packaged Power, Vampire Sunlight,
-  // Frenzy Self, Anti Heal) while still honouring "healing dealt" modifiers
-  // (Emotional, Heal Boost, Level Healing, …).
+  // must ignore "healing received" modifiers (Vampire Sunlight, Frenzy Self,
+  // Anti Heal) while still honouring "healing dealt" modifiers (Emotional,
+  // Heal Boost, Packaged Power, Level Healing, …).
   $: _healDealtMultiplier = (() => {
     const baseMult = _allHealEntries
       .filter(e => (e as { direction?: string }).direction !== 'received')
@@ -986,6 +989,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: _vcDisplayHits = Math.min(_vcCharges, _vcMaxHit)
   $: _oceanSongAmt = perks['Ocean Song'] ?? 0
   $: _radianceAmt = perks['Radiance'] ?? 0
+  $: _lightBearerAmt = perks['Light Bearer'] ?? 0
   $: _wildBoltAmt = perks['Wild Bolt'] ?? 0
   $: _weightySlamAmt = perks['Weighty Slam'] ?? 0
   $: _heatDrillAmt = perks['Heat Drill'] ?? 0
@@ -1189,6 +1193,15 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         title: `Blub Blub: ${blubChance}% proc chance · normal scaling`,
         val: disabledEffects.has('blubBlub') ? '—' : `${(perks['Blub Blub'] ?? 0)}×`,
         cond: `${blubChance}% chance`,
+      })
+    }
+    if (_lightBearerAmt > 0) {
+      const lbChance = Math.round(LIGHT_BEARER_PROC_CHANCE * 100)
+      chips.push({
+        key: 'lightBearer', name: 'Light Bearer',
+        title: `Light Bearer: ${lbChance}% proc chance per M1/M2 hit · Holy healing pulse · Proc Coefficient gated · Heal = ${LIGHT_BEARER_BASE_HEAL}+${LIGHT_BEARER_HEAL_PER_AMOUNT}×perk`,
+        val: disabledEffects.has('lightBearer') ? '—' : `${_lightBearerAmt}×`,
+        cond: `${lbChance}% chance`,
       })
     }
     if (_cauterizeAmt > 0) {
@@ -3131,6 +3144,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     isM2?: boolean
     forceCrit?: boolean
     dmgTypeCombatMults?: Record<string, number>
+    radianceHealMult?: number
     dmgTypeIsHeal?: Record<string, boolean>
     dmgTypeIsCritExempt?: Record<string, boolean>
     procCoefficient?: ProcCoefficient
@@ -3843,8 +3857,9 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     if (_waveRiderAmt > 0) {
       const wrScaling = _computePerkScalingMult({ water: 1.0 })
       const pushWr = (baseDmg: number, labelSuffix: string) => {
+        const srcGroup = labelSuffix === 'M2' ? 'M2' : 'WA'
         result.push({
-          group: 'Perk', index: result.length, count: 1, base: baseDmg, scalingMult: wrScaling, combatMult: _perkCombatMult,
+          group: srcGroup, index: result.length, count: 1, base: baseDmg, scalingMult: wrScaling, combatMult: _perkCombatMult,
           isFinisher: false, dmgTypes: { water: 1.0, heal: 0.2 }, baseDmgTypes: { water: 1.0 },
           dmgTypeCombatMults: { heal: _healFinalMultiplier },
           radianceHealMult: _healDealtMultiplier,
@@ -3862,7 +3877,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       const osScaling = _computePerkScalingMult({ water: 1.0, dexterity: 1.0 })
       const baseHeal = (1 + OCEAN_SONG_PER_STACK * _oceanSongAmt) * (1 + _waCooldown / 30)
       result.push({
-        group: 'Perk', index: result.length, count: 1, base: baseHeal, scalingMult: osScaling, combatMult: _healFinalMultiplier,
+        group: 'WA', index: result.length, count: 1, base: baseHeal, scalingMult: osScaling, combatMult: _healFinalMultiplier,
         radianceHealMult: _healDealtMultiplier,
         isFinisher: false, dmgTypes: { heal: 1.0 }, label: 'Ocean Song', isHeal: true,
       })
@@ -3970,6 +3985,33 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         h.combatMultNoFinisher = h.combatMult ?? 1
         h.combatMult = roundMultiplier((h.combatMult ?? 1) * _finisherBoostMult)
       }
+    }
+
+    // ── Light Bearer ─────────────────────────────────────────────
+    // LMB (M1) and RMB (M2) hits release a Holy healing pulse. Possesses a
+    // Proc Coefficient (gated on the weapon's M1/M2 coefficient). Base
+    // Healing = 0.25 + 0.025 × perkAmount · 1.0 Holy Scaling. Emitted as a
+    // proccable heal source BEFORE Radiance so it can itself trigger a burst
+    // (it's on the compatible-heal list). It renders under the M1/M2 group that
+    // landed it (not a separate Perk section), gated by that group's proc
+    // coefficient.
+    if (_lightBearerAmt > 0) {
+      const lbBase = LIGHT_BEARER_BASE_HEAL + LIGHT_BEARER_HEAL_PER_AMOUNT * _lightBearerAmt
+      const lbScaling = _computePerkScalingMult({ holy: 1.0 })
+      const wProc = WEAPON_PROC_COEFFS[_baseWeaponType] ?? { m1: DEFAULT_PROC_COEFF, m2: DEFAULT_PROC_COEFF }
+      const pushLbPulse = (group: 'M1' | 'M2') => {
+        if (!result.some(h => h.group === group && !h.isHeal)) return
+        const coeff = group === 'M1' ? (wProc.m1 ?? DEFAULT_PROC_COEFF) : (wProc.m2 ?? DEFAULT_PROC_COEFF)
+        if (!canProc(coeff)) return
+        result.push({
+          group, index: result.length, count: 1, base: lbBase,
+          scalingMult: lbScaling, combatMult: _healFinalMultiplier,
+          radianceHealMult: _healDealtMultiplier,
+          isFinisher: false, dmgTypes: { heal: 1.0 }, label: 'Light Bearer', isHeal: true,
+        })
+      }
+      pushLbPulse('M1')
+      pushLbPulse('M2')
     }
 
     // ── Radiance ────────────────────────────────────────────────
@@ -6155,7 +6197,7 @@ $: _groupedSelfDamageSources = (() => {
             {/each}
           {/if}
         </div>
-        <div class="da-pbd-note">Each proccable healing source emits its own Holy burst: base = 1 + healing × 4/45 × perkAmount. Healing-dealt modifiers (Emotional, Heal Boost, …) flow in once through the source's healing; Holy Boost applies via the 10.0 Holy scaling. Bursts cannot proc other effects.</div>
+        <div class="da-pbd-note">Only sources on the spec's compatible-heal list trigger Radiance (Lesser Heal, Holy Shrine, Holy Phalanx, Cleanse, Splash, Solar Light, Heal Rune, Ancient Cleric Rune, Rune of Cleansing, Draconic Blood Holy & Water, Beastial Rage, Caci King Spirit, Crimson Tithe, Deathmist Slash (others), Essence Totem, Light Bearer, Minion Absorption, Ocean Song, Rainstorm, Revel In Death, Sacred Grounds, Vampire, Wave Rider, Cure, Expunge, Meditate). Each proccable source emits its own Holy burst: base = 1 + healing × 4/45 × perkAmount. Damage is boosted by outgoing-healing modifiers (Emotional, Heal Boost, Packaged Power, …) but unaffected by healing-received modifiers (Vampire, Frenzy); Holy Boost applies via the 10.0 Holy scaling. Bursts spawn around the user (not those healed) and cannot proc other effects.</div>
       </div>
     {/if}
   </div>

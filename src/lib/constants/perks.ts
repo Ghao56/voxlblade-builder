@@ -141,3 +141,8 @@ export const CONCEALED_EDGE_HEX_PER_STACK = 0.25
 
 // ── Stormcaller ──────────────────────────────────
 export const STORM_CALLER_PROC_CHANCE = 0.025
+
+// ── Light Bearer ─────────────────────────────────
+export const LIGHT_BEARER_PROC_CHANCE = 0.5
+export const LIGHT_BEARER_BASE_HEAL = 0.25
+export const LIGHT_BEARER_HEAL_PER_AMOUNT = 0.025

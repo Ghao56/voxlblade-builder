@@ -277,25 +277,49 @@ export const VOLTAIC_BODY_DURATION_PER_STACK = 3
 // Radiance
 export const RADIANCE_LABEL = 'Radiance'
 export const RADIANCE_COLOR = '#ffe9a8'
-export const RADIANCE_NOTE = 'Triggered by proccable healing'
+export const RADIANCE_NOTE = 'Triggered by compatible proccable healing'
 export const RADIANCE_BASE = 1
 export const RADIANCE_HEAL_RATIO = 4 / 45
 export const RADIANCE_HOLY_TYPE_MULT = 1.0
 export const RADIANCE_HOLY_SCALING = 10.0
-// Heal sources that never trigger Radiance (self-sustain, HoTs, self-only heals).
+// Radiance only triggers on the game spec's closed "List of Compatible Heals —
+// able to proc effects". Heal sources in the "unable to proc effects" list
+// (Cleansed Blade, Curse Rip, Dark Harvest, Deepcrystal Calling, Hex Shield,
+// Inspiration, Inoculation, Lifesteal, Regen, Rejuvenating Flame, Vital Mist,
+// consumable items) and any other unlisted source never proc Radiance.
+// Damage is boosted by "outgoing healing" modifiers (Emotional, Heal Boost,
+// Packaged Power, …) and ignores "healing received" modifiers (Vampire, Frenzy)
+// via _healDealtMultiplier — Vampire can still TRIGGER a burst (it is a
+// compatible heal) but its received modifier does not boost the burst.
 // Matched against the source hit's label.
-export const RADIANCE_EXCLUDED_SOURCE_PATTERNS: RegExp[] = [
-  /dark harvest/i,
-  /inspiration/i,
-  /curse rip/i,
-  /lifesteal/i,
-  /regen/i,
-  /inoculation/i,
-  /vital mist/i,
-  /rejuvenating flame/i,
-  /hex shield/i,
-  /deepcrystal/i,
-  /cleansed blade/i,
+export const RADIANCE_ALLOWED_SOURCE_PATTERNS: RegExp[] = [
+  /lesser heal/i,
+  /holy shrine/i,
+  /holy phalanx/i,
+  /cleanse/i,
+  /splash/i,
+  /solar light/i,
+  /heal rune/i,
+  /ancient cleric rune/i,
+  /rune of cleansing/i,
+  /dragon (claw|bubble) heal/i, // Draconic Blood (Holy & Water)
+  /water pulse/i, // Draconic Blood (water) pulse heal
+  /beastial rage/i,
+  /caci king spirit/i,
+  /crimson tithe/i,
+  /deathmist slash heal \(allies\)/i, // Deathmist Slash only when healing others
+  /essence totem/i,
+  /light bearer/i,
+  /minion absorption/i,
+  /ocean song/i,
+  /rainstorm/i,
+  /revel in death/i,
+  /sacred grounds/i,
+  /vampire/i,
+  /wave rider/i,
+  /cure/i,
+  /expunge/i,
+  /meditate/i,
 ]
 
 // ── Explosive Honey ─────────────────────────────────────
