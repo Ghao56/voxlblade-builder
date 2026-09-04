@@ -86,6 +86,7 @@ export interface BoostContext {
   enemyHpFillPct?: number
   perfectionStacks?: number
   inventoryItems?: number
+  voxos?: number
 }
 
 // ── Boost definitions ──────────────────────────────────────────────────────
@@ -443,6 +444,22 @@ export const BOOST_DEFS: BoostDef[] = [
       return {
         multiplier,
         condition: `${fullness * 100}% inventory (${items}/${MAX_INVENTORY_ITEMS}) → +${pct}% dmg`,
+      }
+    },
+  },
+  {
+    sourceName: 'Money Smart',
+    type: 'dmg',
+    calcFn: (ctx) => {
+      const amount = ctx.perks['Money Smart'] ?? 0
+      if (amount <= 0) return null
+      const voxos = ctx.voxos ?? 0
+      const maxVoxos = 100000
+      const fullness = Math.min(voxos / maxVoxos, 1)
+      const pct = 20 * fullness * amount
+      return {
+        multiplier: 1 + fullness * 0.20 * amount,
+        condition: `${fullness * 100}% (${voxos.toLocaleString()}/${maxVoxos.toLocaleString()} Voxos) → +${pct.toFixed(1)}% dmg`,
       }
     },
   },

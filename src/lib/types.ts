@@ -261,6 +261,7 @@ export interface BuildState {
   weaponCharge: number
   retaliateCharge: number
   perfectionStacks: number
+  voxos: number
 }
 
 export type ProcCoefficient =

@@ -30,7 +30,7 @@
   import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage, calcInoculationHeal, UNDEAD_MIGHT_SELF_DMG_FRACTION, UNDEAD_MIGHT_DR_PCT_PER_STACK, type SelfDamagePerkDef } from './data/selfDamage'
   import { resolveDamageTypes, resolveWaDamageTypeKeys, applyAirToMagicConversion, computeEffectiveWaDmgTypes } from './lib/damageTypeResolve'
   import { buildDmgTypeBonuses } from './lib/engine/dmgTypeBonuses'
-import { FEROCITY_TENACITY_MULT, DARKENING_HEX_MAX_ACTIVATIONS, DARKENING_HEX_POTENCY_ADD_PER_AMOUNT, DARKENING_HEX_POTENCY_MULT_PER_AMOUNT, DARKENING_HEX_DURATION_ADD_PER_AMOUNT, KINDLING_DMG_ADD_PER_AMOUNT, CURSED_FLAMES_BURN_DMG_PER_AMOUNT, CURSED_FLAMES_DR_BASE, CURSED_FLAMES_DR_PER_BURN_POTENCY, VASSALS_CROAK_MULT_PER_STACK, MAX_INVENTORY_ITEMS } from './lib/constants'
+  import { FEROCITY_TENACITY_MULT, DARKENING_HEX_MAX_ACTIVATIONS, DARKENING_HEX_POTENCY_ADD_PER_AMOUNT, DARKENING_HEX_POTENCY_MULT_PER_AMOUNT, DARKENING_HEX_DURATION_ADD_PER_AMOUNT, KINDLING_DMG_ADD_PER_AMOUNT, CURSED_FLAMES_BURN_DMG_PER_AMOUNT, CURSED_FLAMES_DR_BASE, CURSED_FLAMES_DR_PER_BURN_POTENCY, VASSALS_CROAK_MULT_PER_STACK, MAX_INVENTORY_ITEMS, MAX_MONEY_SMART_VOXOS } from './lib/constants'
 import { calcTypedDmgBoosts } from './data/TypedDmgBoost'
 import { TRACKED_TYPES_WITH_TRUE } from './lib/constants/damage-types'
 import { getRunicGlassDuration, ENCHANTED_SWORD_CD_BY_TYPE } from './lib/constants/rune-base-damage'
@@ -262,6 +262,11 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: inventoryFullness = inventoryItems / MAX_INVENTORY_ITEMS
   $: packagedPowerDmgPct = Math.round(packagedPowerAmt * 0.15 * inventoryFullness * 10000) / 100
   $: packagedPowerHealPct = Math.round(packagedPowerAmt * 0.10 * inventoryFullness * 10000) / 100
+  $: moneySmartAmt = perks['Money Smart'] ?? 0
+  $: moneySmartVoxos = Math.min(Math.max(Math.round($build.voxos ?? 0), 0), MAX_MONEY_SMART_VOXOS)
+  $: moneySmartVoxosPct = (moneySmartVoxos / MAX_MONEY_SMART_VOXOS) * 100
+  $: moneySmartFullness = moneySmartVoxos / MAX_MONEY_SMART_VOXOS
+  $: moneySmartDmgPct = Math.round(moneySmartAmt * 0.20 * moneySmartFullness * 10000) / 100
   $: _healFinalMultiplier = (() => {
     const baseMult = _allHealEntries.reduce((acc, e) => acc * e.rawMultiplier, 1.0)
     return baseMult
@@ -5774,7 +5779,7 @@ $: _groupedSelfDamageSources = (() => {
 </div><!-- end da-section--wbd -->
 
 <!-- ── Perk Base Damage ── -->
-{#if _nonDraconicPerkEntries.length > 0 || darkeningHexAmt > 0 || _vassalsCroakAmt > 0 || _cdAmt > 0 || _vcAmt > 0 || packagedPowerAmt > 0 || _radianceAmt > 0}
+{#if _nonDraconicPerkEntries.length > 0 || darkeningHexAmt > 0 || _vassalsCroakAmt > 0 || _cdAmt > 0 || _vcAmt > 0 || packagedPowerAmt > 0 || _radianceAmt > 0 || moneySmartAmt > 0}
 <div class="da-section da-section--pbd">
   <div class="da-section-title-row">
     <span class="da-section-title">Perk Base Damage</span>
@@ -5850,6 +5855,38 @@ $: _groupedSelfDamageSources = (() => {
           <summary class="da-pbd-details-summary">Perk Details</summary>
           <div class="da-pbd-details-body">
             <p>Grants <b>+15% damage</b> and <b>+10% outgoing healing</b> scaled by inventory fullness (items / {MAX_INVENTORY_ITEMS}). Full inventory grants the full bonus.</p>
+          </div>
+        </details>
+      </div>
+    {/if}
+    {#if moneySmartAmt > 0}
+      <div class="da-pbd-card da-pbd-card--hex">
+        <div class="da-pbd-head">
+          <span class="da-pbd-name">Money Smart</span>
+          <span class="da-pbd-amt">+{moneySmartAmt}</span>
+        </div>
+        <div class="da-sb-slider-wrap">
+          <span class="da-sb-slider-label">Voxos</span>
+          <input
+            type="range"
+            min="0"
+            max={MAX_MONEY_SMART_VOXOS}
+            step="1000"
+            value={moneySmartVoxos}
+            on:input={(e) => {
+              const val = Math.min(Math.max(+(e.target as HTMLInputElement).value, 0), MAX_MONEY_SMART_VOXOS)
+              build.update(s => ({ ...s, voxos: val }) as any)
+            }}
+            class="da-sb-slider"
+            style="--tc:#facc15; --fill:{moneySmartVoxosPct}%"
+          />
+          <span class="da-sb-slider-val" style="color:#facc15">{moneySmartVoxos.toLocaleString()}</span>
+        </div>
+        <div class="da-pbd-condition">{moneySmartVoxos.toLocaleString()}/{MAX_MONEY_SMART_VOXOS.toLocaleString()} → +{moneySmartDmgPct}% dmg</div>
+        <details class="da-pbd-details">
+          <summary class="da-pbd-details-summary">Perk Details</summary>
+          <div class="da-pbd-details-body">
+            <p>Grants <b>+20% damage</b> scaled by voxos held (voxos / {MAX_MONEY_SMART_VOXOS.toLocaleString()}). Full voxos grants the full bonus.</p>
           </div>
         </details>
       </div>

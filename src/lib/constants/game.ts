@@ -8,6 +8,7 @@ export const DEFAULT_HP_FILL = 100
 export const DEFAULT_ENEMY_HP_FILL = 100
 export const DEFAULT_INVENTORY_FILL = 250
 export const MAX_INVENTORY_ITEMS = 250
+export const MAX_MONEY_SMART_VOXOS = 100000
 
 const BASE_HP = 120
 const HP_PER_LEVEL = 0.0125

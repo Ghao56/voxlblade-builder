@@ -91,6 +91,7 @@ const DEFAULT_BUILD: BuildState = {
   weaponCharge: 100,
   retaliateCharge: 100,
   perfectionStacks: 5,
+  voxos: 100000,
 }
 
 function loadBuild(): BuildState {
