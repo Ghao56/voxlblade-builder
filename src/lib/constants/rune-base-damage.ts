@@ -2,6 +2,10 @@
 // Rune base damage values (from Runebasedmg.ts)
 // ──────────────────────────────────────────────
 
+// Magic Missile
+export const MAGIC_MISSILE_BASE_DMG = 6
+export const MAGIC_MISSILE_HITS = 3
+
 // Ancient Cleric
 export const ANCIENT_CLERIC_BASE_DMG = 0.5
 export const ANCIENT_CLERIC_SLIDER_MAX = 20
