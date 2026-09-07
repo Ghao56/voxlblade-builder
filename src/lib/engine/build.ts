@@ -492,7 +492,7 @@ function deriveResults(
   applyEmotionalAttackSpeed(boostedStats, finalPerks, state.emotionalState, state.emotionalDisabled)
   applyGladiatorialRage(boostedStats, finalPerks)
 
-  if (state.rune === 'Ancient Cleric Rune') {
+  if (state.rune === 'Ancient Cleric Rune' && !(state.disabledBuffKeys ?? []).includes('Ancient Shield:Ancient Cleric Rune')) {
     const shieldHp = ANCIENT_CLERIC_SHIELD_BASE + ANCIENT_CLERIC_SHIELD_PER_VAL * (state.buffsConsumed ?? 0)
     boostedStats.protection = (boostedStats.protection ?? 0) + shieldHp
   }
@@ -512,6 +512,10 @@ function deriveResults(
     ? ((state.monkGlove || state.monkEssence) ? calcMonkWeapon(state.monkGlove, state.monkEssence, state.shrineActive, state.guildRank) : null)
     : ((state.weaponBlade || state.weaponHandle) ? calcWeapon(state.weaponBlade, state.weaponHandle, state.shrineActive) : null)
   const { allBuffs, orkBuffTenacity } = computeBuffs(state, finalPerks, wardingDebuffMult, _weaponResult?.weaponModifier)
+  const iceShellPotency = maxBuffPotency(allBuffs, 'Ice Shell')
+  if (iceShellPotency > 0 && !(state.disabledBuffKeys ?? []).includes('Ice Shell:Glacial Shell Rune')) {
+    boostedStats.protection = (boostedStats.protection ?? 0) + iceShellPotency
+  }
   const ragePotency      = maxBuffPotency(allBuffs, 'Rage')
   const bouncePotency    = maxBuffPotency(allBuffs, 'Bounce')
   const quickdrawPotency = maxBuffPotency(allBuffs, 'Quickdraw')

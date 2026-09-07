@@ -61,6 +61,9 @@ export const PROTO_GRAPPLER_POISON_DURATION = 5
 export const REINFORCE_RUNE_POTENCY = 0.5
 export const REINFORCE_RUNE_DURATION = 20
 export const TAUNTING_RUNE_DURATION = 10
+export const GLACIAL_SHELL_SHIELD_POTENCY = 50
+export const GLACIAL_SHELL_DURATION = 20
+export const GLACIAL_SHELL_RECOVERY_PCT = 30
 
 // Basic debuff pool
 export const BASIC_DEBUFF_POTENCY = 0
