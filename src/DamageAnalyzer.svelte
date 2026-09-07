@@ -33,7 +33,7 @@
   import { FEROCITY_TENACITY_MULT, DARKENING_HEX_MAX_ACTIVATIONS, DARKENING_HEX_POTENCY_ADD_PER_AMOUNT, DARKENING_HEX_POTENCY_MULT_PER_AMOUNT, DARKENING_HEX_DURATION_ADD_PER_AMOUNT, KINDLING_DMG_ADD_PER_AMOUNT, CURSED_FLAMES_BURN_DMG_PER_AMOUNT, CURSED_FLAMES_DR_BASE, CURSED_FLAMES_DR_PER_BURN_POTENCY, VASSALS_CROAK_MULT_PER_STACK, MAX_INVENTORY_ITEMS, MAX_MONEY_SMART_VOXOS } from './lib/constants'
 import { calcTypedDmgBoosts } from './data/TypedDmgBoost'
 import { TRACKED_TYPES_WITH_TRUE } from './lib/constants/damage-types'
-import { getRunicGlassDuration, ENCHANTED_SWORD_CD_BY_TYPE } from './lib/constants/rune-base-damage'
+import { getRunicGlassDuration, ENCHANTED_SWORD_CD_BY_TYPE, ANCIENT_CLERIC_SHIELD_BASE, ANCIENT_CLERIC_SHIELD_PER_VAL } from './lib/constants/rune-base-damage'
 import { resolveStanceOverlay } from './data/stanceOverlays'
 import { getAutoDebuffs, calcActualHpFillPct } from './data/perkAutoDebuffs'
 import Badge from './lib/ui/Badge.svelte'
@@ -414,6 +414,15 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       ? (($build.monkGlove || $build.monkEssence) ? calcMonkWeapon($build.monkGlove, $build.monkEssence, $build.shrineActive, $build.guildRank) : null)?.weaponModifier
       : (($build.weaponBlade || $build.weaponHandle) ? calcWeapon($build.weaponBlade, $build.weaponHandle, $build.shrineActive) : null)?.weaponModifier
     const baseBuffs = assembleActiveBuffs($build, $result.perks, wardingDebuffMult, darkeningHexEligible, _weaponModifier)
+
+    if ($build.rune === 'Ancient Cleric Rune') {
+      const dynamicPotency = ANCIENT_CLERIC_SHIELD_BASE + ANCIENT_CLERIC_SHIELD_PER_VAL * ($build.buffsConsumed ?? 0)
+      for (let i = 0; i < baseBuffs.length; i++) {
+        if (baseBuffs[i].buffName === 'Ancient Shield') {
+          baseBuffs[i] = { ...baseBuffs[i], potency: dynamicPotency }
+        }
+      }
+    }
 
     if ($build.rune === 'Enchanted Sword Rune' && $build.enchantedSwordType === 1) {
       baseBuffs.push({
@@ -2753,13 +2762,35 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     ? ((($build as any)[_activeRuneDmgDef.slider.buildKey] ?? 0) as number)
     : 0
     
+  $: _consumableBuffCount = (() => {
+    const seen = new Set<string>()
+    for (const b of _allActiveBuffsRaw) {
+      if (BUFF_DEFS[b.buffName]?.isDebuff) continue
+      if (b.buffName === 'Ancient Shield' && b.sourceName === 'Ancient Cleric Rune') continue
+      seen.add(`${b.buffName}:${b.isSelfDebuff === true ? 's' : 'n'}`)
+    }
+    return seen.size
+  })()
   $: _runeSliderMax = _activeRuneDmgDef?.slider
-    ? (_activeRuneDmgDef.slider.getMax ? _activeRuneDmgDef.slider.getMax({ perks }) : _activeRuneDmgDef.slider.max)
+    ? (_activeRuneDmgDef.slider.getMax
+        ? _activeRuneDmgDef.slider.getMax({ perks })
+        : _activeRuneDmgDef.runeName === 'Ancient Cleric Rune'
+          ? _consumableBuffCount
+          : _activeRuneDmgDef.slider.max)
     : 0
     
   $: if (_activeRuneDmgDef?.slider && _runeSliderVal > _runeSliderMax) {
     const sliderDef = _activeRuneDmgDef.slider
     build.update(s => ({ ...s, [sliderDef.buildKey]: _runeSliderMax }) as any)
+  }
+
+  let _defaultMaxInitRune: string | null = null
+  $: if (_activeRuneDmgDef?.slider?.defaultToMax && _runeSliderMax > 0 && _defaultMaxInitRune !== _activeRuneDmgDef.runeName) {
+    _defaultMaxInitRune = _activeRuneDmgDef.runeName
+    const sliderDef = _activeRuneDmgDef.slider
+    if (((($build as any)[sliderDef.buildKey] ?? 0) as number) === sliderDef.min) {
+      build.update(s => ({ ...s, [sliderDef.buildKey]: _runeSliderMax }) as any)
+    }
   }
 
   $: {

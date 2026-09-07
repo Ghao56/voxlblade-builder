@@ -10,6 +10,7 @@ import { calcCrit } from '../crit'
 import type { CritResult } from '../crit'
 import { roundMultiplier, calcWardingDebuffMultiplier } from '../utils'
 import { MAX_LEVEL, calcBaseMaxHP } from '../constants'
+import { ANCIENT_CLERIC_SHIELD_BASE, ANCIENT_CLERIC_SHIELD_PER_VAL } from '../constants/rune-base-damage'
 import {
   getRace, getGuild, getGuildRank, getArmorPart, getRing, getRune,
   getBlade, getHandle, getGlove, getEssence, isMonkGuild, getPerk,
@@ -490,6 +491,11 @@ function deriveResults(
   const boostedStats = applyStatBoostPerks(finalStats, finalPerks)
   applyEmotionalAttackSpeed(boostedStats, finalPerks, state.emotionalState, state.emotionalDisabled)
   applyGladiatorialRage(boostedStats, finalPerks)
+
+  if (state.rune === 'Ancient Cleric Rune') {
+    const shieldHp = ANCIENT_CLERIC_SHIELD_BASE + ANCIENT_CLERIC_SHIELD_PER_VAL * (state.buffsConsumed ?? 0)
+    boostedStats.protection = (boostedStats.protection ?? 0) + shieldHp
+  }
 
   for (let i = 0; i < STAT_KEYS.length; i++) {
     const k = STAT_KEYS[i]

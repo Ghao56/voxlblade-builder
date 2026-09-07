@@ -23,6 +23,7 @@ export interface RuneSliderDef {
   step?: number
   valueLabels?: string[]
   getMax?: (ctx: { perks: Record<string, number> }) => number
+  defaultToMax?: boolean
 }
 
 export interface RuneShieldDef {
@@ -159,6 +160,7 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
         min: 0,
         max: ANCIENT_CLERIC_SLIDER_MAX,
         step: 1,
+        defaultToMax: true,
       },
       shield: {
         getShieldHp: (val) => ANCIENT_CLERIC_SHIELD_BASE + ANCIENT_CLERIC_SHIELD_PER_VAL * val,
