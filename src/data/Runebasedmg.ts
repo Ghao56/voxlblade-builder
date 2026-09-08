@@ -2,8 +2,7 @@ import type { BuildState } from '../lib/types';
 import { DMG_TYPE_PRIORITY } from '../lib/constants/damage-types';
 import { calculateHealBoost, type HealBoostContext } from './HealBoost';
 import { calcMaxSummonCount } from './SummonData';
-import { MAGIC_MISSILE_BASE_DMG, MAGIC_MISSILE_HITS, ANCIENT_CLERIC_BASE_DMG, ANCIENT_CLERIC_SLIDER_MAX, ANCIENT_CLERIC_SHIELD_BASE, ANCIENT_CLERIC_SHIELD_PER_VAL, BEENADE_BASE_DMG, BEENADE_MAX_POTENCY, BOOSTSHROOM_BASE_DMG, THUNDEROUS_CHARGE_BASE_DMG, SPORELING_TOSS_BASE_DMG, SPORELING_TOSS_HITS_BASE, SPORELING_TOSS_SLIDER_MAX, FOOT_DIVE_BASE_DMG, CACI_BASE_DMG, CACI_HITS, CACITROPS_BASE_DMG, CACITROPS_HITS, HEX_WEB_BASE_DMG, HEX_WEB_HITS, BRAINBLAST_BASE_DMG, BRAINBLAST_HITS, ROCKY_TAIL_BASE_DMG, ROCKY_TAIL_PROT_SCALE, ROCKY_TAIL_VS_BASE_RES, ROCKY_TAIL_VS_PER_LEVEL, ROCKY_TAIL_VS_DEFAULT_RES, ROCKY_TAIL_DIVISOR_COEFF, ROCKY_TAIL_DIVISOR_BASE, ROCKY_TAIL_HITS_MULT, ROCKY_TAIL_MIN_HITS, SLAYER_RAGE_HITS, SLAYER_RAGE_RAGE_RUNE_BASE_DMG, SLAYER_RAGE_RAGE_RUNE_DMG_PER_STACK, SLAYER_RAGE_ROAR_RUNE_BASE_DMG, SLAYER_RAGE_ROAR_RUNE_DMG_PER_STACK, ENCHANTED_SWORD_WEAPON_TYPES, ENCHANTED_SWORD_DAGGER_BASE_DMG, ENCHANTED_SWORD_SWORD_BASE_DMG, ENCHANTED_SWORD_GREATSWORD_BASE_DMG, ENCHANTED_SWORD_DAGGER_POISE, ENCHANTED_SWORD_SWORD_POISE, ENCHANTED_SWORD_GREATSWORD_POISE, ENCHANTED_SWORD_CD_BY_TYPE, RUNIC_GLASS_BASE_DMG, RUNIC_GLASS_DURATION, RUNIC_GLASS_TICKS, getRunicGlassDuration, SANGUINE_BOLT_BASE_DMG, SANGUINE_BOLT_HITS, SANGUINE_BOLT_SELF_DMG } from '../lib/constants/rune-base-damage';
-import { SANGUINE_BOLT_BLEED_DURATION } from '../lib/constants/buffs';
+import { MAGIC_MISSILE_BASE_DMG, MAGIC_MISSILE_HITS, ANCIENT_CLERIC_BASE_DMG, ANCIENT_CLERIC_SLIDER_MAX, ANCIENT_CLERIC_SHIELD_BASE, ANCIENT_CLERIC_SHIELD_PER_VAL, BEENADE_BASE_DMG, BEENADE_MAX_POTENCY, BOOSTSHROOM_BASE_DMG, THUNDEROUS_CHARGE_BASE_DMG, SPORELING_TOSS_BASE_DMG, SPORELING_TOSS_HITS_BASE, SPORELING_TOSS_SLIDER_MAX, FOOT_DIVE_BASE_DMG, CACI_BASE_DMG, CACI_HITS, CACITROPS_BASE_DMG, CACITROPS_HITS, HEX_WEB_BASE_DMG, HEX_WEB_HITS, BRAINBLAST_BASE_DMG, BRAINBLAST_HITS, ROCKY_TAIL_BASE_DMG, ROCKY_TAIL_PROT_SCALE, ROCKY_TAIL_VS_BASE_RES, ROCKY_TAIL_VS_PER_LEVEL, ROCKY_TAIL_VS_DEFAULT_RES, ROCKY_TAIL_DIVISOR_COEFF, ROCKY_TAIL_DIVISOR_BASE, ROCKY_TAIL_HITS_MULT, ROCKY_TAIL_MIN_HITS, SLAYER_RAGE_HITS, SLAYER_RAGE_RAGE_RUNE_BASE_DMG, SLAYER_RAGE_RAGE_RUNE_DMG_PER_STACK, SLAYER_RAGE_ROAR_RUNE_BASE_DMG, SLAYER_RAGE_ROAR_RUNE_DMG_PER_STACK, ENCHANTED_SWORD_WEAPON_TYPES, ENCHANTED_SWORD_DAGGER_BASE_DMG, ENCHANTED_SWORD_SWORD_BASE_DMG, ENCHANTED_SWORD_GREATSWORD_BASE_DMG, ENCHANTED_SWORD_DAGGER_POISE, ENCHANTED_SWORD_SWORD_POISE, ENCHANTED_SWORD_GREATSWORD_POISE, ENCHANTED_SWORD_CD_BY_TYPE, RUNIC_GLASS_BASE_DMG, RUNIC_GLASS_DURATION, RUNIC_GLASS_TICKS, getRunicGlassDuration, SANGUINE_BOLT_BASE_DMG, SANGUINE_BOLT_HITS } from '../lib/constants/rune-base-damage';
 
 export interface RuneDmgCtx {
   potency: number
@@ -143,7 +142,6 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
         if (highest === 'true') return { magic: 1.0 }
         return { ...(highest === 'magic' ? {} : { [highest]: 0.5 }), magic: highest === 'magic' ? 1.0 : 0.5 }
       },
-      note: 'Deals 6 × 3 hits. Damage type is 1.0 of the weapon\'s highest damage type; scaling is 0.5 of the weapon\'s highest damage type + 0.5 Magic.',
     },
     {
       runeName: 'Ancient Cleric Rune',
@@ -153,7 +151,6 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
       scalings: { holy: 0.5, earth: 0.5 },
       hits: 1,
       isHealOnly: true,
-      note: 'Heal only',
       slider: {
         buildKey: 'buffsConsumed',
         label: 'Buffs Consumed',
@@ -183,7 +180,6 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     dmgTypes: { hex: 1.0 },
     scalings: { hex: 1.0 },
     hits: 1,
-    note: 'Boostshroom lasts 20s and can be activated multiple times (~2s internal CD per player). Can be triggered by other players — damage still counts as yours.',
   },
   {
     runeName: 'Thunderous Charge Rune',
@@ -192,7 +188,6 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     dmgTypes: { air: 0.5, magic: 0.5 },
     scalings: { air: 1.0, magic: 1.0 },
     hits: 1,
-    note: 'Hold & release right before hitting an enemy to crit and gain Lightning Cloak for 5s. An enemy does not need to be present to trigger Lightning Cloak.',
   },
   {
     runeName: 'Sporeling Toss Rune',
@@ -209,7 +204,6 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
       step: 1,
       getMax: ({ perks }) => calcMaxSummonCount(perks),
     },
-    note: 'Always tosses 2 fresh Sporelings + however many you already have summoned, capped at your Summon Cap (15 + Swarm) — shared cap with all minions, incl. Boglord Ring/Vassals Croak. /* TODO: verify vs wiki whether the 2 freshly-tossed sporelings count against this same cap */',
   },
   {
     runeName: 'Foot Dive Rune',
@@ -218,7 +212,6 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     dmgTypes: { physical: 1.0 },
     scalings: { physical: 1.0, dexterity: 1.0 },
     hits: 1,
-    note: 'Base cooldown on miss is 25 seconds, when successfully landing this rune the base cooldown is instead 5 seconds',
   },
   {
     runeName: 'Caci Rune',
@@ -227,7 +220,6 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     dmgTypes: { physical: 1.0 },
     scalings: { summon: 1.0 },
     hits: CACI_HITS,
-    note: 'Poise damage same as base damage (5 × 3 hits). Does not count as a summon.',
   },
   {
     runeName: 'Cacitrops Rune',
@@ -236,7 +228,6 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     dmgTypes: { physical: 1.0 },
     scalings: { physical: 1.0, dexterity: 1.0 },
     hits: CACITROPS_HITS,
-    note: 'Damage ticks every ~0.75s over 20.25s. Dodge incoming attacks during casting animation. Every hit applies Bleed for 5s.',
   },
   {
     runeName: 'Hex Web Rune',
@@ -245,7 +236,6 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     dmgTypes: { hex: 1.0 },
     scalings: { hex: 1.0 },
     hits: HEX_WEB_HITS,
-    note: 'Applies Sticky (Hex Web) each hit for 5s. Damage ticks every ~0.5s over 5s. Guardbreaks. Counts as normal Sticky for perk effects.',
   },
     {
     runeName: 'Brainblast Rune',
@@ -254,7 +244,6 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     dmgTypes: { fire: 0.33, earth: 0.33, magic: 0.33 },
     scalings: { fire: 1.0, earth: 1.0, magic: 1.0 },
     hits: BRAINBLAST_HITS,
-    note: 'Guardbreaks. Applies Sticky (Melting Slime) and Burn for 5s.',
   },
   {
     runeName: 'Fireball Rune',
@@ -262,7 +251,6 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     getBaseDamage: () => 15,
     dmgTypes: { fire: 1.0 },
     scalings: { fire: 0.7, magic: 0.3 },
-    note: 'Base Poise Damage 20. Applies Burn for 5s.',
   },
     {
     runeName: 'Rocky Tail Rune',
@@ -284,7 +272,6 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     dmgTypes: { fire: 0.5, holy: 0.5 },
     scalings: { fire: 1.0, holy: 1.0 },
     hits: 10,
-    note: 'Lasts 20s, pulsating every 2s. Applies Sun Blessed each pulse (10s, does not apply to allies). Activates daylight required perks. Only 1 sun active at a time — recasting while active puts rune on 10s cooldown with no effect (can still proc rune-activated perks).',
   },
     {
     runeName: 'Snoeball Rune',
@@ -292,7 +279,6 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     getBaseDamage: () => 30,
     dmgTypes: { water: 0.5, air: 0.5 },
     scalings: { water: 1.0, magic: 1.0 },
-    note: 'Applies Frostbite for 5 seconds, Guardbreaks',
   },
   {
     runeName: 'Rage Rune',
@@ -303,18 +289,27 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     dmgTypes: { hex: 1.0 },
     scalings: { hex: 0.75, physical: 0.75 },
     hits: SLAYER_RAGE_HITS,
-    note: 'Guardbreaks. Can activate other effects. Counts as Rune damage. Take self damage equal to 1.5% of max HP per tick. Applies Weakness every other hit (0.2 potency, ~5s). Rage potency gained ramps +0.01 per stack per tick (up to 20 ticks).',
   },
   {
     runeName: 'Weakening Roar Rune',
-    condition: 'Hold to channel (Slayer Rage) — Hex damage around you · 20 ticks',
-    activeIf: ({ perks }) => (perks['Slayer Rage'] ?? 0) > 0,
-    getBaseDamage: ({ perks = {} }) =>
-      SLAYER_RAGE_ROAR_RUNE_BASE_DMG + SLAYER_RAGE_ROAR_RUNE_DMG_PER_STACK * (perks['Slayer Rage'] ?? 0),
+    condition: 'On cast · or hold to channel (Slayer Rage) — Hex damage around you · 20 ticks',
+    getBaseDamage: ({ perks = {} }) => {
+      const sr = perks['Slayer Rage'] ?? 0
+      return sr > 0
+        ? SLAYER_RAGE_ROAR_RUNE_BASE_DMG + SLAYER_RAGE_ROAR_RUNE_DMG_PER_STACK * sr
+        : 10
+    },
+    getHits: ({ perks = {} }) => (perks['Slayer Rage'] ?? 0) > 0 ? SLAYER_RAGE_HITS : 1,
     dmgTypes: { hex: 1.0 },
-    scalings: { hex: 0.75, physical: 0.75, magic: 0.3 },
-    hits: SLAYER_RAGE_HITS,
-    note: 'Guardbreaks. Can activate other effects. Counts as Rune damage. Take self damage equal to 1% of max HP per tick. Applies Weakness every other hit (0.5 base potency, ramping +0.01 per stack per tick up to 10 ticks). Grants Rage at 0.2 potency for 10 seconds.',
+    scalings: { hex: 0.7, magic: 0.3 },
+    resolveScalings: ({ perks = {} }): Record<string, number> => {
+      const sr = perks['Slayer Rage'] ?? 0
+      if (sr > 0) {
+        return { hex: 0.75, physical: 0.75, magic: 0.3 }
+      }
+      return { hex: 0.7, magic: 0.3 }
+    },
+    guardbreak: true,
   },
   {
     runeName: 'Heal Rune',
@@ -330,7 +325,6 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     getBaseDamage: () => 7,
     dmgTypes: { hex: 0.5, physical: 0.5 },
     scalings: { hex: 0.5, physical: 0.5, dexterity: 0.5 },
-    note: 'Guardbreaks. Applies Poison for 5 seconds. Grappling onto a small enemy will bring them to you, grappling onto a larger enemy will bring you to them.'
   },
   {
     runeName: 'Rune of Cleansing',
@@ -339,7 +333,6 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     dmgTypes: { heal: 1.0 },
     scalings: { water: 0.5 },
     isHealOnly: true,
-    note: 'Cleanses',
   },
   {
     runeName: 'Rubble Rune',
@@ -347,7 +340,15 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     getBaseDamage: () => 18,
     dmgTypes: { earth: 1.0 },
     scalings: { earth: 0.7, physical: 0.3 },
-    note: 'Guardbreaks'
+  },
+  {
+    runeName: 'Static Field Rune',
+    condition: 'Only hits the enemy that activated the parry',
+    getBaseDamage: () => 10,
+    dmgTypes: { air: 0.5, magic: 0.5 },
+    scalings: { air: 1.0, magic: 1.0 },
+    hits: 1,
+    guardbreak: true,
   },
   {
     runeName: 'Sanguine Bolt Rune',
@@ -357,7 +358,6 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     scalings: { air: 0.75, magic: 0.75, physical: 0.75 },
     hits: SANGUINE_BOLT_HITS,
     guardbreak: true,
-    note: `Guardbreaks. Applies Bleed for ${SANGUINE_BOLT_BLEED_DURATION} seconds on every hit. Deals ${SANGUINE_BOLT_SELF_DMG} Physical self-damage per hit (can be reduced). The hitbox is a very large cuboid extending from well behind the player to the end of the beam.`,
   },
   {
     runeName: 'Toad Slam Rune',
@@ -365,7 +365,6 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     getBaseDamage: () => 20,
     dmgTypes: { physical: 1.0 },
     scalings: { physical: 1.0 },
-    note: 'Grants Rage for 10 seconds. Guardbreaks'
   },
   {
     runeName: 'Enchanted Sword Rune',
@@ -412,8 +411,6 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
         if (!highest) return {}
         return highest === 'true' ? { magic: 1.0 } : { [highest]: 1.0 }
       },
-      note: `Applies Runic Glass for ${RUNIC_GLASS_DURATION}s (${RUNIC_GLASS_TICKS} ticks, ${RUNIC_GLASS_BASE_DMG} base dmg/tick). Counts as Rune damage. Potency does not affect its damage; debuff-duration increases do. Works with Life Drinker and Melting Shred, but not Wildfire.`,
     },
-    note: `Hold the rune key to cycle the weapon: ${ENCHANTED_SWORD_WEAPON_TYPES.join(' → ')}. Dagger (${ENCHANTED_SWORD_DAGGER_BASE_DMG} dmg · ${ENCHANTED_SWORD_CD_BY_TYPE[0]}s CD · poise ${ENCHANTED_SWORD_DAGGER_POISE} · guaranteed crit) → One-Handed Sword (${ENCHANTED_SWORD_SWORD_BASE_DMG} dmg · ${ENCHANTED_SWORD_CD_BY_TYPE[1]}s CD · poise ${ENCHANTED_SWORD_SWORD_POISE} · applies Runic Glass) → Greatsword (${ENCHANTED_SWORD_GREATSWORD_BASE_DMG} dmg · ${ENCHANTED_SWORD_CD_BY_TYPE[2]}s CD · poise ${ENCHANTED_SWORD_GREATSWORD_POISE}). All guardbreak, count as finishers, and deal 1.0 of the weapon's highest damage type and scaling (magic scaling if that type is True).`,
   },
 ]

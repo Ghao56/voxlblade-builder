@@ -64,6 +64,9 @@ export const TAUNTING_RUNE_DURATION = 10
 export const GLACIAL_SHELL_SHIELD_POTENCY = 50
 export const GLACIAL_SHELL_DURATION = 20
 export const GLACIAL_SHELL_RECOVERY_PCT = 30
+export const ELECTRO_SHIELD_POTENCY = 1
+export const ELECTRO_SHIELD_DURATION = 5
+export const ELECTRO_SHIELD_MAX_STACKS = 4
 
 // Basic debuff pool
 export const BASIC_DEBUFF_POTENCY = 0
