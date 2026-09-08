@@ -52,6 +52,8 @@ import {
   EROSION_POTENCY_BASE, EROSION_POTENCY_PER_AMOUNT, EROSION_DURATION,
   QUICKDRAW_POTENCY_PER_AMOUNT, QUICKDRAW_DURATION,
   TAILWIND_BUFF_POTENCY, TAILWIND_BUFF_DURATION,
+  JETSTREAM_RUNE_BUFF_POTENCY, JETSTREAM_RUNE_BUFF_DURATION,
+  JETSTREAM_RUNE_SLOWNESS_POTENCY, JETSTREAM_RUNE_SLOWNESS_DURATION,
   TOXIN_TRANSFER_DURATION_EXTRA,
   GROUNDED_DESPAIR_POTENCY_PER_AMOUNT, GROUNDED_DESPAIR_DURATION_PER_AMOUNT,
   QUEENS_POWER_ATK_SPD_BASE, QUEENS_POWER_ATK_SPD_PER_TENTH_POTENCY,
@@ -203,6 +205,13 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     color: '#a5f3fc',
     description: 'Move and jump x% faster/higher.',
     effectPerTenthPotency: WHIRLWIND_EFFECT_PER_TENTH,
+    effectUnit: 'flat',
+  },
+  Jetstream: {
+    name: 'Jetstream',
+    color: '#7dd3fc',
+    description: 'Move 50% faster per 0.1 potency and reduce impact from slowown effects. Self-inflict slow when this ends.',
+    effectPerTenthPotency: 0.5,
     effectUnit: 'flat',
   },
   'Critical Boost': {
@@ -715,12 +724,29 @@ const ITEM_BUFF_MAP: GrantedBuff[] = [
     sourceName: 'Toad Slam Rune',
     sourceType: 'rune',
   },
-  {
+    {
     buffName: 'Bounce',
     potency: BOUNCE_RUNE_POTENCY,
     duration: BOUNCE_RUNE_DURATION,
     sourceName: 'Bounce Rune',
     sourceType: 'rune',
+  },
+  {
+    buffName: 'Jetstream',
+    potency: JETSTREAM_RUNE_BUFF_POTENCY,
+    duration: JETSTREAM_RUNE_BUFF_DURATION,
+    condition: 'On cast',
+    sourceName: 'Jetstream Rune',
+    sourceType: 'rune',
+  },
+  {
+    buffName: 'Slowness',
+    potency: JETSTREAM_RUNE_SLOWNESS_POTENCY,
+    duration: JETSTREAM_RUNE_SLOWNESS_DURATION,
+    condition: 'After buff ends',
+    sourceName: 'Jetstream Rune',
+    sourceType: 'rune',
+    isSelfDebuff: true,
   },
     {
     buffName: 'Beenades',
