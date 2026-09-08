@@ -210,7 +210,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
   Jetstream: {
     name: 'Jetstream',
     color: '#7dd3fc',
-    description: 'Move 50% faster per 0.1 potency and reduce impact from slowown effects. Self-inflict slow when this ends.',
+    description: 'Move x% faster and become less impacted by slowdown effects of moves. Inflict yourself with slow when this ends.',
     effectPerTenthPotency: 0.5,
     effectUnit: 'flat',
   },
