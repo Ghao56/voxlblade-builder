@@ -3159,7 +3159,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: _cdPerkTargets = [...new Set([
     ..._perkOnHitDamages.map(ph => ph.tag),
     ..._activePerkDmgEntries
-      .filter(e => e.isActive && e.typedHits_m2.length > 0 && e.perkName !== 'Cauterize' && e.perkName !== 'Blazing Finisher' && e.perkName !== 'Draconic Blood' && !_isSpiritPerk(e.perkName) && !e.isWA && !e.isRune && !e.countAsM1 && !e.countAsM2)
+      .filter(e => e.isActive && e.typedHits_m2.length > 0 && e.perkName !== 'Cauterize' && e.perkName !== 'Blazing Finisher' && e.perkName !== 'Draconic Blood' && !_isSpiritPerk(e.perkName) && !e.countAsM1 && !e.countAsM2)
       .map(e => e.displayName),
   ])]
   interface BDCHit {
@@ -3682,7 +3682,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       const _pushBdcHit = (hitCount: number, hitBase: number, perHitCounts?: boolean, groupOverride?: string, labelOverride?: string, finisherIndex?: number) => {
         const group = groupOverride ?? (entry.perkName === 'Draconic Blood' ? 'Rune' : _isSpiritPerk(entry.perkName) ? 'Spirit' : entry.isWA ? 'WA' : entry.isRune ? 'Rune' : entry.workOnM2 ? 'M2' : entry.workOnM1 ? 'M1' : 'Perk')
         const cdDracoHit = entry.perkName === 'Draconic Blood' && _cdTarget === 'Draco'
-        const cdPerkHit = _cdActive && (group === 'Perk' ? _cdTarget === entry.displayName : cdDracoHit)
+        const cdPerkHit = _cdActive && (cdDracoHit || _cdTarget === entry.displayName)
         const cdPerkTypes = cdPerkHit
           ? { ...entry.resolvedDmgTypes, water: roundMultiplier((entry.resolvedDmgTypes.water ?? 0) + _cdWaterBonus) }
           : entry.resolvedDmgTypes
