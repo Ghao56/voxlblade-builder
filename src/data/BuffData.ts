@@ -96,6 +96,8 @@ import {
   ELECTRO_SHIELD_POTENCY,
   ELECTRO_SHIELD_DURATION,
   ELECTRO_SHIELD_MAX_STACKS,
+  PLAN_BEE_DRONE_ARMOR_POTENCY, PLAN_BEE_DRONE_ARMOR_DURATION,
+  PLAN_BEE_REGEN_POTENCY, PLAN_BEE_REGEN_DURATION, PLAN_BEE_HP_GATE,
   SNARL_SNARLED_POTENCY, SNARL_SNARLED_DURATION,
   THORNS_BLEED_DURATION,
   STICKY_SWINGS_POTENCY_PER_AMOUNT,
@@ -113,6 +115,7 @@ import {
 } from '../lib/constants/perks'
 import { DRAGIGATOR_SPIRIT_BURN_DURATION } from '../lib/constants/perk-base-damage'
 import { canProc } from '../lib/types'
+import { calcBaseMaxHP } from '../lib/constants/game'
 import { findPerkDmgDef, isHpGateActive } from './Perkbasedmg'
 import type { HpGate } from './Perkbasedmg'
 
@@ -623,6 +626,15 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     statKey: 'protection',
     isNeutral: true,
   },
+  'Drone Armor': {
+    name: 'Drone Armor',
+    color: '#f59e0b',
+    description: 'Increase shield max by x, gaining maximum shield equal to potency.',
+    effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
+    effectUnit: 'flat',
+    statKey: 'protection',
+    isNeutral: true,
+  },
   'Ice Shell': {
     name: 'Ice Shell',
     color: '#00e6ff',
@@ -969,6 +981,23 @@ const ITEM_BUFF_MAP: GrantedBuff[] = [
     condition: 'On hit · applies Snarled · lifesteal 2% per 0.1 potency (not affected by damage boosts) · requires proc coeff',
     sourceName: 'Snarl Rune',
     sourceType: 'rune',
+  },
+  {
+    buffName: 'Drone Armor',
+    potency: PLAN_BEE_DRONE_ARMOR_POTENCY,
+    duration: PLAN_BEE_DRONE_ARMOR_DURATION,
+    condition: 'On cast · potency = missing HP (maxHP − currentHP) · max shield = potency',
+    sourceName: 'Plan Bee Rune',
+    sourceType: 'rune',
+  },
+  {
+    buffName: 'Regen',
+    potency: PLAN_BEE_REGEN_POTENCY,
+    duration: PLAN_BEE_REGEN_DURATION,
+    condition: `Rune used below ${PLAN_BEE_HP_GATE}% HP`,
+    sourceName: 'Plan Bee Rune',
+    sourceType: 'rune',
+    hpGate: { hpThreshold: PLAN_BEE_HP_GATE, aboveThreshold: false },
   },
 ]
 
@@ -2555,6 +2584,7 @@ export interface ActiveBuffsBuildInput {
   channeledDepthsTime?: number
   perfectionStacks?: number
   hpFill?: number
+  level?: number
 }
 
 /**
@@ -2630,6 +2660,16 @@ export function assembleActiveBuffs(
   const hpGated = build.hpFill != null
     ? applyCauterizeConversion(buffs, perks).filter(b => isHpGateActive(b.hpGate, build.hpFill!, 0))
     : applyCauterizeConversion(buffs, perks)
+  if (build.rune === 'Plan Bee Rune') {
+    const baseMaxHP = calcBaseMaxHP(build.level ?? 80)
+    const droneArmorPotency = Math.round(baseMaxHP * Math.max(0, 100 - (build.hpFill ?? 100)) / 100)
+    return hpGated.map(b => {
+      if (b.buffName === 'Drone Armor') {
+        return { ...b, potency: droneArmorPotency }
+      }
+      return b
+    })
+  }
   return hpGated
 }
 

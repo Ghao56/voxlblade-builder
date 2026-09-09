@@ -1350,9 +1350,14 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
     // Snarled: damage taken heals the ENEMY by lifesteal% of damage dealt.
     // "Healing does not consider Damage Boosting perks or effects", so the
     // perk/effect damage-boost multipliers are divided out of the damage base.
+    // This covers both the typed damage-boost perks (Rage, Glyph Conduit, etc.,
+    // carried in applicableBoosts) AND the generic universal/category damage
+    // boosts folded into each hit's combatMult (e.g. Frenzy, Raging Bounce,
+    // race/level damage). Without the combatMult term, generic damage-boost
+    // perks still leaked into the heal.
     if (!isHeal && _snarledLifestealPct > 0 && !ON_HIT_EXCLUDED_SOURCES.has(hit.label ?? '')) {
       const snarledDamageDealt = types.filter(t => !t.isHeal).reduce((s, t) => {
-        const boostMult = t.applicableBoosts?.reduce((acc, b) => acc * b.mult, 1) ?? 1
+        const boostMult = (t.applicableBoosts?.reduce((acc, b) => acc * b.mult, 1) ?? 1) * (t.combatMult ?? 1)
         return s + t.raw / boostMult
       }, 0)
       const enemyHeal = snarledDamageDealt * _snarledLifestealPct / 100

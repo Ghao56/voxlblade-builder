@@ -37,6 +37,7 @@ import { canProc } from './lib/types'
 import { resolveWaDamageTypeKeys, resolveDamageTypes, computeEffectiveWaDmgTypes } from './lib/damageTypeResolve'
 import { buildDmgTypeBonuses } from './lib/engine/dmgTypeBonuses'
 import { SPIRIT_WINDS_PCT_PER_STACK, DARK_MAGIC_PCT_PER_STACK, EMOTIONAL_PCT_PER_STACK, TOXIN_TRANSFER_PCT_PER_STACK, DARKENING_HEX_MAX_ACTIVATIONS } from './lib/constants/perks'
+import { calcBaseMaxHP } from './lib/constants/game'
 
   $: buffListWeapon = isMonkGuild($build.guild)
     ? ($build.monkGlove && $build.monkEssence)
@@ -96,7 +97,7 @@ import { SPIRIT_WINDS_PCT_PER_STACK, DARK_MAGIC_PCT_PER_STACK, EMOTIONAL_PCT_PER
         isSelfDebuff: potionSelfDebuff[$build.potion2] ?? false,
       })
     }
-    return [...base, ...potionBuffs]
+    return [...base, ...potionBuffs].filter(b => isHpGateActive(b.hpGate, $build.hpFill ?? 100, 0))
   })()
 
   $: perkBuffs = (() => {
@@ -132,6 +133,15 @@ import { SPIRIT_WINDS_PCT_PER_STACK, DARK_MAGIC_PCT_PER_STACK, EMOTIONAL_PCT_PER
       for (let i = 0; i < modified.length; i++) {
         if (modified[i].buffName === 'Minion Absorbed') {
           modified[i] = { ...modified[i], potency: _minionAbsPotency }
+        }
+      }
+    }
+
+    if ($build.rune === 'Plan Bee Rune') {
+      const _droneArmorPotency = Math.round(calcBaseMaxHP($build.level ?? 80) * Math.max(0, 100 - ($build.hpFill ?? 100)) / 100)
+      for (let i = 0; i < modified.length; i++) {
+        if (modified[i].buffName === 'Drone Armor') {
+          modified[i] = { ...modified[i], potency: _droneArmorPotency }
         }
       }
     }

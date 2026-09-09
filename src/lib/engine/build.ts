@@ -516,6 +516,10 @@ function deriveResults(
   if (iceShellPotency > 0 && !(state.disabledBuffKeys ?? []).includes('Ice Shell:Glacial Shell Rune')) {
     boostedStats.protection = (boostedStats.protection ?? 0) + iceShellPotency
   }
+  const droneArmorPotency = maxBuffPotency(allBuffs, 'Drone Armor')
+  if (droneArmorPotency > 0 && !(state.disabledBuffKeys ?? []).includes('Drone Armor:Plan Bee Rune')) {
+    boostedStats.protection = (boostedStats.protection ?? 0) + droneArmorPotency
+  }
   const ragePotency      = maxBuffPotency(allBuffs, 'Rage')
   const bouncePotency    = maxBuffPotency(allBuffs, 'Bounce')
   const quickdrawPotency = maxBuffPotency(allBuffs, 'Quickdraw')

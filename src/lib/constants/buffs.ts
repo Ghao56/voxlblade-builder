@@ -68,6 +68,12 @@ export const ELECTRO_SHIELD_POTENCY = 0
 export const ELECTRO_SHIELD_DURATION = 5
 export const ELECTRO_SHIELD_MAX_STACKS = 4
 
+export const PLAN_BEE_DRONE_ARMOR_POTENCY = 0
+export const PLAN_BEE_DRONE_ARMOR_DURATION = 8
+export const PLAN_BEE_REGEN_POTENCY = 1
+export const PLAN_BEE_REGEN_DURATION = 10
+export const PLAN_BEE_HP_GATE = 20
+
 export const SNARL_SNARLED_POTENCY = 0.1
 export const SNARL_SNARLED_DURATION = 10
 

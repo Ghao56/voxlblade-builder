@@ -164,6 +164,15 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
       },
     },
     {
+      runeName: 'Plan Bee Rune',
+      condition: 'On cast · grants Drone Armor (max shield = missing HP) for 8s · below 20% HP also grants Regen (1 potency, 10s)',
+      getBaseDamage: () => 0,
+      dmgTypes: {},
+      scalings: {},
+      hits: 1,
+      isHealOnly: true,
+    },
+    {
         runeName: 'Beenade Rune',
         condition: 'On cast',
         getBaseDamage: () => BEENADE_BASE_DMG,
