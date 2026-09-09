@@ -173,10 +173,12 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
     name: string; abbr: string; color: string
     potency?: number; effectLabel?: string | null; descLabel?: string | null
     damageMult?: number; defReduction?: Partial<Record<string, number>>; typeDamageMult?: Record<string, number>
+    lifestealMult?: number
     variants?: Array<{
       sourceName: string; potency: number
       effectLabel: string | null; descLabel: string | null
       damageMult?: number; defReduction?: Partial<Record<string, number>>; typeDamageMult?: Record<string, number>
+      lifestealMult?: number
     }>
   }> = []
   export let curseRipPerkAmount: number = 0
@@ -413,6 +415,16 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
       .reduce((acc, d) => acc * (d.damageMult ?? 1), 1)
   }
   $: _activeDebuffDamageMult = calcActiveDebuffDamageMult(resolvedDebuffs, disabledDebuffs)
+
+  function calcActiveDebuffLifestealPct(resolved: Array<any>, disabled: Set<string>): number {
+    let pct = 0
+    for (const d of resolved) {
+      if (disabled.has(d.name) || !d.lifestealMult) continue
+      pct += d.lifestealMult
+    }
+    return pct
+  }
+  $: _snarledLifestealPct = calcActiveDebuffLifestealPct(resolvedDebuffs, disabledDebuffs)
 
   function calcDebuffTypeDamageMult(resolved: Array<any>, disabled: Set<string>): Record<string, number> {
     const mults: Record<string, number> = {}
@@ -1335,8 +1347,29 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
       }
     }
 
-    const result: ComputedHit = { group: hit.group, index: hit.index, count: hit.count, isFinisher: hit.isFinisher, label: hit.label, isHeal, types, procCount: hit.procCount, finisherGroupHitCount: hit.finisherGroupHitCount, eachHitM1M2: hit.eachHitM1M2 ?? false, vcBuffedCount, vcMult: VC_MULT, ...(hit.isRadianceProc ? { isRadianceProc: true as const, sourceLabel: hit.sourceLabel } : {}) }
+    // Snarled: damage taken heals the ENEMY by lifesteal% of damage dealt.
+    // "Healing does not consider Damage Boosting perks or effects", so the
+    // perk/effect damage-boost multipliers are divided out of the damage base.
+    if (!isHeal && _snarledLifestealPct > 0 && !ON_HIT_EXCLUDED_SOURCES.has(hit.label ?? '')) {
+      const snarledDamageDealt = types.filter(t => !t.isHeal).reduce((s, t) => {
+        const boostMult = t.applicableBoosts?.reduce((acc, b) => acc * b.mult, 1) ?? 1
+        return s + t.raw / boostMult
+      }, 0)
+      const enemyHeal = snarledDamageDealt * _snarledLifestealPct / 100
+      if (enemyHeal > 0) {
+        types.push({
+          key: 'heal', label: 'Heal', color: '#4ade80',
+          typeBase: enemyHeal, scalingMult: 1, combatMult: 1,
+          applicableBoosts: [], weaponBoostMult: 1, typeDebuffMult: 1,
+          defMult: 1, enemyDefPct: 0,
+          raw: enemyHeal, critVal: enemyHeal,
+          isHeal: true, isCritExempt: true, forceCrit: false,
+          tag: 'Snarled',
+        })
+      }
+    }
 
+    const result: ComputedHit = { group: hit.group, index: hit.index, count: hit.count, isFinisher: hit.isFinisher, label: hit.label, isHeal, types, procCount: hit.procCount, finisherGroupHitCount: hit.finisherGroupHitCount, eachHitM1M2: hit.eachHitM1M2 ?? false, vcBuffedCount, vcMult: VC_MULT, ...(hit.isRadianceProc ? { isRadianceProc: true as const, sourceLabel: hit.sourceLabel } : {}) }
     // Vassals Croak: on an RMB (M2) finisher hit, consume Last Croak and explode once per RMB press.
     // Triggers on any M2-type finisher: base M2 (group 'M2'), M2 finishers folded into the M1 combo
     // (Deltabit → 'M1' with isM2, Delta Drill repeats it), non-standard WA finishers that count as

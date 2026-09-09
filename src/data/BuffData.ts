@@ -96,6 +96,7 @@ import {
   ELECTRO_SHIELD_POTENCY,
   ELECTRO_SHIELD_DURATION,
   ELECTRO_SHIELD_MAX_STACKS,
+  SNARL_SNARLED_POTENCY, SNARL_SNARLED_DURATION,
   THORNS_BLEED_DURATION,
   STICKY_SWINGS_POTENCY_PER_AMOUNT,
   STICKY_SWINGS_DURATION,
@@ -490,6 +491,14 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
       const slowPct = Math.round(potency * 10000) / 100
       return `Move ${slowPct}% slower and take 20% more hex and magic damage.`
     },
+    effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
+    effectUnit: 'flat',
+    isDebuff: true,
+  },
+  'Snarled': {
+    name: 'Snarled',
+    color: '#ff0070',
+    description: 'Damage taken heals enemies by 2% of damage dealt as lifesteal per 0.1 potency. Healing does not consider Damage Boosting perks or effects.',
     effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
     effectUnit: 'flat',
     isDebuff: true,
@@ -953,12 +962,21 @@ const ITEM_BUFF_MAP: GrantedBuff[] = [
     sourceName: 'Static Field Rune',
     sourceType: 'rune',
   },
+  {
+    buffName: 'Snarled',
+    potency: SNARL_SNARLED_POTENCY,
+    duration: SNARL_SNARLED_DURATION,
+    condition: 'On hit · applies Snarled · lifesteal 2% per 0.1 potency (not affected by damage boosts) · requires proc coeff',
+    sourceName: 'Snarl Rune',
+    sourceType: 'rune',
+  },
 ]
 
 export const BASIC_DEBUFF_POOL: Array<{ buffName: string; potency: number; duration: number }> = [
   { buffName: 'Bleed',    potency: BASIC_DEBUFF_POTENCY,   duration: BASIC_DEBUFF_DURATION },
   { buffName: 'Burn',     potency: BASIC_DEBUFF_POTENCY,   duration: BASIC_DEBUFF_DURATION },
   { buffName: 'Poison',   potency: BASIC_DEBUFF_POTENCY,   duration: BASIC_DEBUFF_DURATION },
+  { buffName: 'Snarled', potency: SNARL_SNARLED_POTENCY, duration: SNARL_SNARLED_DURATION },
   { buffName: 'Shatter',  potency: BASIC_SHATTER_POTENCY,  duration: BASIC_DEBUFF_DURATION },
   { buffName: 'Slowness', potency: BASIC_SLOWNESS_POTENCY, duration: BASIC_DEBUFF_DURATION },
   { buffName: 'Weakness', potency: BASIC_WEAKNESS_POTENCY, duration: BASIC_DEBUFF_DURATION },
@@ -1931,7 +1949,7 @@ const TRUE_BALANCE_DEBUFF_MAP: Record<string, {
   'Slowness':        { buffName: 'Tailwind',  getPotency: a => 0.1 * a,       getDuration: a => 3 + a },
   'Sticky':          { buffName: 'Tailwind',  getPotency: a => 0.1 * a,       getDuration: a => 3 + a },
 
-  'Shatter':         { buffName: 'Reinforce', getPotency: a => 0.1 + 0.1 * a, getDuration: a => 5 + a },
+    'Shatter':         { buffName: 'Reinforce', getPotency: a => 0.1 + 0.1 * a, getDuration: a => 5 + a },
   'Electrical Rend': { buffName: 'Reinforce', getPotency: a => 0.1 + 0.1 * a, getDuration: a => 5 + a },
   'Hypnotized':      { buffName: 'Reinforce', getPotency: a => 0.1 + 0.1 * a, getDuration: a => 5 + a },
 

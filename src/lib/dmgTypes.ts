@@ -25,6 +25,7 @@ export const BADGE_CONFIG: Record<string, { color: string; label: string; title:
   'Ichor Spark': { color: '#AAFFDB', label: '✦ Ichor Spark', title: 'Ichor Spark Chain Lightning: 20% × perk amount of this hit\'s damage as Air+Physical chain lightning (up to ? targets) · 12.5% chance at 1 perk' },
   'Ignition': { color: '#f97316', label: '✦ Ignition', title: 'Ignition: small chance to deal bonus Fire damage on hit and inflict Burn · 10% × perk proc chance · 1.0 Fire damage & scaling · Cannot proc other effects · Grants Burn Potency' },
   'Lifesteal': { color: '#4ade80', label: '✦ Lifesteal', title: 'Lifesteal: heal 0.5% of damage dealt per stack + 0.1 flat HP per stack' },
+  'Snarled': { color: '#ff0070', label: '✦ Snarled', title: 'Snarled: damage taken heals the enemy by 2% of damage dealt per 0.1 potency · Does not consider Damage Boosting perks or effects' },
   'Runic Blades': { color: '#43d8ff', label: '✦ Runic Blades', title: 'Runic Blades: magic proc on any hit vs Runic Blades target · Scales with weapon' },
   'Gnawing Poison': { color: '#22c55e', label: '✦ Gnawing Poison', title: 'Gnawing Poison: bites all Poisoned enemies on finisher · Burst of Hex+Physical · Grants Poison Potency' },
   'Cloudpush': { color: '#AAFFDB', label: '✦ Cloudpush', title: 'Cloudpush: deal x% of your damage as bonus air damage that counts as the applier\'s damage' },

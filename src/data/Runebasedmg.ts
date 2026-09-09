@@ -351,6 +351,14 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     guardbreak: true,
   },
   {
+    runeName: 'Snarl Rune',
+    condition: 'Applies Snarled on hit',
+    getBaseDamage: () => 2,
+    dmgTypes: { physical: 1.0 },
+    scalings: { physical: 1.0 },
+    hits: 4,
+  },
+  {
     runeName: 'Sanguine Bolt Rune',
     condition: 'On cast (hold to channel)',
     getBaseDamage: () => SANGUINE_BOLT_BASE_DMG,

@@ -738,6 +738,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         damageMult: combatFx?.damageMult ? combatFx.damageMult(potency) : undefined,
         defReduction: combatFx?.defReduction ? combatFx.defReduction(potency) : undefined,
         typeDamageMult: combatFx?.typeDamageMult ? combatFx.typeDamageMult(potency, perks) : undefined,
+        lifestealMult: combatFx?.lifestealMult ? combatFx.lifestealMult(potency) : undefined,
       }
     }
     const result = [...groups.entries()].map(([name, inner]) => {

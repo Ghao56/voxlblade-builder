@@ -3,12 +3,13 @@ import { HYPNOTIST_MAGIC_ARMOR_PER_POTENCY } from '../lib/constants/perks'
 
 const ALL_DEF_STAT_KEYS = ['physicalDefense', 'magicDefense', 'fireDefense', 'waterDefense','earthDefense', 'airDefense', 'hexDefense', 'holyDefense',] as const
 
-  export interface DebuffCombatEffect {
+export interface DebuffCombatEffect {
     descFn: (potency: number, perks?: Record<string, number>) => string
     damageMult?: (potency: number) => number
    defReduction?: (potency: number) => Partial<Record<typeof ALL_DEF_STAT_KEYS[number], number>>
    typeDamageMult?: (potency: number, perks?: Record<string, number>) => Record<string, number>
-  }
+   lifestealMult?: (potency: number) => number
+   }
 
 export const DEBUFF_COMBAT_EFFECTS: Record<string, DebuffCombatEffect> = {
   Weakness: {
@@ -19,6 +20,10 @@ export const DEBUFF_COMBAT_EFFECTS: Record<string, DebuffCombatEffect> = {
     damageMult: (p: number) => 1 / (1 + p),
   },
 
+  Snarled: {
+    descFn: (p: number) => `Lifesteal: enemies heal ${(p * 20).toFixed(2)}% of damage dealt · not affected by damage boosts`,
+    lifestealMult: (p: number) => p * 20,
+  },
   Shatter: {
     descFn: (p: number) => `Lose ${(p * 100).toFixed(2)} Armor`,
     defReduction: (p: number) => {
