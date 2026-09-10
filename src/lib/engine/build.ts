@@ -1,3 +1,17 @@
+/**
+ * Build engine: calculates final stats, boosts, and damage multipliers.
+ * ARCHITECTURE NOTE (Level / Effective split):
+ * - Level damage bonus (isLevel) is now EXPLICIT via BoostEntry.isLevel.
+ *   It applies as 1 + level/MAX_LEVEL * 1.25% (capped). Previously bundled
+ *   in combatMult; now separated so perks can opt-in (applyLevel?).
+ * - Effective boost (types, perks, VC, etc.) stays in _categoryMult / combatMult.
+ * - PerkDmgDef flags (applyLevel?, applyEffective?, noSelfDebuff?) control
+ *   inheritance for proc/on-hit damage (Ignition, Poisonous, Glacial, Static).
+ * - Snarl rework: uses baseDmgTypes (not dmgTypes fallback) to exclude
+ *   Channeled/Stone Weapon inheritance and excludes general/AP/VC bonuses.
+ * - Static Buildup: special inheritance (post-scaling/pre-boost RMB → strike)
+ *   with double Level inclusion (exception case).
+ */
 import type { StatKey, StatMap, ArmorPart, EnchantSlot, BuildState } from '../types'
 import { STAT_KEYS, applyUpgrade } from '../types'
 import { CDR_PERK_DATA } from '../../data/cdr'
@@ -22,7 +36,7 @@ import { WEAPON_ARTS } from '../../data/weaponArts'
 import { getFinalWaDmgTypes } from '../damageTypeResolve'
 import { buildDmgTypeBonuses } from './dmgTypeBonuses'
 
-// ─── CDR ──────────────────────────────────────────────────────────────────────
+// ─── Section: CDR (Cooldown Reduction) ── calculates rune & WA step breakdowns ─
 
 export interface CDRStep   { source: string; pct: number; multiplier: number; isMultiply?: boolean }
 export interface CDRResult { runeCDR: number; waCDR: number; runeSetCD?: number; runeBreakdown: CDRStep[]; waBreakdown: CDRStep[] }
@@ -101,7 +115,7 @@ function calcCDR(
   }
 }
 
-// ─── Boosts ───────────────────────────────────────────────────────────────────
+// ─── Section: Boosts ── applies stat/perk/weapon boosts; skips isLevel here ─
 
 function calcBoosts(
   perks:             Record<string, number>,
@@ -138,6 +152,8 @@ function calcBoosts(
 ): BoostResult {
   const dmgMap = new Map<string, BoostEntry>()
 
+  // Level Damage Bonus: +1.25% per hero level (max at MAX_LEVEL, e.g. 80 → 2×).
+  // Marked isLevel so perks can selectively include/exclude it via applyLevel? flag.
   const lvlMult = roundMultiplier(1 + Math.max(0, Math.min(MAX_LEVEL, level)) / MAX_LEVEL)
   dmgMap.set('Level Damage', {
     sourceName:    'Level Damage',
@@ -218,11 +234,11 @@ function calcBoosts(
   }
 }
 
-// ─── Build result ─────────────────────────────────────────────────────────────
+// ─── Section: Build result derivation ── final stats, shield/protection, inheritance ─
 
 export interface BuildResult { stats: StatMap; perks: Record<string, number>; cdr: CDRResult; boosts: BoostResult; crit: CritResult }
 
-// ─── Equipment accumulation ───────────────────────────────────────────────────
+// ─── Section: Equipment accumulation ── aggregates weapon/rune/armor stats ─
 
 function accumulateMonkWeapon(
   state:    BuildState,
@@ -493,6 +509,8 @@ function deriveResults(
   applyEmotionalAttackSpeed(boostedStats, finalPerks, state.emotionalState, state.emotionalDisabled)
   applyGladiatorialRage(boostedStats, finalPerks)
 
+  // Shield vs Protection fix: Ancient Cleric / Ice Shell / Drone Armor give
+  // temporary HP (shield), not damage reduction (protection). Use shield stat.
   if (state.rune === 'Ancient Cleric Rune' && !(state.disabledBuffKeys ?? []).includes('Ancient Shield:Ancient Cleric Rune')) {
     const shieldHp = ANCIENT_CLERIC_SHIELD_BASE + ANCIENT_CLERIC_SHIELD_PER_VAL * (state.buffsConsumed ?? 0)
     boostedStats.shield = (boostedStats.shield ?? 0) + shieldHp
@@ -513,11 +531,13 @@ function deriveResults(
     ? ((state.monkGlove || state.monkEssence) ? calcMonkWeapon(state.monkGlove, state.monkEssence, state.shrineActive, state.guildRank) : null)
     : ((state.weaponBlade || state.weaponHandle) ? calcWeapon(state.weaponBlade, state.weaponHandle, state.shrineActive) : null)
   const { allBuffs, orkBuffTenacity } = computeBuffs(state, finalPerks, wardingDebuffMult, _weaponResult?.weaponModifier)
+  // Ice Shell & Drone Armor provide temporary HP (shield) — not protection.
   const iceShellPotency = maxBuffPotency(allBuffs, 'Ice Shell')
   if (iceShellPotency > 0 && !(state.disabledBuffKeys ?? []).includes('Ice Shell:Glacial Shell Rune')) {
     boostedStats.shield = (boostedStats.shield ?? 0) + iceShellPotency
   }
   const droneArmorPotency = maxBuffPotency(allBuffs, 'Drone Armor')
+  // Drone Armor gives temporary shield HP; excluded only by Plan Bee Rune disable.
   if (droneArmorPotency > 0 && !(state.disabledBuffKeys ?? []).includes('Drone Armor:Plan Bee Rune')) {
     boostedStats.shield = (boostedStats.shield ?? 0) + droneArmorPotency
   }

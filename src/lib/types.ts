@@ -293,7 +293,7 @@ export interface BoostEntry {
   needsProcCoeff?: boolean
   procScaling?: ProcScalingType
   hasToggle?: boolean
-  isLevel?: boolean
+  isLevel?: boolean  // true = Level Damage Bonus entry (separated from effective combatMult)
 }
 
 export interface BoostResult {

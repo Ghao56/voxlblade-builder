@@ -13,6 +13,12 @@
   import { SCALING_TO_BOOST, PERCENT_STATS, canProc } from './lib/types'
   import { procChanceScale } from './lib/procRegistry'
 import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
+  // ARCHITECTURE: Level Damage Bonus (levelMult) is EXPLICIT and separate
+  // from Effective Boost (effectiveMult / combatMult). Perk damage inheritance
+  // (Ignition, Poisonous, Glacial, Static Buildup, Snarl) uses this split:
+  // - Inherited RMB damage = post-scaling / pre-boost (includes levelMult)
+  // - Strike/Snarl damage = applies levelMult but excludes general/AP/VC bonuses
+  // - Static Buildup = double level inclusion (exception case)
   import {
     DMG_TYPE_META,
     DEF_TRACKED_TYPES,

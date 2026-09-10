@@ -2072,6 +2072,9 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: activeFinalMult = activeEntries.reduce((acc, e) => acc * e.rawMultiplier, 1.0)
   $: activeFinalMultRounded = roundMultiplier(activeFinalMult)
 
+  // _categoryMult computes final multiplier for a hit category.
+  // excludeLevel = true → skips BoostEntry with isLevel (Level Damage Bonus),
+  //   used when computing effective combatMult separately from level bonus.
   function _categoryMult(type: BoostAttackType, procAllowed: boolean = true, excludeGeneral: boolean = false, excludeLevel: boolean = false): number {
     return activeEntries
       .filter(e => !(e as any).appliesTo || (e as any).appliesTo.includes(type))

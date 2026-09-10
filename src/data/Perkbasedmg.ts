@@ -284,6 +284,10 @@ export interface PerkDmgDef {
   boostCat?: 'm1' | 'm2' | 'perk' | 'rune' | 'wa'
   procCoefficient?: ProcCoefficient
   noGeneralDmgBoosts?: boolean
+  // Level / Effective split flags (see build.ts architecture note):
+  // applyLevel     → include Level Damage Bonus (1.25%/level) in this perk's dmg.
+  // applyEffective → include Effective boosts (types, perks, VC) in calc.
+  // noSelfDebuff   → this proc damage does not trigger its own debuff (e.g. Snarl).
   applyLevel?: boolean
   applyEffective?: boolean
   noSelfDebuff?: boolean
