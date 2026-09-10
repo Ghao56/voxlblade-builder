@@ -10,7 +10,7 @@ const STAT_CONFIG = {
   warding: "percent", physicalDefense: "percent", magicDefense: "percent",
   airDefense: "percent", earthDefense: "percent", waterDefense: "percent",
   fireDefense: "percent", hexDefense: "percent", holyDefense: "percent",
-  protection: "flat", tenacity: "flat", armorPenetration: "flat", jumpBoost: "flat",
+  protection: "flat", shield: "flat", tenacity: "flat", armorPenetration: "flat", jumpBoost: "flat",
   heatResistance: "percent", coldResistance: "percent",
 } as const
 
@@ -228,6 +228,8 @@ export interface BuildState {
   enchantedSwordType: number
   bastionBallistaArrows: number
   ichorSparkCharge: number
+  glacialBuildupCrystals: number
+  staticBuildupCharge: number
   divineCrashDistance: number
   channeledDepthsTime: number
   channeledDepthsTarget: string
@@ -291,6 +293,7 @@ export interface BoostEntry {
   needsProcCoeff?: boolean
   procScaling?: ProcScalingType
   hasToggle?: boolean
+  isLevel?: boolean
 }
 
 export interface BoostResult {
@@ -312,7 +315,7 @@ export const SCALING_TO_BOOST: Record<string, string> = {
   physical: 'physicalBoost', magic: 'magicBoost', fire: 'fireBoost',
   water: 'waterBoost', earth: 'earthBoost', air: 'airBoost',
   hex: 'hexBoost', holy: 'holyBoost', dexterity: 'dexterityBoost', summon: 'summonBoost',
-  protection: 'protection',
+  protection: 'protection', shield: 'shield',
 };
 
 export interface WeaponHitObject {

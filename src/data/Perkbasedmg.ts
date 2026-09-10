@@ -284,6 +284,9 @@ export interface PerkDmgDef {
   boostCat?: 'm1' | 'm2' | 'perk' | 'rune' | 'wa'
   procCoefficient?: ProcCoefficient
   noGeneralDmgBoosts?: boolean
+  applyLevel?: boolean
+  applyEffective?: boolean
+  noSelfDebuff?: boolean
   note?: string
   hpGate?: HpGate
   enemyHpGate?: HpGate
@@ -932,7 +935,68 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     workOnM2: true,
     procCoefficient: { type: 'noProc' },
     noGeneralDmgBoosts: true,
+    noSelfDebuff: true,
+    applyLevel: true,
+    applyEffective: true,
     note: 'Bonus Fire damage on hit. Cannot proc other effects. Unaffected by most general damage bonuses (Smoldering, Ferocity, Dark One). Inflicts Burn for 5 + 0.5 × perk seconds.',
+  },
+  // ── Poisonous ────────────────────────────────────────────────────────────────
+  {
+    perkName: 'Poisonous',
+    condition: '10% × perk chance on hit',
+    getBaseDamage: ({ perkAmount }) => 2 * perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { hex: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { hex: 1.0 },
+    isProcHit: true,
+    workOnM1: true,
+    workOnM2: true,
+    procCoefficient: { type: 'noProc' },
+    noGeneralDmgBoosts: true,
+    noSelfDebuff: true,
+    applyLevel: true,
+    applyEffective: true,
+    note: 'Bonus Hex damage on hit. Cannot proc other effects. Unaffected by most general damage bonuses (Smoldering, Ferocity, Dark One). Small chance to inflict Poison.',
+  },
+  // ── Glacial Buildup (flat crystals) ─────────────────────────────────────────
+  {
+    perkName: 'Glacial Buildup',
+    label: 'Ice Crystals',
+    condition: 'On every hitting attack',
+    getBaseDamage: ({ perkAmount }) => perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { water: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { water: 1.0 },
+    isProcHit: true,
+    workOnM1: true,
+    workOnM2: true,
+    procCoefficient: { type: 'noProc' },
+    noGeneralDmgBoosts: true,
+    applyLevel: false,
+    applyEffective: false,
+    note: 'Hitting opponents applies ice crystals which adds flat Water damage to all incoming attacks. The flat damage is equal to perk amount and is unaffected by damage modifiers except its own Water scaling.',
+  },
+  // ── Glacial Buildup (crystal shatter burst) ─────────────────────────────────
+  {
+    perkName: 'Glacial Buildup',
+    label: 'Crystal Shatter',
+    condition: 'When crystals shatter (high stacks or poisebreak) · toggle via Crystal Stacks slider',
+    getBaseDamage: ({ perkAmount }) => 16 * perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { water: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { water: 1.0 },
+    isProcHit: true,
+    workOnM1: true,
+    workOnM2: true,
+    procCoefficient: { type: 'noProc' },
+    noGeneralDmgBoosts: true,
+    applyLevel: true,
+    applyEffective: true,
+    slider: { buildKey: 'glacialBuildupCrystals', label: 'Crystal Stacks', min: 0, max: 6, step: 1 },
+    note: 'At high enough stacks or upon Poisebreaking the opponent, the crystals shatter, dealing 16 × perk Water damage. The burst follows its own damage rules. Poisebreaking is not modeled; use the Crystal Stacks slider to represent a shatter.',
   },
   // ── Volatile Shell ──────────────────────────────────────────────────────────
   {

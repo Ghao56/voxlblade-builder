@@ -77,6 +77,7 @@ export interface RadianceProcOptions {
   amt: number
   scalingMult: number
   combatMult?: number
+  effectiveMult?: number
   group: string
   index: number
 }
@@ -137,6 +138,7 @@ export function buildRadianceProcHit(
       base: baseDamage,
       scalingMult: opts.scalingMult,
       combatMult: opts.combatMult ?? 1,
+      ...(opts.effectiveMult != null ? { effectiveMult: opts.effectiveMult } : {}),
       isFinisher: false,
       dmgTypes: { holy: RADIANCE_HOLY_TYPE_MULT },
       label: RADIANCE_LABEL,

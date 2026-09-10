@@ -680,6 +680,7 @@ $: gladRageArmorPen = (() => {
 $: _effectiveTenacity = ($result.stats.tenacity ?? 0) + $orkBuffTenacity
 
 $: statRows = Object.entries($result.stats).filter(([k, v]) => {
+    if (k === 'shield') return false
     if (k === 'armorPenetration') {
       const displayVal = (v as number) - raceArmorPen - gladRageArmorPen
       return Math.round(displayVal * 100) !== 0
@@ -1778,7 +1779,7 @@ $: _appWaAvgTotal = (() => {
       <div class="panel summary-panel">
         <div class="summary-title-row">
           <h3 class="panel-title summary-title">Build Summary</h3>
-          <LevelBar protection={$result.stats.protection ?? 0} hpThreshold={_dragonStateThreshold} />
+          <LevelBar protection={$result.stats.protection ?? 0} shield={$result.stats.shield ?? 0} hpThreshold={_dragonStateThreshold} />
         </div>
         <div class="summary-actions">
           <div class="drag-mode-toggle">
@@ -3141,7 +3142,7 @@ $: _appWaAvgTotal = (() => {
     {:else}
       <div class="analyze-wrap" in:fade={{ duration: 200 }}>
         <div class="analyze-hp-bar">
-          <LevelBar protection={$result.stats.protection ?? 0} hpThreshold={_dragonStateThreshold} />
+          <LevelBar protection={$result.stats.protection ?? 0} shield={$result.stats.shield ?? 0} hpThreshold={_dragonStateThreshold} />
         </div>
         <DamageAnalyzer />
       </div>

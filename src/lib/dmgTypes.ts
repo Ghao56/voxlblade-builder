@@ -43,6 +43,8 @@ export const BADGE_CONFIG: Record<string, { color: string; label: string; title:
 export interface ComputedType {
   key: string; label: string; color: string
   typeBase: number; scalingMult: number; combatMult: number
+  effectiveMult?: number
+  levelMult?: number
   applicableBoosts: Array<{ perkName: string; label: string; mult: number }>
   weaponBoostMult: number; weaponBoostLabel?: string
   typeDebuffMult: number
@@ -75,6 +77,7 @@ export interface PerkOnHitDmg {
   baseDmg: number
   scalingMult: number
   combatMult: number
+  effectiveMult?: number
   totalDmg: number
   dmgTypes: Record<string, number>
   procCoefficient?: ProcCoefficient

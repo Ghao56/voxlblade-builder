@@ -60,6 +60,8 @@ const DEFAULT_BUILD: BuildState = {
   enchantedSwordType: 0,
   bastionBallistaArrows: 0,
   ichorSparkCharge: 100,
+  glacialBuildupCrystals: 0,
+  staticBuildupCharge: 3,
   divineCrashDistance: 250,
   channeledDepthsTime: 0,
   channeledDepthsTarget: 'WA',

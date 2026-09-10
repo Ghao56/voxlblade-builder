@@ -91,6 +91,17 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
   export let m1Label: string = 'M1'
   export let mountActive: boolean = false
   export let mountLabel: string = ''
+  // Level damage bonus (1.25% per level). Kept separate from combatMult so effects
+  // like Snarl can include level scaling while still excluding the general
+  // damage-boost (effective-boost) multiplier.
+  export let levelMult: number = 1
+  // Level-free variant of the perk-category combat multiplier (combatMult minus
+  // the Level Damage bonus). Exposes "Effective Boost" independently so spawned
+  // effects can opt into effective-only scaling where appropriate.
+  export let perkEffectiveCombatMult: number = 1
+  export let dragonStateEffectiveCombatMult: number = 1
+  export let staticBuildupAmt: number = 0
+  export let staticBuildupCharge: number = 0
 
   const DOT_COLORS: Record<string, string> = {
     Bleed: '#ff0004',
@@ -137,6 +148,8 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
     group: string; index: number; count: number
     base: number; scalingMult: number; combatMult: number; isFinisher: boolean
     combatMultNoFinisher?: number
+    effectiveMult?: number
+    effectiveMultNoFinisher?: number
     dmgTypes: Record<string, number>
     baseDmgTypes?: Record<string, number>
     boostDmgTypes?: Record<string, number>
@@ -814,6 +827,7 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
       const info = DMG_TYPE_MAP.get(k) ?? { label: k, color: '#e8e4da' }
       const typeIsHeal   = hit.dmgTypeIsHeal?.[k] ?? isHeal
       const typeCombat   = hit.dmgTypeCombatMults?.[k] ?? hit.combatMult
+      const typeEffective = hit.effectiveMult ?? hit.combatMult
       const typeNoCrit   = healCritDmgMult > 0 && typeIsHeal ? false : (hit.dmgTypeIsCritExempt?.[k] ?? typeIsHeal)
       const applicableBoosts = (() => {
         if (hit.boostDmgTypes) {
@@ -854,7 +868,7 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
 
       return {
         key: k, label: labelOverride ?? info.label, color: info.color,
-        typeBase, scalingMult: hit.scalingMult, combatMult: typeCombat,
+        typeBase, scalingMult: hit.scalingMult, combatMult: typeCombat, effectiveMult: typeEffective,
         applicableBoosts, weaponBoostMult, weaponBoostLabel: hit.weaponBoostLabel,
         typeDebuffMult,
         defMult, enemyDefPct,
@@ -924,12 +938,13 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
           const crushPen = crushingPenForType(starType)
           const defMult = calcArmorMult(defPct, hitPenDecimal + crushPen / 100, starType).mult
           const starCombatMult = perkCombatMult
+          const starEffectiveCombatMult = perkEffectiveCombatMult
           const rawPerStar = starBase * starScalingMult * typedMultUsed * sunburnUniversalDmgMult * starCombatMult * defMult * typeDebuffMult * _activeDebuffDamageMult * selfDebuffDamageMult * vcContext
           const raw = rawPerStar * count
           const starPreMitBase = starBase * starScalingMult * sunburnUniversalDmgMult * starCombatMult * _activeDebuffDamageMult * selfDebuffDamageMult
           types.push({
             key: starType, label: info.label, color: info.color,
-            typeBase: starBase, scalingMult: starScalingMult, combatMult: starCombatMult,
+            typeBase: starBase, scalingMult: starScalingMult, combatMult: starCombatMult, effectiveMult: starEffectiveCombatMult,
             applicableBoosts, weaponBoostMult: sunburnUniversalDmgMult, typeDebuffMult,
             defMult, enemyDefPct: defPct,
             raw, critVal: Math.round(raw * critDmgMult / 100 * 10000) / 10000,
@@ -977,7 +992,7 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
 
           types.push({
             key: k, label: info.label, color: info.color,
-            typeBase: dsTypeBase, scalingMult: dragonStateScalingMult, combatMult: dragonStateCombatMult,
+            typeBase: dsTypeBase, scalingMult: dragonStateScalingMult, combatMult: dragonStateCombatMult, effectiveMult: dragonStateEffectiveCombatMult,
             applicableBoosts, weaponBoostMult: dsSunburnMult, weaponBoostLabel: dsSunburnMult !== 1 ? 'Sunburn' : undefined, typeDebuffMult: dsTypeDebuffMult,
             defMult: dsDefMult, enemyDefPct: dsDefPct,
             raw: dsRaw, critVal: Math.round(dsRaw * critDmgMult / 100 * 10000) / 10000,
@@ -1348,24 +1363,35 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
     }
 
     // Snarled: damage taken heals the ENEMY by lifesteal% of damage dealt.
-    // "Healing does not consider Damage Boosting perks or effects", so the
-    // perk/effect damage-boost multipliers are divided out of the damage base.
-    // This covers both the typed damage-boost perks (Rage, Glyph Conduit, etc.,
-    // carried in applicableBoosts) AND the generic universal/category damage
-    // boosts folded into each hit's combatMult (e.g. Frenzy, Raging Bounce,
-    // race/level damage). Without the combatMult term, generic damage-boost
-    // perks still leaked into the heal.
+    // "Healing does not consider Damage Boosting perks or effects" — but level
+    // damage bonus is an exception and SHOULD scale the heal. We rebuild the
+    // pre-boost base from the hit (pre-bonus damage types, scaling, level mult)
+    // so armor penetration, Void Contract, damage-type bonuses, and all damage
+    // boosts are excluded.
     if (!isHeal && _snarledLifestealPct > 0 && !ON_HIT_EXCLUDED_SOURCES.has(hit.label ?? '')) {
-      const snarledDamageDealt = types.filter(t => !t.isHeal).reduce((s, t) => {
-        const boostMult = (t.applicableBoosts?.reduce((acc, b) => acc * b.mult, 1) ?? 1) * (t.combatMult ?? 1)
-        return s + t.raw / boostMult
-      }, 0)
+      // Snarl's enemy heal is based on pre-boost damage affected ONLY by level
+      // damage bonus. It must not include the general damage boosts (combatMult /
+      // effective boost), typed perk boosts, armor penetration (defMult), Void
+      // Contract (vcDilution), or damage-type bonuses (baseDmgTypes are the
+      // pre-bonus distribution, so e.g. Channeled Weapon's added magic type is
+      // excluded).
+      const snarledBaseTypes = hit.baseDmgTypes
+      const snarledBaseSum = snarledBaseTypes
+        ? Object.values(snarledBaseTypes).reduce((s, m) => s + hit.base * m, 0)
+        : 0
+      const snarledDamageDealt = snarledBaseSum * (hit.scalingMult ?? 1) * levelMult
       const enemyHeal = snarledDamageDealt * _snarledLifestealPct / 100
       if (enemyHeal > 0) {
+        // Snarl enemy heal: pre-bonus base (baseDmgTypes = raw, excludes Channeled
+        // Weapon / Stone Weapon), scaling, Level Damage Bonus only, flat lifesteal.
+        // Armor Pen (defMult=1), Void Contract (vcDilution skipped), general combat
+        // boosts (combatMult=1) and typed perks are deliberately excluded.
         types.push({
           key: 'heal', label: 'Heal', color: '#4ade80',
-          typeBase: enemyHeal, scalingMult: 1, combatMult: 1,
-          applicableBoosts: [], weaponBoostMult: 1, typeDebuffMult: 1,
+          typeBase: snarledBaseSum, scalingMult: hit.scalingMult ?? 1, levelMult, combatMult: 1,
+          applicableBoosts: [], weaponBoostMult: _snarledLifestealPct / 100,
+          weaponBoostLabel: `Snarled Lifesteal (${_snarledLifestealPct}%)`,
+          typeDebuffMult: 1,
           defMult: 1, enemyDefPct: 0,
           raw: enemyHeal, critVal: enemyHeal,
           isHeal: true, isCritExempt: true, forceCrit: false,
@@ -1422,6 +1448,48 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
         }
         return [result, lcHit]
       }
+    }
+
+    // Static Buildup: landing an RMB (M2-type) hit calls down lightning strikes,
+    // the number of which scales off your weapon's charge.
+    //   strike base = (3 + inheritedRmb × 0.1538) × (1 + 0.1 × perkAmount)
+    // inheritedRmb is the RMB damage post-scaling but pre-boost, INCLUDING the
+    // Level Damage bonus (special exception: the inherited rmb damage is affected
+    // by Level Damage Bonus while the strikes themselves also receive the Level
+    // Damage bonus via their own combat mult). The strikes do NOT inherit the
+    // RMB's other damage increases (Effective Boost, Rage, Sunburn, debuffs,
+    // armor penetration on the RMB hit), but CAN be affected by their own
+    // damage bonuses. Magic/Air split is inferred from the Lightning Hammer
+    // statline (0.5 airType / 0.5 magicType).
+    if (!isHeal && staticBuildupAmt > 0 && staticBuildupCharge > 0
+      && (hit.group === 'M2' || hit.isM2 || (hit.group === 'WA' && hit.isFinisher))
+      && gate('Static Buildup')) {
+      const rmbBase = hit.baseDmgTypes
+        ? Object.entries(hit.baseDmgTypes).reduce((sum, [, m]) => sum + hit.base * m, 0)
+        : hit.base
+      const inheritedRmb = rmbBase * (hit.scalingMult ?? 1) * levelMult
+      const strikeBase = (3 + inheritedRmb * 0.1538) * (1 + 0.1 * staticBuildupAmt)
+      const strikeTotal = strikeBase * staticBuildupCharge
+      const sbTypeRows = Object.entries({ magic: 0.5, air: 0.5 }).map(([k, weight]) => {
+        const sbInfo = resolveTypeInfo(k, basePenDecimal, { type: 'noProc' }, hit.group)
+        const sbDefPct = defPctForType(k)
+        const sbRaw = strikeTotal * weight * perkCombatMult * sbInfo.typedMultUsed * sunburnUniversalDmgMult * sbInfo.defMult * sbInfo.typeDebuffMult * _activeDebuffDamageMult * selfDebuffDamageMult * vcDilution
+        return {
+          key: k, label: sbInfo.info.label, color: sbInfo.info.color,
+          typeBase: Math.round(strikeBase * weight * 10000) / 10000, scalingMult: 1, combatMult: perkCombatMult,
+          applicableBoosts: sbInfo.applicableBoosts, weaponBoostMult: sunburnUniversalDmgMult, typeDebuffMult: sbInfo.typeDebuffMult,
+          defMult: sbInfo.defMult, enemyDefPct: sbDefPct,
+          raw: Math.round(sbRaw * 10000) / 10000, critVal: Math.round(sbRaw * critDmgMult / 100 * 10000) / 10000,
+          isHeal: false, tag: 'Static Buildup', forceCrit: false, procCoefficient: { type: 'noProc' },
+          oncePerRmb: true,
+        }
+      })
+      const sbHit: ComputedHit = {
+        group: hit.group, index: 0, count: 1, isFinisher: false, label: `Static Buildup (×${staticBuildupCharge})`,
+        isHeal: false, eachHitM1M2: false,
+        types: sbTypeRows as any,
+      }
+      return [result, sbHit]
     }
     return [result]
     })
@@ -1876,6 +1944,12 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
                                 <div class="bdc-fr">
                                   <span class="bdc-fr-label">Scaling</span>
                                   <span class="bdc-fr-val bdc-fr-val--scaling">× {fmtMult(t.scalingMult)}</span>
+                                </div>
+                              {/if}
+                              {#if t.levelMult != null && t.levelMult !== 1}
+                                <div class="bdc-fr">
+                                  <span class="bdc-fr-label">Level Damage</span>
+                                  <span class="bdc-fr-val bdc-fr-val--scaling">× {fmtMult(t.levelMult)}</span>
                                 </div>
                               {/if}
                               {#if t.applicableBoosts && t.applicableBoosts.filter(b => b.label !== 'Converted Energy').length > 0}
@@ -2345,6 +2419,12 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
       <div class="bdc-fr">
         <span class="bdc-fr-label">Scaling</span>
         <span class="bdc-fr-val bdc-fr-val--scaling">× {fmtMult(t.scalingMult)}</span>
+      </div>
+    {/if}
+    {#if t.levelMult != null && t.levelMult !== 1}
+      <div class="bdc-fr">
+        <span class="bdc-fr-label">Level Damage</span>
+        <span class="bdc-fr-val bdc-fr-val--scaling">× {fmtMult(t.levelMult)}</span>
       </div>
     {/if}
     {#if t.applicableBoosts && t.applicableBoosts.filter(b => b.label !== 'Converted Energy').length > 0}

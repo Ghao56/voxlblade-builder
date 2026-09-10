@@ -6,6 +6,7 @@
 
   // ── Props ─────────────────────────────────────────────────────────────────
   export let protection: number = 0
+  export let shield: number = 0
   export let hpThreshold: number | undefined = undefined
 
   $: level = $build.level ?? 80
@@ -45,16 +46,15 @@
   $: HP_FLOOR = Math.round(baseMaxHP * 0.1)
 
   $: effectiveMaxHP = protRounded >= 0
-    ? baseMaxHP
+    ? baseMaxHP + protRounded
     : Math.max(HP_FLOOR, baseMaxHP + protRounded)
 
-  $: effectiveProt = protRounded >= 0
-    ? protRounded
-    : Math.round((-(baseMaxHP - effectiveMaxHP)) * 100) / 100
+  $: effectiveProt = protRounded
 
-  $: shieldCount = protRounded > 0 ? protRounded : 0
+  $: shieldCount = Math.round(shield * 100) / 100
   $: shieldFrac  = shieldCount > 0 ? Math.min(1, shieldCount / baseMaxHP) : 0
   $: lostFrac    = protRounded < 0 ? Math.min(1, Math.abs(protRounded) / baseMaxHP) : 0
+  $: combinedBonus = Math.round((protRounded + shieldCount) * 100) / 100
 
   let dragging = false
   let barEl: HTMLDivElement
@@ -67,9 +67,10 @@
   function calcFillFromMouse(e: MouseEvent): number {
     if (!barEl) return fillPct
     const rect = barEl.getBoundingClientRect()
-    const validEnd = rect.left + rect.width * (effectiveMaxHP / baseMaxHP)
+    const validFrac = Math.min(1, effectiveMaxHP / baseMaxHP)
+    const validEnd = rect.left + rect.width * validFrac
     const clampedX = Math.max(rect.left, Math.min(e.clientX, validEnd))
-    const frac = (clampedX - rect.left) / (rect.width * (effectiveMaxHP / baseMaxHP))
+    const frac = (clampedX - rect.left) / (rect.width * validFrac)
     return Math.round(Math.max(0, Math.min(1, frac)) * 100)
   }
 
@@ -86,9 +87,9 @@
 
   // ── Display helpers ───────────────────────────────────────────────────────
   $: currentHP = Math.round(effectiveMaxHP * fillPct / 100)
-  $: fillFrac  = (effectiveMaxHP / baseMaxHP) * (fillPct / 100)
+  $: fillFrac  = Math.min(1, (effectiveMaxHP / baseMaxHP) * (fillPct / 100))
   $: thumbPos  = fillFrac * 100
-  $: thresholdFrac = hpThreshold != null ? (effectiveMaxHP / baseMaxHP) * (hpThreshold / 100) : 0
+  $: thresholdFrac = hpThreshold != null ? Math.min(1, (effectiveMaxHP / baseMaxHP) * (hpThreshold / 100)) : 0
 
   $: barColor = fillPct > 50 ? '#4ade80' : fillPct > 25 ? '#facc15' : '#f87171'
   $: barGlow  = fillPct > 50 ? 'rgba(74,222,128,0.5)' : fillPct > 25 ? 'rgba(250,204,21,0.5)' : 'rgba(248,113,113,0.5)'
@@ -123,10 +124,10 @@
       <span class="lb-hp-nums">
         <span class="lb-hp-cur">{currentHP}</span>
         <span class="lb-hp-sep">/</span>
-        <span class="lb-hp-max">{baseMaxHP}</span>
-        {#if effectiveProt !== 0}
-          <Badge color={effectiveProt > 0 ? '#38bdf8' : '#f87171'} size="xs">
-            {#if effectiveProt > 0}<i class="fa fa-shield"></i> +{effectiveProt}{:else}<i class="fa fa-warning"></i> {effectiveProt}{/if}
+        <span class="lb-hp-max">{effectiveMaxHP}</span>
+        {#if combinedBonus !== 0}
+          <Badge color={combinedBonus > 0 ? '#22d3ee' : '#f87171'} size="xs">
+            {#if combinedBonus > 0}<i class="fa fa-shield"></i> +{combinedBonus}{:else}<i class="fa fa-warning"></i> {combinedBonus}{/if}
           </Badge>
         {/if}
       </span>

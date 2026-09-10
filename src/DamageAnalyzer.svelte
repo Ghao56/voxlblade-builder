@@ -947,6 +947,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     : 0
   $: _dragonStateScalingMult = _computePerkScalingMult(_dragonStateDef?.scalings ?? {})
   $: _dragonStateCombatMult = _perkCombatMult
+  $: _dragonStateEffectiveMult = _perkEffectiveMult
   $: _dragonStateTotalDmg = _dragonStateAmt > 0 && _dragonStateHpGateActive
     ? _dragonStateBaseDmg * _dragonStateScalingMult * _dragonStateCombatMult
     : 0
@@ -2033,6 +2034,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   )
 
   $: _levelMult = (() => {
+    if (disabledBoosts.has('Level Damage')) return 1
     const levelEntry = boosts.dmgEntries.find(e => e.sourceName === 'Level Damage')
     return levelEntry ? levelEntry.rawMultiplier : 1
   })()
@@ -2070,10 +2072,11 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: activeFinalMult = activeEntries.reduce((acc, e) => acc * e.rawMultiplier, 1.0)
   $: activeFinalMultRounded = roundMultiplier(activeFinalMult)
 
-  function _categoryMult(type: BoostAttackType, procAllowed: boolean = true, excludeGeneral: boolean = false): number {
+  function _categoryMult(type: BoostAttackType, procAllowed: boolean = true, excludeGeneral: boolean = false, excludeLevel: boolean = false): number {
     return activeEntries
       .filter(e => !(e as any).appliesTo || (e as any).appliesTo.includes(type))
       .filter(e => !excludeGeneral || (e as any).appliesTo?.includes(type))
+      .filter(e => excludeLevel ? !(e as any).isLevel : true)
       .filter(e => procAllowed || !(e as any).needsProcCoeff)
       .reduce((acc, e) => acc * e.rawMultiplier, 1.0)
   }
@@ -2085,6 +2088,14 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: _perkCombatMult = (void activeEntries, _categoryMult('perk'))
   $: _dotCombatMult = (void activeEntries, _categoryMult('perk', false))
   $: _radianceCombatMult = (void activeEntries, _categoryMult('perk', false))
+
+  $: _m1EffectiveMult   = (void activeEntries, _categoryMult('m1', true, false, true))
+  $: _m2EffectiveMult   = (void activeEntries, _categoryMult('m2', true, false, true))
+  $: _waEffectiveMult   = (void activeEntries, _categoryMult('wa', true, false, true))
+  $: _runeEffectiveMult = (void activeEntries, _categoryMult('rune', true, false, true))
+  $: _perkEffectiveMult = (void activeEntries, _categoryMult('perk', true, false, true))
+  $: _dotEffectiveMult  = (void activeEntries, _categoryMult('perk', false, false, true))
+  $: _radianceEffectiveMult = (void activeEntries, _categoryMult('perk', false, false, true))
 
   $: _hasSpecificBoosts = boosts.dmgEntries.some(e => !!(e as any).appliesTo)
 
@@ -2140,6 +2151,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     dexterity: '#ffe373',
     summon:    '#c084fc',
     protection: 'rgb(68, 226, 43)',
+    shield: '#22d3ee',
   }
   const DOT_COLORS: Record<string, string> = {
     Bleed: '#ff0004',
@@ -2888,6 +2900,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     typedHitsSameM2: boolean
     scalingMult: number
     combatMult: number
+    effectiveMult: number
     resolvedDmgTypes: Record<string, number>
     baseDmgTypes: Record<string, number>
     resolvedScalings: Record<string, number>
@@ -2905,6 +2918,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     slider?: { buildKey: string; label: string; min: number; max: number; step?: number }
     sliderVal?: number
     sliderMax?: number
+    noSelfDebuff?: boolean
     getFinisherHitBaseDmg?: (ctx: { baseDmg: number; hitIndex: number }) => number
   }
 
@@ -2922,9 +2936,13 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
                       : def.countAsM2 ? 'm2'
                       : def.countAsM1  ? 'm1'
                       : 'perk')
-      const combatMult = _categoryMult(hitType, canProc(def.procCoefficient), !!def.noGeneralDmgBoosts)
+      const effectivePart = def.applyEffective !== false
+        ? _categoryMult(hitType, canProc(def.procCoefficient), !!def.noGeneralDmgBoosts, true)
+        : 1
+      const levelPart = def.applyLevel !== false ? _levelMult : 1
       const mwMult = def.countAsM2 && _mortalWillFinisherDmgMult !== 1 ? _mortalWillFinisherDmgMult : 1
-      const finalCombatMult = combatMult * mwMult
+      const finalCombatMult = effectivePart * levelPart * mwMult
+      const finalEffectiveMult = effectivePart * mwMult
 
       const _perkCtxBurnPotency = (() => {
         let pot = perks['Burn Potency'] ?? 0
@@ -2975,8 +2993,9 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         ? { ...resolvedDmgTypes, holy: Math.round(((resolvedDmgTypes.holy ?? 0) + _mortalWillHolyTypeBonus) * 10000) / 10000 }
         : resolvedDmgTypes
 
-      // Store base damage types without Draconic Runes bonus for self damage calculation
-      const baseDmgTypesForSelfDmg = def.isRune ? baseDmgTypes : baseResolvedDmgTypes
+      // Store raw pre-bonus base damage types (no dmg-type bonuses like Channeled Weapon, no Draconic/holy conversions)
+      // so effects that inherit from the hit base (e.g. Snarl healing) see only the true weapon/perk distribution.
+      const baseDmgTypesForSelfDmg = def.dmgTypeMode === 'weapon' ? _weaponDmgTypesBase : baseDmgTypes
 
       const resolvedScalings = def.scalingMode === 'weapon'
         ? _weaponResult?.scalings ?? {}
@@ -3081,6 +3100,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         typedHitsSameM2: typedHitsM2.length === typedHitsM1f.length && typedHitsM2.every((t, i) => t.rawVal === typedHitsM1f[i].rawVal && t.val === typedHitsM1f[i].val && t.label === typedHitsM1f[i].label),
         scalingMult,
         combatMult: finalCombatMult,
+        effectiveMult: finalEffectiveMult,
         resolvedDmgTypes: resolvedDmgTypesWithMw,
         baseDmgTypes: baseDmgTypesForSelfDmg,
         resolvedScalings,
@@ -3093,6 +3113,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         oncePerFinisher,
         forceCrit: def.forceCrit,
         eachHitM1M2: def.note?.startsWith('Each hit counts as individual M1/M2') === true,
+        noSelfDebuff: def.noSelfDebuff === true,
         secondaryEffects,
         triggerChain: def.triggerChain,
         ...(def.slider ? { slider: { buildKey: def.slider.buildKey, label: def.slider.label, min: def.slider.min, max: _perkSliderMax, step: def.slider.step }, sliderVal: _perkSliderVal, sliderMax: _perkSliderMax } : {}),
@@ -3104,7 +3125,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   $: _nonDraconicPerkEntries = _activePerkDmgEntries.filter(e => e.perkName !== 'Draconic Blood')
   $: _perkOnHitDamages = (() => {
     const out: Array<{
-      tag: string; baseDmg: number; scalingMult: number; combatMult: number; totalDmg: number
+      tag: string; baseDmg: number; scalingMult: number; combatMult: number; effectiveMult: number; totalDmg: number
       dmgTypes: Record<string, number>; procCoefficient?: ProcCoefficient; isProcHit?: boolean; canApplyBurn?: boolean; noSelfDebuff?: boolean
       rawFinisherNumerator?: number; halfActivations?: boolean; oncePerFinisher?: boolean; alwaysOnHit?: boolean; finisherOnly?: boolean
       weaponBoostMult?: number; weaponBoostLabel?: string
@@ -3120,8 +3141,6 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       const perkSunburnMult = _sunburnActive && _sunburnEnemyBurning
         ? ((e.resolvedDmgTypes.holy ?? 0) > 0 ? _sunburnHolyDmgMult : _sunburnUniversalDmgMult) : 1
       const finisherMult = e.boostCat === 'perk' ? 1 : ((e.isFinisher || e.countAsM2) && _finisherBoostMult !== 1 ? _finisherBoostMult : 1)
-      const isIgnition = e.perkName === 'Ignition'
-      const ignitionLevelMult = isIgnition ? _levelMult : 1
       const perkWbMult = roundMultiplier(perkSunburnMult * _activeBellowingEmberMult)
       const perkLabel = [
         perkSunburnMult !== 1 ? 'Sunburn' : '',
@@ -3132,13 +3151,14 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         tag: e.displayName,
         baseDmg: e.baseDmg,
         scalingMult: e.scalingMult,
-        combatMult: roundMultiplier(e.combatMult * finisherMult * ignitionLevelMult),
-        totalDmg: roundMultiplier(e.totalDmg * finisherMult * ignitionLevelMult),
+        combatMult: roundMultiplier(e.combatMult * finisherMult),
+        effectiveMult: roundMultiplier(e.effectiveMult * finisherMult),
+        totalDmg: roundMultiplier(e.totalDmg * finisherMult),
         dmgTypes: e.resolvedDmgTypes,
         procCoefficient: e.perkName === 'Blazing Finisher' ? { type: 'noProc' } : e.procCoefficient,
         isProcHit: e.isProcHit,
         canApplyBurn: _hasSingedBurn,
-        ...(isIgnition ? { noSelfDebuff: true } : {}),
+        ...(e.noSelfDebuff ? { noSelfDebuff: true } : {}),
         ...(perkWbMult !== 1 ? { weaponBoostMult: perkWbMult, weaponBoostLabel: perkLabel } : {}),
         ...(e.rawFinisherNumerator != null ? { rawFinisherNumerator: e.rawFinisherNumerator } : {}),
         ...(e.halfActivations != null ? { halfActivations: e.halfActivations } : {}),
@@ -3171,6 +3191,8 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     scalingMult: number
     combatMult: number
     combatMultNoFinisher?: number
+    effectiveMult?: number
+    effectiveMultNoFinisher?: number
     isFinisher: boolean
     dmgTypes: Record<string, number>
     baseDmgTypes?: Record<string, number>
@@ -3250,7 +3272,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         if (cdTargetHit && count > 1) {
           if (group === 'M1') vcM1Consumed += Math.min(1, vcBuffed); else vcM2Consumed += Math.min(1, vcBuffed)
           result.push({
-            group, index: i, count: 1, base, scalingMult: _scalingMult, combatMult: _m2CombatMult,
+            group, index: i, count: 1, base, scalingMult: _scalingMult, combatMult: _m2CombatMult, effectiveMult: _m2EffectiveMult,
             isFinisher: true, dmgTypes: finalDmgTypes,
             baseDmgTypes: _weaponDmgTypesBase,
             ...(group === 'M1' ? { isM2: true } : {}),
@@ -3268,7 +3290,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         }
         if (group === 'M1') vcM1Consumed += vcBuffed; else vcM2Consumed += vcBuffed
         result.push({
-          group, index: i, count, base, scalingMult: _scalingMult, combatMult: _m2CombatMult,
+          group, index: i, count, base, scalingMult: _scalingMult, combatMult: _m2CombatMult, effectiveMult: _m2EffectiveMult,
           isFinisher: true, dmgTypes: finalDmgTypes,
           baseDmgTypes: _weaponDmgTypesBase,
           ...(group === 'M1' ? { isM2: true } : {}),
@@ -3337,7 +3359,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
               result.push({
                 group: 'M1', index: i, count: 1,
                 base: finMult !== 1 ? roundMultiplier(base * finMult) : base,
-                scalingMult: _scalingMult, combatMult: _m1CombatMult,
+                scalingMult: _scalingMult, combatMult: _m1CombatMult, effectiveMult: _m1EffectiveMult,
                 isFinisher: finisherHit, dmgTypes: finalDmgTypes,
                 baseDmgTypes: _weaponDmgTypesBase,
                 ...(piercerRank > 0 ? { boostDmgTypes } : {}),
@@ -3355,7 +3377,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
             result.push({
               group: 'M1', index: i, count,
               base: finMult !== 1 ? roundMultiplier(base * finMult) : base,
-              scalingMult: _scalingMult, combatMult: _m1CombatMult,
+              scalingMult: _scalingMult, combatMult: _m1CombatMult, effectiveMult: _m1EffectiveMult,
               isFinisher: finisherHit, dmgTypes: finalDmgTypes,
               baseDmgTypes: _weaponDmgTypesBase,
               ...(piercerRank > 0 ? { boostDmgTypes } : {}),
@@ -3403,7 +3425,9 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           base: m1Def.getBaseDamage(),
           scalingMult: _computePerkScalingMult(m1Def.getScalings()),
           combatMult: _runeCombatMult,
+          effectiveMult: _runeEffectiveMult,
           isFinisher: false,
+          baseDmgTypes: m1Def.getDmgTypes(),
           dmgTypes: _mountM1DmgTypes,
           label: `${_activeMountRuneDef.mountLabel} (Mounted)`,
           canApplyBurn: _hasSingedBurn,
@@ -3426,7 +3450,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     // Bomber Charge: override Retaliate WA hits
     if (_bomberChargeWaHit) {
       result.push({
-        group: 'WA', index: 0, count: 1, base: _bomberChargeWaHit.base, scalingMult: _bomberChargeWaHit.scalingMult, combatMult: _waCombatMult,
+        group: 'WA', index: 0, count: 1, base: _bomberChargeWaHit.base, scalingMult: _bomberChargeWaHit.scalingMult, combatMult: _waCombatMult, effectiveMult: _waEffectiveMult,
         isFinisher: false, dmgTypes: _bomberChargeWaHit.dmgTypes, baseDmgTypes: _bomberChargeWaHit.baseDmgTypes,
         label: 'Retaliate (modified by Bomber Charge)',
         canApplyBurn: _hasSingedBurn,
@@ -3436,7 +3460,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     if (_isRetaliateChargeWA && Object.keys(_waDmgTypes).length > 0 && !(_activeMountRuneDef && mountActive)) {
       result.push({
         group: 'WA', index: 0, count: 1, base: _retaliateInterpolatedBase,
-        scalingMult: _waScalingMult, combatMult: _waCombatMult,
+        scalingMult: _waScalingMult, combatMult: _waCombatMult, effectiveMult: _waEffectiveMult,
         isFinisher: false, dmgTypes: _waDmgTypes, baseDmgTypes: _waDmgTypesBase,
         label: _waDisplayName,
         canApplyBurn: _hasSingedBurn,
@@ -3509,7 +3533,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           _activeBellowingEmberMult !== 1 ? 'Bellowing Ember' : '',
         ].filter(Boolean).join(', ')
         const waHitBase = {
-          group: 'WA' as const, index: i, base: h.n, scalingMult: sc, combatMult: _waCombatMult,
+          group: 'WA' as const, index: i, base: h.n, scalingMult: sc, combatMult: _waCombatMult, effectiveMult: _waEffectiveMult,
           isFinisher: waIsFinisher, baseDmgTypes: hitDtBase,
           ...(selectedWA.hits?.[i]?.isCrit ? { forceCrit: true } : {}),
           ...(combinedWbMult !== 1 ? { weaponBoostMult: combinedWbMult, weaponBoostLabel: wbLabel } : {}),
@@ -3575,7 +3599,9 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           base,
           scalingMult: waScalingMult,
           combatMult: _waCombatMult,
+          effectiveMult: _waEffectiveMult,
           isFinisher: false,
+          baseDmgTypes: waDef.getDmgTypes(),
           dmgTypes: waDmgTypes,
           label: `${_activeMountRuneDef.mountLabel} WA (Mounted)`,
           canApplyBurn: _hasSingedBurn,
@@ -3694,6 +3720,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           base: hitBase,
           scalingMult: entry.scalingMult,
           combatMult: entry.combatMult,
+          effectiveMult: entry.effectiveMult ?? 1,
           isFinisher: entry.isFinisher ?? false,
           dmgTypes: cdPerkTypes,
           baseDmgTypes: entry.baseDmgTypes,
@@ -3819,6 +3846,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         base: _activeRuneDmgDef.getBaseDamage(_runeCtx),
         scalingMult: _computePerkScalingMult(_runeScalings),
         combatMult: _runeIsHeal ? _healFinalMultiplier : _runeCombatMult,
+        effectiveMult: _runeIsHeal ? _healFinalMultiplierNoLevel : _runeEffectiveMult,
         isFinisher: _activeRuneDmgDef.isFinisher ?? false,
         isHeal: _runeIsHeal,
         ...(runeForceCrit ? { forceCrit: true } : {}),
@@ -3863,6 +3891,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
             base: _runeSecondary.getBaseDamage(_runeCtx),
             scalingMult: _computePerkScalingMult(_secScalings),
             combatMult: _runeCombatMult,
+            effectiveMult: _runeEffectiveMult,
             isFinisher: false,
             isHeal: false,
             dmgTypes: _secDmgTypesWithBonus,
@@ -3896,7 +3925,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       const pushWr = (baseDmg: number, labelSuffix: string) => {
         const srcGroup = labelSuffix === 'M2' ? 'M2' : 'WA'
         result.push({
-          group: srcGroup, index: result.length, count: 1, base: baseDmg, scalingMult: wrScaling, combatMult: _perkCombatMult,
+          group: srcGroup, index: result.length, count: 1, base: baseDmg, scalingMult: wrScaling, combatMult: _perkCombatMult, effectiveMult: _perkEffectiveMult,
           isFinisher: false, dmgTypes: { water: 1.0, heal: 0.2 }, baseDmgTypes: { water: 1.0 },
           dmgTypeCombatMults: { heal: _healFinalMultiplier },
           radianceHealMult: _healDealtMultiplier,
@@ -3927,7 +3956,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         const fpPerTick = preMit * _fpAmt / 30
         result.push({
           group: 'Perk', index: result.length, count: 10, base: fpPerTick,
-          scalingMult: 1, combatMult: 1,
+          scalingMult: 1, combatMult: 1, effectiveMult: 1,
           isFinisher: false, dmgTypes: _applyDmgBonuses({ hex: 1.0 }, _perkDmgTypeBonusesDoT),
           label: 'Fungal Prototype (' + label + ' →)',
           procCoefficient: { type: 'noProc' },
@@ -4021,6 +4050,10 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         if (!(h.isFinisher || h.isM2)) continue
         h.combatMultNoFinisher = h.combatMult ?? 1
         h.combatMult = roundMultiplier((h.combatMult ?? 1) * _finisherBoostMult)
+        if (h.effectiveMult != null) {
+          h.effectiveMultNoFinisher = h.effectiveMult
+          h.effectiveMult = roundMultiplier(h.effectiveMult * _finisherBoostMult)
+        }
       }
     }
 
@@ -4073,6 +4106,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
             amt: _radianceAmt,
             scalingMult: radianceScalingMult,
             combatMult: _radianceCombatMult,
+            effectiveMult: _radianceEffectiveMult,
             group: src.group,
             index: i + 1,
           }).hit,
@@ -4360,6 +4394,7 @@ $: _groupedSelfDamageSources = (() => {
     dragonStateBaseDmg={_dragonStateHpGateActive ? _dragonStateBaseDmg : 0}
     dragonStateScalingMult={_dragonStateScalingMult}
     dragonStateCombatMult={_dragonStateCombatMult}
+    dragonStateEffectiveCombatMult={_dragonStateEffectiveMult}
     dragonStateTotalDmg={_dragonStateTotalDmg}
     darkMagicHexBonus={_darkMagicHexBonus}
     perkOnHitDamages={_perkOnHitDamages}
@@ -4382,6 +4417,9 @@ $: _groupedSelfDamageSources = (() => {
     starStruckScalingMults={_starStruckScalingMults}
     starRerollSeed={starRerollSeed}
     perkCombatMult={_perkCombatMult}
+    perkEffectiveCombatMult={_perkEffectiveMult}
+    staticBuildupAmt={perks['Static Buildup'] ?? 0}
+    staticBuildupCharge={$build.staticBuildupCharge ?? 0}
     m1Label={_activeMountRuneDef && mountActive ? 'M1/M2' : 'M1'}
     draconicRunesBonus={getDraconicBonuses({
       draconicRunesStacks: perks['Draconic Runes'] ?? 0,
@@ -4411,6 +4449,7 @@ $: _groupedSelfDamageSources = (() => {
     lifestealStacks={perks['Lifesteal'] ?? 0}
     lifestealHealMult={_healFinalMultiplierNoLevel}
     woofSpiritHealMult={_healFinalMultiplierNoLevel}
+    levelMult={_levelMult}
     sunburnUniversalDmgMult={_sunburnEnemyBurning ? _sunburnUniversalDmgMult : 1}
     bellowingEmberMult={_activeBellowingEmberMult}
     phantomPainPct={_phantomPainPct}
@@ -5971,6 +6010,38 @@ $: _groupedSelfDamageSources = (() => {
             <p>When a minion dies, gain a stack of the neutral status <b>Last Croak</b> (max <b>{maxSummons}</b> stacks). Consuming it on RMB/M2 hit explodes for <b>M2 base damage × Last Croak potency × (1 + perk amount) ÷ 15</b> physical damage. Use the slider to test with fewer stacks.</p>
             <p>The explosion does not inherit the triggering attack's output multipliers, but its own damage can still be affected directly by post-output multipliers (damage boosts, <b>Rage</b>, <b>Sunburn</b>, debuff multipliers). Last Croak also grants <b>Rage</b> on consumption.</p>
             <p>Granted by the <b>Boglord Ring</b>.</p>
+          </div>
+        </details>
+      </div>
+    {/if}
+    {#if (perks['Static Buildup'] ?? 0) > 0}
+      <div class="da-pbd-card da-pbd-card--hex">
+        <div class="da-pbd-head">
+          <span class="da-pbd-name">Static Buildup</span>
+          <span class="da-pbd-amt">+{perks['Static Buildup']}</span>
+        </div>
+        <div class="da-sb-slider-wrap">
+          <span class="da-sb-slider-label">Weapon Charge</span>
+          <input
+            type="range"
+            min="0"
+            max="10"
+            step="1"
+            value={$build.staticBuildupCharge ?? 0}
+            on:input={(e) => {
+              const val = Math.min(Math.max(+(e.target as HTMLInputElement).value, 0), 10)
+              build.update(s => ({ ...s, staticBuildupCharge: val }) as any)
+            }}
+            class="da-sb-slider"
+            style="--tc:#e8e4da; --fill:{Math.max(0, Math.min(($build.staticBuildupCharge ?? 0) / 10, 1)) * 100}%"
+          />
+          <span class="da-sb-slider-val" style="color:#e8e4da">{Math.floor($build.staticBuildupCharge ?? 0)}</span>
+        </div>
+        <div class="da-pbd-condition">RMB/M2 hits call down {Math.floor($build.staticBuildupCharge ?? 0)} lightning strike(s). Strike damage = (3 + inherited RMB damage × 0.1538) × (1 + 0.1 × perk amount). Inherited RMB damage is post-scaling/pre-boost and includes Level Damage Bonus (special exception); the strikes can also receive weapon-category damage bonuses.</div>
+        <details class="da-pbd-details">
+          <summary class="da-pbd-details-summary">Perk Details</summary>
+          <div class="da-pbd-details-body">
+            <p>Hitting enemies visibly builds up a yellow charge on your weapon. Landing an RMB calls down multiple lightning strikes, the amount of which scales off of your charge.</p>
           </div>
         </details>
       </div>

@@ -71,6 +71,7 @@ export const PROC_EFFECT_DEFS: Readonly<Record<string, ProcEffectDef>> = {
   'Blub': { chanceScaling: 'normal', baseChance: BLUB_BLUB_PROC_CHANCE },
   'Explosive': { chanceScaling: 'normal' },
   'Glacial': { chanceScaling: 'normal' },
+  'Static Buildup': { chanceScaling: 'positiveOnly', baseChance: 1 },
 }
 
 /**

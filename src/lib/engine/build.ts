@@ -144,6 +144,7 @@ function calcBoosts(
     rawMultiplier: lvlMult,
     condition:     `1.25% per level`,
     type:          'dmg',
+    isLevel:       true,
   })
 
   const ctx: BoostContext = {
@@ -494,7 +495,7 @@ function deriveResults(
 
   if (state.rune === 'Ancient Cleric Rune' && !(state.disabledBuffKeys ?? []).includes('Ancient Shield:Ancient Cleric Rune')) {
     const shieldHp = ANCIENT_CLERIC_SHIELD_BASE + ANCIENT_CLERIC_SHIELD_PER_VAL * (state.buffsConsumed ?? 0)
-    boostedStats.protection = (boostedStats.protection ?? 0) + shieldHp
+    boostedStats.shield = (boostedStats.shield ?? 0) + shieldHp
   }
 
   for (let i = 0; i < STAT_KEYS.length; i++) {
@@ -514,11 +515,11 @@ function deriveResults(
   const { allBuffs, orkBuffTenacity } = computeBuffs(state, finalPerks, wardingDebuffMult, _weaponResult?.weaponModifier)
   const iceShellPotency = maxBuffPotency(allBuffs, 'Ice Shell')
   if (iceShellPotency > 0 && !(state.disabledBuffKeys ?? []).includes('Ice Shell:Glacial Shell Rune')) {
-    boostedStats.protection = (boostedStats.protection ?? 0) + iceShellPotency
+    boostedStats.shield = (boostedStats.shield ?? 0) + iceShellPotency
   }
   const droneArmorPotency = maxBuffPotency(allBuffs, 'Drone Armor')
   if (droneArmorPotency > 0 && !(state.disabledBuffKeys ?? []).includes('Drone Armor:Plan Bee Rune')) {
-    boostedStats.protection = (boostedStats.protection ?? 0) + droneArmorPotency
+    boostedStats.shield = (boostedStats.shield ?? 0) + droneArmorPotency
   }
   const ragePotency      = maxBuffPotency(allBuffs, 'Rage')
   const bouncePotency    = maxBuffPotency(allBuffs, 'Bounce')
