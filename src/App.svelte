@@ -2,6 +2,11 @@
   import { fade } from 'svelte/transition'
   import { build, result, clearBuild, orkBuffTenacity, replaceBuild } from './lib/store'
   import DraconicAbilityStats from './DraconicAbilityStats.svelte'
+  import SummonCard from './SummonCard.svelte'
+  import { SUMMON_DEFS, createSummonInstance } from './data/SummonData'
+  const _demoBumblzDef = SUMMON_DEFS.find(s => s.name === 'Bumblz')
+  const hasSwarm = true // UI shows Swarm Rune +5 equipped
+  const demoBumblz = _demoBumblzDef ? Array.from({ length: hasSwarm ? 3 : 1 }, () => createSummonInstance(_demoBumblzDef, 45, 10, { Swarm: 5 })) : []
   import {
     races, guilds, armors, rings, runes, blades, handles, gloves, essences,
     getGuild, getRace, getArmorPart, getRing, getRune, getEnchant, getPerk,
@@ -458,6 +463,7 @@
       build.update(s => ({ ...s, summonCount: _maxSummons }))
     }
   }
+  $: _sumDemo = $build.summonCount > 0 ? createSummonInstance(SUMMON_DEFS.find(s => s.name === 'Bumblz')!, 45, 10, {}) : null
 
   $: _dragonStateAmt = $result.perks['Dragon State'] ?? 0
   $: _dragonStateThreshold = _dragonStateAmt > 0 ? gateThreshold(DRAGON_STATE_HP_GATE, _dragonStateAmt) : undefined
@@ -2445,6 +2451,14 @@ $: _appWaAvgTotal = (() => {
                   showWater={isDragonBlooded && $build.draconicColor === 'water'}
                 />
                 <div class="dab-notes">Guardbreaks</div>
+                {#if demoBumblz && demoBumblz.length}
+                  <div class="summon-demo">
+                    <h3>Summon Analysis — Bumblz ({demoBumblz.length} from Swarm Rune)</h3>
+                    {#each demoBumblz as s}
+                      <SummonCard summon={s} />
+                    {/each}
+                  </div>
+                {/if}
               </div>
               </button>
 

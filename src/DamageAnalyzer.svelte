@@ -4,13 +4,14 @@
   import { calcWeapon, calcMonkWeapon, isMonkGuild } from './lib/engine'
   import BaseDamageCalc from './BaseDamageCalc.svelte'
   import ScalingBreakdownRow from './ScalingBreakdownRow.svelte'
+  import SummonCard from './SummonCard.svelte'
   import { WEAPON_ARTS } from './data/weaponArts'
   import { WEAPON_BASE_DMG } from './data/weapon base dmg'
   import { DMG_TYPE_COLORS, DMG_TYPE_PRIORITY, SCALING_TO_BOOST, PERCENT_STATS, canProc, type WeaponBaseDmg, type ProcCoefficient } from './lib/types'
   import { BUFF_DEFS, getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, calcBuffEffect, getBuffDescription, convertTailwindToWhirlwind, getTrueBalanceBuffs, assembleActiveBuffs, applyCauterizeConversion, getBurnApplicationCount, hasEligibleDarkeningHexSource, applyDarkeningHexPotency } from './data/BuffData'
   import { DEBUFF_COMBAT_EFFECTS } from './data/debuffCombatEffects'
   import { getDraconicInfusionBuff, getDraconicAbilityDebuffs, getEffectiveDraconicInfusionPotency, getDraconicInfusionPotMult, getDraconicInfusionDurMult } from './data/draconicBuffs'  
-  import { WA_SUMMON_MAP, SUMMON_MAP, calcSummonStat, calcMaxSummonCount } from './data/SummonData'
+  import { WA_SUMMON_MAP, SUMMON_MAP, calcSummonStat, calcMaxSummonCount, createSummonInstance } from './data/SummonData'
   import CritIcon from './CritIcon.svelte'
   import { PERK_DMG_DEFS, findPerkDmgDef, SECONDARY_TONE_COLORS, isHpGateActive, DRAGON_STATE_HP_GATE, calcSpringblastBaseDamage, type TriggerChainEntry } from './data/Perkbasedmg'
   import { resolveDefenseSources, calcBaseArmorDefPct, DEF_GROUP, type DefenseSource } from './lib/defense'
@@ -390,7 +391,8 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   let _carapaceDisabled = false
 
   $: _waSummonDef = (() => {
-    const summonName = WA_SUMMON_MAP[selectedWA.name]
+    const runeSummonName = $build.rune ? WA_SUMMON_MAP[$build.rune] : undefined
+    const summonName = runeSummonName ?? WA_SUMMON_MAP[selectedWA.name]
     if (!summonName) return null
     const def = SUMMON_MAP[summonName]
     if (!def) return null
@@ -398,6 +400,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
     const lv = $build.level ?? 80
     return {
       ...def,
+      count: runeSummonName ? ($build.summonCount ?? def.count) : def.count,
       scaledDmg: calcSummonStat(def.baseDmg, sb, lv),
       scaledHp: def.baseHp !== undefined ? calcSummonStat(def.baseHp, sb, lv) : undefined,
       scaledAttacks: def.attacks?.map(a => ({ 
@@ -406,6 +409,27 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       })),
       summonBoostPct: sb,
     }
+  })()
+
+  $: _summonInstances = (() => {
+    if (!_waSummonDef) return []
+    const lv = $build.level ?? 80
+    const sb = _waSummonDef.summonBoostPct
+    const perkEntries = ($result.perks ?? {}) as Record<string, number>
+    const appliedDebuffs: { name: string; value: number }[] = []
+    for (const atk of _waSummonDef.attacks ?? []) {
+      for (const st of atk.appliesStatus ?? []) {
+        if (!BUFF_DEFS[st.name]?.isDebuff) continue
+        const existing = appliedDebuffs.find(d => d.name === st.name)
+        if (!existing) {
+          appliedDebuffs.push({ name: st.name, value: st.potency })
+        } else {
+          existing.value = Math.max(existing.value, st.potency)
+        }
+      }
+    }
+    const inst = createSummonInstance(_waSummonDef, lv, sb, perkEntries, [], appliedDebuffs)
+    return [inst]
   })()
 
   // ── Active Buffs Assembly ──────────────────────────────────────────────────
@@ -672,6 +696,19 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       const existing = inner.get(b.buffName)
       if (!existing || b.potency > existing) {
         inner.set(b.buffName, b.potency)
+      }
+    }
+    for (const atk of _waSummonDef?.scaledAttacks ?? []) {
+      for (const st of atk.appliesStatus ?? []) {
+        const def = BUFF_DEFS[st.name]
+        if (!def?.isDebuff) continue
+        const key = variantBase.get(st.name) ?? st.name
+        if (!groups.has(key)) groups.set(key, new Map())
+        const inner = groups.get(key)!
+        const existing = inner.get(st.name)
+        if (!existing || st.potency > existing) {
+          inner.set(st.name, st.potency)
+        }
       }
     }
     const autoDebuffs = applyBuffPerkModifiers(getAutoDebuffs({
@@ -5852,6 +5889,21 @@ $: _groupedSelfDamageSources = (() => {
 </div><!-- end da-wbd-body -->
 </div><!-- end da-section--wbd -->
 
+<!-- ── Summons ── -->
+{#if _waSummonDef}
+<div class="da-section da-section--summon">
+  <div class="da-section-title-row">
+    <span class="da-section-title">Summons</span>
+    <span class="da-summon-source">Summon Cap &times;{maxSummons}</span>
+  </div>
+  <div class="da-summons-list">
+    {#each _summonInstances as s}
+      <SummonCard summon={s} />
+    {/each}
+  </div>
+</div>
+{/if}
+
 <!-- ── Perk Base Damage ── -->
 {#if _nonDraconicPerkEntries.length > 0 || darkeningHexAmt > 0 || _vassalsCroakAmt > 0 || _cdAmt > 0 || _vcAmt > 0 || packagedPowerAmt > 0 || _radianceAmt > 0 || moneySmartAmt > 0}
 <div class="da-section da-section--pbd">
@@ -8343,6 +8395,32 @@ $: _groupedSelfDamageSources = (() => {
   width: 100%;
   border-color: rgba(167,139,250,.2);
   background: linear-gradient(160deg, var(--surface, #141715) 60%, rgba(167,139,250,.04) 100%);
+}
+
+/* ── Summon section ── */
+.da-section--summon {
+  width: 100%;
+  border-color: rgba(192,132,252,.28);
+  background: linear-gradient(160deg, var(--surface, #141715) 60%, rgba(192,132,252,.06) 100%);
+}
+
+.da-summon-source {
+  font-size: .65rem;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: #c084fc;
+  background: rgba(192,132,252,.12);
+  border: 1px solid rgba(192,132,252,.3);
+  border-radius: 999px;
+  padding: 2px 10px;
+  align-self: center;
+}
+
+.da-summons-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
 }
 
 .da-pbd-list {
