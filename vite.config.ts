@@ -10,7 +10,7 @@ export default defineConfig({
   base: basePath,
 
   plugins: [
-    svelte(),
+    svelte({ prebundleSvelteLibraries: false }),
 
     VitePWA({
       registerType: 'autoUpdate',
@@ -54,6 +54,11 @@ export default defineConfig({
         manualChunks:undefined
       }
     }
+  },
+
+  optimizeDeps:{
+    noDiscovery:true,
+    include:[]
   }
 
 })

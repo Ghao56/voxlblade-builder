@@ -17,7 +17,7 @@
   import { resolveDefenseSources, calcBaseArmorDefPct, DEF_GROUP, type DefenseSource } from './lib/defense'
   import { getActiveRaceEffect, getOrkTenacityBuffs, calcOrkTenacityBonus } from './data/raceEffects'
   import { getActiveDefensivePerkSources, calcDefensivePotencyMult } from './data/defensivePerks'
-  import { getWeaponConditionalBoost } from './data/weaponConditionalBoosts'
+  import { getWeaponConditionalBoost, isUnbalancedWeaponry } from './data/weaponConditionalBoosts'
   import { getRace } from './lib/engine/data/character'
   import { getRune } from './lib/engine/data/equipment'
   import { RUNE_DMG_DEFS } from './data/Runebasedmg'
@@ -126,11 +126,14 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   'Emotional': 'emotionalDisabled',
 }
 
+  $: _m1WeaponBoostRaw        = getWeaponConditionalBoost(perks, _baseWeaponType, 'm1')
   $: _m1FinisherWeaponBoostRaw = getWeaponConditionalBoost(perks, _baseWeaponType, 'm1Finisher')
   $: _m2WeaponBoostRaw         = getWeaponConditionalBoost(perks, _baseWeaponType, 'm2')
+  $: _m1WeaponBoost          = disableWeaponBoost ? { mult: 1, labels: [] as string[] } : _m1WeaponBoostRaw
   $: _m1FinisherWeaponBoost = disableWeaponBoost ? { mult: 1, labels: [] as string[] } : _m1FinisherWeaponBoostRaw
   $: _m2WeaponBoost         = disableWeaponBoost ? { mult: 1, labels: [] as string[] } : _m2WeaponBoostRaw
-  $: _weaponBoostLabels = [...new Set([..._m1FinisherWeaponBoostRaw.labels, ..._m2WeaponBoostRaw.labels])]
+  $: _weaponBoostLabels = [...new Set([..._m1WeaponBoostRaw.labels, ..._m1FinisherWeaponBoostRaw.labels, ..._m2WeaponBoostRaw.labels])]
+  $: _weaponBoostConditions = [...new Set([..._m1WeaponBoostRaw.conditions, ..._m1FinisherWeaponBoostRaw.conditions, ..._m2WeaponBoostRaw.conditions])]
   $: _pursuitRank = disableWeaponBoost ? 0 : (perks['Pursuit'] ?? 0)
   $: _pursuitActive = _pursuitRank > 0 && ((_displayRows[0] as any)?.m1Finisher ?? true)
 
@@ -1077,6 +1080,11 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
       if (engineSpeedBoost !== 0) out.push({ name: 'Engine · Speed', pct: +(0.25 * engineSpeedBoost * engineAmt).toFixed(4) })
       if (_hasTailwindOrWhirlwind && _effectiveTailwindPotency > 0) out.push({ name: 'Engine · Tailwind', pct: +(30 * _effectiveTailwindPotency * engineAmt).toFixed(4) })
       return out
+    })())
+    .concat((() => {
+      const berserkingAmt = perks['Berserking Strength'] ?? 0
+      if (berserkingAmt <= 0 || !isUnbalancedWeaponry(_baseWeaponType)) return []
+      return [{ name: 'Berserking Strength', pct: +(10 + 10 * berserkingAmt) }]
     })())
   })()
   $: _perkAtkSpdMult = (() => {
@@ -3368,7 +3376,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
           const base = typeof h === 'number' ? h : h.n
           const count = typeof h === 'number' ? 1 : h.count
           const pushM1Hit = (finMult: number, finLabel?: string) => {
-            const wb = finisherHit ? _m1FinisherWeaponBoost : null
+            const wb = finisherHit ? _m1FinisherWeaponBoost : _m1WeaponBoost
             const mwMult = finisherHit && _mortalWillFinisherDmgMult !== 1 ? _mortalWillFinisherDmgMult : 1
             const cdTargetHit = _cdActive && _cdTarget === 'M1' && !cdM1Applied && m1HitsLanded < _cdHit && m1HitsLanded + count >= _cdHit
             if (cdTargetHit) cdM1Applied = true
@@ -4963,10 +4971,11 @@ $: _groupedSelfDamageSources = (() => {
           </div>
         {/if}
         {/if}
-  {#if _m1FinisherWeaponBoostRaw.mult !== 1 || _m2WeaponBoostRaw.mult !== 1 || _pursuitActive || disableWeaponBoost}
-    {@const _wbM1 = _m1FinisherWeaponBoostRaw.mult !== 1}
+  {#if _m1WeaponBoostRaw.mult !== 1 || _m1FinisherWeaponBoostRaw.mult !== 1 || _m2WeaponBoostRaw.mult !== 1 || _pursuitActive || disableWeaponBoost}
+    {@const _wbM1 = _m1WeaponBoostRaw.mult !== 1}
+    {@const _wbM1F = _m1FinisherWeaponBoostRaw.mult !== 1}
     {@const _wbM2 = _m2WeaponBoostRaw.mult !== 1}
-    {@const _wbSame = _m1FinisherWeaponBoostRaw.mult === _m2WeaponBoostRaw.mult}
+    {@const _wbSame = _m1WeaponBoostRaw.mult === _m1FinisherWeaponBoostRaw.mult && _m1FinisherWeaponBoostRaw.mult === _m2WeaponBoostRaw.mult}
     {@const _pursuitMult = _pursuitActive ? PURSUIT_BASE_MULT + PURSUIT_MULT_PER_RANK * _pursuitRank : 1}
     {@const _rawPursuitRank = perks['Pursuit'] ?? 0}
     {@const _rawPursuitMult = _rawPursuitRank > 0 ? PURSUIT_BASE_MULT + PURSUIT_MULT_PER_RANK * _rawPursuitRank : 0}
@@ -4979,14 +4988,15 @@ $: _groupedSelfDamageSources = (() => {
         <span class="da-bc-name">{[_weaponBoostLabels.join(', '), _rawPursuitRank > 0 ? 'Pursuit' : ''].filter(Boolean).join(', ')}</span>
         <span class="da-bc-val">
           {#if _wbSame}
-            ×{+_m1FinisherWeaponBoostRaw.mult.toFixed(4)}
+            ×{+_m1WeaponBoostRaw.mult.toFixed(4)}
           {:else}
-            {#if _wbM1}M1×{+_m1FinisherWeaponBoostRaw.mult.toFixed(4)}{/if}
+            {#if _wbM1}M1×{+_m1WeaponBoostRaw.mult.toFixed(4)}{/if}
+            {#if _wbM1F}M1F×{+_m1FinisherWeaponBoostRaw.mult.toFixed(4)}{/if}
             {#if _wbM2}M2×{+_m2WeaponBoostRaw.mult.toFixed(4)}{/if}
           {/if}
           {#if _rawPursuitRank > 0}M1×{+_rawPursuitMult.toFixed(4)}{/if}
         </span>
-        <span class="da-bc-cond">finisher</span>
+        {#if _weaponBoostConditions.length > 0}<span class="da-bc-cond">{_weaponBoostConditions.join(', ')}</span>{/if}
         <span class="da-bc-toggle">{disableWeaponBoost ? 'OFF' : 'ON'}</span>
       </button>
     </div>

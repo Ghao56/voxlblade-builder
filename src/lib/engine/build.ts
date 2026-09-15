@@ -33,6 +33,7 @@ import { applyEnchantmentsToSlot, applyPerkEffectiveness, applyInfusion } from '
 import { applyShrineToStats, SHRINE_MULTIPLIERS } from './shrine'
 import { MONK_RANK_MULTIPLIER, calcWeapon, calcMonkWeapon } from './weapon'
 import { WEAPON_ARTS } from '../../data/weaponArts'
+import { isUnbalancedWeaponry } from '../../data/weaponConditionalBoosts'
 import { getFinalWaDmgTypes } from '../damageTypeResolve'
 import { buildDmgTypeBonuses } from './dmgTypeBonuses'
 
@@ -458,6 +459,12 @@ function applyEmotionalAttackSpeed(boostedStats: StatMap, finalPerks: Record<str
   }
 }
 
+function applyBerserkingStrength(boostedStats: StatMap, finalPerks: Record<string, number>, finalWeaponType: string): void {
+  const amt = finalPerks['Berserking Strength'] ?? 0
+  if (amt <= 0 || !isUnbalancedWeaponry(finalWeaponType)) return
+  boostedStats.attackSpeed = (boostedStats.attackSpeed ?? 0) + (0.10 + 0.10 * amt)
+}
+
 function applyGladiatorialRage(boostedStats: StatMap, finalPerks: Record<string, number>): void {
   if ((finalPerks['Gladiatorial Rage'] ?? 0) <= 0) return
   let highestBoost = 0
@@ -505,8 +512,13 @@ function deriveResults(
     state.cdrToggles,
   )
 
+  const _weaponResult = isMonkGuild(state.guild)
+    ? ((state.monkGlove || state.monkEssence) ? calcMonkWeapon(state.monkGlove, state.monkEssence, state.shrineActive, state.guildRank) : null)
+    : ((state.weaponBlade || state.weaponHandle) ? calcWeapon(state.weaponBlade, state.weaponHandle, state.shrineActive) : null)
+
   const boostedStats = applyStatBoostPerks(finalStats, finalPerks)
   applyEmotionalAttackSpeed(boostedStats, finalPerks, state.emotionalState, state.emotionalDisabled)
+  applyBerserkingStrength(boostedStats, finalPerks, _weaponResult?.finalWeaponType ?? '')
   applyGladiatorialRage(boostedStats, finalPerks)
 
   // Shield vs Protection fix: Ancient Cleric / Ice Shell / Drone Armor give
@@ -527,9 +539,6 @@ function deriveResults(
 
   const wardingDebuffMult = calcWardingDebuffMultiplier(boostedStats.warding ?? 0)
   const isMountRune = state.rune.endsWith('Mount Rune')
-  const _weaponResult = isMonkGuild(state.guild)
-    ? ((state.monkGlove || state.monkEssence) ? calcMonkWeapon(state.monkGlove, state.monkEssence, state.shrineActive, state.guildRank) : null)
-    : ((state.weaponBlade || state.weaponHandle) ? calcWeapon(state.weaponBlade, state.weaponHandle, state.shrineActive) : null)
   const { allBuffs, orkBuffTenacity } = computeBuffs(state, finalPerks, wardingDebuffMult, _weaponResult?.weaponModifier)
   // Ice Shell & Drone Armor provide temporary HP (shield) — not protection.
   const iceShellPotency = maxBuffPotency(allBuffs, 'Ice Shell')

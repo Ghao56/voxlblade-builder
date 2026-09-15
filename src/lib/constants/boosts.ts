@@ -18,8 +18,10 @@ export const ON_HIT_EXCLUDED_SOURCES: ReadonlySet<string> = new Set([
   'Lightning Cloak',
 ])
 
-// Perks whose dmg-type bonuses never apply to DoT ticks.
-export const DOT_EXCLUDED_PERK_BONUSES: ReadonlySet<string> = new Set(['Channeled Weapon'])
+// Perks whose dmg-type bonuses never apply to DoT ticks (also excluded from
+// ON_HIT_EXCLUDED_SOURCES and no-proc effects, which resolve via the DoT map —
+// same exclusion list as Lifesteal and Channeled Weapon).
+export const DOT_EXCLUDED_PERK_BONUSES: ReadonlySet<string> = new Set(['Channeled Weapon', 'Emotional'])
 
 export const HOLY_INFUSION_POTENCY_MULT = 0.115
 
