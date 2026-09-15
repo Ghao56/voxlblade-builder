@@ -423,6 +423,18 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     return enrichSummonDef(def, !!runeSummonName, sb, lv, $build.summonCount ?? def.count)
   })()
 
+  $: _summonBaseStats = (() => {
+    const def = _waSummonDef
+    if (!def) return [] as { label: string; display: string }[]
+    const out: { label: string; display: string }[] = []
+    if (def.tenacity !== undefined) out.push({ label: 'Tenacity', display: String(def.tenacity) })
+    if (def.physicalDefenseBoost !== undefined) out.push({ label: 'Phys Def', display: fmtPct(def.physicalDefenseBoost) })
+    if (def.magicDefenseBoost !== undefined) out.push({ label: 'Magic Def', display: fmtPct(def.magicDefenseBoost) })
+    if (def.airDefenseBoost !== undefined) out.push({ label: 'Air Def', display: fmtPct(def.airDefenseBoost) })
+    if (def.waterDefenseBoost !== undefined) out.push({ label: 'Water Def', display: fmtPct(def.waterDefenseBoost) })
+    return out
+  })()
+
   $: _summonInstances = (() => {
     const lv = $build.level ?? 80
     const sb = (($result.stats as Record<string,number>).summonBoost ?? 0)
@@ -1506,6 +1518,10 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   function fmtNum(n: number): string {
     const r = roundMultiplier(n)
     return Number.isInteger(r) ? String(r) : r.toFixed(4).replace(/\.?0+$/, '')
+  }
+
+  function fmtPct(v: number): string {
+    return (v >= 0 ? '+' : '') + `${Math.round(v * 100)}%`
   }
 
   function calcGroupMultiplier(entries: Array<{ rawMultiplier: number }>): number {
@@ -5868,6 +5884,48 @@ $: _groupedSelfDamageSources = (() => {
           {/if}
         </div>
          {/if}
+
+          {#if _waSummonDef}
+            <div class="da-wbd-section">
+              <div class="da-wbd-row-label da-wbd-row-label--sum">
+                <Badge color="#c084fc" square size="xs">S</Badge>
+                <span class="da-wbd-lbl-text">{_waSummonDef.name}</span>
+                <Badge color="#c084fc" size="xs" class="da-sb-base-pill">Base Stats</Badge>
+              </div>
+              <div class="da-sb">
+                <div class="da-sb-hp">
+                  <span class="da-sb-hp-label">HP</span>
+                  <span class="da-sb-hp-val">{_waSummonDef.baseHp}</span>
+                </div>
+                {#if _summonBaseStats.length > 0}
+                  <div class="da-sb-stats">
+                    {#each _summonBaseStats as st}
+                      <span class="da-sb-stat">
+                        <span class="da-sb-stat-label">{st.label}</span>
+                        <span class="da-sb-stat-val">{st.display}</span>
+                      </span>
+                    {/each}
+                  </div>
+                {/if}
+                <div class="da-sb-attacks">
+                  {#if _waSummonDef.attacks && _waSummonDef.attacks.length > 0}
+                    {#each _waSummonDef.attacks as atk, ai}
+                      {#if ai > 0}<span class="da-hit-plus">+</span>{/if}
+                      <div class="da-hit-chunk" style="--tc:#c084fc">
+                        <span class="da-hit-num" style="--tc:#c084fc">{atk.baseDmg}</span>
+                        <span class="da-hit-type">{atk.label}</span>
+                      </div>
+                    {/each}
+                  {:else}
+                    <div class="da-hit-chunk" style="--tc:#c084fc">
+                      <span class="da-hit-num" style="--tc:#c084fc">{_waSummonDef.baseDmg}</span>
+                      <span class="da-hit-type">{_waSummonDef.dmgType}</span>
+                    </div>
+                  {/if}
+                </div>
+              </div>
+            </div>
+          {/if}
      </div>
      </div>
    {/each}
@@ -8350,6 +8408,86 @@ $: _groupedSelfDamageSources = (() => {
   color: #c084fc;
   opacity: .45;
   font-family: 'Courier New', monospace;
+}
+.da-sb {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 12px);
+  padding: var(--space-3, 12px) var(--space-4, 16px);
+  min-width: 200px;
+  width: fit-content;
+  background:
+    linear-gradient(165deg, rgba(192,132,252,.08), rgba(192,132,252,.02) 55%),
+    var(--surface, #0f1210);
+  border: 1px solid rgba(192,132,252,.20);
+  border-radius: var(--radius-md, 8px);
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,.3));
+}
+.da-sb-hp {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm, 5px);
+  background: rgba(192,132,252,.10);
+  border: 1px solid rgba(192,132,252,.28);
+  width: fit-content;
+}
+.da-sb-hp-label {
+  font-size: .6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: #c084fc;
+  opacity: .8;
+}
+.da-sb-hp-val {
+  font-family: var(--font-mono, 'Courier New', monospace);
+  font-size: 1rem;
+  font-weight: 800;
+  color: #c084fc;
+}
+.da-sb-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.da-sb-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  border-radius: var(--radius-full, 999px);
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--border, rgba(255,255,255,.05));
+}
+.da-sb-stat-label {
+  font-size: .58rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--ink-muted, #7a7d75);
+}
+.da-sb-stat-val {
+  font-family: var(--font-mono, 'Courier New', monospace);
+  font-size: .78rem;
+  font-weight: 800;
+  color: var(--ink, #e8e4da);
+}
+.da-sb-attacks {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding-top: var(--space-2, 8px);
+  border-top: 1px solid rgba(192,132,252,.14);
+}
+.da-wbd-row-label--sum .da-wbd-lbl-text {
+  color: #c084fc;
+  font-style: normal;
+}
+.da-sb-base-pill {
+  opacity: .9;
 }
 .da-hit-chunk--rage .da-hit-num {
   text-shadow: 0 0 14px color-mix(in srgb, var(--tc) 80%, #f70201);
