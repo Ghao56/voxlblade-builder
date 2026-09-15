@@ -126,9 +126,16 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
   'Emotional': 'emotionalDisabled',
 }
 
+const trimNum = (n: number, maxDecimals = 4): string => {
+  const s = n.toFixed(maxDecimals)
+  return s.includes('.') ? s.replace(/0+$/, '').replace(/\.$/, '') : s
+}
+
   $: _m1WeaponBoostRaw        = getWeaponConditionalBoost(perks, _baseWeaponType, 'm1')
   $: _m1FinisherWeaponBoostRaw = getWeaponConditionalBoost(perks, _baseWeaponType, 'm1Finisher')
-  $: _m2WeaponBoostRaw         = getWeaponConditionalBoost(perks, _baseWeaponType, 'm2')
+  $: _m2WeaponBoostRaw = _gunOverlay
+    ? { mult: 1, labels: [] as string[], conditions: [] as string[] }
+    : getWeaponConditionalBoost(perks, _baseWeaponType, 'm2')
   $: _m1WeaponBoost          = disableWeaponBoost ? { mult: 1, labels: [] as string[] } : _m1WeaponBoostRaw
   $: _m1FinisherWeaponBoost = disableWeaponBoost ? { mult: 1, labels: [] as string[] } : _m1FinisherWeaponBoostRaw
   $: _m2WeaponBoost         = disableWeaponBoost ? { mult: 1, labels: [] as string[] } : _m2WeaponBoostRaw
@@ -431,7 +438,7 @@ const HEAL_BOOST_FLAG_LINKS: Record<string, string> = {
         }
       }
     }
-    const inst = createSummonInstance(_waSummonDef, lv, sb, perkEntries, [], appliedDebuffs)
+    const inst = createSummonInstance(_waSummonDef, lv, sb, perkEntries, undefined, appliedDebuffs)
     return [inst]
   })()
 
@@ -4631,13 +4638,13 @@ $: _groupedSelfDamageSources = (() => {
       <div class="da-section da-section--top da-section--paspd">
         <div class="da-section-title"><i class="fa fa-tachometer"></i> Perk Attack Speed</div>
         <div class="da-apen-inner">
-          <span class="da-apen-val">×{_perkAtkSpdMult.toFixed(4)}</span>
+          <span class="da-apen-val">×{trimNum(_perkAtkSpdMult)}</span>
           <span class="da-apen-sub">Attack Speed Multiplier</span>
           <div class="da-sources">
             {#each _perkAtkSpdEntries as e (e.name)}
               <div class="da-source-row">
                 <span class="da-source-name">{e.name}</span>
-                <span class="da-source-val" style="color:{e.pct < 0 ? '#f87171' : '#86efac'}">{e.pct >= 0 ? '+' : ''}{e.pct.toFixed(2)}%</span>
+                <span class="da-source-val" style="color:{e.pct < 0 ? '#f87171' : '#86efac'}">{e.pct >= 0 ? '+' : ''}{trimNum(e.pct)}%</span>
               </div>
             {/each}
           </div>
@@ -4988,13 +4995,17 @@ $: _groupedSelfDamageSources = (() => {
         <span class="da-bc-name">{[_weaponBoostLabels.join(', '), _rawPursuitRank > 0 ? 'Pursuit' : ''].filter(Boolean).join(', ')}</span>
         <span class="da-bc-val">
           {#if _wbSame}
-            ×{+_m1WeaponBoostRaw.mult.toFixed(4)}
+            ×{trimNum(_m1WeaponBoostRaw.mult)}
           {:else}
-            {#if _wbM1}M1×{+_m1WeaponBoostRaw.mult.toFixed(4)}{/if}
-            {#if _wbM1F}M1F×{+_m1FinisherWeaponBoostRaw.mult.toFixed(4)}{/if}
-            {#if _wbM2}M2×{+_m2WeaponBoostRaw.mult.toFixed(4)}{/if}
+            {#if _wbM1 && _wbM1F && _m1WeaponBoostRaw.mult === _m1FinisherWeaponBoostRaw.mult}
+              M1·M1F ×{trimNum(_m1WeaponBoostRaw.mult)}
+            {:else}
+              {#if _wbM1}M1 ×{trimNum(_m1WeaponBoostRaw.mult)}{/if}
+              {#if _wbM1F}M1F ×{trimNum(_m1FinisherWeaponBoostRaw.mult)}{/if}
+            {/if}
+            {#if _wbM2}M2 ×{trimNum(_m2WeaponBoostRaw.mult)}{/if}
           {/if}
-          {#if _rawPursuitRank > 0}M1×{+_rawPursuitMult.toFixed(4)}{/if}
+          {#if _rawPursuitRank > 0}M1 ×{trimNum(_rawPursuitMult)}{/if}
         </span>
         {#if _weaponBoostConditions.length > 0}<span class="da-bc-cond">{_weaponBoostConditions.join(', ')}</span>{/if}
         <span class="da-bc-toggle">{disableWeaponBoost ? 'OFF' : 'ON'}</span>

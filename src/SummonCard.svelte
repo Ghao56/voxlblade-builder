@@ -1,7 +1,8 @@
 <script lang="ts">
   import type { SummonInstance } from './data/SummonData'
   import { UI_COLORS } from './lib/uiConstants'
-  import { calcSummonMaxHp, calcSummonDamage } from './data/SummonData'
+  import { calcSummonMaxHp, calcSummonDamage, calcSummonBuffDmgMult } from './data/SummonData'
+  import { BUFF_DEFS } from './data/BuffData'
 
   export let summon: SummonInstance
   export let showBuffs = true
@@ -20,9 +21,35 @@
     return map[type.toLowerCase()] || UI_COLORS.combat
   }
 
+  const fmtPct = (v: number) => (v >= 0 ? '+' : '') + `${Math.round(v * 100)}%`
+
+  const BUFF_COLOR_OVERRIDES: Record<string, string> = { 'Rage Potency': '#f70201' }
+  const buffColor = (name: string, isDebuff: boolean) =>
+    BUFF_DEFS[name]?.color ?? BUFF_COLOR_OVERRIDES[name] ?? (isDebuff ? '#9333ea' : '#f87171')
+
+  let _buffOff = new Map<string, boolean>()
+  const toggleBuff = (key: string) => {
+    _buffOff = new Map(_buffOff).set(key, !(_buffOff.get(key) ?? false))
+  }
+
+  $: _offBuffs = new Set([..._buffOff.entries()].filter(([, v]) => v).map(([k]) => k))
+  $: _dmgMult = calcSummonBuffDmgMult(summon.buffs ?? [], _offBuffs)
+
   $: maxHp = calcSummonMaxHp(summon.def.baseHp, summon.spawnBoostPct, summon.level)
   $: currentHp = Math.round(summon.currentHp * 100) / 100
   $: decay = Math.round(summon.decayPerSec * 100) / 100
+
+  const fmtDuration = (secs: number) => {
+    const s = Math.round(secs)
+    if (s < 60) return `${s}s`
+    const m = Math.floor(s / 60)
+    const r = s % 60
+    return r > 0 ? `${m}m ${r}s` : `${m}m`
+  }
+  $: lifetime = (() => {
+    if (summon.decayPerSec <= 0 || !isFinite(summon.decayPerSec)) return '∞'
+    return fmtDuration((summon.currentHp ?? 0) / summon.decayPerSec)
+  })()
 </script>
 
 <div class="summon-card" aria-label="Summon {summon.def.name}">
@@ -39,16 +66,27 @@
     <span class="decay-label">−{decay}/s Decay</span>
   </div>
 
-  {#if summon.def.tenacity !== undefined || summon.def.physicalDefenseBoost !== undefined || summon.def.magicDefenseBoost !== undefined}
+  <div class="summon-lifetime">
+    <span class="lifetime-label">Lifetime</span>
+    <span class="lifetime-value">~{lifetime}</span>
+  </div>
+
+  {#if summon.def.tenacity !== undefined || summon.def.physicalDefenseBoost !== undefined || summon.def.magicDefenseBoost !== undefined || summon.def.airDefenseBoost !== undefined || summon.def.waterDefenseBoost !== undefined}
     <div class="summon-stats">
       {#if summon.def.tenacity !== undefined}
         <div class="stat-item"><span class="stat-label">Tenacity</span><span class="stat-value">{summon.def.tenacity}</span></div>
       {/if}
       {#if summon.def.physicalDefenseBoost !== undefined}
-        <div class="stat-item"><span class="stat-label">Physical Defense</span><span class="stat-value">+{Math.round(summon.def.physicalDefenseBoost * 100)}%</span></div>
+        <div class="stat-item"><span class="stat-label">Physical Defense</span><span class="stat-value">{fmtPct(summon.def.physicalDefenseBoost)}</span></div>
+      {/if}
+      {#if summon.def.airDefenseBoost !== undefined}
+        <div class="stat-item"><span class="stat-label">Air Defense</span><span class="stat-value">{fmtPct(summon.def.airDefenseBoost)}</span></div>
       {/if}
       {#if summon.def.magicDefenseBoost !== undefined}
-        <div class="stat-item"><span class="stat-label">Magic Defense</span><span class="stat-value">+{Math.round(summon.def.magicDefenseBoost * 100)}%</span></div>
+        <div class="stat-item"><span class="stat-label">Magic Defense</span><span class="stat-value">{fmtPct(summon.def.magicDefenseBoost)}</span></div>
+      {/if}
+      {#if summon.def.waterDefenseBoost !== undefined}
+        <div class="stat-item"><span class="stat-label">Water Defense</span><span class="stat-value">{fmtPct(summon.def.waterDefenseBoost)}</span></div>
       {/if}
     </div>
   {/if}
@@ -56,7 +94,7 @@
   <div class="attack-list" role="list" aria-label="Attacks">
     {#if summon.def.attacks && summon.def.attacks.length > 0}
       {#each summon.def.attacks as atk}
-        {@const dmg = calcSummonDamage(atk.baseDmg, summon.currentBoostPct, summon.spawnBoostPct, summon.level)}
+        {@const dmg = Math.round(calcSummonDamage(atk.baseDmg, summon.currentBoostPct, summon.spawnBoostPct, summon.level) * _dmgMult * 100) / 100}
         <div class="attack-block" role="listitem" style="--badge-color: {dmgColor(atk.dmgType)}">
           <span class="attack-label">{atk.label}</span>
           <span class="attack-dmg">[ {dmg} ]</span>
@@ -67,7 +105,7 @@
         </div>
       {/each}
     {:else}
-      {@const dmg = calcSummonDamage(summon.def.baseDmg, summon.currentBoostPct, summon.spawnBoostPct, summon.level)}
+      {@const dmg = Math.round(calcSummonDamage(summon.def.baseDmg, summon.currentBoostPct, summon.spawnBoostPct, summon.level) * _dmgMult * 100) / 100}
       <div class="attack-block" role="listitem" style="--badge-color: {dmgColor(summon.def.dmgType)}">
         <span class="attack-label">Base Attack</span>
         <span class="attack-dmg">[ {dmg} ]</span>
@@ -81,7 +119,17 @@
       <h4 class="section-title">Buffs</h4>
       <div class="badge-row">
         {#each summon.buffs as b}
-          <span class="buff-badge" style="background: #f87171;">[ {b.name} ] {b.value}</span>
+          {@const off = _buffOff.get(b.name) ?? false}
+          {@const color = buffColor(b.name, false)}
+          <button
+            class="buff-badge" class:buff-badge--off={off}
+            style="background:color-mix(in srgb,{color} 10%,transparent);border-color:color-mix(in srgb,{color} 35%,transparent)"
+            aria-pressed={!off}
+            on:click={() => toggleBuff(b.name)}
+          >
+            [ {b.name} ] <span class="badge-val" style="color:{color}">{off ? '—' : b.value}</span>
+            <span class="badge-toggle" class:badge-toggle--on={!off} style={!off ? `background:color-mix(in srgb,${color} 25%,transparent);color:${color}` : ''}>{off ? 'OFF' : 'ON'}</span>
+          </button>
         {/each}
       </div>
     </div>
@@ -92,7 +140,17 @@
       <h4 class="section-title">Applied Debuffs</h4>
       <div class="badge-row">
         {#each summon.debuffs as d}
-          <span class="debuff-badge" style="background: #9333ea;">[ {d.name} ] {d.value}</span>
+          {@const off = _buffOff.get(`d:${d.name}`) ?? false}
+          {@const color = buffColor(d.name, true)}
+          <button
+            class="debuff-badge" class:debuff-badge--off={off}
+            style="background:color-mix(in srgb,{color} 10%,transparent);border-color:color-mix(in srgb,{color} 35%,transparent)"
+            aria-pressed={!off}
+            on:click={() => toggleBuff(`d:${d.name}`)}
+          >
+            [ {d.name} ] <span class="badge-val" style="color:{color}">{off ? '—' : d.value}</span>
+            <span class="badge-toggle" class:badge-toggle--on={!off} style={!off ? `background:color-mix(in srgb,${color} 25%,transparent);color:${color}` : ''}>{off ? 'OFF' : 'ON'}</span>
+          </button>
         {/each}
       </div>
     </div>
@@ -162,6 +220,17 @@
     .hp-max { color: #e4e4e7; }
     .hp-sep { color: #71717a; }
     .decay-label { color: #ef4444; font-weight: 600; margin-left: auto; font-size: 0.85rem; }
+    .summon-lifetime {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 0.82rem;
+      margin-bottom: 10px;
+      color: #a1a1aa;
+    }
+    .lifetime-label { font-weight: 600; }
+    .lifetime-value { color: #fbbf24; font-weight: 700; }
     .attack-list {
       display: flex;
       flex-wrap: wrap;
@@ -209,23 +278,40 @@
       font-weight: 600;
     }
     .badge-row { display: flex; flex-wrap: wrap; gap: 6px; }
-    .buff-badge {
-      display: inline-block;
+    .buff-badge, .debuff-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       padding: 4px 8px;
       border-radius: 9999px;
       font-size: 0.8rem;
       font-weight: 600;
       color: #fff;
       border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.04);
+      cursor: pointer;
+      font-family: inherit;
+      line-height: inherit;
+      transition: opacity .15s ease, filter .15s ease;
     }
-    .debuff-badge {
-      display: inline-block;
-      padding: 4px 8px;
+    .buff-badge--off, .debuff-badge--off {
+      opacity: .45;
+      filter: grayscale(.6);
+    }
+    .badge-val { font-weight: 800; }
+    .badge-toggle {
+      font-size: 0.6rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      padding: 1px 5px;
       border-radius: 9999px;
-      font-size: 0.8rem;
-      font-weight: 600;
+      color: #71717a;
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .badge-toggle--on {
       color: #fff;
-      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.22);
     }
   </style>
 </div>

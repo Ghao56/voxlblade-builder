@@ -55,6 +55,9 @@ export interface SummonDef {
   tenacity?: number
   physicalDefenseBoost?: number
   magicDefenseBoost?: number
+  airDefenseBoost?: number
+  waterDefenseBoost?: number
+  buffs?: SummonBuffOrDebuff[]
   notes?: string[]
 }
 
@@ -87,6 +90,19 @@ export function calcSummonMaxHp(baseHp: number, spawnBoostPct: number, level: nu
 export function calcSummonDamage(baseDmg: number, currentBoostPct: number, spawnBoostPct: number, level: number): number {
   const effectiveBoost = Math.min(currentBoostPct, spawnBoostPct)
   return calcSummonStat(baseDmg, effectiveBoost, level)
+}
+
+export function calcSummonBuffDmgMult(
+  buffs: SummonBuffOrDebuff[] = [],
+  offBuffs: Iterable<string> = new Set<string>(),
+): number {
+  const off = new Set(offBuffs)
+  let mult = 1
+  for (const b of buffs) {
+    if (off.has(b.name)) continue
+    if (b.name === 'Rage Potency') mult *= 1 + b.value
+  }
+  return Math.round(mult * 100) / 100
 }
 
 export function calcSummonDecayPercent(baseDecayPercent: number, spawnBoostPct: number): number {
@@ -156,7 +172,15 @@ export const SUMMON_DEFS: SummonDef[] = [
     dmgType: 'physical',
     source: 'Toaladin Summon',
     tenacity: 0.6,
-    physicalDefenseBoost: 0.2,
+    airDefenseBoost: -0.25,
+    magicDefenseBoost: 0.2,
+    waterDefenseBoost: 1,
+    attacks: [
+      { label: 'Slash', baseDmg: 20, dmgType: 'Physical' },
+      { label: 'Body Slam', baseDmg: 25, dmgType: 'Physical' },
+    ],
+    buffs: [{ name: 'Rage Potency', value: 0.3 }],
+    notes: ['Rage Potency 0.3 buff (summon only)'],
   },
   {
     name: 'Undead Buni',
@@ -347,7 +371,7 @@ export function createSummonInstance(
     decayPerSec,
     source,
     spawnedAt: Date.now(),
-    buffs: buffs ?? [],
+    buffs: buffs ?? def.buffs ?? [],
     debuffs: debuffs ?? [],
   }
 }
