@@ -11,7 +11,7 @@
   import { BUFF_DEFS, getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, calcBuffEffect, getBuffDescription, convertTailwindToWhirlwind, getTrueBalanceBuffs, assembleActiveBuffs, applyCauterizeConversion, getBurnApplicationCount, hasEligibleDarkeningHexSource, applyDarkeningHexPotency } from './data/BuffData'
   import { DEBUFF_COMBAT_EFFECTS } from './data/debuffCombatEffects'
   import { getDraconicInfusionBuff, getDraconicAbilityDebuffs, getEffectiveDraconicInfusionPotency, getDraconicInfusionPotMult, getDraconicInfusionDurMult } from './data/draconicBuffs'  
-  import { WA_SUMMON_MAP, SUMMON_MAP, calcSummonStat, calcMaxSummonCount, createSummonInstance } from './data/SummonData'
+  import { WA_SUMMON_MAP, SUMMON_MAP, calcSummonStat, calcMaxSummonCount, createSummonInstance, type SummonDef, type SummonInstance } from './data/SummonData'
   import CritIcon from './CritIcon.svelte'
   import { PERK_DMG_DEFS, findPerkDmgDef, SECONDARY_TONE_COLORS, isHpGateActive, DRAGON_STATE_HP_GATE, calcSpringblastBaseDamage, type TriggerChainEntry } from './data/Perkbasedmg'
   import { resolveDefenseSources, calcBaseArmorDefPct, DEF_GROUP, type DefenseSource } from './lib/defense'
@@ -400,6 +400,18 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   let _adaptivePlateTriggered = false
   let _carapaceDisabled = false
 
+  const enrichSummonDef = (def: SummonDef, isRune: boolean, summonBoost: number, level: number, summonCount?: number) => ({
+    ...def,
+    count: isRune ? (summonCount ?? def.count) : def.count,
+    scaledDmg: calcSummonStat(def.baseDmg, summonBoost, level),
+    scaledHp: def.baseHp !== undefined ? calcSummonStat(def.baseHp, summonBoost, level) : undefined,
+    scaledAttacks: def.attacks?.map(a => ({
+      ...a,
+      scaledDmg: calcSummonStat(a.baseDmg, summonBoost, level),
+    })),
+    summonBoostPct: summonBoost,
+  })
+
   $: _waSummonDef = (() => {
     const runeSummonName = $build.rune ? WA_SUMMON_MAP[$build.rune] : undefined
     const summonName = runeSummonName ?? WA_SUMMON_MAP[selectedWA.name]
@@ -408,38 +420,36 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     if (!def) return null
     const sb = (($result.stats as Record<string,number>).summonBoost ?? 0)
     const lv = $build.level ?? 80
-    return {
-      ...def,
-      count: runeSummonName ? ($build.summonCount ?? def.count) : def.count,
-      scaledDmg: calcSummonStat(def.baseDmg, sb, lv),
-      scaledHp: def.baseHp !== undefined ? calcSummonStat(def.baseHp, sb, lv) : undefined,
-      scaledAttacks: def.attacks?.map(a => ({ 
-        ...a,
-        scaledDmg: calcSummonStat(a.baseDmg, sb, lv),
-      })),
-      summonBoostPct: sb,
-    }
+    return enrichSummonDef(def, !!runeSummonName, sb, lv, $build.summonCount ?? def.count)
   })()
 
   $: _summonInstances = (() => {
-    if (!_waSummonDef) return []
     const lv = $build.level ?? 80
-    const sb = _waSummonDef.summonBoostPct
+    const sb = (($result.stats as Record<string,number>).summonBoost ?? 0)
     const perkEntries = ($result.perks ?? {}) as Record<string, number>
-    const appliedDebuffs: { name: string; value: number }[] = []
-    for (const atk of _waSummonDef.attacks ?? []) {
-      for (const st of atk.appliesStatus ?? []) {
-        if (!BUFF_DEFS[st.name]?.isDebuff) continue
-        const existing = appliedDebuffs.find(d => d.name === st.name)
-        if (!existing) {
-          appliedDebuffs.push({ name: st.name, value: st.potency })
-        } else {
-          existing.value = Math.max(existing.value, st.potency)
+    const runeSummonName = $build.rune ? WA_SUMMON_MAP[$build.rune] : undefined
+    const weaponSummonName = WA_SUMMON_MAP[selectedWA.name]
+    const names = [...new Set([runeSummonName, weaponSummonName].filter((n): n is string => !!n))]
+    const appliedDebuffsFor = (src: SummonDef): { name: string; value: number }[] => {
+      const out: { name: string; value: number }[] = []
+      for (const atk of src.attacks ?? []) {
+        for (const st of atk.appliesStatus ?? []) {
+          if (!BUFF_DEFS[st.name]?.isDebuff) continue
+          const existing = out.find(d => d.name === st.name)
+          if (!existing) out.push({ name: st.name, value: st.potency })
+          else existing.value = Math.max(existing.value, st.potency)
         }
       }
+      return out
     }
-    const inst = createSummonInstance(_waSummonDef, lv, sb, perkEntries, undefined, appliedDebuffs)
-    return [inst]
+    return names
+      .map(name => {
+        const def = SUMMON_MAP[name]
+        if (!def) return null
+        const enriched = enrichSummonDef(def, name === runeSummonName, sb, lv, $build.summonCount ?? def.count)
+        return createSummonInstance(enriched, lv, sb, perkEntries, undefined, appliedDebuffsFor(enriched))
+      })
+      .filter((i): i is SummonInstance => !!i)
   })()
 
   // ── Active Buffs Assembly ──────────────────────────────────────────────────
@@ -5911,7 +5921,7 @@ $: _groupedSelfDamageSources = (() => {
 </div><!-- end da-section--wbd -->
 
 <!-- ── Summons ── -->
-{#if _waSummonDef}
+{#if _summonInstances.length}
 <div class="da-section da-section--summon">
   <div class="da-section-title-row">
     <span class="da-section-title">Summons</span>
