@@ -2353,9 +2353,10 @@ export function applyBuffPerkModifiers(
 
     const isNeutral = def?.isNeutral
     const containedStacks = perks['Contained'] ?? 0
-    const containedMult = !isNeutral && containedStacks > 0
-      ? 1 + 0.33 * containedStacks
-      : 1
+    const containedMult =
+      !isNeutral && containedStacks > 0 && (!def?.isDebuff || isSelfDebuff)
+        ? 1 + 0.33 * containedStacks
+        : 1
 
     const darkOneStacks = perks['Dark One'] ?? 0
     const darkOneDurationMult = isSelfDebuff && def?.isDebuff && darkOneStacks > 0
