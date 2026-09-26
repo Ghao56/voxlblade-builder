@@ -42,8 +42,7 @@ export interface ArmorPart {
   description: string
   upgrade: number
   stats: ArmorStats
-  perkName: string
-  perkAmount: number
+  perks: Array<{ name: string; amount: number }>
 }
 export interface Armor { name: string; parts: ArmorPart[]; tags?: string[] }
 
@@ -236,6 +235,7 @@ export interface BuildState {
   channeledDepthsHit: number
   voidContractTarget: string
   voidContractHit: number
+  deathmistHit: number
   inDarkness: boolean
   cdrToggles: Record<string, boolean>
   // Potion slots
@@ -259,6 +259,7 @@ export interface BuildState {
   disableWeaponBoost: boolean
   mycoticBloomDotDisabled: boolean
   showCritValues: boolean
+  healCritEnabled: boolean
   enemiesHit: number
   weaponCharge: number
   retaliateCharge: number

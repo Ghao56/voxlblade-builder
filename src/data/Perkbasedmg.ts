@@ -176,6 +176,7 @@ import {
   BLAZING_FINISHER_BASE_DMG,
   DEATHMIST_SLASH_BASE_DMG,
   DEATHMIST_SLASH_ALLIES_HEAL_BASE,
+  DEATHMIST_SLASH_ALLIES_HEAL_PER_STACK,
   DEATHMIST_SLASH_SELF_HEAL_BASE,
   STORM_CALLER_BASE_DMG,
   STORM_CALLER_DMG_PER_STACK,
@@ -1668,7 +1669,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
           const t = (sliderVal - thresholdPct) / range
           return ICHOR_SPARK_SLASH_HEAL_AT_MIN * (1 + t) * perkAmount
         },
-        format: v => `${v.toFixed(3)} HP`,
+        format: v => `${v} HP`,
         condition: 'Lifesteals, scales with charge',
         tone: 'defense',
       },
@@ -1715,20 +1716,20 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     secondaryEffects: [
       {
         label: 'Heal (Allies)',
-        getValue: ({ perkAmount }) => Math.round(DEATHMIST_SLASH_ALLIES_HEAL_BASE * perkAmount * 1000) / 1000,
-        format: v => `${v.toFixed(3)} HP`,
-        condition: 'Base Healing (Allies) · cleanses allies',
+        getValue: ({ perkAmount }) => Math.round((DEATHMIST_SLASH_ALLIES_HEAL_BASE + DEATHMIST_SLASH_ALLIES_HEAL_PER_STACK * perkAmount) * 1000) / 1000,
+        format: v => `${v} HP`,
+        condition: 'Base Healing (Allies) · cleanses allies · ×2 when the finisher connects',
         tone: 'defense',
       },
       {
         label: 'Heal (Self)',
         getValue: ({ perkAmount }) => Math.round(DEATHMIST_SLASH_SELF_HEAL_BASE * perkAmount * 1000) / 1000,
-        format: v => `${v.toFixed(3)} HP`,
-        condition: 'Base Healing (Self) · much less than allies',
+        format: v => `${v} HP`,
+        condition: 'Base Healing (Self) · much less than allies · ×2 when the finisher connects',
         tone: 'defense',
       },
     ],
-    note: 'Once per finisher. Additional slash deals 0.5 Water + 0.5 Hex damage (1.6 × perk amount base, 1.0 Water/Hex scaling). Heals and cleanses allies; the user is not cleansed and heals much less. Healing is halved if the attack does not connect. Can proc other effects, but cannot proc heal-based effects on self.',
+    note: 'Once per finisher. Additional slash deals 0.5 Water + 0.5 Hex damage (1.6 × perk amount base, 1.0 Water/Hex scaling). Heals and cleanses allies; the user is not cleansed and heals much less. Healing is doubled when the finisher connects with an enemy (use the HIT/MISS toggle on this card; HIT is the default). Can proc other effects, but cannot proc heal-based effects on self.',
   },
   // ── Divine Crash ────────────────────────────────────────────────
   {

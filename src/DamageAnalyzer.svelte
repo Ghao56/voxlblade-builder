@@ -55,6 +55,8 @@ import {
   WILD_BOLT_DMG_REDUCTION,
   CRIT_HEALING_BASE,
   CRIT_HEALING_HOLY_BOOST_DIVISOR,
+  CRIT_HEALING_CHANCE_BASE,
+  CRIT_HEALING_PERK_BONUS,
   CRIT_HEALING_PER_STACK,
   TRUE_BALANCE_DMG_DIVISOR,
   TRUE_BALANCE_HEAL_DIVISOR,
@@ -93,6 +95,7 @@ import {
   ICHOR_SPARK_CHAIN_DMG_PCT,
   ICHOR_SPARK_SLASH_CHARGE_THRESHOLD,
   DEATHMIST_SLASH_SELF_HEAL_BASE,
+  DEATHMIST_SLASH_HEAL_ON_HIT_MULT,
   WINTER_WOOF_SPIRIT_BITE_DMG,
   WINTER_WOOF_SPIRIT_HOWL_DMG,
   BLUB_BLUB_PROC_CHANCE,
@@ -303,8 +306,14 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   $: _curseRipHealMult = _healFinalMultiplierNoLevel
 
   $: _healCritDmgMult = (perks['Critical Healing'] ?? 0) > 0
-    ? CRIT_HEALING_BASE + (stats.holyBoost ?? 0) / CRIT_HEALING_HOLY_BOOST_DIVISOR + CRIT_HEALING_PER_STACK * (perks['Critical Healing'] ?? 0)
+    ? CRIT_HEALING_BASE + CRIT_HEALING_PERK_BONUS + CRIT_HEALING_PER_STACK * (perks['Critical Healing'] ?? 0)
     : 0
+
+  $: _healCritChance = (perks['Critical Healing'] ?? 0) > 0
+    ? CRIT_HEALING_CHANCE_BASE + (stats.holyBoost ?? 0) / CRIT_HEALING_HOLY_BOOST_DIVISOR
+    : 0
+
+  $: _deathmistHealMult = ($build.deathmistHit ?? 1) > 0 ? DEATHMIST_SLASH_HEAL_ON_HIT_MULT : 1
 
   $: _antiHealSelfMult = (() => {
     if (!_healScalingCtx.activeBuffs) return 1
@@ -3137,7 +3146,9 @@ const trimNum = (n: number, maxDecimals = 4): string => {
 
       const secondaryEffects = (def.secondaryEffects ?? []).filter(se => !se.showIf || se.showIf({ draconicColor: _effDraconicColor })).map(se => {
         let raw = Math.round(se.getValue({ perkAmount, draconicColor: _effDraconicColor, statuses: _perkCtxStatuses, sliderVal: _perkSliderVal }) * 1000) / 1000
-        
+
+        if (def.perkName === 'Deathmist Slash') raw = Math.round(raw * _deathmistHealMult * 1000) / 1000
+
         if (se.tone === 'defense') {
           const potMult = calcDefensivePotencyMult(perks, $build.draconicRuneInfusion, _effDraconicColor)
           raw = Math.round(raw * potMult * 1000) / 1000
@@ -3761,7 +3772,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
           ?.secondaryEffects ?? []).find(se => se.label === 'Heal (Allies)')
 
         if (healSe) {
-          const baseHeal = healSe.getValue({ perkAmount: entry.perkAmount })
+          const baseHeal = healSe.getValue({ perkAmount: entry.perkAmount }) * _deathmistHealMult
 
           result.push({
             group: 'Perk',
@@ -4518,11 +4529,12 @@ $: _groupedSelfDamageSources = (() => {
     inspirationScalingMult={(perks['Inspiration'] ?? 0) > 0 ? _computePerkScalingMult({ holy: 1.0, summon: 1.0 }) : 1}
     inspirationHealMult={_healFinalMultiplier}
     deathmistPerkAmount={perks['Deathmist Slash'] ?? 0}
-    deathmistSelfHealBase={(perks['Deathmist Slash'] ?? 0) > 0 ? DEATHMIST_SLASH_SELF_HEAL_BASE * (perks['Deathmist Slash'] ?? 0) : 0}
+    deathmistSelfHealBase={(perks['Deathmist Slash'] ?? 0) > 0 ? DEATHMIST_SLASH_SELF_HEAL_BASE * (perks['Deathmist Slash'] ?? 0) * _deathmistHealMult : 0}
     curseRipActiveDebuffCount={_curseRipActiveDebuffCount}
     curseRipHealMult={_curseRipHealMult}
     disableCurseRip={disableCurseRip}
     healCritDmgMult={_healCritDmgMult}
+    healCritChance={_healCritChance}
     venomEaterStacks={perks['Venom Eater'] ?? 0}
     bloodThirstyStacks={perks['Blood Thirsty'] ?? 0}
     lifeDrinkerAmt={perks['Life Drinker'] ?? 0}
@@ -4540,6 +4552,8 @@ $: _groupedSelfDamageSources = (() => {
     mountLabel={_activeMountRuneDef?.mountLabel ?? ''}
     on:mountToggle={() => mountActive = !mountActive}
     on:enemyHpChange={e => build.update(s => ({ ...s, enemyHpFill: e.detail }))}
+    healCritEnabled={$build.healCritEnabled ?? true}
+    on:healCritToggle={() => build.update(s => ({ ...s, healCritEnabled: !(s.healCritEnabled ?? true) }))}
     bind:disabledDebuffs
     bind:showCritValues
     waDebuffWarning={_waDebuffWarning}
@@ -4589,6 +4603,24 @@ $: _groupedSelfDamageSources = (() => {
             {/each}
           </div>
         </div>
+
+        {#if _healCritChance > 0}
+          <div class="da-stat-card da-stat-card--crit">
+            <div class="da-stat-label"><CritIcon size={12}/> Heal Crit Chance</div>
+            <div class="da-stat-val" style="color:#4ade80">{_healCritChance.toFixed(1)}%</div>
+            <div class="da-sources">
+              <div class="da-source-row">
+                <span class="da-source-name">Base</span>
+                <span class="da-source-val" style="color:#4ade80">+{CRIT_HEALING_CHANCE_BASE.toFixed(2)}%</span>
+              </div>
+              <div class="da-source-row">
+                <span class="da-source-name">Holy Boost {(stats.holyBoost ?? 0).toFixed(0)}</span>
+                <span class="da-source-val" style="color:#4ade80">+{((stats.holyBoost ?? 0) / CRIT_HEALING_HOLY_BOOST_DIVISOR).toFixed(2)}%</span>
+              </div>
+              <div class="da-source-formula">{CRIT_HEALING_BASE} + {CRIT_HEALING_PERK_BONUS} + {CRIT_HEALING_PER_STACK} × {perks['Critical Healing'] ?? 0} = ×{fmtCritMult(_healCritDmgMult)} healing on a heal crit. Only compatible, proccable heals can crit (Solar Light's reduced proc coefficient lowers its chance).</div>
+            </div>
+          </div>
+        {/if}
 
       </div>
     </div>
@@ -6346,6 +6378,22 @@ $: _groupedSelfDamageSources = (() => {
         {/if}
         {#if entry.perkName === 'Star Struck'}
           <button class="da-reroll-btn" on:click={() => starRerollSeed++} title="Re-roll the random star damage type (and the stars shown next to M1/M2)">🎲 Reroll Star</button>
+        {/if}
+        {#if entry.perkName === 'Deathmist Slash'}
+          <div class="da-cd-hit-row">
+            <span class="da-sb-slider-label">Finisher connects</span>
+            <div class="da-cd-hit-chips" role="group" aria-label="Deathmist Slash hit or miss">
+              {#each [{ v: 1, l: 'HIT' }, { v: 0, l: 'MISS' }] as o}
+                <button
+                  type="button"
+                  class="da-cd-hit-chip"
+                  class:da-cd-hit-chip--on={($build.deathmistHit ?? 1) === o.v}
+                  on:click={() => build.update(s => ({ ...s, deathmistHit: o.v }) as any)}
+                  title={o.v === 1 ? `Healing x${DEATHMIST_SLASH_HEAL_ON_HIT_MULT} (attack hits an enemy)` : 'Base healing (attack does not connect)'}
+                >{o.l}</button>
+              {/each}
+            </div>
+          </div>
         {/if}
         <!-- Slider -->
         {#if entry.slider}

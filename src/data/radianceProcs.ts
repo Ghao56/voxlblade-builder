@@ -2,7 +2,7 @@ import { canProc, type ProcCoefficient } from '../lib/types'
 import { roundMultiplier } from '../lib/utils'
 import {
   RADIANCE_BASE,
-  RADIANCE_ALLOWED_SOURCE_PATTERNS,
+  COMPATIBLE_HEAL_SOURCE_PATTERNS,
   RADIANCE_HEAL_RATIO,
   RADIANCE_HOLY_TYPE_MULT,
   RADIANCE_LABEL,
@@ -69,7 +69,7 @@ export function isRadianceEligible(src: RadianceHealSource): boolean {
   if (healing == null || healing <= 0) return false
   if (!canProc(src.procCoefficient)) return false
   const label = src.label ?? ''
-  if (!RADIANCE_ALLOWED_SOURCE_PATTERNS.some(rx => rx.test(label))) return false
+  if (!COMPATIBLE_HEAL_SOURCE_PATTERNS.some(rx => rx.test(label))) return false
   return true
 }
 

@@ -335,6 +335,13 @@ function processEnchantedSlot(
   addPerkMap(slotResult.perks)
 }
 
+function perkEntries(item: { perkName?: string; perkAmount?: number; perks?: Array<{ name: string; amount: number }> }): Array<{ name: string; amount: number }> {
+  const out: Array<{ name: string; amount: number }> = []
+  if (item.perkName) out.push({ name: item.perkName, amount: item.perkAmount ?? 1 })
+  if (item.perks) for (const p of item.perks) out.push({ name: p.name, amount: p.amount })
+  return out
+}
+
 function accumulateEquipment(state: BuildState): { stats: StatMap; perks: Record<string, number> } {
   const stats: StatMap                = {}
   const perks: Record<string, number> = {}
@@ -381,9 +388,11 @@ function accumulateEquipment(state: BuildState): { stats: StatMap; perks: Record
     const part = getArmorPart(armorName, partType)
     if (!part) continue
     const upgrade = state[upgradeKey] ?? 0
+    const armorPerks: Record<string, number> = {}
+    for (const p of part.perks) armorPerks[p.name] = (armorPerks[p.name] ?? 0) + p.amount
     let slotResult = applyEnchantmentsToSlot(
       part.stats as StatMap,
-      part.perkName ? { [part.perkName]: 1 } : {},
+      armorPerks,
       state.enchantments[enchSlot],
       upgrade,
     )
@@ -411,7 +420,9 @@ function accumulateEquipment(state: BuildState): { stats: StatMap; perks: Record
     if (!infName) continue
     const part = infType === "Ring" ? getRing(infName) : getArmorPart(infName, infType)
     if (part) {
-      const inf = applyInfusion(part.stats as StatMap, part.perkName ? { [part.perkName]: (part as any).perkAmount ?? 1 } : {})
+      const infPerks: Record<string, number> = {}
+      for (const p of perkEntries(part)) infPerks[p.name] = (infPerks[p.name] ?? 0) + p.amount
+      const inf = applyInfusion(part.stats as StatMap, infPerks)
       addStats(inf.stats)
       addPerkMap(inf.perks)
     }

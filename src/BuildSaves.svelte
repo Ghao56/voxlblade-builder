@@ -79,11 +79,11 @@
         }
       }
       const helmetPart = getArmorPart(st.helmet, 'Helmet')
-      if (helmetPart?.perkName) addPerk(helmetPart.perkName)
+      for (const p of helmetPart?.perks ?? []) addPerk(p.name)
       const chestPart = getArmorPart(st.chestplate, 'Chestplate')
-      if (chestPart?.perkName) addPerk(chestPart.perkName)
+      for (const p of chestPart?.perks ?? []) addPerk(p.name)
       const legsPart = getArmorPart(st.leggings, 'Leggings')
-      if (legsPart?.perkName) addPerk(legsPart.perkName)
+      for (const p of legsPart?.perks ?? []) addPerk(p.name)
       const ringData = getRing(st.ring)
       if (ringData?.perkName) addPerk(ringData.perkName)
       const runeData = getRune(st.rune)
@@ -607,7 +607,7 @@
     }
     for (const [slotName, armorName] of [['Helmet', state.helmet], ['Chestplate', state.chestplate], ['Leggings', state.leggings]] as const) {
       const part = getArmorPart(armorName, slotName)
-      if (part?.perkName) perkNames.push(part.perkName)
+      if (part) for (const p of part.perks) perkNames.push(p.name)
     }
     const ringData = getRing(state.ring)
     if (ringData?.perkName) perkNames.push(ringData.perkName)

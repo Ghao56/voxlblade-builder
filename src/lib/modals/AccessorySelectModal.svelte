@@ -72,14 +72,13 @@
     return {}
   }
 
-  function getItemPerk(item: any): { name: string; amount: number } | null {
-    if (slotName) {
-      const part = getArmorPart(item.name, slotName as any)
-      if (part?.perkName) return { name: part.perkName, amount: part.perkAmount ?? 1 }
-      return null
-    }
-    if (item.perkName) return { name: item.perkName, amount: item.perkAmount ?? 1 }
-    return null
+  function getItemPerks(item: any): Array<{ name: string; amount: number }> {
+    const src = slotName ? getArmorPart(item.name, slotName as any) : item
+    if (!src) return []
+    const perks: Array<{ name: string; amount: number }> = []
+    if (Array.isArray(src.perks)) for (const p of src.perks) perks.push({ name: p.name, amount: p.amount })
+    if (src.perkName) perks.push({ name: src.perkName, amount: src.perkAmount ?? 1 })
+    return perks
   }
 
   function computeItemEffectiveBoost(item: any): number {
@@ -175,10 +174,8 @@
         {#if isRune}
           <Badge color="#34d399" size="xs">CD: {item.cooldown}s</Badge>
         {/if}
-        {#each [getItemPerk(item)] as perk}
-          {#if perk}
-            <span class="modal-perk-tag"><Highlight text={perk.name} query={modalSearch} /> +{perk.amount}</span>
-          {/if}
+        {#each getItemPerks(item) as perk}
+          <span class="modal-perk-tag"><Highlight text={perk.name} query={modalSearch} /> +{perk.amount}</span>
         {/each}
         <div class="modal-item-stats">
           {#each Object.entries(getItemStats(item)).filter(([,v]) => v !== 0) as [k,v]}

@@ -16,7 +16,7 @@ const ENCHANT_MAP = Object.fromEntries(enchantments.map(e => [e.name, e]))
 const RING_MAP    = Object.fromEntries(rings.map(r => [r.name, r]))
 const RUNE_MAP    = Object.fromEntries(runes.map(r => [r.name, r]))
 
-const ARMOR_MAP = Object.fromEntries(armorsRaw.map((a: any) => [
+const ARMOR_MAP: Record<string, Armor> = Object.fromEntries(armorsRaw.map((a: any) => [
   a.name,
   {
     name: a.name,
@@ -26,9 +26,8 @@ const ARMOR_MAP = Object.fromEntries(armorsRaw.map((a: any) => [
       description: p.description ?? a.sharedPart?.description ?? "",
       upgrade:     p.upgrade     ?? a.sharedPart?.upgrade     ?? 0,
       stats:       { ...(a.sharedPart?.stats ?? {}), ...(p.stats ?? {}) },
-      perkName:    p.perkName    ?? a.sharedPart?.perkName    ?? "",
-      perkAmount:  p.perkAmount  ?? a.sharedPart?.perkAmount  ?? 0,
-    })),
+      perks:       (p.perks ?? a.sharedPart?.perks ?? []).map((x: { name: string; amount: number }) => ({ name: x.name, amount: x.amount })),
+    })) as ArmorPart[],
   } as Armor,
 ]))
 

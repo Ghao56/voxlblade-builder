@@ -10,7 +10,8 @@
   import { BADGE_CONFIG, type ComputedType, type ComputedHit, type PerkOnHitDmg } from './lib/dmgTypes'
   import Badge from './lib/ui/Badge.svelte'
   import type { ProcCoefficient } from './lib/types'
-  import { SCALING_TO_BOOST, PERCENT_STATS, canProc } from './lib/types'
+  import { SCALING_TO_BOOST, PERCENT_STATS, canProc, getProcCoeffValue } from './lib/types'
+import { COMPATIBLE_HEAL_SOURCE_PATTERNS } from './lib/constants/perk-base-damage'
   import { procChanceScale } from './lib/procRegistry'
 import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
   // ARCHITECTURE: Level Damage Bonus (levelMult) is EXPLICIT and separate
@@ -212,6 +213,8 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
   export let lifestealHealMult: number = 1
   export let woofSpiritHealMult: number = 1
   export let healCritDmgMult: number = 0
+  export let healCritChance: number = 0
+  export let healCritEnabled: boolean = true
   export let venomEaterStacks: number = 0
   export let bloodThirstyStacks: number = 0
   export let lifeDrinkerAmt: number = 0
@@ -656,6 +659,18 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
     return baseSum * (hit.scalingMult ?? 1) * (hit.combatMult ?? 1) * (hit.weaponBoostMult ?? 1)
   }
 
+  /**
+   * Critical Healing only procs on the game spec's "List of Compatible Heals —
+   * able to proc effects" and never on heals without a proc coefficient. The
+   * hit's own proc coefficient scales the crit chance (e.g. Solar Light's
+   * reduced heal proc coefficient), so a no-proc heal cannot crit at all.
+   */
+  function isHealCritEligible(hit: { label?: string; procCoefficient?: ProcCoefficient }): boolean {
+    if (!canProc(hit.procCoefficient)) return false
+    const label = hit.label ?? ''
+    return COMPATIBLE_HEAL_SOURCE_PATTERNS.some(rx => rx.test(label))
+  }
+
   function getApplicableBoosts(k: string, isHeal: boolean, group?: string, procCoeff?: ProcCoefficient): Array<{ perkName: string; label: string; mult: number }> {
     const candidates = _boostsByType.get(k)
     if (!candidates) return []
@@ -868,9 +883,11 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
         (typeIsHeal ? antiHealSelfMult : 1)
       const raw = typeIsHeal ? rawNoVC : rawNoVC * vcDilution
 
-      const effectiveCrit = healCritDmgMult > 0 && typeIsHeal ? healCritDmgMult : critDmgMult
+      const healCritActive = typeIsHeal && healCritEnabled && healCritDmgMult > 0 && isHealCritEligible(hit)
+      const effectiveCrit = healCritActive ? healCritDmgMult : critDmgMult
       const critVal = typeNoCrit ? raw : raw * effectiveCrit / 100
       const critValNoVC = typeNoCrit ? rawNoVC : rawNoVC * effectiveCrit / 100
+      const healCritChanceUsed = healCritActive ? healCritChance * getProcCoeffValue(hit.procCoefficient) : 0
 
       return {
         key: k, label: labelOverride ?? info.label, color: info.color,
@@ -880,6 +897,7 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
         defMult, enemyDefPct,
         raw, critVal, isHeal: typeIsHeal, isCritExempt: typeNoCrit, forceCrit: hit.forceCrit ?? false,
         rawNoVC, critValNoVC,
+        ...(healCritChanceUsed > 0 ? { healCritChance: healCritChanceUsed } : {}),
         ...(hit.isRadianceProc ? { tag: RADIANCE_LABEL } : {}),
         ...(spellPiercer && baseDefPct > 0 ? { spellPiercerIgnored: true } : {}),
         ...(hit.perHitCounts ? { subHits: hit.count } : {}),
@@ -1580,8 +1598,32 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
   ]
 
   // ── Totals ──────────────────────────────────────────────────
+  /**
+   * Whether a type's displayed value is its crit value. Damage follows the
+   * global "Crit ON/OFF" switch; a heal follows it too, plus the Critical
+   * Healing toggle on its own — `healCritChance` is only set on heal types
+   * that are compatible, proccable sources with heal crits modelled, so an
+   * ineligible heal never shows a crit value.
+   */
+  function useCritFor(t: ComputedType, useCrit: boolean = showCritValues): boolean {
+    if (t.forceCrit) return true
+    if (t.isHeal && (t.healCritChance ?? 0) > 0) return true
+    return useCrit
+  }
+  /** Template-facing variant: mirrors the crit highlight rules for a type chip. */
+  function isCritShown(t: ComputedType): boolean {
+    return t.forceCrit || (useCritFor(t) && !t.isCritExempt)
+  }
+  function _critMultFor(t: ComputedType): number {
+    return t.isHeal ? healCritDmgMult / 100 : critDmgMult / 100
+  }
+  function _critMultLabel(t: ComputedType): string {
+    if (t.forceCrit) return t.isHeal ? 'Guaranteed Heal Crit' : 'Guaranteed Crit'
+    return t.isHeal ? 'Heal Crit Multiplier' : 'Crit Multiplier'
+  }
+
   function hitTypeSum(hit: ComputedHit, useCrit: boolean, includeCount: boolean = false): number {
-    const val = (t: ComputedType) => ((useCrit || t.forceCrit) ? t.critVal : t.raw) / (t.activationDivisor ?? 1)
+    const val = (t: ComputedType) => (useCritFor(t, useCrit) ? t.critVal : t.raw) / (t.activationDivisor ?? 1)
     let perHitSum = 0
     for (const t of hit.types) {
       if (t.isHeal || t.isCurseRip || t.oncePerGroup || t.oncePerRmb) continue
@@ -1599,7 +1641,7 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
     const dsCount = (hit.group === 'M1' || hit.group === 'M2') ? 1 : eventCount
     for (const t of hit.types) {
       if (!t.isHeal) continue
-      const v = (useCrit || t.forceCrit) ? t.critVal : t.raw
+      const v = useCritFor(t, useCrit) ? t.critVal : t.raw
       if (t.oncePerGroup) {
         sum += includeCount ? v * dsCount : v
       } else {
@@ -1614,18 +1656,18 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
       if (h.isHeal) continue
       for (const t of h.types) {
         if (t.isHeal || t.isCurseRip || t.oncePerGroup || t.oncePerRmb) continue
-        total += ((useCrit || t.forceCrit) ? t.critVal : t.raw) / (t.activationDivisor ?? 1) * (t.subHits ?? h.count)
+        total += (useCritFor(t, useCrit) ? t.critVal : t.raw) / (t.activationDivisor ?? 1) * (t.subHits ?? h.count)
       }
       const eventCount = h.procCount ?? h.count
       const dsCount = (h.group === 'M1' || h.group === 'M2') ? 1 : eventCount
-      total += h.types.filter(t => t.oncePerGroup && !t.isHeal && !t.isCurseRip).reduce((ts, t) => ts + ((useCrit || t.forceCrit) ? t.critVal : t.raw) / (t.activationDivisor ?? 1), 0) * dsCount
-      total += h.types.filter(t => t.oncePerRmb && !t.isHeal && !t.isCurseRip).reduce((ts, t) => ts + ((useCrit || t.forceCrit) ? t.critVal : t.raw) / (t.activationDivisor ?? 1), 0)
+      total += h.types.filter(t => t.oncePerGroup && !t.isHeal && !t.isCurseRip).reduce((ts, t) => ts + (useCritFor(t, useCrit) ? t.critVal : t.raw) / (t.activationDivisor ?? 1), 0) * dsCount
+      total += h.types.filter(t => t.oncePerRmb && !t.isHeal && !t.isCurseRip).reduce((ts, t) => ts + (useCritFor(t, useCrit) ? t.critVal : t.raw) / (t.activationDivisor ?? 1), 0)
     }
     return total
   }
   function groupHealTotalSum(list: ComputedHit[], useCrit: boolean): number {
     return list.reduce((s, h) => s + h.types.filter(t => t.isHeal).reduce((ts, t) => {
-      const v = (useCrit || t.forceCrit) ? t.critVal : t.raw
+      const v = useCritFor(t, useCrit) ? t.critVal : t.raw
       if (t.oncePerGroup) {
         const dsCount = (h.group === 'M1' || h.group === 'M2') ? 1 : (h.procCount ?? h.count)
         return ts + v * dsCount
@@ -1857,7 +1899,22 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
                     </span>
                     {/if}
                     {#if gHealTotal > 0}
-                      <span class="bdc-grp-heal-total">{fmt1(gHealTotal)} Heal</span>
+                      {@const gHealCrit = grp.list.some(h => h.types.some(t => t.isHeal && useCritFor(t)))}
+                      <span class="bdc-grp-heal-total" class:bdc-grp-heal-total--crit={gHealCrit}>
+                        {#if gHealCrit}<CritIcon size={10}/>{/if}
+                        {fmt1(gHealTotal)} Heal
+                      </span>
+                      {#if healCritDmgMult > 0}
+                        <button
+                          type="button"
+                          class="bdc-heal-crit-toggle"
+                          class:bdc-heal-crit-toggle--off={!healCritEnabled}
+                          on:click={() => dispatch('healCritToggle')}
+                          title={healCritEnabled
+                            ? `Heal crits ON — heals are shown with the ${fmt1(healCritChance)}% crit (×${fmtMult(healCritDmgMult / 100)}) applied`
+                            : 'Heal crits OFF — heals are shown without any crit'}
+                        >{healCritEnabled ? 'HEAL CRIT' : 'NO CRIT'}</button>
+                      {/if}
                     {/if}
                 </div>
                 <div class="bdc-hit-list-rows">
@@ -1885,7 +1942,7 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
                             class:bdc-hit-type-chunk--heal={t.isHeal}
                             class:bdc-hit-type-chunk--weaponboost={t.weaponBoostMult !== 1}
                             class:bdc-hit-type-chunk--luminescent={t.tag === 'Luminescent'}
-                            class:bdc-hit-type-chunk--crit={(showCritValues && !t.isCritExempt) || t.forceCrit}
+                            class:bdc-hit-type-chunk--crit={isCritShown(t)}
                             role="group"
                             on:mouseenter={(e) => {
                               const el = e.currentTarget as HTMLElement
@@ -1904,10 +1961,10 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
                             on:mouseleave={() => { _ttFormula = null }}>
                             <div class="bdc-hit-type-top">
                               <div class="bdc-hit-type-val-row">
-                                {#if (showCritValues && !t.isCritExempt) || t.forceCrit}
+                                {#if isCritShown(t)}
                                   <span class="bdc-crit-inline-icon"><CritIcon size={12} /></span>
                                 {/if}
-                                <span class="bdc-hit-type-val">{fmt((showCritValues || t.forceCrit) ? (t.subHits ? t.critVal : (t.hitCount ? t.critVal / t.hitCount : t.critVal)) : (t.subHits ? t.raw : (t.hitCount ? t.raw / t.hitCount : t.raw)))}</span>
+                                <span class="bdc-hit-type-val">{fmt(isCritShown(t) ? (t.subHits ? t.critVal : (t.hitCount ? t.critVal / t.hitCount : t.critVal)) : (t.subHits ? t.raw : (t.hitCount ? t.raw / t.hitCount : t.raw)))}</span>
                                 {#if t.subHits}
                                   <span class="bdc-hit-cnt">×{t.subHits}</span>
                                 {:else if t.hitCount && t.tag !== 'Blub'}
@@ -2029,16 +2086,22 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
                                   <span class="bdc-fr-val" style="--tc:{t.color}">+ {fmt(t._bfBonusRaw)}</span>
                                 </div>
                               {/if}
-                              {#if (showCritValues && !t.isCritExempt) || t.forceCrit}
+                              {#if isCritShown(t)}
                                 <div class="bdc-fr">
-                                  <span class="bdc-fr-label">{t.forceCrit ? 'Guaranteed Crit' : 'Crit Multiplier'}</span>
-                                  <span class="bdc-fr-val bdc-fr-val--crit">× {fmtMult(critDmgMult / 100)}</span>
+                                  <span class="bdc-fr-label">{_critMultLabel(t)}</span>
+                                  <span class="bdc-fr-val bdc-fr-val--crit">× {fmtMult(_critMultFor(t))}</span>
                                 </div>
+                                {#if (t.healCritChance ?? 0) > 0}
+                                  <div class="bdc-fr">
+                                    <span class="bdc-fr-label">Heal Crit Chance</span>
+                                    <span class="bdc-fr-val bdc-fr-val--crit">{fmt1(t.healCritChance ?? 0)}%</span>
+                                  </div>
+                                {/if}
                               {/if}
                               <div class="bdc-fr-divider"></div>
                                <div class="bdc-fr bdc-fr--result">
                                 <span class="bdc-fr-label">{t.isHeal ? 'Final Heal' : 'Final Damage'}</span>
-                                <span class="bdc-fr-val bdc-fr-val--result" style="--tc:{t.color}">{fmt((showCritValues || t.forceCrit) ? (t.hitCount ? t.critVal / t.hitCount : t.critVal) : (t.hitCount ? t.raw / t.hitCount : t.raw))}</span>
+                                <span class="bdc-fr-val bdc-fr-val--result" style="--tc:{t.color}">{fmt(isCritShown(t) ? (t.hitCount ? t.critVal / t.hitCount : t.critVal) : (t.hitCount ? t.raw / t.hitCount : t.raw))}</span>
                               </div>
                             </div>
                           </div>
@@ -2503,16 +2566,22 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
         <span class="bdc-fr-val" style="--tc:{t.color}">+ {fmt(t._bfBonusRaw)}</span>
       </div>
     {/if}
-    {#if (showCritValues && !t.isCritExempt) || t.forceCrit}
+    {#if isCritShown(t)}
       <div class="bdc-fr">
-        <span class="bdc-fr-label">{t.forceCrit ? 'Guaranteed Crit' : 'Crit Multiplier'}</span>
-        <span class="bdc-fr-val bdc-fr-val--crit">× {fmtMult(critDmgMult / 100)}</span>
+        <span class="bdc-fr-label">{_critMultLabel(t)}</span>
+        <span class="bdc-fr-val bdc-fr-val--crit">× {fmtMult(_critMultFor(t))}</span>
       </div>
+      {#if (t.healCritChance ?? 0) > 0}
+        <div class="bdc-fr">
+          <span class="bdc-fr-label">Heal Crit Chance</span>
+          <span class="bdc-fr-val bdc-fr-val--crit">{fmt1(t.healCritChance ?? 0)}%</span>
+        </div>
+      {/if}
     {/if}
     <div class="bdc-fr-divider"></div>
     <div class="bdc-fr bdc-fr--result">
       <span class="bdc-fr-label">{t.isHeal ? 'Final Heal' : 'Final Damage'}</span>
-      <span class="bdc-fr-val bdc-fr-val--result" style="--tc:{t.color}">{fmt((showCritValues || t.forceCrit) ? (t.hitCount && t.tag !== 'Blub' ? t.critVal / t.hitCount : t.critVal) : (t.hitCount && t.tag !== 'Blub' ? t.raw / t.hitCount : t.raw))}</span>
+      <span class="bdc-fr-val bdc-fr-val--result" style="--tc:{t.color}">{fmt(isCritShown(t) ? (t.hitCount && t.tag !== 'Blub' ? t.critVal / t.hitCount : t.critVal) : (t.hitCount && t.tag !== 'Blub' ? t.raw / t.hitCount : t.raw))}</span>
     </div>
   </div>
 {/if}
@@ -3015,6 +3084,34 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
   letter-spacing: -.01em;
   margin-left: 8px;
 }
+
+.bdc-grp-heal-total--crit {
+  color: #e2b203;
+  opacity: 1;
+  text-shadow: 0 0 10px rgba(226,178,3,.4);
+}
+
+.bdc-heal-crit-toggle {
+  font-family: 'Courier New', monospace;
+  font-size: .58rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  color: #4ade80;
+  background: rgba(74, 222, 128, .12);
+  border: 1px solid rgba(74, 222, 128, .32);
+  border-radius: 4px;
+  padding: 1px 6px;
+  cursor: pointer;
+  margin-left: 6px;
+  flex-shrink: 0;
+}
+.bdc-heal-crit-toggle:hover { background: rgba(74, 222, 128, .22); }
+.bdc-heal-crit-toggle--off {
+  color: var(--ink-muted, #8a8d85);
+  background: rgba(140, 140, 140, .1);
+  border-color: rgba(140, 140, 140, .28);
+}
+.bdc-heal-crit-toggle--off:hover { background: rgba(140, 140, 140, .2); }
 
 /* ── Per-hit type sum (multi-type only) ── */
 .bdc-hit-type-sum-sep {

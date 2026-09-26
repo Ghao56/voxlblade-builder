@@ -70,6 +70,8 @@ export interface ComputedType {
   _bfBonusRaw?: number
   rawNoVC?: number
   critValNoVC?: number
+  /** Critical Healing crit chance for this heal source, already scaled by its proc coefficient. */
+  healCritChance?: number
 }
 
 export interface PerkOnHitDmg {

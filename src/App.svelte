@@ -987,7 +987,7 @@ function applyEnchantToAll(slot: EnchantSlot) {
                       : 'Leggings';
         armors.forEach(a => { 
           const p = getArmorPart(a.name, slotName); 
-          if (p) { add(a.name, 'name'); if (p.perkName) add(p.perkName, 'perk'); } 
+          if (p) { add(a.name, 'name'); for (const x of p.perks) add(x.name, 'perk'); } 
         });
       } else if (activeModal === 'ring' || activeModal === 'infusion-ring') {
         rings.forEach(r => { add(r.name, 'name'); if (r.perkName) add(r.perkName, 'perk'); });
@@ -1137,7 +1137,9 @@ function applyEnchantToAll(slot: EnchantSlot) {
 
     const filtered = armors.filter(a => {
       const part = getArmorPart(a.name, slotName as any);
-      return part && matchSearchReactive(a.name, part.perkName ? [part.perkName] : [], modalSearch) && perkMatchesTags(part.perkName) && itemMatchesStatFilter(part.stats as Record<string, number>, statFilter);
+      if (!part) return false;
+      const names = part.perks.map(x => x.name);
+      return matchSearchReactive(a.name, names, modalSearch) && names.some(n => perkMatchesTags(n)) && itemMatchesStatFilter(part.stats as Record<string, number>, statFilter);
     })
 
     const scalings = weaponResult?.scalings ?? {}
@@ -1469,11 +1471,13 @@ $: highestDamageType = (() => {
       const part = armorName ? getArmorPart(armorName, partType as any) : null
       const ip = infName ? getArmorPart(infName, partType as any) : null
       if (part || ip) {
-        const bp: Record<string, number> = part?.perkName ? { [part.perkName]: 1 } : {}
+        const bp: Record<string, number> = {}
+        for (const p of part?.perks ?? []) bp[p.name] = (bp[p.name] ?? 0) + p.amount
         const main = part ? buildSlotCard(partType, buildEnchantLabel(armorName, enchSlot), part.description, part.stats as StatMap, bp, enchSlot, undefined, upgradeLevel) : null
         let infusion: DetailCard | null = null
         if (ip) {
-          const ibp: Record<string, number> = ip.perkName ? { [ip.perkName]: 1 } : {}
+          const ibp: Record<string, number> = {}
+          for (const p of ip.perks) ibp[p.name] = (ibp[p.name] ?? 0) + p.amount
           infusion = buildInfusionCard(`Infusion ${partType}`, infName, ip.description, ip.stats as StatMap, ibp)
         }
         groups.push({ main, infusion })

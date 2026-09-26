@@ -259,8 +259,10 @@ export const BLAZING_FINISHER_FINISHER_PCT = 0.20
 
 // Deathmist Slash
 export const DEATHMIST_SLASH_BASE_DMG = 1.6
-export const DEATHMIST_SLASH_ALLIES_HEAL_BASE = 0.2667
-export const DEATHMIST_SLASH_SELF_HEAL_BASE = 0.16
+export const DEATHMIST_SLASH_ALLIES_HEAL_BASE = 0.15
+export const DEATHMIST_SLASH_ALLIES_HEAL_PER_STACK = 0.15
+export const DEATHMIST_SLASH_SELF_HEAL_BASE = 0.15
+export const DEATHMIST_SLASH_HEAL_ON_HIT_MULT = 2
 
 // Stormcaller
 export const STORM_CALLER_BASE_DMG = 20
@@ -282,17 +284,18 @@ export const RADIANCE_BASE = 1
 export const RADIANCE_HEAL_RATIO = 4 / 45
 export const RADIANCE_HOLY_TYPE_MULT = 1.0
 export const RADIANCE_HOLY_SCALING = 10.0
-// Radiance only triggers on the game spec's closed "List of Compatible Heals —
-// able to proc effects". Heal sources in the "unable to proc effects" list
-// (Cleansed Blade, Curse Rip, Dark Harvest, Deepcrystal Calling, Hex Shield,
-// Inspiration, Inoculation, Lifesteal, Regen, Rejuvenating Flame, Vital Mist,
-// consumable items) and any other unlisted source never proc Radiance.
-// Damage is boosted by "outgoing healing" modifiers (Emotional, Heal Boost,
-// Packaged Power, …) and ignores "healing received" modifiers (Vampire, Frenzy)
-// via _healDealtMultiplier — Vampire can still TRIGGER a burst (it is a
-// compatible heal) but its received modifier does not boost the burst.
+// The game spec's closed "List of Compatible Heals — able to proc effects",
+// shared by every proc-on-heal effect (Radiance bursts, Critical Healing crits).
+// Heal sources in the "unable to proc effects" list (Cleansed Blade, Curse Rip,
+// Dark Harvest, Deepcrystal Calling, Hex Shield, Inspiration, Inoculation,
+// Lifesteal, Regen, Rejuvenating Flame, Vital Mist, consumable items) and any
+// other unlisted source never proc these effects.
+// Radiance damage is boosted by "outgoing healing" modifiers (Emotional, Heal
+// Boost, Packaged Power, …) and ignores "healing received" modifiers (Vampire,
+// Frenzy) via _healDealtMultiplier — Vampire can still TRIGGER a burst (it is
+// a compatible heal) but its received modifier does not boost the burst.
 // Matched against the source hit's label.
-export const RADIANCE_ALLOWED_SOURCE_PATTERNS: RegExp[] = [
+export const COMPATIBLE_HEAL_SOURCE_PATTERNS: RegExp[] = [
   /lesser heal/i,
   /holy shrine/i,
   /holy phalanx/i,
