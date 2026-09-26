@@ -1,8 +1,8 @@
 [
     {"name":"Gladiator","ranks":[
         {"rank":1,"stats":{"speedBoost":5,"physicalDefense":10,"heatResistance":50},"perks":[{"name":"Gladiatorial Rage","amount":1}]},
-        {"rank":2,"stats":{"speedBoost":6.25,"physicalDefense":12.5,"heatResistance":62.5},"perks":[{"name":"Fury","amount":1},{"name":"Gladiatorial Rage","amount":2}]},
-        {"rank":3,"stats":{"speedBoost":7.5,"physicalDefense":15,"heatResistance":75},"perks":[{"name":"Fury","amount":2},{"name":"Gladiatorial Rage","amount":3}]}
+        {"rank":2,"stats":{"speedBoost":6.25,"physicalDefense":12.5,"heatResistance":62.5},"perks":[{"name":"Gladiatorial Rage","amount":2}]},
+        {"rank":3,"stats":{"speedBoost":7.5,"physicalDefense":15,"heatResistance":75},"perks":[{"name":"Gladiatorial Rage","amount":3}]}
         ]
     },
     {"name": "Cursed","ranks": [
