@@ -475,6 +475,7 @@
 
   let statFilterSortMode:'highest'|'lowest'|'alphabetical'|'most-effective'|'brawny'='highest'
   let weaponStatFilterSortMode:'highest'|'lowest'|'alphabetical'= 'highest'
+  let weaponAtkSpeedSortMode: 'default' | 'highest' | 'lowest' = 'default'
 
   // ── Armor effective-boost sort helpers ────────────────────────────────────
   function computeArmorEffectiveBoost(
@@ -1094,26 +1095,40 @@ function applyEnchantToAll(slot: EnchantSlot) {
   $: searchedRunes = (void selectedTags, void statFilter, void statFilterSortMode, void weaponResult, void modalSearch, filterAccessoryItems(runes, modalSearch))
 
   function filterWeaponItems(items: any[], search: string) {
-    return sortByStatFilter(
-      items.filter(item =>
-        matchSearchReactive(
-          item.name,
-          getPerkNames(item),
-          search
-        ) &&
-        anyPerkMatchesTags(getPerkNames(item)) &&
-        weaponMatchesFilter(item)
+    const filtered = items.filter(item =>
+      matchSearchReactive(
+        item.name,
+        getPerkNames(item),
+        search
+      ) &&
+      anyPerkMatchesTags(getPerkNames(item)) &&
+      weaponMatchesFilter(item)
+    )
+
+    return sortByAtkSpeed(
+      sortByStatFilter(
+        filtered,
+        (item, k) => item[k] ?? item.stats?.[k] ?? 0,
+        weaponStatFilter,
+        weaponStatFilterSortMode
       ),
-      (item, k) => item[k] ?? item.stats?.[k] ?? 0,
-      weaponStatFilter,
-      weaponStatFilterSortMode
+      weaponAtkSpeedSortMode
     )
   }
 
-  $: searchedBlades   = (void weaponStatFilter, void selectedTags, void modalSearch, filterWeaponItems(filteredBlades,   modalSearch))
-  $: searchedHandles  = (void weaponStatFilter, void selectedTags, void modalSearch, filterWeaponItems(filteredHandles,  modalSearch))
-  $: searchedGloves   = (void weaponStatFilter, void selectedTags, void modalSearch, filterWeaponItems(filteredGloves,   modalSearch))
-  $: searchedEssences = (void weaponStatFilter, void selectedTags, void modalSearch, filterWeaponItems(filteredEssences, modalSearch))
+  const atkSpeedOf = (item: any) => item.attackSpeed ?? 1
+
+  function sortByAtkSpeed(items: any[], mode: 'default' | 'highest' | 'lowest'): any[] {
+    if (mode === 'default') return items
+    return [...items].sort((a, b) =>
+      mode === 'highest' ? atkSpeedOf(b) - atkSpeedOf(a) : atkSpeedOf(a) - atkSpeedOf(b)
+    )
+  }
+
+  $: searchedBlades   = (void weaponStatFilter, void weaponAtkSpeedSortMode, void selectedTags, void modalSearch, filterWeaponItems(filteredBlades,   modalSearch))
+  $: searchedHandles  = (void weaponStatFilter, void weaponAtkSpeedSortMode, void selectedTags, void modalSearch, filterWeaponItems(filteredHandles,  modalSearch))
+  $: searchedGloves   = (void weaponStatFilter, void weaponAtkSpeedSortMode, void selectedTags, void modalSearch, filterWeaponItems(filteredGloves,   modalSearch))
+  $: searchedEssences = (void weaponStatFilter, void weaponAtkSpeedSortMode, void selectedTags, void modalSearch, filterWeaponItems(filteredEssences, modalSearch))
 
   $: searchedArmorsForModal = (() => {
     void selectedTags; void statFilter; void statFilterSortMode; void weaponResult; void modalSearch;
@@ -1158,7 +1173,7 @@ function applyEnchantToAll(slot: EnchantSlot) {
     );
   })();
 
-  $: searchedModalItems = (void selectedTags, void statFilter, void statFilterSortMode, void weaponResult, void modalSearch, void weaponStatFilter, void bladeFilterTier, void bladeFilterType, void handleFilterTier, void handleFilterType, void gloveFilterTier, void essenceFilterTier, modalItems(activeModal ?? ''));
+  $: searchedModalItems = (void selectedTags, void statFilter, void statFilterSortMode, void weaponResult, void modalSearch, void weaponStatFilter, void weaponAtkSpeedSortMode, void bladeFilterTier, void bladeFilterType, void handleFilterTier, void handleFilterType, void gloveFilterTier, void essenceFilterTier, modalItems(activeModal ?? ''));
 
   function matchSearchReactive(name: string, perkNames: string[], query: string): boolean {
     if (!query.trim()) return true
@@ -1757,7 +1772,9 @@ $: _appWaAvgTotal = (() => {
     tierFilterValue={modalTierVal(activeModal)}
     typeFilterValue={modalTypeVal(activeModal)}
     onTierFilterChange={handleTierChange}
-    onTypeFilterChange={handleTypeChange} />
+    onTypeFilterChange={handleTypeChange}
+    atkSpeedSortMode={weaponAtkSpeedSortMode}
+    onAtkSpeedSortMode={(mode) => weaponAtkSpeedSortMode = mode} />
 {:else if activeModal}
   <AccessorySelectModal close={closeModal} bind:modalSearch
     {showSuggestions} {modalSuggestions} {noExactResults} {didYouMean}

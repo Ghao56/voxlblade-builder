@@ -33,6 +33,9 @@
   export let onTierFilterChange: ((val: string) => void) | undefined = undefined
   export let onTypeFilterChange: ((val: string) => void) | undefined = undefined
 
+  export let atkSpeedSortMode: 'default' | 'highest' | 'lowest' = 'default'
+  export let onAtkSpeedSortMode: ((mode: 'default' | 'highest' | 'lowest') => void) | undefined = undefined
+
   $: isBlade = modalType === 'blade'
   $: isHandle = modalType === 'handle'
   $: isGlove = modalType === 'glove'
@@ -100,6 +103,27 @@
       {/if}
     </div>
   {/if}
+  <div class="modal-sort-row">
+    <span class="modal-sort-label">Atk Spd</span>
+    <button
+      class="modal-sort-btn"
+      class:modal-sort-btn--active={atkSpeedSortMode === 'default'}
+      title="Keep the default order (no attack speed sort)"
+      on:click={() => onAtkSpeedSortMode?.('default')}
+    >Default</button>
+    <button
+      class="modal-sort-btn"
+      class:modal-sort-btn--active={atkSpeedSortMode === 'highest'}
+      title="Sort by attack speed, highest first"
+      on:click={() => onAtkSpeedSortMode?.('highest')}
+    >Highest spd</button>
+    <button
+      class="modal-sort-btn"
+      class:modal-sort-btn--active={atkSpeedSortMode === 'lowest'}
+      title="Sort by attack speed, lowest first"
+      on:click={() => onAtkSpeedSortMode?.('lowest')}
+    >Lowest spd</button>
+  </div>
   <div class="modal-list modal-list--compact">
     <button class="modal-item modal-item--sm" class:modal-item--active={!selectedValue}
       on:click={() => select('')}>
