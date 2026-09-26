@@ -15,11 +15,10 @@ import {
   FROZEN_HEART_CONVERSION,
   IMMOVABLE_MULT,
   RIGHTED_WRONGS_BASE_COEFF,
+  RIGHTED_WRONGS_WARDING_WEIGHT,
   RIGHTED_WRONGS_DEFENSE_WEIGHT,
   RIGHTED_WRONGS_TENACITY_WEIGHT,
   RIGHTED_WRONGS_OFFENSE_WEIGHT,
-  RIGHTED_WRONGS_PHYS_MAG_DEFENSE_SCALE,
-  RIGHTED_WRONGS_ELEMENTAL_DEFENSE_SCALE,
   RIGHTED_WRONGS_SPEED_FRACTION,
   ROCKY_BODY_CONVERSION,
   SPELLSHIELD_CONVERSION,
@@ -136,26 +135,16 @@ const PERK_REGISTRY: Record<string, PerkHandler> = {
   },
 
   'Righted Wrongs': (s, Amount) => {
-    for (const key of PHYSICAL_MAGIC_DEFENSES) {
-      const v = get(s, key)
-      if (v < 0) s[key] = v * RIGHTED_WRONGS_PHYS_MAG_DEFENSE_SCALE
-    }
-    for (const key of ELEMENTAL_DEFENSES) {
-      const v = get(s, key)
-      if (v < 0) s[key] = v * RIGHTED_WRONGS_ELEMENTAL_DEFENSE_SCALE
-    }
-
+    const w = negMagnitude(get(s, 'warding'))
     const d = negSum(s, PHYSICAL_MAGIC_DEFENSES)
     const t = negMagnitude(get(s, 'tenacity'))
-    const o =
-      negSum(s, ELEMENTAL_DEFENSES) +
-      negMagnitude(get(s, 'warding')) +
-      negSum(s, OTHER_OFFENSIVE_STATS)
+    const o = negSum(s, ELEMENTAL_DEFENSES) + negSum(s, OTHER_OFFENSIVE_STATS)
 
     const dexterityGained =
       Amount *
       RIGHTED_WRONGS_BASE_COEFF *
-      (d * RIGHTED_WRONGS_DEFENSE_WEIGHT +
+      (w * RIGHTED_WRONGS_WARDING_WEIGHT +
+        d * RIGHTED_WRONGS_DEFENSE_WEIGHT +
         t * RIGHTED_WRONGS_TENACITY_WEIGHT +
         o * RIGHTED_WRONGS_OFFENSE_WEIGHT)
     add(s, 'dexterityBoost', dexterityGained)
