@@ -1,3 +1,5 @@
+import { fmtPct, fmtPctVal } from '../lib/utils'
+
 interface EnemyHpGate {
   hpThreshold: number
   aboveThreshold: boolean
@@ -27,11 +29,14 @@ interface EnemyHpEffectDef {
   dotBoost?: EnemyHpDotBoost
 }
 
+const MYCOTIC_BLOOM_HP_GATE_THRESHOLD = 50
+const MYCOTIC_BLOOM_POISON_DMG_PER_STACK = 0.25
+
 const ENEMY_HP_EFFECT_DEFS: EnemyHpEffectDef[] = [
   {
     perkName: 'Mycotic Bloom',
-    condition: 'Poisoned enemies above 50% HP',
-    hpGate: { hpThreshold: 50, aboveThreshold: true },
+    condition: `Poisoned enemies above ${fmtPctVal(MYCOTIC_BLOOM_HP_GATE_THRESHOLD)} HP`,
+    hpGate: { hpThreshold: MYCOTIC_BLOOM_HP_GATE_THRESHOLD, aboveThreshold: true },
     requiresDebuff: 'Poison',
     debuff: {
       buffName: 'Slowness',
@@ -41,11 +46,11 @@ const ENEMY_HP_EFFECT_DEFS: EnemyHpEffectDef[] = [
   },
   {
     perkName: 'Mycotic Bloom',
-    condition: 'Poisoned enemies below 50% HP · +25% Poison dmg per stack',
-    hpGate: { hpThreshold: 50, aboveThreshold: false },
+    condition: `Poisoned enemies below ${fmtPctVal(MYCOTIC_BLOOM_HP_GATE_THRESHOLD)} HP · +${fmtPct(MYCOTIC_BLOOM_POISON_DMG_PER_STACK)} Poison dmg per stack`,
+    hpGate: { hpThreshold: MYCOTIC_BLOOM_HP_GATE_THRESHOLD, aboveThreshold: false },
     dotBoost: {
       dotType: 'Poison',
-      getMultiplier: (amt) => 1 + 0.25 * amt,
+      getMultiplier: (amt) => 1 + MYCOTIC_BLOOM_POISON_DMG_PER_STACK * amt,
     },
   },
 ]

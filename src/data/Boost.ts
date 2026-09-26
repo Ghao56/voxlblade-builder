@@ -5,7 +5,7 @@
 // Consumed by engine/build.ts calcBoosts() → BuildResult.boostEntries[].
 // UI toggles in DamageAnalyzer._condDisabledSources gate debuff-conditional boosts.
 
-import { roundMultiplier, applyScalingMult } from '../lib/utils'
+import { roundMultiplier, applyScalingMult, fmtPct, fmtPctVal, calcKnockbackResistancePct } from '../lib/utils'
 import {
   FRENZY_BASE, FRENZY_RAGE_MULT, MINION_ABSORPTION_MULT,
   HEMORRHAGE_DMG_BASE, HEMORRHAGE_DMG_PER_STACK,
@@ -25,6 +25,7 @@ import {
   GUARDIAN_SPIN_BASE, GUARDIAN_SPIN_MULT_PER_STACK,
   WILD_BOLT_MULT_PER_STACK, WEIGHTY_SLAM_MULT_PER_STACK,
   RIDER_MULT_PER_STACK, QUICKDRAW_MULT,
+  JUGGERNAUT_DMG_MULT_PER_NEGATIVE_PCT, JUGGERNAUT_KNOCKBACK_RESIST_PER_NEGATIVE_PCT,
   SPRING_POWERED_MULT, THIEF_TRAINING_BEHIND_MULT,
   THIEF_TRAINING_WOULD_CRIT_MULT, VASSALS_CROAK_MULT_PER_STACK,
   RAGING_BOUNCE_MULT, GUIDING_WINDS_MULT_PER_STACK,
@@ -121,7 +122,7 @@ export const BOOST_DEFS: BoostDef[] = [
   {sourceName: 'Serrated Edge', multiplierPerPerk: SERRATED_EDGE_MULT_PER_STACK, type: 'dmg', condition: 'on Finisher', appliesTo: ['finisher'] },
   {sourceName:'Perfection',calcFn:(ctx)=>{const a=ctx.perks['Perfection']??0;const s=ctx.perfectionStacks??5;if(a<=0||s<=0)return null;return{multiplier:1+PERFECTION_MULT_PER_STACK*a*(s/5),condition:`${s}/5 stacks`}}, type: 'dmg',},
   {sourceName:'Stealth',multiplierPerPerk: STEALTH_MULT_PER_STACK, type: 'dmg', condition: "against opponents not targeting you",},
-  { sourceName: 'Golden Crits', multiplierPerPerk: GOLDEN_CRITS_MULT_PER_STACK, type: 'dmg', condition: '40% chance on crit', procScaling: 'positiveOnly', hasToggle: true, baseProcChance: GOLDEN_CRITS_BASE_PROC_CHANCE },
+  { sourceName: 'Golden Crits', multiplierPerPerk: GOLDEN_CRITS_MULT_PER_STACK, type: 'dmg', condition: `${fmtPct(GOLDEN_CRITS_BASE_PROC_CHANCE)} chance on crit`, procScaling: 'positiveOnly', hasToggle: true, baseProcChance: GOLDEN_CRITS_BASE_PROC_CHANCE },
   { sourceName: 'Royal Parry', multiplierPerPerk: ROYAL_PARRY_MULT_PER_STACK, type: 'dmg', condition: 'on hits that activated Critical Boost' },
   { sourceName: 'Spell Piercer', multiplierPerPerk: SPELL_PIERCER_MULT_PER_STACK, type: 'dmg', condition: 'on Weapon Arts and Runes that crit', appliesTo: ['wa', 'rune'] },
   { sourceName: 'Scourge', multiplierPerPerk: SCOURGE_MULT_PER_STACK, condition: 'chance for any hit to Guardbreak', type: 'dmg', needsProcCoeff: true },
@@ -148,7 +149,7 @@ export const BOOST_DEFS: BoostDef[] = [
       const pct = TOXIN_CASTER_MULT_PER_STACK * poisonPotency * a * 100
       return {
         multiplier: 1 + TOXIN_CASTER_MULT_PER_STACK * poisonPotency * a,
-        condition: `${poisonPotency} Poison Potency × ${a} stack × 5%`,
+        condition: `${poisonPotency} Poison Potency × ${a} stack × ${fmtPct(TOXIN_CASTER_MULT_PER_STACK)}`,
       }
     },
     appliesTo: ['wa', 'rune'],
@@ -162,10 +163,12 @@ export const BOOST_DEFS: BoostDef[] = [
       const negSpeed = Math.abs(Math.min(ctx.speedBoost, 0))
       const negAtkSpd = Math.abs(Math.min(ctx.attackSpeed, 0))
       if (negSpeed <= 0 && negAtkSpd <= 0) return null
-      const pct = ((negSpeed + negAtkSpd) * amt) / 2
+      const negTotal = negSpeed + negAtkSpd
+      const pct = negTotal * amt * JUGGERNAUT_DMG_MULT_PER_NEGATIVE_PCT
+      const krPct = calcKnockbackResistancePct(negTotal * amt * JUGGERNAUT_KNOCKBACK_RESIST_PER_NEGATIVE_PCT)
       return {
         multiplier: 1 + pct / 100,
-        condition: `-${negSpeed}% spd + -${negAtkSpd}% aspd = +${pct.toFixed(2)}%`,
+        condition: `+${fmtPctVal(pct)} dmg · -${fmtPctVal(Math.round(krPct))} knockback`,
       }
     },
   },
@@ -209,7 +212,7 @@ export const BOOST_DEFS: BoostDef[] = [
       if (stacks > 0 && ctx.jumpBoost > 0) {
         return {
           multiplier: roundMultiplier(1 + ctx.jumpBoost * SPRING_POWERED_MULT * stacks),
-          condition: `${ctx.jumpBoost} jump boost × ${stacks} stack × 0.75%`,
+          condition: `${ctx.jumpBoost} jump boost × ${stacks} stack × ${fmtPct(SPRING_POWERED_MULT)}`,
         }
       }
       return null
@@ -245,7 +248,7 @@ export const BOOST_DEFS: BoostDef[] = [
         const clampedCount = Math.floor(summonCount)
         return {
           multiplier: roundMultiplier(1 + VASSALS_CROAK_MULT_PER_STACK * clampedCount * stacks),
-          condition: `${clampedCount} summons × ${stacks} stack × 2%`,
+          condition: `${clampedCount} summons × ${stacks} stack × ${fmtPct(VASSALS_CROAK_MULT_PER_STACK)}`,
         }
       }
       return null

@@ -19,12 +19,28 @@ export function scalingEq(pct: number): string {
   return pct >= 0 ? `1 + ${pct}%` : `1 / (1 + ${-pct}%)`
 }
 
+/** Format a multiplier fraction (0.01) as a human-readable percent string ("1%"). */
+export function fmtPct(fraction: number): string {
+  return `${+(fraction * 100).toFixed(4)}%`
+}
+
+/** Format a value already expressed in percent (5) as a percent string ("5%"). */
+export function fmtPctVal(percent: number): string {
+  return `${+percent.toFixed(4)}%`
+}
+
 export function calcWardingDebuffMultiplier(warding: number): number {
   const wardingPct = warding / 100
   if (warding >= 0) {
     return roundMultiplier(1 / (1 + wardingPct))
   }
   return roundMultiplier(1 - wardingPct)
+}
+
+/** Knockback Resistance → percent reduction of knockback duration and force. */
+export function calcKnockbackResistancePct(knockbackResistance: number): number {
+  if (knockbackResistance <= 0) return 0
+  return 100 - 100 / (1 + knockbackResistance)
 }
 
 const htmlEscapeMap: Record<string, string> = {

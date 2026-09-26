@@ -1,5 +1,6 @@
 import { getDotPotencyMult } from './DoTDamage'
 import { getDraconicColorDmgMultiplier } from '../data/draconicColorEffects'
+import { fmtPct } from '../lib/utils'
 import type { BuildState, ProcCoefficient } from '../lib/types'
 import {
   DRAGON_STATE_HP_BASE,
@@ -178,6 +179,8 @@ import {
   DEATHMIST_SLASH_SELF_HEAL_BASE,
   STORM_CALLER_BASE_DMG,
   STORM_CALLER_DMG_PER_STACK,
+  STORM_CALLER_PROC_CHANCE,
+  IGNITION_PROC_CHANCE_PER_AMOUNT,
   VOLTAIC_BODY_BASE_DMG,
   VOLTAIC_BODY_DMG_PER_STACK,
   VOLTAIC_BODY_POTENCY_DMG_MULT,
@@ -928,7 +931,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
   // ── Ignition ────────────────────────────────────────────────────────────────
   {
     perkName: 'Ignition',
-    condition: '10% × perk chance on hit',
+    condition: `${fmtPct(IGNITION_PROC_CHANCE_PER_AMOUNT)} × perk chance on hit`,
     getBaseDamage: ({ perkAmount }) => perkAmount,
     dmgTypeMode: 'fixed',
     dmgTypes: { fire: 1.0 },
@@ -1083,7 +1086,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
   // ── Stormcaller ────────────────────────────────────────────────
   {
     perkName: 'Stormcaller',
-    condition: 'On hit · 2.5% proc chance (unaffected by perk amount)',
+    condition: `On hit · ${fmtPct(STORM_CALLER_PROC_CHANCE)} proc chance (unaffected by perk amount)`,
     getBaseDamage: ({ perkAmount }) => STORM_CALLER_BASE_DMG + STORM_CALLER_DMG_PER_STACK * perkAmount,
     dmgTypeMode: 'fixed',
     dmgTypes: { air: 0.5, magic: 0.5 },

@@ -24,6 +24,7 @@ import {
   CARAPACE_DR_PER_STACK,
   CURSED_BARK_DR_PER_DEBUFF,
 } from '../lib/constants'
+import { fmtPctVal } from '../lib/utils'
 import { getDraconicInfusionPotMult } from './draconicBuffs'
 
 // ── Context ────────────────────────────────────────────────────────────────
@@ -81,7 +82,7 @@ const DEFENSIVE_PERK_SOURCES: DefensivePerkSource[] = [
     perkName: 'Adaptive Plate',
     drPctPerStack: ADAPTIVE_PLATE_TRIGGERED_DR,
     label: 'Adaptive Plate (Triggered types)',
-    conditionLabel: 'Against the type(s) that triggered it — 10% all + 40% matched, additive',
+    conditionLabel: `Against the type(s) that triggered it — ${fmtPctVal(ADAPTIVE_PLATE_BASE_DR)} all + ${fmtPctVal(ADAPTIVE_PLATE_TRIGGERED_DR - ADAPTIVE_PLATE_BASE_DR)} matched, additive`,
     matchedOnly: true,
   },
   {
@@ -89,7 +90,7 @@ const DEFENSIVE_PERK_SOURCES: DefensivePerkSource[] = [
     drPctPerStack: PROTECTOR_SPIRIT_DR_PER_STACK,
     isFlat: true,
     label: 'Protector Spirit',
-    conditionLabel: 'Below 50% HP (or always at 2+ perk) · 3s cooldown between activations',
+    conditionLabel: `Below ${fmtPctVal(PROTECTOR_SPIRIT_HP_THRESHOLD)} HP (or always at ${PROTECTOR_SPIRIT_ALWAYS_ON_AT}+ perk) · 3s cooldown between activations`,
     hpBelowThreshold: PROTECTOR_SPIRIT_HP_THRESHOLD,
     minPerkForAlways: PROTECTOR_SPIRIT_ALWAYS_ON_AT,
   },
@@ -127,7 +128,7 @@ const DEFENSIVE_PERK_SOURCES: DefensivePerkSource[] = [
     perkName: 'Stored Corruption',
     drPctPerStack: STORED_CORRUPTION_DR_PER_STACK,
     label: 'Stored Corruption',
-    conditionLabel: 'Increases damage taken by 5% per 1 of this perk',
+    conditionLabel: `Increases damage taken by ${fmtPctVal(-STORED_CORRUPTION_DR_PER_STACK)} per 1 of this perk`,
   },
   {
     perkName: 'Mounted Defense',

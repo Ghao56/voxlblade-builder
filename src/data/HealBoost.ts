@@ -1,4 +1,4 @@
-import { roundMultiplier } from '../lib/utils'
+import { roundMultiplier, fmtPct } from '../lib/utils'
 import {
   EMOTIONAL_MULT_PER_STACK,
   HEAL_BOOST_MULT_PER_STACK,
@@ -51,7 +51,7 @@ const HEAL_SCALING_DEFS: HealBoostDef[] = [
     multiplierPerPerk: 0, 
     sourceType: 'passive',
     isLevel: true,
-    condition: '1.25% per level'
+    condition: `${fmtPct(1 / MAX_LEVEL)} per level`
   },
   { 
     sourceName: 'Emotional', 
@@ -64,7 +64,7 @@ const HEAL_SCALING_DEFS: HealBoostDef[] = [
     sourceName: 'Heal Boost', 
     multiplierPerPerk: HEAL_BOOST_MULT_PER_STACK, 
     sourceType: 'perk',
-    condition: '10% per perk'
+    condition: `${fmtPct(HEAL_BOOST_MULT_PER_STACK)} per perk`
   },
   {
     sourceName: 'Packaged Power',
@@ -91,7 +91,7 @@ const HEAL_SCALING_DEFS: HealBoostDef[] = [
       if (stacks > 0) {
         return {
           multiplier: roundMultiplier(1 + stacks * OCEANS_RAGE_MULT_PER_STACK),
-          condition: `${stacks} stack × 10% outgoing heal`,
+          condition: `${stacks} stack × ${fmtPct(OCEANS_RAGE_MULT_PER_STACK)} outgoing heal`,
         }
       }
       return null
@@ -168,7 +168,7 @@ export function calculateHealBoost(
   const lvlMult = roundMultiplier(1 + Math.max(0, Math.min(MAX_LEVEL, level)) / MAX_LEVEL)
   entriesMap.set('Level Healing', {
     rawMultiplier: lvlMult,
-    condition: `1.25% per level`,
+    condition: `${fmtPct(1 / MAX_LEVEL)} per level`,
     sourceType: 'passive',
     direction: 'dealt'
   })
