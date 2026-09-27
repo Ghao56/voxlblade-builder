@@ -1006,7 +1006,6 @@ export const BASIC_DEBUFF_POOL: Array<{ buffName: string; potency: number; durat
   { buffName: 'Bleed',    potency: BASIC_DEBUFF_POTENCY,   duration: BASIC_DEBUFF_DURATION },
   { buffName: 'Burn',     potency: BASIC_DEBUFF_POTENCY,   duration: BASIC_DEBUFF_DURATION },
   { buffName: 'Poison',   potency: BASIC_DEBUFF_POTENCY,   duration: BASIC_DEBUFF_DURATION },
-  { buffName: 'Snarled', potency: SNARL_SNARLED_POTENCY, duration: SNARL_SNARLED_DURATION },
   { buffName: 'Shatter',  potency: BASIC_SHATTER_POTENCY,  duration: BASIC_DEBUFF_DURATION },
   { buffName: 'Slowness', potency: BASIC_SLOWNESS_POTENCY, duration: BASIC_DEBUFF_DURATION },
   { buffName: 'Weakness', potency: BASIC_WEAKNESS_POTENCY, duration: BASIC_DEBUFF_DURATION },
