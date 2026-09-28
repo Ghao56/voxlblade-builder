@@ -31,7 +31,7 @@ export const LUMINESCENT_PCT_PER_POTENCY = 5
 
 // Rune-granted buffs
 export const RAGE_RUNE_BUFF_POTENCY = 0.3
-export const RAGE_RUNE_BUFF_DURATION = 10
+export const RAGE_RUNE_BUFF_DURATION = 30
 export const TOAD_SLAM_RAGE_POTENCY = 0.2
 export const TOAD_SLAM_RAGE_DURATION = 10
 export const BOUNCE_RUNE_POTENCY = 0.3

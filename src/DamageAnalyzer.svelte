@@ -3050,6 +3050,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         waCdrMult: $result.cdr.waCDR,
         runeCooldown: _runeBaseCd,
         fellRushAmt: perks['Fell Rush'] ?? 0,
+        protection: $result.stats.protection ?? 0,
       }
       const _sliderDef = def.slider ?? PERK_DMG_DEFS.find(d => d.perkName === def.perkName && d.slider)?.slider
       const _perkSliderMax = _sliderDef?.getMax ? _sliderDef.getMax({ perks }) : (_sliderDef?.max ?? 0)

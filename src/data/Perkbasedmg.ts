@@ -189,6 +189,16 @@ import {
   VOLTAIC_BODY_DURATION_WA_CD_DIVISOR,
   VOLTAIC_BODY_DURATION_PER_STACK,
   EXPLOSIVE_HONEY_BASE_DMG,
+  VOLATILE_SHELL_AOE_BASE,
+  VOLATILE_SHELL_AOE_PER_PROTECTION,
+  VOLATILE_SHELL_AOE_MAX,
+  VOLATILE_SHELL_ABSORB_BASE_PCT,
+  VOLATILE_SHELL_ABSORB_PER_STACK,
+  LODESTONE_BARRAGE_BASE_DMG,
+  LODESTONE_BARRAGE_DMG_PER_STACK,
+  LODESTONE_BARRAGE_ROCKS_BASE,
+  LODESTONE_BARRAGE_CD_DIVISOR,
+  LODESTONE_BARRAGE_ROCKS_PERK_MULT,
 } from '../lib/constants'
 
 export interface PerkSliderDef {
@@ -1023,8 +1033,26 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
         condition: 'Applies Poison for 5s',
         tone: 'offense',
       },
+      {
+        label: 'AOE Size (studs)',
+        getValue: ({ statuses }) =>
+          Math.min(
+            VOLATILE_SHELL_AOE_MAX,
+            VOLATILE_SHELL_AOE_BASE + VOLATILE_SHELL_AOE_PER_PROTECTION * (statuses?.protection ?? 0),
+          ),
+        format: v => `${v.toFixed(1)}`,
+        condition: '13 + 1.3 × Protection · max 120',
+        tone: 'utility',
+      },
+      {
+        label: 'Damage Absorbed',
+        getValue: ({ perkAmount }) => VOLATILE_SHELL_ABSORB_BASE_PCT + VOLATILE_SHELL_ABSORB_PER_STACK * perkAmount,
+        format: v => `${v.toFixed(0)}%`,
+        condition: 'Protection absorbs 70% + 15% per perk · was a flat 75%',
+        tone: 'utility',
+      },
     ],
-    note: 'Explosion size scales with perk amount · Protection is not a % like other Stat Boosts, making it 100x more effective in scaling',
+    note: 'Explosion size scales with Protection (13 + 1.3 × Protection, capped at 120) · Protection is not a % like other Stat Boosts, making it 100x more effective in scaling',
   },
   // ── Spore Burst ─────────────────────────────────────────────────────────
   {
@@ -1570,6 +1598,37 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
       },
     ],
     note: 'Chance scales on base cooldown. Reduced proc coefficient. Lasts ~5s.',
+  },
+  // ── Lodestone Barrage ───────────────────────────────────────────────────────
+  {
+    perkName: 'Lodestone Barrage',
+    condition: 'On Rune use — barrage of rocks at nearby mobs',
+    getBaseDamage: ({ perkAmount }) => LODESTONE_BARRAGE_BASE_DMG + LODESTONE_BARRAGE_DMG_PER_STACK * perkAmount,
+    getHits: ({ perkAmount, statuses }) =>
+      Math.round(
+        LODESTONE_BARRAGE_ROCKS_BASE +
+          (statuses?.runeCooldown ?? 0) / LODESTONE_BARRAGE_CD_DIVISOR *
+            (1 + LODESTONE_BARRAGE_ROCKS_PERK_MULT * perkAmount),
+      ),
+    dmgTypeMode: 'fixed',
+    dmgTypes: { magic: 0.5, earth: 0.5 },
+    scalingMode: 'fixed',
+    scalings: { magic: 0.5, earth: 0.5, dexterity: 0.5 },
+    isRune: true,
+    secondaryEffects: [
+      {
+        label: 'Rocks Fired',
+        getValue: ({ perkAmount, statuses }) =>
+          Math.round(
+            LODESTONE_BARRAGE_ROCKS_BASE +
+              (statuses?.runeCooldown ?? 0) / LODESTONE_BARRAGE_CD_DIVISOR *
+                (1 + LODESTONE_BARRAGE_ROCKS_PERK_MULT * perkAmount),
+          ),
+        condition: '1 + (Base Cooldown / 3) × (1 + 0.2 × perkAmount)',
+        tone: 'offense',
+      },
+    ],
+    note: 'Rock count scales on the Rune\'s base cooldown, not its cooldown-reduced value.',
   },
   // ── Vile Presence ─────────────────────────────────────────────────────
   {
