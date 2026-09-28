@@ -36,7 +36,7 @@ import { WA_PROC_COEFFS, DEFAULT_PROC_COEFF } from './data/procCoefficients'
 import { canProc } from './lib/types'
 import { resolveWaDamageTypeKeys, resolveDamageTypes, computeEffectiveWaDmgTypes } from './lib/damageTypeResolve'
 import { buildDmgTypeBonuses } from './lib/engine/dmgTypeBonuses'
-import { SPIRIT_WINDS_PCT_PER_STACK, DARK_MAGIC_PCT_PER_STACK, EMOTIONAL_PCT_PER_STACK, TOXIN_TRANSFER_PCT_PER_STACK, DARKENING_HEX_MAX_ACTIVATIONS } from './lib/constants/perks'
+import { SPIRIT_WINDS_PCT_PER_STACK, DARK_MAGIC_HEX_CONVERSION_PCT_PER_STACK, EMOTIONAL_PCT_PER_STACK, TOXIN_TRANSFER_PCT_PER_STACK, DARKENING_HEX_MAX_ACTIVATIONS } from './lib/constants/perks'
 import { calcBaseMaxHP } from './lib/constants/game'
 
   $: buffListWeapon = isMonkGuild($build.guild)
@@ -214,7 +214,7 @@ import { calcBaseMaxHP } from './lib/constants/game'
       waDmgTypeBonuses: _waDmgTypeBonuses,
       waOnlyBonuses: _waOnlyBonuses,
       airToMagicConversionRate: _spiritWindsAmt > 0 && _hasTailwindOrWhirlwind ? SPIRIT_WINDS_PCT_PER_STACK * _spiritWindsAmt : 0,
-      darkMagicHexBonus: _darkMagicAmt > 0 ? DARK_MAGIC_PCT_PER_STACK * _darkMagicAmt : 0,
+      darkMagicHexRate: _darkMagicAmt > 0 ? Math.min(1, DARK_MAGIC_HEX_CONVERSION_PCT_PER_STACK * _darkMagicAmt) : 0,
       echoIncinerateAmt: _echoIncinerateAmt,
       weightySlamActive: ($result.perks['Weighty Slam'] ?? 0) > 0 && _selectedWA.name === 'Slam',
       heatDrillActive: ($result.perks['Heat Drill'] ?? 0) > 0 && (_selectedWA.name === 'Lunge' || _selectedWA.name === 'Barrage'),

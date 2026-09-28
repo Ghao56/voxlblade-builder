@@ -74,7 +74,7 @@ export interface EffectiveWaDmgTypesInput {
   waDmgTypeBonuses: Record<string, number>
   waOnlyBonuses: Record<string, number>
   airToMagicConversionRate: number
-  darkMagicHexBonus: number
+  darkMagicHexRate: number
   echoIncinerateAmt: number
   wildBoltElement?: string | null
   weightySlamActive?: boolean
@@ -91,7 +91,7 @@ export interface EffectiveWaDmgTypesInput {
  */
 export function computeEffectiveWaDmgTypes(input: EffectiveWaDmgTypesInput): Record<string, number> {
   const apply = (types: Record<string, number>) =>
-    applyAirToMagicConversion(types, input.airToMagicConversionRate, input.darkMagicHexBonus, input.echoIncinerateAmt)
+    applyAirToMagicConversion(types, input.airToMagicConversionRate, input.darkMagicHexRate, input.echoIncinerateAmt)
 
   if (input.wildBoltElement) {
     return apply(resolveDamageTypes({ [input.wildBoltElement]: 1 }, input.waDmgTypeBonuses))
@@ -148,7 +148,7 @@ export function computeEffectiveWaDmgTypes(input: EffectiveWaDmgTypesInput): Rec
 export function applyAirToMagicConversion(
   types: Record<string, number>,
   conversionRate: number,
-  darkMagicHex?: number,
+  darkMagicHexRate?: number,
   echoIncinerateAmt?: number,
 ): Record<string, number> {
   let result = { ...types }
@@ -167,10 +167,17 @@ export function applyAirToMagicConversion(
   if (echoIncinerateAmt && echoIncinerateAmt > 0) {
     result = applyFireAirConversion(result)
   }
-  // Dark Magic only triggers on native magic, not magic converted from Air by Spirit Winds
+  // Dark Magic converts a fraction of the weapon's NATIVE magic (not magic converted
+  // from Air by Spirit Winds) into Hex. The rate is capped at 100% so the magic side can
+  // never go negative at 4+ stacks.
   const nativeMagic = types.magic ?? 0
-  if (darkMagicHex && darkMagicHex > 0 && nativeMagic > 0) {
-    result.hex = round4((result.hex ?? 0) + darkMagicHex)
+  if (darkMagicHexRate && darkMagicHexRate > 0 && nativeMagic > 0) {
+    const rate = Math.min(1, darkMagicHexRate)
+    const converted = round4(nativeMagic * rate)
+    if (converted > 0) {
+      result.magic = round4((result.magic ?? 0) - converted)
+      result.hex = round4((result.hex ?? 0) + converted)
+    }
   }
   return result
 }

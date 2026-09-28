@@ -75,7 +75,8 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
   export let dragonStateScalingMult: number = 1
   export let dragonStateCombatMult: number = 1
   export let dragonStateTotalDmg: number = 0
-  export let darkMagicHexBonus: number = 0
+  export let darkMagicHexRate: number = 0
+  export let darkMagicDmgMult: number = 1
   export let perkOnHitDamages: Array<PerkOnHitDmg & { getFinisherHitBaseDmg?: (ctx: { baseDmg: number; hitIndex: number }) => number }> = []
   export let waArmorPenetration: number = 0
   export let globalArmorPenetration: number = 0
@@ -123,10 +124,28 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
   }
 
   function withDarkMagicHex(types: Record<string, number>): Record<string, number> {
-    if (darkMagicHexBonus <= 0 || (types.magic ?? 0) <= 0) return types
+    const nativeMagic = types.magic ?? 0
+    if (darkMagicHexRate <= 0 || nativeMagic <= 0) return types
+    const rate = Math.min(1, darkMagicHexRate)
+    const converted = Math.round(nativeMagic * rate * 10000) / 10000
+    if (converted <= 0) return types
     const out = { ...types }
-    out.hex = Math.round(((out.hex ?? 0) + darkMagicHexBonus) * 10000) / 10000
+    out.magic = Math.round((nativeMagic - converted) * 10000) / 10000
+    out.hex = Math.round(((out.hex ?? 0) + converted) * 10000) / 10000
     return out
+  }
+
+  /**
+   * Dark Magic's flat damage boost, gated on the attack containing any Hex Damage
+   * Type. Appended to `applicableBoosts` so it both multiplies the hit and shows
+   * up in the boost breakdown.
+   */
+  function darkMagicHexBoostEntry() {
+    return {
+      perkName: 'Dark Magic',
+      label: `Dark Magic · Hex ${Math.round((darkMagicDmgMult - 1) * 100)}%`,
+      mult: darkMagicDmgMult,
+    }
   }
 
   const STAR_TYPES = ['magic', 'air', 'fire', 'hex', 'holy', 'water', 'true']
@@ -134,9 +153,10 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
     return STAR_TYPES[Math.floor(Math.random() * STAR_TYPES.length)]
   }
 
-  function resolveTypeInfo(k: string, penDecimal: number, procCoeff?: ProcCoefficient, group?: string) {
-    const info = DMG_TYPE_MAP.get(k) ?? { label: k, color: FALLBACK_DMG_COLOR }
+  function resolveTypeInfo(k: string, penDecimal: number, procCoeff?: ProcCoefficient, group?: string, resolvedTypes?: Record<string, number>) {
+    const info = DMG_TYPE_MAP.get(k) ?? { label: k, color: '#e8e4da' }
     const applicableBoosts = getApplicableBoosts(k, false, group, procCoeff)
+    if (resolvedTypes && (resolvedTypes.hex ?? 0) > 0 && darkMagicDmgMult > 1) applicableBoosts.push(darkMagicHexBoostEntry())
     const typedMultUsed = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
     const typeDebuffMult = _activeDebuffTypeDamageMult[k] ?? 1
     const defPct = defPctForType(k)
@@ -711,6 +731,7 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
       for (const [k, mult] of Object.entries(resolvedTypes)) {
         const info = DMG_TYPE_MAP.get(k) ?? { label: k, color: '#e8e4da' }
         const applicableBoosts = getApplicableBoosts(k, false, undefined, hit?.procCoefficient)
+        if ((resolvedTypes.hex ?? 0) > 0 && darkMagicDmgMult > 1) applicableBoosts.push(darkMagicHexBoostEntry())
         const typedMultUsed = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
         const debuffMult = _activeDebuffTypeDamageMult[k] ?? 1
         const defPct   = defPctForType(k)
@@ -813,7 +834,7 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
           const blubResolvedTypes = resolveDamageTypes(BLUB_BLUB_DMG_TYPES, perkDmgTypeBonuses)
           for (const [k, mult] of Object.entries(blubResolvedTypes)) {
             const blubCrushPen = crushingPenForType(k)
-            const { info, applicableBoosts, typedMultUsed, typeDebuffMult: blubDebuffMult, defPct: blubDefPct, defMult: blubDefMult } = resolveTypeInfo(k, basePenDecimal + blubCrushPen / 100, { type: 'noProc' })
+            const { info, applicableBoosts, typedMultUsed, typeDebuffMult: blubDebuffMult, defPct: blubDefPct, defMult: blubDefMult } = resolveTypeInfo(k, basePenDecimal + blubCrushPen / 100, { type: 'noProc' }, undefined, blubResolvedTypes)
             const blubTypeBase = blubPerHit * mult
             const blubRawPerHit = blubTypeBase * typedMultUsed * blubOutMult * blubDefMult * blubDebuffMult * BLUB_BLUB_HIT_COUNT * vcContext
             types.push({
@@ -863,6 +884,13 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
         }
         return getApplicableBoosts(k, typeIsHeal, bdcGroup, hit.procCoefficient)
       })()
+      // Dark Magic: flat damage boost on any attack whose resolved types contain Hex.
+      // `hit.dmgTypes` is already post weapon-bonuses and post Spirit Winds /
+      // Dark Magic / Echo Incineration conversions, so the perk's own
+      // magic→hex conversion satisfies the gate.
+      if (!typeIsHeal && (hit.dmgTypes?.hex ?? 0) > 0 && darkMagicDmgMult > 1) {
+        applicableBoosts.push(darkMagicHexBoostEntry())
+      }
       const typedMultUsed = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
 
       const baseDefPct = typeIsHeal ? 0 : baseDefForType(k)
@@ -1215,7 +1243,7 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
               const ppResolvedTypes = resolveDamageTypes({ hex: 1.0 }, perkDmgTypeBonuses)
               for (const [k, mult] of Object.entries(ppResolvedTypes)) {
                 const ppCrushPen = crushingPenForType(k)
-                const { info, applicableBoosts, typedMultUsed, typeDebuffMult: ppTypeDebuffMult, defPct: ppDefPct, defMult: ppDefMult } = resolveTypeInfo(k, basePenDecimal + ppCrushPen / 100)
+          const { info, applicableBoosts, typedMultUsed, typeDebuffMult: ppTypeDebuffMult, defPct: ppDefPct, defMult: ppDefMult } = resolveTypeInfo(k, basePenDecimal + ppCrushPen / 100, undefined, undefined, ppResolvedTypes)
                 const ppTypeBase = ppAmount * mult
                 const ppRaw = ppTypeBase * typedMultUsed * ppDefMult * ppTypeDebuffMult
                 types.push({

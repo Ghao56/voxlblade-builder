@@ -681,10 +681,11 @@
   },
   {
     "name": "Dark Magic",
-    "description": "All sources of Magic Damage gain a small amount of Hex Damage Type. Take Hex self-damage when this triggers.",
+    "description": "Convert a portion of Magic Damage Type on your weapon to Hex Damage Type and boosts damage when hex damage is dealt. Take Hex self-damage when dealing hex damage.\nIncreases damage dealt on attacks that contain any amount of Hex Damage Type by 20% per 1 of this perk\nTake Hex self damage equal to 0.5% of the attacks damage dealt before modifiers on attacks that activate this damage boost\nConvert 30% of weapon Magic Damage Type to Hex Damage Type per 1 of this perk",
     "tags": [
       "Damage Boost",
       "Self-Damage",
+      "Damage Type",
       "Armor"
     ]
   },
