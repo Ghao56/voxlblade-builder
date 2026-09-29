@@ -37,6 +37,16 @@ export function calcWardingDebuffMultiplier(warding: number): number {
   return roundMultiplier(1 - wardingPct)
 }
 
+/** Format a stun-resist percent (22.5) as a tenacity-equivalent duration ("0.225s"). */
+export function stunResistPctToSeconds(percent: number): number {
+  return Math.round((percent / 100) * 10000) / 10000
+}
+
+/** Format a duration in seconds (0.225) as a string ("0.225s"). */
+export function fmtSec(seconds: number): string {
+  return `${+seconds.toFixed(4)}s`
+}
+
 /** Knockback Resistance → percent reduction of knockback duration and force. */
 export function calcKnockbackResistancePct(knockbackResistance: number): number {
   if (knockbackResistance <= 0) return 0

@@ -26,9 +26,11 @@ import {
   SPORE_BURST_BASE,
   SPORE_BURST_POTENCY_MULT,
   SPORE_BURST_ROUND,
-  SPRINGBLAST_BASE_HIT,
-  SPRINGBLAST_PER_STACK_HIT,
-  SPRINGBLAST_MULT_PER_STACK,
+  SPRINGBLAST_BASE_FLAT,
+  SPRINGBLAST_BASE_PER_STACK,
+  SPRINGBLAST_PROC_COEFF_BASE,
+  SPRINGBLAST_PROC_COEFF_PER_STACK,
+  SPRINGBLAST_MAX_FINISHER_HITS,
   SPRINGBLAST_DENOM_HALF,
   SPRINGBLAST_ROUND,
   BASIC_SPIRIT_BASE_DMG,
@@ -278,7 +280,7 @@ export interface PerkDmgDef {
   label?: string
   condition?: string
   getBaseDamage: (ctx: PerkDmgCtx) => number
-  getFinisherHitBaseDmg?: (ctx: { baseDmg: number; hitIndex: number }) => number
+  getFinisherHitBaseDmg?: (ctx: { baseDmg: number; hitIndex: number; perkAmount?: number; proccingBase?: number; finisherHitCount?: number }) => number
   hits?: number
   getHits?: (ctx: PerkDmgCtx) => number 
   dmgTypeMode: 'weapon' | 'fixed' | 'dynamic'
@@ -320,8 +322,16 @@ export interface PerkDmgDef {
   slider?: PerkSliderDef
 }
 
-export function calcSpringblastBaseDamage(perkAmount: number): number {
-  return (SPRINGBLAST_BASE_HIT + SPRINGBLAST_PER_STACK_HIT * perkAmount) * (1 + SPRINGBLAST_MULT_PER_STACK * perkAmount)
+/**
+ * Springblast deals a fixed part plus a share of the finisher hit that procs it,
+ * spread over the hits of that finisher (falloff stops at 5 hits).
+ */
+export function calcSpringblastBaseDamage(perkAmount: number, proccingBaseDmg = 0, finisherHits = 1): number {
+  const flat = SPRINGBLAST_BASE_FLAT + SPRINGBLAST_BASE_PER_STACK * perkAmount
+  const procCoeff = SPRINGBLAST_PROC_COEFF_BASE + SPRINGBLAST_PROC_COEFF_PER_STACK * perkAmount
+  const hits = Math.min(Math.max(finisherHits, 1), SPRINGBLAST_MAX_FINISHER_HITS)
+  const denom = SPRINGBLAST_DENOM_HALF + hits / 2
+  return Math.round((flat + procCoeff * proccingBaseDmg) / denom * SPRINGBLAST_ROUND) / SPRINGBLAST_ROUND
 }
 
 export function calcBomberChargeBaseDamage(perkAmount: number, missingHpPct: number): number {
@@ -361,18 +371,16 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
   // ── Springblast ────────────────────────────────────────────────────────────
   {
     perkName: 'Springblast',
-    condition: 'On Finisher while Bounce active',
-    getBaseDamage: ({ perkAmount, finisherHits = 1 }) =>
-      Math.round(
-          calcSpringblastBaseDamage(perkAmount) /
-          (SPRINGBLAST_DENOM_HALF + finisherHits / 2) * SPRINGBLAST_ROUND
-      ) / SPRINGBLAST_ROUND,
+    condition: 'On every Finisher hit while Bounce active',
+    getBaseDamage: ({ perkAmount, finisherHits = 1 }) => calcSpringblastBaseDamage(perkAmount, 0, finisherHits),
+    getFinisherHitBaseDmg: ({ perkAmount = 0, proccingBase = 0, finisherHitCount = 1 }) =>
+      calcSpringblastBaseDamage(perkAmount, proccingBase, finisherHitCount),
     dmgTypeMode: 'fixed',
     dmgTypes: { physical: 1.0 },
     scalingMode: 'fixed',
     scalings: { physical: 1.0 },
     guardbreak: true,
-    note: 'Activates on every finisher hit. Reduced chance to proc other effects. Deals high knockback. Half activations with Dual Guns or Storm Caster.',
+    note: 'Explodes on every finisher hit while Bounce is active, dealing 1.0 Physical damage type with 1.0 Physical scaling. Base Damage per proc = (7 + 0.7·perk + (0.25 + 0.15·perk)·proccing hit base damage) / (0.5 + min(hits in finisher, 5)/2) — per-proc damage drops with more finisher hits, total damage still rises. Reduced chance to proc other effects. Deals high knockback. Half activations with Dual Guns or Storm Caster.',
   },
   // ── Bastion Ballista ─────────────────────────────────────────────────────
   {

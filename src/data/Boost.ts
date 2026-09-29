@@ -5,7 +5,7 @@
 // Consumed by engine/build.ts calcBoosts() → BuildResult.boostEntries[].
 // UI toggles in DamageAnalyzer._condDisabledSources gate debuff-conditional boosts.
 
-import { roundMultiplier, applyScalingMult, fmtPct, fmtPctVal, calcKnockbackResistancePct } from '../lib/utils'
+import { roundMultiplier, applyScalingMult, fmtPct, fmtPctVal, fmtSec, stunResistPctToSeconds, calcKnockbackResistancePct } from '../lib/utils'
 import {
   FRENZY_BASE, FRENZY_RAGE_MULT, MINION_ABSORPTION_MULT,
   HEMORRHAGE_DMG_BASE, HEMORRHAGE_DMG_PER_STACK,
@@ -169,7 +169,7 @@ export const BOOST_DEFS: BoostDef[] = [
       const srPct = negTotal * amt * JUGGERNAUT_STUN_RESIST_PER_NEGATIVE_PCT
       return {
         multiplier: 1 + pct / 100,
-        condition: `+${fmtPctVal(pct)} dmg · -${fmtPctVal(Math.round(krPct))} knockback · +${fmtPctVal(srPct)}% stun resist`,
+        condition: `+${fmtPctVal(pct)} dmg · -${fmtPctVal(Math.round(krPct))} knockback · +${fmtSec(stunResistPctToSeconds(srPct))} stun resist`,
       }
     },
   },

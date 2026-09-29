@@ -2960,6 +2960,54 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     return typeof last === 'number' ? 1 : (last.count ?? 1)
   })()
 
+  /** Distinct values → how many hits had that value. */
+  function groupByValue(values: number[]): Map<number, number> {
+    const m = new Map<number, number>()
+    for (const v of values) m.set(v, (m.get(v) ?? 0) + 1)
+    return m
+  }
+  /** "10.06 ×3 · 7.4" — per-hit values collapsed to distinct values + counts. */
+  function fmtGroupedHits(values: number[]) {
+    return Array.from(groupByValue(values).entries())
+      .map(([v, count]) => count > 1 ? `${fmtNum(roundMultiplier(v))} ×${count}` : fmtNum(roundMultiplier(v)))
+      .join(' · ')
+  }
+  /** One chunk per distinct per-hit value, with the hit count of that value. */
+  function buildTypedHitsFromBases(baseValues: number[], dmgTypes: Record<string, number>) {
+    return Object.entries(dmgTypes).flatMap(([k, mult]) =>
+      Array.from(groupByValue(baseValues).entries()).map(([dmg, count]) => ({
+        rawVal: roundMultiplier(dmg),
+        val: roundMultiplier(dmg * mult),
+        color: DMG_TYPE_COLORS[k] ?? '#e8e4da',
+        label: k.charAt(0).toUpperCase() + k.slice(1),
+        count,
+      }))
+    )
+  }
+  /**
+   * Base damage of every hit in a finisher group (weapon charge applied) — the
+   * proccing hit base Springblast keys off. The real per-hit values come from
+   * each hit's own base damage in BaseDamageCalc; these drive the perk card.
+   */
+  function _expandHitBases(group: any): number[] {
+    const out: number[] = []
+    if (!Array.isArray(group)) return out
+    for (const h of group) {
+      const n = typeof h === 'number' ? h : h.n
+      if (typeof n !== 'number') continue
+      const c = typeof h === 'number' ? 1 : (h.count ?? 1)
+      for (let i = 0; i < c; i++) out.push(applyWeaponCharge(n))
+    }
+    return out
+  }
+  $: _finisherHitBasesM2 = _expandHitBases(_displayRows[0]?.m2)
+  $: _finisherHitBasesM1f = ((perks['Deltabit'] ?? 0) > 0 && !disableWeaponBoost)
+    ? _finisherHitBasesM2
+    : _expandHitBases((_displayRows[0]?.m1 ?? []).slice(-1))
+  $: _finisherHitBaseAvg = _finisherHitBasesM2.length
+    ? _finisherHitBasesM2.reduce((s: number, v: number) => s + v, 0) / _finisherHitBasesM2.length
+    : 0
+
   function _computePerkScalingMult(scalingDef: Record<string, number>): number {
     let total = 0
     for (const [key, val] of Object.entries(scalingDef)) {
@@ -2993,6 +3041,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     typedHits_m2:  Array<{ rawVal: number; val: number; color: string; label: string; rageApplied?: boolean; count?: number }>
     typedHits_m1f: Array<{ rawVal: number; val: number; color: string; label: string; rageApplied?: boolean }>
     typedHitsSameM2: boolean
+    finisherSummaries?: string[]
     scalingMult: number
     combatMult: number
     effectiveMult: number
@@ -3014,7 +3063,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     sliderVal?: number
     sliderMax?: number
     noSelfDebuff?: boolean
-    getFinisherHitBaseDmg?: (ctx: { baseDmg: number; hitIndex: number }) => number
+    getFinisherHitBaseDmg?: (ctx: { baseDmg: number; hitIndex: number; perkAmount?: number; proccingBase?: number; finisherHitCount?: number }) => number
   }
 
   $: _activePerkDmgEntries = (void activeEntries, void disabledDebuffs, void starRerollSeed, (() => {
@@ -3132,17 +3181,27 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         )
       }
 
+      const buildTypedHitsFromBasesLocal = (baseValues: number[]) =>
+        buildTypedHitsFromBases(baseValues, resolvedDmgTypesWithMw)
+
       const _fhM2  = _m2FinisherHits
       const _fhM1f = _m1FinisherHits
       const baseDmg_m2  = def.getBaseDamage({ perkAmount, finisherHits: _fhM2,  draconicColor: _effDraconicColor, statuses: _perkCtxStatuses, sliderVal: _perkSliderVal })
       const baseDmg_m1f = def.getBaseDamage({ perkAmount, finisherHits: _fhM1f, draconicColor: _effDraconicColor, statuses: _perkCtxStatuses, sliderVal: _perkSliderVal })
 
       const isSpringblast = def.perkName === 'Springblast'
+      // Springblast is resolved per finisher hit from that hit's own base damage
+      // (see BaseDamageCalc); the card lists every distinct per-hit value.
+      const springblastM2Bases = isSpringblast
+        ? _finisherHitBasesM2.map(p => calcSpringblastBaseDamage(perkAmount, p, _fhM2))
+        : undefined
+      const springblastM1fBases = isSpringblast
+        ? _finisherHitBasesM1f.map(p => calcSpringblastBaseDamage(perkAmount, p, _fhM1f))
+        : undefined
       const baseDmg = isSpringblast
-        ? Math.round(calcSpringblastBaseDamage(perkAmount) * 1000) / 1000
+        ? (springblastM2Bases?.length ? springblastM2Bases[0] : calcSpringblastBaseDamage(perkAmount, _finisherHitBaseAvg, _fhM2))
         : baseDmg_m1f
       const totalDmg = isSpringblast ? 1 : baseDmg * scalingMult * finalCombatMult
-      const rawFinisherNumerator = isSpringblast ? baseDmg : undefined
       const hasHalfActivations = def.halfActivations && perkAmount > 0 && ((_gunOverlay?.type === 'Dual Guns') || _baseWeaponType === 'Storm Caster')
       const halfActivations = hasHalfActivations || undefined
       const oncePerFinisher = isSpringblast ? false : (def.finisherOnly ? true : undefined)
@@ -3173,12 +3232,16 @@ const trimNum = (n: number, maxDecimals = 4): string => {
 
       const entryHits = def.getHits ? def.getHits({ perkAmount, statuses: _perkCtxStatuses, sliderVal: _perkSliderVal }) : def.hits
 
-      const typedHitsM2 = (def.getFinisherHitBaseDmg && entryHits)
-        ? buildPerHitTypedHits(isSpringblast ? baseDmg : baseDmg_m2, entryHits, def.getFinisherHitBaseDmg)
-        : buildTypedHits(isSpringblast ? baseDmg : baseDmg_m2)
-      const typedHitsM1f = (def.getFinisherHitBaseDmg && entryHits)
-        ? buildPerHitTypedHits(isSpringblast ? baseDmg : baseDmg_m1f, entryHits, def.getFinisherHitBaseDmg)
-        : buildTypedHits(isSpringblast ? baseDmg : baseDmg_m1f)
+      const typedHitsM2 = isSpringblast
+        ? buildTypedHitsFromBasesLocal(springblastM2Bases ?? [baseDmg])
+        : (def.getFinisherHitBaseDmg && entryHits)
+          ? buildPerHitTypedHits(baseDmg_m2, entryHits, def.getFinisherHitBaseDmg)
+          : buildTypedHits(baseDmg_m2)
+      const typedHitsM1f = isSpringblast
+        ? buildTypedHitsFromBasesLocal(springblastM1fBases ?? [baseDmg])
+        : (def.getFinisherHitBaseDmg && entryHits)
+          ? buildPerHitTypedHits(baseDmg_m1f, entryHits, def.getFinisherHitBaseDmg)
+          : buildTypedHits(baseDmg_m1f)
 
       out.push({
         perkName: def.perkName,
@@ -3208,7 +3271,6 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         isActive,
         baseDmg,
         totalDmg,
-        rawFinisherNumerator,
         halfActivations,
         oncePerFinisher,
         forceCrit: def.forceCrit,
@@ -3219,18 +3281,48 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         ...(def.slider ? { slider: { buildKey: def.slider.buildKey, label: def.slider.label, min: def.slider.min, max: _perkSliderMax, step: def.slider.step }, sliderVal: _perkSliderVal, sliderMax: _perkSliderMax } : {}),
       })
     }
+    // Springblast procs on every finisher hit no matter where that finisher
+    // comes from, so the card lists the resolved per-hit value of every source
+    // (M1 finisher, M2 finisher, and perk finishers such as Divine Crash).
+    const sbIdx = out.findIndex(e => e.perkName === 'Springblast')
+    if (sbIdx >= 0) {
+      const sb = out[sbIdx]
+      const sbAmt = sb.perkAmount
+      const sources: { label: string; hits: number; values: number[] }[] = []
+      const addSource = (label: string, hits: number, bases: number[]) => {
+        if (bases.length === 0) return
+        sources.push({ label, hits, values: bases.map(b => calcSpringblastBaseDamage(sbAmt, b, hits)) })
+      }
+      const hitLabel = (n: number) => `${n} hit${n > 1 ? 's' : ''}`
+      addSource(`M2 fin (${hitLabel(_m2FinisherHits)})`, _m2FinisherHits, _finisherHitBasesM2)
+      addSource(`M1 fin (${hitLabel(_m1FinisherHits)})`, _m1FinisherHits, _finisherHitBasesM1f)
+      for (const e of out) {
+        if (!e.isFinisher || !e.isActive) continue
+        const hits = e.hits ?? 1
+        const perHit = e.getFinisherHitBaseDmg
+          ? Array.from({ length: hits }, (_, i) => e.getFinisherHitBaseDmg!({ baseDmg: e.baseDmg, hitIndex: i, perkAmount: e.perkAmount }))
+          : Array.from({ length: hits }, () => e.baseDmg)
+        addSource(`${e.displayName} (${hitLabel(hits)})`, hits, perHit)
+      }
+      if (sources.length > 0) {
+        sb.typedHits_m2 = buildTypedHitsFromBases(sources.flatMap(s => s.values), sb.resolvedDmgTypes)
+        sb.typedHits_m1f = sb.typedHits_m2
+        sb.typedHitsSameM2 = true
+        sb.finisherSummaries = sources.map(s => `${s.label} → ${fmtGroupedHits(s.values)} per hit`)
+      }
+    }
     return out
   })())
   $: _draconicBloodEntry = _activePerkDmgEntries.find(e => e.perkName === 'Draconic Blood' && !draconicInfusionDisabled) ?? null
   $: _nonDraconicPerkEntries = _activePerkDmgEntries.filter(e => e.perkName !== 'Draconic Blood')
   $: _perkOnHitDamages = (() => {
     const out: Array<{
-      tag: string; baseDmg: number; scalingMult: number; combatMult: number; effectiveMult: number; totalDmg: number
+      tag: string; baseDmg: number; perkAmount?: number; scalingMult: number; combatMult: number; effectiveMult: number; totalDmg: number
       dmgTypes: Record<string, number>; procCoefficient?: ProcCoefficient; isProcHit?: boolean; canApplyBurn?: boolean; noSelfDebuff?: boolean
       rawFinisherNumerator?: number; halfActivations?: boolean; oncePerFinisher?: boolean; alwaysOnHit?: boolean; finisherOnly?: boolean
       weaponBoostMult?: number; weaponBoostLabel?: string
       cdWater?: number
-      getFinisherHitBaseDmg?: (ctx: { baseDmg: number; hitIndex: number }) => number
+      getFinisherHitBaseDmg?: (ctx: { baseDmg: number; hitIndex: number; perkAmount?: number; proccingBase?: number; finisherHitCount?: number }) => number
     }> = []
     for (const e of _activePerkDmgEntries) {
       if (!e.isActive) continue
@@ -3250,6 +3342,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       out.push({
         tag: e.displayName,
         baseDmg: e.baseDmg,
+        perkAmount: e.perkAmount,
         scalingMult: e.scalingMult,
         combatMult: roundMultiplier(e.combatMult * finisherMult),
         effectiveMult: roundMultiplier(e.effectiveMult * finisherMult),
@@ -6452,6 +6545,13 @@ $: _groupedSelfDamageSources = (() => {
             <div class="da-pbd-ctx-grp">
               {#each _allFinisherHitCounts.filter(h => h > 1) as hc}
                 <span class="da-pbd-ctx-label">×{hc} hits → {fmtNum(roundMultiplier(entry.baseDmg / (0.5 + hc / 2)))} per hit</span>
+              {/each}
+            </div>
+          {/if}
+          {#if entry.finisherSummaries && entry.finisherSummaries.length > 0}
+            <div class="da-pbd-ctx-grp">
+              {#each entry.finisherSummaries as s}
+                <span class="da-pbd-ctx-label">{s}</span>
               {/each}
             </div>
           {/if}

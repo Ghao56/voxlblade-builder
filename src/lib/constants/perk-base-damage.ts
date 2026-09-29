@@ -21,9 +21,13 @@ export const DRAGON_BUBBLE_WATER_HEAL_PER_STACK = 0.1538
 export const DRAGON_BUBBLE_POISE_DAMAGE = 45
 
 // Springblast
-export const SPRINGBLAST_BASE_HIT = 6
-export const SPRINGBLAST_PER_STACK_HIT = 2
-export const SPRINGBLAST_MULT_PER_STACK = 0.1
+// Base Damage per proc ≈ (7 + 0.7·perkAmount + (0.25 + 0.15·perkAmount)·proccingFinisherBaseDamage)
+//                      / (0.5 + min(finisherHits, 5)/2)
+export const SPRINGBLAST_BASE_FLAT = 7
+export const SPRINGBLAST_BASE_PER_STACK = 0.7
+export const SPRINGBLAST_PROC_COEFF_BASE = 0.25
+export const SPRINGBLAST_PROC_COEFF_PER_STACK = 0.15
+export const SPRINGBLAST_MAX_FINISHER_HITS = 5
 export const SPRINGBLAST_DENOM_HALF = 0.5
 export const SPRINGBLAST_ROUND = 1000
 

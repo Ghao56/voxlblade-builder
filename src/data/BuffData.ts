@@ -1392,7 +1392,8 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
   ],
   'Air Pressure': (amount, _allPerks, _vassalsCroakStacks, _perf, _weaponModifier, airPressurePotency) => {
     const maxPotency = AIR_PRESSURE_MAX_POTENCY_PER_AMOUNT * amount
-    const potency = Math.max(0, Math.min(maxPotency, airPressurePotency ?? 0))
+    const stored = airPressurePotency ?? 0
+    const potency = Math.max(0, Math.min(maxPotency, stored > 0 ? stored : maxPotency))
     return [
       {
         buffName: 'Air Pressure',

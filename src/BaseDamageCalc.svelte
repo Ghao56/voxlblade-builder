@@ -76,7 +76,7 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
   export let dragonStateCombatMult: number = 1
   export let dragonStateTotalDmg: number = 0
   export let darkMagicDmgMult: number = 1
-  export let perkOnHitDamages: Array<PerkOnHitDmg & { getFinisherHitBaseDmg?: (ctx: { baseDmg: number; hitIndex: number }) => number }> = []
+  export let perkOnHitDamages: Array<PerkOnHitDmg & { getFinisherHitBaseDmg?: (ctx: { baseDmg: number; hitIndex: number; perkAmount?: number; proccingBase?: number; finisherHitCount?: number }) => number }> = []
   export let waArmorPenetration: number = 0
   export let globalArmorPenetration: number = 0
   export let crushingPressureAmt: number = 0
@@ -1105,7 +1105,7 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
             const defMult = calcArmorMult(defPct, basePenDecimal + crushPen / 100, k).mult
             let baseForType: number
             if (ph.getFinisherHitBaseDmg) {
-              baseForType = ph.getFinisherHitBaseDmg({ baseDmg: ph.baseDmg, hitIndex: hit.finisherHitIndex ?? hit.index })
+              baseForType = ph.getFinisherHitBaseDmg({ baseDmg: ph.baseDmg, hitIndex: hit.finisherHitIndex ?? hit.index, perkAmount: ph.perkAmount, proccingBase: hit.base, finisherHitCount: hit.finisherGroupHitCount ?? hit.count })
             } else if (ph.rawFinisherNumerator != null) {
               const fh = hit.finisherGroupHitCount ?? hit.count
               baseForType = Math.round(ph.rawFinisherNumerator / (0.5 + fh / 2) * 1000) / 1000
@@ -1134,7 +1134,7 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
             const cdInfo = DMG_TYPE_MAP.get('water') ?? { label: 'water', color: '#38bdf8' }
             let cdBase = ph.baseDmg
             if (ph.getFinisherHitBaseDmg) {
-              cdBase = ph.getFinisherHitBaseDmg({ baseDmg: ph.baseDmg, hitIndex: hit.finisherHitIndex ?? hit.index })
+              cdBase = ph.getFinisherHitBaseDmg({ baseDmg: ph.baseDmg, hitIndex: hit.finisherHitIndex ?? hit.index, perkAmount: ph.perkAmount, proccingBase: hit.base, finisherHitCount: hit.finisherGroupHitCount ?? hit.count })
             } else if (ph.rawFinisherNumerator != null) {
               const fh = hit.finisherGroupHitCount ?? hit.count
               cdBase = Math.round(ph.rawFinisherNumerator / (0.5 + fh / 2) * 1000) / 1000
