@@ -77,6 +77,7 @@ export interface ComputedType {
 export interface PerkOnHitDmg {
   tag: string
   baseDmg: number
+  perkAmount?: number
   scalingMult: number
   combatMult: number
   effectiveMult?: number
@@ -89,7 +90,8 @@ export interface PerkOnHitDmg {
   oncePerFinisher?: boolean
   alwaysOnHit?: boolean
   finisherOnly?: boolean
-  getFinisherHitBaseDmg?: (ctx: { baseDmg: number; hitIndex: number }) => number
+  /** `proccingBase` = base damage of the hit that triggers the proc, `finisherHitCount` = hits in that finisher. */
+  getFinisherHitBaseDmg?: (ctx: { baseDmg: number; hitIndex: number; perkAmount?: number; proccingBase?: number; finisherHitCount?: number }) => number
   canApplyBurn?: boolean
   noSelfDebuff?: boolean
   weaponBoostMult?: number
