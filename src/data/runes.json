@@ -20,7 +20,7 @@
     {"name":"Jetstream Rune","description":"Activate to move as fast as you can for a moment, though youll become exhausted afterwards.","upgrade":0,"stats":{"airBoost":10},"cooldown":15},
     {"name":"Launch Rune","description":"Cast to launch yourself into the air.","upgrade":0,"stats":{"airBoost":10},"cooldown":15},
     {"name":"Magic Missile Rune","description":"Cast to fire a couple magic missles.","upgrade":0,"stats":{"magicBoost":10},"cooldown":10},
-    {"name":"Pack Leader Rune","description":"Cast to summon 2 Winter Woofs.","upgrade":0,"stats":{"physicalBoost":5,"summonBoost":5},"cooldown":120},
+    {"name":"Pack Leader Rune","description":"Cast to summon 2 Winter Woofs.","upgrade":0,"stats":{"physicalBoost":5,"summonBoost":5},"cooldown":60},
     {"name":"Plan Bee Rune","description":"Its good to always have a plan bee! Grant yourself shield based on missing HP and grant regen below 20%","upgrade":0,"stats":{"physicalDefense":5,"magicDefense":5},"cooldown":30},
     {"name":"Proto Grappler Rune","description":"Using will launch the grapple hook in the direction your facing. Hold down to aim the grapple hook.","upgrade":0,"stats":{"physicalDefense":8,"magicDefense":8},"cooldown":15},
     {"name":"Rage Rune","description":"Become enraged and deal more damage!","upgrade":0,"stats":{"physicalBoost":10},"cooldown":60},

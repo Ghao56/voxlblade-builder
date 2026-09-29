@@ -48,7 +48,7 @@ export const BRAINBLAST_HITS = 2
 
 // Rocky Tail
 export const ROCKY_TAIL_BASE_DMG = 8
-export const ROCKY_TAIL_PROT_SCALE = 0.08
+export const ROCKY_TAIL_PROT_SCALE = 0.04
 export const ROCKY_TAIL_VS_BASE_RES = 0.7
 export const ROCKY_TAIL_VS_PER_LEVEL = 0.15
 export const ROCKY_TAIL_VS_DEFAULT_RES = 0.75

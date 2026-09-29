@@ -3,7 +3,7 @@
 // ──────────────────────────────────────────────
 
 export const WEIGHT_DISTRIBUTION_SPLIT_RATIO = 0.5
-export const WEIGHT_DISTRIBUTION_MULTIPLIER = 0.1
+export const WEIGHT_DISTRIBUTION_MULTIPLIER = 0.5
 
 export const QUICK_WITTED_CONVERSION = 0.25
 export const WHIRL_FOOT_CONVERSION = 0.05

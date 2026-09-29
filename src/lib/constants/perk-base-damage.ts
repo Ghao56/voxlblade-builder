@@ -114,8 +114,7 @@ export const BARBED_FLURRY_BASE_DMG = 1.6
 export const BARBED_FLURRY_DMG_PER_STACK = 0.32
 
 // Honey Arts
-export const HONEY_ARTS_BASE_DMG = 0.625
-export const HONEY_ARTS_DMG_PER_STACK = 0.6725
+export const HONEY_ARTS_DMG_PER_STACK = 2
 export const HONEY_ARTS_STICKY_DURATION = 5
 
 // Sickness
@@ -193,7 +192,7 @@ export const DARK_HARVEST_BASE_DAMAGE = 20
 export const DARK_HARVEST_DAMAGE_PER_STACK = 20
 export const DARK_HARVEST_HP_GATE_THRESHOLD = 50
 export const DARK_HARVEST_HEAL_PER_STACK = 1
-export const DARK_HARVEST_COOLDOWN = 3
+export const DARK_HARVEST_COOLDOWN = 2
 
 // Pyre Bloom
 export const PYRE_BLOOM_BASE_DMG = 1.5

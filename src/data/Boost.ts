@@ -108,7 +108,7 @@ export interface BoostDef {
 
 // ── Simple dmg boosts ──────────────────────────────────────────────────────
 export const BOOST_DEFS: BoostDef[] = [
-  { sourceName: 'Hemorrhage', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Hemorrhage'] ?? 0; if (a <= 0) return null; return { multiplier: roundMultiplier(1 + HEMORRHAGE_DMG_BASE + HEMORRHAGE_DMG_PER_STACK * a), condition: `against Bleeding opponents · +${HEMORRHAGE_STUN_PCT_PER_STACK}% Stun · +${HEMORRHAGE_POISE_PCT_PER_STACK}% Poise Dmg per stack` } }, needsProcCoeff: true },
+  { sourceName: 'Hemorrhage', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Hemorrhage'] ?? 0; if (a <= 0) return null; return { multiplier: roundMultiplier(1 + HEMORRHAGE_DMG_BASE + HEMORRHAGE_DMG_PER_STACK * a), condition: `against Bleeding opponents · +${HEMORRHAGE_STUN_PCT_PER_STACK}% Stun · +${HEMORRHAGE_POISE_PCT_PER_STACK}% Poise Dmg per stack` } },},
   {sourceName: 'Blood Thirsty', multiplierPerPerk: BLOOD_THIRSTY_MULT_PER_STACK, type: 'dmg', condition: 'against Bleeding opponents', needsProcCoeff: true},
   {sourceName: 'Venom Spitter', multiplierPerPerk: VENOM_SPITTER_MULT_PER_STACK, type: 'dmg', condition: 'against Poisoned opponents'},
   {sourceName: 'Frostbite', multiplierPerPerk: 0.10, type: 'dmg', condition: 'against Slowed or Frostbitten opponents'},
@@ -117,8 +117,8 @@ export const BOOST_DEFS: BoostDef[] = [
   {sourceName: 'Frequent Flier', multiplierPerPerk: FREQUENT_FLIER_MULT_PER_STACK, type: 'dmg', condition: 'while mid-air'},
   {sourceName: 'Marsh Flow', multiplierPerPerk: MARSH_FLOW_MULT_PER_STACK, type: 'dmg', condition: 'while you have Regen'},
   {sourceName: 'Cleave', multiplierPerPerk: CLEAVE_MULT_PER_STACK, type: 'dmg', condition: 'against opponents with Shatter'},
-  {sourceName: 'Sticky Swings', multiplierPerPerk: STICKY_SWINGS_MULT_PER_STACK, type: 'dmg', condition: 'against opponents with Sticky', needsProcCoeff: true},
-  {sourceName: 'Explosive Honey', multiplierPerPerk: EXPLOSIVE_HONEY_MULT_PER_STACK, type: 'dmg', condition: 'against opponents with Sticky', needsProcCoeff: true}, // see also: DamageAnalyzer._condDisabledSources toggles this off when Sticky is inactive
+  {sourceName: 'Sticky Swings', multiplierPerPerk: STICKY_SWINGS_MULT_PER_STACK, type: 'dmg', condition: 'against opponents with Sticky',},
+  {sourceName: 'Explosive Honey', multiplierPerPerk: EXPLOSIVE_HONEY_MULT_PER_STACK, type: 'dmg', condition: 'against opponents with Sticky',}, // see also: DamageAnalyzer._condDisabledSources toggles this off when Sticky is inactive
   {sourceName: 'Serrated Edge', multiplierPerPerk: SERRATED_EDGE_MULT_PER_STACK, type: 'dmg', condition: 'on Finisher', appliesTo: ['finisher'] },
   {sourceName:'Perfection',calcFn:(ctx)=>{const a=ctx.perks['Perfection']??0;const s=ctx.perfectionStacks??5;if(a<=0||s<=0)return null;return{multiplier:1+PERFECTION_MULT_PER_STACK*a*(s/5),condition:`${s}/5 stacks`}}, type: 'dmg',},
   {sourceName:'Stealth',multiplierPerPerk: STEALTH_MULT_PER_STACK, type: 'dmg', condition: "against opponents not targeting you",},
@@ -126,7 +126,7 @@ export const BOOST_DEFS: BoostDef[] = [
   { sourceName: 'Royal Parry', multiplierPerPerk: ROYAL_PARRY_MULT_PER_STACK, type: 'dmg', condition: 'on hits that activated Critical Boost' },
   { sourceName: 'Spell Piercer', multiplierPerPerk: SPELL_PIERCER_MULT_PER_STACK, type: 'dmg', condition: 'on Weapon Arts and Runes that crit', appliesTo: ['wa', 'rune'] },
   { sourceName: 'Scourge', multiplierPerPerk: SCOURGE_MULT_PER_STACK, condition: 'chance for any hit to Guardbreak', type: 'dmg', needsProcCoeff: true },
-  { sourceName: 'Sharpshooter', multiplierPerPerk: SHARPSHOOTER_MULT_PER_STACK, type: 'dmg', condition: 'Hitting from afar', needsProcCoeff: true },
+  { sourceName: 'Sharpshooter', multiplierPerPerk: SHARPSHOOTER_MULT_PER_STACK, type: 'dmg', condition: 'Hitting from afar',},
   { sourceName: 'Venom Eater', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Venom Eater'] ?? 0; if (a <= 0) return null; return { multiplier: 1 + VENOM_EATER_DMG_MULT_PER_STACK * a, condition: `on Crit against Poisoned opponents` } }, needsProcCoeff: true },
   { sourceName: 'Ferocity', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Ferocity'] ?? 0; if (a <= 0 || ctx.tenacity <= 0) return null; const pct = ctx.tenacity * FEROCITY_TENACITY_MULT * a; return { multiplier: 1 + pct / 100, condition: `based on your Tenacity` } } },
   { sourceName: 'Spirit Winds', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Spirit Winds'] ?? 0; if (a <= 0 || ctx.tailwindPotency <= 0) return null; const pct = (SPIRIT_WINDS_TAILWIND_MULT * ctx.tailwindPotency + SPIRIT_WINDS_PER_STACK * a) * 100; return { multiplier: 1 + pct / 100, condition: `while you have Tailwind` } } },
@@ -433,7 +433,6 @@ export const BOOST_DEFS: BoostDef[] = [
         condition: `${enemyHp}% enemy HP → +${pct.toFixed(2)}% dmg`,
       }
     },
-    needsProcCoeff: true,
   },
   {
     sourceName: 'Packaged Power',
