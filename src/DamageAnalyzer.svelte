@@ -6,7 +6,7 @@
   import ScalingBreakdownRow from './ScalingBreakdownRow.svelte'
   import SummonCard from './SummonCard.svelte'
   import { WEAPON_ARTS, waChargeBase, waChargeMult } from './data/weaponArts'
-  import { CRAGBLADE_BUFF_NAME, CRAGBLADE_M1_M2_DMG_MULT, resolveCragbladeType } from './data/cragblade'
+  import { CRAGBLADE_NAME, CRAGBLADE_M1_M2_DMG_MULT, resolveCragbladeType } from './data/cragblade'
   import { WEAPON_BASE_DMG } from './data/weapon base dmg'
   import { DMG_TYPE_COLORS, DMG_TYPE_PRIORITY, SCALING_TO_BOOST, PERCENT_STATS, canProc, type WeaponBaseDmg, type ProcCoefficient } from './lib/types'
   import { BUFF_DEFS, getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, calcBuffEffect, getBuffDescription, convertTailwindToWhirlwind, getTrueBalanceBuffs, assembleActiveBuffs, applyCauterizeConversion, getBurnApplicationCount, hasEligibleDarkeningHexSource, applyDarkeningHexPotency } from './data/BuffData'
@@ -1096,7 +1096,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   $: _lightningCloakActive = _allActiveBuffsRaw.some(b => b.buffName === 'Lightning Cloak')
   $: _activeLightningCloakBuffs = _allActiveBuffsRaw.filter(b => b.buffName === 'Lightning Cloak')
   $: _cragbladeActive = (_disabledKeysArr.length,
-    _allActiveBuffsRaw.some(b => b.buffName === CRAGBLADE_BUFF_NAME && !_isBuffDisabled(b)))
+    _allActiveBuffsRaw.some(b => b.buffName === CRAGBLADE_NAME && !_isBuffDisabled(b)))
   $: _stormRendAmt = perks['Storm Rend'] ?? 0
   $: _lightningCloakPct = _lightningCloakActive && lightningCloakState !== 'off'
     ? (lightningCloakState === 'twoThirds' ? 2 * LIGHTNING_CLOAK_FRACTION : LIGHTNING_CLOAK_FRACTION) : 0
@@ -1760,7 +1760,13 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     }
     return _applyDmgBonuses(base, perkBonuses)
   }
-  $: _weaponDmgTypes = _computeWeaponDmgTypes(_weaponResult?.damageTypes ?? {}, $result.perks['Stone Weapon'] ?? 0, _perkDmgTypeBonuses)
+  // Cragblade makes M1/M2 damage count as Weapon Art damage, so M1/M2 also
+  // receive the WA-only damage-type bonuses (e.g. Wind Walker's Air bonus).
+  $: _weaponDmgTypes = (() => {
+    const types = _computeWeaponDmgTypes(_weaponResult?.damageTypes ?? {}, $result.perks['Stone Weapon'] ?? 0, _perkDmgTypeBonuses)
+    if (!_cragbladeActive) return types
+    return resolveDamageTypes(types, _waOnlyBonuses)
+  })()
   $: _weaponDmgTypesPre = _computeWeaponDmgTypes(_weaponResult?.damageTypes ?? {}, $result.perks['Stone Weapon'] ?? 0, _perkDmgTypeBonusesPre)
   $: _weaponDmgTypesBase = (() => {
     return { ...(_weaponResult?.damageTypes ?? {}) }
@@ -2117,7 +2123,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
 
     if (_cragbladeActive) {
       entries.push({
-        sourceName: CRAGBLADE_BUFF_NAME,
+        sourceName: CRAGBLADE_NAME,
         rawMultiplier: CRAGBLADE_M1_M2_DMG_MULT,
         condition: 'M1 and M2 damage also counts as Weapon Art damage',
         type: 'dmg',
@@ -2634,6 +2640,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     weaponDmgTypes: _weaponDmgTypesPre,
     waDmgTypeBonuses: _waDmgTypeBonusesPre,
     waOnlyBonuses: _waOnlyBonusesPre,
+    cragbladeActive: _cragbladeActive,
   })
 
   // Bomber Charge WA override (Retaliate): single data-driven source shared by
@@ -3700,12 +3707,23 @@ const trimNum = (n: number, maxDecimals = 4): string => {
           })
         }
     }
+    // Charge-derived WAs (Polarity Cannon, Retaliate, Retaliate under Bomber Charge)
+    // emit their single interpolated/overridden hit here, outside the _waHitsSeq loop
+    // below, so they never pick up the WA-target designations that loop stamps. Both
+    // produce exactly one hit, so it is always hit #1 and no split is needed.
+    const chargeWaCdWater = _cdActive && _cdTarget === 'WA' ? _cdWaterBonus : 0
+    const chargeWaVcBuffed = _vcAmt > 0 && _vcTarget === 'WA' ? 1 : 0
+    const chargeWaDmgTypes = (types: Record<string, number>) => chargeWaCdWater > 0
+      ? { ...types, water: roundMultiplier((types.water ?? 0) + chargeWaCdWater) }
+      : types
     // Bomber Charge: override Retaliate WA hits
     if (_bomberChargeWaHit) {
       result.push({
         group: 'WA', index: 0, count: 1, base: _bomberChargeWaHit.base, scalingMult: _bomberChargeWaHit.scalingMult, combatMult: _waCombatMult, effectiveMult: _waEffectiveMult,
-        isFinisher: false, dmgTypes: _bomberChargeWaHit.dmgTypes, baseDmgTypes: _bomberChargeWaHit.baseDmgTypes,
-        label: 'Retaliate (modified by Bomber Charge)',
+        isFinisher: false, dmgTypes: chargeWaDmgTypes(_bomberChargeWaHit.dmgTypes), baseDmgTypes: _bomberChargeWaHit.baseDmgTypes,
+        ...(chargeWaCdWater > 0 ? { cdWater: chargeWaCdWater } : {}),
+        ...(chargeWaVcBuffed > 0 ? { vcBuffedCount: chargeWaVcBuffed } : {}),
+        label: chargeWaCdWater > 0 ? 'Retaliate (modified by Bomber Charge) · Channeled Depths' : 'Retaliate (modified by Bomber Charge)',
         canApplyBurn: _hasSingedBurn,
       })
     }
@@ -3714,8 +3732,10 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       result.push({
         group: 'WA', index: 0, count: 1, base: _waChargeBase,
         scalingMult: _waScalingMult, combatMult: _waCombatMult, effectiveMult: _waEffectiveMult,
-        isFinisher: false, dmgTypes: _waDmgTypes, baseDmgTypes: _waDmgTypesBase,
-        label: _waDisplayName,
+        isFinisher: false, dmgTypes: chargeWaDmgTypes(_waDmgTypes), baseDmgTypes: _waDmgTypesBase,
+        ...(chargeWaCdWater > 0 ? { cdWater: chargeWaCdWater } : {}),
+        ...(chargeWaVcBuffed > 0 ? { vcBuffedCount: chargeWaVcBuffed } : {}),
+        label: chargeWaCdWater > 0 ? `${_waDisplayName} · Channeled Depths` : _waDisplayName,
         canApplyBurn: _hasSingedBurn,
       })
     }
@@ -4244,6 +4264,20 @@ const trimNum = (n: number, maxDecimals = 4): string => {
           pushFp(_activeRuneDmgDef.getBaseDamage(_fpRuneCtx)
             * _computePerkScalingMult(_fpRuneScalings) * _runeCombatMult, 'Rune')
         }
+        if (_cragbladeActive) {
+          // Cragblade makes M1 and M2 damage count as Weapon Art damage, and this
+          // perk's trigger is "Weapon Arts or Runes that hit" — so weapon attacks
+          // create clouds as well. "The damage scales on which created it": scale
+          // off the first hit of each sequence, matching the WA and Rune clouds.
+          const firstHitPreMit = (seq: HitSeq | null | undefined, combatMult: number, charged: boolean) => {
+            const h = seq?.[0]
+            if (h == null) return 0
+            const raw = typeof h === 'number' ? h : h.n
+            return (charged ? applyWeaponCharge(raw) : raw) * _scalingMult * combatMult
+          }
+          pushFp(firstHitPreMit(_displayRows[0]?.m1, _m1CombatMult, false), 'M1')
+          pushFp(firstHitPreMit(_displayRows[0]?.m2, _m2CombatMult, true), 'M2')
+        }
       }
     }
 
@@ -4658,6 +4692,7 @@ $: _groupedSelfDamageSources = (() => {
     darkMagicDmgMult={_darkMagicDmgMult}
     perkOnHitDamages={_perkOnHitDamages}
     waArmorPenetration={_waArmorPenetration}
+    weaponHitsCountAsWa={_cragbladeActive}
     globalArmorPenetration={_raceGlobalArmorPen}
     crushingPressureAmt={_crushingPressureAmt}
     echoIncinerationBaseDmg={_echoIncinerationBaseDmg}

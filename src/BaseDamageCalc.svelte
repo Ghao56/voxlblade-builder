@@ -78,6 +78,7 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
   export let darkMagicDmgMult: number = 1
   export let perkOnHitDamages: Array<PerkOnHitDmg & { getFinisherHitBaseDmg?: (ctx: { baseDmg: number; hitIndex: number; perkAmount?: number; proccingBase?: number; finisherHitCount?: number }) => number }> = []
   export let waArmorPenetration: number = 0
+  export let weaponHitsCountAsWa: boolean = false
   export let globalArmorPenetration: number = 0
   export let crushingPressureAmt: number = 0
   export let echoIncinerationBaseDmg: number = 0
@@ -678,6 +679,17 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
     return COMPATIBLE_HEAL_SOURCE_PATTERNS.some(rx => rx.test(label))
   }
 
+  /**
+   * True when a hit group is treated as Weapon Art damage. Cragblade's buff
+   * makes M1/M2 hits count as Weapon Art damage, so every Weapon-Art-only
+   * branch (armor penetration, typed boosts, Explosive) uses this instead of
+   * comparing the raw group string. Display grouping is unaffected.
+   */
+  function isWeaponArtGroup(group?: string): boolean {
+    if (group === 'WA' || group === 'Rune') return true
+    return weaponHitsCountAsWa && (group === 'M1' || group === 'M2')
+  }
+
   function getApplicableBoosts(k: string, isHeal: boolean, group?: string, procCoeff?: ProcCoefficient): Array<{ perkName: string; label: string; mult: number }> {
     const candidates = _boostsByType.get(k)
     if (!candidates) return []
@@ -707,7 +719,7 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
     // group-restricted typed boosts, Spell Piercer).
     const bdcGroup = hit.isRadianceProc ? '' : hit.group
     const basePenDecimal = (armorPen + globalArmorPenetration) / 100
-    const hitPenDecimal = bdcGroup === 'WA' || bdcGroup === 'Rune' ? (armorPen + globalArmorPenetration + waArmorPenetration) / 100 : basePenDecimal
+    const hitPenDecimal = isWeaponArtGroup(bdcGroup) ? (armorPen + globalArmorPenetration + waArmorPenetration) / 100 : basePenDecimal
 
     const addProcEffect = (baseAmount: number, pct: number, dmgTypes: Record<string, number>, tag: string, scalingMult = 1, combatMult = 1, hitCount?: number) => {
       const amount = baseAmount * pct
@@ -811,7 +823,7 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
       if (stormRendPct > 0 && active('Chain')) {
         addProcEffect(opts.preMitBase, stormRendPct, { air: 0.5, magic: 0.5 }, 'Chain', 1, 1, opts.count)
       }
-      if (opts.group === 'WA' && explosiveChargePct > 0 && active('Explosive')) {
+      if (isWeaponArtGroup(opts.group) && explosiveChargePct > 0 && active('Explosive')) {
         addProcEffect(opts.preMitBase, explosiveChargePct, { physical: 0.5, fire: 0.5 }, 'Explosive', 1, 1, opts.count)
       }
       if (opts.blub && blubBlubAmt > 0 && active('Blub')) {
@@ -882,7 +894,7 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
 
       const baseDefPct = typeIsHeal ? 0 : baseDefForType(k)
       const debuffDefReduction = defReductionForType(k)
-      const spellPiercer = !typeIsHeal && !hit.isRadianceProc && _spellPiercerActive && (showCritValues || hit.forceCrit) && (bdcGroup === 'WA' || bdcGroup === 'Rune')
+      const spellPiercer = !typeIsHeal && !hit.isRadianceProc && _spellPiercerActive && (showCritValues || hit.forceCrit) && isWeaponArtGroup(bdcGroup)
       // Spell Piercer ignores the target's positive defense first; armor-reduction debuffs (e.g. Shatter) apply on top of the ignored value
       const enemyDefPct = (spellPiercer ? Math.min(baseDefPct, 0) : baseDefPct) - debuffDefReduction
       const crushPen = typeIsHeal ? 0 : crushingPenForType(k)
@@ -1173,7 +1185,7 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
           if (lightningCloakPct > 0 && pGate('Chain')) addProcEffect(preMitBase, lightningCloakPct, { air: 0.5, magic: 0.5 }, 'Chain')
           if (ichorSparkChainPct > 0 && pGate('Ichor Spark')) addProcEffect(preMitBase, ichorSparkChainPct, { air: 0.5, physical: 0.5 }, 'Ichor Spark')
           if (stormRendPct > 0 && pGate('Chain')) addProcEffect(preMitBase, stormRendPct, { air: 0.5, magic: 0.5 }, 'Chain')
-          if (explosiveChargePct > 0 && hit.group === 'WA' && pGate('Explosive')) addProcEffect(preMitBase, explosiveChargePct, { physical: 0.5, fire: 0.5 }, 'Explosive')
+          if (explosiveChargePct > 0 && isWeaponArtGroup(hit.group) && pGate('Explosive')) addProcEffect(preMitBase, explosiveChargePct, { physical: 0.5, fire: 0.5 }, 'Explosive')
             if (blubBlubAmt > 0 && pGate('Blub')) {
               const blubDmgSum = Object.values(resolvedTypes).reduce((s, m) => s + m, 0)
               const blubPerHit = ph.baseDmg * blubDmgSum * ph.scalingMult * BLUB_BLUB_PCT_PER_STACK * blubBlubAmt
@@ -1542,11 +1554,15 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
   $: perkHits = computedHits.filter(h => h.group !== 'M1' && h.group !== 'M2' && h.group !== 'WA' && h.group !== 'Rune' && h.group !== 'Spirit' && h.label !== 'Springblast')
 
   /** Perk hits are grouped one section per source perk: trigger-context suffixes
-   *  like "(M2)"/"(WA)" collapse into the perk's name, and Radiance bursts nest
-   *  under the perk whose healing spawned them (via their sourceLabel). */
+   *  like "(M2)"/"(WA)"/"(Cragblade WA →)" collapse into the perk's name, and
+   *  Radiance bursts nest under the perk whose healing spawned them (via their
+   *  sourceLabel). */
   function _perkGroupKey(h: ComputedHit): string {
     const raw = h.isRadianceProc && h.sourceLabel ? h.sourceLabel : (h.label ?? 'Perk')
-    return raw.replace(/ Heal$/, '').replace(/\s*\((M1|M2|WA)\)$/, '')
+    return raw
+      .replace(/ Heal$/, '')
+      .replace(/\s*\((M1|M2|WA)\)$/, '')
+      .replace(/\s*\([^)]*→\)$/, '')
   }
 
   $: _groupedPerks = (() => {

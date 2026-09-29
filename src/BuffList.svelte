@@ -34,7 +34,7 @@ import { getRunicGlassDuration } from './lib/constants/rune-base-damage'
 import { findPerkDmgDef, isHpGateActive } from './data/Perkbasedmg'
 import { WA_PROC_COEFFS, DEFAULT_PROC_COEFF } from './data/procCoefficients'
 import { canProc } from './lib/types'
-import { resolveWaDamageTypeKeys, resolveDamageTypes, computeEffectiveWaDmgTypes } from './lib/damageTypeResolve'
+import { resolveWaDamageTypeKeys, resolveDamageTypes, computeEffectiveWaDmgTypes, weaponHitsCountAsWa } from './lib/damageTypeResolve'
 import { buildDmgTypeBonuses } from './lib/engine/dmgTypeBonuses'
 import { SPIRIT_WINDS_PCT_PER_STACK, DARK_MAGIC_HEX_CONVERSION_PCT_PER_STACK, EMOTIONAL_PCT_PER_STACK, TOXIN_TRANSFER_PCT_PER_STACK, DARKENING_HEX_MAX_ACTIVATIONS } from './lib/constants/perks'
 import { calcBaseMaxHP } from './lib/constants/game'
@@ -207,6 +207,7 @@ import { calcBaseMaxHP } from './lib/constants/game'
     }
     const _weaponDmgTypesBonused = resolveDamageTypes(_weaponDmgTypes, _perkDmgTypeBonuses)
     const _selectedWA = buffListSelectedWA
+    const _cragbladeActive = weaponHitsCountAsWa($build.selectedWeaponArt, $build.disabledBuffKeys)
     const _effectiveWaDmgTypes = computeEffectiveWaDmgTypes({
       waDamageType: _selectedWA.damageType,
       weaponDmgTypes: _weaponDmgTypesBonused,
@@ -219,6 +220,7 @@ import { calcBaseMaxHP } from './lib/constants/game'
       weightySlamActive: ($result.perks['Weighty Slam'] ?? 0) > 0 && _selectedWA.name === 'Slam',
       heatDrillActive: ($result.perks['Heat Drill'] ?? 0) > 0 && (_selectedWA.name === 'Lunge' || _selectedWA.name === 'Barrage'),
       essenceRayActive: ($result.perks['Essence Ray'] ?? 0) > 0 && _selectedWA.name === 'Magical Ray',
+      cragbladeActive: _cragbladeActive,
     })
     const _hasMagicDmg = Object.entries(_effectiveWaDmgTypes).some(([dt, mult]) => dt === 'magic' && mult > 0)
     const _hasMagicOrPhysicalDmg = Object.entries(_effectiveWaDmgTypes).some(([dt, mult]) => (dt === 'magic' || dt === 'physical') && mult > 0)

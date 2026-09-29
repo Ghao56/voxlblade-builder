@@ -1,5 +1,6 @@
 import { round4 } from './engine/_utils'
 import { DMG_TYPE_PRIORITY } from './constants/damage-types'
+import { CRAGBLADE_NAME } from '../data/cragblade'
 
 export function resolveDamageTypes(
   baseTypes: Record<string, number>,
@@ -58,13 +59,46 @@ export function resolveWaDamageTypeKeys(
   return { ...weaponDmgTypes }
 }
 
+/**
+ * Single place that answers "does this attack count as Weapon Art damage?".
+ *
+ * Cragblade's buff makes the weapon's M1/M2 damage count as Weapon Art damage,
+ * so every Weapon-Art-only rule (damage-type bonuses, auto-debuff flags, armor
+ * penetration, Spell Piercer, Explosive) reads this one signal instead of
+ * hardcoding its own copy of the Cragblade check. Callers that already track
+ * live buff state (DamageAnalyzer) pass their own value; callers that only have
+ * the build state (BuffList, engine) use this helper.
+ */
+export function weaponHitsCountAsWa(
+  selectedWeaponArt: string | undefined,
+  disabledBuffKeys: readonly string[] = [],
+): boolean {
+  if (selectedWeaponArt !== CRAGBLADE_NAME) return false
+  return !disabledBuffKeys.some(k => k === CRAGBLADE_NAME || k.startsWith(`${CRAGBLADE_NAME}:`))
+}
+
+/** Folds the weapon's damage types into the Weapon Art's, keeping WA values. */
+function foldWeaponTypesIntoWaTypes(
+  types: Record<string, number>,
+  weaponTypes: Record<string, number>,
+): Record<string, number> {
+  const merged: Record<string, number> = { ...types }
+  for (const [key, mult] of Object.entries(weaponTypes)) {
+    if (mult > 0 && (merged[key] ?? 0) === 0) merged[key] = mult
+  }
+  return merged
+}
+
 export function getFinalWaDmgTypes(
   waDamageType: string | undefined,
   weaponDmgTypes: Record<string, number>,
   dmgTypeBonuses: Record<string, number>,
+  cragbladeActive = false,
 ): Record<string, number> {
   const baseTypes = resolveWaDamageTypeKeys(waDamageType, weaponDmgTypes)
-  return resolveDamageTypes(baseTypes, dmgTypeBonuses)
+  const types = resolveDamageTypes(baseTypes, dmgTypeBonuses)
+  if (!cragbladeActive) return types
+  return foldWeaponTypesIntoWaTypes(types, weaponDmgTypes)
 }
 
 export interface EffectiveWaDmgTypesInput {
@@ -80,6 +114,7 @@ export interface EffectiveWaDmgTypesInput {
   weightySlamActive?: boolean
   heatDrillActive?: boolean
   essenceRayActive?: boolean
+  cragbladeActive?: boolean
 }
 
 /**
@@ -89,7 +124,7 @@ export interface EffectiveWaDmgTypesInput {
  * Single source of truth shared by the damage engine and the BuffList panel so
  * auto-debuff checks (e.g. Toxin Caster magic-damage requirement) stay in sync.
  */
-export function computeEffectiveWaDmgTypes(input: EffectiveWaDmgTypesInput): Record<string, number> {
+function computeBaseWaDmgTypes(input: EffectiveWaDmgTypesInput): Record<string, number> {
   const apply = (types: Record<string, number>) =>
     applyAirToMagicConversion(types, input.airToMagicConversionRate, input.darkMagicHexRate, input.echoIncinerateAmt)
 
@@ -142,6 +177,19 @@ export function computeEffectiveWaDmgTypes(input: EffectiveWaDmgTypesInput): Rec
     return apply(resolveDamageTypes(types, input.waDmgTypeBonuses))
   }
   return apply(resolveDamageTypes(input.weaponDmgTypes, input.waOnlyBonuses))
+}
+
+/**
+ * Same as computeBaseWaDmgTypes, plus the Cragblade fold: when cragbladeActive
+ * is true the weapon's own damage types are included, because M1/M2 damage
+ * counts as Weapon Art damage. Callers only pass that on the debuff-flag
+ * mirror, so the debuff graph stays cycle-free and actual Weapon Art damage is
+ * never inflated.
+ */
+export function computeEffectiveWaDmgTypes(input: EffectiveWaDmgTypesInput): Record<string, number> {
+  const types = computeBaseWaDmgTypes(input)
+  if (!input.cragbladeActive) return types
+  return foldWeaponTypesIntoWaTypes(types, input.weaponDmgTypes)
 }
 
 /** Convert a fraction of Air damage to Magic damage (e.g. for Spirit Winds). */

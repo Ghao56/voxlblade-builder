@@ -34,7 +34,7 @@ import { applyShrineToStats, SHRINE_MULTIPLIERS } from './shrine'
 import { MONK_RANK_MULTIPLIER, calcWeapon, calcMonkWeapon } from './weapon'
 import { WEAPON_ARTS } from '../../data/weaponArts'
 import { isUnbalancedWeaponry } from '../../data/weaponConditionalBoosts'
-import { getFinalWaDmgTypes } from '../damageTypeResolve'
+import { getFinalWaDmgTypes, weaponHitsCountAsWa } from '../damageTypeResolve'
 import { buildDmgTypeBonuses } from './dmgTypeBonuses'
 
 // ─── Section: CDR (Cooldown Reduction) ── calculates rune & WA step breakdowns ─
@@ -591,7 +591,8 @@ function deriveResults(
   const _waDmgTypesForBoost = (() => {
     if (!_weaponResult) return {} as Record<string, number>
     const wa = WEAPON_ARTS.find(a => a.name === state.selectedWeaponArt)
-    return getFinalWaDmgTypes(wa?.damageType, _weaponResult.damageTypes, _perkDmgTypeBonusesForBoost)
+    const cragbladeActive = weaponHitsCountAsWa(state.selectedWeaponArt, state.disabledBuffKeys)
+    return getFinalWaDmgTypes(wa?.damageType, _weaponResult.damageTypes, _perkDmgTypeBonusesForBoost, cragbladeActive)
   })()
   const hasMagicDmg = Object.entries(_waDmgTypesForBoost).some(([dt, mult]) => dt === 'magic' && mult > 0)
   const hasMagicOrPhysicalDmg = Object.entries(_waDmgTypesForBoost).some(([dt, mult]) => (dt === 'magic' || dt === 'physical') && mult > 0)

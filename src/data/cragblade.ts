@@ -1,5 +1,5 @@
-export const CRAGBLADE_WA_NAME = 'Cragblade'
-export const CRAGBLADE_BUFF_NAME = 'Cragblade'
+/** Weapon Art name and granted buff name are the same string. */
+export const CRAGBLADE_NAME = 'Cragblade'
 export const CRAGBLADE_BUFF_DURATION = 25
 
 export const CRAGBLADE_M1_M2_DMG_PCT = 30
