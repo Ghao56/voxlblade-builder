@@ -63,7 +63,6 @@ import {
   ROARING_HEADS_DMG_PER_STACK,
   BARBED_FLURRY_BASE_DMG,
   BARBED_FLURRY_DMG_PER_STACK,
-  HONEY_ARTS_BASE_DMG,
   HONEY_ARTS_DMG_PER_STACK,
   HONEY_ARTS_STICKY_DURATION,
   SICKNESS_BASE_DMG,
@@ -890,11 +889,11 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
   {
     perkName: 'Honey Arts',
     condition: 'On Weapon Art use',
-    getBaseDamage: ({ perkAmount }) => HONEY_ARTS_BASE_DMG + HONEY_ARTS_DMG_PER_STACK * perkAmount,
+    getBaseDamage: ({ perkAmount }) => HONEY_ARTS_DMG_PER_STACK * perkAmount,
     dmgTypeMode: 'fixed',
     dmgTypes: { magic: 1.0 },
     scalingMode: 'fixed',
-    scalings: { magic: 1.0 },
+    scalings: { magic: 1.5 },
     procCoefficient: { type: 'noProc' },
     secondaryEffects: [
       {
@@ -1447,11 +1446,11 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
   {
     perkName: 'Gravity Well',
     condition: 'on Weapon Art or Rune use',
-    getBaseDamage: ({ perkAmount }) => 20 + 2 * perkAmount,
+    getBaseDamage: ({ perkAmount }) => 15 + 10 * perkAmount,
     dmgTypeMode: 'fixed',
     dmgTypes: { earth: 0.5, magic: 0.5 },
     scalingMode: 'fixed',
-    scalings: { earth: 0.5, magic: 0.5 },
+    scalings: { earth: 1.0, magic: 1.0 },
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
   },
   // ── Gravitational Enforcer ────────────────────────────────────────────────
@@ -1633,7 +1632,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     dmgTypes: { magic: 0.5, earth: 0.5 },
     scalingMode: 'fixed',
     scalings: { magic: 0.5, earth: 0.5, dexterity: 0.5 },
-    isRune: true,
+    procCoefficient: { type: 'hasCoeff', value: 0.4 },
     secondaryEffects: [
       {
         label: 'Rocks Fired',
@@ -1683,7 +1682,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     dmgTypes: { magic: 0.5, water: 0.5 },
     scalingMode: 'fixed',
     scalings: { magic: 1.0, water: 1.0 },
-    procCoefficient: { type: 'noProc' },
+    procCoefficient: { type: 'hasCoeff', value: 0.2 },
     note: 'Duration extends if the user keeps hitting enemies',
   },
   // ── Ichor Spark: Charged RMB ────────────────────────────────────────────────
@@ -2042,6 +2041,18 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
       },
     ],
     note: 'Activates in an area around the user, but will always hit the target that cused the user to activate this perk regardless of distance.'
+  },
+  // ── Tesla Cannon ───────────────────────────────────────────────
+  {
+    perkName: 'Tesla Cannon',
+    condition: 'When hitting an enemy from afar',
+    getBaseDamage: ({ perkAmount }) => 2 + 4 * perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { air: 0.5, magic: 0.5 },
+    scalingMode: 'fixed',
+    scalings: { air: 1.0, magic: 1.0 },
+    procCoefficient: { type: 'hasCoeff', value: 0.5 },
+    note: 'Hits roughly every 0.5 seconds, and lasts for up to 7.5 seconds, or until it reaches a target. More than one Tesla Orb cannot be activae at a time.'
   },
 ]
 

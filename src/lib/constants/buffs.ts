@@ -18,7 +18,8 @@ export const GLYPH_CONDUIT_EFFECT_PER_TENTH = 0.2
 export const DESPAIR_EFFECT_PER_TENTH = 0.085
 
 // Inspiration: Inspired buff potency/duration and damage effect (7.5% per 1 perk = 0.1 potency)
-export const INSPIRED_POTENCY_PER_AMOUNT = 0.1
+export const INSPIRED_BASE_POTENCY = 0.1
+export const INSPIRED_POTENCY_PER_AMOUNT = 0.025
 export const INSPIRED_DURATION = 15
 export const INSPIRED_EFFECT_PER_TENTH = 0.075
 
@@ -184,7 +185,7 @@ export const SWIFT_GUARD_DURATION = 10
 export const RUNIC_WINDS_POTENCY_PER_AMOUNT = 0.1
 export const RUNIC_WINDS_DURATION = 5
 export const GRANDMAGIC_GUARD_POTENCY_PER_AMOUNT = 0.5
-export const GRANDMAGIC_GUARD_DURATION = 5
+export const GRANDMAGIC_GUARD_DURATION = 10
 export const MARSH_FLOW_POTENCY = 1
 export const MARSH_FLOW_DURATION_BASE = 3
 export const MARSH_FLOW_DURATION_PER_AMOUNT = 1

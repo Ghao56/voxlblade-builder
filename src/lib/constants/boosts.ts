@@ -33,7 +33,7 @@ export const HEMORRHAGE_DMG_BASE = 0.10
 export const HEMORRHAGE_DMG_PER_STACK = 0.10
 export const HEMORRHAGE_STUN_PCT_PER_STACK = 20
 export const HEMORRHAGE_POISE_PCT_PER_STACK = 15
-export const BLOOD_THIRSTY_MULT_PER_STACK = 0.20
+export const BLOOD_THIRSTY_MULT_PER_STACK = 0.2
 export const VENOM_SPITTER_MULT_PER_STACK = 0.10
 export const PERFECTION_MULT_PER_STACK = 0.10
 export const STEALTH_MULT_PER_STACK = 0.10
@@ -84,7 +84,7 @@ export const VAMPIRE_DIVISOR = 15
 export const VAMPIRE_SUNLIGHT_HEAL_MULT = 0.5
 export const TOXIN_CASTER_MULT_PER_STACK = 0.05
 export const CUT_DOWN_MULT_PER_AMOUNT = 0.30
-export const EXECUTIONER_MULT_PER_AMOUNT = 0.50
+export const EXECUTIONER_MULT_PER_AMOUNT = 0.60
 
 // ── Heat Drill ────────────────────────────────
 export const HEAT_DRILL_COOLDOWN = 15

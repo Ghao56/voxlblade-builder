@@ -480,7 +480,7 @@ export const WEAPON_ARTS: WeaponArt[] = [
     damageType: "0.5 Magic + 0.5 Earth",
     scaling: "Same as weapon",
     extras: ["Center bonus: 3 × 24 additional hits", "Hold activation key for full duration"],
-    requirements: { magicScaling: 0.6, earthScaling: 0.6 },
+    requirements: { magicScaling: 0.4, earthScaling: 0.4 },
   },
 {
   name: "Starstream",

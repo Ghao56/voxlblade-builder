@@ -1875,11 +1875,10 @@
     ]
   },
   {
-    "name": "Magic Circuit",
-    "description": "Using a Rune emits damaging chain lightning from your character. The strength of the lightning scales on the Cooldown.",
+    "name": "Tesla Cannon",
+    "description": "When striking enemies from range launch a tesla orb that rapidly zaps nearby enemies.",
     "tags": [
       "Offensive",
-      "Rune Activated",
       "Armor"
     ]
   },

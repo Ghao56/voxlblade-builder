@@ -103,6 +103,7 @@ import {
   STICKY_SWINGS_POTENCY_PER_AMOUNT,
   STICKY_SWINGS_DURATION,
   AGGRESSIVE_PERSONALITY_TAUNT_DURATION_PER_AMOUNT,
+  INSPIRED_BASE_POTENCY,
 } from '../lib/constants/buffs'
 import {
   CRYO_ENGINE_TAILWIND_BASE_POTENCY, CRYO_ENGINE_TAILWIND_POTENCY_PER_AMOUNT,
@@ -269,7 +270,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     color: '#1cf8ff',
     description: 'Take x% less damage and gain y flat reduction to magic damage.',
     dynamicDescription: (perks, potency) => {
-      const x = +(potency * 50).toFixed(4)
+      const x = +(potency * 40).toFixed(4)
       const y = +(potency * 3).toFixed(4)
       return `Take ${x}% less damage and gain ${y} flat reduction to magic damage.`
     },
@@ -1034,7 +1035,7 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
   'Inspiration': (amount) => [
     {
       buffName: 'Inspired',
-      potency: INSPIRED_POTENCY_PER_AMOUNT * amount,
+      potency: INSPIRED_BASE_POTENCY + INSPIRED_POTENCY_PER_AMOUNT * amount,
       duration: INSPIRED_DURATION,
       condition: `On landing M1/M2 · pulse has no Proc Coefficient`,
       sourceName: 'Inspiration',
@@ -1209,7 +1210,7 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
   'Propelling Fun': (amount) => [
     {
       buffName: 'Cloudpush',
-      potency: PROPELLING_FUN_POTENCY_PER_AMOUNT * amount,
+      potency: PROPELLING_FUN_POTENCY_PER_AMOUNT,
       duration: PROPELLING_FUN_DURATION_MULTIPLIER * amount,
       condition: 'On jump',
       sourceName: 'Propelling Fun',
@@ -1217,7 +1218,7 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
     },
     {
       buffName: 'Cinderpull',
-      potency: PROPELLING_FUN_POTENCY_PER_AMOUNT * amount,
+      potency: PROPELLING_FUN_POTENCY_PER_AMOUNT,
       duration: PROPELLING_FUN_DURATION_MULTIPLIER * amount,
       condition: 'On jump',
       sourceName: 'Propelling Fun',

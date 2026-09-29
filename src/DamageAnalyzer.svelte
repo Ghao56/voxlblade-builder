@@ -4134,7 +4134,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     }
     if (_oceanSongAmt > 0) {
       const osScaling = _computePerkScalingMult({ water: 1.0, dexterity: 1.0 })
-      const baseHeal = (1 + OCEAN_SONG_PER_STACK * _oceanSongAmt) * (1 + _waCooldown / 30)
+      const baseHeal = (0.7 + OCEAN_SONG_PER_STACK * _oceanSongAmt) * (1 + _waCooldown / 30)
       result.push({
         group: 'WA', index: result.length, count: 1, base: baseHeal, scalingMult: osScaling, combatMult: _healFinalMultiplier,
         radianceHealMult: _healDealtMultiplier,

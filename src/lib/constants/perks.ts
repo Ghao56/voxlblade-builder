@@ -53,7 +53,7 @@ export const PRIMAL_DIVISOR = 4
 // ── Perk crit-rate multipliers ────────────────────
 export const FLOWING_CRITS_BOOST_MULT = 0.0875
 export const SPELL_SLINGER_BOOST_MULT = 0.075
-export const SHARP_CRITS_BOOST_MULT = 0.075
+export const SHARP_CRITS_BOOST_MULT = 0.1
 export const SEISMIC_MOMENTUM_BOOST_MULT = 0.075
 export const PERFECTION_CRIT_PER_STACK = 5
 export const CACI_KING_SPIRIT_CRIT_PER_STACK = 20

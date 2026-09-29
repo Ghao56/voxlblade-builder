@@ -54,7 +54,7 @@ const TYPED_DMG_BOOST_DEFS: TypedDmgBoostDef[] = [
     label: 'Photosynthesis',
     potencySource: 'perkAmount',
     getAffectedTypes: () => ['holy', 'earth'],
-    getDamageMultiplier: (amt) => 1 + 0.2 * amt,
+    getDamageMultiplier: (amt) => 1 + 0.25 * amt,
     getHealMultiplier: (amt) => 1 + 0.15 * amt,
     activeIf: (ctx) => !!ctx.inSunlight,
     conditionLabel: 'While standing in Sunlight',
