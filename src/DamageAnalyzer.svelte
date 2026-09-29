@@ -1140,6 +1140,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   $: _darkMagicAmt = perks['Dark Magic'] ?? 0
   $: _darkMagicHexRate = _darkMagicAmt > 0 ? Math.min(1, DARK_MAGIC_HEX_CONVERSION_PCT_PER_STACK * _darkMagicAmt) : 0
   $: _darkMagicDmgMult = _darkMagicAmt > 0 ? 1 + DARK_MAGIC_DMG_MULT_PER_STACK * _darkMagicAmt : 1
+  const _noDarkMagicWeaponHex = 0
   $: _raceGlobalArmorPen = getRace($build.race)?.globalArmorPenetration ?? 0
   $: _waArmorPenetration = (_windWalkerAmt > 0 && _hasTailwindOrWhirlwind ? WIND_WALKER_PEN_PER_STACK * _windWalkerAmt : 0) + (getRace($build.race)?.waArmorPenetration ?? 0) + (disabledBoosts.has('Highlander') ? 0 : (perks['Highlander'] ?? 0) * 10)
   $: _stormRendPct = _stormRendAmt > 0 && stormRendState !== 'off'
@@ -3081,7 +3082,8 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         : def.isWA
           ? _applyDmgBonuses(baseDmgTypes, _waDmgTypeBonuses)
           : _applyDmgBonuses(baseDmgTypes, canProc(def.procCoefficient) ? _perkDmgTypeBonuses : _perkDmgTypeBonusesDoT)
-      const resolvedDmgTypes = applyAirToMagicConversion(baseResolvedDmgTypes, _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt)
+      const _entryDarkMagicRate = def.dmgTypeMode === 'weapon' ? _darkMagicHexRate : _noDarkMagicWeaponHex
+      const resolvedDmgTypes = applyAirToMagicConversion(baseResolvedDmgTypes, _spiritWindsConversionRate, _entryDarkMagicRate, _echoIncinerationAmt)
       const resolvedDmgTypesWithMw = def.countAsM2 && _mortalWillHolyTypeBonus > 0
         ? { ...resolvedDmgTypes, holy: Math.round(((resolvedDmgTypes.holy ?? 0) + _mortalWillHolyTypeBonus) * 10000) / 10000 }
         : resolvedDmgTypes
@@ -3512,7 +3514,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
             _perkDmgTypeBonuses
           ),
           _spiritWindsConversionRate,
-          _darkMagicHexRate,
+          _noDarkMagicWeaponHex,
           _echoIncinerationAmt
         )
         result.push({
@@ -3922,7 +3924,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
               _perkDmgTypeBonuses
             ),
             _spiritWindsConversionRate,
-            _darkMagicHexRate,
+            _noDarkMagicWeaponHex,
             _echoIncinerationAmt
           )
       const runeSunburnMult = _sunburnActive && _sunburnEnemyBurning && !_runeIsHeal
@@ -3974,7 +3976,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
             _perkDmgTypeBonuses
           ),
           _spiritWindsConversionRate,
-          _darkMagicHexRate,
+          _noDarkMagicWeaponHex,
           _echoIncinerationAmt
         )
         const _secCount = _runeSecondary.getHits ? _runeSecondary.getHits(_runeCtx) : (_runeSecondary.hits ?? 1)
@@ -4497,7 +4499,6 @@ $: _groupedSelfDamageSources = (() => {
     dragonStateCombatMult={_dragonStateCombatMult}
     dragonStateEffectiveCombatMult={_dragonStateEffectiveMult}
     dragonStateTotalDmg={_dragonStateTotalDmg}
-    darkMagicHexRate={_darkMagicHexRate}
     darkMagicDmgMult={_darkMagicDmgMult}
     perkOnHitDamages={_perkOnHitDamages}
     waArmorPenetration={_waArmorPenetration}
@@ -5831,7 +5832,7 @@ $: _groupedSelfDamageSources = (() => {
               })
               const bonusEntries = Object.entries(_perkDmgTypeBonuses).filter(([, v]) => v > 0)
               const resolved = bonusEntries.length > 0 ? resolveDamageTypes(base, _perkDmgTypeBonuses) : base
-              return applyAirToMagicConversion(resolved, _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt)
+              return applyAirToMagicConversion(resolved, _spiritWindsConversionRate, _noDarkMagicWeaponHex, _echoIncinerationAmt)
             })()}
         
         <div class="da-wbd-section">

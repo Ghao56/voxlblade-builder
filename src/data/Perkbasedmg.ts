@@ -935,7 +935,6 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     isProcHit: true,
     hpGate: DRAGON_STATE_HP_GATE,
     triggerChain: [
-      { perk: 'Dark Magic', trigger: 'always' },
       { perk: 'Bombardier', trigger: 'chance' },
     ],
   },
