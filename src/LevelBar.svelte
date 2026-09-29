@@ -45,16 +45,19 @@
   $: protRounded = Math.round(protection * 100) / 100
   $: HP_FLOOR = Math.round(baseMaxHP * 0.1)
 
-  $: effectiveMaxHP = protRounded >= 0
-    ? baseMaxHP + protRounded
-    : Math.max(HP_FLOOR, baseMaxHP + protRounded)
+  // Protection has two distinct effects, they never cancel each other out:
+  //   positive → raises max shield HP (temporary HP pool)
+  //   negative → lowers max HP (down to the 10% floor)
+  $: hpLoss      = protRounded < 0 ? protRounded : 0
+  $: protToShield = protRounded > 0 ? protRounded : 0
+  $: effectiveMaxHP = protRounded < 0
+    ? Math.max(HP_FLOOR, baseMaxHP + protRounded)
+    : baseMaxHP
 
-  $: effectiveProt = protRounded
-
-  $: shieldCount = Math.round(shield * 100) / 100
+  $: shieldFromSources = Math.max(0, Math.round(shield * 100) / 100)
+  $: shieldCount = Math.round((shieldFromSources + protToShield) * 100) / 100
   $: shieldFrac  = shieldCount > 0 ? Math.min(1, shieldCount / baseMaxHP) : 0
   $: lostFrac    = protRounded < 0 ? Math.min(1, Math.abs(protRounded) / baseMaxHP) : 0
-  $: combinedBonus = Math.round((protRounded + shieldCount) * 100) / 100
 
   let dragging = false
   let barEl: HTMLDivElement
@@ -125,9 +128,14 @@
         <span class="lb-hp-cur">{currentHP}</span>
         <span class="lb-hp-sep">/</span>
         <span class="lb-hp-max">{effectiveMaxHP}</span>
-        {#if combinedBonus !== 0}
-          <Badge color={combinedBonus > 0 ? '#22d3ee' : '#f87171'} size="xs">
-            {#if combinedBonus > 0}<i class="fa fa-shield"></i> +{combinedBonus}{:else}<i class="fa fa-warning"></i> {combinedBonus}{/if}
+        {#if shieldCount > 0}
+          <Badge color="#22d3ee" size="xs" title="Max shield HP (temporary HP){protToShield > 0 ? ` — includes +${protToShield} from Protection` : ''}">
+            <i class="fa fa-shield"></i> +{shieldCount}
+          </Badge>
+        {/if}
+        {#if hpLoss < 0}
+          <Badge color="#f87171" size="xs" title="Negative Protection lowers max HP — shield does not offset it">
+            <i class="fa fa-warning"></i> {hpLoss} max HP
           </Badge>
         {/if}
       </span>
