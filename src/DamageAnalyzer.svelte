@@ -47,7 +47,8 @@ import {
   LIGHTNING_CLOAK_FRACTION,
   LUMINESCENT_PCT_PER_STACK,
   SPIRIT_WINDS_PCT_PER_STACK,
-  DARK_MAGIC_PCT_PER_STACK,
+  DARK_MAGIC_HEX_CONVERSION_PCT_PER_STACK,
+  DARK_MAGIC_DMG_MULT_PER_STACK,
   WIND_WALKER_PEN_PER_STACK,
   REAPER_PCT_PER_DEBUFF_PER_STACK,
   EXTINGUISH_MULT_PER_STACK,
@@ -106,6 +107,7 @@ import {
   DOT_EXCLUDED_PERK_BONUSES,
   VAPOR_AEGIS_FIRE_WATER_DR_PCT,
   QUEENS_POWER_ATK_SPD_BASE, QUEENS_POWER_ATK_SPD_PER_TENTH_POTENCY,
+  AIR_PRESSURE_MAX_POTENCY_PER_AMOUNT,
 } from './lib/constants'
 
 // ── Cross-Toggle Mappings ──────────────────────────────────────────────────
@@ -161,7 +163,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     const _hasProtection = (resultVal.stats.protection ?? 0) > 0
     const _debuffCount = dummyDebuffs.filter((d: any) => !disabledDebuffs.has(d.name)).length
     let baseSources = getActiveDefensivePerkSources(
-      perka, hpFillPct, adaptivePlateTriggered, effectiveInDarkness, ragePotency > 0, mountActive, _hasProtection, _debuffCount
+      perka, hpFillPct, adaptivePlateTriggered, effectiveInDarkness, ragePotency > 0, mountActive, _hasProtection, _debuffCount, buildVal.airPressurePotency ?? 0
     )
     if (carapaceDisabled) {
       baseSources = baseSources.filter(s => s.name !== 'Carapace')
@@ -178,6 +180,15 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       }
     })
   }
+  $: {
+    const _apAmt = perks['Air Pressure'] ?? 0
+    const _apDef = _apAmt > 0 ? PERK_DMG_DEFS.find(d => d.perkName === 'Air Pressure' && d.slider) : undefined
+    const _apMax = _apDef?.slider?.getMax ? _apDef.slider.getMax({ perks }) : 0
+    if (_apDef?.slider?.defaultToMax && _apMax > 0 && ($build.airPressurePotency ?? 0) === 0) {
+      build.update(s => ({ ...s, airPressurePotency: _apMax }) as any)
+    }
+  }
+
   $: _photosynthesisStacks = perks['Photosynthesis'] ?? 0
   $: _vampireStacks = perks['Vampire'] ?? 0
   $: _sunBlessedStacks = _allActiveBuffs.filter(b => b.buffName === 'Sun Blessed').length > 0 ? 1 : 0
@@ -1032,9 +1043,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   $: _waveRiderAmt = perks['Wave Rider'] ?? 0
   $: _cdAmt = (disabledBuffKeys.has('Channeled Depths:Channeled Depths') ? 0 : (perks['Channeled Depths'] ?? 0))
   $: _cdCap = 0.1 + 0.1 * _cdAmt
-  $: _cdPotency = _cdAmt > 0
-    ? Math.round(Math.min(_cdCap, 0.01 * _cdAmt * ($build.channeledDepthsTime ?? 0)) * 10000) / 10000
-    : 0
+  $: _cdPotency = _cdAmt > 0 ? _cdCap : 0
   $: _cdActive = _cdPotency >= 0.2
   $: _cdWaterBonus = _cdActive ? Math.round(0.5 * (_cdPotency / 0.1) * 10000) / 10000 : 0
   $: _cdTarget = $build.channeledDepthsTarget ?? 'WA'
@@ -1056,12 +1065,6 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     }
   })()
   $: _cdHit = Math.max(1, Math.min(_cdMaxHit, Math.floor($build.channeledDepthsHit ?? 1)))
-  $: _cdTimeToCap = _cdAmt > 0 ? Math.ceil(_cdCap / (0.01 * _cdAmt)) : 0
-  $: _cdTimeToThreshold = _cdAmt > 0 ? Math.round((0.2 / (0.01 * _cdAmt)) * 100) / 100 : 0
-  $: _cdFillPct = _cdTimeToCap > 0 ? Math.min(100, (($build.channeledDepthsTime ?? 0) / _cdTimeToCap) * 100) : 0
-  $: if (_cdAmt > 0 && $build.channeledDepthsTime != null && $build.channeledDepthsTime > _cdTimeToCap) {
-    build.update(s => ({ ...s, channeledDepthsTime: _cdTimeToCap }) as any)
-  }
   // Void Contract — the mark buffs the first N hits of the chosen target
   // (N = 1 + floor(perkAmount), in-game it expires after those hits or its 5s duration).
   $: _vcAmt = disabledDebuffs.has('Void Contract') ? 0 : (perks['Void Contract'] ?? 0)
@@ -1137,7 +1140,9 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   $: _spiritWindsAmt = perks['Spirit Winds'] ?? 0
   $: _spiritWindsConversionRate = _spiritWindsAmt > 0 && _hasTailwindOrWhirlwind ? SPIRIT_WINDS_PCT_PER_STACK * _spiritWindsAmt : 0
   $: _darkMagicAmt = perks['Dark Magic'] ?? 0
-  $: _darkMagicHexBonus = _darkMagicAmt > 0 ? DARK_MAGIC_PCT_PER_STACK * _darkMagicAmt : 0
+  $: _darkMagicHexRate = _darkMagicAmt > 0 ? Math.min(1, DARK_MAGIC_HEX_CONVERSION_PCT_PER_STACK * _darkMagicAmt) : 0
+  $: _darkMagicDmgMult = _darkMagicAmt > 0 ? 1 + DARK_MAGIC_DMG_MULT_PER_STACK * _darkMagicAmt : 1
+  const _noDarkMagicWeaponHex = 0
   $: _raceGlobalArmorPen = getRace($build.race)?.globalArmorPenetration ?? 0
   $: _waArmorPenetration = (_windWalkerAmt > 0 && _hasTailwindOrWhirlwind ? WIND_WALKER_PEN_PER_STACK * _windWalkerAmt : 0) + (getRace($build.race)?.waArmorPenetration ?? 0) + (disabledBoosts.has('Highlander') ? 0 : (perks['Highlander'] ?? 0) * 10)
   $: _stormRendPct = _stormRendAmt > 0 && stormRendState !== 'off'
@@ -1742,7 +1747,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   $: _weaponDmgTypesBase = (() => {
     return { ...(_weaponResult?.damageTypes ?? {}) }
   })()
-  $: _convertedWeaponDmgTypes = applyAirToMagicConversion(_weaponDmgTypes, _spiritWindsConversionRate, _darkMagicHexBonus, _echoIncinerationAmt)
+  $: _convertedWeaponDmgTypes = applyAirToMagicConversion(_weaponDmgTypes, _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt)
   $: _hasFireDmg = Object.entries(_weaponDmgTypes).some(([dt, mult]) => dt === 'fire' && mult > 0)
 
   $: _gunDmgTypes = (() => {
@@ -2556,7 +2561,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       : selectedWA.damageType,
     weaponDmgTypesBase: _weaponDmgTypesBase,
     airToMagicConversionRate: _spiritWindsConversionRate,
-    darkMagicHexBonus: _darkMagicHexBonus,
+    darkMagicHexRate: _darkMagicHexRate,
     echoIncinerateAmt: _echoIncinerationAmt,
     wildBoltElement: _wildBoltElement,
     weightySlamActive: _weightySlamAmt > 0 && selectedWA.name === 'Slam',
@@ -2593,7 +2598,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     const dmgTypes = applyAirToMagicConversion(
       _applyDmgBonuses({ ...baseDmgTypes }, _waDmgTypeBonuses),
       _spiritWindsConversionRate,
-      _darkMagicHexBonus,
+      _darkMagicHexRate,
       _echoIncinerationAmt
     )
     const scalings = def.scalings ?? {}
@@ -2717,7 +2722,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         let result = dtStr === 'Same as weapon' && _emotionalHexBonus > 0
           ? { ...base, hex: Math.round(((base.hex ?? 0) + _emotionalHexBonus) * 10000) / 10000 }
           : base
-        result = applyAirToMagicConversion(result, _spiritWindsConversionRate, _darkMagicHexBonus, _echoIncinerationAmt)
+        result = applyAirToMagicConversion(result, _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt)
     return result
   })()
       const types: DamageDisplayType[] = Object.entries(dtFinal).map(([k, mult]) => ({
@@ -2739,9 +2744,9 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         ? (() => {
             const entries = Object.entries(_weaponDmgTypesBase)
             const highestKey = entries.length > 0 ? entries.reduce((a, b) => b[1] > a[1] ? b : a)[0] : 'physical'
-            return applyAirToMagicConversion(_applyDmgBonuses({ [highestKey]: 1 }, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexBonus, _echoIncinerationAmt)
+            return applyAirToMagicConversion(_applyDmgBonuses({ [highestKey]: 1 }, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt)
           })()
-        : applyAirToMagicConversion(_applyDmgBonuses({ fire: 0.5, air: 0.5 }, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexBonus, _echoIncinerationAmt)
+        : applyAirToMagicConversion(_applyDmgBonuses({ fire: 0.5, air: 0.5 }, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt)
       const types: DamageDisplayType[] = Object.entries(dtFinal).map(([k, mult]) => ({
         label: k.charAt(0).toUpperCase() + k.slice(1),
         rawVal: Math.round(base * 10000) / 10000,
@@ -2757,7 +2762,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     return seq.map((h) => {
       const base = typeof h === 'number' ? h : h.n
       const count = typeof h === 'number' ? 1 : h.count
-      const dtFinal = applyAirToMagicConversion(_applyDmgBonuses({ true: 1 }, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexBonus, _echoIncinerationAmt)
+      const dtFinal = applyAirToMagicConversion(_applyDmgBonuses({ true: 1 }, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt)
       const types: DamageDisplayType[] = Object.entries(dtFinal).map(([k, mult]) => ({
         label: k.charAt(0).toUpperCase() + k.slice(1),
         rawVal: Math.round(base * 10000) / 10000,
@@ -3050,6 +3055,8 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         waCdrMult: $result.cdr.waCDR,
         runeCooldown: _runeBaseCd,
         fellRushAmt: perks['Fell Rush'] ?? 0,
+        protection: $result.stats.protection ?? 0,
+        airPressurePotency: Math.min(AIR_PRESSURE_MAX_POTENCY_PER_AMOUNT * (perks['Air Pressure'] ?? 0), $build.airPressurePotency ?? 0),
       }
       const _sliderDef = def.slider ?? PERK_DMG_DEFS.find(d => d.perkName === def.perkName && d.slider)?.slider
       const _perkSliderMax = _sliderDef?.getMax ? _sliderDef.getMax({ perks }) : (_sliderDef?.max ?? 0)
@@ -3078,7 +3085,8 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         : def.isWA
           ? _applyDmgBonuses(baseDmgTypes, _waDmgTypeBonuses)
           : _applyDmgBonuses(baseDmgTypes, canProc(def.procCoefficient) ? _perkDmgTypeBonuses : _perkDmgTypeBonusesDoT)
-      const resolvedDmgTypes = applyAirToMagicConversion(baseResolvedDmgTypes, _spiritWindsConversionRate, _darkMagicHexBonus, _echoIncinerationAmt)
+      const _entryDarkMagicRate = def.dmgTypeMode === 'weapon' ? _darkMagicHexRate : _noDarkMagicWeaponHex
+      const resolvedDmgTypes = applyAirToMagicConversion(baseResolvedDmgTypes, _spiritWindsConversionRate, _entryDarkMagicRate, _echoIncinerationAmt)
       const resolvedDmgTypesWithMw = def.countAsM2 && _mortalWillHolyTypeBonus > 0
         ? { ...resolvedDmgTypes, holy: Math.round(((resolvedDmgTypes.holy ?? 0) + _mortalWillHolyTypeBonus) * 10000) / 10000 }
         : resolvedDmgTypes
@@ -3509,7 +3517,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
             _perkDmgTypeBonuses
           ),
           _spiritWindsConversionRate,
-          _darkMagicHexBonus,
+          _noDarkMagicWeaponHex,
           _echoIncinerationAmt
         )
         result.push({
@@ -3581,21 +3589,21 @@ const trimNum = (n: number, maxDecimals = 4): string => {
             const highestKey = entries.length > 0
               ? entries.reduce((a, b) => b[1] > a[1] ? b : a)[0]
               : Object.keys(_weaponDmgTypes)[0] ?? 'physical'
-            hitDt = applyAirToMagicConversion(_applyDmgBonuses({ [highestKey]: 1 }, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexBonus, _echoIncinerationAmt)
+            hitDt = applyAirToMagicConversion(_applyDmgBonuses({ [highestKey]: 1 }, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt)
             hitDtBase = { [highestKey]: 1 }
           } else {
             const explTypes = _applyDmgBonuses({ fire: 0.5, air: 0.5 }, _waDmgTypeBonuses)
-            hitDt = applyAirToMagicConversion(explTypes, _spiritWindsConversionRate, _darkMagicHexBonus, _echoIncinerationAmt)
+            hitDt = applyAirToMagicConversion(explTypes, _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt)
             hitDtBase = { fire: 0.5, air: 0.5 }
           }
         } else if (_essenceRayActive) {
-          hitDt = applyAirToMagicConversion(_applyDmgBonuses({ true: 1 }, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexBonus, _echoIncinerationAmt)
+          hitDt = applyAirToMagicConversion(_applyDmgBonuses({ true: 1 }, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt)
           hitDtBase = { true: 1 }
         } else if (selectedWA.hitDamageTypes?.length) {
           const _hdt = selectedWA.hitDamageTypes[Math.min(i, selectedWA.hitDamageTypes.length - 1)]
           hitDt = _hdt === 'Same as weapon'
             ? _applyDmgBonuses({ ..._convertedWeaponDmgTypes }, _waOnlyBonuses)
-            : applyAirToMagicConversion(_resolveHitDmgTypes(_hdt, _weaponDmgTypes, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexBonus, _echoIncinerationAmt)
+            : applyAirToMagicConversion(_resolveHitDmgTypes(_hdt, _weaponDmgTypes, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt)
           hitDtBase = _resolveHitDmgTypesBase(selectedWA.hitDamageTypes[Math.min(i, selectedWA.hitDamageTypes.length - 1)], _weaponDmgTypesBase)
         } else {
           hitDt = _waDmgTypes
@@ -3680,7 +3688,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
           ? { ...baseWaDmgTypes, hex: Math.round(((baseWaDmgTypes.hex ?? 0) + _emotionalHexBonus) * 10000) / 10000 }
           : baseWaDmgTypes,
         _spiritWindsConversionRate,
-        _darkMagicHexBonus,
+        _darkMagicHexRate,
         _echoIncinerationAmt
       )
       for (const h of waDef.getHits()) {
@@ -3919,7 +3927,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
               _perkDmgTypeBonuses
             ),
             _spiritWindsConversionRate,
-            _darkMagicHexBonus,
+            _noDarkMagicWeaponHex,
             _echoIncinerationAmt
           )
       const runeSunburnMult = _sunburnActive && _sunburnEnemyBurning && !_runeIsHeal
@@ -3971,7 +3979,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
             _perkDmgTypeBonuses
           ),
           _spiritWindsConversionRate,
-          _darkMagicHexBonus,
+          _noDarkMagicWeaponHex,
           _echoIncinerationAmt
         )
         const _secCount = _runeSecondary.getHits ? _runeSecondary.getHits(_runeCtx) : (_runeSecondary.hits ?? 1)
@@ -4225,9 +4233,10 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       .reduce((sum, h) => sum + Math.max(1, h.count ?? 1), 0)
   }
 
-  function _sumPreBoostHitDamage(hits: BDCHit[], group: 'WA' | 'Rune' | 'M1' | 'M2' | 'Perk', label?: string): number {
+  function _sumPreBoostHitDamage(hits: BDCHit[], group: 'WA' | 'Rune' | 'M1' | 'M2' | 'Perk', label?: string, requireHex?: boolean): number {
     return hits
       .filter(h => h.group === group && !h.isHeal && (label === undefined || h.label === label))
+      .filter(h => !requireHex || ((h.dmgTypes?.hex ?? 0) > 0))
       .reduce((sum, h) => {
         const dmgTypesForCalc = h.baseDmgTypes ?? h.dmgTypes
         const typeMultSum = Object.values(dmgTypesForCalc).reduce((s, m) => s + m, 0)
@@ -4337,6 +4346,10 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       const amount = def.sourceType === 'rune' ? 1 : (perks[def.perkName] ?? 0)
       if (amount <= 0) continue
 
+      // Dark Magic's self damage only lands on attacks that activate its Hex damage
+      // boost, i.e. attacks whose resolved types actually contain Hex.
+      const _darkMagicNeedsHex = def.perkName === 'Dark Magic'
+
       for (const key of def.appliesTo) {
         const group = SELF_DAMAGE_APPLIES_TO_GROUP[key]
         if (!group) continue
@@ -4352,7 +4365,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
           for (const label of waLabels) {
             const preBoostDmg = def.perkName === 'Bombardier' ? _bombardierSelfDmgBase
               : def.perkName === 'Explosive Charge' ? _sumPreMitNoLevelHitDamage(_bdcWeaponHits, 'WA', label)
-              : _sumPreBoostHitDamage(_bdcWeaponHits, 'WA', label)
+              : _sumPreBoostHitDamage(_bdcWeaponHits, 'WA', label, _darkMagicNeedsHex)
             if (preBoostDmg <= 0) continue
             const _hc = def.flatSelfDmg ? _countHitsForLabel(_bdcWeaponHits, 'WA', label) : 1
             const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark, _hc)
@@ -4362,6 +4375,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
           const mountM1Dmg = (_activeMountRuneDef && mountActive)
             ? _bdcWeaponHits
                 .filter(h => h.group === 'M1' && !h.isHeal)
+                .filter(h => !_darkMagicNeedsHex || ((h.dmgTypes?.hex ?? 0) > 0))
                 .reduce((sum, h) => {
                   const dmgTypesForCalc = h.baseDmgTypes ?? h.dmgTypes
                   const typeMultSum = Object.values(dmgTypesForCalc).reduce((s, m) => s + m, 0)
@@ -4378,7 +4392,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
           const runeLabels = [...new Set(_bdcWeaponHits.filter(h => h.group === 'Rune' && !h.isHeal).map(h => h.label))]
           for (const label of runeLabels) {
             const preBoostDmg = def.perkName === 'Bombardier' ? _bombardierSelfDmgBase
-              : _sumPreBoostHitDamage(_bdcWeaponHits, 'Rune', label)
+              : _sumPreBoostHitDamage(_bdcWeaponHits, 'Rune', label, _darkMagicNeedsHex)
             if (preBoostDmg <= 0) continue
             const _hc = def.flatSelfDmg ? _countHitsForLabel(_bdcWeaponHits, 'Rune', label) : 1
             const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark, _hc)
@@ -4388,7 +4402,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
           const labels = [...new Set(_bdcWeaponHits.filter(h => h.group === 'M1' && !h.isHeal).map(h => h.label ?? 'M1'))]
           for (const label of labels) {
             const preBoostDmg = def.perkName === 'Bombardier' ? _bombardierSelfDmgBase
-              : _sumPreBoostHitDamage(_bdcWeaponHits, 'M1', label === 'M1' ? undefined : label)
+              : _sumPreBoostHitDamage(_bdcWeaponHits, 'M1', label === 'M1' ? undefined : label, _darkMagicNeedsHex)
             if (preBoostDmg <= 0) continue
             const _hc = def.flatSelfDmg ? _countHitsForLabel(_bdcWeaponHits, 'M1', label === 'M1' ? undefined : label) : 1
             const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark, _hc)
@@ -4398,7 +4412,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
           const labels = [...new Set(_bdcWeaponHits.filter(h => h.group === 'M2' && !h.isHeal).map(h => h.label ?? 'M2'))]
           for (const label of labels) {
             const preBoostDmg = def.perkName === 'Bombardier' ? _bombardierSelfDmgBase
-              : _sumPreBoostHitDamage(_bdcWeaponHits, 'M2', label === 'M2' ? undefined : label)
+              : _sumPreBoostHitDamage(_bdcWeaponHits, 'M2', label === 'M2' ? undefined : label, _darkMagicNeedsHex)
             if (preBoostDmg <= 0) continue
             const _hc = def.flatSelfDmg ? _countHitsForLabel(_bdcWeaponHits, 'M2', label === 'M2' ? undefined : label) : 1
             const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark, _hc)
@@ -4408,7 +4422,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
           const labels = [...new Set(_bdcWeaponHits.filter(h => h.group === 'Perk' && !h.isHeal).map(h => h.label ?? 'Perk'))]
           for (const label of labels) {
             const preBoostDmg = def.perkName === 'Bombardier' ? _bombardierSelfDmgBase
-              : _sumPreBoostHitDamage(_bdcWeaponHits, 'Perk', label === 'Perk' ? undefined : label)
+              : _sumPreBoostHitDamage(_bdcWeaponHits, 'Perk', label === 'Perk' ? undefined : label, _darkMagicNeedsHex)
             if (preBoostDmg <= 0) continue
             const _hc = def.flatSelfDmg ? _countHitsForLabel(_bdcWeaponHits, 'Perk', label === 'Perk' ? undefined : label) : 1
             const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark, _hc)
@@ -4488,7 +4502,7 @@ $: _groupedSelfDamageSources = (() => {
     dragonStateCombatMult={_dragonStateCombatMult}
     dragonStateEffectiveCombatMult={_dragonStateEffectiveMult}
     dragonStateTotalDmg={_dragonStateTotalDmg}
-    darkMagicHexBonus={_darkMagicHexBonus}
+    darkMagicDmgMult={_darkMagicDmgMult}
     perkOnHitDamages={_perkOnHitDamages}
     waArmorPenetration={_waArmorPenetration}
     globalArmorPenetration={_raceGlobalArmorPen}
@@ -5821,7 +5835,7 @@ $: _groupedSelfDamageSources = (() => {
               })
               const bonusEntries = Object.entries(_perkDmgTypeBonuses).filter(([, v]) => v > 0)
               const resolved = bonusEntries.length > 0 ? resolveDamageTypes(base, _perkDmgTypeBonuses) : base
-              return applyAirToMagicConversion(resolved, _spiritWindsConversionRate, _darkMagicHexBonus, _echoIncinerationAmt)
+              return applyAirToMagicConversion(resolved, _spiritWindsConversionRate, _noDarkMagicWeaponHex, _echoIncinerationAmt)
             })()}
         
         <div class="da-wbd-section">
@@ -6228,23 +6242,6 @@ $: _groupedSelfDamageSources = (() => {
           <span class="da-pbd-name">Channeled Depths</span>
           <span class="da-pbd-amt">+{_cdAmt}</span>
         </div>
-        <div class="da-sb-slider-wrap">
-          <span class="da-sb-slider-label">Elapsed Time (s)</span>
-          <input
-            type="range"
-            min="0"
-            max={_cdTimeToCap}
-            step="1"
-            value={$build.channeledDepthsTime ?? 0}
-            on:input={(e) => {
-              const val = +(e.target as HTMLInputElement).value
-              build.update(s => ({ ...s, channeledDepthsTime: val }) as any)
-            }}
-            class="da-sb-slider"
-            style="--tc:#2a49ff; --fill:{_cdFillPct}%"
-          />
-          <span class="da-sb-slider-val" style="color:#2a49ff">{+($build.channeledDepthsTime ?? 0)}s</span>
-        </div>
         <div class="da-cd-targets">
           {#each [{ k: 'M1', l: 'M1', ok: true }, { k: 'M2', l: 'M2', ok: true }, { k: 'WA', l: 'WA', ok: true }, { k: 'Rune', l: 'Rune', ok: _cdHasRuneTarget }, { k: 'Draco', l: 'Draco', ok: _cdHasDracoTarget }].filter(t => t.ok) as t}
             <button
@@ -6299,15 +6296,15 @@ $: _groupedSelfDamageSources = (() => {
         </div>
         <div class="da-pbd-condition">
           {#if !_cdActive}
-            Potency <b>{_cdPotency}</b> / cap <b>{Math.round(_cdCap * 10000) / 10000}</b> — below 0.2 potency (reaches it after <b>{Math.round(_cdTimeToThreshold * 10) / 10}s</b>), not yet armed.
+            Potency <b>{_cdPotency}</b> is below the <b>0.2</b> activation threshold, not yet armed.
           {:else}
-            Armed at <b>{_cdPotency}</b> potency — hit <b>#{_cdHit}</b> of <b>{_cdTarget}</b> gains <b>+{_cdWaterBonus}</b> Water Damage Type ({Math.round(_cdWaterBonus / 2 * 10000) / 10000} not converted by Piercer, {Math.round(_cdWaterBonus / 2 * 10000) / 10000} converted).
+            Fully charged at <b>{_cdPotency}</b> potency — hit <b>#{_cdHit}</b> of <b>{_cdTarget}</b> gains <b>+{_cdWaterBonus}</b> Water Damage Type ({Math.round(_cdWaterBonus / 2 * 10000) / 10000} not converted by Piercer, {Math.round(_cdWaterBonus / 2 * 10000) / 10000} converted).
           {/if}
         </div>
         <details class="da-pbd-details">
           <summary class="da-pbd-details-summary">Perk Details</summary>
           <div class="da-pbd-details-body">
-            <p>Gains <b>+0.01</b> Channeled Depths potency per second per perk amount, capped at <b>0.1 + 0.1 × amount</b> ({Math.round(_cdCap * 10000) / 10000}). The status is neutral and does not count as a buff or debuff.</p>
+            <p>The Channeled Depths status is always <b>fully charged</b> at <b>0.1 + 0.1 × amount</b> ({Math.round(_cdCap * 10000) / 10000}). The status is neutral and does not count as a buff or debuff.</p>
             <p>At or above <b>0.2</b> potency, the next attack gains <b>+0.5</b> additional Water Damage Type per <b>0.1</b> potency, then the status is consumed. Half of this additional damage type is <b>not</b> converted by <b>Piercer</b>.</p>
           </div>
         </details>
@@ -6623,7 +6620,7 @@ $: _groupedSelfDamageSources = (() => {
           </div>
         </div>
         {#if perkName === 'Dark Magic'}
-          <div class="da-pbd-note">Self damage = 0.5% × {fmtNum(activeSrc.preBoostDmg)} pre-boost damage</div>
+          <div class="da-pbd-note">Self damage = 0.5% × {fmtNum(activeSrc.preBoostDmg)} pre-boost damage (attacks containing Hex only)</div>
         {/if}
       </div>
     {/each}

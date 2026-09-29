@@ -5,7 +5,7 @@
 // Dragged into DamageAnalyzer for display; consumed by calcAutoDebuffs for perk-triggered debuffs.
 
 import { roundMultiplier } from '../lib/utils'
-import { BASTION_BLESS_MULT, ICHOR_SPARK_BLEED_DURATION } from '../lib/constants'
+import { BASTION_BLESS_MULT, ICHOR_SPARK_BLEED_DURATION, AIR_PRESSURE_DEF_PER_POTENCY } from '../lib/constants'
 import {
   BUFF_EFFECT_PER_TENTH, WHIRLWIND_EFFECT_PER_TENTH, GLYPH_CONDUIT_EFFECT_PER_TENTH,
   DESPAIR_EFFECT_PER_TENTH, LUMINESCENT_PCT_PER_POTENCY,
@@ -41,7 +41,7 @@ import {
   VASSALS_CROAK_MAX_SUMMONS_BASE, VASSALS_CROAK_RAGE_DURATION,
   IRON_SLAYER_POTENCY_PER_AMOUNT, IRON_SLAYER_DURATION,
   BASTION_REGEN_POTENCY, BASTION_REINFORCE_POTENCY, BASTION_RATE_PER_AMOUNT, BASTION_BUFF_DURATION,
-  AIR_PRESSURE_BUFF_POTENCY_PER_AMOUNT, AIR_PRESSURE_BUFF_DURATION,
+  AIR_PRESSURE_MAX_POTENCY_PER_AMOUNT, AIR_PRESSURE_POTENCY_GAIN_BASE, AIR_PRESSURE_POTENCY_GAIN_PER_AMOUNT, AIR_PRESSURE_BUFF_DURATION,
   APOLLO_TAUNT_POTENCY, APOLLO_TAUNT_DURATION,
   VALOR_TAUNT_POTENCY, VALOR_TAUNT_DURATION,
   CHANNELED_REINFORCE_POTENCY, CHANNELED_REINFORCE_DURATION,
@@ -64,7 +64,7 @@ import {
   GRANDMAGIC_GUARD_POTENCY_PER_AMOUNT, GRANDMAGIC_GUARD_DURATION,
   MARSH_FLOW_POTENCY, MARSH_FLOW_DURATION_BASE, MARSH_FLOW_DURATION_PER_AMOUNT,
   BOUNCE_DURATION_BASE, BOUNCE_DURATION_PER_STACK,
-  MOD_GLADIATORIAL_POTENCY, MOD_MAGE_RAGE_POTENCY, MOD_OCEANS_RAGE_POTENCY,
+  MOD_GLADIATORIAL_POTENCY, MOD_GLADIATORIAL_DURATION, MOD_MAGE_RAGE_POTENCY, MOD_OCEANS_RAGE_POTENCY,
   MOD_SLAYER_RAGE_POTENCY, MOD_SLAYER_WEAKNESS_POTENCY,
   SLAYER_RAGE_RAGE_RUNE_WEAK_POTENCY, SLAYER_RAGE_WEAK_DURATION,
   SLAYER_RAGE_ROAR_WEAK_BASE_POTENCY, SLAYER_RAGE_ROAR_RAGE_POTENCY, SLAYER_RAGE_ROAR_RAGE_DURATION,
@@ -255,6 +255,10 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     name: 'Air Pressure',
     color: '#AAFFDB',
     description: 'Take x% less damage and upon using a rune release an air burst.',
+    dynamicDescription: (_perks, potency) => {
+      const x = +(AIR_PRESSURE_DEF_PER_POTENCY * potency).toFixed(4)
+      return `Take ${x}% less damage and upon using a rune release an air burst.`
+    },
     effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
     effectUnit: 'flat',
     statKey: 'airDefense',
@@ -710,7 +714,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
   'Channeled Depths': {
     name: 'Channeled Depths',
     color: '#2a49ff',
-    description: 'Ramping neutral status. Above 0.2 potency, the next attack gains 0.5 additional Water Damage Type per 0.1 potency, then the status is consumed. Half of this effect is not converted by Piercer.',
+    description: 'Slowly gain potency and above 0.2 any attack will add a lot of water damage type',
     effectPerTenthPotency: 0,
     effectUnit: 'flat',
     isNeutral: true,
@@ -1012,11 +1016,11 @@ export const BASIC_DEBUFF_POOL: Array<{ buffName: string; potency: number; durat
 ]
 
 // ── Perk-triggered buffs ────────────────────────────────────────────────────
-type PerkBuffFactory = (amount: number, allPerks: Record<string, number>, vassalsCroakStacks?: number, channeledDepthsTime?: number, perfectionStacks?: number, weaponModifier?: string) => GrantedBuff[]
+type PerkBuffFactory = (amount: number, allPerks: Record<string, number>, vassalsCroakStacks?: number, perfectionStacks?: number, weaponModifier?: string, airPressurePotency?: number) => GrantedBuff[]
 
 const PERK_BUFFS: Record<string, PerkBuffFactory> = {
 
-  'Perfection': (amount, _allPerks, _vassalsCroakStacks, _channeledDepthsTime, perfectionStacks = 5) => [
+  'Perfection': (amount, _allPerks, _vassalsCroakStacks, perfectionStacks = 5) => [
     {
       buffName: 'Perfection',
       potency: perfectionStacks * amount,
@@ -1060,16 +1064,14 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
     },
   ],
 
-  'Channeled Depths': (amount, _allPerks, _vassalsCroakStacks, channeledDepthsTime) => {
+  'Channeled Depths': (amount) => {
     const cap = 0.1 + 0.1 * amount
-    const time = channeledDepthsTime ?? 0
-    const potency = Math.round(Math.min(cap, 0.01 * amount * time) * 10000) / 10000
     return [
       {
         buffName: 'Channeled Depths',
-        potency,
+        potency: cap,
         duration: 0,
-        condition: `+0.01 potency/s per perk · cap ${Math.round(cap * 10000) / 10000} · at or above 0.2 potency, next attack gains 0.5 Water Damage Type per 0.1 potency (half not converted by Piercer)`,
+        condition: `Always fully charged at ${Math.round(cap * 10000) / 10000} potency · at or above 0.2 potency, next attack gains 0.5 Water Damage Type per 0.1 potency (half not converted by Piercer)`,
         sourceName: 'Channeled Depths',
         sourceType: 'perk',
       },
@@ -1388,16 +1390,20 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       sourceType: 'perk',
     },
   ],
-  'Air Pressure': (amount) => [
-    {
-      buffName: 'Air Pressure',
-      potency: AIR_PRESSURE_BUFF_POTENCY_PER_AMOUNT * amount,
-      duration: AIR_PRESSURE_BUFF_DURATION,
-      condition: 'Dealing Air Damage',
-      sourceName: 'Air Pressure',
-      sourceType: 'perk',
-    },
-  ],
+  'Air Pressure': (amount, _allPerks, _vassalsCroakStacks, _perf, _weaponModifier, airPressurePotency) => {
+    const maxPotency = AIR_PRESSURE_MAX_POTENCY_PER_AMOUNT * amount
+    const potency = Math.max(0, Math.min(maxPotency, airPressurePotency ?? 0))
+    return [
+      {
+        buffName: 'Air Pressure',
+        potency,
+        duration: AIR_PRESSURE_BUFF_DURATION,
+        condition: `Dealing Air Damage builds ${Math.round((AIR_PRESSURE_POTENCY_GAIN_BASE + AIR_PRESSURE_POTENCY_GAIN_PER_AMOUNT * amount) * 100)}% of the damage dealt before modifiers (max ${maxPotency}) · +1% defense per 1 potency · Using a Rune consumes it for an Air Burst`,
+        sourceName: 'Air Pressure',
+        sourceType: 'perk',
+      },
+    ]
+  },
   'Apollo Boost': () => [
       {
         buffName: 'Taunt',
@@ -1820,7 +1826,7 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       sourceType: 'perk',
     },
   ],
-  'Saw Heart': (_amount, _allPerks, _vassals, _cdt, _perf, weaponModifier) => {
+  'Saw Heart': (_amount, _allPerks, _vassals, _perf, weaponModifier) => {
     if (weaponModifier !== 'Saw Heart') return []
     return [
       {
@@ -1841,7 +1847,7 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       },
     ]
   },
-  'Saw Stance': (_amount, _allPerks, _vassals, _cdt, _perf, weaponModifier) => {
+  'Saw Stance': (_amount, _allPerks, _vassals, _perf, weaponModifier) => {
     if (weaponModifier !== 'Saw Stance') return []
     return [
       {
@@ -2057,7 +2063,7 @@ const BOUNCE_DURATION_MULT = durationMultFromStack(BOUNCE_DURATION_BASE, BOUNCE_
 const BUFF_POTENCY_MODIFIERS: BuffPotencyModifier[] = [
   { buffName: 'Bounce', potencyPerStack: 0, label: 'Bounce Momentum', durationMultiplierFormula: BOUNCE_DURATION_MULT },
 
-  { buffName: 'Rage', potencyPerStack: MOD_GLADIATORIAL_POTENCY, label: 'Gladiatorial Rage' },
+  { buffName: 'Rage', potencyPerStack: MOD_GLADIATORIAL_POTENCY, label: 'Gladiatorial Rage', durationMultiplierPerStack: MOD_GLADIATORIAL_DURATION },
   { buffName: 'Rage', potencyPerStack: MOD_MAGE_RAGE_POTENCY, label: 'Mage Rage' },
   { buffName: 'Rage', potencyPerStack: MOD_OCEANS_RAGE_POTENCY, label: 'Oceans Rage' },
   { buffName: 'Rage', potencyPerStack: MOD_SLAYER_RAGE_POTENCY, label: 'Slayer Rage', runeFilter: 'Rage Rune' },
@@ -2502,14 +2508,14 @@ export function getBuffDescription(
   return desc.replace(/x%/g, `${+(pct).toFixed(4).replace(/\.?0+$/, '')}%`)
 }
 
-export function getPerkBuffs(perks: Record<string, number>, vassalsCroakStacks?: number, channeledDepthsTime?: number, perfectionStacks?: number, weaponModifier?: string): GrantedBuff[] {
+export function getPerkBuffs(perks: Record<string, number>, vassalsCroakStacks?: number, perfectionStacks?: number, weaponModifier?: string, airPressurePotency?: number): GrantedBuff[] {
   const buffs: GrantedBuff[] = []
 
   for (const [perkName, amount] of Object.entries(perks)) {
     if (amount <= 0) continue
     const factory = PERK_BUFFS[perkName]
     if (!factory) continue
-    for (const b of factory(amount, perks, vassalsCroakStacks, channeledDepthsTime, perfectionStacks, weaponModifier)) {
+    for (const b of factory(amount, perks, vassalsCroakStacks, perfectionStacks, weaponModifier, airPressurePotency)) {
       buffs.push({ ...b, duration: Math.round(b.duration * 100) / 100 })
     }
   }
@@ -2583,7 +2589,7 @@ export interface ActiveBuffsBuildInput {
   draconicColor?: string
   inDarkness?: boolean
   lastCroakStacks?: number
-  channeledDepthsTime?: number
+  airPressurePotency?: number
   perfectionStacks?: number
   hpFill?: number
   level?: number
@@ -2650,7 +2656,7 @@ export function assembleActiveBuffs(
   }
 
   const buffs = convertTailwindToWhirlwind(applyBuffPerkModifiers(
-    [...itemBuffs, ...potionBuffs, ...getPerkBuffs(perks, build.lastCroakStacks, build.channeledDepthsTime, build.perfectionStacks, weaponModifier), ...getWeaponArtBuffs(build.selectedWeaponArt)],
+    [...itemBuffs, ...potionBuffs, ...getPerkBuffs(perks, build.lastCroakStacks, build.perfectionStacks, weaponModifier, build.airPressurePotency), ...getWeaponArtBuffs(build.selectedWeaponArt)],
     perks,
     build.rune || undefined,
     wardingDebuffMult,

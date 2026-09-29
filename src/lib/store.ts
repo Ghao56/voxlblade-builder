@@ -63,7 +63,7 @@ const DEFAULT_BUILD: BuildState = {
   glacialBuildupCrystals: 0,
   staticBuildupCharge: 3,
   divineCrashDistance: 250,
-  channeledDepthsTime: 0,
+  airPressurePotency: 0,
   channeledDepthsTarget: 'WA',
   channeledDepthsHit: 1,
   voidContractTarget: 'M1',

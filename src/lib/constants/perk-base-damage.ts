@@ -95,7 +95,8 @@ export const PROTECTOR_SPIRIT_BASE_DMG = 0.4
 export const PROTECTOR_SPIRIT_DMG_PER_STACK = 0.1
 
 // Air Pressure
-export const AIR_PRESSURE_DMG_PER_STACK = 7.5
+export const AIR_PRESSURE_BASE_DMG = 6
+export const AIR_PRESSURE_DMG_PER_POTENCY = 0.65
 
 // Air Barrier
 export const AIR_BARRIER_DMG_PER_STACK = 3
@@ -132,6 +133,14 @@ export const WHIRLWIND_DMG_PER_STACK = 0.3
 export const VOLATILE_SHELL_BASE_DMG = 25
 export const VOLATILE_SHELL_DMG_PER_STACK = 20
 export const VOLATILE_SHELL_POISON_DURATION = 5
+// Explosion radius = VOLATILE_SHELL_AOE_BASE + VOLATILE_SHELL_AOE_PER_PROTECTION * Protection,
+// capped at VOLATILE_SHELL_AOE_MAX (no longer scales with perk amount).
+export const VOLATILE_SHELL_AOE_BASE = 13
+export const VOLATILE_SHELL_AOE_PER_PROTECTION = 1.3
+export const VOLATILE_SHELL_AOE_MAX = 120
+// Share of incoming damage Protection absorbs while the shield is held (was a flat 75%).
+export const VOLATILE_SHELL_ABSORB_BASE_PCT = 70
+export const VOLATILE_SHELL_ABSORB_PER_STACK = 15
 
 // Royal Finisher
 export const ROYAL_FINISHER_BASE_DMG = 3
@@ -237,6 +246,14 @@ export const RULER_SANDS_BASE_DMG_PER_HIT = 0.3
 export const RULER_SANDS_HITS = 25
 export const RULER_SANDS_CHANCE_CD_MULT = 1.0
 export const RULER_SANDS_CHANCE_PERK_MULT = 0.5
+
+// Lodestone Barrage
+export const LODESTONE_BARRAGE_BASE_DMG = 2
+export const LODESTONE_BARRAGE_DMG_PER_STACK = 0.75
+// Rocks fired = round(1 + (Base Cooldown / 3) * (1 + 0.2 * perkAmount))
+export const LODESTONE_BARRAGE_ROCKS_BASE = 1
+export const LODESTONE_BARRAGE_CD_DIVISOR = 3
+export const LODESTONE_BARRAGE_ROCKS_PERK_MULT = 0.2
 
 // Ichor Spark
 export const ICHOR_SPARK_SWIPE_BASE_A = 4.75

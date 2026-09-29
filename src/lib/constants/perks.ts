@@ -4,7 +4,10 @@ export const LUMINESCENT_PCT_PER_STACK = 0.05
 
 export const SPIRIT_WINDS_PCT_PER_STACK = 0.10
 
-export const DARK_MAGIC_PCT_PER_STACK = 0.20
+/** Fraction of the weapon's Magic Damage Type converted to Hex per 1 of the perk. */
+export const DARK_MAGIC_HEX_CONVERSION_PCT_PER_STACK = 0.30
+/** Flat damage boost applied to any attack containing Hex Damage Type, per 1 of the perk. */
+export const DARK_MAGIC_DMG_MULT_PER_STACK = 0.20
 
 export const WIND_WALKER_PEN_PER_STACK = 10
 

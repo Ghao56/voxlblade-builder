@@ -13,7 +13,7 @@ import {
   PROTECTOR_SPIRIT_DR_PER_STACK,
   PROTECTOR_SPIRIT_HP_THRESHOLD,
   PROTECTOR_SPIRIT_ALWAYS_ON_AT,
-  AIR_PRESSURE_MAX_DR_PER_STACK,
+  AIR_PRESSURE_DEF_PER_POTENCY,
   VALOR_SHIELD_DR_PER_STACK,
   VALOR_MAX_DR,
   VAMPIRE_DR_PER_STACK,
@@ -36,6 +36,7 @@ interface DefensivePerkSourceContext {
   isMounted: boolean
   hasProtection: boolean
   uniqueDebuffCount: number
+  airPressurePotency: number
 }
 
 // ── Def definitions ────────────────────────────────────────────────────────
@@ -96,9 +97,10 @@ const DEFENSIVE_PERK_SOURCES: DefensivePerkSource[] = [
   },
   {
     perkName: 'Air Pressure',
-    drPctPerStack: AIR_PRESSURE_MAX_DR_PER_STACK,
-    label: 'Air Pressure (Max Potency)',
-    conditionLabel: 'Air Pressure (Max Potency)',
+    drPctFn: (_amt, ctx) => AIR_PRESSURE_DEF_PER_POTENCY * ctx.airPressurePotency,
+    dependsOn: ctx => ctx.airPressurePotency > 0,
+    label: 'Air Pressure',
+    conditionLabel: `${AIR_PRESSURE_DEF_PER_POTENCY}% defense per 1 potency · damage taken ÷ (1 + defense%)`,
     potencyCapped: true,
   },
   {
@@ -163,9 +165,10 @@ export function getActiveDefensivePerkSources(
   isMounted: boolean = false,
   hasProtection: boolean = false,
   uniqueDebuffCount: number = 0,
+  airPressurePotency: number = 0,
 ): Array<{ name: string; defPct: number; isFlat?: boolean; condition: string; potencyCapped?: boolean; grantsStunImmunity?: boolean }> {
   const out: Array<{ name: string; defPct: number; isFlat?: boolean; condition: string; potencyCapped?: boolean; grantsStunImmunity?: boolean }> = []
-  const ctx: DefensivePerkSourceContext = { hpFillPct, adaptivePlateTriggered, inDarkness, rageActive, isMounted, hasProtection, uniqueDebuffCount }
+  const ctx: DefensivePerkSourceContext = { hpFillPct, adaptivePlateTriggered, inDarkness, rageActive, isMounted, hasProtection, uniqueDebuffCount, airPressurePotency }
 
   for (const def of DEFENSIVE_PERK_SOURCES) {
     const amt = perks[def.perkName] ?? 0

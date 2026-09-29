@@ -25,7 +25,7 @@ import {
   GUARDIAN_SPIN_BASE, GUARDIAN_SPIN_MULT_PER_STACK,
   WILD_BOLT_MULT_PER_STACK, WEIGHTY_SLAM_MULT_PER_STACK,
   RIDER_MULT_PER_STACK, QUICKDRAW_MULT,
-  JUGGERNAUT_DMG_MULT_PER_NEGATIVE_PCT, JUGGERNAUT_KNOCKBACK_RESIST_PER_NEGATIVE_PCT,
+  JUGGERNAUT_DMG_MULT_PER_NEGATIVE_PCT, JUGGERNAUT_KNOCKBACK_RESIST_PER_NEGATIVE_PCT, JUGGERNAUT_STUN_RESIST_PER_NEGATIVE_PCT,
   SPRING_POWERED_MULT, THIEF_TRAINING_BEHIND_MULT,
   THIEF_TRAINING_WOULD_CRIT_MULT, VASSALS_CROAK_MULT_PER_STACK,
   RAGING_BOUNCE_MULT, GUIDING_WINDS_MULT_PER_STACK,
@@ -166,9 +166,10 @@ export const BOOST_DEFS: BoostDef[] = [
       const negTotal = negSpeed + negAtkSpd
       const pct = negTotal * amt * JUGGERNAUT_DMG_MULT_PER_NEGATIVE_PCT
       const krPct = calcKnockbackResistancePct(negTotal * amt * JUGGERNAUT_KNOCKBACK_RESIST_PER_NEGATIVE_PCT)
+      const srPct = negTotal * amt * JUGGERNAUT_STUN_RESIST_PER_NEGATIVE_PCT
       return {
         multiplier: 1 + pct / 100,
-        condition: `+${fmtPctVal(pct)} dmg · -${fmtPctVal(Math.round(krPct))} knockback`,
+        condition: `+${fmtPctVal(pct)} dmg · -${fmtPctVal(Math.round(krPct))} knockback · +${fmtPctVal(srPct)}% stun resist`,
       }
     },
   },
