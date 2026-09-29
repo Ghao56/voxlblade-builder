@@ -230,7 +230,7 @@ export interface BuildState {
   glacialBuildupCrystals: number
   staticBuildupCharge: number
   divineCrashDistance: number
-  channeledDepthsTime: number
+  airPressurePotency: number
   channeledDepthsTarget: string
   channeledDepthsHit: number
   voidContractTarget: string

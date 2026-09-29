@@ -46,7 +46,10 @@ import {
   PROTECTOR_SPIRIT_DMG_PER_STACK,
   PROTECTOR_SPIRIT_HP_GATE,
   PROTECTOR_SPIRIT_ALWAYS_ACTIVE_AT,
-  AIR_PRESSURE_DMG_PER_STACK,
+  AIR_PRESSURE_BASE_DMG,
+  AIR_PRESSURE_DMG_PER_POTENCY,
+  AIR_PRESSURE_MAX_POTENCY_PER_AMOUNT,
+  AIR_PRESSURE_DEF_PER_POTENCY,
   AIR_BARRIER_DMG_PER_STACK,
   APOLLO_BOOST_BASE,
   APOLLO_BOOST_SUB_BASE,
@@ -205,9 +208,10 @@ export interface PerkSliderDef {
   buildKey: keyof BuildState
   label: string
   min: number
-  max: number
+  max?: number
   step?: number
   getMax?: (ctx: { perks: Record<string, number> }) => number
+  defaultToMax?: boolean
 }
 
 export interface PerkDmgCtx {
@@ -720,16 +724,24 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
   {
     perkName: 'Air Pressure',
     condition: 'Upon using a rune release an air burst',
-    getBaseDamage: ({ perkAmount }) => AIR_PRESSURE_DMG_PER_STACK * perkAmount,
+    getBaseDamage: ({ sliderVal }) => AIR_PRESSURE_BASE_DMG + AIR_PRESSURE_DMG_PER_POTENCY * (sliderVal ?? 0),
     dmgTypeMode: 'fixed',
     dmgTypes: { air: 1.0 },
     scalingMode: 'fixed',
     scalings: { air: 1.0 },
     isRune: true,
+    slider: {
+      buildKey: 'airPressurePotency',
+      label: 'Air Pressure Potency',
+      min: 0,
+      step: 0.1,
+      defaultToMax: true,
+      getMax: ({ perks }) => AIR_PRESSURE_MAX_POTENCY_PER_AMOUNT * (perks['Air Pressure'] ?? 0),
+    },
     secondaryEffects: [
       {
-        label: 'Damage Reduction',
-        getValue: ({ perkAmount }) => 10 * perkAmount,
+        label: 'Defense',
+        getValue: ({ sliderVal }) => AIR_PRESSURE_DEF_PER_POTENCY * (sliderVal ?? 0),
         format: v => `${v}%`,
         tone: 'defense',
       }

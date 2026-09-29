@@ -101,7 +101,7 @@ import { calcBaseMaxHP } from './lib/constants/game'
   })()
 
   $: perkBuffs = (() => {
-    const buffs = getPerkBuffs($result.perks, $build.lastCroakStacks, $build.channeledDepthsTime, undefined, buffListWeapon?.weaponModifier)
+    const buffs = getPerkBuffs($result.perks, $build.lastCroakStacks, undefined, buffListWeapon?.weaponModifier, $build.airPressurePotency)
     const idx = buffs.findIndex(b => b.buffName === 'Exhaust')
     if (idx !== -1) {
       const wa = WEAPON_ARTS.find(wa => wa.name === $build.selectedWeaponArt)

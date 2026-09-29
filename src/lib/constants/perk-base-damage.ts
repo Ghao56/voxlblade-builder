@@ -95,7 +95,8 @@ export const PROTECTOR_SPIRIT_BASE_DMG = 0.4
 export const PROTECTOR_SPIRIT_DMG_PER_STACK = 0.1
 
 // Air Pressure
-export const AIR_PRESSURE_DMG_PER_STACK = 7.5
+export const AIR_PRESSURE_BASE_DMG = 6
+export const AIR_PRESSURE_DMG_PER_POTENCY = 0.65
 
 // Air Barrier
 export const AIR_BARRIER_DMG_PER_STACK = 3

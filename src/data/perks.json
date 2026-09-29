@@ -29,7 +29,7 @@
   },
   {
     "name": "Air Pressure",
-    "description": "Dealing Air Damage builds up the Buff Air Pressure, the maximum of which scales on perk amount.",
+    "description": "Dealing Air Damage builds up the Buff Air Pressure, the maximum of which scales on perk amount. While active you gain defense, and using a Rune consumes the status to release an Air Burst.",
     "tags": [
       "Defensive",
       "Buff",
@@ -436,7 +436,7 @@
   },
   {
     "name": "Channeled Depths",
-    "description": "Gain a passively ramping, neutral Channeled Depths status. Cap and ramping speed increases with perk amount.",
+    "description": "Gain a neutral Channeled Depths status that is always fully charged. Its maximum increases with perk amount.",
     "tags": [
       "Damage Boost",
       "Armor"
@@ -1308,7 +1308,7 @@
   },
   {
     "name": "Gladiatorial Rage",
-    "description": "Halves Rage Rune Cooldown and adds a flat potency increase to all sources and forms of Rage. Rage duration is increased on kill only, and gain Armor Penetration scaling off of your highest offensive Boost.",
+    "description": "Halves Rage Rune Cooldown and adds a flat potency increase to all sources and forms of Rage. Increases Rage duration by 20% per 1 of this perk, and gain Armor Penetration scaling off of your highest offensive Boost.",
     "tags": [
       "Buff",
       "Cooldown Reduction",

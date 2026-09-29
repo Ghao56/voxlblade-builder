@@ -107,6 +107,7 @@ import {
   DOT_EXCLUDED_PERK_BONUSES,
   VAPOR_AEGIS_FIRE_WATER_DR_PCT,
   QUEENS_POWER_ATK_SPD_BASE, QUEENS_POWER_ATK_SPD_PER_TENTH_POTENCY,
+  AIR_PRESSURE_MAX_POTENCY_PER_AMOUNT,
 } from './lib/constants'
 
 // ── Cross-Toggle Mappings ──────────────────────────────────────────────────
@@ -162,7 +163,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     const _hasProtection = (resultVal.stats.protection ?? 0) > 0
     const _debuffCount = dummyDebuffs.filter((d: any) => !disabledDebuffs.has(d.name)).length
     let baseSources = getActiveDefensivePerkSources(
-      perka, hpFillPct, adaptivePlateTriggered, effectiveInDarkness, ragePotency > 0, mountActive, _hasProtection, _debuffCount
+      perka, hpFillPct, adaptivePlateTriggered, effectiveInDarkness, ragePotency > 0, mountActive, _hasProtection, _debuffCount, buildVal.airPressurePotency ?? 0
     )
     if (carapaceDisabled) {
       baseSources = baseSources.filter(s => s.name !== 'Carapace')
@@ -179,6 +180,15 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       }
     })
   }
+  $: {
+    const _apAmt = perks['Air Pressure'] ?? 0
+    const _apDef = _apAmt > 0 ? PERK_DMG_DEFS.find(d => d.perkName === 'Air Pressure' && d.slider) : undefined
+    const _apMax = _apDef?.slider?.getMax ? _apDef.slider.getMax({ perks }) : 0
+    if (_apDef?.slider?.defaultToMax && _apMax > 0 && ($build.airPressurePotency ?? 0) === 0) {
+      build.update(s => ({ ...s, airPressurePotency: _apMax }) as any)
+    }
+  }
+
   $: _photosynthesisStacks = perks['Photosynthesis'] ?? 0
   $: _vampireStacks = perks['Vampire'] ?? 0
   $: _sunBlessedStacks = _allActiveBuffs.filter(b => b.buffName === 'Sun Blessed').length > 0 ? 1 : 0
@@ -1033,9 +1043,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   $: _waveRiderAmt = perks['Wave Rider'] ?? 0
   $: _cdAmt = (disabledBuffKeys.has('Channeled Depths:Channeled Depths') ? 0 : (perks['Channeled Depths'] ?? 0))
   $: _cdCap = 0.1 + 0.1 * _cdAmt
-  $: _cdPotency = _cdAmt > 0
-    ? Math.round(Math.min(_cdCap, 0.01 * _cdAmt * ($build.channeledDepthsTime ?? 0)) * 10000) / 10000
-    : 0
+  $: _cdPotency = _cdAmt > 0 ? _cdCap : 0
   $: _cdActive = _cdPotency >= 0.2
   $: _cdWaterBonus = _cdActive ? Math.round(0.5 * (_cdPotency / 0.1) * 10000) / 10000 : 0
   $: _cdTarget = $build.channeledDepthsTarget ?? 'WA'
@@ -1057,12 +1065,6 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     }
   })()
   $: _cdHit = Math.max(1, Math.min(_cdMaxHit, Math.floor($build.channeledDepthsHit ?? 1)))
-  $: _cdTimeToCap = _cdAmt > 0 ? Math.ceil(_cdCap / (0.01 * _cdAmt)) : 0
-  $: _cdTimeToThreshold = _cdAmt > 0 ? Math.round((0.2 / (0.01 * _cdAmt)) * 100) / 100 : 0
-  $: _cdFillPct = _cdTimeToCap > 0 ? Math.min(100, (($build.channeledDepthsTime ?? 0) / _cdTimeToCap) * 100) : 0
-  $: if (_cdAmt > 0 && $build.channeledDepthsTime != null && $build.channeledDepthsTime > _cdTimeToCap) {
-    build.update(s => ({ ...s, channeledDepthsTime: _cdTimeToCap }) as any)
-  }
   // Void Contract — the mark buffs the first N hits of the chosen target
   // (N = 1 + floor(perkAmount), in-game it expires after those hits or its 5s duration).
   $: _vcAmt = disabledDebuffs.has('Void Contract') ? 0 : (perks['Void Contract'] ?? 0)
@@ -3054,6 +3056,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         runeCooldown: _runeBaseCd,
         fellRushAmt: perks['Fell Rush'] ?? 0,
         protection: $result.stats.protection ?? 0,
+        airPressurePotency: Math.min(AIR_PRESSURE_MAX_POTENCY_PER_AMOUNT * (perks['Air Pressure'] ?? 0), $build.airPressurePotency ?? 0),
       }
       const _sliderDef = def.slider ?? PERK_DMG_DEFS.find(d => d.perkName === def.perkName && d.slider)?.slider
       const _perkSliderMax = _sliderDef?.getMax ? _sliderDef.getMax({ perks }) : (_sliderDef?.max ?? 0)
@@ -6239,23 +6242,6 @@ $: _groupedSelfDamageSources = (() => {
           <span class="da-pbd-name">Channeled Depths</span>
           <span class="da-pbd-amt">+{_cdAmt}</span>
         </div>
-        <div class="da-sb-slider-wrap">
-          <span class="da-sb-slider-label">Elapsed Time (s)</span>
-          <input
-            type="range"
-            min="0"
-            max={_cdTimeToCap}
-            step="1"
-            value={$build.channeledDepthsTime ?? 0}
-            on:input={(e) => {
-              const val = +(e.target as HTMLInputElement).value
-              build.update(s => ({ ...s, channeledDepthsTime: val }) as any)
-            }}
-            class="da-sb-slider"
-            style="--tc:#2a49ff; --fill:{_cdFillPct}%"
-          />
-          <span class="da-sb-slider-val" style="color:#2a49ff">{+($build.channeledDepthsTime ?? 0)}s</span>
-        </div>
         <div class="da-cd-targets">
           {#each [{ k: 'M1', l: 'M1', ok: true }, { k: 'M2', l: 'M2', ok: true }, { k: 'WA', l: 'WA', ok: true }, { k: 'Rune', l: 'Rune', ok: _cdHasRuneTarget }, { k: 'Draco', l: 'Draco', ok: _cdHasDracoTarget }].filter(t => t.ok) as t}
             <button
@@ -6310,15 +6296,15 @@ $: _groupedSelfDamageSources = (() => {
         </div>
         <div class="da-pbd-condition">
           {#if !_cdActive}
-            Potency <b>{_cdPotency}</b> / cap <b>{Math.round(_cdCap * 10000) / 10000}</b> — below 0.2 potency (reaches it after <b>{Math.round(_cdTimeToThreshold * 10) / 10}s</b>), not yet armed.
+            Potency <b>{_cdPotency}</b> is below the <b>0.2</b> activation threshold, not yet armed.
           {:else}
-            Armed at <b>{_cdPotency}</b> potency — hit <b>#{_cdHit}</b> of <b>{_cdTarget}</b> gains <b>+{_cdWaterBonus}</b> Water Damage Type ({Math.round(_cdWaterBonus / 2 * 10000) / 10000} not converted by Piercer, {Math.round(_cdWaterBonus / 2 * 10000) / 10000} converted).
+            Fully charged at <b>{_cdPotency}</b> potency — hit <b>#{_cdHit}</b> of <b>{_cdTarget}</b> gains <b>+{_cdWaterBonus}</b> Water Damage Type ({Math.round(_cdWaterBonus / 2 * 10000) / 10000} not converted by Piercer, {Math.round(_cdWaterBonus / 2 * 10000) / 10000} converted).
           {/if}
         </div>
         <details class="da-pbd-details">
           <summary class="da-pbd-details-summary">Perk Details</summary>
           <div class="da-pbd-details-body">
-            <p>Gains <b>+0.01</b> Channeled Depths potency per second per perk amount, capped at <b>0.1 + 0.1 × amount</b> ({Math.round(_cdCap * 10000) / 10000}). The status is neutral and does not count as a buff or debuff.</p>
+            <p>The Channeled Depths status is always <b>fully charged</b> at <b>0.1 + 0.1 × amount</b> ({Math.round(_cdCap * 10000) / 10000}). The status is neutral and does not count as a buff or debuff.</p>
             <p>At or above <b>0.2</b> potency, the next attack gains <b>+0.5</b> additional Water Damage Type per <b>0.1</b> potency, then the status is consumed. Half of this additional damage type is <b>not</b> converted by <b>Piercer</b>.</p>
           </div>
         </details>
