@@ -30,11 +30,23 @@ export interface WeaponArtRequirement {
   scalingExemptWeaponTypes?: string[]
 }
 
+export interface WeaponArtCharge {
+  /** Seconds of charging that reach maximum charge. */
+  maxSeconds: number
+  /** Fractional damage/healing bonus gained per second of charging. */
+  pctPerSecond: number
+  /** Seconds of charging at which the charge backfires. */
+  backfireSeconds?: number
+  /** Flat self-damage by damage type dealt when the charge backfires. */
+  backfireSelfDamage?: Record<string, number>
+}
+
 export interface WeaponArt {
   name: string
   description: string
   cooldown: number
   baseDamage?: string
+  baseHealing?: number
   damageType?: string
   hitDamageTypes?: string[]
   hitScalings?: string[]
@@ -47,6 +59,21 @@ export interface WeaponArt {
   replaces?: string;
   category?: string;
   baseDamagePerDebuff?: number;
+  charge?: WeaponArtCharge;
+}
+
+/**
+ * Charge curve for Weapon Arts whose base damage is stored as a `min – max`
+ * range. The slider drives `chargePct` from 0 (released immediately) to 100
+ * (fully charged), and every other charged quantity rides the same curve.
+ */
+export function waChargeMult(min: number, max: number, chargePct: number): number {
+  if (min <= 0) return 1
+  return (min + (max - min) * (chargePct / 100)) / min
+}
+
+export function waChargeBase(min: number, max: number, chargePct: number): number {
+  return min * waChargeMult(min, max, chargePct)
 }
 
 export const WEAPON_ARTS: WeaponArt[] = [
@@ -354,6 +381,30 @@ export const WEAPON_ARTS: WeaponArt[] = [
     damageType: "0.5 Fire + 0.5 Hex",
     scaling: "Same as weapon",
     requirements: { hexScaling: 0.4, fireScaling: 0.4 },
+  },
+  {
+    name: "Polarity Cannon",
+    description: "Hold and release to charge up and release an unstable blast of holy and hex energy. Overcharging will cause the energy to backfire.",
+    cooldown: 25,
+    baseDamage: "50 – 100",
+    baseHealing: 5,
+    damageType: "0.5 Holy + 0.5 Hex",
+    scaling: "Same as weapon",
+    charge: {
+      maxSeconds: 5,
+      pctPerSecond: 0.2,
+      backfireSeconds: 6,
+      backfireSelfDamage: { holy: 27.5, hex: 27.5 },
+    },
+    extras: [
+      "Charge up to 5s to increase damage, healing, and size",
+      "Damage and healing increase by 20% per second charged, up to a maximum of +100%",
+      "Guardbreaks",
+      "Can proc other effects",
+      "Overcharging past ~6s backfires for 27.5 Holy and 27.5 Hex Self Damage",
+      "Can heal the same target more than once",
+    ],
+    requirements: { holyScaling: 0.5, hexScaling: 0.5 },
   },
   {
     name: "Gale Assault",

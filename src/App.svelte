@@ -2860,7 +2860,20 @@ $: _appWaAvgTotal = (() => {
         </div>
       </div>
     {/if}
-    {#if selectedWA.baseDamage && /healing/i.test(selectedWA.baseDamage)}
+    {#if selectedWA.baseHealing != null}
+      {@const charge = selectedWA.charge}
+      <div class="wa-stat-row">
+        <span class="wa-stat-key">Healing</span>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;flex:1;">
+          <span class="wa-stat-val heal-val">
+            {charge
+              ? `${selectedWA.baseHealing} – ${Math.round(selectedWA.baseHealing * (1 + charge.pctPerSecond * charge.maxSeconds) * 100) / 100}`
+              : selectedWA.baseHealing}
+            <span class="heal-label">{charge ? 'heal (up to full charge)' : 'heal'}</span>
+          </span>
+        </div>
+      </div>
+    {:else if selectedWA.baseDamage && /healing/i.test(selectedWA.baseDamage)}
       {@const healMatches =selectedWA.baseDamage.match(/[\d.×x\s]+healing/gi)}
       {#if healMatches?.length}
         <div class="wa-stat-row">

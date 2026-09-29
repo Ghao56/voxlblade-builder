@@ -5,7 +5,7 @@
   import BaseDamageCalc from './BaseDamageCalc.svelte'
   import ScalingBreakdownRow from './ScalingBreakdownRow.svelte'
   import SummonCard from './SummonCard.svelte'
-  import { WEAPON_ARTS } from './data/weaponArts'
+  import { WEAPON_ARTS, waChargeBase, waChargeMult } from './data/weaponArts'
   import { WEAPON_BASE_DMG } from './data/weapon base dmg'
   import { DMG_TYPE_COLORS, DMG_TYPE_PRIORITY, SCALING_TO_BOOST, PERCENT_STATS, canProc, type WeaponBaseDmg, type ProcCoefficient } from './lib/types'
   import { BUFF_DEFS, getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, calcBuffEffect, getBuffDescription, convertTailwindToWhirlwind, getTrueBalanceBuffs, assembleActiveBuffs, applyCauterizeConversion, getBurnApplicationCount, hasEligibleDarkeningHexSource, applyDarkeningHexPotency } from './data/BuffData'
@@ -2540,9 +2540,16 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         : h
     ) : null
   })()
+  // Charge-based WAs with a `baseHealing` ride the same charge curve as their
+  // damage, so the flat healing is scaled by the min→max range ratio.
+  $: _waChargeHealSeq = (() => {
+    if (!_isChargeWA || selectedWA.baseHealing == null) return null
+    return [{ n: Math.round(selectedWA.baseHealing * _waChargeMult * 10000) / 10000, count: 1 }]
+  })()
+
   $: _waHealSeq = _solarLightActive
     ? [{ n: Math.round(((SOLAR_LIGHT_HEAL_BASE + SOLAR_LIGHT_HEAL_PER_STACK * _solarLightAmt) * _solarStage) * 1000) / 1000, count: SOLAR_LIGHT_TICKS }]
-    : (_waAllHits.heal.length > 0 ? _waAllHits.heal : null)
+    : (_waChargeHealSeq ?? (_waAllHits.heal.length > 0 ? _waAllHits.heal : null))
   $: _waDebuffWarning = !!selectedWA.baseDamagePerDebuff && _generalActiveDebuffCount <= 0
 
   let _wildBoltElemIdx = 0
@@ -2820,17 +2827,26 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     return { minEnds: toEnds(min), minLabel, maxEnds: toEnds(max), maxLabel }
   })()
 
-  $: _isRetaliateChargeWA = selectedWA.name === 'Retaliate' && !_bomberChargeWaHit && !!_waRangeDamage
+  // Charge-based WAs store their base damage as a min–max range and let the
+  // charge slider interpolate between the two endpoints. Retaliate is excluded
+  // while Bomber Charge replaces its formula outright.
+  $: _isChargeWA = !!_waRangeDamage && (
+    (selectedWA.name === 'Retaliate' && !_bomberChargeWaHit) || !!selectedWA.charge
+  )
 
-  $: _retaliateInterpolatedBase = (() => {
-    if (!_isRetaliateChargeWA || !_waRangeDamage) return 0
-    const { min, max } = _waRangeDamage
-    return min + (max - min) * (retaliateCharge / 100)
+  $: _waChargeMult = (() => {
+    if (!_isChargeWA || !_waRangeDamage) return 1
+    return waChargeMult(_waRangeDamage.min, _waRangeDamage.max, retaliateCharge)
   })()
 
-  $: _retaliateInterpolatedTyped = (() => {
-    if (!_isRetaliateChargeWA || Object.keys(_waDmgTypes).length === 0) return null
-    const base = _retaliateInterpolatedBase
+  $: _waChargeBase = (() => {
+    if (!_isChargeWA || !_waRangeDamage) return 0
+    return waChargeBase(_waRangeDamage.min, _waRangeDamage.max, retaliateCharge)
+  })()
+
+  $: _waChargeTyped = (() => {
+    if (!_isChargeWA || Object.keys(_waDmgTypes).length === 0) return null
+    const base = _waChargeBase
     return Object.entries(_waDmgTypes).map(([k, mult]) => ({
       label: k.charAt(0).toUpperCase() + k.slice(1),
       rawVal: Math.round(base * 10000) / 10000,
@@ -3649,10 +3665,10 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         canApplyBurn: _hasSingedBurn,
       })
     }
-    // Retaliate charge-interpolated hit (when not overridden by Bomber Charge)
-    if (_isRetaliateChargeWA && Object.keys(_waDmgTypes).length > 0 && !(_activeMountRuneDef && mountActive)) {
+    // Charge-interpolated WA hit (Retaliate / Polarity Cannon, not overridden by Bomber Charge)
+    if (_isChargeWA && Object.keys(_waDmgTypes).length > 0 && !(_activeMountRuneDef && mountActive)) {
       result.push({
-        group: 'WA', index: 0, count: 1, base: _retaliateInterpolatedBase,
+        group: 'WA', index: 0, count: 1, base: _waChargeBase,
         scalingMult: _waScalingMult, combatMult: _waCombatMult, effectiveMult: _waEffectiveMult,
         isFinisher: false, dmgTypes: _waDmgTypes, baseDmgTypes: _waDmgTypesBase,
         label: _waDisplayName,
@@ -5586,10 +5602,10 @@ $: _groupedSelfDamageSources = (() => {
           {#if gunLabel && !m2Only}
             <span class="da-wbd-m2-src">from {gunLabel}</span>
             {#if selectedWeaponData?.m2Charge?.enabled}
-              <div class="da-rifle-charge-wrap">
-                <div class="da-rifle-charge-label">
-                  <span class="da-rcl-name">{selectedWeaponData.m2Charge.label}</span>
-                  <span class="da-rcl-pct">{weaponCharge}%</span>
+              <div class="da-charge-control">
+                <div class="da-charge-control-label">
+                  <span class="da-charge-name">{selectedWeaponData.m2Charge.label}</span>
+                  <span class="da-charge-pct">{weaponCharge}%</span>
                 </div>
                 <input
                   type="range"
@@ -5597,10 +5613,10 @@ $: _groupedSelfDamageSources = (() => {
                   max={selectedWeaponData.m2Charge.max}
                   step="1"
                   bind:value={weaponCharge}
-                  class="da-rifle-charge-slider"
+                  class="da-charge-slider"
                   style="--fill:{weaponCharge}%"
                 />
-                <div class="da-rifle-marks">
+                <div class="da-charge-marks">
                   <span>0</span><span>25</span><span>50</span><span>75</span><span>100%</span>
                 </div>
               </div>
@@ -5659,11 +5675,11 @@ $: _groupedSelfDamageSources = (() => {
             {_waHitsSeq.map(h => h.count > 1 ? `${h.n}×${h.count}` : String(h.n)).join(', ')}
 
           {:else if _waRangeTyped}
-            {#if _isRetaliateChargeWA && _retaliateInterpolatedTyped}
+            {#if _isChargeWA && _waChargeTyped}
               <div class="da-range-row">
                 <div class="da-hit-card">
                   <div class="da-range-end">
-                    {#each _retaliateInterpolatedTyped as t, ti}
+                    {#each _waChargeTyped as t, ti}
                       {#if ti > 0}
                         <span class="da-hit-plus">+</span>
                       {/if}
@@ -5684,10 +5700,14 @@ $: _groupedSelfDamageSources = (() => {
                   </span>
                 {/if}
               </div>
-              <div class="da-rifle-charge-wrap" style="margin-top:8px">
-                <div class="da-rifle-charge-label">
-                  <span class="da-rcl-name">Charge</span>
-                  <span class="da-rcl-pct">{retaliateCharge}%</span>
+              <div class="da-charge-control" style="margin-top:8px">
+                <div class="da-charge-control-label">
+                  <span class="da-charge-name">Charge</span>
+                  <span class="da-charge-pct">
+                    {selectedWA.charge
+                      ? `${Math.round((retaliateCharge / 100) * selectedWA.charge.maxSeconds * 10) / 10}s · ${retaliateCharge}%`
+                      : `${retaliateCharge}%`}
+                  </span>
                 </div>
                 <input
                   type="range"
@@ -5695,12 +5715,17 @@ $: _groupedSelfDamageSources = (() => {
                   max="100"
                   step="1"
                   bind:value={retaliateCharge}
-                  class="da-rifle-charge-slider"
+                  class="da-charge-slider"
                   style="--fill:{retaliateCharge}%"
                 />
-                <div class="da-rifle-marks">
+                <div class="da-charge-marks">
                   <span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span>
                 </div>
+                {#if selectedWA.charge?.backfireSeconds != null}
+                  <div class="da-charge-marks" style="color:#f87171;">
+                    <span>⚠ Backfires past {selectedWA.charge.backfireSeconds}s</span>
+                  </div>
+                {/if}
               </div>
             {:else}
             <div class="da-range-row">
@@ -8011,6 +8036,7 @@ $: _groupedSelfDamageSources = (() => {
   font-weight: 800;
   color: var(--tc, #e8e4da);
   font-family: 'Courier New', monospace;
+  font-variant-numeric: tabular-nums;
   letter-spacing: -.01em;
   text-shadow: 0 0 10px color-mix(in srgb, var(--tc, #e8e4da) 50%, transparent);
   transition: color var(--duration-fast) var(--ease-out),
@@ -8420,7 +8446,12 @@ $: _groupedSelfDamageSources = (() => {
   border-color: rgba(74,222,128,.2);
   background: rgba(74,222,128,.06);
 }
-.da-rifle-charge-wrap {
+/* Charge slider — shared by the Rifle M2 charge and the charge-based Weapon Arts.
+   `flex: 1 0 100%` pins it to its own full-width row so the hit card above can
+   resize as its numbers change without yanking the slider out from under the
+   cursor mid-drag. */
+.da-charge-control {
+  flex: 1 0 100%;
   margin-top: 10px;
   padding: 10px 13px 8px;
   border-radius: 10px;
@@ -8429,29 +8460,28 @@ $: _groupedSelfDamageSources = (() => {
   display: flex;
   flex-direction: column;
   gap: 7px;
-  min-width: 170px;
 }
-.da-rifle-charge-label {
+.da-charge-control-label {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
 }
-.da-rcl-name {
+.da-charge-name {
   font-size: .57rem;
   font-weight: 800;
   letter-spacing: .14em;
   text-transform: uppercase;
   color: #d97706;
 }
-.da-rcl-pct {
+.da-charge-pct {
   font-size: .85rem;
   font-weight: 900;
   color: #fbbf24;
   font-family: 'Courier New', monospace;
   line-height: 1;
 }
-.da-rifle-charge-slider {
+.da-charge-slider {
   width: 100%;
   appearance: none;
   height: 6px;
@@ -8464,7 +8494,7 @@ $: _groupedSelfDamageSources = (() => {
     rgba(255,255,255,.1) var(--fill, 100%)
   );
 }
-.da-rifle-charge-slider::-webkit-slider-thumb {
+.da-charge-slider::-webkit-slider-thumb {
   appearance: none;
   width: 16px;
   height: 16px;
@@ -8475,15 +8505,15 @@ $: _groupedSelfDamageSources = (() => {
   box-shadow: 0 0 0 3px rgba(251,191,36,.18);
   transition: transform .1s, box-shadow .1s;
 }
-.da-rifle-charge-slider::-webkit-slider-thumb:hover {
+.da-charge-slider::-webkit-slider-thumb:hover {
   transform: scale(1.2);
   box-shadow: 0 0 0 5px rgba(251,191,36,.28);
 }
-.da-rifle-charge-slider::-webkit-slider-thumb:active {
+.da-charge-slider::-webkit-slider-thumb:active {
   cursor: grabbing;
   transform: scale(1.08);
 }
-.da-rifle-charge-slider::-moz-range-thumb {
+.da-charge-slider::-moz-range-thumb {
   width: 16px;
   height: 16px;
   border-radius: 50%;
@@ -8491,12 +8521,12 @@ $: _groupedSelfDamageSources = (() => {
   border: 2px solid rgba(0,0,0,.5);
   cursor: grab;
 }
-.da-rifle-marks {
+.da-charge-marks {
   display: flex;
   justify-content: space-between;
   padding: 0 1px;
 }
-.da-rifle-marks span {
+.da-charge-marks span {
   font-size: .52rem;
   color: rgba(251,191,36,.38);
   font-weight: 700;
