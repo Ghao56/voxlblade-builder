@@ -6,6 +6,7 @@
   import ScalingBreakdownRow from './ScalingBreakdownRow.svelte'
   import SummonCard from './SummonCard.svelte'
   import { WEAPON_ARTS, waChargeBase, waChargeMult } from './data/weaponArts'
+  import { CRAGBLADE_BUFF_NAME, CRAGBLADE_M1_M2_DMG_MULT, resolveCragbladeType } from './data/cragblade'
   import { WEAPON_BASE_DMG } from './data/weapon base dmg'
   import { DMG_TYPE_COLORS, DMG_TYPE_PRIORITY, SCALING_TO_BOOST, PERCENT_STATS, canProc, type WeaponBaseDmg, type ProcCoefficient } from './lib/types'
   import { BUFF_DEFS, getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, calcBuffEffect, getBuffDescription, convertTailwindToWhirlwind, getTrueBalanceBuffs, assembleActiveBuffs, applyCauterizeConversion, getBurnApplicationCount, hasEligibleDarkeningHexSource, applyDarkeningHexPotency } from './data/BuffData'
@@ -121,6 +122,7 @@ const BUFF_NAME_BOOST_LINKS: Record<string, string> = {
   'Perfection': 'Perfection',
   'Minion Absorbed': 'Minion Absorption',
   'Queens Power': 'Queens Power',
+  'Cragblade': 'Cragblade',
 }
 const BOOST_BUFF_KEY_LINKS: Record<string, string[]> = {
   'Smoldering': ['Burn:Smoldering'],
@@ -1093,6 +1095,8 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   $: _essenceRayAmt = perks['Essence Ray'] ?? 0
   $: _lightningCloakActive = _allActiveBuffsRaw.some(b => b.buffName === 'Lightning Cloak')
   $: _activeLightningCloakBuffs = _allActiveBuffsRaw.filter(b => b.buffName === 'Lightning Cloak')
+  $: _cragbladeActive = (_disabledKeysArr.length,
+    _allActiveBuffsRaw.some(b => b.buffName === CRAGBLADE_BUFF_NAME && !_isBuffDisabled(b)))
   $: _stormRendAmt = perks['Storm Rend'] ?? 0
   $: _lightningCloakPct = _lightningCloakActive && lightningCloakState !== 'off'
     ? (lightningCloakState === 'twoThirds' ? 2 * LIGHTNING_CLOAK_FRACTION : LIGHTNING_CLOAK_FRACTION) : 0
@@ -1594,14 +1598,24 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     weaponPerks: _weaponPerks,
   })
 
+  $: _cragbladeConvert = _cragbladeActive ? resolveCragbladeType(_baseWeaponType) : null
+
   $: _displayRows = (() => {
-    type MergedRow = WeaponBaseDmg & { gunLabel?: string; m2Only?: boolean; m2NoLock?: boolean }
+    type MergedRow = WeaponBaseDmg & { gunLabel?: string; m2Only?: boolean; m2NoLock?: boolean; cragbladeLabel?: string; cragbladeM2Retained?: boolean }
     const rows: MergedRow[] = []
 
     if (_baseWeaponType) {
       const base = WEAPON_BASE_DMG.find(w => w.type === _baseWeaponType)
       if (base) {
-        if (_gunOverlay) {
+        if (_cragbladeConvert) {
+          const conv = WEAPON_BASE_DMG.find(w => w.type === _cragbladeConvert.type)
+          if (conv) {
+            const m2 = _cragbladeConvert.retainM2 ? base.m2 : conv.m2
+            rows.push({ ...conv, m2, cragbladeLabel: _cragbladeConvert.type, cragbladeM2Retained: _cragbladeConvert.retainM2 } as any as MergedRow)
+          } else {
+            rows.push({ ...base })
+          }
+        } else if (_gunOverlay) {
           const gun = WEAPON_BASE_DMG.find(w => w.type === _gunOverlay.type)
           if (_gunOverlay.m2Only) {
             rows.push({ type: _baseWeaponType, m1: base.m1, m2: gun?.m2 ?? null, gunLabel: _gunOverlay.type, m2Only: true, m2NoLock: _gunOverlay.m2NoLock } as any as MergedRow)
@@ -1624,6 +1638,10 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   $: _currentLabel = _gunOverlay && _baseWeaponType
     ? `${_baseWeaponType} + ${_gunOverlay.type}`
     : _gunOverlay?.type ?? _baseWeaponType
+
+  $: _cragbladeLabel = _cragbladeConvert
+    ? `${_baseWeaponType} → ${_cragbladeConvert.type}${_cragbladeConvert.retainM2 ? ' (M2 retained)' : ''}`
+    : ''
 
   // Shared context for every buildDmgTypeBonuses variant below; the variants
   // differ only by their gating flags. Kept as its own reactive statement so
@@ -2033,7 +2051,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   }
   type BoostAttackType = 'm1' | 'm2' | 'perk' | 'rune' | 'wa';
   $: _syntheticDmgBoostEntries = (() => {
-    const entries: Array<{ sourceName: string; rawMultiplier: number; condition: string; type: 'dmg'; needsProcCoeff?: boolean }> = []
+    const entries: Array<{ sourceName: string; rawMultiplier: number; condition: string; type: 'dmg'; needsProcCoeff?: boolean; appliesTo?: BoostAttackType[] }> = []
 
     const cr = _curseRipPerkAmount > 0 && _curseRipActiveDebuffCount > 0
     if (cr) entries.push({ sourceName: 'Curse Rip', rawMultiplier: _curseRipDamageBoost, condition: `${_curseRipActiveDebuffCount} unique debuff${_curseRipActiveDebuffCount > 1 ? 's' : ''} · ${_curseRipPerkAmount} stack`, type: 'dmg' })
@@ -2094,6 +2112,16 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         rawMultiplier: convertedEnergyEntry.dmgMult,
         condition: convertedEnergyEntry.condition,
         type: 'dmg',
+      })
+    }
+
+    if (_cragbladeActive) {
+      entries.push({
+        sourceName: CRAGBLADE_BUFF_NAME,
+        rawMultiplier: CRAGBLADE_M1_M2_DMG_MULT,
+        condition: 'M1 and M2 damage also counts as Weapon Art damage',
+        type: 'dmg',
+        appliesTo: ['m1', 'm2'],
       })
     }
 
@@ -2164,13 +2192,29 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   $: activeFinalMult = activeEntries.reduce((acc, e) => acc * e.rawMultiplier, 1.0)
   $: activeFinalMultRounded = roundMultiplier(activeFinalMult)
 
+  // While the Cragblade buff is active, M1/M2 hits also carry the 'wa' tag, so
+  // Weapon-Art-scoped boosts (Gorecast, Spell Piercer, …) fold into their multipliers.
+  function _boostTargetsType(entry: any, type: BoostAttackType): boolean {
+    const appliesTo = entry?.appliesTo as BoostAttackType[] | undefined
+    if (!appliesTo) return true
+    if (appliesTo.includes(type)) return true
+    return _cragbladeActive && (type === 'm1' || type === 'm2') && appliesTo.includes('wa')
+  }
+
+  function _boostSpecificallyTargetsType(entry: any, type: BoostAttackType): boolean {
+    const appliesTo = entry?.appliesTo as BoostAttackType[] | undefined
+    if (!appliesTo) return false
+    if (appliesTo.includes(type)) return true
+    return _cragbladeActive && (type === 'm1' || type === 'm2') && appliesTo.includes('wa')
+  }
+
   // _categoryMult computes final multiplier for a hit category.
   // excludeLevel = true → skips BoostEntry with isLevel (Level Damage Bonus),
   //   used when computing effective combatMult separately from level bonus.
   function _categoryMult(type: BoostAttackType, procAllowed: boolean = true, excludeGeneral: boolean = false, excludeLevel: boolean = false): number {
     return activeEntries
-      .filter(e => !(e as any).appliesTo || (e as any).appliesTo.includes(type))
-      .filter(e => !excludeGeneral || (e as any).appliesTo?.includes(type))
+      .filter(e => _boostTargetsType(e, type))
+      .filter(e => !excludeGeneral || _boostSpecificallyTargetsType(e, type))
       .filter(e => excludeLevel ? !(e as any).isLevel : true)
       .filter(e => procAllowed || !(e as any).needsProcCoeff)
       .reduce((acc, e) => acc * e.rawMultiplier, 1.0)
@@ -2221,7 +2265,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     const allEntries = _primalAdjustedDmgEntries
 
     for (const { key, label } of CAT_DEFS) {
-      const allChips   = allEntries.filter(e => (e as any).appliesTo?.includes(key))
+      const allChips   = allEntries.filter(e => _boostSpecificallyTargetsType(e, key))
       const activeChips = allChips.filter(e => !disabledBoosts.has(e.sourceName) && !(e.sourceName === 'Spirit Winds' && _effectiveTailwindPotency <= 0))
       const specMult   = activeChips.reduce((acc, e) => acc * e.rawMultiplier, 1.0)
       const totalMult  = roundMultiplier(_universalActiveMult * specMult)
@@ -5323,6 +5367,9 @@ $: _groupedSelfDamageSources = (() => {
       {#if _currentLabel}
         <Badge color="#fb923c">{_currentLabel}</Badge>
       {/if}
+      {#if _cragbladeLabel}
+        <Badge color="#c88a3c">Cragblade: {_cragbladeLabel}</Badge>
+      {/if}
       {#if showAllWeapons}
         <button class="da-wbd-toggle da-wbd-toggle--open" on:click={() => showAllWeapons = false}>
           <span class="da-wbd-toggle-arr">▼</span>
@@ -5341,6 +5388,7 @@ $: _groupedSelfDamageSources = (() => {
   {#each WEAPON_BASE_DMG as row}
     {@const isActive   = _currentLabel && row.type === _baseWeaponType}
     {@const isGunActive = !!_gunOverlay && row.type === _gunOverlay.type}
+    {@const isCragActive = !!_cragbladeConvert && row.type === _cragbladeConvert.type}
     {@const gunLabel = (row as any).gunLabel as string | undefined}
     {@const m2Only = (row as any).m2Only as boolean | undefined}
     {@const hasDmgTypes = isActive && Object.keys(_weaponDmgTypes).length > 0}
@@ -5353,9 +5401,11 @@ $: _groupedSelfDamageSources = (() => {
       <div class="da-wbd-card-head">
         {#if isActive}<span class="da-wbd-dot" class:da-wbd-dot--gun={!!gunLabel}></span>{/if}
         {#if isGunActive}<span class="da-wbd-dot da-wbd-dot--gun"></span>{/if}
+        {#if isCragActive}<span class="da-wbd-dot" style="background:#c88a3c"></span>{/if}
 
         <span class="da-wbd-card-name">{row.type}</span>
         {#if gunLabel}<Badge color="#38bdf8">{gunLabel}</Badge>{/if}
+        {#if isCragActive}<Badge color="#c88a3c">Cragblade</Badge>{/if}
 
         {#if showAllWeapons && isActive}
           <Badge color="#fb923c" class="da-wbd-equipped-badge">✦ Equipped</Badge>

@@ -1,3 +1,10 @@
+import {
+  CRAGBLADE_M1_M2_DMG_PCT,
+  CRAGBLADE_POISE_DMG_PCT,
+  CRAGBLADE_ATTACK_SPEED_MULT,
+  CRAGBLADE_ATTACK_SPEED_EXEMPT_SOURCES,
+} from './cragblade'
+
 export interface WAIndividualHit {
   damageType: string
   scaling?: string
@@ -558,5 +565,23 @@ export const WEAPON_ARTS: WeaponArt[] = [
   ],
   avgTotalHits: 70,
   requirements: { bothParts: ["Starlight Greatblade", "Starlight Handle"] },
+},
+{
+  name: "Cragblade",
+  description: "Shatter the ground with a crag of stone and reshape your weapon for 25 seconds.",
+  cooldown: 40,
+  baseDamage: "8",
+  damageType: "1 Earth",
+  scaling: "Same as weapon",
+  extras: [
+    "Grants the Cragblade Buff for 25s",
+    "M1 and M2 damage now also counts as Weapon Art damage",
+    `M1 and M2 damage +${CRAGBLADE_M1_M2_DMG_PCT}%`,
+    `M1 and M2 poise damage +${CRAGBLADE_POISE_DMG_PCT}%`,
+    `Attack speed set to ${CRAGBLADE_ATTACK_SPEED_MULT}×, ignoring all other attack speed modifiers except ${CRAGBLADE_ATTACK_SPEED_EXEMPT_SOURCES.join(', ')}`,
+    "Converts the weapon type: Dagger, 1-Handed Sword → Mallet · Spear → War Hammer · Greatsword → Unbalanced Sword · Dual Swords → Dual Unbalanced Swords · Dual Wielding Daggers → Dual Mallets · Lance → Unbalanced Sword (retains its M2)",
+    "Unlisted weapon types keep their own type",
+  ],
+  requirements: { earthScaling: 0.75 },
 },
 ]

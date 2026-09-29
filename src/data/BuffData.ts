@@ -115,6 +115,7 @@ import {
   CURSED_FLAMES_BURN_DURATION_PER_AMOUNT,
 } from '../lib/constants/perks'
 import { DRAGIGATOR_SPIRIT_BURN_DURATION } from '../lib/constants/perk-base-damage'
+import { CRAGBLADE_BUFF_DURATION } from './cragblade'
 import { canProc } from '../lib/types'
 import { calcBaseMaxHP } from '../lib/constants/game'
 import { findPerkDmgDef, isHpGateActive } from './Perkbasedmg'
@@ -325,6 +326,13 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     name: 'Lightning Cloak',
     color: '#AAFFDB',
     description: 'Gain 20% movement speed. Attacks trigger chain lightning dealing 1/3 of hit damage as Air+Magic to up to 4 additional targets.',
+    effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
+    effectUnit: 'flat',
+  },
+  Cragblade: {
+    name: 'Cragblade',
+    color: '#c88a3c',
+    description: 'Your weapon counts as weapon art damage, has static attack speed, and deals 30% more damage and 100% more poise damage.',
     effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
     effectUnit: 'flat',
   },
@@ -1966,6 +1974,9 @@ const WEAPON_ART_BUFF_MAP: Record<string, GrantedBuff[]> = {
   ],
   'Icicle Wave': [
     { buffName: 'Frostbite', potency: 0, duration: ICICLE_WAVE_FROSTBITE_DURATION, sourceName: 'Icicle Wave', sourceType: 'weaponArt' },
+  ],
+  'Cragblade': [
+    { buffName: 'Cragblade', potency: 0, duration: CRAGBLADE_BUFF_DURATION, sourceName: 'Cragblade', sourceType: 'weaponArt' },
   ],
 }
 
