@@ -49,17 +49,21 @@ import {
   LUMINESCENT_PCT_PER_STACK,
   SPIRIT_WINDS_PCT_PER_STACK,
   DARK_MAGIC_HEX_CONVERSION_PCT_PER_STACK,
+  TRUE_MOON_TRUE_CONVERSION_PCT_PER_STACK,
+  TRUE_MOON_DMG_MULT_PER_STACK,
   DARK_MAGIC_DMG_MULT_PER_STACK,
   WIND_WALKER_PEN_PER_STACK,
   REAPER_PCT_PER_DEBUFF_PER_STACK,
   EXTINGUISH_MULT_PER_STACK,
   EXPLOSIVE_CHARGE_PCT,
   WILD_BOLT_DMG_REDUCTION,
-  CRIT_HEALING_BASE,
+  CRIT_HEALING_MULT_BASE,
   CRIT_HEALING_HOLY_BOOST_DIVISOR,
   CRIT_HEALING_CHANCE_BASE,
   CRIT_HEALING_PERK_BONUS,
   CRIT_HEALING_PER_STACK,
+  critHealingDmgMult,
+  critHealingChance,
   TRUE_BALANCE_DMG_DIVISOR,
   TRUE_BALANCE_HEAL_DIVISOR,
   CURSE_RIP_DMG_BOOST_CONST,
@@ -318,12 +322,10 @@ const trimNum = (n: number, maxDecimals = 4): string => {
 
   $: _curseRipHealMult = _healFinalMultiplierNoLevel
 
-  $: _healCritDmgMult = (perks['Critical Healing'] ?? 0) > 0
-    ? CRIT_HEALING_BASE + CRIT_HEALING_PERK_BONUS + CRIT_HEALING_PER_STACK * (perks['Critical Healing'] ?? 0)
-    : 0
+  $: _healCritDmgMult = critHealingDmgMult(perks['Critical Healing'] ?? 0)
 
   $: _healCritChance = (perks['Critical Healing'] ?? 0) > 0
-    ? CRIT_HEALING_CHANCE_BASE + (stats.holyBoost ?? 0) / CRIT_HEALING_HOLY_BOOST_DIVISOR
+    ? critHealingChance(stats.holyBoost ?? 0)
     : 0
 
   $: _deathmistHealMult = ($build.deathmistHit ?? 1) > 0 ? DEATHMIST_SLASH_HEAL_ON_HIT_MULT : 1
@@ -1147,6 +1149,10 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   $: _darkMagicHexRate = _darkMagicAmt > 0 ? Math.min(1, DARK_MAGIC_HEX_CONVERSION_PCT_PER_STACK * _darkMagicAmt) : 0
   $: _darkMagicDmgMult = _darkMagicAmt > 0 ? 1 + DARK_MAGIC_DMG_MULT_PER_STACK * _darkMagicAmt : 1
   const _noDarkMagicWeaponHex = 0
+  $: _trueMoonAmt = perks['True Moon'] ?? 0
+  $: _trueMoonTrueRate = _trueMoonAmt > 0 ? Math.min(1, TRUE_MOON_TRUE_CONVERSION_PCT_PER_STACK * _trueMoonAmt) : 0
+  $: _trueMoonDmgMult = _trueMoonAmt > 0 ? 1 + TRUE_MOON_DMG_MULT_PER_STACK * _trueMoonAmt : 1
+  const _noTrueMoonWeaponTrue = 0
   $: _raceGlobalArmorPen = getRace($build.race)?.globalArmorPenetration ?? 0
   $: _waArmorPenetration = (_windWalkerAmt > 0 && _hasTailwindOrWhirlwind ? WIND_WALKER_PEN_PER_STACK * _windWalkerAmt : 0) + (getRace($build.race)?.waArmorPenetration ?? 0) + (disabledBoosts.has('Highlander') ? 0 : (perks['Highlander'] ?? 0) * 10)
   $: _stormRendPct = _stormRendAmt > 0 && stormRendState !== 'off'
@@ -1771,7 +1777,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   $: _weaponDmgTypesBase = (() => {
     return { ...(_weaponResult?.damageTypes ?? {}) }
   })()
-  $: _convertedWeaponDmgTypes = applyAirToMagicConversion(_weaponDmgTypes, _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt)
+  $: _convertedWeaponDmgTypes = applyAirToMagicConversion(_weaponDmgTypes, _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt, _trueMoonTrueRate)
   $: _hasFireDmg = Object.entries(_weaponDmgTypes).some(([dt, mult]) => dt === 'fire' && mult > 0)
 
   $: _gunDmgTypes = (() => {
@@ -2619,6 +2625,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     weaponDmgTypesBase: _weaponDmgTypesBase,
     airToMagicConversionRate: _spiritWindsConversionRate,
     darkMagicHexRate: _darkMagicHexRate,
+    trueMoonTrueRate: _trueMoonTrueRate,
     echoIncinerateAmt: _echoIncinerationAmt,
     wildBoltElement: _wildBoltElement,
     weightySlamActive: _weightySlamAmt > 0 && selectedWA.name === 'Slam',
@@ -2657,7 +2664,8 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       _applyDmgBonuses({ ...baseDmgTypes }, _waDmgTypeBonuses),
       _spiritWindsConversionRate,
       _darkMagicHexRate,
-      _echoIncinerationAmt
+      _echoIncinerationAmt,
+      _trueMoonTrueRate
     )
     const scalings = def.scalings ?? {}
     return {
@@ -2780,7 +2788,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         let result = dtStr === 'Same as weapon' && _emotionalHexBonus > 0
           ? { ...base, hex: Math.round(((base.hex ?? 0) + _emotionalHexBonus) * 10000) / 10000 }
           : base
-        result = applyAirToMagicConversion(result, _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt)
+        result = applyAirToMagicConversion(result, _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt, _trueMoonTrueRate)
     return result
   })()
       const types: DamageDisplayType[] = Object.entries(dtFinal).map(([k, mult]) => ({
@@ -2802,9 +2810,9 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         ? (() => {
             const entries = Object.entries(_weaponDmgTypesBase)
             const highestKey = entries.length > 0 ? entries.reduce((a, b) => b[1] > a[1] ? b : a)[0] : 'physical'
-            return applyAirToMagicConversion(_applyDmgBonuses({ [highestKey]: 1 }, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt)
+            return applyAirToMagicConversion(_applyDmgBonuses({ [highestKey]: 1 }, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt, _trueMoonTrueRate)
           })()
-        : applyAirToMagicConversion(_applyDmgBonuses({ fire: 0.5, air: 0.5 }, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt)
+        : applyAirToMagicConversion(_applyDmgBonuses({ fire: 0.5, air: 0.5 }, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt, _trueMoonTrueRate)
       const types: DamageDisplayType[] = Object.entries(dtFinal).map(([k, mult]) => ({
         label: k.charAt(0).toUpperCase() + k.slice(1),
         rawVal: Math.round(base * 10000) / 10000,
@@ -2820,7 +2828,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     return seq.map((h) => {
       const base = typeof h === 'number' ? h : h.n
       const count = typeof h === 'number' ? 1 : h.count
-      const dtFinal = applyAirToMagicConversion(_applyDmgBonuses({ true: 1 }, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt)
+      const dtFinal = applyAirToMagicConversion(_applyDmgBonuses({ true: 1 }, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt, _trueMoonTrueRate)
       const types: DamageDisplayType[] = Object.entries(dtFinal).map(([k, mult]) => ({
         label: k.charAt(0).toUpperCase() + k.slice(1),
         rawVal: Math.round(base * 10000) / 10000,
@@ -3202,7 +3210,8 @@ const trimNum = (n: number, maxDecimals = 4): string => {
           ? _applyDmgBonuses(baseDmgTypes, _waDmgTypeBonuses)
           : _applyDmgBonuses(baseDmgTypes, canProc(def.procCoefficient) ? _perkDmgTypeBonuses : _perkDmgTypeBonusesDoT)
       const _entryDarkMagicRate = def.dmgTypeMode === 'weapon' ? _darkMagicHexRate : _noDarkMagicWeaponHex
-      const resolvedDmgTypes = applyAirToMagicConversion(baseResolvedDmgTypes, _spiritWindsConversionRate, _entryDarkMagicRate, _echoIncinerationAmt)
+      const _entryTrueMoonRate = def.dmgTypeMode === 'weapon' ? _trueMoonTrueRate : _noTrueMoonWeaponTrue
+      const resolvedDmgTypes = applyAirToMagicConversion(baseResolvedDmgTypes, _spiritWindsConversionRate, _entryDarkMagicRate, _echoIncinerationAmt, _entryTrueMoonRate)
       const resolvedDmgTypesWithMw = def.countAsM2 && _mortalWillHolyTypeBonus > 0
         ? { ...resolvedDmgTypes, holy: Math.round(((resolvedDmgTypes.holy ?? 0) + _mortalWillHolyTypeBonus) * 10000) / 10000 }
         : resolvedDmgTypes
@@ -3271,7 +3280,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       const totalDmg = isSpringblast ? 1 : baseDmg * scalingMult * finalCombatMult
       const hasHalfActivations = def.halfActivations && perkAmount > 0 && ((_gunOverlay?.type === 'Dual Guns') || _baseWeaponType === 'Storm Caster')
       const halfActivations = hasHalfActivations || undefined
-      const oncePerFinisher = isSpringblast ? false : (def.finisherOnly ? true : undefined)
+      const oncePerFinisher = isSpringblast ? false : (def.oncePerFinisher ?? (def.finisherOnly ? true : undefined))
 
       const perkKey = `${def.perkName}:${def.label ?? def.perkName}`
       const manualOff = _disabledPerkKeySet.has(perkKey)
@@ -3678,7 +3687,8 @@ const trimNum = (n: number, maxDecimals = 4): string => {
           ),
           _spiritWindsConversionRate,
           _noDarkMagicWeaponHex,
-          _echoIncinerationAmt
+          _echoIncinerationAmt,
+          _noTrueMoonWeaponTrue
         )
         result.push({
           group: 'M1', index: 0, count: 1,
@@ -3762,21 +3772,21 @@ const trimNum = (n: number, maxDecimals = 4): string => {
             const highestKey = entries.length > 0
               ? entries.reduce((a, b) => b[1] > a[1] ? b : a)[0]
               : Object.keys(_weaponDmgTypes)[0] ?? 'physical'
-            hitDt = applyAirToMagicConversion(_applyDmgBonuses({ [highestKey]: 1 }, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt)
+            hitDt = applyAirToMagicConversion(_applyDmgBonuses({ [highestKey]: 1 }, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt, _trueMoonTrueRate)
             hitDtBase = { [highestKey]: 1 }
           } else {
             const explTypes = _applyDmgBonuses({ fire: 0.5, air: 0.5 }, _waDmgTypeBonuses)
-            hitDt = applyAirToMagicConversion(explTypes, _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt)
+            hitDt = applyAirToMagicConversion(explTypes, _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt, _trueMoonTrueRate)
             hitDtBase = { fire: 0.5, air: 0.5 }
           }
         } else if (_essenceRayActive) {
-          hitDt = applyAirToMagicConversion(_applyDmgBonuses({ true: 1 }, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt)
+          hitDt = applyAirToMagicConversion(_applyDmgBonuses({ true: 1 }, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt, _trueMoonTrueRate)
           hitDtBase = { true: 1 }
         } else if (selectedWA.hitDamageTypes?.length) {
           const _hdt = selectedWA.hitDamageTypes[Math.min(i, selectedWA.hitDamageTypes.length - 1)]
           hitDt = _hdt === 'Same as weapon'
             ? _applyDmgBonuses({ ..._convertedWeaponDmgTypes }, _waOnlyBonuses)
-            : applyAirToMagicConversion(_resolveHitDmgTypes(_hdt, _weaponDmgTypes, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt)
+            : applyAirToMagicConversion(_resolveHitDmgTypes(_hdt, _weaponDmgTypes, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt, _trueMoonTrueRate)
           hitDtBase = _resolveHitDmgTypesBase(selectedWA.hitDamageTypes[Math.min(i, selectedWA.hitDamageTypes.length - 1)], _weaponDmgTypesBase)
         } else {
           hitDt = _waDmgTypes
@@ -3862,7 +3872,8 @@ const trimNum = (n: number, maxDecimals = 4): string => {
           : baseWaDmgTypes,
         _spiritWindsConversionRate,
         _darkMagicHexRate,
-        _echoIncinerationAmt
+        _echoIncinerationAmt,
+        _trueMoonTrueRate
       )
       for (const h of waDef.getHits()) {
         const base = typeof h === 'number' ? h : h.n
@@ -4153,7 +4164,8 @@ const trimNum = (n: number, maxDecimals = 4): string => {
           ),
           _spiritWindsConversionRate,
           _noDarkMagicWeaponHex,
-          _echoIncinerationAmt
+          _echoIncinerationAmt,
+          _noTrueMoonWeaponTrue
         )
         const _secCount = _runeSecondary.getHits ? _runeSecondary.getHits(_runeCtx) : (_runeSecondary.hits ?? 1)
         if (Object.keys(_secDmgTypesWithBonus).length > 0) {
@@ -4690,6 +4702,7 @@ $: _groupedSelfDamageSources = (() => {
     dragonStateEffectiveCombatMult={_dragonStateEffectiveMult}
     dragonStateTotalDmg={_dragonStateTotalDmg}
     darkMagicDmgMult={_darkMagicDmgMult}
+    trueMoonDmgMult={_trueMoonDmgMult}
     perkOnHitDamages={_perkOnHitDamages}
     waArmorPenetration={_waArmorPenetration}
     weaponHitsCountAsWa={_cragbladeActive}
@@ -4819,7 +4832,7 @@ $: _groupedSelfDamageSources = (() => {
                 <span class="da-source-name">Holy Boost {(stats.holyBoost ?? 0).toFixed(0)}</span>
                 <span class="da-source-val" style="color:#4ade80">+{((stats.holyBoost ?? 0) / CRIT_HEALING_HOLY_BOOST_DIVISOR).toFixed(2)}%</span>
               </div>
-              <div class="da-source-formula">{CRIT_HEALING_BASE} + {CRIT_HEALING_PERK_BONUS} + {CRIT_HEALING_PER_STACK} × {perks['Critical Healing'] ?? 0} = ×{fmtCritMult(_healCritDmgMult)} healing on a heal crit. Only compatible, proccable heals can crit (Solar Light's reduced proc coefficient lowers its chance).</div>
+              <div class="da-source-formula">{CRIT_HEALING_MULT_BASE} + {CRIT_HEALING_PERK_BONUS} + {CRIT_HEALING_PER_STACK} × {perks['Critical Healing'] ?? 0} = ×{fmtCritMult(_healCritDmgMult)} healing on a heal crit (the full heal plus the perk bonus — not the normal crit multiplier). Only compatible, proccable heals can crit (Solar Light's reduced proc coefficient lowers its chance).</div>
             </div>
           </div>
         {/if}
@@ -6038,7 +6051,7 @@ $: _groupedSelfDamageSources = (() => {
               })
               const bonusEntries = Object.entries(_perkDmgTypeBonuses).filter(([, v]) => v > 0)
               const resolved = bonusEntries.length > 0 ? resolveDamageTypes(base, _perkDmgTypeBonuses) : base
-              return applyAirToMagicConversion(resolved, _spiritWindsConversionRate, _noDarkMagicWeaponHex, _echoIncinerationAmt)
+              return applyAirToMagicConversion(resolved, _spiritWindsConversionRate, _noDarkMagicWeaponHex, _echoIncinerationAmt, _noTrueMoonWeaponTrue)
             })()}
         
         <div class="da-wbd-section">

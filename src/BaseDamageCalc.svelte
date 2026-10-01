@@ -76,6 +76,7 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
   export let dragonStateCombatMult: number = 1
   export let dragonStateTotalDmg: number = 0
   export let darkMagicDmgMult: number = 1
+  export let trueMoonDmgMult: number = 1
   export let perkOnHitDamages: Array<PerkOnHitDmg & { getFinisherHitBaseDmg?: (ctx: { baseDmg: number; hitIndex: number; perkAmount?: number; proccingBase?: number; finisherHitCount?: number }) => number }> = []
   export let waArmorPenetration: number = 0
   export let weaponHitsCountAsWa: boolean = false
@@ -136,6 +137,25 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
     }
   }
 
+  /**
+   * True Moon's flat damage boost, gated on the attack containing any True Damage
+   * Type. Same shape as Dark Magic's hex boost.
+   */
+  function trueMoonTrueBoostEntry() {
+    return {
+      perkName: 'True Moon',
+      label: `True Moon · True ${Math.round((trueMoonDmgMult - 1) * 100)}%`,
+      mult: trueMoonDmgMult,
+    }
+  }
+
+  /** Pushes the Dark Magic / True Moon type-gated boosts when their type is present. */
+  function pushTypeGatedBoosts(applicableBoosts: Array<{ perkName: string; label: string; mult: number }>, types: Record<string, number> | undefined) {
+    if (!types) return
+    if ((types.hex ?? 0) > 0 && darkMagicDmgMult > 1) applicableBoosts.push(darkMagicHexBoostEntry())
+    if ((types.true ?? 0) > 0 && trueMoonDmgMult > 1) applicableBoosts.push(trueMoonTrueBoostEntry())
+  }
+
   const STAR_TYPES = ['magic', 'air', 'fire', 'hex', 'holy', 'water', 'true']
   function pickStarType(): string {
     return STAR_TYPES[Math.floor(Math.random() * STAR_TYPES.length)]
@@ -144,7 +164,7 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
   function resolveTypeInfo(k: string, penDecimal: number, procCoeff?: ProcCoefficient, group?: string, resolvedTypes?: Record<string, number>) {
     const info = DMG_TYPE_MAP.get(k) ?? { label: k, color: '#e8e4da' }
     const applicableBoosts = getApplicableBoosts(k, false, group, procCoeff)
-    if (resolvedTypes && (resolvedTypes.hex ?? 0) > 0 && darkMagicDmgMult > 1) applicableBoosts.push(darkMagicHexBoostEntry())
+    pushTypeGatedBoosts(applicableBoosts, resolvedTypes)
     const typedMultUsed = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
     const typeDebuffMult = _activeDebuffTypeDamageMult[k] ?? 1
     const defPct = defPctForType(k)
@@ -730,7 +750,7 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
       for (const [k, mult] of Object.entries(resolvedTypes)) {
         const info = DMG_TYPE_MAP.get(k) ?? { label: k, color: '#e8e4da' }
         const applicableBoosts = getApplicableBoosts(k, false, undefined, hit?.procCoefficient)
-        if ((resolvedTypes.hex ?? 0) > 0 && darkMagicDmgMult > 1) applicableBoosts.push(darkMagicHexBoostEntry())
+        pushTypeGatedBoosts(applicableBoosts, resolvedTypes)
         const typedMultUsed = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
         const debuffMult = _activeDebuffTypeDamageMult[k] ?? 1
         const defPct   = defPctForType(k)
@@ -884,12 +904,11 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
         return getApplicableBoosts(k, typeIsHeal, bdcGroup, hit.procCoefficient)
       })()
       // Dark Magic: flat damage boost on any attack whose resolved types contain Hex.
+      // True Moon mirrors it for True Damage Type.
       // `hit.dmgTypes` is already post weapon-bonuses and post Spirit Winds /
-      // Dark Magic / Echo Incineration conversions, so the perk's own
-      // magic→hex conversion satisfies the gate.
-      if (!typeIsHeal && (hit.dmgTypes?.hex ?? 0) > 0 && darkMagicDmgMult > 1) {
-        applicableBoosts.push(darkMagicHexBoostEntry())
-      }
+      // Dark Magic / True Moon / Echo Incineration conversions, so the perk's own
+      // magic→hex/true conversion satisfies the gate.
+      if (!typeIsHeal) pushTypeGatedBoosts(applicableBoosts, hit.dmgTypes)
       const typedMultUsed = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
 
       const baseDefPct = typeIsHeal ? 0 : baseDefForType(k)
@@ -2122,12 +2141,6 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
                                   <span class="bdc-fr-label">{_critMultLabel(t)}</span>
                                   <span class="bdc-fr-val bdc-fr-val--crit">× {fmtMult(_critMultFor(t))}</span>
                                 </div>
-                                {#if (t.healCritChance ?? 0) > 0}
-                                  <div class="bdc-fr">
-                                    <span class="bdc-fr-label">Heal Crit Chance</span>
-                                    <span class="bdc-fr-val bdc-fr-val--crit">{fmt1(t.healCritChance ?? 0)}%</span>
-                                  </div>
-                                {/if}
                               {/if}
                               <div class="bdc-fr-divider"></div>
                                <div class="bdc-fr bdc-fr--result">
@@ -2602,12 +2615,6 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
         <span class="bdc-fr-label">{_critMultLabel(t)}</span>
         <span class="bdc-fr-val bdc-fr-val--crit">× {fmtMult(_critMultFor(t))}</span>
       </div>
-      {#if (t.healCritChance ?? 0) > 0}
-        <div class="bdc-fr">
-          <span class="bdc-fr-label">Heal Crit Chance</span>
-          <span class="bdc-fr-val bdc-fr-val--crit">{fmt1(t.healCritChance ?? 0)}%</span>
-        </div>
-      {/if}
     {/if}
     <div class="bdc-fr-divider"></div>
     <div class="bdc-fr bdc-fr--result">

@@ -9,6 +9,13 @@ export const DARK_MAGIC_HEX_CONVERSION_PCT_PER_STACK = 0.30
 /** Flat damage boost applied to any attack containing Hex Damage Type, per 1 of the perk. */
 export const DARK_MAGIC_DMG_MULT_PER_STACK = 0.20
 
+/** Fraction of the weapon's Magic Damage Type converted to True per 1 of the perk. */
+export const TRUE_MOON_TRUE_CONVERSION_PCT_PER_STACK = 0.30
+/** Flat damage boost applied to any attack containing True Damage Type, per 1 of the perk. */
+export const TRUE_MOON_DMG_MULT_PER_STACK = 0.15
+/** Base proc chance for True Moon (0..1). */
+export const TRUE_MOON_PROC_CHANCE = 0.50
+
 export const WIND_WALKER_PEN_PER_STACK = 10
 
 export const REAPER_PCT_PER_DEBUFF_PER_STACK = 0.05

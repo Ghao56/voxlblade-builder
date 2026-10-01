@@ -258,6 +258,10 @@ export const LODESTONE_BARRAGE_ROCKS_BASE = 1
 export const LODESTONE_BARRAGE_CD_DIVISOR = 3
 export const LODESTONE_BARRAGE_ROCKS_PERK_MULT = 0.2
 
+// True Moon
+export const TRUE_MOON_BASE_DMG = 2
+export const TRUE_MOON_DMG_PER_STACK = 1.5
+
 // Ichor Spark
 export const ICHOR_SPARK_SWIPE_BASE_A = 4.75
 export const ICHOR_SPARK_SWIPE_BASE_B = 2.75

@@ -203,6 +203,11 @@ import {
   LODESTONE_BARRAGE_ROCKS_BASE,
   LODESTONE_BARRAGE_CD_DIVISOR,
   LODESTONE_BARRAGE_ROCKS_PERK_MULT,
+  TRUE_MOON_BASE_DMG,
+  TRUE_MOON_DMG_PER_STACK,
+  TRUE_MOON_DMG_MULT_PER_STACK,
+  TRUE_MOON_PROC_CHANCE,
+  TRUE_MOON_TRUE_CONVERSION_PCT_PER_STACK,
 } from '../lib/constants'
 
 export interface PerkSliderDef {
@@ -297,6 +302,9 @@ export interface PerkDmgDef {
   isRune?: boolean
   isProcHit?: boolean
   finisherOnly?: boolean
+  // false → the proc counts once per HIT (scales with the host row's hit count),
+  // instead of the default once-per-group behaviour.
+  oncePerFinisher?: boolean
   halfActivations?: boolean
   forceCrit?: boolean
   guardbreak?: boolean
@@ -1930,6 +1938,37 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     guardbreak: true,
     procCoefficient: { type: 'hasCoeff', value: 1 },
     note: 'roughly 3.33 second charge time at 1 of this perk, and roughly 1.66 seconds at 2 of this perk.',
+  },
+  // ── True Moon ───────────────────────────────────────────────────
+  {
+    perkName: 'True Moon',
+    label: 'True Moon',
+    condition: `On hit · ${fmtPct(TRUE_MOON_PROC_CHANCE)} proc chance (unaffected by perk amount)`,
+    getBaseDamage: ({ perkAmount }) => TRUE_MOON_BASE_DMG + TRUE_MOON_DMG_PER_STACK * perkAmount,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { true: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { magic: 1.0 },
+    isProcHit: true,
+    oncePerFinisher: false,
+    procCoefficient: { type: 'hasCoeff', value: 1.0 },
+    secondaryEffects: [
+      {
+        label: 'Magic → True Conversion',
+        getValue: ({ perkAmount }) => Math.min(1, TRUE_MOON_TRUE_CONVERSION_PCT_PER_STACK * perkAmount),
+        format: v => `${Math.round(v * 100)}%`,
+        tone: 'offense',
+        condition: 'Weapon damage only',
+      },
+      {
+        label: 'True Damage Boost',
+        getValue: ({ perkAmount }) => TRUE_MOON_DMG_MULT_PER_STACK * perkAmount,
+        format: v => `${Math.round(v * 100)}%`,
+        tone: 'offense',
+        condition: 'Attacks containing any True Damage Type',
+      },
+    ],
+    note: 'Chance to shoot a True Damage moon at the opponent on hit. Also converts 30% of the user\'s weapon Magic Damage Type to True Damage Type per 1 of the perk (capped at 100%), and boosts damage on attacks that contain any amount of True Damage Type by 15% per 1 of the perk. The conversion only applies to the user\'s weapon damage, not to perk proc damage.',
   },
   // ── Proto Tech ─────────────────────────────────────────────────
   {

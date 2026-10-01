@@ -1,5 +1,5 @@
 ﻿import type { ProcCoefficient } from '../lib/types'
-import { BLUB_BLUB_PCT_PER_STACK, BLUB_BLUB_HIT_COUNT, BLUB_BLUB_PROC_CHANCE } from './constants'
+import { BLUB_BLUB_PCT_PER_STACK, BLUB_BLUB_HIT_COUNT, BLUB_BLUB_PROC_CHANCE, TRUE_MOON_PROC_CHANCE } from './constants'
 import { RADIANCE_COLOR } from './constants/perk-base-damage'
 
 export const BADGE_CONFIG: Record<string, { color: string; label: string; title: string }> = {
@@ -38,6 +38,7 @@ export const BADGE_CONFIG: Record<string, { color: string; label: string; title:
   'Star Struck': { color: '#fde047', label: '✦ Star', title: 'Star Struck: landed M1/M2 shoot stars · random damage type · True star deals 6 base with 0.5 Magic scaling · stars can proc other on-hit effects' },
   'Explosive Honey': { color: '#fbbf24', label: '✦ Explosive Honey', title: 'Explosive Honey: magic burst on finisher · Applies Sticky · Cannot proc other effects' },
   'Radiance': { color: RADIANCE_COLOR, label: '✦ Radiance', title: 'Radiance: proccable heals emit a Holy burst = 1 + healing × 4/45 × perkAmount · Per source · Cannot proc other effects' },
+  'True Moon': { color: '#cbd5e1', label: '✦ True Moon', title: `True Moon: 2 + 1.5×perkAmount True damage with 1.0 Magic scaling on hit · ${TRUE_MOON_PROC_CHANCE * 100}% proc chance · Per hit` },
 }
 
 export interface ComputedType {

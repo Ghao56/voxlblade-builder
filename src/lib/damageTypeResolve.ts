@@ -109,6 +109,7 @@ export interface EffectiveWaDmgTypesInput {
   waOnlyBonuses: Record<string, number>
   airToMagicConversionRate: number
   darkMagicHexRate: number
+  trueMoonTrueRate?: number
   echoIncinerateAmt: number
   wildBoltElement?: string | null
   weightySlamActive?: boolean
@@ -126,7 +127,7 @@ export interface EffectiveWaDmgTypesInput {
  */
 function computeBaseWaDmgTypes(input: EffectiveWaDmgTypesInput): Record<string, number> {
   const apply = (types: Record<string, number>) =>
-    applyAirToMagicConversion(types, input.airToMagicConversionRate, input.darkMagicHexRate, input.echoIncinerateAmt)
+    applyAirToMagicConversion(types, input.airToMagicConversionRate, input.darkMagicHexRate, input.echoIncinerateAmt, input.trueMoonTrueRate)
 
   if (input.wildBoltElement) {
     return apply(resolveDamageTypes({ [input.wildBoltElement]: 1 }, input.waDmgTypeBonuses))
@@ -192,12 +193,19 @@ export function computeEffectiveWaDmgTypes(input: EffectiveWaDmgTypesInput): Rec
   return foldWeaponTypesIntoWaTypes(types, input.weaponDmgTypes)
 }
 
+/** Amount of a weapon's native magic claimed by a capped conversion rate. */
+function nativeMagicConversionAmount(nativeMagic: number, rate: number | undefined): number {
+  if (!rate || rate <= 0 || nativeMagic <= 0) return 0
+  return round4(nativeMagic * Math.min(1, rate))
+}
+
 /** Convert a fraction of Air damage to Magic damage (e.g. for Spirit Winds). */
 export function applyAirToMagicConversion(
   types: Record<string, number>,
   conversionRate: number,
   darkMagicHexRate?: number,
   echoIncinerateAmt?: number,
+  trueMoonTrueRate?: number,
 ): Record<string, number> {
   let result = { ...types }
   // Spirit Winds first: convert Air → Magic BEFORE Echo Incineration
@@ -219,13 +227,18 @@ export function applyAirToMagicConversion(
   // from Air by Spirit Winds) into Hex. The rate is capped at 100% so the magic side can
   // never go negative at 4+ stacks.
   const nativeMagic = types.magic ?? 0
-  if (darkMagicHexRate && darkMagicHexRate > 0 && nativeMagic > 0) {
-    const rate = Math.min(1, darkMagicHexRate)
-    const converted = round4(nativeMagic * rate)
-    if (converted > 0) {
-      result.magic = round4((result.magic ?? 0) - converted)
-      result.hex = round4((result.hex ?? 0) + converted)
-    }
+  const hexConverted = nativeMagicConversionAmount(nativeMagic, darkMagicHexRate)
+  if (hexConverted > 0) {
+    result.magic = round4((result.magic ?? 0) - hexConverted)
+    result.hex = round4((result.hex ?? 0) + hexConverted)
+  }
+  // True Moon behaves identically but targets True Damage Type. Only native magic
+  // that Dark Magic did not already claim is left to convert.
+  const remainingMagic = Math.max(0, round4(nativeMagic - hexConverted))
+  const trueConverted = nativeMagicConversionAmount(remainingMagic, trueMoonTrueRate)
+  if (trueConverted > 0) {
+    result.magic = round4((result.magic ?? 0) - trueConverted)
+    result.true = round4((result.true ?? 0) + trueConverted)
   }
   return result
 }

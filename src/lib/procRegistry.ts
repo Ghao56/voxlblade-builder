@@ -2,7 +2,7 @@ import type { ProcCoefficient, ProcScalingType } from './types'
 import { canProc } from './types'
 import { BLUB_BLUB_PROC_CHANCE } from './constants/perks'
 import { ICHOR_SPARK_CHAIN_PROC_CHANCE, QUAKE_CHANCE_BASE } from './constants/perk-base-damage'
-import { STORM_CALLER_PROC_CHANCE, LIGHT_BEARER_PROC_CHANCE } from './constants/perks'
+import { STORM_CALLER_PROC_CHANCE, LIGHT_BEARER_PROC_CHANCE, TRUE_MOON_PROC_CHANCE } from './constants/perks'
 
 /**
  * Data-driven registry of proc-capable effects.
@@ -69,6 +69,7 @@ export const PROC_EFFECT_DEFS: Readonly<Record<string, ProcEffectDef>> = {
   'Chain': { chanceScaling: 'normal' }, // Lightning Cloak + Storm Rend chain lightning
   'Ichor Spark': { chanceScaling: 'normal', baseChance: ICHOR_SPARK_CHAIN_PROC_CHANCE },
   'Blub': { chanceScaling: 'normal', baseChance: BLUB_BLUB_PROC_CHANCE },
+  'True Moon': { chanceScaling: 'normal', baseChance: TRUE_MOON_PROC_CHANCE },
   'Explosive': { chanceScaling: 'normal' },
   'Glacial': { chanceScaling: 'normal' },
   'Static Buildup': { chanceScaling: 'positiveOnly', baseChance: 1 },

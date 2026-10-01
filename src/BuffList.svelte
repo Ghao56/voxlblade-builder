@@ -36,7 +36,7 @@ import { WA_PROC_COEFFS, DEFAULT_PROC_COEFF } from './data/procCoefficients'
 import { canProc } from './lib/types'
 import { resolveWaDamageTypeKeys, resolveDamageTypes, computeEffectiveWaDmgTypes, weaponHitsCountAsWa } from './lib/damageTypeResolve'
 import { buildDmgTypeBonuses } from './lib/engine/dmgTypeBonuses'
-import { SPIRIT_WINDS_PCT_PER_STACK, DARK_MAGIC_HEX_CONVERSION_PCT_PER_STACK, EMOTIONAL_PCT_PER_STACK, TOXIN_TRANSFER_PCT_PER_STACK, DARKENING_HEX_MAX_ACTIVATIONS } from './lib/constants/perks'
+import { SPIRIT_WINDS_PCT_PER_STACK, DARK_MAGIC_HEX_CONVERSION_PCT_PER_STACK, TRUE_MOON_TRUE_CONVERSION_PCT_PER_STACK, EMOTIONAL_PCT_PER_STACK, TOXIN_TRANSFER_PCT_PER_STACK, DARKENING_HEX_MAX_ACTIVATIONS } from './lib/constants/perks'
 import { calcBaseMaxHP } from './lib/constants/game'
 
   $: buffListWeapon = isMonkGuild($build.guild)
@@ -152,6 +152,7 @@ import { calcBaseMaxHP } from './lib/constants/game'
     const _ragePotency = Math.max(0, ...modified.filter(b => b.buffName === 'Rage').map(b => b.potency ?? 0))
     const _spiritWindsAmt = $result.perks['Spirit Winds'] ?? 0
     const _darkMagicAmt = $result.perks['Dark Magic'] ?? 0
+    const _trueMoonAmt = $result.perks['True Moon'] ?? 0
     const _echoIncinerateAmt = $result.perks['Echo Incineration'] ?? 0
     const _toxinTransferHexBonus = (() => {
       const amt = $result.perks['Toxin Transfer'] ?? 0
@@ -216,6 +217,7 @@ import { calcBaseMaxHP } from './lib/constants/game'
       waOnlyBonuses: _waOnlyBonuses,
       airToMagicConversionRate: _spiritWindsAmt > 0 && _hasTailwindOrWhirlwind ? SPIRIT_WINDS_PCT_PER_STACK * _spiritWindsAmt : 0,
       darkMagicHexRate: _darkMagicAmt > 0 ? Math.min(1, DARK_MAGIC_HEX_CONVERSION_PCT_PER_STACK * _darkMagicAmt) : 0,
+      trueMoonTrueRate: _trueMoonAmt > 0 ? Math.min(1, TRUE_MOON_TRUE_CONVERSION_PCT_PER_STACK * _trueMoonAmt) : 0,
       echoIncinerateAmt: _echoIncinerateAmt,
       weightySlamActive: ($result.perks['Weighty Slam'] ?? 0) > 0 && _selectedWA.name === 'Slam',
       heatDrillActive: ($result.perks['Heat Drill'] ?? 0) > 0 && (_selectedWA.name === 'Lunge' || _selectedWA.name === 'Barrage'),
