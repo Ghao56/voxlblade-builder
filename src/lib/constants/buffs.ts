@@ -186,6 +186,9 @@ export const RUNIC_WINDS_POTENCY_PER_AMOUNT = 0.1
 export const RUNIC_WINDS_DURATION = 5
 export const GRANDMAGIC_GUARD_POTENCY_PER_AMOUNT = 0.5
 export const GRANDMAGIC_GUARD_DURATION = 10
+// Magic Reinforce: +4% defense per 0.1 potency, and 0.3 flat magic damage reduction per 0.1 potency
+export const MAGIC_REINFORCE_DEF_PER_POTENCY = 40
+export const MAGIC_REINFORCE_MAGIC_DMG_REDUCTION_PER_POTENCY = 3
 export const MARSH_FLOW_POTENCY = 1
 export const MARSH_FLOW_DURATION_BASE = 3
 export const MARSH_FLOW_DURATION_PER_AMOUNT = 1
@@ -202,6 +205,10 @@ export const STICKY_SWINGS_DURATION = 10
 export const EXPLOSIVE_HONEY_STICKY_POTENCY = 0.5
 export const EXPLOSIVE_HONEY_STICKY_DURATION = 6
 export const AGGRESSIVE_PERSONALITY_TAUNT_DURATION_PER_AMOUNT = 7
+// Warding Tides: cleanse abilities also grant Reinforce to the cleansed
+export const WARDING_TIDES_REINFORCE_POTENCY_BASE = 0.15
+export const WARDING_TIDES_REINFORCE_POTENCY_PER_AMOUNT = 0.1
+export const WARDING_TIDES_REINFORCE_DURATION = 10
 
 // BUFF_POTENCY_MODIFIERS
 export const BOUNCE_DURATION_BASE = 1.0

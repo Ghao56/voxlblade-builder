@@ -33,7 +33,8 @@ export const WILD_BOLT_DMG_REDUCTION = 0.75
 
 export const LIGHTNING_CLOAK_FRACTION = 1 / 3
 
-export const CURSE_RIP_DIVISOR = 60
+/** Curse Rip heals ~0.666% of the damage the hit deals (1/150). */
+export const CURSE_RIP_DIVISOR = 150
 export const CURSE_RIP_DMG_BOOST_CONST = 10
 export const CURSE_RIP_DMG_BOOST_PER_DEBUFF = 5
 

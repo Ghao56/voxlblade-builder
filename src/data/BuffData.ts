@@ -62,6 +62,7 @@ import {
   SWIFT_GUARD_POTENCY_PER_AMOUNT, SWIFT_GUARD_DURATION,
   RUNIC_WINDS_POTENCY_PER_AMOUNT, RUNIC_WINDS_DURATION,
   GRANDMAGIC_GUARD_POTENCY_PER_AMOUNT, GRANDMAGIC_GUARD_DURATION,
+  MAGIC_REINFORCE_DEF_PER_POTENCY, MAGIC_REINFORCE_MAGIC_DMG_REDUCTION_PER_POTENCY,
   MARSH_FLOW_POTENCY, MARSH_FLOW_DURATION_BASE, MARSH_FLOW_DURATION_PER_AMOUNT,
   BOUNCE_DURATION_BASE, BOUNCE_DURATION_PER_STACK,
   MOD_GLADIATORIAL_POTENCY, MOD_GLADIATORIAL_DURATION, MOD_MAGE_RAGE_POTENCY, MOD_OCEANS_RAGE_POTENCY,
@@ -103,6 +104,7 @@ import {
   STICKY_SWINGS_POTENCY_PER_AMOUNT,
   STICKY_SWINGS_DURATION,
   AGGRESSIVE_PERSONALITY_TAUNT_DURATION_PER_AMOUNT,
+  WARDING_TIDES_REINFORCE_POTENCY_BASE, WARDING_TIDES_REINFORCE_POTENCY_PER_AMOUNT, WARDING_TIDES_REINFORCE_DURATION,
   INSPIRED_BASE_POTENCY,
 } from '../lib/constants/buffs'
 import {
@@ -271,8 +273,8 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     color: '#1cf8ff',
     description: 'Take x% less damage and gain y flat reduction to magic damage.',
     dynamicDescription: (perks, potency) => {
-      const x = +(potency * 40).toFixed(4)
-      const y = +(potency * 3).toFixed(4)
+      const x = +(potency * MAGIC_REINFORCE_DEF_PER_POTENCY).toFixed(4)
+      const y = +(potency * MAGIC_REINFORCE_MAGIC_DMG_REDUCTION_PER_POTENCY).toFixed(4)
       return `Take ${x}% less damage and gain ${y} flat reduction to magic damage.`
     },
     effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
@@ -1047,6 +1049,17 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       duration: INSPIRED_DURATION,
       condition: `On landing M1/M2 · pulse has no Proc Coefficient`,
       sourceName: 'Inspiration',
+      sourceType: 'perk',
+    },
+  ],
+
+  'Warding Tides': (amount) => [
+    {
+      buffName: 'Reinforce',
+      potency: WARDING_TIDES_REINFORCE_POTENCY_BASE + WARDING_TIDES_REINFORCE_POTENCY_PER_AMOUNT * amount,
+      duration: WARDING_TIDES_REINFORCE_DURATION,
+      condition: 'When cleansing, granted to those cleansed',
+      sourceName: 'Warding Tides',
       sourceType: 'perk',
     },
   ],

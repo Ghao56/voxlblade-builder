@@ -1,5 +1,6 @@
 ﻿import type { ProcCoefficient } from '../lib/types'
 import { BLUB_BLUB_PCT_PER_STACK, BLUB_BLUB_HIT_COUNT, BLUB_BLUB_PROC_CHANCE, TRUE_MOON_PROC_CHANCE } from './constants'
+import { CURSE_RIP_DIVISOR } from './constants/perks'
 import { RADIANCE_COLOR } from './constants/perk-base-damage'
 
 export const BADGE_CONFIG: Record<string, { color: string; label: string; title: string }> = {
@@ -10,7 +11,7 @@ export const BADGE_CONFIG: Record<string, { color: string; label: string; title:
   'Explosive': { color: '#f97316', label: '✦ Explosive', title: 'Explosive Charge: 100% of WA pre-boost damage as Physical+Fire explosion' },
   'Springblast': { color: '#f438d7', label: '✦ Springblast', title: 'Springblast: explosion on finisher while Bounce active · Per finisher hit' },
   'Royal Finisher': { color: '#60a5fa', label: '✦ Royal Finisher', title: 'Royal Finisher: damaging wave of Magic on finisher · Once per finisher' },
-  'Curse Rip': { color: '#e879f9', label: '✦ Curse Rip', title: 'Curse Rip: 1/60 of damage dealt as lifesteal (requires debuffed opponent)' },
+  'Curse Rip': { color: '#e879f9', label: '✦ Curse Rip', title: `Curse Rip: 1/${CURSE_RIP_DIVISOR} of damage dealt as lifesteal (requires debuffed opponent · Output Bonuses and Type-Specific Multipliers apply · Crits and Armor Penetration do not)` },
   'Inspiration': { color: '#ffde0f', label: '✦ Inspiration', title: 'Inspiration: pulse that slightly heals when M1/M2 land' },
   'Light Bearer': { color: '#facc15', label: '✦ Light Bearer', title: 'Light Bearer: M1/M2 hits release a Holy healing pulse · Proc Coefficient gated · 50% proc chance per perk' },
   'Venom Eater': { color: '#4ade80', label: '✦ Venom Eater', title: 'Venom Eater: heal 0.1 HP per stack on crit vs poisoned target' },

@@ -27,7 +27,7 @@
   import { applyDraconicBonuses, getDraconicBonuses } from './data/draconicRunes'
   import { calculateHealBoost, type HealSource } from './data/HealBoost'
   import { buildRadianceProcHit, isRadianceEligible, radianceSourceHealing } from './data/radianceProcs'
-  import { RADIANCE_HOLY_SCALING, RADIANCE_LABEL, RADIANCE_COLOR } from './lib/constants/perk-base-damage'
+  import { RADIANCE_HOLY_SCALING, RADIANCE_LABEL, RADIANCE_COLOR, RAINSTORM_BASE_DMG, RAINSTORM_DMG_PER_STACK, RAINSTORM_BASE_HEAL, RAINSTORM_HEAL_PER_STACK, RAINSTORM_LABEL } from './lib/constants/perk-base-damage'
   import { roundMultiplier, calcWardingDebuffMultiplier, calcProcChance, applyScalingMult, scalingEq } from './lib/utils'
   import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage, calcInoculationHeal, UNDEAD_MIGHT_SELF_DMG_FRACTION, UNDEAD_MIGHT_DR_PCT_PER_STACK, type SelfDamagePerkDef } from './data/selfDamage'
   import { resolveDamageTypes, resolveWaDamageTypeKeys, applyAirToMagicConversion, computeEffectiveWaDmgTypes } from './lib/damageTypeResolve'
@@ -113,6 +113,8 @@ import {
   VAPOR_AEGIS_FIRE_WATER_DR_PCT,
   QUEENS_POWER_ATK_SPD_BASE, QUEENS_POWER_ATK_SPD_PER_TENTH_POTENCY,
   AIR_PRESSURE_MAX_POTENCY_PER_AMOUNT,
+  MAGIC_REINFORCE_DEF_PER_POTENCY,
+  MAGIC_REINFORCE_MAGIC_DMG_REDUCTION_PER_POTENCY,
 } from './lib/constants'
 
 // ── Cross-Toggle Mappings ──────────────────────────────────────────────────
@@ -406,9 +408,9 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       }
       if (_activeMagicReinforcePotency > 0) {
         const P = _activeMagicReinforcePotency
-        const defPct = Math.round((P / 2) * 100 * 1000) / 1000
+        const defPct = Math.round(P * MAGIC_REINFORCE_DEF_PER_POTENCY * 1000) / 1000
         const isMagicType = ['magic', 'fire', 'water', 'hex', 'holy'].includes(type)
-        const flatDmg = Math.round(P * 3 * 1000) / 1000
+        const flatDmg = Math.round(P * MAGIC_REINFORCE_MAGIC_DMG_REDUCTION_PER_POTENCY * 1000) / 1000
 
         sources.push({
           name: 'Magic Reinforce',
@@ -1089,6 +1091,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   })()
   $: _vcDisplayHits = Math.min(_vcCharges, _vcMaxHit)
   $: _oceanSongAmt = perks['Ocean Song'] ?? 0
+  $: _rainstormAmt = perks['Rainstorm'] ?? 0
   $: _radianceAmt = perks['Radiance'] ?? 0
   $: _lightBearerAmt = perks['Light Bearer'] ?? 0
   $: _wildBoltAmt = perks['Wild Bolt'] ?? 0
@@ -2492,6 +2495,20 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     }
   })()
 
+  // Rainstorm heal Water-scaling breakdown (1.0 Water Scaling)
+  $: _rainstormHealScalingBreakdown = (() => {
+    if (!(_rainstormAmt > 0)) return null
+    const rows = buildScalingRows({ water: 1.0 })
+    if (!rows.length) return null
+    const totalEffectivePct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 1000) / 1000
+    return {
+      rows,
+      totalEffectivePct,
+      multiplier: roundMultiplier(applyScalingMult(totalEffectivePct / 100)),
+      label: `${RAINSTORM_LABEL} Heal`
+    }
+  })()
+
   // Radiance Holy-scaling breakdown (10.0 Holy Scaling)
   $: _radianceScalingBreakdown = (() => {
     if (!(_radianceAmt > 0)) return null
@@ -2503,6 +2520,20 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       totalEffectivePct,
       multiplier: roundMultiplier(applyScalingMult(totalEffectivePct / 100)),
       label: RADIANCE_LABEL,
+    }
+  })()
+
+  // Rainstorm Water-scaling breakdown (1.0 Water Scaling)
+  $: _rainstormScalingBreakdown = (() => {
+    if (!(_rainstormAmt > 0)) return null
+    const rows = buildScalingRows({ water: 1.0 })
+    if (!rows.length) return null
+    const totalEffectivePct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 1000) / 1000
+    return {
+      rows,
+      totalEffectivePct,
+      multiplier: roundMultiplier(applyScalingMult(totalEffectivePct / 100)),
+      label: RAINSTORM_LABEL,
     }
   })()
 
@@ -4381,6 +4412,32 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       }
       pushLbPulse('M1')
       pushLbPulse('M2')
+    }
+
+    // ── Rainstorm ───────────────────────────────────────────────
+    // One Raindrop per rotation. Base Damage = 4 + 2 × perkAmount, Base Healing =
+    // 0.5 + 0.2 × perkAmount, both on 1.0 Water scaling. The drop cannot proc
+    // other effects; its healing can (it is on the compatible-heal list).
+    if (_rainstormAmt > 0) {
+      const rsScaling = _computePerkScalingMult({ water: 1.0 })
+      result.push({
+        group: 'Perk', index: result.length, count: 1,
+        base: RAINSTORM_BASE_DMG + RAINSTORM_DMG_PER_STACK * _rainstormAmt,
+        scalingMult: rsScaling, combatMult: _perkCombatMult, effectiveMult: _perkEffectiveMult,
+        isFinisher: false, dmgTypes: { water: 1.0 },
+        procCoefficient: { type: 'noProc' },
+        label: 'Rainstorm',
+      })
+      result.push({
+        group: 'Perk', index: result.length, count: 1,
+        base: RAINSTORM_BASE_HEAL + RAINSTORM_HEAL_PER_STACK * _rainstormAmt,
+        scalingMult: rsScaling, combatMult: _healFinalMultiplier,
+        radianceHealMult: _healDealtMultiplier,
+        isFinisher: false, dmgTypes: { heal: 1.0 },
+        dmgTypeIsCritExempt: { heal: true },
+        label: 'Rainstorm Heal',
+        isHeal: true,
+      })
     }
 
     // ── Radiance ────────────────────────────────────────────────
@@ -7072,7 +7129,7 @@ $: _groupedSelfDamageSources = (() => {
 </div>
 {/if}
 {#if (_weaponResult && scalingBreakdown.rows.length > 0
-  && _nonDraconicPerkEntries.some(e =>(e.dmgTypeMode === 'fixed' ||e.dmgTypeMode === 'dynamic')&& Object.keys(e.resolvedScalings ?? {}).length > 0|| e.dmgTypeMode === 'weapon')) || _radianceScalingBreakdown}
+  && _nonDraconicPerkEntries.some(e =>(e.dmgTypeMode === 'fixed' ||e.dmgTypeMode === 'dynamic')&& Object.keys(e.resolvedScalings ?? {}).length > 0|| e.dmgTypeMode === 'weapon')) || _radianceScalingBreakdown || _rainstormScalingBreakdown}
   <div class="da-section da-section--scaling">
     <div class="da-section-title">📐 Damage Scaling</div>
     <div class="ds-formula-hint">Effective Boost = Σ (Scaling × Boost%) → ×(1 + Effective%) when ≥ 0, × 1/(1 + |Effective%|) when &lt; 0</div>
@@ -7228,6 +7285,65 @@ $: _groupedSelfDamageSources = (() => {
           </div>
           <span class="ds-result-eq">Multiplier =</span>
           <span class="ds-result-val">×{+_radianceScalingBreakdown.multiplier.toFixed(4)}</span>
+        </div>
+      {/if}
+
+      <!-- Rainstorm: Raindrop damage/heal on 1.0 Water Scaling -->
+      {#if _rainstormScalingBreakdown}
+        <div class="da-perk-scaling-divider">
+          <span class="da-perk-scaling-label">{RAINSTORM_LABEL}</span>
+        </div>
+        <div class="ds-table ds-table--perk" style="margin-top: 5px; font-size: 0.75rem; opacity: 0.9;">
+          {#each _rainstormScalingBreakdown.rows as row}
+            <div class="ds-row">
+              <div class="ds-col ds-col--type">
+                <span class="ds-dot" style="background:{row.color}"></span>
+                <span style="color:{row.color}">{row.key.charAt(0).toUpperCase() + row.key.slice(1)}</span>
+              </div>
+              <div class="ds-col ds-col--val">
+                <span class="ds-num" style="color:{row.color}">{roundMultiplier(row.scalingVal)}</span>
+              </div>
+              <div class="ds-col ds-col--op">×</div>
+              <div class="ds-col ds-col--boost">
+                {#if row.boostPct !== 0}
+                  <span class="ds-boost" style={row.boostPct < 0 ? 'color: #cf6679;' : ''}>
+                    {row.boostPct > 0 ? '+' : ''}{roundMultiplier(row.boostPct)}%
+                  </span>
+                {:else}
+                  <span class="ds-boost ds-boost--zero">+0%</span>
+                {/if}
+              </div>
+              <div class="ds-col ds-col--op">=</div>
+              <div class="ds-col ds-col--contrib">
+                <span class="ds-contrib"
+                      class:ds-contrib--zero={row.contribution === 0}
+                      style={row.contribution > 0 ? `color:${row.color}` : row.contribution < 0 ? 'color: #cf6679;' : ''}>
+                  {row.contribution > 0 ? '+' : ''}{row.contribution}%
+                </span>
+              </div>
+            </div>
+          {/each}
+          <div class="ds-row">
+            <div class="ds-col ds-col--type">
+              <span class="ds-dot" style="background:#34d399"></span>
+              <span style="color:#34d399">Total</span>
+            </div>
+            <div class="ds-col ds-col--val"></div>
+            <div class="ds-col ds-col--op"></div>
+            <div class="ds-col ds-col--boost"></div>
+            <div class="ds-col ds-col--op">=</div>
+            <div class="ds-col ds-col--contrib">
+              <span class="ds-contrib" class:ds-contrib--zero={_rainstormScalingBreakdown.totalEffectivePct === 0} style={_rainstormScalingBreakdown.totalEffectivePct < 0 ? 'color:#cf6679' : 'color:#34d399'}>{_rainstormScalingBreakdown.totalEffectivePct > 0 ? '+' : ''}{_rainstormScalingBreakdown.totalEffectivePct}%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ds-result-row ds-result-row--perk" style="background: rgba(251, 146, 60, 0.05); border-color: rgba(251, 146, 60, 0.15);">
+          <div style="display:flex;flex-direction:column;gap:2px;flex:1;">
+            <span class="ds-result-label" style="color: {SCALING_COLORS['water'] ?? '#38bdf8'};">Perk: {RAINSTORM_LABEL} Scaling</span>
+          </div>
+          <span class="ds-result-eq">Multiplier =</span>
+          <span class="ds-result-val">×{+_rainstormScalingBreakdown.multiplier.toFixed(4)}</span>
         </div>
       {/if}
     </div>
@@ -7544,7 +7660,7 @@ $: _groupedSelfDamageSources = (() => {
 </div>
 {/if}
 
-{#if _waHealScalingBreakdown || _perkHealScalingBreakdown}
+{#if _waHealScalingBreakdown || _perkHealScalingBreakdown || _rainstormHealScalingBreakdown}
 <div class="da-section da-section--scaling" style="border-color:rgba(74,222,128,.2);background:linear-gradient(160deg,var(--surface,#141715) 60%,rgba(74,222,128,.03) 100%)">
   <div class="da-section-title" style="color:#4ade80">✦ Heal Scaling</div>
 
@@ -7610,6 +7726,39 @@ $: _groupedSelfDamageSources = (() => {
           <div class="ds-col ds-col--op">=</div>
           <div class="ds-col ds-col--contrib">
             <span class="ds-total-pct" style="color:#38bdf8;text-shadow:0 0 10px rgba(56,189,248,.4)">×{+_perkHealScalingBreakdown.multiplier.toFixed(4)}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  {/if}
+
+  <!-- Rainstorm heal scaling subsection -->
+  {#if _rainstormHealScalingBreakdown}
+    <div class="ds-wa-subsection" style="margin-top:{_waHealScalingBreakdown || _perkHealScalingBreakdown ? '12px' : '0'}">
+      <div class="ds-wa-header">
+        <Badge color="#38bdf8">Perk</Badge>
+        <span class="ds-wa-name" style="color:#38bdf8">{_rainstormHealScalingBreakdown.label}</span>
+      </div>
+      <div class="ds-table">
+        <div class="ds-head">
+          <div class="ds-col ds-col--type">Scaling</div>
+          <div class="ds-col ds-col--val">Scaling Val</div>
+          <div class="ds-col ds-col--op"></div>
+          <div class="ds-col ds-col--boost">Your Boost</div>
+          <div class="ds-col ds-col--op"></div>
+          <div class="ds-col ds-col--contrib">Contribution</div>
+        </div>
+        {#each _rainstormHealScalingBreakdown.rows as row}
+          <ScalingBreakdownRow {row} useRoundMultiplier={true} showZeroBoost={true} />
+        {/each}
+        <div class="ds-row ds-row--total" style="background:rgba(56,189,248,.07);border-color:rgba(56,189,248,.18)">
+          <div class="ds-col ds-col--type ds-total-label" style="color:#38bdf8">Total</div>
+          <div class="ds-col ds-col--val"></div>
+          <div class="ds-col ds-col--op"></div>
+          <div class="ds-col ds-col--boost"></div>
+          <div class="ds-col ds-col--op">=</div>
+          <div class="ds-col ds-col--contrib">
+            <span class="ds-total-pct" style="color:#38bdf8;text-shadow:0 0 10px rgba(56,189,248,.4)">×{+_rainstormHealScalingBreakdown.multiplier.toFixed(4)}</span>
           </div>
         </div>
       </div>

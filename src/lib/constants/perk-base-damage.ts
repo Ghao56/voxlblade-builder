@@ -300,6 +300,15 @@ export const VOLTAIC_BODY_ACTIVATION_WINDOW = 3
 export const VOLTAIC_BODY_DURATION_WA_CD_DIVISOR = 2
 export const VOLTAIC_BODY_DURATION_PER_STACK = 3
 
+// Rainstorm
+// One Raindrop per rotation: 1.0 Water damage type + 1.0 Water scaling on the
+// damage, and 1.0 Water scaling on its healing.
+export const RAINSTORM_BASE_DMG = 4
+export const RAINSTORM_DMG_PER_STACK = 2
+export const RAINSTORM_BASE_HEAL = 0.5
+export const RAINSTORM_HEAL_PER_STACK = 0.2
+export const RAINSTORM_LABEL = 'Rainstorm'
+
 // Radiance
 export const RADIANCE_LABEL = 'Radiance'
 export const RADIANCE_COLOR = '#ffe9a8'

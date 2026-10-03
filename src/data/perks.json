@@ -612,7 +612,7 @@
   },
   {
     "name": "Curse Rip",
-    "description": "Hits against a Debuffed opponent gains Lifesteal as well as a Damage Boost that scales on the amount of unique ones on them.",
+    "description": "Hits against a Debuffed opponent gain ~0.666% Lifesteal (scales with Output Bonuses and Type-Specific Multipliers, but not Crits or Armor Penetration) as well as a Damage Boost of (10 x perkAmount - 10 + 5 x unique debuffs)%.",
     "tags": [
       "Debuff",
       "Healing",
@@ -3525,7 +3525,7 @@
   },
   {
     "name": "Warding Tides",
-    "description": "Abilities that can cleanse Debuffs now also grants Reinforce.",
+    "description": "When cleansing, apply Reinforce to those cleansed. Reinforce potency is equal to 0.15 + 0.1 per amount of this perk, and lasts for 10 seconds.",
     "tags": [
       "Defensive",
       "Buff",

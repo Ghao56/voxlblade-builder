@@ -1311,8 +1311,16 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
     }
 
     if (!isHeal && curseRipPerkAmount > 0 && curseRipActiveDebuffCount > 0 && !disableCurseRip && !ON_HIT_EXCLUDED_SOURCES.has(hit.label ?? '')) {
-      const preMitSum  = computePreMitigationBase(hit)
-      const preMitBase = preMitSum * _activeDebuffDamageMult * selfDebuffDamageMult
+      // Curse Rip lifesteals off the damage this hit deals, so the base carries
+      // Output Bonuses (combatMult / weapon boosts) and Type-Specific Multipliers
+      // (typed perk boosts, per-type debuff bonuses). It deliberately ignores
+      // critical and post-critical multipliers as well as enemy defense / armor
+      // penetration, so `defMult` is the only factor divided back out. `rawNoVC`
+      // keeps the Void Contract mark off the heal, as the pre-mitigation base
+      // this used to key off did.
+      const preMitBase = types.slice(0, _finisherMainTypesEnd)
+        .filter(t => !t.isHeal)
+        .reduce((s, t) => s + (t.rawNoVC ?? t.raw) / (t.defMult || 1), 0)
 
       if (preMitBase > 0) {
         const healAmount = preMitBase / CURSE_RIP_DIVISOR
