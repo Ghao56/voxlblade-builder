@@ -206,10 +206,13 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
     finisherHitIndex?: number
     eachHitM1M2?: boolean
     cdWater?: number
-    vcBuffedCount?: number
-    isRadianceProc?: boolean
-    sourceLabel?: string
-    note?: string
+vcBuffedCount?: number
+isRadianceProc?: boolean
+sourceLabel?: string
+/** Lands on the user's ALLIES, not on the user — rendered in its own badged
+ *  branch of the hit list (still counted in the totals). */
+alliesOnly?: boolean
+note?: string
   }> = []
   export let typedBoostEntries: TypedDmgBoostEntry[] = []
   export let luminescentPct: number = 0
@@ -834,6 +837,17 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
       if (luminescentPct > 0 && active('Luminescent')) {
         addProcEffect(opts.preMitBase, luminescentPct, { holy: 1.0 }, 'Luminescent', 1, 1, opts.count)
       }
+      // Propelling Fun's Cloudpush / Cinderpull: an extra Air (or Fire, while
+      // burning) instance worth a % of this hit's damage. Both also apply to
+      // the perk user, so unlike Cinder Surge they DO scale the user's damage.
+      // Gated by the instance's ProcCoefficient (no bonus on attacks without
+      // one) and pushed as noProc by addProcEffect (cannot proc other effects).
+      if (cloudpushPct > 0 && active('Cloudpush')) {
+        addProcEffect(opts.preMitBase, cloudpushPct, { air: 1.0 }, 'Cloudpush', 1, 1, opts.count)
+      }
+      if (cinderpullPct > 0 && active('Cinderpull')) {
+        addProcEffect(opts.preMitBase, cinderpullPct, { fire: 1.0 }, 'Cinderpull', 1, 1, opts.count)
+      }
       if (lightningCloakPct > 0 && active('Chain')) {
         addProcEffect(opts.preMitBase, lightningCloakPct, { air: 0.5, magic: 0.5 }, 'Chain', 1, 1, opts.count)
       }
@@ -1201,6 +1215,8 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
             addProcEffect(bombardierBaseDmg, 1, { magic: 0.5, holy: 0.5 }, 'Bombardier', bombardierScalingMult, ph.combatMult)
           }
           if (luminescentPct > 0 && pGate('Luminescent')) addProcEffect(preMitBase, luminescentPct, { holy: 1.0 }, 'Luminescent')
+          if (cloudpushPct > 0 && pGate('Cloudpush')) addProcEffect(preMitBase, cloudpushPct, { air: 1.0 }, 'Cloudpush')
+          if (cinderpullPct > 0 && pGate('Cinderpull')) addProcEffect(preMitBase, cinderpullPct, { fire: 1.0 }, 'Cinderpull')
           if (lightningCloakPct > 0 && pGate('Chain')) addProcEffect(preMitBase, lightningCloakPct, { air: 0.5, magic: 0.5 }, 'Chain')
           if (ichorSparkChainPct > 0 && pGate('Ichor Spark')) addProcEffect(preMitBase, ichorSparkChainPct, { air: 0.5, physical: 0.5 }, 'Ichor Spark')
           if (stormRendPct > 0 && pGate('Chain')) addProcEffect(preMitBase, stormRendPct, { air: 0.5, magic: 0.5 }, 'Chain')
@@ -1478,7 +1494,7 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
       }
     }
 
-    const result: ComputedHit = { group: hit.group, index: hit.index, count: hit.count, isFinisher: hit.isFinisher, label: hit.label, isHeal, types, procCount: hit.procCount, finisherGroupHitCount: hit.finisherGroupHitCount, eachHitM1M2: hit.eachHitM1M2 ?? false, vcBuffedCount, vcMult: VC_MULT, ...(hit.isRadianceProc ? { isRadianceProc: true as const, sourceLabel: hit.sourceLabel } : {}) }
+    const result: ComputedHit = { group: hit.group, index: hit.index, count: hit.count, isFinisher: hit.isFinisher, label: hit.label, isHeal, types, procCount: hit.procCount, finisherGroupHitCount: hit.finisherGroupHitCount, eachHitM1M2: hit.eachHitM1M2 ?? false, vcBuffedCount, vcMult: VC_MULT, ...(hit.alliesOnly ? { alliesOnly: true as const } : {}), ...(hit.isRadianceProc ? { isRadianceProc: true as const, sourceLabel: hit.sourceLabel } : {}) }
     // Vassals Croak: on an RMB (M2) finisher hit, consume Last Croak and explode once per RMB press.
     // Triggers on any M2-type finisher: base M2 (group 'M2'), M2 finishers folded into the M1 combo
     // (Deltabit → 'M1' with isM2, Delta Drill repeats it), non-standard WA finishers that count as
@@ -1578,7 +1594,11 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
   $: waHits   = computedHits.filter(h => h.group === 'WA')
   $: runeHits = computedHits.filter(h => h.group === 'Rune')
   $: spiritHits = computedHits.filter(h => h.group === 'Spirit')
-  $: perkHits = computedHits.filter(h => h.group !== 'M1' && h.group !== 'M2' && h.group !== 'WA' && h.group !== 'Rune' && h.group !== 'Spirit' && h.label !== 'Springblast')
+  // Allies-only output (e.g. Rejuvenating Flame's passive AoE heal). It still
+  // counts toward the totals, but gets its own badged branch instead of being
+  // filed under the perk that produces it, so it is never read as self-heal.
+  $: alliesHits = computedHits.filter(h => h.alliesOnly)
+  $: perkHits = computedHits.filter(h => h.group !== 'M1' && h.group !== 'M2' && h.group !== 'WA' && h.group !== 'Rune' && h.group !== 'Spirit' && !h.alliesOnly && h.label !== 'Springblast')
 
   /** Perk hits are grouped one section per source perk: trigger-context suffixes
    *  like "(M2)"/"(WA)"/"(Cragblade WA →)" collapse into the perk's name, and
@@ -1653,6 +1673,7 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
     ...(runeHits.length > 0 ? [{ label: 'Rune', list: _splitVcHits(runeHits) }] : []),
     ...(spiritHits.length > 0 ? [{ label: 'Spirit', list: _splitVcHits(spiritHits) }] : []),
     ..._groupedPerks.map(g => ({ ...g, list: _splitVcHits(g.list) })),
+    ...(alliesHits.length > 0 ? [{ label: 'Allies', allies: true, list: _splitVcHits(alliesHits) }] : []),
   ]
 
   // ── Totals ──────────────────────────────────────────────────
@@ -1947,9 +1968,12 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
             {#if grp.list.length > 0}
               {@const gTotal = groupTotalSum(grp.list, showCritValues)}
               {@const gHealTotal = groupHealTotalSum(grp.list, showCritValues)}
-              <div class="bdc-hit-list-grp">
+              <div class="bdc-hit-list-grp" class:bdc-hit-list-grp--allies={grp.allies}>
                 <div class="bdc-grp-head">
                   <span class="bdc-hit-grp-label">{grp.label}</span>
+                    {#if grp.allies}
+                      <Badge color="#38bdf8" size="xs" square mono title="Heals your Allies — this output never lands on you">Allies</Badge>
+                    {/if}
                     {#if gTotal > 0}
                     <span class="bdc-grp-total" class:bdc-grp-total--crit={showCritValues}>
                       {#if showCritValues}<CritIcon size={10}/>{/if}
@@ -3243,6 +3267,10 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+.bdc-hit-list-grp--allies .bdc-grp-head {
+  border-left: 2px solid rgba(56, 189, 248, 0.45);
+  padding-left: 8px;
 }
 .bdc-hit-list-rows {
   display: flex;

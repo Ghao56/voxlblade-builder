@@ -9,7 +9,7 @@
   import { CRAGBLADE_NAME, CRAGBLADE_M1_M2_DMG_MULT, resolveCragbladeType } from './data/cragblade'
   import { WEAPON_BASE_DMG } from './data/weapon base dmg'
   import { DMG_TYPE_COLORS, DMG_TYPE_PRIORITY, SCALING_TO_BOOST, PERCENT_STATS, canProc, type WeaponBaseDmg, type ProcCoefficient } from './lib/types'
-  import { BUFF_DEFS, getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, calcBuffEffect, getBuffDescription, convertTailwindToWhirlwind, getTrueBalanceBuffs, assembleActiveBuffs, applyCauterizeConversion, getBurnApplicationCount, hasEligibleDarkeningHexSource, applyDarkeningHexPotency } from './data/BuffData'
+  import { BUFF_DEFS, getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, calcBuffEffect, getBuffDescription, convertTailwindToWhirlwind, getTrueBalanceBuffs, assembleActiveBuffs, applyCauterizeConversion, getBurnApplicationCount, hasEligibleDarkeningHexSource, applyDarkeningHexPotency, resolveBuffTarget, isSelfBurnBuff } from './data/BuffData'
   import { DEBUFF_COMBAT_EFFECTS } from './data/debuffCombatEffects'
   import { getDraconicInfusionBuff, getDraconicAbilityDebuffs, getEffectiveDraconicInfusionPotency, getDraconicInfusionPotMult, getDraconicInfusionDurMult } from './data/draconicBuffs'  
   import { WA_SUMMON_MAP, SUMMON_MAP, calcSummonStat, calcMaxSummonCount, createSummonInstance, type SummonDef, type SummonInstance } from './data/SummonData'
@@ -27,8 +27,8 @@
   import { applyDraconicBonuses, getDraconicBonuses } from './data/draconicRunes'
   import { calculateHealBoost, type HealSource } from './data/HealBoost'
   import { buildRadianceProcHit, isRadianceEligible, radianceSourceHealing } from './data/radianceProcs'
-  import { RADIANCE_HOLY_SCALING, RADIANCE_LABEL, RADIANCE_COLOR, RAINSTORM_BASE_DMG, RAINSTORM_DMG_PER_STACK, RAINSTORM_BASE_HEAL, RAINSTORM_HEAL_PER_STACK, RAINSTORM_LABEL } from './lib/constants/perk-base-damage'
-  import { roundMultiplier, calcWardingDebuffMultiplier, calcProcChance, applyScalingMult, scalingEq } from './lib/utils'
+  import { RADIANCE_HOLY_SCALING, RADIANCE_LABEL, RADIANCE_COLOR, RAINSTORM_BASE_DMG, RAINSTORM_DMG_PER_STACK, RAINSTORM_BASE_HEAL, RAINSTORM_HEAL_PER_STACK, RAINSTORM_LABEL, REJUVENATING_FLAME_BASE_HEAL, REJUVENATING_FLAME_HEAL_PER_AMOUNT, REJUVENATING_FLAME_FIRE_SCALING, REJUVENATING_FLAME_BURN_HEAL_MULT, REJUVENATING_FLAME_BURN_AOE_PER_AMOUNT, REJUVENATING_FLAME_HEAL_LABEL } from './lib/constants/perk-base-damage'
+  import { roundMultiplier, calcWardingDebuffMultiplier, calcProcChance, applyScalingMult } from './lib/utils'
   import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage, calcInoculationHeal, UNDEAD_MIGHT_SELF_DMG_FRACTION, UNDEAD_MIGHT_DR_PCT_PER_STACK, type SelfDamagePerkDef } from './data/selfDamage'
   import { resolveDamageTypes, resolveWaDamageTypeKeys, applyAirToMagicConversion, computeEffectiveWaDmgTypes } from './lib/damageTypeResolve'
   import { buildDmgTypeBonuses } from './lib/engine/dmgTypeBonuses'
@@ -1092,6 +1092,18 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   $: _vcDisplayHits = Math.min(_vcCharges, _vcMaxHit)
   $: _oceanSongAmt = perks['Ocean Song'] ?? 0
   $: _rainstormAmt = perks['Rainstorm'] ?? 0
+  // Rejuvenating Flame — passive AoE heal on Allies (×5 while the user is
+  // Burning) that also grants Cinder Surge to those healed. Cinder Surge is an
+  // Allies-only buff: it never touches the user's own damage, so it only shows
+  // up in the buff list (badged "Allies"), never as a damage chunk.
+  // Raw amount drives the perk chip; the gated amount drives the damage/heal
+  // math. Keeping them separate means a disabled chip still renders (showing
+  // "disabled") and can be toggled back on instead of vanishing for good.
+  $: _rfPerkAmt = perks['Rejuvenating Flame'] ?? 0
+  $: _rejuvenatingFlameAmt = _rfPerkAmt > 0 && !disabledEffects.has('rejuvenatingFlame') ? _rfPerkAmt : 0
+  $: _rfBurning = _allActiveBuffs.some(b => isSelfBurnBuff(b))
+  $: _rfBurnHealMult = _rfBurning ? REJUVENATING_FLAME_BURN_HEAL_MULT : 1
+  $: _cinderSurgePotency = Math.max(0, ..._allActiveBuffs.filter(b => b.buffName === 'Cinder Surge').map(b => b.potency))
   $: _radianceAmt = perks['Radiance'] ?? 0
   $: _lightBearerAmt = perks['Light Bearer'] ?? 0
   $: _wildBoltAmt = perks['Wild Bolt'] ?? 0
@@ -1387,6 +1399,24 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         title: `Kindling (${kindlingAmt}): Burn deals +${50 * kindlingAmt}% dmg · Burn lasts 80% shorter`,
         val: disabledEffects.has('kindling') ? '—' : `×${+(1 + KINDLING_DMG_ADD_PER_AMOUNT * kindlingAmt).toFixed(2)}`,
         cond: disabledEffects.has('kindling') ? 'disabled' : 'Burn · 80% shorter',
+      })
+    }
+    if (_rfPerkAmt > 0) {
+      const rfAmt = _rfPerkAmt
+      // The chip reports the DEFAULT base heal (0.1 + 0.05 × amount). The
+      // Burning ×5 is a separate conditional multiplier, called out in the
+      // condition text and folded into the Allies row's Base Heal.
+      const rfBase = +(REJUVENATING_FLAME_BASE_HEAL + REJUVENATING_FLAME_HEAL_PER_AMOUNT * rfAmt).toFixed(4)
+      const rfAoeBonus = Math.round(REJUVENATING_FLAME_BURN_AOE_PER_AMOUNT * rfAmt * 100)
+      chips.push({
+        key: 'rejuvenatingFlame', name: 'Rejuvenating Flame',
+        title: `Rejuvenating Flame (${rfAmt}): passive AoE heal on Allies · ${REJUVENATING_FLAME_FIRE_SCALING} Fire scaling · ×${REJUVENATING_FLAME_BURN_HEAL_MULT} heal while Burning · AoE +${rfAoeBonus}% while Burning · grants Cinder Surge ${trimNum(_cinderSurgePotency, 3)} potency to healed Allies`,
+        val: disabledEffects.has('rejuvenatingFlame') ? '—' : `${rfBase} base`,
+        cond: disabledEffects.has('rejuvenatingFlame')
+          ? 'disabled'
+          : _rfBurning
+            ? `Burning · heal ×${REJUVENATING_FLAME_BURN_HEAL_MULT} · AoE +${rfAoeBonus}%`
+            : 'not Burning',
       })
     }
     return chips
@@ -2523,6 +2553,20 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     }
   })()
 
+  // Rejuvenating Flame heal Fire-scaling breakdown (0.7 Fire Scaling)
+  $: _rejuvenatingFlameHealScalingBreakdown = (() => {
+    if (!(_rejuvenatingFlameAmt > 0)) return null
+    const rows = buildScalingRows({ fire: REJUVENATING_FLAME_FIRE_SCALING })
+    if (!rows.length) return null
+    const totalEffectivePct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 1000) / 1000
+    return {
+      rows,
+      totalEffectivePct,
+      multiplier: roundMultiplier(applyScalingMult(totalEffectivePct / 100)),
+      label: REJUVENATING_FLAME_HEAL_LABEL,
+    }
+  })()
+
   // Rainstorm Water-scaling breakdown (1.0 Water Scaling)
   $: _rainstormScalingBreakdown = (() => {
     if (!(_rainstormAmt > 0)) return null
@@ -3480,7 +3524,9 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   $: _cdPerkTargets = [...new Set([
     ..._perkOnHitDamages.map(ph => ph.tag),
     ..._activePerkDmgEntries
-      .filter(e => e.isActive && e.typedHits_m2.length > 0 && e.perkName !== 'Cauterize' && e.perkName !== 'Blazing Finisher' && e.perkName !== 'Draconic Blood' && !_isSpiritPerk(e.perkName) && !e.countAsM1 && !e.countAsM2)
+      // Rainstorm is excluded: its rows are emitted outside this pipeline, so a
+      // Channeled Depths target pointing at them would silently do nothing.
+      .filter(e => e.isActive && e.typedHits_m2.length > 0 && e.perkName !== 'Cauterize' && e.perkName !== 'Blazing Finisher' && e.perkName !== 'Draconic Blood' && e.perkName !== RAINSTORM_LABEL && !_isSpiritPerk(e.perkName) && !e.countAsM1 && !e.countAsM2)
       .map(e => e.displayName),
   ])]
   interface BDCHit {
@@ -3516,9 +3562,12 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     weaponBoostMult?: number
     weaponBoostLabel?: string
     cdWater?: number
-    isRadianceProc?: boolean
-    sourceLabel?: string
-    note?: string
+isRadianceProc?: boolean
+sourceLabel?: string
+/** Output that lands on the user's ALLIES, not on the user. Kept in the totals
+ *  but rendered in its own badged branch of the hit list (see BaseDamageCalc). */
+alliesOnly?: boolean
+note?: string
   }
 
   $: _bdcWeaponHits = (() => {
@@ -3930,6 +3979,10 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       if (entry.isProcHit) continue 
       if (entry.perkName === 'Cauterize') continue 
       if (entry.perkName === 'Blazing Finisher') continue 
+      // Rainstorm's def is card-only — its damage + heal rows are emitted by the
+      // hand-written Rainstorm block further down (shared Water scaling, noProc
+      // damage half, Radiance-eligible heal half).
+      if (entry.perkName === RAINSTORM_LABEL) continue
 
        // Check for heal effects from Draconic Blood abilities
        if (entry.perkName === 'Draconic Blood') {
@@ -3989,7 +4042,10 @@ const trimNum = (n: number, maxDecimals = 4): string => {
 
       // Deathmist Slash damage attaches to finisher hit rows via
       // _perkOnHitDamages + BaseDamageCalc, so no standalone damage row here.
-      // The allies heal is separated into its own standalone Perk row.
+      // The allies heal is separated into its own standalone row. alliesOnly routes
+      // it into the badged "Allies" branch in BaseDamageCalc instead of the
+      // per-perk branch, so it is never read as self-heal (group stays 'Perk'
+      // so it still counts toward the heal totals).
       if (entry.perkName === 'Deathmist Slash') {
         const healSe = (findPerkDmgDef('Deathmist Slash')
           ?.secondaryEffects ?? []).find(se => se.label === 'Heal (Allies)')
@@ -4009,6 +4065,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
             dmgTypes: { heal: 1.0 },
             label: 'Deathmist Slash Heal (Allies)',
             isHeal: true,
+            alliesOnly: true,
           })
         }
         continue
@@ -4418,6 +4475,8 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     // One Raindrop per rotation. Base Damage = 4 + 2 × perkAmount, Base Healing =
     // 0.5 + 0.2 × perkAmount, both on 1.0 Water scaling. The drop cannot proc
     // other effects; its healing can (it is on the compatible-heal list).
+    // The Perk Base Damage card is driven by the Rainstorm PerkDmgDef, which
+    // mirrors these numbers; the generic perk loop skips that def (see above).
     if (_rainstormAmt > 0) {
       const rsScaling = _computePerkScalingMult({ water: 1.0 })
       result.push({
@@ -4426,7 +4485,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         scalingMult: rsScaling, combatMult: _perkCombatMult, effectiveMult: _perkEffectiveMult,
         isFinisher: false, dmgTypes: { water: 1.0 },
         procCoefficient: { type: 'noProc' },
-        label: 'Rainstorm',
+        label: RAINSTORM_LABEL,
       })
       result.push({
         group: 'Perk', index: result.length, count: 1,
@@ -4435,8 +4494,37 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         radianceHealMult: _healDealtMultiplier,
         isFinisher: false, dmgTypes: { heal: 1.0 },
         dmgTypeIsCritExempt: { heal: true },
-        label: 'Rainstorm Heal',
+        label: `${RAINSTORM_LABEL} Heal`,
         isHeal: true,
+      })
+    }
+
+    // ── Rejuvenating Flame ─────────────────────────────────
+    // Passive AoE heal around the user, hitting Allies only (never the user) on
+    // 0.7 Fire scaling. Base Healing = 0.1 + 0.05 × perkAmount, multiplied by 5
+    // while the user is Burning; the AoE grows further while Burning but that
+    // never reaches an enemy, so it is reported by the chip tooltip only.
+    // The heal lacks a Proc Coefficient: it cannot proc other effects, and it is
+    // absent from COMPATIBLE_HEAL_SOURCE_PATTERNS so no Radiance burst follows.
+    // The healed Allies also receive Cinder Surge for 3s (an Allies-only buff that
+    // never touches the user's own damage - see BUFF_DEFS['Cinder Surge']).
+    // alliesOnly keeps this row out of the perk branches: it still counts toward
+    // the heal totals, but BaseDamageCalc renders it under its own "Allies"
+    // branch (badged) so it is never read as self-heal. Scaling is untouched.
+    if (_rejuvenatingFlameAmt > 0) {
+      const rfBase = (REJUVENATING_FLAME_BASE_HEAL + REJUVENATING_FLAME_HEAL_PER_AMOUNT * _rejuvenatingFlameAmt) * _rfBurnHealMult
+      const rfScaling = _computePerkScalingMult({ fire: REJUVENATING_FLAME_FIRE_SCALING })
+      result.push({
+        group: 'Perk', index: result.length, count: 1,
+        base: rfBase,
+        scalingMult: rfScaling, combatMult: _healFinalMultiplier,
+        radianceHealMult: _healDealtMultiplier,
+        isFinisher: false, dmgTypes: { heal: 1.0 },
+        dmgTypeIsCritExempt: { heal: true },
+        procCoefficient: { type: 'noProc' },
+label: REJUVENATING_FLAME_HEAL_LABEL,
+isHeal: true,
+alliesOnly: true,
       })
     }
 
@@ -5247,6 +5335,9 @@ $: _groupedSelfDamageSources = (() => {
                   style="background:color-mix(in srgb,{def.color} 10%,transparent);border-color:color-mix(in srgb,{def.color} 35%,transparent)"
                   on:click={() => buff.buffName === 'Magic Reinforce' ? toggleMagicReinforceChip(buff._allSources) : toggleBuffByName(buff.buffName)}>
                   <span class="da-bc-name">{def.name}</span>
+                  {#if resolveBuffTarget(buff.buffName, buff) === 'allies'}
+                    <Badge color="#38bdf8" size="xs" square mono title="Granted to your Allies — not to you">Allies</Badge>
+                  {/if}
                   <span class="da-bc-val" style="color:{def.color}">{isOff ? '—' : roundMultiplier(buff.potency)}</span>
                   <span class="da-bc-cond">{getBuffDescription(buff.buffName, $result.perks, buff.potency)}</span>
                   <span class="da-bc-toggle" style={isOff ? '' : `background:color-mix(in srgb,${def.color} 25%,transparent);color:${def.color}`}>{isOff ? 'OFF' : 'ON'}</span>
@@ -6978,7 +7069,7 @@ $: _groupedSelfDamageSources = (() => {
       <span class="ds-result-label">Scaling Multiplier</span>
       <span class="ds-applies-to">{waScalingSameAsWeapon ? 'M1 · M2 · Weapon Art' : 'M1 · M2'}</span>
     </div>
-    <span class="ds-result-eq">{scalingEq(scalingBreakdown.totalEffectivePct)} =</span>
+    <span class="ds-result-eq">Multiplier =</span>
     <span class="ds-result-val">×{+scalingBreakdown.multiplier.toFixed(4)}</span>
   </div>
 
@@ -7052,7 +7143,7 @@ $: _groupedSelfDamageSources = (() => {
           </span>
           <span class="ds-applies-to">Weapon Art</span>
         </div>
-        <span class="ds-result-eq">{scalingEq(waScalingBreakdown.totalEffectivePct)} =</span>
+        <span class="ds-result-eq">Multiplier =</span>
         <span class="ds-result-val"
           style={waScalingIsHealOnly ? 'color:#4ade80;text-shadow:0 0 12px rgba(74,222,128,.4)' : ''}>
           ×{+waScalingBreakdown.multiplier.toFixed(4)}
@@ -7104,7 +7195,7 @@ $: _groupedSelfDamageSources = (() => {
           <span class="ds-result-label">Scaling Multiplier</span>
           <span class="ds-applies-to">Weapon Art (Bomber Charge)</span>
         </div>
-        <span class="ds-result-eq">{scalingEq(Math.round(Object.entries(_bomberChargeWaHit.scalings).reduce((s, [k, v]) => s + (v as number) * ((stats as Record<string, number>)[k + 'Boost'] ?? 0), 0) * 100) / 100)} =</span>
+        <span class="ds-result-eq">Multiplier =</span>
         <span class="ds-result-val">×{+_bomberChargeWaHit.scalingMult.toFixed(4)}</span>
       </div>
     </div>
@@ -7419,7 +7510,7 @@ $: _groupedSelfDamageSources = (() => {
           <div style="display:flex;flex-direction:column;gap:2px;flex:1;">
             <span class="ds-result-label" style="color:#fb923c;">{dt.type} Scaling Multiplier</span>
           </div>
-          <span class="ds-result-eq">{scalingEq(dt.totalEffectivePct)} =</span>
+          <span class="ds-result-eq">Multiplier =</span>
           <span class="ds-result-val">×{+dt.scalingMult.toFixed(4)}</span>
         </div>
         {/each}
@@ -7487,7 +7578,7 @@ $: _groupedSelfDamageSources = (() => {
           <div style="display:flex;flex-direction:column;gap:2px;flex:1;">
             <span class="ds-result-label" style="color:#fb923c;">{dt.type} Scaling Multiplier</span>
           </div>
-          <span class="ds-result-eq">{scalingEq(dt.totalEffectivePct)} =</span>
+          <span class="ds-result-eq">Multiplier =</span>
           <span class="ds-result-val">×{+dt.scalingMult.toFixed(4)}</span>
         </div>
           {/if}
@@ -7567,7 +7658,7 @@ $: _groupedSelfDamageSources = (() => {
         </span>
         <span class="ds-applies-to">Rune</span>
       </div>
-      <span class="ds-result-eq">{scalingEq(runeScalingBreakdown.totalEffectivePct)} =</span>
+      <span class="ds-result-eq">Multiplier =</span>
       <span class="ds-result-val" style={_activeRuneDmgDef?.isHealOnly ? 'color:#4ade80;text-shadow:0 0 12px rgba(74,222,128,.4)' : ''}>
         ×{+runeScalingBreakdown.multiplier.toFixed(4)}
       </span>
@@ -7613,7 +7704,7 @@ $: _groupedSelfDamageSources = (() => {
         <span class="ds-result-label">Scaling Multiplier</span>
         <span class="ds-applies-to">Rune</span>
       </div>
-      <span class="ds-result-eq">{scalingEq(_draconicScalingBreakdown.totalEffectivePct)} =</span>
+      <span class="ds-result-eq">Multiplier =</span>
       <span class="ds-result-val">×{+_draconicScalingBreakdown.multiplier.toFixed(4)}</span>
     </div>
   {/if}
@@ -7653,14 +7744,14 @@ $: _groupedSelfDamageSources = (() => {
         <span class="ds-result-label">Scaling Multiplier</span>
         <span class="ds-applies-to">Mount M1 · Mount WA</span>
       </div>
-      <span class="ds-result-eq">{scalingEq(_mountRuneScalingBreakdown.totalEffectivePct)} =</span>
+      <span class="ds-result-eq">Multiplier =</span>
       <span class="ds-result-val">×{+_mountRuneScalingBreakdown.multiplier.toFixed(4)}</span>
     </div>
   {/if}
 </div>
 {/if}
 
-{#if _waHealScalingBreakdown || _perkHealScalingBreakdown || _rainstormHealScalingBreakdown}
+{#if _waHealScalingBreakdown || _perkHealScalingBreakdown || _rainstormHealScalingBreakdown || _rejuvenatingFlameHealScalingBreakdown}
 <div class="da-section da-section--scaling" style="border-color:rgba(74,222,128,.2);background:linear-gradient(160deg,var(--surface,#141715) 60%,rgba(74,222,128,.03) 100%)">
   <div class="da-section-title" style="color:#4ade80">✦ Heal Scaling</div>
 
@@ -7759,6 +7850,39 @@ $: _groupedSelfDamageSources = (() => {
           <div class="ds-col ds-col--op">=</div>
           <div class="ds-col ds-col--contrib">
             <span class="ds-total-pct" style="color:#38bdf8;text-shadow:0 0 10px rgba(56,189,248,.4)">×{+_rainstormHealScalingBreakdown.multiplier.toFixed(4)}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  {/if}
+
+  <!-- Rejuvenating Flame heal scaling subsection (0.7 Fire Scaling) -->
+  {#if _rejuvenatingFlameHealScalingBreakdown}
+    <div class="ds-wa-subsection" style="margin-top:{_waHealScalingBreakdown || _perkHealScalingBreakdown || _rainstormHealScalingBreakdown ? '12px' : '0'}">
+      <div class="ds-wa-header">
+        <Badge color="#38bdf8">Perk</Badge>
+        <span class="ds-wa-name" style="color:#38bdf8">{_rejuvenatingFlameHealScalingBreakdown.label}</span>
+      </div>
+      <div class="ds-table">
+        <div class="ds-head">
+          <div class="ds-col ds-col--type">Scaling</div>
+          <div class="ds-col ds-col--val">Scaling Val</div>
+          <div class="ds-col ds-col--op"></div>
+          <div class="ds-col ds-col--boost">Your Boost</div>
+          <div class="ds-col ds-col--op"></div>
+          <div class="ds-col ds-col--contrib">Contribution</div>
+        </div>
+        {#each _rejuvenatingFlameHealScalingBreakdown.rows as row}
+          <ScalingBreakdownRow {row} useRoundMultiplier={true} showZeroBoost={true} />
+        {/each}
+        <div class="ds-row ds-row--total" style="background:rgba(56,189,248,.07);border-color:rgba(56,189,248,.18)">
+          <div class="ds-col ds-col--type ds-total-label" style="color:#38bdf8">Total</div>
+          <div class="ds-col ds-col--val"></div>
+          <div class="ds-col ds-col--op"></div>
+          <div class="ds-col ds-col--boost"></div>
+          <div class="ds-col ds-col--op">=</div>
+          <div class="ds-col ds-col--contrib">
+            <span class="ds-total-pct" style="color:#38bdf8;text-shadow:0 0 10px rgba(56,189,248,.4)">×{+_rejuvenatingFlameHealScalingBreakdown.multiplier.toFixed(4)}</span>
           </div>
         </div>
       </div>

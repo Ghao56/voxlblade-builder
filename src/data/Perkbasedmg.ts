@@ -208,6 +208,10 @@ import {
   TRUE_MOON_DMG_MULT_PER_STACK,
   TRUE_MOON_PROC_CHANCE,
   TRUE_MOON_TRUE_CONVERSION_PCT_PER_STACK,
+  RAINSTORM_BASE_DMG,
+  RAINSTORM_DMG_PER_STACK,
+  RAINSTORM_BASE_HEAL,
+  RAINSTORM_HEAL_PER_STACK,
 } from '../lib/constants'
 
 export interface PerkSliderDef {
@@ -1570,7 +1574,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
       return s
     },
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
-    note: `${PROPELLING_FUN_COOLDOWN}s cooldown. Jumping creates an air current. If burning, activates Cinderpull instead (Fire Damage Type). Cloudpush/Cinderpull grant bonus damage type to allies.`,
+    note: `${PROPELLING_FUN_COOLDOWN}s cooldown. Jumping creates an air current. If burning, activates Cinderpull instead (Fire Damage Type). Cloudpush/Cinderpull grant bonus damage type to allies and also apply to the user of this perk.`,
   },
   // ── Quake ─────────────────────────────────────────────────────────
   {
@@ -2092,6 +2096,33 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     scalings: { air: 1.0, magic: 1.0 },
     procCoefficient: { type: 'hasCoeff', value: 0.5 },
     note: 'Hits roughly every 0.5 seconds, and lasts for up to 7.5 seconds, or until it reaches a target. More than one Tesla Orb cannot be activae at a time.'
+  },
+  // ── Rainstorm ─────────────────────────────────────────────────
+  // One Raindrop per rotation. This def is the Perk Base Damage CARD only: the
+  // damage + heal rows in the breakdown are emitted by DamageAnalyzer's
+  // hand-written Rainstorm block, so the generic perk loop skips this entry
+  // (same arrangement as Cauterize / Blazing Finisher). Keeping the formulas
+  // here means the card can never drift from the emitted rows.
+  {
+    perkName: 'Rainstorm',
+    condition: 'One Raindrop per rotation',
+    getBaseDamage: ({ perkAmount }) => RAINSTORM_BASE_DMG + RAINSTORM_DMG_PER_STACK * perkAmount,
+    hits: 1,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { water: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { water: 1.0 },
+    procCoefficient: { type: 'noProc' },
+    secondaryEffects: [
+      {
+        label: 'Heal',
+        getValue: ({ perkAmount }) => Math.round((RAINSTORM_BASE_HEAL + RAINSTORM_HEAL_PER_STACK * perkAmount) * 1000) / 1000,
+        format: v => `${v} HP`,
+        condition: 'Base Healing (Self) · 1.0 Water scaling · on the compatible-heal list (triggers Radiance)',
+        tone: 'defense',
+      },
+    ],
+    note: 'One Raindrop per rotation on 1.0 Water scaling. Base Damage = 4 + 2 × perk amount, Base Healing = 0.5 + 0.2 × perk amount. The drop cannot proc other effects, but its healing can — it is on the compatible-heal list, so each drop triggers a Radiance burst.',
   },
 ]
 

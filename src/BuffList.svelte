@@ -21,6 +21,7 @@ import { isMonkGuild } from './lib/engine/data/character'
     hasEligibleDarkeningHexSource,
     applyDarkeningHexPotency,
     isDarkeningHexPotencyMultExcluded,
+    resolveBuffTarget,
     type GrantedBuff,
   } from './data/BuffData'
   import { getDraconicInfusionBuff, getDraconicAbilityDebuffs, getDraconicInfusionPotMult, getDraconicInfusionDurMult } from './data/draconicBuffs'
@@ -580,6 +581,10 @@ $: groupedBuffs = (() => {
                     
                     {#if group.strongest.isSelfDebuff}
                       <span class="bl-tag bl-tag--self">Self</span>
+                    {:else if !def.isDebuff && resolveBuffTarget(group.buffName, group.strongest) === 'allies'}
+                      <span class="bl-tag bl-tag--allies" title="Granted to your Allies — not to you">Allies</span>
+                    {:else if !def.isDebuff}
+                      <span class="bl-tag bl-tag--self">Self</span>
                     {/if}
                     
                     {#if group.maxDuration > 0}
@@ -972,6 +977,11 @@ $: groupedBuffs = (() => {
     background: rgba(148,163,184,.12);
     border: 1px solid rgba(148,163,184,.28);
     color: #94a3b8;
+  }
+  .bl-tag--allies {
+    background: rgba(56,189,248,.12);
+    border: 1px solid rgba(56,189,248,.3);
+    color: #38bdf8;
   }
   .bl-tab-dot--neutral { background: #6366f1; box-shadow: 0 0 5px rgba(99,102,241,.5); }
   .bl-count--neutral   { background: rgba(99,102,241,.15); border: 1px solid rgba(99,102,241,.3); color: #6366f1; }

@@ -112,6 +112,10 @@ export interface ComputedHit {
     vcBuffedCount?: number
     vcMult?: number
     vcBuffed?: boolean
-    isRadianceProc?: boolean
-    sourceLabel?: string
+isRadianceProc?: boolean
+sourceLabel?: string
+/** Output that lands on the user's ALLIES, not on the user (e.g. Rejuvenating
+ *  Flame's passive AoE heal). Counted in the totals, rendered in its own
+ *  badged branch of the hit list. */
+alliesOnly?: boolean
 }

@@ -16,7 +16,7 @@ import type { StatKey, StatMap, ArmorPart, EnchantSlot, BuildState } from '../ty
 import { STAT_KEYS, applyUpgrade } from '../types'
 import { CDR_PERK_DATA } from '../../data/cdr'
 import { applyStatBoostPerks, OFFENSIVE_BOOSTS } from '../../data/statboost'
-import { getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, convertTailwindToWhirlwind, assembleActiveBuffs, BUFF_DEFS } from '../../data/BuffData'
+import { getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, convertTailwindToWhirlwind, assembleActiveBuffs, BUFF_DEFS, isSelfBurnBuff } from '../../data/BuffData'
 import { getActiveRaceEffect, calcOrkTenacityBonus } from '../../data/raceEffects'
 import { BOOST_DEFS, type BoostContext } from '../../data/Boost'
 import type { BoostEntry, BoostResult } from '../types'
@@ -566,7 +566,7 @@ function deriveResults(
   const quickdrawPotency = maxBuffPotency(allBuffs, 'Quickdraw')
   const tailwindPotency  = maxBuffPotency(allBuffs, ['Tailwind', 'Whirlwind'])
   const burnPotency      = maxBuffPotency(allBuffs, 'Burn')
-  const hasBurn          = allBuffs.some((b: any) => b.buffName === 'Burn')
+  const hasBurn          = allBuffs.some((b: any) => isSelfBurnBuff(b))
   const selfDebuffCount  = new Set(allBuffs.filter((b: any) => {
     const def = BUFF_DEFS[b.buffName]
     return (b.isSelfDebuff || def?.isSelfDebuff) && def?.isDebuff

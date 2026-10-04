@@ -15,10 +15,6 @@ export function applyScalingMult(effFrac: number): number {
   return 1 / (1 - effFrac)
 }
 
-export function scalingEq(pct: number): string {
-  return pct >= 0 ? `1 + ${pct}%` : `1 / (1 + ${-pct}%)`
-}
-
 /** Format a multiplier fraction (0.01) as a human-readable percent string ("1%"). */
 export function fmtPct(fraction: number): string {
   return `${+(fraction * 100).toFixed(4)}%`

@@ -4,7 +4,7 @@
 // Each entry checks perk presence, existing debuffs, and optional proc coefficient gates.
 
 import { PENANCE_HP_THRESHOLD, PENANCE_BLEED_POTENCY, PENANCE_BLEED_DURATION } from './Boost'
-import { HYPNOTIST_POTENCY_PER_PERK, HYPNOTIST_DURATION_BASE, HYPNOTIST_DURATION_PER_PERK, FIERY_PURSUIT_BURN_DURATION, SUNBURN_BURN_BASE_CHANCE, SUNBURN_BURN_CHANCE_PER_STACK, FROSTBITE_SLOW_POTENCY_PER_STACK, FROSTBITE_CHANCE_PER_STACK, CRYO_ENGINE_PROC_CHANCE_PER_AMOUNT, IGNITION_BURN_DURATION_BASE, IGNITION_BURN_DURATION_PER_AMOUNT, IGNITION_PROC_CHANCE_PER_AMOUNT } from '../lib/constants/perks'
+import { HYPNOTIST_POTENCY_BASE, HYPNOTIST_POTENCY_PER_PERK, HYPNOTIST_DURATION_BASE, HYPNOTIST_DURATION_PER_PERK, FIERY_PURSUIT_BURN_DURATION, SUNBURN_BURN_BASE_CHANCE, SUNBURN_BURN_CHANCE_PER_STACK, FROSTBITE_SLOW_POTENCY_PER_STACK, FROSTBITE_CHANCE_PER_STACK, CRYO_ENGINE_PROC_CHANCE_PER_AMOUNT, IGNITION_BURN_DURATION_BASE, IGNITION_BURN_DURATION_PER_AMOUNT, IGNITION_PROC_CHANCE_PER_AMOUNT } from '../lib/constants/perks'
 import type { GrantedBuff } from './BuffData'
 import { canProc, type ProcCoefficient } from '../lib/types'
 import { calcBaseMaxHP } from '../lib/constants/game'
@@ -388,9 +388,9 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
   if (hypnotistAmt > 0 && exhaustCanProc && !existingBuffNames.includes('Hypnotized')) {
     debuffs.push({
       buffName: 'Hypnotized',
-      potency: HYPNOTIST_POTENCY_PER_PERK * hypnotistAmt,
+      potency: HYPNOTIST_POTENCY_BASE + HYPNOTIST_POTENCY_PER_PERK * hypnotistAmt,
       duration: HYPNOTIST_DURATION_BASE + HYPNOTIST_DURATION_PER_PERK * hypnotistAmt,
-      condition: 'On WA or Rune hit · Potency = 0.1 × ' + +hypnotistAmt.toFixed(2),
+      condition: `On WA or Rune hit · Potency = ${HYPNOTIST_POTENCY_BASE} + ${HYPNOTIST_POTENCY_PER_PERK} × ${hypnotistAmt}`,
       sourceName: 'Hypnotist',
       sourceType: 'perk',
     })

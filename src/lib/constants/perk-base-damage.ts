@@ -309,6 +309,23 @@ export const RAINSTORM_BASE_HEAL = 0.5
 export const RAINSTORM_HEAL_PER_STACK = 0.2
 export const RAINSTORM_LABEL = 'Rainstorm'
 
+// Rejuvenating Flame
+// Passive AoE heal around the user (Allies only, never the user) on 0.7 Fire
+// scaling. Base Healing = 0.1 + 0.05 × perkAmount, multiplied by 5 while the
+// user is Burning. AoE radius grows further while Burning (display only — the
+// AoE never reaches enemies, so it cannot change the user's own damage).
+// The heal lacks a Proc Coefficient, so it never procs other effects and is
+// absent from COMPATIBLE_HEAL_SOURCE_PATTERNS (no Radiance burst).
+// The healed allies also receive Cinder Surge (constants/buffs.ts) for 3s;
+// being Burning does NOT multiply that potency.
+export const REJUVENATING_FLAME_BASE_HEAL = 0.1
+export const REJUVENATING_FLAME_HEAL_PER_AMOUNT = 0.05
+export const REJUVENATING_FLAME_FIRE_SCALING = 0.7
+export const REJUVENATING_FLAME_BURN_HEAL_MULT = 5
+export const REJUVENATING_FLAME_BURN_AOE_PER_AMOUNT = 0.5
+export const REJUVENATING_FLAME_LABEL = 'Rejuvenating Flame'
+export const REJUVENATING_FLAME_HEAL_LABEL = 'Rejuvenating Flame Heal'
+
 // Radiance
 export const RADIANCE_LABEL = 'Radiance'
 export const RADIANCE_COLOR = '#ffe9a8'

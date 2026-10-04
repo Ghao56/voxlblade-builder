@@ -77,6 +77,8 @@ import {
   ENDLESS_DESPAIR_DURATION_PER_STACK, STORED_CORRUPTION_DURATION_PER_STACK,
   PROPELLING_FUN_POTENCY_PER_AMOUNT, PROPELLING_FUN_DURATION_MULTIPLIER,
   CLOUDPUSH_PCT_PER_POTENCY, CINDERPULL_PCT_PER_POTENCY,
+  CINDER_SURGE_BASE_POTENCY, CINDER_SURGE_POTENCY_PER_AMOUNT, CINDER_SURGE_DURATION,
+  CINDER_SURGE_FIRE_PCT_PER_POTENCY, CINDER_SURGE_FIRE_PCT_PER_TENTH_POTENCY,
   RAGE_POTION_POTENCY, RAGE_POTION_DURATION,
   POISON_POTION_POTENCY, POISON_POTION_DURATION,
   POTION_CHUGGER_POTENCY_MULT_PER_LEVEL,
@@ -123,6 +125,9 @@ import { calcBaseMaxHP } from '../lib/constants/game'
 import { findPerkDmgDef, isHpGateActive } from './Perkbasedmg'
 import type { HpGate } from './Perkbasedmg'
 
+/** Who a buff is granted to. Defaults to 'self' when unspecified. */
+export type BuffTarget = 'self' | 'allies'
+
 export interface BuffDefinition {
   name: string
   color: string
@@ -135,6 +140,14 @@ export interface BuffDefinition {
   isSelfDebuff?: boolean
   isNeutral?: boolean
   potencyCapped?: boolean
+  /**
+   * Who receives this buff. 'self' (default) applies it to the user — and, when
+   * the description says so, to the user's allies too (e.g. Cloudpush /
+   * Cinderpull also apply to the perk user). 'allies' means allies ONLY
+   * (e.g. Cinder Surge), surfaced as a badge in BuffList. Debuffs are
+   * excluded — those carry `isSelfDebuff` / go to the enemy instead.
+   */
+  target?: BuffTarget
 }
 
 function formatDamageTypes(types: string[]) {
@@ -155,6 +168,8 @@ export interface GrantedBuff {
   isSelfDebuff?: boolean
   burnMode?: 'dot' | 'singed'
   hpGate?: HpGate
+  /** Per-grant override of the buff's default target. See BuffDefinition.target. */
+  target?: BuffTarget
 }
 
 
@@ -297,7 +312,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     description: "Deal x% of your damage as bonus air damage that counts as the applier's damage.",
     dynamicDescription: (_perks, potency) => {
       const pct = +(potency * 75).toFixed(4)
-      return `Deal ${pct}% of your damage as bonus air damage that counts as the applier's damage.`
+      return `Deal ${pct}% of your damage as bonus air damage that counts as the applier's damage. Also applies to the user of this perk.`
     },
     effectPerTenthPotency: CLOUDPUSH_PCT_PER_POTENCY,
     effectUnit: '%',
@@ -308,10 +323,22 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     description: "Deal x% of your damage as bonus fire damage that counts as the applier's damage.",
     dynamicDescription: (_perks, potency) => {
       const pct = +(potency * 75).toFixed(4)
-      return `Deal ${pct}% of your damage as bonus fire damage that counts as the applier's damage.`
+      return `Deal ${pct}% of your damage as bonus fire damage that counts as the applier's damage. Also applies to the user of this perk.`
     },
     effectPerTenthPotency: CINDERPULL_PCT_PER_POTENCY,
     effectUnit: '%',
+  },
+  'Cinder Surge': {
+    name: 'Cinder Surge',
+    color: '#fb923c',
+    description: 'Attacks gain 0.05 Fire damage type per 0.1 potency.',
+    dynamicDescription: (_perks, potency) => {
+      const gain = +(potency * 0.5).toFixed(4)
+      return `Attacks gain ${gain} Fire damage type.`
+    },
+    effectPerTenthPotency: CINDER_SURGE_FIRE_PCT_PER_TENTH_POTENCY,
+    effectUnit: '%',
+    target: 'allies',
   },
   'Draconic Infusion': {
     name: 'Draconic Infusion',
@@ -1244,6 +1271,17 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       condition: 'On jump',
       sourceName: 'Propelling Fun',
       sourceType: 'perk',
+    },
+  ],
+  'Rejuvenating Flame': (amount) => [
+    {
+      buffName: 'Cinder Surge',
+      potency: CINDER_SURGE_BASE_POTENCY + CINDER_SURGE_POTENCY_PER_AMOUNT * amount,
+      duration: CINDER_SURGE_DURATION,
+      condition: 'Passive AoE heal · applied to healed Allies for 3s · not multiplied by Burn',
+      sourceName: 'Rejuvenating Flame',
+      sourceType: 'perk',
+      target: 'allies',
     },
   ],
   'Smoldering': (amount) => [
@@ -2501,6 +2539,32 @@ export function convertTailwindToWhirlwind(
     sourceType: 'perk',
   })
   return result
+}
+
+/**
+ * Whether a buff lands on the user ('self', the default) or on the user's
+ * allies only ('allies'). A per-grant `target` overrides the buff definition so
+ * one buff can be granted to different recipients by different sources.
+ */
+export function resolveBuffTarget(buffName: string, granted?: GrantedBuff): BuffTarget {
+  return granted?.target ?? BUFF_DEFS[buffName]?.target ?? 'self'
+}
+
+/**
+ * Whether this buff means the USER is Burning, as opposed to the user's attacks
+ * Burning an opponent. Only self debuffs count: Smoldering and Steam Powered
+ * set you on fire, while Ignition / Exhaust / Sunburn / Bellowing Ember / Fiery
+ * Pursuit / Pyre Bloom / Solar Light / Fireball & Brainblast Runes / Flame Slash /
+ * Wild Bolt / Heat Drill / Dragigator Spirit and the plain Burn dummy debuff all
+ * Burn the enemy. Singed (Cauterize) is an enemy debuff as well and never counts.
+ *
+ * "While the user is Burning" effects (Rejuvenating Flame's ×5 heal, Smoldering's
+ * damage boost) must use this instead of a bare `buffName === 'Burn'` check, or
+ * they trigger off the enemy's Burn.
+ */
+export function isSelfBurnBuff(buff: { buffName: string; isSelfDebuff?: boolean }): boolean {
+  if (buff.buffName !== 'Burn') return false
+  return !!(buff.isSelfDebuff || BUFF_DEFS['Burn']?.isSelfDebuff)
 }
 
 export function getBuffDescription(

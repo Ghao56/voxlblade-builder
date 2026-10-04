@@ -249,3 +249,12 @@ export const CLOUDPUSH_PCT_PER_POTENCY = 7.5
 export const CINDERPULL_PCT_PER_POTENCY = 7.5
 export const CLOUDPUSH_PCT_PER_STACK = 0.075
 export const CINDERPULL_PCT_PER_STACK = 0.075
+
+// Rejuvenating Flame — Cinder Surge (granted to the healed Allies, never to self)
+export const CINDER_SURGE_BASE_POTENCY = 0.05
+export const CINDER_SURGE_POTENCY_PER_AMOUNT = 0.05
+export const CINDER_SURGE_DURATION = 3
+// Bonus Fire damage (as % of your damage, counted as your damage) per 1 potency.
+// The spec is quoted per tenth of potency: 0.05 per 0.1 potency.
+export const CINDER_SURGE_FIRE_PCT_PER_POTENCY = 0.5
+export const CINDER_SURGE_FIRE_PCT_PER_TENTH_POTENCY = 0.05
