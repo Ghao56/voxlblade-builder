@@ -8,7 +8,7 @@ import { HYPNOTIST_POTENCY_BASE, HYPNOTIST_POTENCY_PER_PERK, HYPNOTIST_DURATION_
 import type { GrantedBuff } from './BuffData'
 import { canProc, type ProcCoefficient } from '../lib/types'
 import { calcBaseMaxHP } from '../lib/constants/game'
-import { BASIC_DEBUFF_DURATION, EXPLOSIVE_HONEY_STICKY_POTENCY, EXPLOSIVE_HONEY_STICKY_DURATION } from '../lib/constants/buffs'
+import { BASIC_DEBUFF_DURATION, EXPLOSIVE_HONEY_STICKY_POTENCY, EXPLOSIVE_HONEY_STICKY_DURATION, PURE_ROT_POISON_DURATION } from '../lib/constants/buffs'
 import { BELLOWING_EMBER_HP_GATE_THRESHOLD, BELLOWING_EMBER_HP_GATE_PER_STACK, PYRE_BLOOM_BURN_DURATION, RUNIC_BLADES_DEBUFF_DURATION_PER_STACK, CACI_SPIRIT_BLEED_DURATION, ICE_BURST_BLEED_DURATION, WOOF_SPIRIT_WEAKNESS_POTENCY, WOOF_SPIRIT_WEAKNESS_DURATION, WINTER_WOOF_SPIRIT_SHATTER_POTENCY, WINTER_WOOF_SPIRIT_SHATTER_DURATION, WINTER_WOOF_SPIRIT_BLEED_DURATION } from '../lib/constants/perk-base-damage'
 import { getActiveEnemyHpDebuffs } from './enemyHpEffects'
 
@@ -133,6 +133,21 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
       duration: BASIC_DEBUFF_DURATION,
       condition: 'Magic damage from WA or Rune applies Poison',
       sourceName: 'Toxin Caster',
+      sourceType: 'perk',
+    })
+  }
+
+  // Rotted (granted by Pure Rot on cleanse): every hit with a Proc Coefficient
+  // applies the applier's own Poison, so potency stays 0 and is filled in from
+  // Poison Potency downstream — Rotted potency does not scale it. Resolved before
+  // Gnawing Poison / Curse Rip read the enemy's active debuffs.
+  if (playerBuffNames.includes('Rotted') && exhaustCanProc && !existingBuffNames.includes('Poison')) {
+    debuffs.push({
+      buffName: 'Poison',
+      potency: 0,
+      duration: PURE_ROT_POISON_DURATION,
+      condition: 'Rotted · On hit with a Proc Coefficient · counts as the applier\'s Poison',
+      sourceName: 'Rotted',
       sourceType: 'perk',
     })
   }

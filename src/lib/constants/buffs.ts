@@ -210,6 +210,14 @@ export const WARDING_TIDES_REINFORCE_POTENCY_BASE = 0.15
 export const WARDING_TIDES_REINFORCE_POTENCY_PER_AMOUNT = 0.1
 export const WARDING_TIDES_REINFORCE_DURATION = 10
 
+// Pure Rot: cleansing grants Rotted instead of removing debuffs. Rotted makes
+// every hit with a Proc Coefficient apply the applier's own Poison — the applied
+// Poison scales off Poison Potency, NOT off Rotted's potency (the in-game status
+// description is misleading here).
+export const PURE_ROT_ROTTED_POTENCY_PER_AMOUNT = 0.1
+export const PURE_ROT_ROTTED_DURATION = 20
+export const PURE_ROT_POISON_DURATION = 20
+
 // BUFF_POTENCY_MODIFIERS
 export const BOUNCE_DURATION_BASE = 1.0
 export const BOUNCE_DURATION_PER_STACK = 0.3

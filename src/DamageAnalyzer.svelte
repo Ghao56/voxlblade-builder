@@ -5335,9 +5335,9 @@ $: _groupedSelfDamageSources = (() => {
                   style="background:color-mix(in srgb,{def.color} 10%,transparent);border-color:color-mix(in srgb,{def.color} 35%,transparent)"
                   on:click={() => buff.buffName === 'Magic Reinforce' ? toggleMagicReinforceChip(buff._allSources) : toggleBuffByName(buff.buffName)}>
                   <span class="da-bc-name">{def.name}</span>
-                  {#if resolveBuffTarget(buff.buffName, buff) === 'allies'}
-                    <Badge color="#38bdf8" size="xs" square mono title="Granted to your Allies — not to you">Allies</Badge>
-                  {/if}
+                   {#if resolveBuffTarget(buff.buffName, buff) === 'allies'}
+                     <Badge color="#38bdf8" size="xs" square mono title="Granted to your Allies">Allies</Badge>
+                   {/if}
                   <span class="da-bc-val" style="color:{def.color}">{isOff ? '—' : roundMultiplier(buff.potency)}</span>
                   <span class="da-bc-cond">{getBuffDescription(buff.buffName, $result.perks, buff.potency)}</span>
                   <span class="da-bc-toggle" style={isOff ? '' : `background:color-mix(in srgb,${def.color} 25%,transparent);color:${def.color}`}>{isOff ? 'OFF' : 'ON'}</span>

@@ -579,13 +579,11 @@ $: groupedBuffs = (() => {
                   <div class="bl-name-group">
                     <span class="bl-buff-name" style="color:{def.color}">{def.name}</span>
                     
-                    {#if group.strongest.isSelfDebuff}
-                      <span class="bl-tag bl-tag--self">Self</span>
-                    {:else if !def.isDebuff && resolveBuffTarget(group.buffName, group.strongest) === 'allies'}
-                      <span class="bl-tag bl-tag--allies" title="Granted to your Allies — not to you">Allies</span>
-                    {:else if !def.isDebuff}
-                      <span class="bl-tag bl-tag--self">Self</span>
-                    {/if}
+                     {#if group.strongest.isSelfDebuff}
+                       <span class="bl-tag bl-tag--self">Self</span>
+                     {:else if !def.isDebuff && resolveBuffTarget(group.buffName, group.strongest) === 'allies'}
+                       <span class="bl-tag bl-tag--allies" title="Granted to your Allies — not to you">Allies</span>
+                     {/if}
                     
                     {#if group.maxDuration > 0}
                       <span class="bl-tag bl-tag--duration">⏱ {group.maxDuration}s</span>

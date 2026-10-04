@@ -107,6 +107,7 @@ import {
   STICKY_SWINGS_DURATION,
   AGGRESSIVE_PERSONALITY_TAUNT_DURATION_PER_AMOUNT,
   WARDING_TIDES_REINFORCE_POTENCY_BASE, WARDING_TIDES_REINFORCE_POTENCY_PER_AMOUNT, WARDING_TIDES_REINFORCE_DURATION,
+  PURE_ROT_ROTTED_POTENCY_PER_AMOUNT, PURE_ROT_ROTTED_DURATION,
   INSPIRED_BASE_POTENCY,
 } from '../lib/constants/buffs'
 import {
@@ -473,6 +474,13 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectUnit: 'flat',
     isDebuff: true,
   },
+  Rotted: {
+    name: 'Rotted',
+    color: '#bbff37',
+    description: 'Applies poison on hit.',
+    effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
+    effectUnit: 'flat',
+  },
   Frostbite: {
     name: 'Frostbite',
     color: '#59aff9',
@@ -675,7 +683,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     dynamicDescription: (_perks, potency) => `Increase shield max by ${+(potency.toFixed(4))}`,
     effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
     effectUnit: 'flat',
-    statKey: 'shield',
+    statKey: 'protection',
     isNeutral: true,
   },
   'Ice Shell': {
@@ -1087,6 +1095,17 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       duration: WARDING_TIDES_REINFORCE_DURATION,
       condition: 'When cleansing, granted to those cleansed',
       sourceName: 'Warding Tides',
+      sourceType: 'perk',
+    },
+  ],
+
+  'Pure Rot': (amount) => [
+    {
+      buffName: 'Rotted',
+      potency: PURE_ROT_ROTTED_POTENCY_PER_AMOUNT * amount,
+      duration: PURE_ROT_ROTTED_DURATION,
+      condition: `Instead of cleansing · Rotted potency = ${PURE_ROT_ROTTED_POTENCY_PER_AMOUNT} × ${amount} · does not scale the applied Poison`,
+      sourceName: 'Pure Rot',
       sourceType: 'perk',
     },
   ],

@@ -169,7 +169,8 @@ export const BOOST_DEFS: BoostDef[] = [
       const srPct = negTotal * amt * JUGGERNAUT_STUN_RESIST_PER_NEGATIVE_PCT
       return {
         multiplier: 1 + pct / 100,
-        condition: `+${fmtPctVal(pct)} dmg · -${fmtPctVal(Math.round(krPct))} knockback · +${fmtSec(stunResistPctToSeconds(srPct))} stun resist`,
+         condition: `+${fmtPctVal(pct)} dmg · -${fmtPctVal(Math.round(krPct))} knockback`,
+
       }
     },
   },

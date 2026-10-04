@@ -1666,6 +1666,7 @@ note?: string
     return out
   }
 
+  // Allies stay last (lowest priority) — they are appended after the perk groups.
   $: hitGroups = [
     { label: m1Label, list: _splitVcHits(m1Hits) },
     { label: 'M2', list: _splitVcHits(m2Hits) },
@@ -1960,9 +1961,178 @@ note?: string
         </div>
       {/if}
 
-      {#if hitGroups.every(g => g.list.length === 0)}
+      {#if hitGroups.every(g => g.list.length === 0) && _activeDotTicks.length === 0 && !(waDebuffWarning && waHits.length === 0)}
         <p class="bdc-empty">No weapon hits available.</p>
       {:else}
+        {#if _activeDotTicks.length > 0}
+          <div class="bdc-hit-list-grp bdc-hit-list-grp--status">
+            <div class="bdc-grp-head">
+              <span class="bdc-hit-grp-label">Status</span>
+            </div>
+            <div class="bdc-hit-list-rows">
+              {#each _activeDotTicks as dot}
+                {@const _dc = dot.dmgType === 'true' && dot.type === 'Poison'
+                  ? (BADGE_COLORS['true'] ?? '#f87171')
+                  : (DOT_COLORS[dot.type] ?? '#e8e4da')}
+                <div class="bdc-hit-row">
+                  <div class="bdc-hit-row-types">
+                    <!-- svelte-ignore a11y_no_static_element_interactions -->
+                    <div class="bdc-hit-type-chunk" style="--tc:{_dc}"
+                      class:bdc-hit-type-chunk--rage={dot.applicableBoosts?.some(b => b.perkName === 'Rage')}
+                      on:mouseenter={(e) => showDotTooltip(dot, e)}
+                      on:mouseleave={() => { _dotTooltip = null }}>
+                      <div class="bdc-hit-type-top">
+                        <div class="bdc-hit-type-val-row">
+                          <span class="bdc-hit-type-val">{fmt(dot.finalDmgPrimary ?? dot.finalDmg ?? dot.tickDamage)}</span>
+                        </div>
+                        <div class="bdc-hit-type-label-row">
+                          <span class="bdc-hit-type-label">{dot.type}</span>
+                          {#if dot.dmgType}
+                            <span class="bdc-dot-dmg-badge" style="background:{BADGE_COLORS[dot.dmgType] ?? '#6b7280'}">{dot.dmgType}</span>
+                          {/if}
+                        </div>
+                        {#if dot.defMult != null && dot.defMult < 1}
+                          <div class="bdc-dot-raw-line">raw {fmt(dot.tickDamage)}</div>
+                        {/if}
+                      </div>
+                    </div>
+                    {#each dot.bonusTypes ?? [] as bt}
+                      <span class="bdc-hit-plus">+</span>
+                      <!-- svelte-ignore a11y_no_static_element_interactions -->
+                      <div class="bdc-hit-type-chunk" style="--tc:{bt.color}"
+                        class:bdc-hit-type-chunk--rage={bt.applicableBoosts?.some(b => b.perkName === 'Rage')}
+                        on:mouseenter={(e) => showDotTooltip(dot, e)}
+                        on:mouseleave={() => { _dotTooltip = null }}>
+                        <div class="bdc-hit-type-top">
+                          <div class="bdc-hit-type-val-row">
+                            <span class="bdc-hit-type-val">{fmt(bt.raw)}</span>
+                          </div>
+                          <div class="bdc-hit-type-label-row">
+                            <span class="bdc-hit-type-label">{bt.label}</span>
+                          </div>
+                        </div>
+                      </div>
+                    {/each}
+                    {#if dot.trueDmg}
+                      <span class="bdc-hit-plus">+</span>
+                      <!-- svelte-ignore a11y_no_static_element_interactions -->
+                      <div class="bdc-hit-type-chunk" style="--tc:{BADGE_COLORS['true'] ?? '#52525b'}"
+                        class:bdc-hit-type-chunk--rage={dot.trueApplicableBoosts?.some(b => b.perkName === 'Rage')}
+                        on:mouseenter={(e) => {
+                          const r = (e.currentTarget as HTMLElement).getBoundingClientRect()
+                          const spaceBelow = window.innerHeight - r.bottom
+                          const left = Math.max(8, Math.min(r.left, window.innerWidth - 260))
+                          _meltingTooltip = {
+                            preMitBase: dot.preMitBase,
+                            meltingShredFactor: dot.meltingShredFactor ?? 0.15,
+                            trueBoosts: dot.trueApplicableBoosts ?? [],
+                            typedMult: dot.typedMult,
+                            typeDebuffMult: dot.typeDebuffMult,
+                            debuffMult: dot.debuffMult,
+                            selfDebuffDamageMult: selfDebuffDamageMult,
+                            trueDmg: dot.trueDmg!,
+                            style: spaceBelow > 180
+                              ? `left:${left}px;top:${r.bottom + 4}px;`
+                              : `left:${left}px;bottom:${window.innerHeight - r.top + 4}px;`,
+                          }
+                        }}
+                        on:mouseleave={() => { _meltingTooltip = null }}>
+                        <div class="bdc-hit-type-top">
+                          <div class="bdc-hit-type-val-row">
+                            <span class="bdc-hit-type-val">{fmt(dot.trueDmg)}</span>
+                          </div>
+                          <div class="bdc-hit-type-label-row">
+                            <span class="bdc-hit-type-label">True</span>
+                            <span class="bdc-dot-dmg-badge" style="background:{BADGE_COLORS['true'] ?? '#52525b'}">true</span>
+                          </div>
+                        </div>
+                      </div>
+                    {/if}
+                    {#if dot.woundTrueDmg}
+                      <span class="bdc-hit-plus">+</span>
+                      <!-- svelte-ignore a11y_no_static_element_interactions -->
+                      <div class="bdc-hit-type-chunk" style="--tc:{BADGE_COLORS['true'] ?? '#52525b'}"
+                        class:bdc-hit-type-chunk--rage={dot.trueApplicableBoosts?.some(b => b.perkName === 'Rage')}
+                        on:mouseenter={(e) => {
+                          const r = (e.currentTarget as HTMLElement).getBoundingClientRect()
+                          const spaceBelow = window.innerHeight - r.bottom
+                          const left = Math.max(8, Math.min(r.left, window.innerWidth - 260))
+                          _woundTooltip = {
+                            preMitBase: dot.preMitBase,
+                            woundPotency: dot.woundPotency ?? 0,
+                            trueBoosts: dot.trueApplicableBoosts ?? [],
+                            trueDmg: dot.woundTrueDmg!,
+                            style: spaceBelow > 180
+                              ? `left:${left}px;top:${r.bottom + 4}px;`
+                              : `left:${left}px;bottom:${window.innerHeight - r.top + 4}px;`,
+                          }
+                        }}
+                        on:mouseleave={() => { _woundTooltip = null }}>
+                        <div class="bdc-hit-type-top">
+                          <div class="bdc-hit-type-val-row">
+                            <span class="bdc-hit-type-val">{fmt(dot.woundTrueDmg)}</span>
+                          </div>
+                          <div class="bdc-hit-type-label-row">
+                            <span class="bdc-hit-type-label">Wound</span>
+                            <span class="bdc-dot-dmg-badge" style="background:{BADGE_COLORS['true'] ?? '#52525b'}">true</span>
+                          </div>
+                        </div>
+                      </div>
+                    {/if}
+                    {#if dot.siphoningRotHeal}
+                      <span class="bdc-hit-plus">+</span>
+                      <!-- svelte-ignore a11y_no_static_element_interactions -->
+                      <div class="bdc-hit-type-chunk bdc-hit-type-chunk--heal" style="--tc:#4ade80">
+                        <div class="bdc-hit-type-top">
+                          <div class="bdc-hit-type-val-row">
+                            <span class="bdc-hit-type-val">{fmt(dot.siphoningRotHeal)}</span>
+                          </div>
+                          <div class="bdc-hit-type-label-row">
+                            <span class="bdc-hit-type-label">Heal</span>
+                            <Badge color="#4ade80" size="xs" square mono title="Siphoning Rot: Heals for 1 HP per Poison tick per perk stack">✦ Siphoning Rot</Badge>
+                          </div>
+                        </div>
+                        <div class="bdc-hit-type-formula">
+                          <div class="bdc-fr">
+                            <span class="bdc-fr-label">Base Heal</span>
+                            <span class="bdc-fr-val">{fmt(dot.siphoningRotHeal)}</span>
+                          </div>
+                          <div class="bdc-fr-divider"></div>
+                          <div class="bdc-fr bdc-fr--result">
+                            <span class="bdc-fr-label">Final Heal</span>
+                            <span class="bdc-fr-val bdc-fr-val--result" style="--tc:#4ade80;">{fmt(dot.siphoningRotHeal)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    {/if}
+                  </div>
+                  <div class="bdc-hit-row-end">
+                    <span class="bdc-hit-type-sum-sep">=</span>
+                    <span class="bdc-hit-type-sum-holder"><span class="bdc-hit-type-sum">{fmt((dot.finalDmg ?? dot.tickDamage) + (dot.trueDmg ?? 0) + (dot.woundTrueDmg ?? 0))}</span></span>
+                    {#if dot.lifeDrinkerHeal}
+                      <span class="bdc-hit-type-heal-sum">{fmt(dot.lifeDrinkerHeal)}</span>
+                    {/if}
+                    {#if dot.siphoningRotHeal}
+                      <span class="bdc-hit-type-heal-sum">{fmt(dot.siphoningRotHeal)}</span>
+                    {/if}
+                  </div>
+                </div>
+              {/each}
+            </div>
+            <div class="bdc-dot-footnote">Per tick</div>
+          </div>
+        {/if}
+        {#if waDebuffWarning && waHits.length === 0}
+          <div class="bdc-hit-list-grp">
+            <div class="bdc-grp-head">
+              <span class="bdc-hit-grp-label">WA</span>
+            </div>
+            <div class="bdc-wa-debuff-warn">
+              <span class="bdc-wa-debuff-warn-icon">⚠</span>
+              <span>No active debuffs — this WA requires debuffs to deal damage.</span>
+            </div>
+          </div>
+        {/if}
         <div class="bdc-hit-list">
           {#each hitGroups as grp}
             {#if grp.list.length > 0}
@@ -1970,10 +2140,11 @@ note?: string
               {@const gHealTotal = groupHealTotalSum(grp.list, showCritValues)}
               <div class="bdc-hit-list-grp" class:bdc-hit-list-grp--allies={grp.allies}>
                 <div class="bdc-grp-head">
-                  <span class="bdc-hit-grp-label">{grp.label}</span>
-                    {#if grp.allies}
-                      <Badge color="#38bdf8" size="xs" square mono title="Heals your Allies — this output never lands on you">Allies</Badge>
-                    {/if}
+                  {#if grp.allies}
+                    <Badge color="#38bdf8" size="xs" square mono title="Heals your Allies — this output never lands on you">Allies</Badge>
+                  {:else}
+                    <span class="bdc-hit-grp-label">{grp.label}</span>
+                  {/if}
                     {#if gTotal > 0}
                     <span class="bdc-grp-total" class:bdc-grp-total--crit={showCritValues}>
                       {#if showCritValues}<CritIcon size={10}/>{/if}
@@ -2221,176 +2392,7 @@ note?: string
               </div>
             {/if}
           {/each}
-          {#if waDebuffWarning && waHits.length === 0}
-            <div class="bdc-hit-list-grp">
-              <div class="bdc-grp-head">
-                <span class="bdc-hit-grp-label">WA</span>
-              </div>
-              <div class="bdc-wa-debuff-warn">
-                <span class="bdc-wa-debuff-warn-icon">⚠</span>
-                <span>No active debuffs — this WA requires debuffs to deal damage.</span>
-              </div>
-            </div>
-          {/if}
         </div>
-        {#if _activeDotTicks.length > 0}
-          <div class="bdc-hit-list-grp">
-            <div class="bdc-grp-head">
-              <span class="bdc-hit-grp-label">Status</span>
-            </div>
-            <div class="bdc-hit-list-rows">
-              {#each _activeDotTicks as dot}
-                {@const _dc = dot.dmgType === 'true' && dot.type === 'Poison'
-                  ? (BADGE_COLORS['true'] ?? '#f87171')
-                  : (DOT_COLORS[dot.type] ?? '#e8e4da')}
-                <div class="bdc-hit-row">
-                  <div class="bdc-hit-row-types">
-                    <!-- svelte-ignore a11y_no_static_element_interactions -->
-                    <div class="bdc-hit-type-chunk" style="--tc:{_dc}"
-                      class:bdc-hit-type-chunk--rage={dot.applicableBoosts?.some(b => b.perkName === 'Rage')}
-                      on:mouseenter={(e) => showDotTooltip(dot, e)}
-                      on:mouseleave={() => { _dotTooltip = null }}>
-                      <div class="bdc-hit-type-top">
-                        <div class="bdc-hit-type-val-row">
-                          <span class="bdc-hit-type-val">{fmt(dot.finalDmgPrimary ?? dot.finalDmg ?? dot.tickDamage)}</span>
-                        </div>
-                        <div class="bdc-hit-type-label-row">
-                          <span class="bdc-hit-type-label">{dot.type}</span>
-                          {#if dot.dmgType}
-                            <span class="bdc-dot-dmg-badge" style="background:{BADGE_COLORS[dot.dmgType] ?? '#6b7280'}">{dot.dmgType}</span>
-                          {/if}
-                        </div>
-                        {#if dot.defMult != null && dot.defMult < 1}
-                          <div class="bdc-dot-raw-line">raw {fmt(dot.tickDamage)}</div>
-                        {/if}
-                      </div>
-                    </div>
-                    {#each dot.bonusTypes ?? [] as bt}
-                      <span class="bdc-hit-plus">+</span>
-                      <!-- svelte-ignore a11y_no_static_element_interactions -->
-                      <div class="bdc-hit-type-chunk" style="--tc:{bt.color}"
-                        class:bdc-hit-type-chunk--rage={bt.applicableBoosts?.some(b => b.perkName === 'Rage')}
-                        on:mouseenter={(e) => showDotTooltip(dot, e)}
-                        on:mouseleave={() => { _dotTooltip = null }}>
-                        <div class="bdc-hit-type-top">
-                          <div class="bdc-hit-type-val-row">
-                            <span class="bdc-hit-type-val">{fmt(bt.raw)}</span>
-                          </div>
-                          <div class="bdc-hit-type-label-row">
-                            <span class="bdc-hit-type-label">{bt.label}</span>
-                          </div>
-                        </div>
-                      </div>
-                    {/each}
-                    {#if dot.trueDmg}
-                      <span class="bdc-hit-plus">+</span>
-                      <!-- svelte-ignore a11y_no_static_element_interactions -->
-                      <div class="bdc-hit-type-chunk" style="--tc:{BADGE_COLORS['true'] ?? '#52525b'}"
-                        class:bdc-hit-type-chunk--rage={dot.trueApplicableBoosts?.some(b => b.perkName === 'Rage')}
-                        on:mouseenter={(e) => {
-                          const r = (e.currentTarget as HTMLElement).getBoundingClientRect()
-                          const spaceBelow = window.innerHeight - r.bottom
-                          const left = Math.max(8, Math.min(r.left, window.innerWidth - 260))
-                          _meltingTooltip = {
-                            preMitBase: dot.preMitBase,
-                            meltingShredFactor: dot.meltingShredFactor ?? 0.15,
-                            trueBoosts: dot.trueApplicableBoosts ?? [],
-                            typedMult: dot.typedMult,
-                            typeDebuffMult: dot.typeDebuffMult,
-                            debuffMult: dot.debuffMult,
-                            selfDebuffDamageMult: selfDebuffDamageMult,
-                            trueDmg: dot.trueDmg!,
-                            style: spaceBelow > 180
-                              ? `left:${left}px;top:${r.bottom + 4}px;`
-                              : `left:${left}px;bottom:${window.innerHeight - r.top + 4}px;`,
-                          }
-                        }}
-                        on:mouseleave={() => { _meltingTooltip = null }}>
-                        <div class="bdc-hit-type-top">
-                          <div class="bdc-hit-type-val-row">
-                            <span class="bdc-hit-type-val">{fmt(dot.trueDmg)}</span>
-                          </div>
-                          <div class="bdc-hit-type-label-row">
-                            <span class="bdc-hit-type-label">True</span>
-                            <span class="bdc-dot-dmg-badge" style="background:{BADGE_COLORS['true'] ?? '#52525b'}">true</span>
-                          </div>
-                        </div>
-                      </div>
-                    {/if}
-                    {#if dot.woundTrueDmg}
-                      <span class="bdc-hit-plus">+</span>
-                      <!-- svelte-ignore a11y_no_static_element_interactions -->
-                      <div class="bdc-hit-type-chunk" style="--tc:{BADGE_COLORS['true'] ?? '#52525b'}"
-                        class:bdc-hit-type-chunk--rage={dot.trueApplicableBoosts?.some(b => b.perkName === 'Rage')}
-                        on:mouseenter={(e) => {
-                          const r = (e.currentTarget as HTMLElement).getBoundingClientRect()
-                          const spaceBelow = window.innerHeight - r.bottom
-                          const left = Math.max(8, Math.min(r.left, window.innerWidth - 260))
-                          _woundTooltip = {
-                            preMitBase: dot.preMitBase,
-                            woundPotency: dot.woundPotency ?? 0,
-                            trueBoosts: dot.trueApplicableBoosts ?? [],
-                            trueDmg: dot.woundTrueDmg!,
-                            style: spaceBelow > 180
-                              ? `left:${left}px;top:${r.bottom + 4}px;`
-                              : `left:${left}px;bottom:${window.innerHeight - r.top + 4}px;`,
-                          }
-                        }}
-                        on:mouseleave={() => { _woundTooltip = null }}>
-                        <div class="bdc-hit-type-top">
-                          <div class="bdc-hit-type-val-row">
-                            <span class="bdc-hit-type-val">{fmt(dot.woundTrueDmg)}</span>
-                          </div>
-                          <div class="bdc-hit-type-label-row">
-                            <span class="bdc-hit-type-label">Wound</span>
-                            <span class="bdc-dot-dmg-badge" style="background:{BADGE_COLORS['true'] ?? '#52525b'}">true</span>
-                          </div>
-                        </div>
-                      </div>
-                    {/if}
-                    {#if dot.siphoningRotHeal}
-                      <span class="bdc-hit-plus">+</span>
-                      <!-- svelte-ignore a11y_no_static_element_interactions -->
-                      <div class="bdc-hit-type-chunk bdc-hit-type-chunk--heal" style="--tc:#4ade80">
-                        <div class="bdc-hit-type-top">
-                          <div class="bdc-hit-type-val-row">
-                            <span class="bdc-hit-type-val">{fmt(dot.siphoningRotHeal)}</span>
-                          </div>
-                          <div class="bdc-hit-type-label-row">
-                            <span class="bdc-hit-type-label">Heal</span>
-                            <Badge color="#4ade80" size="xs" square mono title="Siphoning Rot: Heals for 1 HP per Poison tick per perk stack">✦ Siphoning Rot</Badge>
-                          </div>
-                        </div>
-                        <div class="bdc-hit-type-formula">
-                          <div class="bdc-fr">
-                            <span class="bdc-fr-label">Base Heal</span>
-                            <span class="bdc-fr-val">{fmt(dot.siphoningRotHeal)}</span>
-                          </div>
-                          <div class="bdc-fr-divider"></div>
-                          <div class="bdc-fr bdc-fr--result">
-                            <span class="bdc-fr-label">Final Heal</span>
-                            <span class="bdc-fr-val bdc-fr-val--result" style="--tc:#4ade80;">{fmt(dot.siphoningRotHeal)}</span>
-                          </div>
-                        </div>
-                      </div>
-                    {/if}
-                  </div>
-                  <div class="bdc-hit-row-end">
-                    <span class="bdc-hit-type-sum-sep">=</span>
-                    <span class="bdc-hit-type-sum-holder"><span class="bdc-hit-type-sum">{fmt((dot.finalDmg ?? dot.tickDamage) + (dot.trueDmg ?? 0) + (dot.woundTrueDmg ?? 0))}</span></span>
-                    {#if dot.lifeDrinkerHeal}
-                      <span class="bdc-hit-type-heal-sum">{fmt(dot.lifeDrinkerHeal)}</span>
-                    {/if}
-                    {#if dot.siphoningRotHeal}
-                      <span class="bdc-hit-type-heal-sum">{fmt(dot.siphoningRotHeal)}</span>
-                    {/if}
-                  </div>
-                </div>
-              {/each}
-            </div>
-            <div class="bdc-dot-footnote">Per tick</div>
-          </div>
-        {/if}
       {/if}
     </div>
   </div>
@@ -3258,15 +3260,21 @@ note?: string
   opacity: .5;
   font-style: italic;
 }
+/* Flattened into the parent column so Status and Allies can be ordered against
+   the hit groups: hit groups → Status → Allies (Allies stays bottom-most). */
 .bdc-hit-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  display: contents;
 }
 .bdc-hit-list-grp {
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+.bdc-hit-list-grp--status {
+  order: 1;
+}
+.bdc-hit-list-grp--allies {
+  order: 2;
 }
 .bdc-hit-list-grp--allies .bdc-grp-head {
   border-left: 2px solid rgba(56, 189, 248, 0.45);
