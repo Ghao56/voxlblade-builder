@@ -10143,26 +10143,34 @@ $: _groupedSelfDamageSources = (() => {
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
   padding: 7px 11px;
   border-radius: 12px;
   background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
   border: 1px solid rgba(255,255,255,.08);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 2px 8px rgba(0,0,0,.18);
 }
+/* Labels come from perk/rune data and can be arbitrarily long ("Already-summoned
+   Sporelings"), so let them shrink and wrap instead of pushing the track and the
+   value badge out of the card. */
 .da-sb-slider-label {
   font-size: .58rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .14em;
+  line-height: 1.25;
   color: var(--ink-muted, #9a9d95);
-  flex-shrink: 0;
+  flex: 0 1 auto;
   min-width: 44px;
-  white-space: nowrap;
+  max-width: 50%;
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 .da-sb-slider {
   -webkit-appearance: none;
   appearance: none;
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
   height: 6px;
   border-radius: 999px;
   background: linear-gradient(to right, var(--tc, #a78bfa) var(--fill, 50%), rgba(255,255,255,.07) var(--fill, 50%));
@@ -10252,6 +10260,7 @@ $: _groupedSelfDamageSources = (() => {
 }
 .da-sb-slider-wrap--stack .da-sb-slider-label {
   min-width: 0;
+  max-width: none;
 }
 .da-sb-seg {
   display: flex;
