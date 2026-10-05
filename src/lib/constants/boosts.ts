@@ -5,8 +5,8 @@ export const MINION_ABSORPTION_MULT = 0.2
 
 export const VENOM_EATER_HEAL_PER_STACK = 0.1
 export const SIPHONING_ROT_HEAL_PER_STACK = 1
-export const LIFESTEAL_HEAL_PCT_PER_STACK = 0.005
-export const LIFESTEAL_FLAT_HEAL_PER_STACK = 0.1
+export const LIFESTEAL_HEAL_PCT_PER_STACK = 0.0025
+export const LIFESTEAL_FLAT_HEAL = 0.1
 
 // ── On-hit exclusion ──────────────────────────────
 // Damage sources that on-hit effects (Lifesteal, Channeled Weapon, Curse Rip) do NOT apply to.
