@@ -30,7 +30,7 @@
   import { RADIANCE_HOLY_SCALING, RADIANCE_LABEL, RADIANCE_COLOR, RAINSTORM_BASE_DMG, RAINSTORM_DMG_PER_STACK, RAINSTORM_BASE_HEAL, RAINSTORM_HEAL_PER_STACK, RAINSTORM_LABEL, REJUVENATING_FLAME_BASE_HEAL, REJUVENATING_FLAME_HEAL_PER_AMOUNT, REJUVENATING_FLAME_FIRE_SCALING, REJUVENATING_FLAME_BURN_HEAL_MULT, REJUVENATING_FLAME_BURN_AOE_PER_AMOUNT, REJUVENATING_FLAME_HEAL_LABEL } from './lib/constants/perk-base-damage'
   import { roundMultiplier, calcWardingDebuffMultiplier, calcProcChance, applyScalingMult } from './lib/utils'
   import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage, calcInoculationHeal, UNDEAD_MIGHT_SELF_DMG_FRACTION, UNDEAD_MIGHT_DR_PCT_PER_STACK, type SelfDamagePerkDef } from './data/selfDamage'
-  import { resolveDamageTypes, resolveWaDamageTypeKeys, applyAirToMagicConversion, computeEffectiveWaDmgTypes } from './lib/damageTypeResolve'
+  import { resolveDamageTypes, resolveWaDamageTypeKeys, applyAirToMagicConversion, computeEffectiveWaDmgTypes, pickHighestDmgType } from './lib/damageTypeResolve'
   import { buildDmgTypeBonuses } from './lib/engine/dmgTypeBonuses'
   import { FEROCITY_TENACITY_MULT, DARKENING_HEX_MAX_ACTIVATIONS, DARKENING_HEX_POTENCY_ADD_PER_AMOUNT, DARKENING_HEX_POTENCY_MULT_PER_AMOUNT, DARKENING_HEX_DURATION_ADD_PER_AMOUNT, KINDLING_DMG_ADD_PER_AMOUNT, CURSED_FLAMES_BURN_DMG_PER_AMOUNT, CURSED_FLAMES_DR_BASE, CURSED_FLAMES_DR_PER_BURN_POTENCY, VASSALS_CROAK_MULT_PER_STACK, MAX_INVENTORY_ITEMS, MAX_MONEY_SMART_VOXOS } from './lib/constants'
 import { calcTypedDmgBoosts } from './data/TypedDmgBoost'
@@ -2778,19 +2778,10 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     }
   
     if (dt.includes('Highest damage type')) {
-      const entries = Object.entries(_weaponDmgTypesBase)
-      if (entries.length === 0) {
+      const highestKey = pickHighestDmgType(Object.entries(_weaponDmgTypesBase))
+      if (highestKey === null) {
         return _weaponDmgTypesBase
       }
-      const [highestKey] = entries.reduce((a, b) => {
-        if (b[1] > a[1]) return b
-        if (b[1] === a[1]) {
-          const ia = (DMG_TYPE_PRIORITY as readonly string[]).indexOf(a[0])
-          const ib = (DMG_TYPE_PRIORITY as readonly string[]).indexOf(b[0])
-          return (ib === -1 ? 999 : ib) < (ia === -1 ? 999 : ia) ? b : a
-        }
-        return a
-      })
       return { [highestKey]: 1 }
     }
   

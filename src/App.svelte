@@ -17,7 +17,8 @@
   } from './lib/engine'
   import { setEnchantment, setGuild, moveArmorSlot, canArmorMoveToSlot, moveRingSlot } from './lib/store'
   import type { EnchantSlot, StatMap, StatPrefix, ScalingKey } from './lib/types'
-  import { DMG_TYPE_PRIORITY, SCALING_TO_BOOST } from './lib/types'
+  import { SCALING_TO_BOOST } from './lib/types'
+  import { pickHighestDmgType } from './lib/damageTypeResolve'
   import { OFFENSIVE_BOOSTS } from './data/statboost'
   import { enchantments, getEnchant as ge, isExclusiveEnchant } from './lib/engine'
   import EnchantSelect from './lib/EnchantSelect.svelte'
@@ -1345,22 +1346,7 @@ $: weaponDamageTypesWithBonus = (() => {
   return result
 })()
 
-$: highestDamageType = (() => {
-  const entries = Object.entries(weaponDamageTypesWithBonus)
-  if (entries.length === 0) return null
-  
-  return entries.reduce((a, b) => {
-    if (b[1] > a[1]) return b
-    if (b[1] === a[1]) {
-      const ia = DMG_TYPE_PRIORITY.indexOf(a[0] as typeof DMG_TYPE_PRIORITY[number])
-      const ib = DMG_TYPE_PRIORITY.indexOf(b[0] as typeof DMG_TYPE_PRIORITY[number])
-      const pa = ia === -1 ? 999 : ia
-      const pb = ib === -1 ? 999 : ib
-      return pb < pa ? b : a
-    }
-    return a
-  })
-})()
+$: highestDamageType = pickHighestDmgType(Object.entries(weaponDamageTypesWithBonus))
   // ── Weapon result ──────────────────────────────────────────────────────────
  $: weaponResult = isMonk
   ? (($build.monkGlove || $build.monkEssence) ? calcMonkWeapon($build.monkGlove, $build.monkEssence, shrineActive, $build.guildRank) : null)
@@ -2834,11 +2820,10 @@ $: _appWaAvgTotal = (() => {
                       {/each}
                     {/if}
                   {:else if selectedWA.damageType.includes('Highest damage type') && highestDamageType && weaponResult}
-                    {@const [hdKey] = highestDamageType}
                     <div style="display:flex;flex-direction:column;gap:3px;">
                       <div class="damage-type-grid">
                         <div class="damage-type-pill damage-type-pill--highest">
-                          <span class="dt-name">{hdKey.charAt(0).toUpperCase() + hdKey.slice(1)}</span>
+                          <span class="dt-name">{highestDamageType.charAt(0).toUpperCase() + highestDamageType.slice(1)}</span>
                           <span class="dt-val">1.0x</span>
                         </div>
                       </div>

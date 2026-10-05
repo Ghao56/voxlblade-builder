@@ -31,7 +31,3 @@ export function resolveCragbladeType(weaponType: string): CragbladeTypeConversio
   if (!weaponType) return null
   return CRAGBLADE_WEAPON_TYPE_MAP[weaponType] ?? null
 }
-
-export function isCragbladeAttackSpeedExempt(sourceName: string): boolean {
-  return CRAGBLADE_ATTACK_SPEED_EXEMPT_SOURCES.includes(sourceName)
-}

@@ -1,5 +1,5 @@
 import type { BuildState } from '../lib/types';
-import { DMG_TYPE_PRIORITY } from '../lib/constants/damage-types';
+import { pickHighestDmgType } from '../lib/damageTypeResolve';
 import { calculateHealBoost, type HealBoostContext } from './HealBoost';
 import { calcMaxSummonCount } from './SummonData';
 import { MAGIC_MISSILE_BASE_DMG, MAGIC_MISSILE_HITS, ANCIENT_CLERIC_BASE_DMG, ANCIENT_CLERIC_SLIDER_MAX, ANCIENT_CLERIC_SHIELD_BASE, ANCIENT_CLERIC_SHIELD_PER_VAL, BEENADE_BASE_DMG, BEENADE_MAX_POTENCY, BOOSTSHROOM_BASE_DMG, THUNDEROUS_CHARGE_BASE_DMG, SPORELING_TOSS_BASE_DMG, SPORELING_TOSS_HITS_BASE, SPORELING_TOSS_SLIDER_MAX, FOOT_DIVE_BASE_DMG, CACI_BASE_DMG, CACI_HITS, CACITROPS_BASE_DMG, CACITROPS_HITS, HEX_WEB_BASE_DMG, HEX_WEB_HITS, BRAINBLAST_BASE_DMG, BRAINBLAST_HITS, ROCKY_TAIL_BASE_DMG, ROCKY_TAIL_PROT_SCALE, ROCKY_TAIL_VS_BASE_RES, ROCKY_TAIL_VS_PER_LEVEL, ROCKY_TAIL_VS_DEFAULT_RES, ROCKY_TAIL_DIVISOR_COEFF, ROCKY_TAIL_DIVISOR_BASE, ROCKY_TAIL_HITS_MULT, ROCKY_TAIL_MIN_HITS, SLAYER_RAGE_HITS, SLAYER_RAGE_RAGE_RUNE_BASE_DMG, SLAYER_RAGE_RAGE_RUNE_DMG_PER_STACK, SLAYER_RAGE_ROAR_RUNE_BASE_DMG, SLAYER_RAGE_ROAR_RUNE_DMG_PER_STACK, ENCHANTED_SWORD_WEAPON_TYPES, ENCHANTED_SWORD_DAGGER_BASE_DMG, ENCHANTED_SWORD_SWORD_BASE_DMG, ENCHANTED_SWORD_GREATSWORD_BASE_DMG, ENCHANTED_SWORD_DAGGER_POISE, ENCHANTED_SWORD_SWORD_POISE, ENCHANTED_SWORD_GREATSWORD_POISE, ENCHANTED_SWORD_CD_BY_TYPE, RUNIC_GLASS_BASE_DMG, RUNIC_GLASS_DURATION, RUNIC_GLASS_TICKS, getRunicGlassDuration, SANGUINE_BOLT_BASE_DMG, SANGUINE_BOLT_HITS } from '../lib/constants/rune-base-damage';
@@ -69,24 +69,12 @@ export interface RuneDmgDef {
 }
 
 /**
- * Picks the weapon's highest damage type (ties broken by DMG_TYPE_PRIORITY),
- * mirroring computeEffectiveWaDmgTypes. Returns null when the weapon has no
- * positive damage types.
+ * Picks the weapon's highest damage type, ignoring types that resolve to zero.
+ * Shares the DMG_TYPE_PRIORITY tie-break with computeEffectiveWaDmgTypes via
+ * pickHighestDmgType. Returns null when the weapon has no positive damage types.
  */
 function resolveHighestWeaponDmgType(types: Record<string, number> | undefined): string | null {
-  const entries = Object.entries(types ?? {}).filter(([, v]) => v > 0)
-  if (entries.length === 0) return null
-  const priority = DMG_TYPE_PRIORITY as readonly string[]
-  const [highestKey] = entries.reduce((a, b) => {
-    if (b[1] > a[1]) return b
-    if (b[1] === a[1]) {
-      const ia = priority.indexOf(a[0])
-      const ib = priority.indexOf(b[0])
-      return (ib === -1 ? 999 : ib) < (ia === -1 ? 999 : ia) ? b : a
-    }
-    return a
-  })
-  return highestKey
+  return pickHighestDmgType(Object.entries(types ?? {}).filter(([, v]) => v > 0))
 }
 
 const ENCHANTED_SWORD_BASE_DMG_BY_TYPE: Record<number, number> = {

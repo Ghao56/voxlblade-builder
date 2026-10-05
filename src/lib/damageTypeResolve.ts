@@ -27,6 +27,30 @@ export function applyFireAirConversion(types: Record<string, number>): Record<st
   return result
 }
 
+/**
+ * The "Highest damage type" rule: largest value wins, ties broken by
+ * DMG_TYPE_PRIORITY order (types missing from the list sort last). Returns null
+ * for an empty entry list so callers can apply their own empty-case fallback.
+ * Single source of truth — every Highest-damage-type consumer must use this so
+ * the Weapon Art card, the engine and the rune table cannot disagree.
+ */
+export function pickHighestDmgType(
+  entries: readonly (readonly [string, number])[],
+): string | null {
+  if (entries.length === 0) return null
+  const priority = DMG_TYPE_PRIORITY as readonly string[]
+  const [key] = entries.reduce((a, b) => {
+    if (b[1] > a[1]) return b
+    if (b[1] === a[1]) {
+      const ia = priority.indexOf(a[0])
+      const ib = priority.indexOf(b[0])
+      return (ib === -1 ? 999 : ib) < (ia === -1 ? 999 : ia) ? b : a
+    }
+    return a
+  })
+  return key
+}
+
 export function resolveWaDamageTypeKeys(
   waDamageType: string | undefined,
   weaponDmgTypes: Record<string, number>,
@@ -35,18 +59,8 @@ export function resolveWaDamageTypeKeys(
     return { ...weaponDmgTypes }
   }
   if (waDamageType.includes('Highest damage type')) {
-    const entries = Object.entries(weaponDmgTypes)
-    if (entries.length === 0) return { ...weaponDmgTypes }
-    const priority = DMG_TYPE_PRIORITY as readonly string[]
-    const [highestKey] = entries.reduce((a, b) => {
-      if (b[1] > a[1]) return b
-      if (b[1] === a[1]) {
-        const ia = priority.indexOf(a[0])
-        const ib = priority.indexOf(b[0])
-        return (ib === -1 ? 999 : ib) < (ia === -1 ? 999 : ia) ? b : a
-      }
-      return a
-    })
+    const highestKey = pickHighestDmgType(Object.entries(weaponDmgTypes))
+    if (highestKey === null) return { ...weaponDmgTypes }
     return { [highestKey]: 1 }
   }
   const types: Record<string, number> = {}
@@ -152,19 +166,10 @@ function computeBaseWaDmgTypes(input: EffectiveWaDmgTypesInput): Record<string, 
   }
 
   if (dt.includes('Highest damage type')) {
-    const entries = Object.entries(input.weaponDmgTypesBase)
-    if (entries.length === 0) {
+    const highestKey = pickHighestDmgType(Object.entries(input.weaponDmgTypesBase))
+    if (highestKey === null) {
       return apply(resolveDamageTypes(input.weaponDmgTypes, input.waOnlyBonuses))
     }
-    const [highestKey] = entries.reduce((a, b) => {
-      if (b[1] > a[1]) return b
-      if (b[1] === a[1]) {
-        const ia = (DMG_TYPE_PRIORITY as readonly string[]).indexOf(a[0])
-        const ib = (DMG_TYPE_PRIORITY as readonly string[]).indexOf(b[0])
-        return (ib === -1 ? 999 : ib) < (ia === -1 ? 999 : ia) ? b : a
-      }
-      return a
-    })
     return apply(resolveDamageTypes({ [highestKey]: 1 }, input.waDmgTypeBonuses))
   }
 
