@@ -32,7 +32,7 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
     VENOM_EATER_HEAL_PER_STACK,
     SIPHONING_ROT_HEAL_PER_STACK,
     LIFESTEAL_HEAL_PCT_PER_STACK,
-    LIFESTEAL_FLAT_HEAL_PER_STACK,
+    LIFESTEAL_FLAT_HEAL,
     ON_HIT_EXCLUDED_SOURCES,
     CURSE_RIP_DIVISOR,
     WOOF_SPIRIT_HEAL,
@@ -1437,8 +1437,8 @@ note?: string
       const damageDealt = types.filter(t => !t.isHeal).reduce((s, t) => s + t.raw, 0)
       const critDamageDealt = types.filter(t => !t.isHeal).reduce((s, t) => s + t.critVal, 0)
       if (damageDealt > 0) {
-        const healAmount = LIFESTEAL_HEAL_PCT_PER_STACK * lifestealStacks * damageDealt + LIFESTEAL_FLAT_HEAL_PER_STACK * lifestealStacks
-        const critHealAmount = LIFESTEAL_HEAL_PCT_PER_STACK * lifestealStacks * critDamageDealt + LIFESTEAL_FLAT_HEAL_PER_STACK * lifestealStacks
+        const healAmount = LIFESTEAL_HEAL_PCT_PER_STACK * lifestealStacks * damageDealt + LIFESTEAL_FLAT_HEAL
+        const critHealAmount = LIFESTEAL_HEAL_PCT_PER_STACK * lifestealStacks * critDamageDealt + LIFESTEAL_FLAT_HEAL
         if (healAmount > 0) {
           const healRaw = healAmount * lifestealHealMult * antiHealSelfMult
           const critHealRaw = critHealAmount * lifestealHealMult * antiHealSelfMult
