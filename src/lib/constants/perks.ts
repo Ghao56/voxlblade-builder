@@ -65,6 +65,7 @@ export const SHARP_CRITS_BOOST_MULT = 0.1
 export const SEISMIC_MOMENTUM_BOOST_MULT = 0.075
 export const PERFECTION_CRIT_PER_STACK = 5
 export const CACI_KING_SPIRIT_CRIT_PER_STACK = 20
+export const HEIGHTENED_REFLEXES_CRIT_PER_STACK = 1.5
 
 // ── Perk crit-damage formulas ─────────────────────
 export const THIEF_TRAINING_CRIT_DMG_MULT = 10

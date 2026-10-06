@@ -9,6 +9,7 @@ import {
   SHARP_CRITS_BOOST_MULT,
   SEISMIC_MOMENTUM_BOOST_MULT,
   CACI_KING_SPIRIT_CRIT_PER_STACK,
+  HEIGHTENED_REFLEXES_CRIT_PER_STACK,
   THIEF_TRAINING_CRIT_DMG_MULT,
   THIEF_TRAINING_CRIT_DMG_SUB,
   VENOM_EATER_CRIT_DMG_SUB,
@@ -115,6 +116,14 @@ const EXTRA_CRIT_SOURCES: Array<CritSource> = [
     },
     gatingPerks: ['Caci King Spirit'],
   },
+  {
+    label: 'Heightened Reflexes',
+    calc: (_stats, perks) => {
+      const stacks = perks['Heightened Reflexes'] ?? 0
+      return stacks > 0 ? round(stacks * HEIGHTENED_REFLEXES_CRIT_PER_STACK) : 0
+    },
+    gatingPerks: ['Heightened Reflexes'],
+  },
 ]
 
 const CRIT_DMG_SOURCES: Array<CritSource> = [
@@ -177,6 +186,14 @@ const CRIT_DMG_SOURCES: Array<CritSource> = [
       return stacks > 0 ? round(stacks * SPLINTER_CRIT_DMG_PER_STACK) : 0
     },
     gatingPerks: ['Splinter'],
+  },
+  {
+    label: 'Heightened Reflexes',
+    calc: (_stats, perks) => {
+      const stacks = perks['Heightened Reflexes'] ?? 0
+      return stacks > 0 ? round(stacks * HEIGHTENED_REFLEXES_CRIT_PER_STACK) : 0
+    },
+    gatingPerks: ['Heightened Reflexes'],
   },
   {
     label: 'Perfection',

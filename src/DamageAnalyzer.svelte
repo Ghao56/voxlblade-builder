@@ -9,7 +9,7 @@
   import { CRAGBLADE_NAME, CRAGBLADE_M1_M2_DMG_MULT, resolveCragbladeType } from './data/cragblade'
   import { WEAPON_BASE_DMG } from './data/weapon base dmg'
   import { DMG_TYPE_COLORS, DMG_TYPE_PRIORITY, SCALING_TO_BOOST, PERCENT_STATS, canProc, type WeaponBaseDmg, type ProcCoefficient } from './lib/types'
-  import { BUFF_DEFS, getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, applyBuffPerkModifiers, calcBuffEffect, getBuffDescription, convertTailwindToWhirlwind, getTrueBalanceBuffs, assembleActiveBuffs, applyCauterizeConversion, getBurnApplicationCount, hasEligibleDarkeningHexSource, applyDarkeningHexPotency, resolveBuffTarget, isSelfBurnBuff } from './data/BuffData'
+  import { BUFF_DEFS, getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, getHealingArtsRegenBuff, applyBuffPerkModifiers, calcBuffEffect, getBuffDescription, convertTailwindToWhirlwind, getTrueBalanceBuffs, assembleActiveBuffs, applyCauterizeConversion, getBurnApplicationCount, hasEligibleDarkeningHexSource, applyDarkeningHexPotency, resolveBuffTarget, isSelfBurnBuff } from './data/BuffData'
   import { DEBUFF_COMBAT_EFFECTS } from './data/debuffCombatEffects'
   import { getDraconicInfusionBuff, getDraconicAbilityDebuffs, getEffectiveDraconicInfusionPotency, getDraconicInfusionPotMult, getDraconicInfusionDurMult } from './data/draconicBuffs'  
   import { WA_SUMMON_MAP, SUMMON_MAP, calcSummonStat, calcMaxSummonCount, createSummonInstance, type SummonDef, type SummonInstance } from './data/SummonData'
@@ -602,6 +602,15 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       }
     }
 
+    const _haAmt = $result.perks['Healing Arts'] ?? 0
+    if (_haAmt > 0) {
+      baseBuffs.push(getHealingArtsRegenBuff(
+        _haAmt,
+        Math.max(1, Math.floor(_waCooldown * ($result.cdr?.waCDR ?? 1))),
+        _runeBaseCd
+      ))
+    }
+
     const tbAmt = $result.perks['True Balance'] ?? 0
     if (tbAmt > 0) {
       const enemyDebuffs = baseBuffs.filter(b => {
@@ -654,6 +663,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   })()
   $: _allActiveBuffs = (_dep(ponderReinforceDisabled), _disabledKeysArr.length, _allActiveBuffsRaw.filter(b => !_isBuffDisabled(b)))
   $: _hasCritBoostBuff = _allActiveBuffs.some(b => b.buffName === 'Critical Boost')
+  $: _regenPotency = Math.max(0, ..._allActiveBuffs.filter(b => b.buffName === 'Regen').map(b => b.potency))
 
   $: _dedupedActiveBuffs = (_dep(ponderReinforceDisabled), _disabledKeysArr.length, (() => {
     const map = new Map<string, typeof _allActiveBuffsRaw[0] & { _isOff: boolean; _allSources: string[] }>()
@@ -2572,6 +2582,19 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       totalEffectivePct,
       multiplier: roundMultiplier(applyScalingMult(totalEffectivePct / 100)),
       label: REJUVENATING_FLAME_HEAL_LABEL,
+    }
+  })()
+
+  $: _regenHealScalingBreakdown = (() => {
+    if (!(_regenPotency > 0)) return null
+    const rows = buildScalingRows({ water: 1.0, holy: 1.0 })
+    if (!rows.length) return null
+    const totalEffectivePct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 1000) / 1000
+    return {
+      rows,
+      totalEffectivePct,
+      multiplier: roundMultiplier(applyScalingMult(totalEffectivePct / 100)),
+      label: 'Regen Heal',
     }
   })()
 
@@ -4898,6 +4921,9 @@ $: _groupedSelfDamageSources = (() => {
     bloodThirstyStacks={perks['Blood Thirsty'] ?? 0}
     lifeDrinkerAmt={perks['Life Drinker'] ?? 0}
     siphoningRotAmt={perks['Siphoning Rot'] ?? 0}
+    regenHealBase={_regenPotency}
+    regenHealScalingMult={_regenPotency > 0 ? _computePerkScalingMult({ water: 1.0, holy: 1.0 }) : 1}
+    regenHealMult={_healFinalMultiplier}
     lifestealStacks={perks['Lifesteal'] ?? 0}
     honeyGatherAmt={perks['Honey Gather'] ?? 0}
     lifestealHealMult={_healFinalMultiplierNoLevel}
@@ -7751,7 +7777,7 @@ $: _groupedSelfDamageSources = (() => {
 </div>
 {/if}
 
-{#if _waHealScalingBreakdown || _perkHealScalingBreakdown || _rainstormHealScalingBreakdown || _rejuvenatingFlameHealScalingBreakdown}
+{#if _waHealScalingBreakdown || _perkHealScalingBreakdown || _rainstormHealScalingBreakdown || _rejuvenatingFlameHealScalingBreakdown || _regenHealScalingBreakdown}
 <div class="da-section da-section--scaling" style="border-color:rgba(74,222,128,.2);background:linear-gradient(160deg,var(--surface,#141715) 60%,rgba(74,222,128,.03) 100%)">
   <div class="da-section-title" style="color:#4ade80">✦ Heal Scaling</div>
 
@@ -7883,6 +7909,38 @@ $: _groupedSelfDamageSources = (() => {
           <div class="ds-col ds-col--op">=</div>
           <div class="ds-col ds-col--contrib">
             <span class="ds-total-pct" style="color:#38bdf8;text-shadow:0 0 10px rgba(56,189,248,.4)">×{+_rejuvenatingFlameHealScalingBreakdown.multiplier.toFixed(4)}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  {/if}
+
+  {#if _regenHealScalingBreakdown}
+    <div class="ds-wa-subsection" style="margin-top:{_waHealScalingBreakdown || _perkHealScalingBreakdown || _rainstormHealScalingBreakdown || _rejuvenatingFlameHealScalingBreakdown ? '12px' : '0'}">
+      <div class="ds-wa-header">
+        <Badge color="#4ade80">Buff</Badge>
+        <span class="ds-wa-name" style="color:#4ade80">{_regenHealScalingBreakdown.label}</span>
+      </div>
+      <div class="ds-table">
+        <div class="ds-head">
+          <div class="ds-col ds-col--type">Scaling</div>
+          <div class="ds-col ds-col--val">Scaling Val</div>
+          <div class="ds-col ds-col--op"></div>
+          <div class="ds-col ds-col--boost">Your Boost</div>
+          <div class="ds-col ds-col--op"></div>
+          <div class="ds-col ds-col--contrib">Contribution</div>
+        </div>
+        {#each _regenHealScalingBreakdown.rows as row}
+          <ScalingBreakdownRow {row} useRoundMultiplier={true} showZeroBoost={true} />
+        {/each}
+        <div class="ds-row ds-row--total" style="background:rgba(74,222,128,.07);border-color:rgba(74,222,128,.18)">
+          <div class="ds-col ds-col--type ds-total-label" style="color:#4ade80">Total</div>
+          <div class="ds-col ds-col--val"></div>
+          <div class="ds-col ds-col--op"></div>
+          <div class="ds-col ds-col--boost"></div>
+          <div class="ds-col ds-col--op">=</div>
+          <div class="ds-col ds-col--contrib">
+            <span class="ds-total-pct" style="color:#4ade80;text-shadow:0 0 10px rgba(74,222,128,.4)">×{+_regenHealScalingBreakdown.multiplier.toFixed(4)}</span>
           </div>
         </div>
       </div>

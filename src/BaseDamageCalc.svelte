@@ -253,6 +253,9 @@ note?: string
   export let bloodThirstyStacks: number = 0
   export let lifeDrinkerAmt: number = 0
   export let siphoningRotAmt: number = 0
+  export let regenHealBase: number = 0
+  export let regenHealScalingMult: number = 1
+  export let regenHealMult: number = 1
   export let lifestealStacks: number = 0
   export let honeyGatherAmt: number = 0
   export let sunburnUniversalDmgMult: number = 1
@@ -329,6 +332,19 @@ note?: string
       sunburnMult: dot.weaponBoostMult ?? 1,
       weaponBoostLabel: dot.weaponBoostLabel,
       finalDmg: dot.finalDmg,
+      style: spaceBelow > 180
+        ? `left:${left}px;top:${r.bottom + 4}px;`
+        : `left:${left}px;bottom:${window.innerHeight - r.top + 4}px;`,
+    }
+  }
+
+  let _regenTooltip: { style: string } | null = null
+
+  function showRegenTooltip(e: MouseEvent) {
+    const r = (e.currentTarget as HTMLElement).getBoundingClientRect()
+    const spaceBelow = window.innerHeight - r.bottom
+    const left = Math.max(8, Math.min(r.left, window.innerWidth - 260))
+    _regenTooltip = {
       style: spaceBelow > 180
         ? `left:${left}px;top:${r.bottom + 4}px;`
         : `left:${left}px;bottom:${window.innerHeight - r.top + 4}px;`,
@@ -655,6 +671,9 @@ note?: string
 
     return { ...d, dmgType, scalingMult, combatMult, preMitBase, applicableBoosts, typedMult, trueApplicableBoosts, trueTypedMult, defPct, defMult, typeDebuffMult, debuffMult, finalDmg, finalDmgPrimary, bonusTypes, trueDmg, woundTrueDmg, woundPotency, woundAmt, lifeDrinkerHeal, siphoningRotHeal, weaponBoostMult: dotWbMult, weaponBoostLabel: dotWbLabel }
   })
+
+  $: regenScaledHeal = regenHealBase * regenHealScalingMult
+  $: regenHeal = regenScaledHeal * regenHealMult * antiHealSelfMult
 
   function defPctForType(k: string): number {
     if (k === 'true' || k === 'summon') return 0
@@ -1975,10 +1994,10 @@ note?: string
         </div>
       {/if}
 
-      {#if hitGroups.every(g => g.list.length === 0) && _activeDotTicks.length === 0 && !(waDebuffWarning && waHits.length === 0)}
+      {#if hitGroups.every(g => g.list.length === 0) && _activeDotTicks.length === 0 && regenHeal <= 0 && !(waDebuffWarning && waHits.length === 0)}
         <p class="bdc-empty">No weapon hits available.</p>
       {:else}
-        {#if _activeDotTicks.length > 0}
+        {#if _activeDotTicks.length > 0 || regenHeal > 0}
           <div class="bdc-hit-list-grp bdc-hit-list-grp--status">
             <div class="bdc-grp-head">
               <span class="bdc-hit-grp-label">Status</span>
@@ -2132,6 +2151,56 @@ note?: string
                   </div>
                 </div>
               {/each}
+              {#if regenHeal > 0}
+                <div class="bdc-hit-row">
+                  <div class="bdc-hit-row-types">
+                    <!-- svelte-ignore a11y_no_static_element_interactions -->
+                    <div class="bdc-hit-type-chunk bdc-hit-type-chunk--heal" style="--tc:#4ade80"
+                      on:mouseenter={showRegenTooltip}
+                      on:mouseleave={() => { _regenTooltip = null }}>
+                      <div class="bdc-hit-type-top">
+                        <div class="bdc-hit-type-val-row">
+                          <span class="bdc-hit-type-val">{fmt(regenHeal)}</span>
+                        </div>
+                        <div class="bdc-hit-type-label-row">
+                          <span class="bdc-hit-type-label">Heal</span>
+                          <Badge color="#4ade80" size="xs" square mono title="Regen: Regenerate health over time. Base Healing = Potency x Water/Holy Scaling.">✦ Regen</Badge>
+                        </div>
+                      </div>
+                      <div class="bdc-hit-type-formula">
+                        <div class="bdc-fr">
+                          <span class="bdc-fr-label">Base Heal</span>
+                          <span class="bdc-fr-val">{fmt(regenHealBase)}</span>
+                        </div>
+                        <div class="bdc-fr">
+                          <span class="bdc-fr-label">Scaling</span>
+                          <span class="bdc-fr-val">× {fmtMult(regenHealScalingMult)}</span>
+                        </div>
+                        {#if regenHealMult !== 1}
+                          <div class="bdc-fr">
+                            <span class="bdc-fr-label">Heal Boost</span>
+                            <span class="bdc-fr-val">× {fmtMult(regenHealMult)}</span>
+                          </div>
+                        {/if}
+                        {#if antiHealSelfMult !== 1}
+                          <div class="bdc-fr">
+                            <span class="bdc-fr-label">Anti-Heal</span>
+                            <span class="bdc-fr-val bdc-fr-val--selfdebuff">× {fmtMult(antiHealSelfMult)}</span>
+                          </div>
+                        {/if}
+                        <div class="bdc-fr-divider"></div>
+                        <div class="bdc-fr bdc-fr--result">
+                          <span class="bdc-fr-label">Final Heal</span>
+                          <span class="bdc-fr-val bdc-fr-val--result" style="--tc:#4ade80;">{fmt(regenHeal)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="bdc-hit-row-end">
+                    <span class="bdc-hit-type-sum-holder"><span class="bdc-hit-type-heal-sum">{fmt(regenHeal)}</span></span>
+                  </div>
+                </div>
+              {/if}
             </div>
             <div class="bdc-dot-footnote">Per tick</div>
           </div>
@@ -2502,6 +2571,36 @@ note?: string
     <div class="bdc-fr bdc-fr--result">
       <span class="bdc-fr-label">Final DoT Tick</span>
       <span class="bdc-fr-val bdc-fr-val--result" style="--tc:{_dtc}">{fmt(_dotTooltip.finalDmg)}</span>
+    </div>
+  </div>
+{/if}
+
+{#if _regenTooltip}
+  <div class="bdc-tt-formula-fixed" style={_regenTooltip.style}>
+    <div class="bdc-fr">
+      <span class="bdc-fr-label">Base Heal</span>
+      <span class="bdc-fr-val">{fmt(regenHealBase)}</span>
+    </div>
+    <div class="bdc-fr">
+      <span class="bdc-fr-label">Scaling</span>
+      <span class="bdc-fr-val bdc-fr-val--scaling">× {fmtMult(regenHealScalingMult)}</span>
+    </div>
+    {#if regenHealMult !== 1}
+      <div class="bdc-fr">
+        <span class="bdc-fr-label">Heal Boost</span>
+        <span class="bdc-fr-val bdc-fr-val--combat">× {fmtMult(regenHealMult)}</span>
+      </div>
+    {/if}
+    {#if antiHealSelfMult !== 1}
+      <div class="bdc-fr">
+        <span class="bdc-fr-label">Anti-Heal</span>
+        <span class="bdc-fr-val bdc-fr-val--debuff">× {fmtMult(antiHealSelfMult)}</span>
+      </div>
+    {/if}
+    <div class="bdc-fr-divider"></div>
+    <div class="bdc-fr bdc-fr--result">
+      <span class="bdc-fr-label">Final Heal</span>
+      <span class="bdc-fr-val bdc-fr-val--result" style="--tc:#4ade80;">{fmt(regenHeal)}</span>
     </div>
   </div>
 {/if}

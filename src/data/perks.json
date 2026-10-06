@@ -1504,7 +1504,7 @@
   },
   {
     "name": "Heightened Reflexes",
-    "description": "On kill or Poisebreak, gain a stack of the Buff Autoparry. Autoparry automatically activates whilst Blocking, and has increased Stun if you possess the perk Parry itself.",
+    "description": "Gain crit chance. Additionally on kill or Poisebreak, gain a stack of the Buff ''Autoparry''. Additionally, ''Autoparry'' gains increased Stun if you possess the perk ''Parry'' itself.",
     "tags": [
       "Defensive",
       "Buff",

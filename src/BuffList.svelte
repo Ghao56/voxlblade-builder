@@ -10,6 +10,7 @@ import { isMonkGuild } from './lib/engine/data/character'
     BUFF_DEFS,
     getActiveBuildBuffs,
     getPerkBuffs,
+    getHealingArtsRegenBuff,
     applyBuffPerkModifiers,
     calcBuffEffect,
     getBuffDescription,
@@ -31,7 +32,8 @@ import { isMonkGuild } from './lib/engine/data/character'
   import { UI_COLORS, SOURCE_LABELS } from './lib/uiConstants'
 import { getAutoDebuffs } from './data/perkAutoDebuffs'
 import { RUNE_DMG_DEFS } from './data/Runebasedmg'
-import { getRunicGlassDuration } from './lib/constants/rune-base-damage'
+import { getRunicGlassDuration, ENCHANTED_SWORD_CD_BY_TYPE } from './lib/constants/rune-base-damage'
+  import { getRune } from './lib/engine/data/equipment'
 import { findPerkDmgDef, isHpGateActive } from './data/Perkbasedmg'
 import { WA_PROC_COEFFS, DEFAULT_PROC_COEFF } from './data/procCoefficients'
 import { canProc } from './lib/types'
@@ -109,6 +111,14 @@ import { calcBaseMaxHP } from './lib/constants/game'
       if (wa?.cooldown) {
         buffs[idx] = { ...buffs[idx], duration: wa.cooldown / 2 }
       }
+    }
+    const _haAmt = $result.perks['Healing Arts'] ?? 0
+    if (_haAmt > 0) {
+      const _haWaCd = Math.max(1, Math.floor((buffListSelectedWA?.cooldown ?? 0) * ($result.cdr?.waCDR ?? 1)))
+      const _haRuneCd = $build.rune === 'Enchanted Sword Rune'
+        ? ENCHANTED_SWORD_CD_BY_TYPE[$build.enchantedSwordType] ?? 10
+        : getRune($build.rune)?.cooldown ?? 10
+      buffs.push(getHealingArtsRegenBuff(_haAmt, _haWaCd, _haRuneCd))
     }
     if ($build.selectedWeaponArt !== 'Laser') {
       return buffs.filter(b => b.sourceName !== 'Wild Bolt').filter(b => isHpGateActive(b.hpGate, $build.hpFill ?? 100, 0))

@@ -726,7 +726,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     color: '#00fd66',
     description: 'Block the next debuff you receive and heal.',
     dynamicDescription: (_perks, potency) => {
-      const heal = potency * 3
+      const heal = potency * 2.5
       return `Blocks ${potency} debuff(s). Heals ${heal} HP on block.`
     },
     effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
@@ -2630,6 +2630,18 @@ export function getPerkBuffs(perks: Record<string, number>, vassalsCroakStacks?:
   }
 
   return buffs
+}
+
+export function getHealingArtsRegenBuff(amount: number, waCdAfterCdr: number, runeBaseCd: number): GrantedBuff {
+  const baseCd = Math.max(waCdAfterCdr, runeBaseCd)
+  return {
+    buffName: 'Regen',
+    potency: 0.5 * amount,
+    duration: Math.round(baseCd * (0.075 + 0.2667 * amount) * 100) / 100,
+    condition: 'Healing Arts · on Weapon Art or Rune use',
+    sourceName: 'Healing Arts',
+    sourceType: 'perk',
+  }
 }
 
 export function getActiveBuildBuffs(build: {
