@@ -551,7 +551,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
   'Snarled': {
     name: 'Snarled',
     color: '#ff0070',
-    description: 'Damage taken heals enemies by 2% of damage dealt as lifesteal per 0.1 potency. Healing does not consider Damage Boosting perks or effects.',
+    description: 'Damage taken heals enemies by 0.5% of damage dealt as lifesteal per 0.1 potency, plus 0.1 flat HP. Healing does not consider Damage Boosting perks or effects.',
     effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
     effectUnit: 'flat',
     isDebuff: true,
@@ -1029,7 +1029,7 @@ const ITEM_BUFF_MAP: GrantedBuff[] = [
     buffName: 'Snarled',
     potency: SNARL_SNARLED_POTENCY,
     duration: SNARL_SNARLED_DURATION,
-    condition: 'On hit · applies Snarled · lifesteal 2% per 0.1 potency (not affected by damage boosts) · requires proc coeff',
+    condition: 'On hit · applies Snarled · lifesteal 0.5% per 0.1 potency + 0.1 flat (not affected by damage boosts) · requires proc coeff',
     sourceName: 'Snarl Rune',
     sourceType: 'rune',
   },

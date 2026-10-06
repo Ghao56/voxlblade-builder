@@ -834,6 +834,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         defReduction: combatFx?.defReduction ? combatFx.defReduction(potency) : undefined,
         typeDamageMult: combatFx?.typeDamageMult ? combatFx.typeDamageMult(potency, perks) : undefined,
         lifestealMult: combatFx?.lifestealMult ? combatFx.lifestealMult(potency) : undefined,
+        lifestealFlat: combatFx?.lifestealFlat,
       }
     }
     const result = [...groups.entries()].map(([name, inner]) => {
@@ -4891,6 +4892,7 @@ $: _groupedSelfDamageSources = (() => {
     lifeDrinkerAmt={perks['Life Drinker'] ?? 0}
     siphoningRotAmt={perks['Siphoning Rot'] ?? 0}
     lifestealStacks={perks['Lifesteal'] ?? 0}
+    honeyGatherAmt={perks['Honey Gather'] ?? 0}
     lifestealHealMult={_healFinalMultiplierNoLevel}
     woofSpiritHealMult={_healFinalMultiplierNoLevel}
     levelMult={_levelMult}

@@ -4,9 +4,10 @@ export const FRENZY_RAGE_MULT = 1 / 6
 export const MINION_ABSORPTION_MULT = 0.2
 
 export const VENOM_EATER_HEAL_PER_STACK = 0.1
-export const SIPHONING_ROT_HEAL_PER_STACK = 1
 export const LIFESTEAL_HEAL_PCT_PER_STACK = 0.0025
 export const LIFESTEAL_FLAT_HEAL = 0.1
+export const SIPHONING_ROT_HEAL_PER_STACK = LIFESTEAL_HEAL_PCT_PER_STACK
+export const HONEY_GATHER_HEAL_PCT_PER_STACK = 0.005
 
 // ── On-hit exclusion ──────────────────────────────
 // Damage sources that on-hit effects (Lifesteal, Channeled Weapon, Curse Rip) do NOT apply to.
@@ -33,7 +34,9 @@ export const HEMORRHAGE_DMG_BASE = 0.10
 export const HEMORRHAGE_DMG_PER_STACK = 0.10
 export const HEMORRHAGE_STUN_PCT_PER_STACK = 20
 export const HEMORRHAGE_POISE_PCT_PER_STACK = 15
-export const BLOOD_THIRSTY_MULT_PER_STACK = 0.2
+export const BLOOD_THIRSTY_MULT_PER_STACK = 0.175
+export const BLOOD_THIRSTY_HEAL_BASE = 0.4
+export const BLOOD_THIRSTY_HEAL_PER_STACK = 0.4
 export const VENOM_SPITTER_MULT_PER_STACK = 0.10
 export const PERFECTION_MULT_PER_STACK = 0.10
 export const STEALTH_MULT_PER_STACK = 0.10

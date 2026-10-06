@@ -167,6 +167,9 @@ import {
   RULER_SANDS_HITS,
   RULER_SANDS_CHANCE_CD_MULT,
   RULER_SANDS_CHANCE_PERK_MULT,
+  TESLA_ORB_BASE_DMG,
+  TESLA_ORB_DMG_PER_STACK,
+  TESLA_ORB_HITS,
   ICHOR_SPARK_SWIPE_BASE_A,
   ICHOR_SPARK_SWIPE_BASE_B,
   ICHOR_SPARK_SLASH_BASE_A,
@@ -2088,14 +2091,15 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
   // ── Tesla Cannon ───────────────────────────────────────────────
   {
     perkName: 'Tesla Cannon',
-    condition: 'When hitting an enemy from afar',
-    getBaseDamage: ({ perkAmount }) => 2 + 4 * perkAmount,
+    condition: 'When striking enemies from range',
+    getBaseDamage: ({ perkAmount }) => TESLA_ORB_BASE_DMG + TESLA_ORB_DMG_PER_STACK * perkAmount,
+    hits: TESLA_ORB_HITS,
     dmgTypeMode: 'fixed',
     dmgTypes: { air: 0.5, magic: 0.5 },
     scalingMode: 'fixed',
     scalings: { air: 1.0, magic: 1.0 },
     procCoefficient: { type: 'hasCoeff', value: 0.5 },
-    note: 'Hits roughly every 0.5 seconds, and lasts for up to 7.5 seconds, or until it reaches a target. More than one Tesla Orb cannot be activae at a time.'
+    note: 'Tesla Orb hits roughly every 0.5 seconds and lasts for roughly 7.5 seconds, or until it reaches its target. Only one Tesla Orb can be active at a time. Can proc other effects.'
   },
   // ── Rainstorm ─────────────────────────────────────────────────
   // One Raindrop per rotation. This def is the Perk Base Damage CARD only: the

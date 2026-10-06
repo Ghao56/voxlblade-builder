@@ -33,6 +33,9 @@ import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
     SIPHONING_ROT_HEAL_PER_STACK,
     LIFESTEAL_HEAL_PCT_PER_STACK,
     LIFESTEAL_FLAT_HEAL,
+    HONEY_GATHER_HEAL_PCT_PER_STACK,
+    BLOOD_THIRSTY_HEAL_BASE,
+    BLOOD_THIRSTY_HEAL_PER_STACK,
     ON_HIT_EXCLUDED_SOURCES,
     CURSE_RIP_DIVISOR,
     WOOF_SPIRIT_HEAL,
@@ -251,6 +254,7 @@ note?: string
   export let lifeDrinkerAmt: number = 0
   export let siphoningRotAmt: number = 0
   export let lifestealStacks: number = 0
+  export let honeyGatherAmt: number = 0
   export let sunburnUniversalDmgMult: number = 1
   export let bellowingEmberMult: number = 1
   export let perkCombatMult: number = 1
@@ -469,15 +473,17 @@ note?: string
   }
   $: _activeDebuffDamageMult = calcActiveDebuffDamageMult(resolvedDebuffs, disabledDebuffs)
 
-  function calcActiveDebuffLifestealPct(resolved: Array<any>, disabled: Set<string>): number {
+  function calcActiveDebuffLifesteal(resolved: Array<any>, disabled: Set<string>) {
     let pct = 0
+    let flat = 0
     for (const d of resolved) {
       if (disabled.has(d.name) || !d.lifestealMult) continue
       pct += d.lifestealMult
+      flat += d.lifestealFlat ?? 0
     }
-    return pct
+    return { pct, flat }
   }
-  $: _snarledLifestealPct = calcActiveDebuffLifestealPct(resolvedDebuffs, disabledDebuffs)
+  $: _snarledLifesteal = calcActiveDebuffLifesteal(resolvedDebuffs, disabledDebuffs)
 
   function calcDebuffTypeDamageMult(resolved: Array<any>, disabled: Set<string>): Record<string, number> {
     const mults: Record<string, number> = {}
@@ -559,6 +565,9 @@ note?: string
   $: critDmgMult = (crit?.critDamageMultiplier ?? BASE_CRIT_DMG_PCT) - (_hasBleedOnTarget ? 0 : _splinterAmount) - (_hasBurnOnTarget ? 0 : _sparkAmount)
   $: _venomEaterActive = venomEaterStacks > 0 && showCritValues && !disabledBoosts.has('Venom Eater') && resolvedDebuffs.some(d => d.name === 'Poison')
   $: _bloodThirstyActive = bloodThirstyStacks > 0 && !disabledBoosts.has('Blood Thirsty') && resolvedDebuffs.some(d => d.name === 'Bleed')
+  // Honey Gather lifesteals only vs Sticky. 'Sticky (Melting Slime)' is the
+  // synthetic variant name, so match the prefix.
+  $: _honeyGatherActive = honeyGatherAmt > 0 && resolvedDebuffs.some(d => d.name.startsWith('Sticky') && !disabledDebuffs.has(d.name))
   $: _spellPiercerActive = !disabledBoosts.has('Spell Piercer') && (boosts?.dmgEntries ?? []).some((e: any) => e.sourceName === 'Spell Piercer')
 
   // Void Contract state — the mark fully buffs the designated hit instance (target
@@ -641,7 +650,7 @@ note?: string
       : 0
 
     const siphoningRotHeal = (siphoningRotAmt > 0 && d.type === 'Poison')
-      ? SIPHONING_ROT_HEAL_PER_STACK * siphoningRotAmt
+      ? SIPHONING_ROT_HEAL_PER_STACK * siphoningRotAmt * preMitBase + LIFESTEAL_FLAT_HEAL
       : 0
 
     return { ...d, dmgType, scalingMult, combatMult, preMitBase, applicableBoosts, typedMult, trueApplicableBoosts, trueTypedMult, defPct, defMult, typeDebuffMult, debuffMult, finalDmg, finalDmgPrimary, bonusTypes, trueDmg, woundTrueDmg, woundPotency, woundAmt, lifeDrinkerHeal, siphoningRotHeal, weaponBoostMult: dotWbMult, weaponBoostLabel: dotWbLabel }
@@ -898,6 +907,22 @@ note?: string
     // this hit, powered by the Proc Registry (see lib/procRegistry.ts).
     const gate = (tag: string) => procChanceScale(tag, hit.procCoefficient) > 0
 
+    // Blood Thirsty's Bleed-remove heal. Pushes from three places (this hit,
+    // the on-hit perk pass, the proc pass) — one helper so they can't drift.
+    const pushBloodThirstyHeal = () => {
+      const btHeal = BLOOD_THIRSTY_HEAL_BASE + BLOOD_THIRSTY_HEAL_PER_STACK * bloodThirstyStacks
+      if (btHeal <= 0) return
+      types.push({
+        key: 'heal', label: 'Heal', color: '#4ade80',
+        typeBase: btHeal, scalingMult: 1, combatMult: 1,
+        applicableBoosts: [], weaponBoostMult: 1, typeDebuffMult: 1,
+        defMult: 1, enemyDefPct: 0,
+        raw: btHeal, critVal: btHeal,
+        isHeal: true, isCritExempt: true, forceCrit: false,
+        tag: 'Blood Thirsty',
+      })
+    }
+
     const buildTypeChunk = (k: string, mult: number, labelOverride?: string): ComputedType => {
       const info = DMG_TYPE_MAP.get(k) ?? { label: k, color: '#e8e4da' }
       const typeIsHeal   = hit.dmgTypeIsHeal?.[k] ?? isHeal
@@ -1114,18 +1139,7 @@ note?: string
           addProcEffect(quakeBaseDmg, 1, { earth: 1.0 }, 'Quake', quakeScalingMult, dragonStateCombatMult)
         }
         if (_bloodThirstyActive && gate('Blood Thirsty')) {
-          const btHeal = 0.3 * bloodThirstyStacks
-          if (btHeal > 0) {
-            types.push({
-              key: 'heal', label: 'Heal', color: '#4ade80',
-              typeBase: btHeal, scalingMult: 1, combatMult: 1,
-              applicableBoosts: [], weaponBoostMult: 1, typeDebuffMult: 1,
-              defMult: 1, enemyDefPct: 0,
-              raw: btHeal, critVal: btHeal,
-              isHeal: true, isCritExempt: true, forceCrit: false,
-              tag: 'Blood Thirsty',
-            })
-          }
+          pushBloodThirstyHeal()
         }
       }
     }
@@ -1257,18 +1271,7 @@ note?: string
               }
             }
             if (_bloodThirstyActive && pGate('Blood Thirsty')) {
-              const btHeal = 0.3 * bloodThirstyStacks
-              if (btHeal > 0) {
-                types.push({
-                  key: 'heal', label: 'Heal', color: '#4ade80',
-                  typeBase: btHeal, scalingMult: 1, combatMult: 1,
-                  applicableBoosts: [], weaponBoostMult: 1, typeDebuffMult: 1,
-                  defMult: 1, enemyDefPct: 0,
-                  raw: btHeal, critVal: btHeal,
-                  isHeal: true, isCritExempt: true, forceCrit: false,
-                  tag: 'Blood Thirsty',
-                })
-              }
+              pushBloodThirstyHeal()
             }
             if (phantomPainPct > 0 && pGate('Phantom Pain')) {
               const ppPhBase = types.slice(_typesStartIdx).filter(t => !t.isHeal).reduce((s, t) => s + t.raw / (t.defMult || 1), 0)
@@ -1403,18 +1406,7 @@ note?: string
     }
 
     if (!isHeal && _bloodThirstyActive && gate('Blood Thirsty')) {
-      const btHeal = 0.3 * bloodThirstyStacks
-      if (btHeal > 0) {
-        types.push({
-          key: 'heal', label: 'Heal', color: '#4ade80',
-          typeBase: btHeal, scalingMult: 1, combatMult: 1,
-          applicableBoosts: [], weaponBoostMult: 1, typeDebuffMult: 1,
-          defMult: 1, enemyDefPct: 0,
-          raw: btHeal, critVal: btHeal,
-          isHeal: true, isCritExempt: true, forceCrit: false,
-          tag: 'Blood Thirsty',
-        })
-      }
+      pushBloodThirstyHeal()
     }
 
     if (!isHeal && (hit.label ?? '') === 'Woof Spirit') {
@@ -1456,13 +1448,35 @@ note?: string
       }
     }
 
+    // Honey Gather: 0.5% per stack of damage dealt vs Sticky, + 0.1 flat.
+    // Scales with Output Bonuses and Type-Specific Multipliers, but NOT crits
+    // (uses `raw`, not `critVal`) and NOT enemy defense / Armor Pen — divide
+    // each type's defense multiplier back out (same trick as Phantom Pain).
+    if (!isHeal && _honeyGatherActive && gate('Honey Gather') && !ON_HIT_EXCLUDED_SOURCES.has(hit.label ?? '')) {
+      const damageDealt = types.filter(t => !t.isHeal).reduce((s, t) => s + t.raw / (t.defMult || 1), 0)
+      const healAmount = HONEY_GATHER_HEAL_PCT_PER_STACK * honeyGatherAmt * damageDealt + LIFESTEAL_FLAT_HEAL
+      if (healAmount > 0) {
+        const healRaw = healAmount * lifestealHealMult * antiHealSelfMult
+        types.push({
+          key: 'heal', label: 'Heal', color: '#4ade80',
+          typeBase: healAmount, scalingMult: 1, combatMult: 1,
+          applicableBoosts: [], weaponBoostMult: 1, typeDebuffMult: 1,
+          defMult: 1, enemyDefPct: 0,
+          raw: healRaw, critVal: healRaw,
+          isHeal: true, isCritExempt: true, forceCrit: false,
+          tag: 'Honey Gather',
+          healBoostMult: lifestealHealMult !== 1 ? lifestealHealMult : undefined,
+        })
+      }
+    }
+
     // Snarled: damage taken heals the ENEMY by lifesteal% of damage dealt.
     // "Healing does not consider Damage Boosting perks or effects" — but level
     // damage bonus is an exception and SHOULD scale the heal. We rebuild the
     // pre-boost base from the hit (pre-bonus damage types, scaling, level mult)
     // so armor penetration, Void Contract, damage-type bonuses, and all damage
     // boosts are excluded.
-    if (!isHeal && _snarledLifestealPct > 0 && !ON_HIT_EXCLUDED_SOURCES.has(hit.label ?? '')) {
+    if (!isHeal && _snarledLifesteal.pct > 0 && !ON_HIT_EXCLUDED_SOURCES.has(hit.label ?? '')) {
       // Snarl's enemy heal is based on pre-boost damage affected ONLY by level
       // damage bonus. It must not include the general damage boosts (combatMult /
       // effective boost), typed perk boosts, armor penetration (defMult), Void
@@ -1474,7 +1488,7 @@ note?: string
         ? Object.values(snarledBaseTypes).reduce((s, m) => s + hit.base * m, 0)
         : 0
       const snarledDamageDealt = snarledBaseSum * (hit.scalingMult ?? 1) * levelMult
-      const enemyHeal = snarledDamageDealt * _snarledLifestealPct / 100
+      const enemyHeal = snarledDamageDealt * _snarledLifesteal.pct / 100 + _snarledLifesteal.flat
       if (enemyHeal > 0) {
         // Snarl enemy heal: pre-bonus base (baseDmgTypes = raw, excludes Channeled
         // Weapon / Stone Weapon), scaling, Level Damage Bonus only, flat lifesteal.
@@ -1483,8 +1497,8 @@ note?: string
         types.push({
           key: 'heal', label: 'Heal', color: '#4ade80',
           typeBase: snarledBaseSum, scalingMult: hit.scalingMult ?? 1, levelMult, combatMult: 1,
-          applicableBoosts: [], weaponBoostMult: _snarledLifestealPct / 100,
-          weaponBoostLabel: `Snarled Lifesteal (${_snarledLifestealPct}%)`,
+          applicableBoosts: [], weaponBoostMult: _snarledLifesteal.pct / 100,
+          weaponBoostLabel: `Snarled Lifesteal (${_snarledLifesteal.pct}%)`,
           typeDebuffMult: 1,
           defMult: 1, enemyDefPct: 0,
           raw: enemyHeal, critVal: enemyHeal,
@@ -2089,7 +2103,7 @@ note?: string
                           </div>
                           <div class="bdc-hit-type-label-row">
                             <span class="bdc-hit-type-label">Heal</span>
-                            <Badge color="#4ade80" size="xs" square mono title="Siphoning Rot: Heals for 1 HP per Poison tick per perk stack">✦ Siphoning Rot</Badge>
+                            <Badge color="#4ade80" size="xs" square mono title="Siphoning Rot: Lifesteal 0.25% of Poison damage per perk stack + 0.1 (ignores damage type and post-damage type multipliers)">✦ Siphoning Rot</Badge>
                           </div>
                         </div>
                         <div class="bdc-hit-type-formula">

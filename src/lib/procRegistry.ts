@@ -43,6 +43,7 @@ export const PROC_EFFECT_DEFS: Readonly<Record<string, ProcEffectDef>> = {
   // Non-chance effects: can never activate on a NoProc instance.
   'Blood Thirsty': { blockedOnNoProc: true },
   'Venom Eater': { blockedOnNoProc: true },
+  'Honey Gather': { blockedOnNoProc: true },
   'Phantom Pain': { blockedOnNoProc: true },
   'Runic Blades': { blockedOnNoProc: true },
   'Luminescent': { blockedOnNoProc: true },

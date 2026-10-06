@@ -1,4 +1,4 @@
-import { DEBUFF_STICKY_DMG_MULT, DEBUFF_DESPAIR_DISPLAY_DIVISOR, DEBUFF_DESPAIR_DISPLAY_MULT, DEBUFF_DESPAIR_DMG_COEFF } from '../lib/constants/debuff-effects'
+import { DEBUFF_STICKY_DMG_MULT, DEBUFF_DESPAIR_DISPLAY_DIVISOR, DEBUFF_DESPAIR_DISPLAY_MULT, DEBUFF_DESPAIR_DMG_COEFF, SNARLED_LIFESTEAL_FLAT, SNARLED_LIFESTEAL_PCT_PER_POTENCY } from '../lib/constants/debuff-effects'
 import { HYPNOTIST_MAGIC_ARMOR_PER_POTENCY } from '../lib/constants/perks'
 
 const ALL_DEF_STAT_KEYS = ['physicalDefense', 'magicDefense', 'fireDefense', 'waterDefense','earthDefense', 'airDefense', 'hexDefense', 'holyDefense',] as const
@@ -9,6 +9,7 @@ export interface DebuffCombatEffect {
    defReduction?: (potency: number) => Partial<Record<typeof ALL_DEF_STAT_KEYS[number], number>>
    typeDamageMult?: (potency: number, perks?: Record<string, number>) => Record<string, number>
    lifestealMult?: (potency: number) => number
+   lifestealFlat?: number
    }
 
 export const DEBUFF_COMBAT_EFFECTS: Record<string, DebuffCombatEffect> = {
@@ -21,8 +22,9 @@ export const DEBUFF_COMBAT_EFFECTS: Record<string, DebuffCombatEffect> = {
   },
 
   Snarled: {
-    descFn: (p: number) => `Lifesteal: enemies heal ${(p * 20).toFixed(2)}% of damage dealt · not affected by damage boosts`,
-    lifestealMult: (p: number) => p * 20,
+    descFn: (p: number) => `Lifesteal: enemies heal ${(p * SNARLED_LIFESTEAL_PCT_PER_POTENCY).toFixed(2)}% of damage dealt + ${SNARLED_LIFESTEAL_FLAT} HP · not affected by damage boosts`,
+    lifestealMult: (p: number) => p * SNARLED_LIFESTEAL_PCT_PER_POTENCY,
+    lifestealFlat: SNARLED_LIFESTEAL_FLAT,
   },
   Shatter: {
     descFn: (p: number) => `Lose ${(p * 100).toFixed(2)} Armor`,

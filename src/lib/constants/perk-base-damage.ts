@@ -262,6 +262,12 @@ export const LODESTONE_BARRAGE_ROCKS_PERK_MULT = 0.2
 export const TRUE_MOON_BASE_DMG = 2
 export const TRUE_MOON_DMG_PER_STACK = 1.5
 
+// Tesla Cannon
+export const TESLA_ORB_BASE_DMG = 2
+export const TESLA_ORB_DMG_PER_STACK = 4
+// Orb zaps every ~0.5s for ~7.5s -> 15 zaps (only one Orb may be active at a time).
+export const TESLA_ORB_HITS = 15
+
 // Ichor Spark
 export const ICHOR_SPARK_SWIPE_BASE_A = 4.75
 export const ICHOR_SPARK_SWIPE_BASE_B = 2.75
