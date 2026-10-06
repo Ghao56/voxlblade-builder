@@ -20,14 +20,14 @@ interface WeaponConditionalBoost {
 const WEAPON_CONDITIONAL_BOOSTS: WeaponConditionalBoost[] = [
   {
     perkName: 'Aggressive Personality',
-    multiplierPerPerk: 0.25,
+    multiplierPerPerk: 0.30,
     weaponTypes: ['War Hammer', 'Dual Mallets'],
     hitScope: 'm1Finisher',
     condition: 'M1 Finisher (ground slam)',
   },
   {
     perkName: 'Aggressive Personality',
-    multiplierPerPerk: 0.25,
+    multiplierPerPerk: 0.30,
     weaponTypes: ['Mallet'],
     hitScope: 'm2',
     condition: 'M2 (ground slam)',

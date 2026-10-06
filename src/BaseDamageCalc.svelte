@@ -646,7 +646,7 @@ note?: string
     const woundAmt = woundPotency > 0 ? Math.round(woundPotency * 10) : 0
 
     const lifeDrinkerHeal = lifeDrinkerAmt > 0
-      ? 0.01 * preMitBase  * lifeDrinkerAmt + 0.1
+      ? LIFESTEAL_HEAL_PCT_PER_STACK * preMitBase * lifeDrinkerAmt + LIFESTEAL_FLAT_HEAL
       : 0
 
     const siphoningRotHeal = (siphoningRotAmt > 0 && d.type === 'Poison')

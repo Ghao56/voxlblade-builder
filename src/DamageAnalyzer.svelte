@@ -4287,11 +4287,11 @@ note?: string
     }
     if (_waveRiderAmt > 0) {
       const wrScaling = _computePerkScalingMult({ water: 1.0 })
-      const pushWr = (baseDmg: number, labelSuffix: string) => {
+      const pushWr = (baseDmg: number, healAmt: number, labelSuffix: string) => {
         const srcGroup = labelSuffix === 'M2' ? 'M2' : 'WA'
         result.push({
           group: srcGroup, index: result.length, count: 1, base: baseDmg, scalingMult: wrScaling, combatMult: _perkCombatMult, effectiveMult: _perkEffectiveMult,
-          isFinisher: false, dmgTypes: { water: 1.0, heal: 0.2 }, baseDmgTypes: { water: 1.0 },
+          isFinisher: false, dmgTypes: { water: 1.0, heal: healAmt / baseDmg }, baseDmgTypes: { water: 1.0 },
           dmgTypeCombatMults: { heal: _healFinalMultiplier },
           radianceHealMult: _healDealtMultiplier,
           dmgTypeIsHeal: { heal: true },
@@ -4301,8 +4301,8 @@ note?: string
           ...(_activeBellowingEmberMult !== 1 ? { weaponBoostMult: _activeBellowingEmberMult, weaponBoostLabel: 'Bellowing Ember' } : {}),
         })
       }
-      pushWr(40, 'M2')
-      pushWr(35, 'WA')
+      pushWr(40, 5, 'M2')
+      pushWr(35, 4.5, 'WA')
     }
     if (_oceanSongAmt > 0) {
       const osScaling = _computePerkScalingMult({ water: 1.0, dexterity: 1.0 })
