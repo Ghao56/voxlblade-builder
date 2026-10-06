@@ -17,8 +17,8 @@ import {
   VALOR_SHIELD_DR_PER_STACK,
   VALOR_MAX_DR,
   VAMPIRE_DR_PER_STACK,
-  FRENZY_DR_PER_STACK,
-  FRENZY_FIXED_DR,
+  FRENZY_DT_PCT_BASE,
+  FRENZY_DT_PCT_PER_POTENCY,
   STORED_CORRUPTION_DR_PER_STACK,
   MOUNTED_DEFENSE_DR_PER_STACK,
   CARAPACE_DR_PER_STACK,
@@ -33,6 +33,7 @@ interface DefensivePerkSourceContext {
   adaptivePlateTriggered: boolean
   inDarkness: boolean
   rageActive: boolean
+  ragePotency: number
   isMounted: boolean
   hasProtection: boolean
   uniqueDebuffCount: number
@@ -119,11 +120,13 @@ const DEFENSIVE_PERK_SOURCES: DefensivePerkSource[] = [
   },
   {
     perkName: 'Frenzy',
-    drPctPerStack: FRENZY_DR_PER_STACK,
-    fixedDefPct: FRENZY_FIXED_DR,
+    drPctFn: (_amt, ctx) => {
+      const pot = ctx.ragePotency ?? 0
+      return FRENZY_DT_PCT_BASE + FRENZY_DT_PCT_PER_POTENCY * pot
+    },
     label: 'Frenzy (Self)',
     conditionLabel: 'While Rage is active · flat, regardless of perk amount',
-    dependsOn: ctx => ctx.rageActive,
+    dependsOn: ctx => ctx.rageActive && (ctx.ragePotency ?? 0) >= 0,
     potencyCapped: true,
   },
   {
@@ -162,13 +165,14 @@ export function getActiveDefensivePerkSources(
   adaptivePlateTriggered: boolean = false,
   inDarkness: boolean = true,
   rageActive: boolean = false,
+  ragePotencyVal: number = 0,
   isMounted: boolean = false,
   hasProtection: boolean = false,
   uniqueDebuffCount: number = 0,
   airPressurePotency: number = 0,
 ): Array<{ name: string; defPct: number; isFlat?: boolean; condition: string; potencyCapped?: boolean; grantsStunImmunity?: boolean }> {
   const out: Array<{ name: string; defPct: number; isFlat?: boolean; condition: string; potencyCapped?: boolean; grantsStunImmunity?: boolean }> = []
-  const ctx: DefensivePerkSourceContext = { hpFillPct, adaptivePlateTriggered, inDarkness, rageActive, isMounted, hasProtection, uniqueDebuffCount, airPressurePotency }
+  const ctx: DefensivePerkSourceContext = { hpFillPct, adaptivePlateTriggered, inDarkness, rageActive, ragePotency: ragePotencyVal, isMounted, hasProtection, uniqueDebuffCount, airPressurePotency }
 
   for (const def of DEFENSIVE_PERK_SOURCES) {
     const amt = perks[def.perkName] ?? 0

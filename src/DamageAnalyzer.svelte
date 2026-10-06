@@ -28,7 +28,7 @@
   import { calculateHealBoost, type HealSource } from './data/HealBoost'
   import { buildRadianceProcHit, isRadianceEligible, radianceSourceHealing } from './data/radianceProcs'
   import { RADIANCE_HOLY_SCALING, RADIANCE_LABEL, RADIANCE_COLOR, RAINSTORM_BASE_DMG, RAINSTORM_DMG_PER_STACK, RAINSTORM_BASE_HEAL, RAINSTORM_HEAL_PER_STACK, RAINSTORM_LABEL, REJUVENATING_FLAME_BASE_HEAL, REJUVENATING_FLAME_HEAL_PER_AMOUNT, REJUVENATING_FLAME_FIRE_SCALING, REJUVENATING_FLAME_BURN_HEAL_MULT, REJUVENATING_FLAME_BURN_AOE_PER_AMOUNT, REJUVENATING_FLAME_HEAL_LABEL } from './lib/constants/perk-base-damage'
-  import { roundMultiplier, calcWardingDebuffMultiplier, calcProcChance, applyScalingMult } from './lib/utils'
+  import { roundMultiplier, calcWardingDebuffMultiplier, calcProcChance, applyScalingMult, fmtPctVal } from './lib/utils'
   import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage, calcInoculationHeal, UNDEAD_MIGHT_SELF_DMG_FRACTION, UNDEAD_MIGHT_DR_PCT_PER_STACK, type SelfDamagePerkDef } from './data/selfDamage'
   import { resolveDamageTypes, resolveWaDamageTypeKeys, applyAirToMagicConversion, computeEffectiveWaDmgTypes, pickHighestDmgType } from './lib/damageTypeResolve'
   import { buildDmgTypeBonuses } from './lib/engine/dmgTypeBonuses'
@@ -115,6 +115,7 @@ import {
   AIR_PRESSURE_MAX_POTENCY_PER_AMOUNT,
   MAGIC_REINFORCE_DEF_PER_POTENCY,
   MAGIC_REINFORCE_MAGIC_DMG_REDUCTION_PER_POTENCY,
+  FRENZY_SPEED_PCT_PER_STACK,
 } from './lib/constants'
 
 // ── Cross-Toggle Mappings ──────────────────────────────────────────────────
@@ -162,16 +163,16 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   const _DEF_TYPE_LIST = TRACKED_TYPES_WITH_TRUE
   
   $: _activeDefensivePerkSources = computeActiveDefensivePerkSources(
-    __daResultVal, __daBuildVal, perks, _hpFillPct, _adaptivePlateTriggered, _carapaceDisabled, _effectiveInDarkness, _ragePotency, mountActive, _dummyDebuffs, disabledDebuffs,
+    __daResultVal, __daBuildVal, perks, _hpFillPct, _adaptivePlateTriggered, _carapaceDisabled, _effectiveInDarkness, _ragePotency, _ragePotency > 0, mountActive, _dummyDebuffs, disabledDebuffs,
   )
   function computeActiveDefensivePerkSources(
     resultVal: typeof __daResultVal, buildVal: typeof __daBuildVal,
-    perka: Record<string,number>, hpFillPct: number, adaptivePlateTriggered: boolean, carapaceDisabled: boolean, effectiveInDarkness: boolean, ragePotency: number, mountActive: boolean, dummyDebuffs: any[], disabledDebuffs: Set<string>,
+    perka: Record<string,number>, hpFillPct: number, adaptivePlateTriggered: boolean, carapaceDisabled: boolean, effectiveInDarkness: boolean, ragePotency: number, rageActive: boolean, mountActive: boolean, dummyDebuffs: any[], disabledDebuffs: Set<string>,
   ) {
     const _hasProtection = (resultVal.stats.protection ?? 0) > 0
     const _debuffCount = dummyDebuffs.filter((d: any) => !disabledDebuffs.has(d.name)).length
     let baseSources = getActiveDefensivePerkSources(
-      perka, hpFillPct, adaptivePlateTriggered, effectiveInDarkness, ragePotency > 0, mountActive, _hasProtection, _debuffCount, buildVal.airPressurePotency ?? 0
+      perka, hpFillPct, adaptivePlateTriggered, effectiveInDarkness, rageActive, ragePotency, mountActive, _hasProtection, _debuffCount, buildVal.airPressurePotency ?? 0
     )
     if (carapaceDisabled) {
       baseSources = baseSources.filter(s => s.name !== 'Carapace')
@@ -2114,7 +2115,13 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     const frenzyStacks = perks['Frenzy'] ?? 0
     if (frenzyStacks > 0 && _ragePotency > 0) {
       const pct = calcFrenzyPct(_ragePotency) * frenzyStacks
-      entries.push({ sourceName: 'Frenzy', rawMultiplier: roundMultiplier(1 + pct), condition: `Rage active · potency ${Math.round(_ragePotency * 1000) / 1000}`, type: 'dmg' })
+      const dtPct = _activeDefensivePerkSources.find(s => s.name === 'Frenzy (Self)')?.defPct ?? 0
+      entries.push({
+        sourceName: 'Frenzy',
+        rawMultiplier: roundMultiplier(1 + pct),
+        condition: `Increases damage dealt by ${fmtPctVal(pct * 100)}\nIncreases damage taken by ${fmtPctVal(dtPct)}\nIncreases movement speed by ${fmtPctVal(FRENZY_SPEED_PCT_PER_STACK * frenzyStacks)}`,
+        type: 'dmg',
+      })
     }
 
     const darkOneStacks = perks['Dark One'] ?? 0
@@ -5091,7 +5098,7 @@ $: _groupedSelfDamageSources = (() => {
               {entry.sourceName === 'Level Damage' ? `LV${$build.level ?? 80}` : entry.sourceName}
             </span>
             <span class="da-bc-val">{disabled ? '—' : `×${+entry.rawMultiplier.toFixed(4)}`}</span>
-            {#if entry.condition || _procScaledConditions.has(entry.sourceName)}<span class="da-bc-cond">{_procScaledConditions.get(entry.sourceName) ?? entry.condition}</span>{/if}
+            {#if entry.condition || _procScaledConditions.has(entry.sourceName)}<span class="da-bc-cond" class:da-bc-cond--wide={entry.sourceName === 'Frenzy'}>{_procScaledConditions.get(entry.sourceName) ?? entry.condition}</span>{/if}
             <span class="da-bc-toggle">{disabled ? 'OFF' : 'ON'}</span>
           </button>
           <span class="da-chain-op">×</span>
@@ -5126,7 +5133,7 @@ $: _groupedSelfDamageSources = (() => {
                 {entry.sourceName === 'Level Damage' ? `LV${$build.level ?? 80}` : entry.sourceName}
               </span>
               <span class="da-bc-val">{disabled ? '—' : `×${+entry.rawMultiplier.toFixed(4)}`}</span>
-              {#if entry.condition || _procScaledConditions.has(entry.sourceName)}<span class="da-bc-cond">{_procScaledConditions.get(entry.sourceName) ?? entry.condition}</span>{/if}
+              {#if entry.condition || _procScaledConditions.has(entry.sourceName)}<span class="da-bc-cond" class:da-bc-cond--wide={entry.sourceName === 'Frenzy'}>{_procScaledConditions.get(entry.sourceName) ?? entry.condition}</span>{/if}
               <span class="da-bc-toggle">{disabled ? 'OFF' : 'ON'}</span>
             </button>
             <span class="da-chain-op">×</span>
@@ -8076,6 +8083,7 @@ $: _groupedSelfDamageSources = (() => {
   .da-bc-val  { font-size: .82rem; font-weight: 800; color: #fb923c; }
   .da-boost-chip--lvl .da-bc-val { color: #fbbf24; }
   .da-bc-cond { font-size: .55rem; color: var(--ink, #e8e4da); opacity: .75; font-style: italic; text-align: center; max-width: 80px; }
+  .da-bc-cond--wide { max-width: 250px; white-space: pre-line; }
   .da-chain-op { font-size: .8rem; color: var(--ink-muted, #8a8d85); opacity: .5; font-weight: 700; transition: opacity var(--duration-fast) var(--ease-out); }
   .da-chain-result { font-size: 1rem; font-weight: 900; color: #fb923c; background: rgba(251,146,60,.1); padding: 4px 10px; border-radius: 8px; transition: color var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out); }
   .da-heal-label { font-size: .62rem; font-weight: 700; color: #4ade80; text-transform: uppercase; letter-spacing: .1em; padding: 4px 8px; background: rgba(74,222,128,.08); border-radius: 6px; border: 1px solid rgba(74,222,128,.2); flex-shrink: 0; }

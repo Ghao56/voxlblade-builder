@@ -1,5 +1,7 @@
 export const FRENZY_BASE = 0.05
 export const FRENZY_RAGE_MULT = 1 / 6
+/** Movement speed % granted per Frenzy perk amount while Rage is active. */
+export const FRENZY_SPEED_PCT_PER_STACK = 5
 
 export const MINION_ABSORPTION_MULT = 0.2
 

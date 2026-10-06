@@ -110,18 +110,6 @@ const HEAL_SCALING_DEFS: HealBoostDef[] = [
     },
   },
   {
-    sourceName: 'Frenzy (Self)',
-    sourceType: 'perk',
-    direction: 'received',
-    calcFn: (ctx) => {
-      const stacks = ctx.perks['Frenzy'] ?? 0
-      if (stacks > 0 && (ctx.ragePotency ?? 0) > 0) {
-        return { multiplier: 0.5, condition: 'while you have Rage' }
-      }
-      return null
-    },
-  },
-  {
     sourceName: 'Dragon Infusion',
     sourceType: 'rune',
     calcFn: (ctx) => {
