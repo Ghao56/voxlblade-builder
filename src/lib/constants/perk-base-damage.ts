@@ -332,6 +332,11 @@ export const REJUVENATING_FLAME_BURN_AOE_PER_AMOUNT = 0.5
 export const REJUVENATING_FLAME_LABEL = 'Rejuvenating Flame'
 export const REJUVENATING_FLAME_HEAL_LABEL = 'Rejuvenating Flame Heal'
 
+// Hex Shield (neutral status perk): blocks one debuff per stack and heals
+// flat HP when it blocks. No stat scaling, no Proc Coefficient, absent from
+// COMPATIBLE_HEAL_SOURCE_PATTERNS (no Radiance burst, no heal crits).
+export const HEX_SHIELD_HEAL_PER_STACK = 2.5
+
 // Radiance
 export const RADIANCE_LABEL = 'Radiance'
 export const RADIANCE_COLOR = '#ffe9a8'

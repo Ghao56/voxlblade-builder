@@ -109,6 +109,7 @@ import {
   LIGHT_BEARER_PROC_CHANCE,
   LIGHT_BEARER_BASE_HEAL,
   LIGHT_BEARER_HEAL_PER_AMOUNT,
+  HEX_SHIELD_HEAL_PER_STACK,
   DOT_EXCLUDED_PERK_BONUSES,
   VAPOR_AEGIS_FIRE_WATER_DR_PCT,
   QUEENS_POWER_ATK_SPD_BASE, QUEENS_POWER_ATK_SPD_PER_TENTH_POTENCY,
@@ -4547,6 +4548,26 @@ note?: string
 label: REJUVENATING_FLAME_HEAL_LABEL,
 isHeal: true,
 alliesOnly: true,
+      })
+    }
+
+    // ── Hex Shield ──────────────────────────────────────────────
+    // Neutral status perk: blocks one debuff per stack and heals 2.5 HP per
+    // stack when it blocks. Flat heal, no stat scaling, no Proc Coefficient,
+    // absent from COMPATIBLE_HEAL_SOURCE_PATTERNS (no Radiance burst, no heal
+    // crits). One row per block event; shown whenever the perk is ranked.
+    const _hexShieldAmt = perks['Hex Shield'] ?? 0
+    if (_hexShieldAmt > 0) {
+      result.push({
+        group: 'Perk', index: result.length, count: 1,
+        base: HEX_SHIELD_HEAL_PER_STACK * _hexShieldAmt,
+        scalingMult: 1, combatMult: _healFinalMultiplier,
+        radianceHealMult: _healDealtMultiplier,
+        isFinisher: false, dmgTypes: { heal: 1.0 },
+        dmgTypeIsCritExempt: { heal: true },
+        procCoefficient: { type: 'noProc' },
+        label: 'Hex Shield Heal',
+        isHeal: true,
       })
     }
 

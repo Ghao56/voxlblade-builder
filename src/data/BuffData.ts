@@ -721,14 +721,20 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
     effectUnit: 'flat',
   },
+  Autoparry: {
+    name: 'Autoparry',
+    color: '#fc5003',
+    description: 'Autoparry any attack that hits you.',
+    effectPerTenthPotency: 0,
+    effectUnit: 'flat',
+    potencyCapped: true,
+  },
+  // Plain description only: the per-block heal is reported by the damage
+  // calculator (DamageAnalyzer "Hex Shield Heal" row), not the buff chip.
   'Hex Shield': {
     name: 'Hex Shield',
     color: '#00fd66',
     description: 'Block the next debuff you receive and heal.',
-    dynamicDescription: (_perks, potency) => {
-      const heal = potency * 2.5
-      return `Blocks ${potency} debuff(s). Heals ${heal} HP on block.`
-    },
     effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
     effectUnit: 'flat',
     isNeutral: true,
@@ -1588,6 +1594,19 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       duration: 10,
       condition: 'On debuff block',
       sourceName: 'Hex Shield',
+      sourceType: 'perk',
+    },
+  ],
+  // Potency = 2 + perkAmount (floors naturally: perk ranks are whole numbers),
+  // duration = 10 + 2 * perkAmount. Purely a status display — it deals no
+  // damage, so it never feeds the damage math.
+  'Heightened Reflexes': (amount) => [
+    {
+      buffName: 'Autoparry',
+      potency: Math.floor(2 + amount),
+      duration: 10 + 2 * amount,
+      condition: 'On kill',
+      sourceName: 'Heightened Reflexes',
       sourceType: 'perk',
     },
   ],
