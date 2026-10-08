@@ -3,7 +3,7 @@ import { svelte } from '@sveltejs/vite-plugin-svelte'
 import { VitePWA } from 'vite-plugin-pwa'
 import { visualizer } from 'rollup-plugin-visualizer'
 
-const basePath = process.env.VITE_BASE_PATH || '/voxlblade-builder/'
+const basePath = process.env.VITE_BASE_PATH || '/'
 
 export default defineConfig({
 

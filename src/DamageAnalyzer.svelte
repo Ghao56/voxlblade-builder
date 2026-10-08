@@ -4561,7 +4561,7 @@ alliesOnly: true,
       result.push({
         group: 'Perk', index: result.length, count: 1,
         base: HEX_SHIELD_HEAL_PER_STACK * _hexShieldAmt,
-        scalingMult: 1, combatMult: _healFinalMultiplier,
+        scalingMult: 1, combatMult: _healFinalMultiplierNoLevel,
         radianceHealMult: _healDealtMultiplier,
         isFinisher: false, dmgTypes: { heal: 1.0 },
         dmgTypeIsCritExempt: { heal: true },
@@ -7954,15 +7954,13 @@ $: _groupedSelfDamageSources = (() => {
         {#each _regenHealScalingBreakdown.rows as row}
           <ScalingBreakdownRow {row} useRoundMultiplier={true} showZeroBoost={true} />
         {/each}
-        <div class="ds-row ds-row--total" style="background:rgba(74,222,128,.07);border-color:rgba(74,222,128,.18)">
-          <div class="ds-col ds-col--type ds-total-label" style="color:#4ade80">Total</div>
-          <div class="ds-col ds-col--val"></div>
-          <div class="ds-col ds-col--op"></div>
-          <div class="ds-col ds-col--boost"></div>
-          <div class="ds-col ds-col--op">=</div>
-          <div class="ds-col ds-col--contrib">
-            <span class="ds-total-pct" style="color:#4ade80;text-shadow:0 0 10px rgba(74,222,128,.4)">×{+_regenHealScalingBreakdown.multiplier.toFixed(4)}</span>
+        <div class="ds-result-row" style="border-color: rgba(74, 222, 128, 0.2); background: rgba(74, 222, 128, 0.06); margin-top: 8px;">
+          <div style="display:flex;flex-direction:column;gap:2px;flex:1;">
+            <span class="ds-result-label" style="color: rgb(74, 222, 128);">Heal Multiplier</span>
+            <span class="ds-applies-to">{_regenHealScalingBreakdown.label}</span>
           </div>
+          <span class="ds-result-eq">Multiplier =</span>
+          <span class="ds-result-val" style="color: rgb(74, 222, 128); text-shadow: rgba(74, 222, 128, 0.4) 0px 0px 12px;">×{+_regenHealScalingBreakdown.multiplier.toFixed(4)}</span>
         </div>
       </div>
     </div>
