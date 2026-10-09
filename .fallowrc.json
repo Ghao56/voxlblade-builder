@@ -67,6 +67,14 @@
     {
       "file": "src/lib/ui/RollValue.svelte",
       "exports": ["*"]
+    },
+    {
+      "file": "src/BaseDamageCalc.svelte",
+      "exports": ["*"]
+    },
+    {
+      "file": "src/lib/damageTypeResolve.ts",
+      "exports": ["*"]
     }
   ]
 }

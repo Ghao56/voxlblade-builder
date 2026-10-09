@@ -64,7 +64,7 @@ export const REINFORCE_RUNE_DURATION = 20
 export const TAUNTING_RUNE_DURATION = 10
 export const GLACIAL_SHELL_SHIELD_POTENCY = 50
 export const GLACIAL_SHELL_DURATION = 20
-export const GLACIAL_SHELL_RECOVERY_PCT = 30
+const GLACIAL_SHELL_RECOVERY_PCT = 30
 export const ELECTRO_SHIELD_POTENCY = 0
 export const ELECTRO_SHIELD_DURATION = 5
 export const ELECTRO_SHIELD_MAX_STACKS = 4
@@ -112,7 +112,7 @@ const TRUE_BALANCE_RAGE_DURATION_BASE = 3
 const TRUE_BALANCE_INSPIRED_DURATION_BASE = 4
 
 // PERK_BUFFS factory constants
-export const PERFECTION_POTENCY_PER_AMOUNT = 5
+const PERFECTION_POTENCY_PER_AMOUNT = 5
 export const BOUNCE_MOMENTUM_BUFF_POTENCY = 1.0
 export const BOUNCE_MOMENTUM_DURATION_PER_AMOUNT = 3
 export const TOADZERKER_BUFF_POTENCY = 0.2
@@ -264,5 +264,5 @@ export const CINDER_SURGE_POTENCY_PER_AMOUNT = 0.05
 export const CINDER_SURGE_DURATION = 3
 // Bonus Fire damage (as % of your damage, counted as your damage) per 1 potency.
 // The spec is quoted per tenth of potency: 0.05 per 0.1 potency.
-export const CINDER_SURGE_FIRE_PCT_PER_POTENCY = 0.5
+const CINDER_SURGE_FIRE_PCT_PER_POTENCY = 0.5
 export const CINDER_SURGE_FIRE_PCT_PER_TENTH_POTENCY = 0.05

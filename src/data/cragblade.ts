@@ -8,7 +8,7 @@ export const CRAGBLADE_ATTACK_SPEED_MULT = 0.75
 export const CRAGBLADE_ATTACK_SPEED_EXEMPT_SOURCES = ['Delta Drill']
 
 export const CRAGBLADE_M1_M2_DMG_MULT = 1 + CRAGBLADE_M1_M2_DMG_PCT / 100
-export const CRAGBLADE_POISE_DMG_MULT = 1 + CRAGBLADE_POISE_DMG_PCT / 100
+const CRAGBLADE_POISE_DMG_MULT = 1 + CRAGBLADE_POISE_DMG_PCT / 100
 
 export interface CragbladeTypeConversion {
   /** Weapon type whose M1/M2 damage tables replace the equipped weapon's. */
@@ -17,7 +17,7 @@ export interface CragbladeTypeConversion {
   retainM2: boolean
 }
 
-export const CRAGBLADE_WEAPON_TYPE_MAP: Record<string, CragbladeTypeConversion> = {
+const CRAGBLADE_WEAPON_TYPE_MAP: Record<string, CragbladeTypeConversion> = {
   'Dagger':                { type: 'Mallet',                retainM2: false },
   '1-Handed Sword':        { type: 'Mallet',                retainM2: false },
   'Spear':                 { type: 'War Hammer',            retainM2: false },

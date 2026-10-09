@@ -95,7 +95,7 @@ const DEFAULT_BUILD: BuildState = {
   weaponCharge: 100,
   retaliateCharge: 100,
   perfectionStacks: 5,
-  vitalMistPotency: 0,
+  vitalMistPotency: 50,
   vitalMistBlocking: false,
   voxos: 100000,
 }
@@ -162,6 +162,7 @@ function swapEnchantments(slotA: EnchantSlot, slotB: EnchantSlot) {
 
 export const orkBuffTenacity = writable(0)
 
+// fallow-ignore-next-line unused-export
 export const buildReplaceSeq = writable(0)
 export function replaceBuild(state: BuildState) {
   build.set(state)

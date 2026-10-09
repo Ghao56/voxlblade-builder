@@ -13,7 +13,7 @@ export const DOT_SCALINGS: Record<string, Record<string, number>> = {
 }
 
 /** Maps each DoT type to the damage type used for defense mitigation. */
-export const DOT_DMG_TYPE_MAP: Record<string, string> = {
+const DOT_DMG_TYPE_MAP: Record<string, string> = {
   Bleed: 'physical',
   Burn: 'fire',
   Poison: 'hex',
@@ -21,12 +21,12 @@ export const DOT_DMG_TYPE_MAP: Record<string, string> = {
 }
 
 /** Ghastly Rot converts Poison to the True damage type while owned. */
-export function isPoisonConvertedToTrue(ghastlyRotAmt: number): boolean {
+function isPoisonConvertedToTrue(ghastlyRotAmt: number): boolean {
   return ghastlyRotAmt > 0
 }
 
 /** Cursed Flames splits Burn into 0.5 Fire / 0.5 Hex while owned. */
-export function isBurnSplitByCursedFlames(cursedFlamesAmt: number): boolean {
+function isBurnSplitByCursedFlames(cursedFlamesAmt: number): boolean {
   return cursedFlamesAmt > 0
 }
 

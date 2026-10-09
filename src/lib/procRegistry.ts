@@ -30,7 +30,7 @@ import { STORM_CALLER_PROC_CHANCE, LIGHT_BEARER_PROC_CHANCE, TRUE_MOON_PROC_CHAN
  * is either active (scale 1) or blocked (scale 0). Base percentages and any
  * chance reduction math belong to the game's random rollout, not this sim.
  */
-export interface ProcEffectDef {
+interface ProcEffectDef {
   /** How the effect's proc chance reacts to the hit's coefficient. */
   chanceScaling?: ProcScalingType
   /** Base proc chance (0..1) for reference; not used for expected-value damage. */
@@ -39,7 +39,7 @@ export interface ProcEffectDef {
   blockedOnNoProc?: boolean
 }
 
-export const PROC_EFFECT_DEFS: Readonly<Record<string, ProcEffectDef>> = {
+const PROC_EFFECT_DEFS: Readonly<Record<string, ProcEffectDef>> = {
   // Non-chance effects: can never activate on a NoProc instance.
   'Blood Thirsty': { blockedOnNoProc: true },
   'Venom Eater': { blockedOnNoProc: true },
@@ -85,16 +85,11 @@ export function procChanceScale(tag: string, pc: ProcCoefficient | undefined): n
   return procScaleForDefinition(def, tag, pc)
 }
 
-/** Behavior of a single effect definition (exposed for tests / future effect defs). */
-export function procScaleForDefinition(def: ProcEffectDef, _tag: string, pc: ProcCoefficient | undefined): number {
+/** Behavior of a single effect definition. */
+function procScaleForDefinition(def: ProcEffectDef, _tag: string, pc: ProcCoefficient | undefined): number {
   const scaling = def.chanceScaling ?? (def.blockedOnNoProc ? undefined : 'normal')
   // PositiveOnly/ignore-scaled effects (Carrying Winds, Golden Crits, ...) never drop
   // their chance, even on a no-proc hit. Everything else requires a proc-capable hit.
   if (scaling === 'ignore' || scaling === 'positiveOnly') return 1
   return canProc(pc) ? 1 : 0
-}
-
-/** Whether the effect can activate for a hit with the given -proc coefficient. */
-export function canProcEffect(tag: string, pc: ProcCoefficient | undefined): boolean {
-  return procChanceScale(tag, pc) > 0
 }

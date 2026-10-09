@@ -4900,6 +4900,121 @@ $: _groupedSelfDamageSources = (() => {
 </script>
 
 <div class="da-root">
+  {#snippet scalingHead()}
+  <div class="ds-head">
+    <div class="ds-col ds-col--type">Scaling</div>
+    <div class="ds-col ds-col--val">Scaling Val</div>
+    <div class="ds-col ds-col--op"></div>
+    <div class="ds-col ds-col--boost">Your Boost</div>
+    <div class="ds-col ds-col--op"></div>
+    <div class="ds-col ds-col--contrib">Contribution</div>
+  </div>
+  {/snippet}
+  {#snippet scalingRow(row: any)}
+  <div class="ds-row">
+    <div class="ds-col ds-col--type">
+      <span class="ds-dot" style="background:{row.color}"></span>
+      <span style="color:{row.color}">{row.label ?? (row.key.charAt(0).toUpperCase() + row.key.slice(1))}</span>
+    </div>
+    <div class="ds-col ds-col--val">
+      <span class="ds-num" style="color:{row.color}">{roundMultiplier(row.scalingVal)}</span>
+    </div>
+    <div class="ds-col ds-col--op">×</div>
+    <div class="ds-col ds-col--boost">
+      {#if row.boostPct !== 0}
+        <span class="ds-boost" style={row.boostPct < 0 ? 'color: #cf6679;' : ''}>{row.boostPct > 0 ? '+' : ''}{roundMultiplier(row.boostPct)}%</span>
+      {:else}
+        <span class="ds-boost ds-boost--zero">+0%</span>
+      {/if}
+    </div>
+    <div class="ds-col ds-col--op">=</div>
+    <div class="ds-col ds-col--contrib">
+      <span class="ds-contrib" class:ds-contrib--zero={row.contribution === 0}
+        style={row.contribution > 0 ? `color:${row.color}` : row.contribution < 0 ? 'color: #cf6679;' : ''}>
+        {row.contribution > 0 ? '+' : ''}{row.contribution}%
+      </span>
+    </div>
+  </div>
+  {/snippet}
+  {#snippet scalingTotal(bd: any, flex = false)}
+  <div class="ds-row">
+    <div class="ds-col ds-col--type" style={flex ? 'flex:1.2;' : undefined}>
+      <span class="ds-dot" style="background:#34d399"></span>
+      <span style="color:#34d399">Total</span>
+    </div>
+    <div class="ds-col ds-col--val" style={flex ? 'flex:1;' : undefined}></div>
+    <div class="ds-col ds-col--op" style={flex ? 'flex:0.3;' : undefined}></div>
+    <div class="ds-col ds-col--boost" style={flex ? 'flex:1.2;' : undefined}></div>
+    <div class="ds-col ds-col--op" style={flex ? 'flex:0.3;' : undefined}>=</div>
+    <div class="ds-col ds-col--contrib" style={flex ? 'flex:1;' : undefined}>
+      <span class="ds-contrib" class:ds-contrib--zero={bd.totalEffectivePct === 0} style={bd.totalEffectivePct < 0 ? 'color:#cf6679' : 'color:#34d399'}>{bd.totalEffectivePct > 0 ? '+' : ''}{bd.totalEffectivePct}%</span>
+    </div>
+  </div>
+  {/snippet}
+  {#snippet scalingDotHead(dt: any, dc: any, tc: any)}
+  <div class="ds-head">
+    <div class="ds-col ds-col--type" style="flex:1.2;">
+      <span class="ds-dot" style="background:{dc}"></span>
+      <span style="color:{tc}">{dt.type}</span>
+    </div>
+    <div class="ds-col ds-col--val" style="flex:1;">Scaling</div>
+    <div class="ds-col ds-col--op" style="flex:0.3;"></div>
+    <div class="ds-col ds-col--boost" style="flex:1.2;">Your Boost</div>
+    <div class="ds-col ds-col--op" style="flex:0.3;"></div>
+    <div class="ds-col ds-col--contrib" style="flex:1;">Contribution</div>
+  </div>
+  {/snippet}
+  {#snippet scalingDotRow(row: any)}
+  <div class="ds-row">
+    <div class="ds-col ds-col--type" style="flex:1.2;">
+      <span class="ds-dot" style="background:{row.color}"></span>
+      <span style="color:{row.color}">{row.key.charAt(0).toUpperCase() + row.key.slice(1)}</span>
+    </div>
+    <div class="ds-col ds-col--val" style="flex:1;">
+      <span class="ds-num" style="color:{row.color}">{roundMultiplier(row.scalingVal)}</span>
+    </div>
+    <div class="ds-col ds-col--op" style="flex:0.3;">×</div>
+    <div class="ds-col ds-col--boost" style="flex:1.2;">
+      {#if row.boostPct !== 0}
+        <span class="ds-boost">{row.boostPct > 0 ? '+' : ''}{roundMultiplier(row.boostPct)}%</span>
+      {:else}
+        <span class="ds-boost ds-boost--zero">+0%</span>
+      {/if}
+    </div>
+    <div class="ds-col ds-col--op" style="flex:0.3;">=</div>
+    <div class="ds-col ds-col--contrib" style="flex:1;">
+      <span class="ds-contrib" class:ds-contrib--zero={row.contribution === 0} style={row.contribution > 0 ? `color:${row.color}` : row.contribution < 0 ? 'color: #cf6679;' : ''}>
+        {row.contribution > 0 ? '+' : ''}{row.contribution}%
+      </span>
+    </div>
+  </div>
+  {/snippet}
+  {#snippet plainHits(hits: any[])}
+    {#each hits as hit, hi}
+      {#if hi > 0}<span class="da-hit-divider">›</span>{/if}
+      <div class="da-plain-pill">
+        <span class="da-plain-num">{typeof hit === 'number' ? hit : hit.n}</span>
+        {#if typeof hit !== 'number' && hit.count > 1}
+          <span class="da-plain-count">×{hit.count}</span>
+        {/if}
+      </div>
+    {/each}
+  {/snippet}
+  {#snippet healScalingBody(bd: any)}
+    {#each bd.rows as row}
+      <ScalingBreakdownRow {row} useRoundMultiplier={true} showZeroBoost={true} />
+    {/each}
+    <div class="ds-row ds-row--total" style="background:rgba(56,189,248,.07);border-color:rgba(56,189,248,.18)">
+      <div class="ds-col ds-col--type ds-total-label" style="color:#38bdf8">Total</div>
+      <div class="ds-col ds-col--val"></div>
+      <div class="ds-col ds-col--op"></div>
+      <div class="ds-col ds-col--boost"></div>
+      <div class="ds-col ds-col--op">=</div>
+      <div class="ds-col ds-col--contrib">
+        <span class="ds-total-pct" style="color:#38bdf8;text-shadow:0 0 10px rgba(56,189,248,.4)">×{+bd.multiplier.toFixed(4)}</span>
+      </div>
+    </div>
+  {/snippet}
   <BaseDamageCalc {boosts} {crit} {stats} {disabledBoosts} {activeFinalMult}
     weaponHits={_bdcWeaponHits}
     perkDmgTypeBonuses={_perkDmgTypeBonuses}
@@ -5725,15 +5840,7 @@ $: _groupedSelfDamageSources = (() => {
               <span class="da-wbd-na">N/A</span>
             </div>
           {:else if row.m1}
-            {#each row.m1 as hit, hi}
-              {#if hi > 0}<span class="da-hit-divider">›</span>{/if}
-              <div class="da-plain-pill">
-                <span class="da-plain-num">{typeof hit === 'number' ? hit : hit.n}</span>
-                {#if typeof hit !== 'number' && hit.count > 1}
-                  <span class="da-plain-count">×{hit.count}</span>
-                {/if}
-              </div>
-            {/each}
+            {@render plainHits(row.m1)}
           {/if}
         </div>
       </div>
@@ -5769,15 +5876,7 @@ $: _groupedSelfDamageSources = (() => {
               {/if}
             {/each}
           {:else if row.m2}
-            {#each row.m2 as hit, hi}
-              {#if hi > 0}<span class="da-hit-divider">›</span>{/if}
-              <div class="da-plain-pill">
-                <span class="da-plain-num">{typeof hit === 'number' ? hit : hit.n}</span>
-                {#if typeof hit !== 'number' && hit.count > 1}
-                  <span class="da-plain-count">×{hit.count}</span>
-                {/if}
-              </div>
-            {/each}
+            {@render plainHits(row.m2)}
           {:else}
             <span class="da-wbd-na">N/A</span>
           {/if}
@@ -5919,15 +6018,7 @@ $: _groupedSelfDamageSources = (() => {
               {/if}
             {/each}
           {:else if row.m2}
-            {#each row.m2 as hit, hi}
-              {#if hi > 0}<span class="da-hit-divider">›</span>{/if}
-              <div class="da-plain-pill">
-                <span class="da-plain-num">{typeof hit === 'number' ? hit : hit.n}</span>
-                {#if typeof hit !== 'number' && hit.count > 1}
-                  <span class="da-plain-count">×{hit.count}</span>
-                {/if}
-              </div>
-            {/each}
+            {@render plainHits(row.m2)}
           {:else}
             <span class="da-wbd-na">N/A</span>
           {/if}
@@ -7139,59 +7230,16 @@ $: _groupedSelfDamageSources = (() => {
   </div>
 
   <div class="ds-table">
-    <div class="ds-head">
-      <div class="ds-col ds-col--type">Scaling</div>
-      <div class="ds-col ds-col--val">Scaling Val</div>
-      <div class="ds-col ds-col--op"></div>
-      <div class="ds-col ds-col--boost">Your Boost</div>
-      <div class="ds-col ds-col--op"></div>
-      <div class="ds-col ds-col--contrib">Contribution</div>
-    </div>
+    {@render scalingHead()}
+
 
     {#each scalingBreakdown.rows as row}
-      <div class="ds-row">
-        <div class="ds-col ds-col--type">
-          <span class="ds-dot" style="background:{row.color}"></span>
-          <span style="color:{row.color}">{row.label ??(row.key.charAt(0).toUpperCase()+ row.key.slice(1))}</span>
-        </div>
-        <div class="ds-col ds-col--val">
-          <span class="ds-num" style="color:{row.color}">{roundMultiplier(row.scalingVal)}</span>
-        </div>
-        <div class="ds-col ds-col--op">×</div>
-        <div class="ds-col ds-col--boost">
-          {#if row.boostPct !== 0}
-            <span class="ds-boost" style={row.boostPct < 0 ? 'color: #cf6679;' : ''} class:ds-boost--zero={row.boostPct === 0}>
-              {row.boostPct > 0 ? '+' : ''}{roundMultiplier(row.boostPct)}%
-            </span>
-          {:else}
-            <span class="ds-boost ds-boost--zero">+0%</span>
-          {/if}
-        </div>
-        <div class="ds-col ds-col--op">=</div>
-        <div class="ds-col ds-col--contrib">
-          <span class="ds-contrib" 
-                class:ds-contrib--zero={row.contribution === 0} 
-                style={row.contribution > 0 ? `color:${row.color}` : row.contribution < 0 ? 'color: #cf6679;' : ''}>
-            {row.contribution > 0 ? '+' : ''}{row.contribution}%
-          </span>
-        </div>
-      </div>
-    {/each}
+          {@render scalingRow(row)}
+        {/each}
 
     <!-- Total row -->
-    <div class="ds-row">
-      <div class="ds-col ds-col--type">
-        <span class="ds-dot" style="background:#34d399"></span>
-        <span style="color:#34d399">Total</span>
-      </div>
-      <div class="ds-col ds-col--val"></div>
-      <div class="ds-col ds-col--op"></div>
-      <div class="ds-col ds-col--boost"></div>
-      <div class="ds-col ds-col--op">=</div>
-      <div class="ds-col ds-col--contrib">
-        <span class="ds-contrib" class:ds-contrib--zero={scalingBreakdown.totalEffectivePct === 0} style={scalingBreakdown.totalEffectivePct < 0 ? 'color:#cf6679' : 'color:#34d399'}>{scalingBreakdown.totalEffectivePct > 0 ? '+' : ''}{scalingBreakdown.totalEffectivePct}%</span>
-      </div>
-    </div>
+    {@render scalingTotal(scalingBreakdown)}
+
   </div>
 
   <!-- Multiplier result -->
@@ -7216,42 +7264,10 @@ $: _groupedSelfDamageSources = (() => {
         <span class="ds-wa-name">{_waDisplayName}</span>
       </div>
       <div class="ds-table">
-        <div class="ds-head">
-          <div class="ds-col ds-col--type">Scaling</div>
-          <div class="ds-col ds-col--val">Scaling Val</div>
-          <div class="ds-col ds-col--op"></div>
-          <div class="ds-col ds-col--boost">Your Boost</div>
-          <div class="ds-col ds-col--op"></div>
-          <div class="ds-col ds-col--contrib">Contribution</div>
-        </div>
+        {@render scalingHead()}
+
         {#each waScalingBreakdown.rows as row}
-          <div class="ds-row">
-            <div class="ds-col ds-col--type">
-              <span class="ds-dot" style="background:{row.color}"></span>
-              <span style="color:{row.color}">{(row as any).label ?? (row.key.charAt(0).toUpperCase() + row.key.slice(1))}</span>
-            </div>
-            <div class="ds-col ds-col--val">
-              <span class="ds-num" style="color:{row.color}">{roundMultiplier(row.scalingVal)}</span>
-            </div>
-            <div class="ds-col ds-col--op">×</div>
-            <div class="ds-col ds-col--boost">
-              {#if row.boostPct !== 0}
-                <span class="ds-boost" style={row.boostPct < 0 ? 'color: #cf6679;' : ''}>
-                  {row.boostPct > 0 ? '+' : ''}{roundMultiplier(row.boostPct)}%
-                </span>
-              {:else}
-                <span class="ds-boost ds-boost--zero">+0%</span>
-              {/if}
-            </div>
-            <div class="ds-col ds-col--op">=</div>
-            <div class="ds-col ds-col--contrib">
-              <span class="ds-contrib" 
-                    class:ds-contrib--zero={row.contribution === 0}
-                    style={row.contribution > 0 ? `color:${row.color}` : row.contribution < 0 ? 'color: #cf6679;' : ''}>
-                {row.contribution > 0 ? '+' : ''}{row.contribution}%
-              </span>
-            </div>
-          </div>
+          {@render scalingRow(row)}
         {/each}
         <div class="ds-row ds-row--total">
           <div class="ds-col ds-col--type ds-total-label">Total</div>
@@ -7291,14 +7307,8 @@ $: _groupedSelfDamageSources = (() => {
         <span class="ds-wa-name">{selectedWA.name} (Bomber Charge)</span>
       </div>
       <div class="ds-table">
-        <div class="ds-head">
-          <div class="ds-col ds-col--type">Scaling</div>
-          <div class="ds-col ds-col--val">Scaling Val</div>
-          <div class="ds-col ds-col--op"></div>
-          <div class="ds-col ds-col--boost">Your Boost</div>
-          <div class="ds-col ds-col--op"></div>
-          <div class="ds-col ds-col--contrib">Contribution</div>
-        </div>
+        {@render scalingHead()}
+
         {#each Object.entries(_bomberChargeWaHit.scalings) as [key, scVal]}
           {@const statVal = (stats as Record<string, number>)[key + 'Boost'] ?? 0}
           {@const contribution = Math.round((scVal as number) * statVal * 1000) / 1000}
@@ -7357,14 +7367,8 @@ $: _groupedSelfDamageSources = (() => {
     <div class="ds-formula-hint">Effective Boost = Σ (Scaling × Boost%) → ×(1 + Effective%) when ≥ 0, × 1/(1 + |Effective%|) when &lt; 0</div>
     
     <div class="ds-table">
-      <div class="ds-head">
-        <div class="ds-col ds-col--type">Scaling</div>
-        <div class="ds-col ds-col--val">Scaling Val</div>
-        <div class="ds-col ds-col--op"></div>
-        <div class="ds-col ds-col--boost">Your Boost</div>
-        <div class="ds-col ds-col--op"></div>
-        <div class="ds-col ds-col--contrib">Contribution</div>
-      </div>
+      {@render scalingHead()}
+
 
     {#each _nonDraconicPerkEntries as entry}
         {#if Object.keys(entry.resolvedScalings ?? {}).length > 0}
@@ -7410,19 +7414,8 @@ $: _groupedSelfDamageSources = (() => {
                 </div>
               </div>
             {/each}
-            <div class="ds-row">
-              <div class="ds-col ds-col--type">
-                <span class="ds-dot" style="background:#34d399"></span>
-                <span style="color:#34d399">Total</span>
-              </div>
-              <div class="ds-col ds-col--val"></div>
-              <div class="ds-col ds-col--op"></div>
-              <div class="ds-col ds-col--boost"></div>
-              <div class="ds-col ds-col--op">=</div>
-              <div class="ds-col ds-col--contrib">
-                <span class="ds-contrib" class:ds-contrib--zero={roundMultiplier(computeScalingPct(entry.resolvedScalings)) === 0} style={computeScalingPct(entry.resolvedScalings) < 0 ? 'color:#cf6679' : 'color:#34d399'}>{computeScalingPct(entry.resolvedScalings) > 0 ? '+' : ''}{roundMultiplier(computeScalingPct(entry.resolvedScalings))}%</span>
-              </div>
-            </div>
+            {@render scalingTotal({ totalEffectivePct: computeScalingPct(entry.resolvedScalings) })}
+
           </div>
 
           <div class="ds-result-row ds-result-row--perk" style="background: rgba(251, 146, 60, 0.05); border-color: rgba(251, 146, 60, 0.15);">
@@ -7458,47 +7451,10 @@ $: _groupedSelfDamageSources = (() => {
         </div>
         <div class="ds-table ds-table--perk" style="margin-top: 5px; font-size: 0.75rem; opacity: 0.9;">
           {#each _radianceScalingBreakdown.rows as row}
-            <div class="ds-row">
-              <div class="ds-col ds-col--type">
-                <span class="ds-dot" style="background:{row.color}"></span>
-                <span style="color:{row.color}">{row.key.charAt(0).toUpperCase() + row.key.slice(1)}</span>
-              </div>
-              <div class="ds-col ds-col--val">
-                <span class="ds-num" style="color:{row.color}">{roundMultiplier(row.scalingVal)}</span>
-              </div>
-              <div class="ds-col ds-col--op">×</div>
-              <div class="ds-col ds-col--boost">
-                {#if row.boostPct !== 0}
-                  <span class="ds-boost" style={row.boostPct < 0 ? 'color: #cf6679;' : ''}>
-                    {row.boostPct > 0 ? '+' : ''}{roundMultiplier(row.boostPct)}%
-                  </span>
-                {:else}
-                  <span class="ds-boost ds-boost--zero">+0%</span>
-                {/if}
-              </div>
-              <div class="ds-col ds-col--op">=</div>
-              <div class="ds-col ds-col--contrib">
-                <span class="ds-contrib"
-                      class:ds-contrib--zero={row.contribution === 0}
-                      style={row.contribution > 0 ? `color:${row.color}` : row.contribution < 0 ? 'color: #cf6679;' : ''}>
-                  {row.contribution > 0 ? '+' : ''}{row.contribution}%
-                </span>
-              </div>
-            </div>
-          {/each}
-          <div class="ds-row">
-            <div class="ds-col ds-col--type">
-              <span class="ds-dot" style="background:#34d399"></span>
-              <span style="color:#34d399">Total</span>
-            </div>
-            <div class="ds-col ds-col--val"></div>
-            <div class="ds-col ds-col--op"></div>
-            <div class="ds-col ds-col--boost"></div>
-            <div class="ds-col ds-col--op">=</div>
-            <div class="ds-col ds-col--contrib">
-              <span class="ds-contrib" class:ds-contrib--zero={_radianceScalingBreakdown.totalEffectivePct === 0} style={_radianceScalingBreakdown.totalEffectivePct < 0 ? 'color:#cf6679' : 'color:#34d399'}>{_radianceScalingBreakdown.totalEffectivePct > 0 ? '+' : ''}{_radianceScalingBreakdown.totalEffectivePct}%</span>
-            </div>
-          </div>
+          {@render scalingRow(row)}
+        {/each}
+          {@render scalingTotal(_radianceScalingBreakdown)}
+
         </div>
 
         <div class="ds-result-row ds-result-row--perk" style="background: rgba(251, 146, 60, 0.05); border-color: rgba(251, 146, 60, 0.15);">
@@ -7517,47 +7473,10 @@ $: _groupedSelfDamageSources = (() => {
         </div>
         <div class="ds-table ds-table--perk" style="margin-top: 5px; font-size: 0.75rem; opacity: 0.9;">
           {#each _rainstormScalingBreakdown.rows as row}
-            <div class="ds-row">
-              <div class="ds-col ds-col--type">
-                <span class="ds-dot" style="background:{row.color}"></span>
-                <span style="color:{row.color}">{row.key.charAt(0).toUpperCase() + row.key.slice(1)}</span>
-              </div>
-              <div class="ds-col ds-col--val">
-                <span class="ds-num" style="color:{row.color}">{roundMultiplier(row.scalingVal)}</span>
-              </div>
-              <div class="ds-col ds-col--op">×</div>
-              <div class="ds-col ds-col--boost">
-                {#if row.boostPct !== 0}
-                  <span class="ds-boost" style={row.boostPct < 0 ? 'color: #cf6679;' : ''}>
-                    {row.boostPct > 0 ? '+' : ''}{roundMultiplier(row.boostPct)}%
-                  </span>
-                {:else}
-                  <span class="ds-boost ds-boost--zero">+0%</span>
-                {/if}
-              </div>
-              <div class="ds-col ds-col--op">=</div>
-              <div class="ds-col ds-col--contrib">
-                <span class="ds-contrib"
-                      class:ds-contrib--zero={row.contribution === 0}
-                      style={row.contribution > 0 ? `color:${row.color}` : row.contribution < 0 ? 'color: #cf6679;' : ''}>
-                  {row.contribution > 0 ? '+' : ''}{row.contribution}%
-                </span>
-              </div>
-            </div>
-          {/each}
-          <div class="ds-row">
-            <div class="ds-col ds-col--type">
-              <span class="ds-dot" style="background:#34d399"></span>
-              <span style="color:#34d399">Total</span>
-            </div>
-            <div class="ds-col ds-col--val"></div>
-            <div class="ds-col ds-col--op"></div>
-            <div class="ds-col ds-col--boost"></div>
-            <div class="ds-col ds-col--op">=</div>
-            <div class="ds-col ds-col--contrib">
-              <span class="ds-contrib" class:ds-contrib--zero={_rainstormScalingBreakdown.totalEffectivePct === 0} style={_rainstormScalingBreakdown.totalEffectivePct < 0 ? 'color:#cf6679' : 'color:#34d399'}>{_rainstormScalingBreakdown.totalEffectivePct > 0 ? '+' : ''}{_rainstormScalingBreakdown.totalEffectivePct}%</span>
-            </div>
-          </div>
+          {@render scalingRow(row)}
+        {/each}
+          {@render scalingTotal(_rainstormScalingBreakdown)}
+
         </div>
 
         <div class="ds-result-row ds-result-row--perk" style="background: rgba(251, 146, 60, 0.05); border-color: rgba(251, 146, 60, 0.15);">
@@ -7585,57 +7504,13 @@ $: _groupedSelfDamageSources = (() => {
         {@const _dc = (dt.type === 'Burn' && (perks['Cursed Flames'] ?? 0) > 0) ? (getCursedFlamesBurnGradient(perks['Cursed Flames'] ?? 0) ?? DOT_COLORS[dt.type]) : (DOT_COLORS[dt.type] ?? '#e8e4da')}
         {@const _tc = DOT_COLORS[dt.type] ?? '#e8e4da'}
         <div class="ds-table ds-table--perk" style="margin-top:6px;">
-          <div class="ds-head">
-            <div class="ds-col ds-col--type" style="flex:1.2;">
-              <span class="ds-dot" style="background:{_dc}"></span>
-              <span style="color:{_tc}">{dt.type}</span>
-            </div>
-            <div class="ds-col ds-col--val" style="flex:1;">Scaling</div>
-            <div class="ds-col ds-col--op" style="flex:0.3;"></div>
-            <div class="ds-col ds-col--boost" style="flex:1.2;">Your Boost</div>
-            <div class="ds-col ds-col--op" style="flex:0.3;"></div>
-            <div class="ds-col ds-col--contrib" style="flex:1;">Contribution</div>
-          </div>
+          {@render scalingDotHead(dt, _dc, _tc)}
+
           {#each dt.scalingRows as row}
-            <div class="ds-row">
-              <div class="ds-col ds-col--type" style="flex:1.2;">
-                <span class="ds-dot" style="background:{row.color}"></span>
-                <span style="color:{row.color}">{row.key.charAt(0).toUpperCase() + row.key.slice(1)}</span>
-              </div>
-              <div class="ds-col ds-col--val" style="flex:1;">
-                <span class="ds-num" style="color:{row.color}">{roundMultiplier(row.scalingVal)}</span>
-              </div>
-              <div class="ds-col ds-col--op" style="flex:0.3;">×</div>
-              <div class="ds-col ds-col--boost" style="flex:1.2;">
-                {#if row.boostPct !== 0}
-                  <span class="ds-boost" class:ds-boost--zero={row.boostPct === 0}>
-                    {row.boostPct > 0 ? '+' : ''}{roundMultiplier(row.boostPct)}%
-                  </span>
-                {:else}
-                  <span class="ds-boost ds-boost--zero">+0%</span>
-                {/if}
-              </div>
-              <div class="ds-col ds-col--op" style="flex:0.3;">=</div>
-              <div class="ds-col ds-col--contrib" style="flex:1;">
-                <span class="ds-contrib" class:ds-contrib--zero={row.contribution === 0} style={row.contribution > 0 ? `color:${row.color}` : row.contribution < 0 ? 'color: #cf6679;' : ''}>
-                  {row.contribution > 0 ? '+' : ''}{row.contribution}%
-                </span>
-              </div>
-            </div>
+            {@render scalingDotRow(row)}
           {/each}
-          <div class="ds-row">
-            <div class="ds-col ds-col--type" style="flex:1.2;">
-              <span class="ds-dot" style="background:#34d399"></span>
-              <span style="color:#34d399">Total</span>
-            </div>
-            <div class="ds-col ds-col--val" style="flex:1;"></div>
-            <div class="ds-col ds-col--op" style="flex:0.3;"></div>
-            <div class="ds-col ds-col--boost" style="flex:1.2;"></div>
-            <div class="ds-col ds-col--op" style="flex:0.3;">=</div>
-            <div class="ds-col ds-col--contrib" style="flex:1;">
-              <span class="ds-contrib" class:ds-contrib--zero={dt.totalEffectivePct === 0} style={dt.totalEffectivePct < 0 ? 'color:#cf6679' : 'color:#34d399'}>{dt.totalEffectivePct > 0 ? '+' : ''}{dt.totalEffectivePct}%</span>
-            </div>
-          </div>
+          {@render scalingTotal(dt, true)}
+
         </div>
         <div class="ds-result-row ds-result-row--perk" style="background:rgba(251,146,60,.05);border-color:rgba(251,146,60,.15);">
           <div style="display:flex;flex-direction:column;gap:2px;flex:1;">
@@ -7653,57 +7528,13 @@ $: _groupedSelfDamageSources = (() => {
         {@const _tc = DOT_COLORS[dt.type] ?? '#e8e4da'}
         {#if i > 0}<div class="da-perk-scaling-divider"></div>{/if}
         <div class="ds-table ds-table--perk" style="margin-top:6px;">
-          <div class="ds-head">
-            <div class="ds-col ds-col--type" style="flex:1.2;">
-              <span class="ds-dot" style="background:{_dc}"></span>
-              <span style="color:{_tc}">{dt.type}</span>
-            </div>
-            <div class="ds-col ds-col--val" style="flex:1;">Scaling</div>
-            <div class="ds-col ds-col--op" style="flex:0.3;"></div>
-            <div class="ds-col ds-col--boost" style="flex:1.2;">Your Boost</div>
-            <div class="ds-col ds-col--op" style="flex:0.3;"></div>
-            <div class="ds-col ds-col--contrib" style="flex:1;">Contribution</div>
-          </div>
+          {@render scalingDotHead(dt, _dc, _tc)}
+
           {#each dt.scalingRows as row}
-            <div class="ds-row">
-              <div class="ds-col ds-col--type" style="flex:1.2;">
-                <span class="ds-dot" style="background:{row.color}"></span>
-                <span style="color:{row.color}">{row.key.charAt(0).toUpperCase() + row.key.slice(1)}</span>
-              </div>
-              <div class="ds-col ds-col--val" style="flex:1;">
-                <span class="ds-num" style="color:{row.color}">{roundMultiplier(row.scalingVal)}</span>
-              </div>
-              <div class="ds-col ds-col--op" style="flex:0.3;">×</div>
-              <div class="ds-col ds-col--boost" style="flex:1.2;">
-                {#if row.boostPct !== 0}
-                  <span class="ds-boost" class:ds-boost--zero={row.boostPct === 0}>
-                    {row.boostPct > 0 ? '+' : ''}{roundMultiplier(row.boostPct)}%
-                  </span>
-                {:else}
-                  <span class="ds-boost ds-boost--zero">+0%</span>
-                {/if}
-              </div>
-              <div class="ds-col ds-col--op" style="flex:0.3;">=</div>
-              <div class="ds-col ds-col--contrib" style="flex:1;">
-                <span class="ds-contrib" class:ds-contrib--zero={row.contribution === 0} style={row.contribution > 0 ? `color:${row.color}` : row.contribution < 0 ? 'color: #cf6679;' : ''}>
-                  {row.contribution > 0 ? '+' : ''}{row.contribution}%
-                </span>
-              </div>
-            </div>
+            {@render scalingDotRow(row)}
           {/each}
-          <div class="ds-row">
-            <div class="ds-col ds-col--type" style="flex:1.2;">
-              <span class="ds-dot" style="background:#34d399"></span>
-              <span style="color:#34d399">Total</span>
-            </div>
-            <div class="ds-col ds-col--val" style="flex:1;"></div>
-            <div class="ds-col ds-col--op" style="flex:0.3;"></div>
-            <div class="ds-col ds-col--boost" style="flex:1.2;"></div>
-            <div class="ds-col ds-col--op" style="flex:0.3;">=</div>
-            <div class="ds-col ds-col--contrib" style="flex:1;">
-              <span class="ds-contrib" class:ds-contrib--zero={dt.totalEffectivePct === 0} style={dt.totalEffectivePct < 0 ? 'color:#cf6679' : 'color:#34d399'}>{dt.totalEffectivePct > 0 ? '+' : ''}{dt.totalEffectivePct}%</span>
-            </div>
-          </div>
+          {@render scalingTotal(dt, true)}
+
         </div>
         <div class="ds-result-row ds-result-row--perk" style="background:rgba(251,146,60,.05);border-color:rgba(251,146,60,.15);">
           <div style="display:flex;flex-direction:column;gap:2px;flex:1;">
@@ -7730,14 +7561,8 @@ $: _groupedSelfDamageSources = (() => {
         <span class="ds-wa-name" style="color:#38bdf8">{_activeRuneDmgDef?.runeName}</span>
       </div>
       <div class="ds-table">
-        <div class="ds-head">
-          <div class="ds-col ds-col--type">Scaling</div>
-          <div class="ds-col ds-col--val">Scaling Val</div>
-          <div class="ds-col ds-col--op"></div>
-          <div class="ds-col ds-col--boost">Your Boost</div>
-          <div class="ds-col ds-col--op"></div>
-          <div class="ds-col ds-col--contrib">Contribution</div>
-        </div>
+        {@render scalingHead()}
+
         {#each runeScalingBreakdown.rows as row}
           {@const isPct = row.boostKey ? PERCENT_STATS.has(row.boostKey) : true}
           <div class="ds-row">
@@ -7768,17 +7593,8 @@ $: _groupedSelfDamageSources = (() => {
             </div>
           </div>
         {/each}
-        <div class="ds-row">
-          <div class="ds-col ds-col--type">
-            <span class="ds-dot" style="background:#34d399"></span>
-            <span style="color:#34d399">Total</span>
-          </div>
-          <div class="ds-col ds-col--val"></div><div class="ds-col ds-col--op"></div><div class="ds-col ds-col--boost"></div>
-          <div class="ds-col ds-col--op">=</div>
-          <div class="ds-col ds-col--contrib">
-            <span class="ds-contrib" class:ds-contrib--zero={runeScalingBreakdown.totalEffectivePct === 0} style={runeScalingBreakdown.totalEffectivePct < 0 ? 'color:#cf6679' : 'color:#34d399'}>{runeScalingBreakdown.totalEffectivePct > 0 ? '+' : ''}{runeScalingBreakdown.totalEffectivePct}%</span>
-          </div>
-        </div>
+        {@render scalingTotal(runeScalingBreakdown)}
+
       </div>
     </div>
 
@@ -7806,28 +7622,13 @@ $: _groupedSelfDamageSources = (() => {
         <span class="ds-wa-name" style="color:#38bdf8">{_draconicBloodEntry?.displayName}</span>
       </div>
       <div class="ds-table">
-        <div class="ds-head">
-          <div class="ds-col ds-col--type">Scaling</div>
-          <div class="ds-col ds-col--val">Scaling Val</div>
-          <div class="ds-col ds-col--op"></div>
-          <div class="ds-col ds-col--boost">Your Boost</div>
-          <div class="ds-col ds-col--op"></div>
-          <div class="ds-col ds-col--contrib">Contribution</div>
-        </div>
+        {@render scalingHead()}
+
         {#each _draconicScalingBreakdown.rows as row}
           <ScalingBreakdownRow {row} />
         {/each}
-        <div class="ds-row">
-          <div class="ds-col ds-col--type">
-            <span class="ds-dot" style="background:#34d399"></span>
-            <span style="color:#34d399">Total</span>
-          </div>
-          <div class="ds-col ds-col--val"></div><div class="ds-col ds-col--op"></div><div class="ds-col ds-col--boost"></div>
-          <div class="ds-col ds-col--op">=</div>
-          <div class="ds-col ds-col--contrib">
-            <span class="ds-contrib" class:ds-contrib--zero={_draconicScalingBreakdown.totalEffectivePct === 0} style={_draconicScalingBreakdown.totalEffectivePct < 0 ? 'color:#cf6679' : 'color:#34d399'}>{_draconicScalingBreakdown.totalEffectivePct > 0 ? '+' : ''}{_draconicScalingBreakdown.totalEffectivePct}%</span>
-          </div>
-        </div>
+        {@render scalingTotal(_draconicScalingBreakdown)}
+
       </div>
     </div>
     <div class="ds-result-row">
@@ -7846,28 +7647,13 @@ $: _groupedSelfDamageSources = (() => {
         <span class="ds-wa-name" style="color:#fb923c">{_activeMountRuneDef?.mountLabel} (M1 · WA)</span>
       </div>
       <div class="ds-table">
-        <div class="ds-head">
-          <div class="ds-col ds-col--type">Scaling</div>
-          <div class="ds-col ds-col--val">Scaling Val</div>
-          <div class="ds-col ds-col--op"></div>
-          <div class="ds-col ds-col--boost">Your Boost</div>
-          <div class="ds-col ds-col--op"></div>
-          <div class="ds-col ds-col--contrib">Contribution</div>
-        </div>
+        {@render scalingHead()}
+
         {#each _mountRuneScalingBreakdown.rows as row}
           <ScalingBreakdownRow {row} />
         {/each}
-        <div class="ds-row">
-          <div class="ds-col ds-col--type">
-            <span class="ds-dot" style="background:#34d399"></span>
-            <span style="color:#34d399">Total</span>
-          </div>
-          <div class="ds-col ds-col--val"></div><div class="ds-col ds-col--op"></div><div class="ds-col ds-col--boost"></div>
-          <div class="ds-col ds-col--op">=</div>
-          <div class="ds-col ds-col--contrib">
-            <span class="ds-contrib" class:ds-contrib--zero={_mountRuneScalingBreakdown.totalEffectivePct === 0} style={_mountRuneScalingBreakdown.totalEffectivePct < 0 ? 'color:#cf6679' : 'color:#34d399'}>{_mountRuneScalingBreakdown.totalEffectivePct > 0 ? '+' : ''}{_mountRuneScalingBreakdown.totalEffectivePct}%</span>
-          </div>
-        </div>
+        {@render scalingTotal(_mountRuneScalingBreakdown)}
+
       </div>
     </div>
     <div class="ds-result-row">
@@ -7893,14 +7679,8 @@ $: _groupedSelfDamageSources = (() => {
         <span class="ds-wa-name" style="color:#4ade80">{_waDisplayName}</span>
       </div>
       <div class="ds-table">
-        <div class="ds-head">
-          <div class="ds-col ds-col--type">Scaling</div>
-          <div class="ds-col ds-col--val">Scaling Val</div>
-          <div class="ds-col ds-col--op"></div>
-          <div class="ds-col ds-col--boost">Your Boost</div>
-          <div class="ds-col ds-col--op"></div>
-          <div class="ds-col ds-col--contrib">Contribution</div>
-        </div>
+        {@render scalingHead()}
+
         {#each _waHealScalingBreakdown.rows as row}
           <ScalingBreakdownRow {row} useRoundMultiplier={true} showZeroBoost={true} />
         {/each}
@@ -7929,27 +7709,9 @@ $: _groupedSelfDamageSources = (() => {
         <span class="ds-wa-name" style="color:#38bdf8">{_perkHealScalingBreakdown.label}</span>
       </div>
       <div class="ds-table">
-        <div class="ds-head">
-          <div class="ds-col ds-col--type">Scaling</div>
-          <div class="ds-col ds-col--val">Scaling Val</div>
-          <div class="ds-col ds-col--op"></div>
-          <div class="ds-col ds-col--boost">Your Boost</div>
-          <div class="ds-col ds-col--op"></div>
-          <div class="ds-col ds-col--contrib">Contribution</div>
-        </div>
-        {#each _perkHealScalingBreakdown.rows as row}
-          <ScalingBreakdownRow {row} useRoundMultiplier={true} showZeroBoost={true} />
-        {/each}
-        <div class="ds-row ds-row--total" style="background:rgba(56,189,248,.07);border-color:rgba(56,189,248,.18)">
-          <div class="ds-col ds-col--type ds-total-label" style="color:#38bdf8">Total</div>
-          <div class="ds-col ds-col--val"></div>
-          <div class="ds-col ds-col--op"></div>
-          <div class="ds-col ds-col--boost"></div>
-          <div class="ds-col ds-col--op">=</div>
-          <div class="ds-col ds-col--contrib">
-            <span class="ds-total-pct" style="color:#38bdf8;text-shadow:0 0 10px rgba(56,189,248,.4)">×{+_perkHealScalingBreakdown.multiplier.toFixed(4)}</span>
-          </div>
-        </div>
+        {@render scalingHead()}
+
+        {@render healScalingBody(_perkHealScalingBreakdown)}
       </div>
     </div>
   {/if}
@@ -7962,27 +7724,9 @@ $: _groupedSelfDamageSources = (() => {
         <span class="ds-wa-name" style="color:#38bdf8">{_rainstormHealScalingBreakdown.label}</span>
       </div>
       <div class="ds-table">
-        <div class="ds-head">
-          <div class="ds-col ds-col--type">Scaling</div>
-          <div class="ds-col ds-col--val">Scaling Val</div>
-          <div class="ds-col ds-col--op"></div>
-          <div class="ds-col ds-col--boost">Your Boost</div>
-          <div class="ds-col ds-col--op"></div>
-          <div class="ds-col ds-col--contrib">Contribution</div>
-        </div>
-        {#each _rainstormHealScalingBreakdown.rows as row}
-          <ScalingBreakdownRow {row} useRoundMultiplier={true} showZeroBoost={true} />
-        {/each}
-        <div class="ds-row ds-row--total" style="background:rgba(56,189,248,.07);border-color:rgba(56,189,248,.18)">
-          <div class="ds-col ds-col--type ds-total-label" style="color:#38bdf8">Total</div>
-          <div class="ds-col ds-col--val"></div>
-          <div class="ds-col ds-col--op"></div>
-          <div class="ds-col ds-col--boost"></div>
-          <div class="ds-col ds-col--op">=</div>
-          <div class="ds-col ds-col--contrib">
-            <span class="ds-total-pct" style="color:#38bdf8;text-shadow:0 0 10px rgba(56,189,248,.4)">×{+_rainstormHealScalingBreakdown.multiplier.toFixed(4)}</span>
-          </div>
-        </div>
+        {@render scalingHead()}
+
+        {@render healScalingBody(_rainstormHealScalingBreakdown)}
       </div>
     </div>
   {/if}
@@ -7995,27 +7739,9 @@ $: _groupedSelfDamageSources = (() => {
         <span class="ds-wa-name" style="color:#38bdf8">{_rejuvenatingFlameHealScalingBreakdown.label}</span>
       </div>
       <div class="ds-table">
-        <div class="ds-head">
-          <div class="ds-col ds-col--type">Scaling</div>
-          <div class="ds-col ds-col--val">Scaling Val</div>
-          <div class="ds-col ds-col--op"></div>
-          <div class="ds-col ds-col--boost">Your Boost</div>
-          <div class="ds-col ds-col--op"></div>
-          <div class="ds-col ds-col--contrib">Contribution</div>
-        </div>
-        {#each _rejuvenatingFlameHealScalingBreakdown.rows as row}
-          <ScalingBreakdownRow {row} useRoundMultiplier={true} showZeroBoost={true} />
-        {/each}
-        <div class="ds-row ds-row--total" style="background:rgba(56,189,248,.07);border-color:rgba(56,189,248,.18)">
-          <div class="ds-col ds-col--type ds-total-label" style="color:#38bdf8">Total</div>
-          <div class="ds-col ds-col--val"></div>
-          <div class="ds-col ds-col--op"></div>
-          <div class="ds-col ds-col--boost"></div>
-          <div class="ds-col ds-col--op">=</div>
-          <div class="ds-col ds-col--contrib">
-            <span class="ds-total-pct" style="color:#38bdf8;text-shadow:0 0 10px rgba(56,189,248,.4)">×{+_rejuvenatingFlameHealScalingBreakdown.multiplier.toFixed(4)}</span>
-          </div>
-        </div>
+        {@render scalingHead()}
+
+        {@render healScalingBody(_rejuvenatingFlameHealScalingBreakdown)}
       </div>
     </div>
   {/if}
@@ -8027,14 +7753,8 @@ $: _groupedSelfDamageSources = (() => {
         <span class="ds-wa-name" style="color:#4ade80">{_regenHealScalingBreakdown.label}</span>
       </div>
       <div class="ds-table">
-        <div class="ds-head">
-          <div class="ds-col ds-col--type">Scaling</div>
-          <div class="ds-col ds-col--val">Scaling Val</div>
-          <div class="ds-col ds-col--op"></div>
-          <div class="ds-col ds-col--boost">Your Boost</div>
-          <div class="ds-col ds-col--op"></div>
-          <div class="ds-col ds-col--contrib">Contribution</div>
-        </div>
+        {@render scalingHead()}
+
         {#each _regenHealScalingBreakdown.rows as row}
           <ScalingBreakdownRow {row} useRoundMultiplier={true} showZeroBoost={true} />
         {/each}

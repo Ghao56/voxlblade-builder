@@ -5,7 +5,7 @@
 // Consumed by engine/build.ts calcBoosts() → BuildResult.boostEntries[].
 // UI toggles in DamageAnalyzer._condDisabledSources gate debuff-conditional boosts.
 
-import { roundMultiplier, applyScalingMult, fmtPct, fmtPctVal, fmtSec, stunResistPctToSeconds, calcKnockbackResistancePct } from '../lib/utils'
+import { roundMultiplier, applyScalingMult, fmtPct, fmtPctVal, calcKnockbackResistancePct } from '../lib/utils'
 import {
   FRENZY_BASE, FRENZY_RAGE_MULT, MINION_ABSORPTION_MULT,
   HEMORRHAGE_DMG_BASE, HEMORRHAGE_DMG_PER_STACK,

@@ -14,8 +14,7 @@
 import { COMPATIBLE_HEAL_SOURCE_PATTERNS } from './lib/constants/perk-base-damage'
   import { procChanceScale } from './lib/procRegistry'
   import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
-  import { vitalMistConsumption, vitalMistHealPerTick, VITAL_MIST_RATE_PER_HP, VITAL_MIST_HEAL_PER_5_POTENCY, VITAL_MIST_CONSUMPTION_BASE_PER_TICK, VITAL_MIST_CONSUMPTION_PER_POTENCY, VITAL_MIST_CONSUMPTION_THRESHOLD, VITAL_MIST_TAILWIND_POTENCY_BASE, VITAL_MIST_TAILWIND_POTENCY_PER_AMOUNT, VITAL_MIST_TAILWIND_DURATION, VITAL_MIST_MAX_POTENCY_BASE, VITAL_MIST_MAX_POTENCY_PER_AMOUNT } from './lib/vitalMist'
-  import { isVitalMistConvertibleTag, vitalMistActive } from './lib/vitalMist'
+  import { vitalMistActive, isVitalMistConvertibleTag } from './lib/vitalMist'
   // ARCHITECTURE: Level Damage Bonus (levelMult) is EXPLICIT and separate
   // from Effective Boost (effectiveMult / combatMult). Perk damage inheritance
   // (Ignition, Poisonous, Glacial, Static Buildup, Snarl) uses this split:
@@ -1859,6 +1858,13 @@ note?: string
 
 <svelte:window on:mousemove={onEnemyHpMouseMove} on:mouseup={onEnemyHpMouseUp} />
 
+{#snippet typedboostRow(boost: any)}
+  <div class="bdc-fr">
+    <span class="bdc-fr-label">{boost.label}</span>
+    <span class="bdc-fr-val bdc-fr-val--typedboost" class:bdc-fr-val--rage={boost.perkName === 'Rage'}>× {fmtMult(boost.mult)}</span>
+  </div>
+{/snippet}
+
 <div class="bdc-root da-section">
   <div class="da-section-title">Damage Calculator</div>
 
@@ -2565,10 +2571,7 @@ note?: string
     {/if}
     {#if _hasBoosts}
       {#each _dotTooltip.applicableBoosts.filter(b => b.label !== 'Converted Energy') as boost}
-        <div class="bdc-fr">
-          <span class="bdc-fr-label">{boost.label}</span>
-          <span class="bdc-fr-val bdc-fr-val--typedboost" class:bdc-fr-val--rage={boost.perkName === 'Rage'}>× {fmtMult(boost.mult)}</span>
-        </div>
+        {@render typedboostRow(boost)}
       {/each}
     {/if}
     {#if _dotTooltip.defMult !== 1}
@@ -2650,10 +2653,7 @@ note?: string
     </div>
     {#if mt.trueBoosts.filter(b => b.label !== 'Converted Energy').length > 0}
       {#each mt.trueBoosts.filter(b => b.label !== 'Converted Energy') as boost}
-        <div class="bdc-fr">
-          <span class="bdc-fr-label">{boost.label}</span>
-          <span class="bdc-fr-val bdc-fr-val--typedboost" class:bdc-fr-val--rage={boost.perkName === 'Rage'}>× {fmtMult(boost.mult)}</span>
-        </div>
+        {@render typedboostRow(boost)}
       {/each}
     {/if}
     <div class="bdc-fr-divider"></div>
@@ -2677,10 +2677,7 @@ note?: string
     </div>
     {#if wt.trueBoosts.filter(b => b.label !== 'Converted Energy').length > 0}
       {#each wt.trueBoosts.filter(b => b.label !== 'Converted Energy') as boost}
-        <div class="bdc-fr">
-          <span class="bdc-fr-label">{boost.label}</span>
-          <span class="bdc-fr-val bdc-fr-val--typedboost" class:bdc-fr-val--rage={boost.perkName === 'Rage'}>× {fmtMult(boost.mult)}</span>
-        </div>
+        {@render typedboostRow(boost)}
       {/each}
     {/if}
     <div class="bdc-fr-divider"></div>

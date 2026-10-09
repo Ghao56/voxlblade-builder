@@ -277,7 +277,7 @@ export const ICHOR_SPARK_CHARGE_DMG_MULT = 0.8
 export const ICHOR_SPARK_CHARGE_TIME_BASE = 7.8
 export const ICHOR_SPARK_CHARGE_TIME_PER_STACK = 1.3
 export const ICHOR_SPARK_CHAIN_DMG_PCT = 0.20
-export const ICHOR_SPARK_CHAIN_HEAL_FLAT = 0.3
+const ICHOR_SPARK_CHAIN_HEAL_FLAT = 0.3
 export const ICHOR_SPARK_SLASH_HEAL_AT_MIN = 0.333
 export const ICHOR_SPARK_SLASH_CHARGE_THRESHOLD = 0.375
 export const ICHOR_SPARK_CHAIN_PROC_CHANCE = 0.125
@@ -329,7 +329,7 @@ export const REJUVENATING_FLAME_HEAL_PER_AMOUNT = 0.05
 export const REJUVENATING_FLAME_FIRE_SCALING = 0.7
 export const REJUVENATING_FLAME_BURN_HEAL_MULT = 5
 export const REJUVENATING_FLAME_BURN_AOE_PER_AMOUNT = 0.5
-export const REJUVENATING_FLAME_LABEL = 'Rejuvenating Flame'
+const REJUVENATING_FLAME_LABEL = 'Rejuvenating Flame'
 export const REJUVENATING_FLAME_HEAL_LABEL = 'Rejuvenating Flame Heal'
 
 // Hex Shield (neutral status perk): blocks one debuff per stack and heals

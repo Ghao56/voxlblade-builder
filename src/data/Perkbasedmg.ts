@@ -353,7 +353,7 @@ export function calcSpringblastBaseDamage(perkAmount: number, proccingBaseDmg = 
   return Math.round((flat + procCoeff * proccingBaseDmg) / denom * SPRINGBLAST_ROUND) / SPRINGBLAST_ROUND
 }
 
-export function calcBomberChargeBaseDamage(perkAmount: number, missingHpPct: number): number {
+function calcBomberChargeBaseDamage(perkAmount: number, missingHpPct: number): number {
   const missingPct = Math.min(BOMBER_CHARGE_MISSING_HP_CAP, missingHpPct / 100)
   const base = BOMBER_CHARGE_BASE * (1 + BOMBER_CHARGE_PCT_PER_STACK * perkAmount) * (1 + BOMBER_CHARGE_MISSING_HP_MULT * missingPct)
   return Math.round(base * 1000) / 1000

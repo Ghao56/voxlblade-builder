@@ -1,5 +1,4 @@
 import { writable } from 'svelte/store'
-import { LIFESTEAL_HEAL_PCT_PER_STACK, LIFESTEAL_FLAT_HEAL } from './constants'
 
 // Vital Mist is active only while the engine actually produces lifesteal healing.
 // BaseDamageCalc writes the real, condition-aware result here (e.g. Honey Gather
@@ -9,20 +8,16 @@ import { LIFESTEAL_HEAL_PCT_PER_STACK, LIFESTEAL_FLAT_HEAL } from './constants'
 // hand-maintained perk list.
 export const vitalMistActive = writable(false)
 
-export const VITAL_MIST_HEAL_PCT_PER_STACK = LIFESTEAL_HEAL_PCT_PER_STACK
-export const VITAL_MIST_FLAT_HEAL = LIFESTEAL_FLAT_HEAL
-export const VITAL_MIST_RATE_PER_HP = 10 // 1 HP = 10 potency
-export const VITAL_MIST_HEAL_PER_5_POTENCY = 1 // 1 HP per 5 potency consumed
-export const VITAL_MIST_CONSUMPTION_BASE_PER_TICK = 2
-export const VITAL_MIST_CONSUMPTION_PER_POTENCY = 0.5
-export const VITAL_MIST_CONSUMPTION_THRESHOLD = 50
-export const VITAL_MIST_TAILWIND_POTENCY_BASE = 0.1
-export const VITAL_MIST_TAILWIND_POTENCY_PER_AMOUNT = 0.1
+const VITAL_MIST_CONSUMPTION_BASE_PER_TICK = 2
+const VITAL_MIST_CONSUMPTION_PER_POTENCY = 0.5
+const VITAL_MIST_CONSUMPTION_THRESHOLD = 50
+const VITAL_MIST_TAILWIND_POTENCY_BASE = 0.1
+const VITAL_MIST_TAILWIND_POTENCY_PER_AMOUNT = 0.1
 export const VITAL_MIST_TAILWIND_DURATION = 4
-export const VITAL_MIST_MAX_POTENCY_BASE = 50
-export const VITAL_MIST_MAX_POTENCY_PER_AMOUNT = 50
+const VITAL_MIST_MAX_POTENCY_BASE = 50
+const VITAL_MIST_MAX_POTENCY_PER_AMOUNT = 50
 
-export const VITAL_MIST_CONVERTIBLE_TAGS = new Set([
+const VITAL_MIST_CONVERTIBLE_TAGS = new Set([
   'Lifesteal',
   'Blood Thirsty',
   'Beastial Rage',

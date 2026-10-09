@@ -13,7 +13,7 @@ export type SummonSource =
   | 'Toaladin Summon'
   | 'Undead Buni Summon'
 
-export const DECAY_BY_SOURCE: Record<SummonSource, number> = {
+const DECAY_BY_SOURCE: Record<SummonSource, number> = {
   Possession: 1.5,
   'Spore Trooper': 1,
   'Croakernaut Rune': 2,
@@ -27,7 +27,7 @@ export const DECAY_BY_SOURCE: Record<SummonSource, number> = {
   'Undead Buni Summon': 2,
 }
 
-export const BASE_SUMMON_CAP = 15
+const BASE_SUMMON_CAP = 15
 
 export interface AppliedStatus {
   name: string
@@ -105,7 +105,7 @@ export function calcSummonBuffDmgMult(
   return Math.round(mult * 100) / 100
 }
 
-export function calcSummonDecayPercent(baseDecayPercent: number, spawnBoostPct: number): number {
+function calcSummonDecayPercent(baseDecayPercent: number, spawnBoostPct: number): number {
   return baseDecayPercent / (1 + spawnBoostPct / 100)
 }
 
@@ -114,16 +114,16 @@ export function calcMaxSummonCount(perks: Record<string, number>, hasTrustyServa
   return BASE_SUMMON_CAP + Math.floor(perks['Swarm'] ?? 0)
 }
 
-export function applySacrificialSummoning(decayPercent: number): number {
+function applySacrificialSummoning(decayPercent: number): number {
   // Sacrificial Summoning reduces decay by 25% relative to current decay
   return Math.round(decayPercent * 0.75 * 100) / 100
 }
 
-export function applyTrustyServant(): { maxCount: number; decayPercent: number } {
+function applyTrustyServant(): { maxCount: number; decayPercent: number } {
   return { maxCount: 1, decayPercent: 0 }
 }
 
-export const SUMMON_DEFS: SummonDef[] = [
+const SUMMON_DEFS: SummonDef[] = [
   {
     name: 'Mage Bomber',
     count: 2,
@@ -334,7 +334,7 @@ const SUMMON_PERK_DEFS: SummonPerkDef[] = [
   },
 ]
 
-export const SUMMON_PERK_MAP = Object.fromEntries(SUMMON_PERK_DEFS.map(p => [p.perkName, p]))
+const SUMMON_PERK_MAP = Object.fromEntries(SUMMON_PERK_DEFS.map(p => [p.perkName, p]))
 
 export function createSummonInstance(
   def: SummonDef,

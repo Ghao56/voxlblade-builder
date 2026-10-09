@@ -2,7 +2,7 @@ import { roundMultiplier } from '../lib/utils'
 
 export type WeaponHitScope = 'm1' | 'm1Finisher' | 'm2' | 'all'
 
-export const UNBALANCED_WEAPONRY = ['Unbalanced Sword', 'Dual Unbalanced Swords', 'Great Spear'] as const
+const UNBALANCED_WEAPONRY = ['Unbalanced Sword', 'Dual Unbalanced Swords', 'Great Spear'] as const
 
 export function isUnbalancedWeaponry(weaponType: string): boolean {
   return (UNBALANCED_WEAPONRY as readonly string[]).includes(weaponType)

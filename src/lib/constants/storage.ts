@@ -27,7 +27,7 @@ export const BUILD_STATE_DEFAULTS: Record<string, any> = {
   disabledEffects: [], disabledBuffKeys: [], disabledPerkEntries: [], disabledHealBoosts: [],
   ponderReinforceDisabled: true,
   enemiesHit: 1, weaponCharge: 100, retaliateCharge: 100, perfectionStacks: 5,
-  vitalMistPotency: 0, vitalMistBlocking: false,
+  vitalMistPotency: 50, vitalMistBlocking: false,
 }
 
 export const SAVE_KEY_MAP: Record<string, string> = {

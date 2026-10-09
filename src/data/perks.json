@@ -29,7 +29,7 @@
   },
   {
     "name": "Air Pressure",
-    "description": "Dealing Air Damage builds up the Buff Air Pressure, the maximum of which scales on perk amount. While active you gain defense, and using a Rune consumes the status to release an Air Burst.",
+    "description": "Dealing Air Damage builds up the Buff ''Air Pressure'', the maximum of which scales on perk amount.",
     "tags": [
       "Defensive",
       "Buff",
@@ -126,6 +126,7 @@
       "Damage Boost",
       "Debuff",
       "RNG",
+      "Incomplete",
       "Armor",
       "Weapon"
     ]
@@ -174,6 +175,7 @@
     "description": "Healing now has a low chance to grant various standard Buffs at varying potency.",
     "tags": [
       "Buff",
+      "Healing",
       "RNG",
       "Ring",
       "Guild",
@@ -183,7 +185,7 @@
   },
   {
     "name": "Blood Lust",
-    "description": "Hitting an opponent with Bleed grants the Buff Bloodlust. Maximum Potency of the Buff Bloodlust depends on perk amount.",
+    "description": "Hitting an opponent with Bleed grants the Buff ''Bloodlust''. Maximum Potency of the Buff ''Bloodlust'' depends on perk amount.",
     "tags": [
       "Attack Speed",
       "Buff",
@@ -236,6 +238,8 @@
     "description": "The Retaliate Weapon Art now grants less Defensive utility, but instead scales off of your missing HP, Holy, and Magic Boosts. Additionally, you can now act freely during the charging phase.",
     "tags": [
       "Weapon Art",
+      "Offensive",
+      "Defensive",
       "Guardbreak",
       "Armor",
       "Weapon"
@@ -243,7 +247,7 @@
   },
   {
     "name": "Bomber Satchel",
-    "description": "On hit with a Weapon Art, gain a stack of the neutral status Beenades. Beenades stacks are consumed by the Beenade Rune to throw additional projectiles.",
+    "description": "On hit with a Weapon Art, gain a stack of the neutral status ''Beenades''. ''Beenades'' stacks are consumed by the Beenade Rune to throw additional projectiles.",
     "tags": [
       "Weapon Art",
       "Rune Activated",
@@ -252,7 +256,7 @@
   },
   {
     "name": "Bomber Spirit",
-    "description": "Release your Spiritual Energy with an RMB, which will launch four Bomber projectiles that cause large explosions. Additionally, grants the Buff Bursting.",
+    "description": "Release your Spiritual Energy with an RMB, which will launch four Bomber projectiles that cause large explosions. Additionally, grants the Buff ''Bursting''.",
     "tags": [
       "Spirit (Monk)",
       "Offensive",
@@ -263,7 +267,7 @@
   },
   {
     "name": "Bounce Momentum",
-    "description": "Jumping whilst possessing Bounce will grant you the Buff Tongue Shot for a brief duration. Tongue Shot causes you to lash at an enemy with a tongue upon using a Finisher, Stunning and rendering them temporarily immobile. Additionally, increases the duration of Bounce.",
+    "description": "Jumping whilst possessing Bounce will grant you the Buff ''Tongue Shot'' for a brief duration. ''Tongue Shot'' causes you to lash at an enemy with a tongue upon using a Finisher, Stunning and rendering them temporarily immobile. Additionally, increases the duration of Bounce.",
     "tags": [
       "Offensive",
       "Finisher",
@@ -293,7 +297,7 @@
   },
   {
     "name": "Buckler",
-    "description": "Grants an equal amount of the perk Parry. If using a one-handed weapon, also gain a cosmetic buckler in your offhand.",
+    "description": "Grants an equal amount of the perk ''Parry''. If using a one-handed weapon, also gain a cosmetic buckler in your offhand.",
     "tags": [
       "Defensive",
       "Ring"
@@ -333,7 +337,6 @@
       "Spirit (Monk)",
       "Offensive",
       "Finisher",
-      "Guardbreak",
       "Mobility",
       "Weapon"
     ]
@@ -351,7 +354,7 @@
   },
   {
     "name": "Caci King Spirit",
-    "description": "Release your Spiritual Energy by holding down your Rune key, which renders you incapable of many but grants rapid Regeneration. Additionally, release disco pulses whilst doing so, which grants the Buff King's Luck to all nearby Allies. Ruler of the Sands is guaranteed to activate whilst under the effects of King's Luck.",
+    "description": "Release your Spiritual Energy by holding down your Rune key, which renders you incapable of many but grants rapid Regeneration. Additionally, release disco pulses whilst doing so, which grants the Buff ''King's Luck'' to all nearby Allies. ''Ruler of the Sands'' is guaranteed to activate whilst under the effects of ''King's Luck''.",
     "tags": [
       "Spirit (Monk)",
       "Buff",
@@ -421,13 +424,12 @@
     "tags": [
       "Debuff",
       "Poison Potency",
-      "Incomplete",
       "Armor"
     ]
   },
   {
     "name": "Cauterize",
-    "description": "All instances of Burn you inflict on opponents now instead applies the Debuff Singed. Singed counts as Burn for all related effects, but instead does a burst of Fire Damage on first application rather than over time.",
+    "description": "All instances of Burn you inflict on opponents now instead applies the Debuff ''Singed''. ''Singed'' counts as ''Burn'' for all related effects, but instead does a burst of Fire Damage on first application rather than over time.",
     "tags": [
       "Offensive",
       "Debuff",
@@ -436,9 +438,10 @@
   },
   {
     "name": "Channeled Depths",
-    "description": "Gain a neutral Channeled Depths status that is always fully charged. Its maximum increases with perk amount.",
+    "description": "Gain a passively ramping, neutral ''Channeled Depths'' status. Cap and ramping speed increases with perk amount.",
     "tags": [
       "Damage Boost",
+      "Damage Type",
       "Armor"
     ]
   },
@@ -449,6 +452,7 @@
       "Cooldown Reduction",
       "Weapon Art",
       "Damage Boost",
+      "Damage Type",
       "Guild"
     ]
   },
@@ -475,7 +479,7 @@
   },
   {
     "name": "Cleansed Blade",
-    "description": "Using the Cleanse Weapon Art specifically grants you the Buff Oceanic Blade.",
+    "description": "Using the Cleanse Weapon Art specifically grants you the Buff ''Oceanic Blade''.",
     "tags": [
       "Weapon Art Activated",
       "Healing",
@@ -510,6 +514,7 @@
     "tags": [
       "Offensive",
       "Damage Boost",
+      "Damage Type",
       "Weapon"
     ]
   },
@@ -518,7 +523,6 @@
     "description": "Gain a Poise Damage Boost and bonus Stun based on your Tenacity.",
     "tags": [
       "Poise",
-      "Incomplete",
       "Ring"
     ]
   },
@@ -612,7 +616,7 @@
   },
   {
     "name": "Curse Rip",
-    "description": "Hits against a Debuffed opponent gain ~0.666% Lifesteal (scales with Output Bonuses and Type-Specific Multipliers, but not Crits or Armor Penetration) as well as a Damage Boost of (10 x perkAmount - 10 + 5 x unique debuffs)%.",
+    "description": "Hits against a Debuffed opponent gains Lifesteal as well as a Damage Boost that scales on the amount of unique ones on them.",
     "tags": [
       "Debuff",
       "Healing",
@@ -641,7 +645,7 @@
   },
   {
     "name": "Cursed Experiment",
-    "description": "Using your Rune below 50% HP grants the Buffs Regeneration, Critical Boost, and Hexigen at high potency, but inflicts you with Slowness afterwards.",
+    "description": "Using your Rune below 50% HP grants the Buffs ''Regeneration'', ''Critical Boost'', and ''Hexigen'' at high potency, but inflicts you with Slowness afterwards.",
     "tags": [
       "Rune Activated",
       "Buff",
@@ -681,7 +685,7 @@
   },
   {
     "name": "Dark Magic",
-    "description": "Convert a portion of Magic Damage Type on your weapon to Hex Damage Type and boosts damage when hex damage is dealt. Take Hex self-damage when dealing hex damage.\nIncreases damage dealt on attacks that contain any amount of Hex Damage Type by 20% per 1 of this perk\nTake Hex self damage equal to 0.5% of the attacks damage dealt before modifiers on attacks that activate this damage boost\nConvert 30% of weapon Magic Damage Type to Hex Damage Type per 1 of this perk",
+    "description": "Convert a portion of Magic Damage Type on your weapon to Hex Damage Type and boosts damage when hex damage is dealt. Take Hex self-damage when dealing hex damage.",
     "tags": [
       "Damage Boost",
       "Self-Damage",
@@ -720,7 +724,7 @@
   },
   {
     "name": "Deep Spider Spirit",
-    "description": "Release your Spiritual Energy by using a Rune, which inflicts you with Poison and the unique neutral status Anti-Venom of equal duration. Anti-Venom also increases the duration of all Poison by 50%.",
+    "description": "Release your Spiritual Energy by using a Rune, which inflicts you with Poison and the unique neutral status ''Anti-Venom'' of equal duration. ''Anti-Venom'' also increases the duration of all Poison by 50%.",
     "tags": [
       "Spirit (Monk)",
       "Rune Activated",
@@ -778,7 +782,7 @@
   },
   {
     "name": "Directive",
-    "description": "Your minions only swap Aggro when landing an RMB or using a Rune. The RMB causes your minions to focus solely on that opponent whilst gaining a Damage Boost in the process. The Rune causes your minions to each attack a random mob nearby whilst gaining Reinforce.",
+    "description": "Your minions only swap Aggro when landing an RMB or using a Rune. The RMB causes your minions to focus solely on that opponent whilst gaining a Damage Boost in the process. The Rune causes your minions to each attack a random mob nearby and gain reinforce if there is an eligible target nearby.",
     "tags": [
       "Damage Boost",
       "Buff",
@@ -835,9 +839,17 @@
       "Offensive",
       "Buff",
       "Debuff",
+      "RNG",
+      "Cooldown Reduction",
+      "Attack Speed",
       "Healing",
+      "Heal Boost",
+      "Cleanse",
       "Guardbreak",
+      "Poise",
+      "Defensive",
       "Damage Boost",
+      "Damage Type",
       "Guild"
     ]
   },
@@ -847,6 +859,7 @@
     "tags": [
       "Rune",
       "Damage Boost",
+      "Damage Type",
       "Guild"
     ]
   },
@@ -922,6 +935,7 @@
       "RNG",
       "Burn Potency",
       "Guardbreak",
+      "Damage Type",
       "Armor"
     ]
   },
@@ -943,6 +957,7 @@
       "Cooldown Reduction",
       "Heal Boost",
       "Damage Boost",
+      "Damage Type",
       "Buff",
       "Self-Debuff",
       "Attack Speed",
@@ -981,7 +996,8 @@
     "description": "Removes crafting materials from mob drops, making it easier to obtain equipment.",
     "tags": [
       "RNG",
-      "Armor"
+      "Armor",
+      "Incomplete"
     ]
   },
   {
@@ -1072,7 +1088,7 @@
   },
   {
     "name": "Fell Rush",
-    "description": "Inflicting any Debuff links you to the opponent. RMB'ing with a clear line of sight to said opponent will teleport you to them, dealing damage. If you also possess the perk Divine Crash, both are combined into a stronger variant.",
+    "description": "Inflicting any Debuff links you to the opponent. RMB'ing with a clear line of sight to said opponent will teleport you to them, dealing damage. If you also possess the perk ''Divine Crash'', both are combined into a stronger variant.",
     "tags": [
       "Offensive",
       "Debuff",
@@ -1112,12 +1128,13 @@
       "Rune Activated",
       "Summoner",
       "Offensive",
+      "Guardbreak",
       "Armor"
     ]
   },
   {
     "name": "Flash Strike",
-    "description": "Successfully Parrying an attack briefly grants the Buff Flash Strike for a brief duration. Flash Strike dramatically increases your Attack Speed.",
+    "description": "Successfully Parrying an attack briefly grants the Buff ''Flash Strike'' for a brief duration. ''Flash Strike'' dramatically increases your Attack Speed.",
     "tags": [
       "Buff",
       "Attack Speed",
@@ -1143,12 +1160,13 @@
       "Damage Boost",
       "Poise",
       "Buff",
+      "Damage Type",
       "Armor"
     ]
   },
   {
     "name": "Fractured Energy",
-    "description": "Convert all your crit chance 1:1 to a chance to inflict the debuff Fractured. Fractured stores a portion of all Damage you deal against the opponent for 5 seconds before repeating it as Magic and Earth Damage. Does not convert guaranteed crits.",
+    "description": "Convert all your crit chance 1:1 to a chance to inflict the debuff ''Fractured''. ''Fractured'' stores a portion of all Damage you deal against the opponent for 5 seconds before repeating it as Magic and Earth Damage. Does not convert guaranteed crits.",
     "tags": [
       "Crit",
       "Offensive",
@@ -1158,7 +1176,7 @@
   },
   {
     "name": "Fragrance Aura",
-    "description": "Heals with a Proc Coefficient or from consumables grants you the neutral status Fragrance.",
+    "description": "Heals with a Proc Coefficient or from consumables grants you the neutral status ''Fragrance''.",
     "tags": [
       "Buff",
       "Healing",
@@ -1243,7 +1261,7 @@
   },
   {
     "name": "Fury",
-    "description": "Increases the duration of all forms of Rage.",
+    "description": "Increases the duration and potency of all forms of Rage.",
     "tags": [
       "Buff",
       "Guild",
@@ -1288,7 +1306,7 @@
   },
   {
     "name": "Ghastly Rot",
-    "description": "Gain a high chance to inflict the Ghastly Rot Debuff on hit. Ghastly Rot causes any Attack against the opponent to have a chance to inflict Poison. Additionally, your Poison now deals True Damage instead of Hex.",
+    "description": "Gain a high chance to inflict the ''Ghastly Rot'' Debuff on hit. ''Ghastly Rot'' causes any Attack against the opponent to have a chance to inflict Poison. Additionally, your Poison now deals True Damage instead of Hex.",
     "tags": [
       "Debuff",
       "RNG",
@@ -1308,7 +1326,7 @@
   },
   {
     "name": "Gladiatorial Rage",
-    "description": "Halves Rage Rune Cooldown and adds a flat potency increase to all sources and forms of Rage. Increases Rage duration by 20% per 1 of this perk, and gain Armor Penetration scaling off of your highest offensive Boost.",
+    "description": "Halves Rage Rune Cooldown and adds a flat potency and duration increases to all sources and forms of Rage. Rage duration is increased on kill only, and gain Armor Penetration scaling off of your highest offensive Boost.",
     "tags": [
       "Buff",
       "Cooldown Reduction",
@@ -1318,7 +1336,7 @@
   },
   {
     "name": "Glyph Conduit",
-    "description": "Upon landing an RMB or using a Rune, gain the Buff Glyph Conduit.",
+    "description": "Upon landing an RMB or using a Rune, gain the Buff ''Glyph Conduit''.",
     "tags": [
       "Buff",
       "Finisher",
@@ -1413,7 +1431,7 @@
   },
   {
     "name": "Grounded Despair",
-    "description": "Jumping and landing creates a small Hex shockwave, inflicting yourself with the Debuff Despair, affected by your related perks. The shockwave has a Proc Coefficient.",
+    "description": "Jumping and landing creates a small Hex shockwave, inflicting yourself with the Debuff ''Despair'', affected by your related perks. The shockwave has a Proc Coefficient.",
     "tags": [
       "Offensive",
       "Self-Debuff",
@@ -1483,13 +1501,14 @@
   },
   {
     "name": "Heavy Gravitate",
-    "description": "Hitting an opponent with either Earth or Magic Damage from a Weapon Art or Rune applies the debuff Heavy Gravity. Heavy Gravity reduces movement speed, and can be consumed upon using your RMB to deal Damage and heavy Poise Damage.",
+    "description": "Hitting an opponent with either Earth or Magic Damage from a Weapon Art or Rune applies the debuff ''Heavy Gravity''. Heavy Gravity reduces movement speed, and can be consumed upon using your RMB to deal Damage and heavy Poise Damage.",
     "tags": [
       "Weapon Art Activated",
       "Rune Activated",
       "Debuff",
       "Poise",
       "Finisher",
+      "Guardbreak",
       "Armor"
     ]
   },
@@ -1507,7 +1526,10 @@
     "description": "Gain crit chance. Additionally on kill or Poisebreak, gain a stack of the Buff ''Autoparry''. Additionally, ''Autoparry'' gains increased Stun if you possess the perk ''Parry'' itself.",
     "tags": [
       "Defensive",
+      "Crit",
+      "Crit Damage",
       "Buff",
+      "Poise",
       "Armor"
     ]
   },
@@ -1517,6 +1539,7 @@
     "tags": [
       "Debuff",
       "Damage Boost",
+      "Damage Type",
       "Poise",
       "Weapon"
     ]
@@ -1532,7 +1555,7 @@
   },
   {
     "name": "Hex Shield",
-    "description": "Every 10 seconds, gain a stack of the neutral status Hex Shield per perk amount.",
+    "description": "Every 10 seconds, gain a stack of the neutral status ''Hex Shield'' per perk amount.",
     "tags": [
       "Buff",
       "Healing",
@@ -1584,7 +1607,7 @@
   },
   {
     "name": "Hypnotist",
-    "description": "Weapon Arts and Runes inflicts the debuff Hypnotized. Hypnotized decreases Armor against all Magic Damage Types, and renders the applier incapable of drawing Aggro of the victim.",
+    "description": "Weapon Arts and Runes inflicts the debuff ''Hypnotized''. ''Hypnotized'' decreases Armor against all Magic Damage Types, and renders the applier incapable of drawing Aggro of the victim.",
     "tags": [
       "Weapon Art Activated",
       "Rune Activated",
@@ -1614,7 +1637,7 @@
   },
   {
     "name": "Icestorm",
-    "description": "Landing 10 hits in a short timeframe creates an ice storm to orbit around you, which inflicts Slow. Does not possess a Proc Coefficient.",
+    "description": "Landing 5 hits in a short timeframe creates an ice storm to orbit around you, which inflicts Slow.",
     "tags": [
       "Offensive",
       "Debuff",
@@ -1633,26 +1656,12 @@
       "Guardbreak",
       "Self-Damage",
       "Healing",
-      "Bleed Potency",
       "Weapon"
     ]
   },
   {
     "name": "Ignition",
     "description": "Gain a small chance to inflict Burn and deal bonus Fire Damage on hit. Grants Burn potency.",
-    "tags": [
-      "Offensive",
-      "Debuff",
-      "RNG",
-      "Burn Potency",
-      "Ring",
-      "Weapon",
-      "Armor"
-    ]
-  },
-  {
-    "name": "Echo Incineration",
-    "description": "Half of your Fire Damage is converted into Air Damage and vice versa. Additionally, you have a chance to release a fiery tornado on hit that deals Fire and Air Damage whilst inflicting Burn. Grants Burn potency.",
     "tags": [
       "Offensive",
       "Debuff",
@@ -1687,7 +1696,6 @@
     "description": "Your LMB's and RMB's Attack Speed scales with the average value of your Physical and Dexterity Boost.",
     "tags": [
       "Stat Boost",
-      "Offensive",
       "Attack Speed",
       "Weapon"
     ]
@@ -1703,7 +1711,7 @@
   },
   {
     "name": "Inspiration",
-    "description": "LMB's and RMB's that land releases pulses that slightly heal and grants the Buff Inspiration. The pulse does not possess a Proc Coefficient and the heal is doubly as effective on minions.",
+    "description": "LMB's and RMB's that land releases pulses that slightly heal and grants the Buff ''Inspiration''. The pulse does not possess a Proc Coefficient and the heal is doubly as effective on minions.",
     "tags": [
       "Buff",
       "Healing",
@@ -1805,7 +1813,7 @@
   },
   {
     "name": "Lithic Veil",
-    "description": "Healing any Ally grants the Buff Lithic Veil. Lithic Veil grants flat Physical Damage and Stun Reduction.",
+    "description": "Healing any Ally grants the Buff ''Lithic Veil''. ''Lithic Veil'' grants flat Physical Damage and Stun Reduction.",
     "tags": [
       "Buff",
       "Healing",
@@ -1840,7 +1848,7 @@
   },
   {
     "name": "Luminescent Fervor",
-    "description": "Healing any Ally grants the Buff Luminescent.",
+    "description": "Healing any Ally grants the Buff ''Luminescent''.",
     "tags": [
       "Buff",
       "Damage Boost",
@@ -1875,11 +1883,11 @@
     ]
   },
   {
-    "name": "Tesla Cannon",
-    "description": "When striking enemies from range launch a tesla orb that rapidly zaps nearby enemies.",
+    "name": "Magic Circuit",
+    "description": "Using a Rune emits damaging chain lightning from your character. The strength of the lightning scales on the Cooldown.",
     "tags": [
       "Offensive",
-      "Armor"
+      "Rune Activated"
     ]
   },
   {
@@ -1916,10 +1924,11 @@
   },
   {
     "name": "Melting Shred",
-    "description": "All DoTs now gain additional True Damage Type. Additionally, opponents inflicted with your DoTs are also inflicted with the Debuff Anti Heal. Anti Heal reduces any and all incoming healing.",
+    "description": "All DoTs now gain additional True Damage Type. Additionally, opponents inflicted with your DoTs are also inflicted with the Debuff ''Anti Heal''. ''Anti Heal'' reduces any and all incoming healing.",
     "tags": [
       "Debuff",
       "Damage Boost",
+      "Damage Type",
       "Enchantment"
     ]
   },
@@ -1946,7 +1955,7 @@
   },
   {
     "name": "Minion Absorption",
-    "description": "Minions summoned are instantly consumed to grant the Buff Minion Absorbed if you don't possess it already. Minion Absorbed heals you based on the strength of the consumed minion, and grants a Damage Boost equal to a portion of your Summon Boost.",
+    "description": "Minions summoned are instantly consumed to grant the Buff ''Minion Absorbed'' if you don't possess it already. ''Minion Absorbed'' heals you based on the strength of the consumed minion, and grants a Damage Boost equal to a portion of your Summon Boost.",
     "tags": [
       "Buff",
       "Damage Boost",
@@ -1971,6 +1980,7 @@
       "Stat Boost",
       "Finisher",
       "Damage Boost",
+      "Damage Type",
       "Armor"
     ]
   },
@@ -1988,6 +1998,7 @@
     "description": "Enemies you have Poisoned are inflicted with Slowness over 50%. Enemies below 50% take more damage from Poison instead.",
     "tags": [
       "Debuff",
+      "Damage Boost",
       "Ring"
     ]
   },
@@ -2048,7 +2059,7 @@
   },
   {
     "name": "Perfection",
-    "description": "Dodging or parrying, grants a stack of the Buff Perfection, it increases your speed, critical chance and damage. Taking damage that wasnt parried or dodged reduces a stack.",
+    "description": "Dodging or parrying, grants a stack of the Buff ''Perfection'', it increases your speed, critical chance and damage. Taking damage that wasnt parried or dodged reduces a stack.",
     "tags": [
       "Buff",
       "Damage Boost",
@@ -2101,13 +2112,14 @@
     "description": "Finishers now output their damage entirely as True Damage, and gains a Damage Boost. If your weapon type is specifically a one-handed sword, spear, dagger, fists, or rapier, the Damage Boost is doubly as effective.",
     "tags": [
       "Damage Boost",
+      "Damage Type",
       "Finisher",
       "Weapon"
     ]
   },
   {
     "name": "Poison Acceleration",
-    "description": "Being Poisoned grants a Speed and Attack Speed Boost, alongside Weapon Art and Rune Cooldown Reduction.",
+    "description": "Being Poisoned grants a Speed and Attack Speed Boost, alongside Weapon Art Cast Speed, and Rune and Weapon Art Cooldown Reduction.",
     "tags": [
       "Attack Speed",
       "Cooldown Reduction",
@@ -2120,7 +2132,7 @@
   },
   {
     "name": "Poison Potency",
-    "description": "Increases the damage of the poison status by x%",
+    "description": "Increases the damage of the poisoned status by x%",
     "tags": [
       "Poison Potency",
       "Debuff",
@@ -2134,8 +2146,8 @@
     "description": "Gain a small chance to inflict Poison and deal bonus Hex Damage on hit.",
     "tags": [
       "Debuff",
+      "Offensive",
       "RNG",
-      "Incomplete",
       "Weapon"
     ]
   },
@@ -2195,7 +2207,7 @@
   },
   {
     "name": "Propelling Fun",
-    "description": "Jumping creates an air current that grants all Allies the Buff Cloudpush. Cloudpush grants bonus Air Damage Type that counts as your damage. Whilst afflicted with Burn, jumping actiavtes Cinderpull' instead which grants bonus Fire Damage Type.",
+    "description": "Jumping creates an air current that grants all Allies the Buff ''Cloudpush''. ''Cloudpush'' grants bonus Air Damage Type that counts as your damage. Whilst afflicted with Burn, jumping actiavtes ''Cinderpull' instead which grants bonus Fire Damage Type.",
     "tags": [
       "Damage Boost",
       "Buff",
@@ -2218,6 +2230,7 @@
     "description": "Occasionally emit Poison chain lightning from your character.",
     "tags": [
       "Debuff",
+      "Offensive",
       "RNG",
       "Weapon"
     ]
@@ -2233,7 +2246,7 @@
   },
   {
     "name": "Pure Rot",
-    "description": "Cleanses no longer removes Debuffs, but instead grants any Ally the Buff Rotted.",
+    "description": "Cleanses no longer removes Debuffs, but instead grants any Ally the Buff ''Rotted''.",
     "tags": [
       "Buff",
       "Debuff",
@@ -2274,7 +2287,7 @@
   },
   {
     "name": "Quarry",
-    "description": "Hitting an opponent builds up the neutral status Hidden Treasure on them. At 4 stacks of this status, deal a burst of Holy and Physical Damage. Has a Cooldown per opponent.",
+    "description": "Hitting an opponent builds up the neutral status ''Hidden Treasure'' on them. At 4 stacks of this status, deal a burst of Holy and Physical Damage. Has a Cooldown per opponent.",
     "tags": [
       "Offensive",
       "Armor"
@@ -2304,7 +2317,7 @@
   },
   {
     "name": "Queens Power",
-    "description": "Upon summoning a minion, grants the Buff Queens Power.",
+    "description": "Upon summoning a minion, grants the Buff ''Queens Power''.",
     "tags": [
       "Summoner",
       "Buff",
@@ -2330,12 +2343,13 @@
     "tags": [
       "Weapon Art",
       "Attack Speed",
+      "Defensive",
       "Guild"
     ]
   },
   {
     "name": "Quickdraw",
-    "description": "Upon equipping your weapon, gain the neutral status Quickdraw for a brief duration. Quickdraw greatly increases the damage of Weapon Arts and Runes.",
+    "description": "Upon equipping your weapon, gain the neutral status ''Quickdraw'' for a brief duration. ''Quickdraw'' greatly increases the damage of Weapon Arts and Runes.",
     "tags": [
       "Weapon Art",
       "Rune",
@@ -2418,6 +2432,7 @@
       "Healing",
       "Buff",
       "Damage Boost",
+      "Damage Type",
       "Self-Debuff",
       "Armor"
     ]
@@ -2497,7 +2512,7 @@
   },
   {
     "name": "Royal Parry",
-    "description": "A successful Parry grants you the buff Critical Boost. Critting due to the effects of said Buff will add an additional Damage Boost.",
+    "description": "A successful Parry grants you the buff ''Critical Boost''. Critting due to the effects of said Buff will add an additional Damage Boost.",
     "tags": [
       "Defensive",
       "Damage Boost",
@@ -2520,7 +2535,7 @@
   },
   {
     "name": "Runic Blades",
-    "description": "Weapon Arts or Runes marks the opponent with the debuff Runic Blades. Hits against said opponent launch Magical Blades at them, with a very short Cooldown.",
+    "description": "Weapon Arts or Runes marks the opponent with the debuff ''Runic Blades''. Hits against said opponent launch Magical Blades at them, with a very short Cooldown.",
     "tags": [
       "Offensive",
       "Weapon Art Activated",
@@ -2568,7 +2583,8 @@
     "tags": [
       "Stat Boost",
       "Debuff",
-      "Incomplete",
+      "Damage Boost",
+      "Damage Type",
       "Weapon"
     ]
   },
@@ -2613,7 +2629,7 @@
   },
   {
     "name": "Screeching Sound",
-    "description": "Blocking an Attack has a chance to create a small shockwave of Air that deals slight Damage, Stuns, and Taunts nearby opponents.",
+    "description": "Blocking an Attack has a chance to create a small shockwave of Air that deals slight Damage, Stuns, and Taunts nearby opponents. Additionally you take less damage from taunted opponents.",
     "tags": [
       "Defensive",
       "Offensive",
@@ -2654,10 +2670,12 @@
   },
   {
     "name": "Sharp Claws",
-    "description": "Guardbreaks inflicts Bleed and the Debuff Wound. Wound causes Bleed to gain additional True Damage Type as well as slight Stun. Grants Bleed Potency.",
+    "description": "Guardbreaks inflicts Bleed and the Debuff ''Wound''. ''Wound'' causes Bleed to gain additional True Damage Type as well as slight Stun. Grants Bleed Potency.",
     "tags": [
       "Debuff",
       "Guardbreak",
+      "Damage Boost",
+      "Damage Type",
       "Bleed Potency",
       "Ring",
       "Armor",
@@ -2690,8 +2708,7 @@
       "Debuff",
       "Guardbreak",
       "Poise",
-      "Weapon",
-      "Incomplete"
+      "Weapon"
     ]
   },
   {
@@ -2782,9 +2799,12 @@
   },
   {
     "name": "Solar Light",
-    "description": "Converts the Lesser Heal Weapon Art in specific to a holdable beam of light from above, which targets the Ally closest to your cursor, excluding minions. Said beam of light enhances in attributes when standing in the Sun, or when under the effects of the Buff Sun Blessed.",
+    "description": "Converts the Lesser Heal Weapon Art in specific to a holdable beam of light from above, which targets the Ally closest to your cursor, excluding minions. Said beam of light enhances in attributes when standing in the Sun, or when under the effects of the Buff ''Sun Blessed''.",
     "tags": [
       "Healing",
+      "Offensive",
+      "Damage Type",
+      "Debuff",
       "Weapon Art",
       "Armor"
     ]
@@ -2831,7 +2851,7 @@
   },
   {
     "name": "Spirit Commune",
-    "description": "LMB's, RMB's, mob kills and Poisebreaks grants Spiritual Energy. Spiritual Energy can be released in various forms, depending on the glove.",
+    "description": "LMB's, RMB's, mob kills and Poisebreaks grants ''Spiritual Energy''. ''Spiritual Energy'' can be released in various forms, depending on the glove.",
     "tags": [
       "Spirit (Monk)",
       "Guild"
@@ -2843,6 +2863,7 @@
     "tags": [
       "Buff",
       "Damage Boost",
+      "Damage Type",
       "Armor"
     ]
   },
@@ -2872,9 +2893,10 @@
   },
   {
     "name": "Spore Trooper",
-    "description": "Gain a neutral, ramping status titled Stored Sporelings , the maximum of which scales on perk amount. Additionally, more of this perk increases the size of the Sporelings.",
+    "description": "Gain a neutral, ramping status titled ''Stored Sporelings'' , the maximum of which scales on perk amount. Additionally, more of this perk increases the size of the Sporelings.",
     "tags": [
       "Summoner",
+      "Finisher",
       "Incomplete",
       "Armor"
     ]
@@ -2907,6 +2929,7 @@
       "RNG",
       "Finisher",
       "Guardbreak",
+      "Incomplete",
       "Weapon"
     ]
   },
@@ -2922,7 +2945,7 @@
   },
   {
     "name": "Star Barrage",
-    "description": "Using a Weapon Art grants you the Buff Star Mode for a brief duration. Star Mode greatly increases Attack Speed.",
+    "description": "Using a Weapon Art grants you the Buff ''Star Mode'' for a brief duration. ''Star Mode'' greatly increases Attack Speed.",
     "tags": [
       "Buff",
       "Attack Speed",
@@ -2932,7 +2955,7 @@
   },
   {
     "name": "Star Friendship",
-    "description": "Healing a different Ally grants them the Buff Friendship. Friendship grants high Weapon Art Cooldown reduction, and is consumed after activation.",
+    "description": "Healing a different Ally grants them the Buff ''Friendship''. ''Friendship'' grants high Weapon Art Cooldown reduction and will heal and be consumed after activation.",
     "tags": [
       "Healing",
       "Buff",
@@ -2947,7 +2970,6 @@
     "tags": [
       "Offensive",
       "RNG",
-      "Incomplete",
       "Weapon"
     ]
   },
@@ -2958,7 +2980,6 @@
       "Offensive",
       "Finisher",
       "Guardbreak",
-      "Incomplete",
       "Weapon"
     ]
   },
@@ -2967,13 +2988,14 @@
     "description": "Lowers your detection range for opponents, and gain a chance not to draw Aggro on hit. Additionally, gain a Damage Boost against enemies that aren't targeting you.",
     "tags": [
       "Damage Boost",
+      "RNG",
       "Guild",
       "Armor"
     ]
   },
   {
     "name": "Steam Charge",
-    "description": "Inflicting Burn on either yourself or an opponent ramps up the neutral status Steam Buildup. At max stacks, your RMB is instead replaced with a gargantuan blast of steam that counts as a Finisher.",
+    "description": "Inflicting Burn on either yourself or an opponent ramps up the neutral status ''Steam Buildup''. At max stacks, your RMB is instead replaced with a gargantuan blast of steam that counts as a Finisher.",
     "tags": [
       "Offensive",
       "Finisher",
@@ -3031,7 +3053,7 @@
     "tags": [
       "Damage Boost",
       "Attack Speed",
-      "Incomplete",
+      "Damage Type",
       "Enchantment"
     ]
   },
@@ -3064,7 +3086,7 @@
   },
   {
     "name": "Storm Rend",
-    "description": "Gain a chance to create chain lighting and inflict the DebuffElectrical Rend on hit. Electrical Rend reduces Armor and Stun Resistance by a small amount.",
+    "description": "Gain a chance to create chain lighting and inflict the Debuff''Electrical Rend'' on hit. ''Electrical Rend'' reduces Armor and Stun Resistance by a small amount.",
     "tags": [
       "Offensive",
       "Debuff",
@@ -3170,6 +3192,14 @@
     ]
   },
   {
+    "name": "Tesla Cannon",
+    "description": "When striking enemies from range launch a tesla orb that rapidly zaps nearby enemies.",
+    "tags": [
+      "Offensive",
+      "Armor"
+    ]
+  },
+  {
     "name": "Thief Training",
     "description": "Damage dealt whilst standing behind an opponent will always crit and gain a Damage Boost, but crits deal less damage than usual when below 3 of this perk. If an attack would've crit regardless, gain another Damage Boost. Additionally, halve your base Roll cooldown and improves its attributes.",
     "tags": [
@@ -3185,6 +3215,7 @@
     "description": "Gain a chance to release thorns that deals light Damage and applies Bleed when you are hit, guaranteed if you were Blocking. Grants Bleed Potency.",
     "tags": [
       "Defensive",
+      "Offensive",
       "Debuff",
       "RNG",
       "Bleed Potency",
@@ -3204,9 +3235,13 @@
   },
   {
     "name": "Torpedo Barrage",
-    "description": "Gain stacks of the neutral status Torpedos when hitting an opponent. Hitting an opponent with a Weapon Art or Rune begins to drain your Torpedos until empty, dealing Physical and Water Damage.",
+    "description": "Gain stacks of the neutral status ''Torpedos'' when hitting an opponent. Hitting an opponent with a Weapon Art or Rune begins to drain your ''Torpedos'' until empty, dealing Physical and Water Damage.",
     "tags": [
       "Offensive",
+      "Weapon Art Activated",
+      "Weapon Art",
+      "Rune Activated",
+      "Rune",
       "Armor",
       "Incomplete"
     ]
@@ -3229,6 +3264,7 @@
       "Debuff",
       "Self-Debuff",
       "Damage Boost",
+      "Damage Type",
       "Poison Potency",
       "Armor",
       "Weapon"
@@ -3272,6 +3308,7 @@
     "description": "Converts a portion of Magic Damage Type to True Damage Type. Additionally, gain a chance to shoot a True Damage moon at the opponent on hit. Has a heavily reduced Proc Coefficient.",
     "tags": [
       "Offensive",
+      "Damage Type",
       "RNG",
       "Armor"
     ]
@@ -3368,7 +3405,7 @@
   },
   {
     "name": "Vassals Croak",
-    "description": "Gain a Damage Boost scaling on the amount of active minions. When your minions die, gain a stack of the neutral status Last Croak. Last Croak also grants Rage to you on consumption.",
+    "description": "Gain a Damage Boost scaling on the amount of active minions. When your minions die, gain a stack of the neutral status ''Last Croak''. ''Last Croak'' also grants Rage to you on consumption.",
     "tags": [
       "Damage Boost",
       "Buff",
@@ -3432,7 +3469,7 @@
   },
   {
     "name": "Vital Mist",
-    "description": "All sources of Lifesteal are instead consumed to build up charges of the neutral status Vital Mist. Vital Mist is passively consumed to heal Allies in an AoE and, at or above 50 charge, gains increased AoE and grants Tailwind. This doubles the consumption of the status, alongside when Blocking.",
+    "description": "All sources of Lifesteal are instead consumed to build up charges of the neutral status ''Vital Mist''. ''Vital Mist'' is passively consumed to heal Allies in an AoE and, at or above 50 charge, gains increased AoE and grants Tailwind. This doubles the consumption of the status, alongside when Blocking.",
     "tags": [
       "Buff",
       "Healing",
@@ -3451,7 +3488,7 @@
   },
   {
     "name": "Void Contract",
-    "description": "Occasionally mark a random mob nearby. Marked enemies take 30% more damage per 1 of the Void Contract perk; the mark covers the next 1 + perkAmount hits, then expires (or after 5s at 1 of this perk). Counts as a Debuff for others.",
+    "description": "Occasionally mark a random mob nearby, which expires after a short period or a couple of hits. Can only be consumed by the applicant, but counts as a Debuff for others.",
     "tags": [
       "Debuff",
       "RNG",
@@ -3465,6 +3502,8 @@
     "tags": [
       "Buff",
       "Damage Boost",
+      "Defensive",
+      "Damage Type",
       "Ring",
       "Armor",
       "Weapon"
@@ -3493,7 +3532,7 @@
   },
   {
     "name": "Voltaic Body",
-    "description": "Using your Weapon Art grants you the Buff Voltaic Body, but increases your Rune Cooldown. The potency of the Buff Voltaic Body increases each activation, and is reduced every second.",
+    "description": "Using your Weapon Art grants you the Buff ''Voltaic Body'', but increases your Rune Cooldown. The potency of the Buff ''Voltaic Body'' increases each activation, and is reduced every second.",
     "tags": [
       "Buff",
       "Weapon Art Activated",
@@ -3505,7 +3544,7 @@
   },
   {
     "name": "Wall",
-    "description": "Blocking releases pulses around yourself that grants other Allies the neutral status Redirect. Redirect sends a portion of most Damage they take to you.",
+    "description": "Blocking releases pulses around yourself that grants other Allies the neutral status ''Redirect''. ''Redirect'' sends a portion of most Damage they take to you.",
     "tags": [
       "Buff",
       "Defensive",
@@ -3525,7 +3564,7 @@
   },
   {
     "name": "Warding Tides",
-    "description": "When cleansing, apply Reinforce to those cleansed. Reinforce potency is equal to 0.15 + 0.1 per amount of this perk, and lasts for 10 seconds.",
+    "description": "Abilities that can cleanse Debuffs now also grants Reinforce.",
     "tags": [
       "Defensive",
       "Buff",
@@ -3535,7 +3574,7 @@
   },
   {
     "name": "Wave Rider",
-    "description": "Gain a ramping Wave Rider status, which can be accelerated by healing any Ally with a cleansing heal and maxes out at 100. At max, your next Weapon Art or RMB will be empowered by water. If it empowered your Weapon Art, largely reduce its Cooldown once in addition.",
+    "description": "Gain a ramping ''Wave Rider'' status, which can be accelerated by healing any Ally with a cleansing heal and maxes out at 100. At max, your next Weapon Art or RMB will be empowered by water. If it empowered your Weapon Art, largely reduce its Cooldown once in addition.",
     "tags": [
       "Weapon Art Activated",
       "Healing",
@@ -3563,6 +3602,7 @@
     "tags": [
       "Stat Boost",
       "Mobility",
+      "Incomplete",
       "Weapon"
     ]
   },
@@ -3590,7 +3630,7 @@
   },
   {
     "name": "Whirlwind",
-    "description": "Converts all Tailwind to the Buff Whirlwind, with an increased duration. Whirlwind. Additionally, using a Weapon Art or Rune release a wind slash around yourself that inflicts Bleed.",
+    "description": "Converts all Tailwind to the Buff ''Whirlwind'', with an increased duration. ''Whirlwind''. Additionally, using a Weapon Art or Rune release a wind slash around yourself that inflicts Bleed.",
     "tags": [
       "Buff",
       "Weapon Art",
@@ -3606,6 +3646,7 @@
     "tags": [
       "Offensive",
       "Weapon Art",
+      "Damage Type",
       "Debuff",
       "RNG",
       "Armor"
@@ -3634,9 +3675,9 @@
     "description": "While under the effects of Tailwind, your Weapon Arts deal increased Knockback and gains some Armor Penetration. Additionally, Tailwind lasts longer.",
     "tags": [
       "Buff",
-      "Offensive",
       "Weapon Art",
       "Damage Boost",
+      "Damage Type",
       "Armor"
     ]
   },
@@ -3670,16 +3711,6 @@
       "Crit",
       "Buff",
       "Armor"
-    ]
-  },
-  {
-    "name": "Royal Finisher",
-    "description": "Release a damaging wave of Magic once per Finisher.",
-    "tags": [
-      "Offensive",
-      "Finisher",
-      "Magic",
-      "Weapon"
     ]
   }
 ]
