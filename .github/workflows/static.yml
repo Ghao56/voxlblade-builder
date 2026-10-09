@@ -32,6 +32,8 @@ jobs:
       - run: npm install
 
       - run: npm run build
+        env:
+          VITE_BASE_PATH: /voxlblade-builder/
 
       - uses: actions/upload-pages-artifact@v5
         with:
