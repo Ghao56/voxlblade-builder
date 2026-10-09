@@ -11,7 +11,8 @@
   import { DMG_TYPE_COLORS, DMG_TYPE_PRIORITY, SCALING_TO_BOOST, PERCENT_STATS, canProc, type WeaponBaseDmg, type ProcCoefficient } from './lib/types'
   import { BUFF_DEFS, getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, getHealingArtsRegenBuff, applyBuffPerkModifiers, calcBuffEffect, getBuffDescription, convertTailwindToWhirlwind, getTrueBalanceBuffs, assembleActiveBuffs, applyCauterizeConversion, getBurnApplicationCount, hasEligibleDarkeningHexSource, applyDarkeningHexPotency, resolveBuffTarget, isSelfBurnBuff } from './data/BuffData'
   import { DEBUFF_COMBAT_EFFECTS } from './data/debuffCombatEffects'
-  import { getDraconicInfusionBuff, getDraconicAbilityDebuffs, getEffectiveDraconicInfusionPotency, getDraconicInfusionPotMult, getDraconicInfusionDurMult } from './data/draconicBuffs'  
+  import { getDraconicInfusionBuff, getDraconicAbilityDebuffs, getEffectiveDraconicInfusionPotency, getDraconicInfusionPotMult, getDraconicInfusionDurMult } from './data/draconicBuffs'
+  import { vitalMistMaxPotency, vitalMistConsumption, vitalMistHealPerTick, vitalMistTailwindPotency, vitalMistActive } from './lib/vitalMist'  
   import { WA_SUMMON_MAP, SUMMON_MAP, calcSummonStat, calcMaxSummonCount, createSummonInstance, type SummonDef, type SummonInstance } from './data/SummonData'
   import CritIcon from './CritIcon.svelte'
   import { PERK_DMG_DEFS, findPerkDmgDef, SECONDARY_TONE_COLORS, isHpGateActive, DRAGON_STATE_HP_GATE, calcSpringblastBaseDamage, type TriggerChainEntry } from './data/Perkbasedmg'
@@ -27,7 +28,7 @@
   import { applyDraconicBonuses, getDraconicBonuses } from './data/draconicRunes'
   import { calculateHealBoost, type HealSource } from './data/HealBoost'
   import { buildRadianceProcHit, isRadianceEligible, radianceSourceHealing } from './data/radianceProcs'
-  import { RADIANCE_HOLY_SCALING, RADIANCE_LABEL, RADIANCE_COLOR, RAINSTORM_BASE_DMG, RAINSTORM_DMG_PER_STACK, RAINSTORM_BASE_HEAL, RAINSTORM_HEAL_PER_STACK, RAINSTORM_LABEL, REJUVENATING_FLAME_BASE_HEAL, REJUVENATING_FLAME_HEAL_PER_AMOUNT, REJUVENATING_FLAME_FIRE_SCALING, REJUVENATING_FLAME_BURN_HEAL_MULT, REJUVENATING_FLAME_BURN_AOE_PER_AMOUNT, REJUVENATING_FLAME_HEAL_LABEL } from './lib/constants/perk-base-damage'
+  import { RADIANCE_HOLY_SCALING, RADIANCE_LABEL, RADIANCE_COLOR, RAINSTORM_BASE_DMG, RAINSTORM_DMG_PER_STACK, RAINSTORM_BASE_HEAL, RAINSTORM_HEAL_PER_STACK, RAINSTORM_LABEL, REJUVENATING_FLAME_BASE_HEAL, REJUVENATING_FLAME_HEAL_PER_AMOUNT, REJUVENATING_FLAME_FIRE_SCALING, REJUVENATING_FLAME_BURN_HEAL_MULT, REJUVENATING_FLAME_BURN_AOE_PER_AMOUNT, REJUVENATING_FLAME_HEAL_LABEL, WAVE_RIDER_LABEL } from './lib/constants/perk-base-damage'
   import { roundMultiplier, calcWardingDebuffMultiplier, calcProcChance, applyScalingMult, fmtPctVal } from './lib/utils'
   import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage, calcInoculationHeal, UNDEAD_MIGHT_SELF_DMG_FRACTION, UNDEAD_MIGHT_DR_PCT_PER_STACK, type SelfDamagePerkDef } from './data/selfDamage'
   import { resolveDamageTypes, resolveWaDamageTypeKeys, applyAirToMagicConversion, computeEffectiveWaDmgTypes, pickHighestDmgType } from './lib/damageTypeResolve'
@@ -198,6 +199,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       build.update(s => ({ ...s, airPressurePotency: _apMax }) as any)
     }
   }
+  $: vitalMistPerkAmount = perks['Vital Mist'] ?? 0
 
   $: _photosynthesisStacks = perks['Photosynthesis'] ?? 0
   $: _vampireStacks = perks['Vampire'] ?? 0
@@ -497,7 +499,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     const _weaponModifier = isMonkGuild($build.guild)
       ? (($build.monkGlove || $build.monkEssence) ? calcMonkWeapon($build.monkGlove, $build.monkEssence, $build.shrineActive, $build.guildRank) : null)?.weaponModifier
       : (($build.weaponBlade || $build.weaponHandle) ? calcWeapon($build.weaponBlade, $build.weaponHandle, $build.shrineActive) : null)?.weaponModifier
-    const baseBuffs = assembleActiveBuffs($build, $result.perks, wardingDebuffMult, darkeningHexEligible, _weaponModifier)
+    const baseBuffs = assembleActiveBuffs($build, $result.perks, wardingDebuffMult, darkeningHexEligible, _weaponModifier, $vitalMistActive ? ($build.vitalMistPotency ?? 0) : 0)
 
     if ($build.rune === 'Ancient Cleric Rune') {
       const dynamicPotency = ANCIENT_CLERIC_SHIELD_BASE + ANCIENT_CLERIC_SHIELD_PER_VAL * ($build.buffsConsumed ?? 0)
@@ -3549,7 +3551,8 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     ..._activePerkDmgEntries
       // Rainstorm is excluded: its rows are emitted outside this pipeline, so a
       // Channeled Depths target pointing at them would silently do nothing.
-      .filter(e => e.isActive && e.typedHits_m2.length > 0 && e.perkName !== 'Cauterize' && e.perkName !== 'Blazing Finisher' && e.perkName !== 'Draconic Blood' && e.perkName !== RAINSTORM_LABEL && !_isSpiritPerk(e.perkName) && !e.countAsM1 && !e.countAsM2)
+      // Wave Rider is excluded for the same reason (card-only defs).
+      .filter(e => e.isActive && e.typedHits_m2.length > 0 && e.perkName !== 'Cauterize' && e.perkName !== 'Blazing Finisher' && e.perkName !== 'Draconic Blood' && e.perkName !== RAINSTORM_LABEL && e.perkName !== WAVE_RIDER_LABEL && !_isSpiritPerk(e.perkName) && !e.countAsM1 && !e.countAsM2)
       .map(e => e.displayName),
   ])]
   interface BDCHit {
@@ -4006,6 +4009,9 @@ note?: string
       // hand-written Rainstorm block further down (shared Water scaling, noProc
       // damage half, Radiance-eligible heal half).
       if (entry.perkName === RAINSTORM_LABEL) continue
+      // Same arrangement as Rainstorm: the Wave Rider defs are card-only, their
+      // mixed damage + heal rows come from the hand-written block further down.
+      if (entry.perkName === WAVE_RIDER_LABEL) continue
 
        // Check for heal effects from Draconic Blood abilities
        if (entry.perkName === 'Draconic Blood') {
@@ -4318,22 +4324,26 @@ note?: string
     }
     if (_waveRiderAmt > 0) {
       const wrScaling = _computePerkScalingMult({ water: 1.0 })
-      const pushWr = (baseDmg: number, healAmt: number, labelSuffix: string) => {
-        const srcGroup = labelSuffix === 'M2' ? 'M2' : 'WA'
+      // Numbers come from the Wave Rider PerkDmgDefs (the same ones the Perk
+      // Base Damage cards render), so emitted rows and cards can never drift.
+      // The heal rides the damage row so it inherits this hit's procs and stays
+      // on the compatible-heal list (Radiance).
+      for (const def of PERK_DMG_DEFS.filter(d => d.perkName === WAVE_RIDER_LABEL)) {
+        const baseDmg = def.getBaseDamage({ perkAmount: _waveRiderAmt })
+        const healAmt = def.secondaryEffects?.find(se => se.label === 'Heal')?.getValue({ perkAmount: _waveRiderAmt }) ?? 0
+        if (baseDmg <= 0) continue
         result.push({
-          group: srcGroup, index: result.length, count: 1, base: baseDmg, scalingMult: wrScaling, combatMult: _perkCombatMult, effectiveMult: _perkEffectiveMult,
+          group: def.isWA ? 'WA' : 'M2', index: result.length, count: 1, base: baseDmg, scalingMult: wrScaling, combatMult: _perkCombatMult, effectiveMult: _perkEffectiveMult,
           isFinisher: false, dmgTypes: { water: 1.0, heal: healAmt / baseDmg }, baseDmgTypes: { water: 1.0 },
           dmgTypeCombatMults: { heal: _healFinalMultiplier },
           radianceHealMult: _healDealtMultiplier,
           dmgTypeIsHeal: { heal: true },
           dmgTypeIsCritExempt: { heal: true },
-          label: `Wave Rider (${labelSuffix})`,
+          label: def.label ?? def.perkName,
           canApplyBurn: _hasSingedBurn,
           ...(_activeBellowingEmberMult !== 1 ? { weaponBoostMult: _activeBellowingEmberMult, weaponBoostLabel: 'Bellowing Ember' } : {}),
         })
       }
-      pushWr(40, 5, 'M2')
-      pushWr(35, 4.5, 'WA')
     }
     if (_oceanSongAmt > 0) {
       const osScaling = _computePerkScalingMult({ water: 1.0, dexterity: 1.0 })
@@ -4569,6 +4579,34 @@ alliesOnly: true,
         label: 'Hex Shield Heal',
         isHeal: true,
       })
+    }
+
+    // ── Vital Mist ─────────────────────────────────────────────
+    if ((perks['Vital Mist'] ?? 0) > 0 && $vitalMistActive) {
+      const vmAmt = perks['Vital Mist'] ?? 0
+      const potency = Math.min(vitalMistMaxPotency(vmAmt), $build.vitalMistPotency ?? 0)
+      if (potency > 0) {
+        const consumption = vitalMistConsumption(vmAmt, potency, $build.vitalMistBlocking ?? false)
+        const consumed = Math.min(potency, consumption)
+        const baseHeal = consumed / 5
+        if (baseHeal > 0) {
+          result.push({
+            group: 'Perk',
+            index: result.length,
+            count: 1,
+            base: baseHeal,
+            scalingMult: 1,
+            combatMult: _healFinalMultiplierNoLevel,
+            radianceHealMult: _healDealtMultiplier,
+            isFinisher: false,
+            dmgTypes: { heal: 1.0 },
+            dmgTypeIsCritExempt: { heal: true },
+            procCoefficient: { type: 'noProc' },
+            label: 'Vital Mist Heal (per tick)',
+            isHeal: true,
+          })
+        }
+      }
     }
 
     // ── Radiance ────────────────────────────────────────────────
@@ -4949,6 +4987,7 @@ $: _groupedSelfDamageSources = (() => {
     honeyGatherAmt={perks['Honey Gather'] ?? 0}
     lifestealHealMult={_healFinalMultiplierNoLevel}
     woofSpiritHealMult={_healFinalMultiplierNoLevel}
+    vitalMistPerkAmount={vitalMistPerkAmount}
     levelMult={_levelMult}
     sunburnUniversalDmgMult={_sunburnEnemyBurning ? _sunburnUniversalDmgMult : 1}
     bellowingEmberMult={_activeBellowingEmberMult}
@@ -6754,6 +6793,51 @@ $: _groupedSelfDamageSources = (() => {
             <p>Marked enemies take <b>+30%</b> more damage per 1 of the Void Contract perk (perk amount rounds down to the nearest whole number). The mark lasts <b>1 + perkAmount</b> hits ({_vcCharges} hit{_vcCharges === 1 ? '' : 's'} at your current amount), then expires — or expires naturally after its duration (<b>5s</b> at 1 of this perk).</p>
           </div>
         </details>
+      </div>
+    {/if}
+    {#if (perks['Vital Mist'] ?? 0) > 0 && $vitalMistActive}
+      <div class="da-pbd-card da-pbd-card--hex">
+        <div class="da-pbd-head">
+          <span class="da-pbd-name">Vital Mist</span>
+          <span class="da-pbd-amt">+{perks['Vital Mist'] ?? 0}</span>
+        </div>
+        <div class="da-cd-hit-row">
+          <span class="da-sb-slider-label">Blocking</span>
+          <div class="da-cd-hit-chips" role="group" aria-label="Vital Mist blocking">
+            {#each [{ v: true, l: 'ON' }, { v: false, l: 'OFF' }] as o}
+              <button
+                type="button"
+                class="da-cd-hit-chip"
+                class:da-cd-hit-chip--on={($build.vitalMistBlocking ?? false) === o.v}
+                on:click={() => build.update(s => ({ ...s, vitalMistBlocking: o.v }) as any)}
+                title={o.v ? 'Double consumption while blocking' : 'Normal consumption'}
+              >{o.l}</button>
+            {/each}
+          </div>
+        </div>
+        <div class="da-sb-slider-wrap" style="margin-bottom:6px">
+          <span class="da-sb-slider-label">Potency</span>
+          <input
+            type="range"
+            min="0"
+            max={vitalMistMaxPotency(perks['Vital Mist'] ?? 0)}
+            step="1"
+            value={$build.vitalMistPotency ?? 0}
+            on:input={(e) => {
+              const val = +(e.target as HTMLInputElement).value
+              build.update(s => ({ ...s, vitalMistPotency: val }) as any)
+            }}
+            class="da-sb-slider"
+            style="--tc:#60a5fa; --fill:{((($build.vitalMistPotency ?? 0) - 0) / (vitalMistMaxPotency(perks['Vital Mist'] ?? 0) || 1)) * 100}%"
+          />
+          <span class="da-sb-slider-val" style="color:#60a5fa">{$build.vitalMistPotency ?? 0}</span>
+        </div>
+        <div class="da-pbd-condition">
+          1 HP → 10 potency (Lifesteal conversion). Max potency {vitalMistMaxPotency(perks['Vital Mist'] ?? 0)}. 
+          Consumption {vitalMistConsumption(perks['Vital Mist'] ?? 0, ($build.vitalMistPotency ?? 0), ($build.vitalMistBlocking ?? false)).toFixed(1)} per tick; >50 doubles; blocking doubles. 
+          Heal {vitalMistHealPerTick(vitalMistConsumption(perks['Vital Mist'] ?? 0, ($build.vitalMistPotency ?? 0), ($build.vitalMistBlocking ?? false)) * Math.min(($build.vitalMistPotency ?? 0), vitalMistConsumption(perks['Vital Mist'] ?? 0, ($build.vitalMistPotency ?? 0), ($build.vitalMistBlocking ?? false))))}/tick. 
+          Tailwind {vitalMistTailwindPotency(perks['Vital Mist'] ?? 0).toFixed(1)} (4s, self) above 50. Size increases with amount. Cannot proc other healing effects.
+        </div>
       </div>
     {/if}
     {#each _nonDraconicPerkEntries as entry}

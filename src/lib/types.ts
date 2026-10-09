@@ -264,6 +264,8 @@ export interface BuildState {
   weaponCharge: number
   retaliateCharge: number
   perfectionStacks: number
+  vitalMistPotency: number
+  vitalMistBlocking: boolean
   voxos: number
 }
 

@@ -95,6 +95,8 @@ const DEFAULT_BUILD: BuildState = {
   weaponCharge: 100,
   retaliateCharge: 100,
   perfectionStacks: 5,
+  vitalMistPotency: 0,
+  vitalMistBlocking: false,
   voxos: 100000,
 }
 

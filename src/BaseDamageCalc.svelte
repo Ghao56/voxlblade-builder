@@ -13,7 +13,9 @@
   import { SCALING_TO_BOOST, PERCENT_STATS, canProc, getProcCoeffValue } from './lib/types'
 import { COMPATIBLE_HEAL_SOURCE_PATTERNS } from './lib/constants/perk-base-damage'
   import { procChanceScale } from './lib/procRegistry'
-import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
+  import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
+  import { vitalMistConsumption, vitalMistHealPerTick, VITAL_MIST_RATE_PER_HP, VITAL_MIST_HEAL_PER_5_POTENCY, VITAL_MIST_CONSUMPTION_BASE_PER_TICK, VITAL_MIST_CONSUMPTION_PER_POTENCY, VITAL_MIST_CONSUMPTION_THRESHOLD, VITAL_MIST_TAILWIND_POTENCY_BASE, VITAL_MIST_TAILWIND_POTENCY_PER_AMOUNT, VITAL_MIST_TAILWIND_DURATION, VITAL_MIST_MAX_POTENCY_BASE, VITAL_MIST_MAX_POTENCY_PER_AMOUNT } from './lib/vitalMist'
+  import { isVitalMistConvertibleTag, vitalMistActive } from './lib/vitalMist'
   // ARCHITECTURE: Level Damage Bonus (levelMult) is EXPLICIT and separate
   // from Effective Boost (effectiveMult / combatMult). Perk damage inheritance
   // (Ignition, Poisonous, Glacial, Static Buildup, Snarl) uses this split:
@@ -257,11 +259,13 @@ note?: string
   export let regenHealScalingMult: number = 1
   export let regenHealMult: number = 1
   export let lifestealStacks: number = 0
+
   export let honeyGatherAmt: number = 0
   export let sunburnUniversalDmgMult: number = 1
   export let bellowingEmberMult: number = 1
   export let perkCombatMult: number = 1
   export let phantomPainPct: number = 0
+  export let vitalMistPerkAmount: number = 0
   export let enemyHpFill: number = 100
   export let dotTicks: Array<{
     type: string; tickDamage: number; dotPotency?: number; inflictionPotency?: number
@@ -755,9 +759,13 @@ note?: string
     return results
   }
  
+  $: _vmConvertedBySource = new Map<string, number>()
+  let _vmConvertedAny = false
   $: computedHits = typedBoostEntries && effectiveDefenses && (void starRerollSeed, () => {
     const lcConsumed = new Set<string>()
     const cdPerkConsumed = new Set<string>()
+    _vmConvertedBySource.clear()
+    _vmConvertedAny = false
     // Void Contract — mirrors Channeled Depths: the user designates ONE hit instance
     // (target group + hit #, see DamageAnalyzer). That hit and everything it spawns
     // (procs, blub, stars, on-hit perks, DS, LC) inherits the buff via vcDilution / vcContext.
@@ -1527,6 +1535,25 @@ note?: string
       }
     }
 
+    // Vital Mist: convert lifesteal healing to potency before finalizing result
+    let vmPotencyGainedThisHit = 0
+    if ((vitalMistPerkAmount ?? 0) > 0) {
+      for (let t = types.length - 1; t >= 0; t--) {
+        const type = types[t]
+        if (!type.isHeal) continue
+        const convert = isVitalMistConvertibleTag(type.tag) || (hit.label === 'Dark Harvest Heal') || (hit.label === 'Woof Spirit') || (type.tag === 'Woof Spirit') || (hit.label === 'Life Drinker') || (type.tag === 'Life Drinker') || (hit.label === 'Vampire') || (type.tag === 'Vampire') || (hit.label === 'Beastial Rage') || (type.tag === 'Beastial Rage') || (hit.label === 'Ichor Spark') || (type.tag === 'Ichor Spark') || (hit.label === 'Blood Thirsty') || (type.tag === 'Blood Thirsty') || (hit.label === 'Curse Rip') || (type.tag === 'Curse Rip') || (hit.label === 'Venom Eater') || (type.tag === 'Venom Eater') || (hit.label === 'Honey Gather') || (type.tag === 'Honey Gather') || (hit.label === 'Snarled') || (type.tag === 'Snarled') || (hit.label === 'Dark Harvest') || (type.tag === 'Dark Harvest')
+        if (convert) {
+          _vmConvertedAny = true
+          vmPotencyGainedThisHit += type.raw * 10
+          types.splice(t, 1)
+        }
+      }
+      if (vmPotencyGainedThisHit > 0) {
+        const key = hit.label || 'Lifesteal'
+        _vmConvertedBySource.set(key, (_vmConvertedBySource.get(key) ?? 0) + vmPotencyGainedThisHit / 10)
+      }
+    }
+
     const result: ComputedHit = { group: hit.group, index: hit.index, count: hit.count, isFinisher: hit.isFinisher, label: hit.label, isHeal, types, procCount: hit.procCount, finisherGroupHitCount: hit.finisherGroupHitCount, eachHitM1M2: hit.eachHitM1M2 ?? false, vcBuffedCount, vcMult: VC_MULT, ...(hit.alliesOnly ? { alliesOnly: true as const } : {}), ...(hit.isRadianceProc ? { isRadianceProc: true as const, sourceLabel: hit.sourceLabel } : {}) }
     // Vassals Croak: on an RMB (M2) finisher hit, consume Last Croak and explode once per RMB press.
     // Triggers on any M2-type finisher: base M2 (group 'M2'), M2 finishers folded into the M1 combo
@@ -1621,6 +1648,8 @@ note?: string
     return [result]
     })
   })()
+
+  $: vitalMistActive.set((vitalMistPerkAmount ?? 0) > 0 && _vmConvertedAny)
 
   $: m1Hits   = computedHits.filter(h => h.group === 'M1')
   $: m2Hits   = computedHits.filter(h => h.group === 'M2')

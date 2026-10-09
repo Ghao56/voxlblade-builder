@@ -3,6 +3,7 @@
   import { build, result } from './lib/store'
   import { calcWardingDebuffMultiplier, roundMultiplier } from './lib/utils'
   import { calcDotDisplayPotency, getCursedFlamesBurnGradient } from './data/DoTDamage'
+  import { vitalMistActive } from './lib/vitalMist'
   import { calcWeapon, calcMonkWeapon } from './lib/engine/weapon'
 import { isMonkGuild } from './lib/engine/data/character'
   import Badge from './lib/ui/Badge.svelte'
@@ -104,8 +105,9 @@ import { calcBaseMaxHP } from './lib/constants/game'
   })()
 
   $: perkBuffs = (() => {
-    const buffs = getPerkBuffs($result.perks, $build.lastCroakStacks, undefined, buffListWeapon?.weaponModifier, $build.airPressurePotency)
-    const idx = buffs.findIndex(b => b.buffName === 'Exhaust')
+    const vmPotency = $vitalMistActive ? (($build as any).vitalMistPotency ?? 0) : 0
+    const buffs = (getPerkBuffs as any)($result.perks, $build.lastCroakStacks, undefined, buffListWeapon?.weaponModifier, $build.airPressurePotency, vmPotency)
+    const idx = buffs.findIndex((b: any) => b.buffName === 'Exhaust')
     if (idx !== -1) {
       const wa = WEAPON_ARTS.find(wa => wa.name === $build.selectedWeaponArt)
       if (wa?.cooldown) {
@@ -121,9 +123,9 @@ import { calcBaseMaxHP } from './lib/constants/game'
       buffs.push(getHealingArtsRegenBuff(_haAmt, _haWaCd, _haRuneCd))
     }
     if ($build.selectedWeaponArt !== 'Laser') {
-      return buffs.filter(b => b.sourceName !== 'Wild Bolt').filter(b => isHpGateActive(b.hpGate, $build.hpFill ?? 100, 0))
+      return buffs.filter((b: any) => b.sourceName !== 'Wild Bolt').filter((b: any) => isHpGateActive(b.hpGate, $build.hpFill ?? 100, 0))
     }
-    return buffs.filter(b => isHpGateActive(b.hpGate, $build.hpFill ?? 100, 0))
+    return buffs.filter((b: any) => isHpGateActive(b.hpGate, $build.hpFill ?? 100, 0))
   })()
 
   $: weaponArtBuffs = getWeaponArtBuffs($build.selectedWeaponArt)

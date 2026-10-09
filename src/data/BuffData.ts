@@ -4,8 +4,9 @@
 // Each section below groups one category. See also: GetBuffPotencyModifier for debuff scaling.
 // Dragged into DamageAnalyzer for display; consumed by calcAutoDebuffs for perk-triggered debuffs.
 
-import { roundMultiplier } from '../lib/utils'
-import { BASTION_BLESS_MULT, ICHOR_SPARK_BLEED_DURATION, AIR_PRESSURE_DEF_PER_POTENCY } from '../lib/constants'
+  import { roundMultiplier } from '../lib/utils'
+  import { BASTION_BLESS_MULT, ICHOR_SPARK_BLEED_DURATION, AIR_PRESSURE_DEF_PER_POTENCY } from '../lib/constants'
+  import { vitalMistMaxPotency, vitalMistTailwindPotency, VITAL_MIST_TAILWIND_DURATION } from '../lib/vitalMist'
 import {
   BUFF_EFFECT_PER_TENTH, WHIRLWIND_EFFECT_PER_TENTH, GLYPH_CONDUIT_EFFECT_PER_TENTH,
   DESPAIR_EFFECT_PER_TENTH, LUMINESCENT_PCT_PER_POTENCY,
@@ -1068,7 +1069,7 @@ export const BASIC_DEBUFF_POOL: Array<{ buffName: string; potency: number; durat
 ]
 
 // ── Perk-triggered buffs ────────────────────────────────────────────────────
-type PerkBuffFactory = (amount: number, allPerks: Record<string, number>, vassalsCroakStacks?: number, perfectionStacks?: number, weaponModifier?: string, airPressurePotency?: number) => GrantedBuff[]
+type PerkBuffFactory = (amount: number, allPerks: Record<string, number>, vassalsCroakStacks?: number, perfectionStacks?: number, weaponModifier?: string, airPressurePotency?: number, vitalMistPotency?: number) => GrantedBuff[]
 
 const PERK_BUFFS: Record<string, PerkBuffFactory> = {
 
@@ -1309,6 +1310,19 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       target: 'allies',
     },
   ],
+  'Vital Mist': (amount, _allPerks, _v, _p, _w, _a, vitalMistPotency) => {
+    const potency = Math.min(vitalMistMaxPotency(amount), vitalMistPotency ?? 0)
+    if (potency <= 50) return []
+    return [{
+      buffName: 'Tailwind',
+      potency: vitalMistTailwindPotency(amount),
+      duration: VITAL_MIST_TAILWIND_DURATION,
+      condition: 'Vital Mist charge above 50',
+      sourceName: 'Vital Mist',
+      sourceType: 'perk',
+      target: 'self',
+    }]
+  },
   'Smoldering': (amount) => [
     {
       buffName: 'Burn',
@@ -2636,14 +2650,14 @@ export function getBuffDescription(
   return desc.replace(/x%/g, `${+(pct).toFixed(4).replace(/\.?0+$/, '')}%`)
 }
 
-export function getPerkBuffs(perks: Record<string, number>, vassalsCroakStacks?: number, perfectionStacks?: number, weaponModifier?: string, airPressurePotency?: number): GrantedBuff[] {
+export function getPerkBuffs(perks: Record<string, number>, vassalsCroakStacks?: number, perfectionStacks?: number, weaponModifier?: string, airPressurePotency?: number, vitalMistPotency?: number): GrantedBuff[] {
   const buffs: GrantedBuff[] = []
 
   for (const [perkName, amount] of Object.entries(perks)) {
     if (amount <= 0) continue
     const factory = PERK_BUFFS[perkName]
     if (!factory) continue
-    for (const b of factory(amount, perks, vassalsCroakStacks, perfectionStacks, weaponModifier, airPressurePotency)) {
+    for (const b of factory(amount, perks, vassalsCroakStacks, perfectionStacks, weaponModifier, airPressurePotency, vitalMistPotency)) {
       buffs.push({ ...b, duration: Math.round(b.duration * 100) / 100 })
     }
   }
@@ -2730,6 +2744,7 @@ export interface ActiveBuffsBuildInput {
   inDarkness?: boolean
   lastCroakStacks?: number
   airPressurePotency?: number
+  vitalMistPotency?: number
   perfectionStacks?: number
   hpFill?: number
   level?: number
@@ -2778,6 +2793,7 @@ export function assembleActiveBuffs(
   wardingDebuffMult?: number,
   darkeningHexEligible?: boolean,
   weaponModifier?: string,
+  vitalMistPotency?: number,
 ): GrantedBuff[] {
   const itemBuffs = getActiveBuildBuffs({
     rune: build.rune, ring: build.ring, infusionRing: build.infusionRing,
@@ -2795,8 +2811,9 @@ export function assembleActiveBuffs(
     potionBuffs.push(...BUFFS_BY_ITEM_SOURCE[build.potion2])
   }
 
+  const vmPotency = vitalMistPotency ?? 0
   const buffs = convertTailwindToWhirlwind(applyBuffPerkModifiers(
-    [...itemBuffs, ...potionBuffs, ...getPerkBuffs(perks, build.lastCroakStacks, build.perfectionStacks, weaponModifier, build.airPressurePotency), ...getWeaponArtBuffs(build.selectedWeaponArt)],
+    [...itemBuffs, ...potionBuffs, ...getPerkBuffs(perks, build.lastCroakStacks, build.perfectionStacks, weaponModifier, build.airPressurePotency, vmPotency), ...getWeaponArtBuffs(build.selectedWeaponArt)],
     perks,
     build.rune || undefined,
     wardingDebuffMult,

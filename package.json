@@ -27,6 +27,7 @@
     "vitest": "^4.1.10"
   },
   "dependencies": {
-    "@vercel/analytics": "^2.0.1"
+    "@vercel/analytics": "^2.0.1",
+    "font-awesome": "^4.7.0"
   }
 }

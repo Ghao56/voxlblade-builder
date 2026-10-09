@@ -215,6 +215,11 @@ import {
   RAINSTORM_DMG_PER_STACK,
   RAINSTORM_BASE_HEAL,
   RAINSTORM_HEAL_PER_STACK,
+  WAVE_RIDER_M2_BASE_DMG,
+  WAVE_RIDER_M2_HEAL,
+  WAVE_RIDER_WA_BASE_DMG,
+  WAVE_RIDER_WA_HEAL,
+  WAVE_RIDER_LABEL,
 } from '../lib/constants'
 
 export interface PerkSliderDef {
@@ -2127,6 +2132,58 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
       },
     ],
     note: 'One Raindrop per rotation on 1.0 Water scaling. Base Damage = 4 + 2 × perk amount, Base Healing = 0.5 + 0.2 × perk amount. The drop cannot proc other effects, but its healing can — it is on the compatible-heal list, so each drop triggers a Radiance burst.',
+  },
+  // ── Wave Rider ─────────────────────────────────────────────────
+  // At max stacks the next Weapon Art / RMB is empowered by water: one hit
+  // dealing Water damage and healing the user. Like Rainstorm, these defs are
+  // the Perk Base Damage CARDS only — the breakdown rows are mixed
+  // damage + heal rows emitted by DamageAnalyzer's hand-written Wave Rider
+  // block (the generic loop cannot express a heal sharing a row's type split),
+  // so the generic perk loop skips them and that block reads these defs back
+  // for its numbers. Card and rows therefore cannot drift.
+  {
+    perkName: WAVE_RIDER_LABEL,
+    label: 'Wave Rider (M2)',
+    condition: 'At 100 stacks: next RMB is empowered by water',
+    getBaseDamage: () => WAVE_RIDER_M2_BASE_DMG,
+    hits: 1,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { water: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { water: 1.0 },
+    workOnM2: true,
+    secondaryEffects: [
+      {
+        label: 'Heal',
+        getValue: () => WAVE_RIDER_M2_HEAL,
+        format: v => `${v} HP`,
+        condition: 'Base Healing (Self) · 1.0 Water scaling · on the compatible-heal list (triggers Radiance)',
+        tone: 'defense',
+      },
+    ],
+    note: `Empowered RMB: ${WAVE_RIDER_M2_BASE_DMG} Water damage on 1.0 Water scaling, healing ${WAVE_RIDER_M2_HEAL} HP. The healing can proc other effects (compatible-heal list → Radiance).`,
+  },
+  {
+    perkName: WAVE_RIDER_LABEL,
+    label: 'Wave Rider (WA)',
+    condition: 'At 100 stacks: next Weapon Art is empowered by water (largely reduced WA cooldown once)',
+    getBaseDamage: () => WAVE_RIDER_WA_BASE_DMG,
+    hits: 1,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { water: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { water: 1.0 },
+    isWA: true,
+    secondaryEffects: [
+      {
+        label: 'Heal',
+        getValue: () => WAVE_RIDER_WA_HEAL,
+        format: v => `${v} HP`,
+        condition: 'Base Healing (Self) · 1.0 Water scaling · on the compatible-heal list (triggers Radiance)',
+        tone: 'defense',
+      },
+    ],
+    note: `Empowered Weapon Art: ${WAVE_RIDER_WA_BASE_DMG} Water damage on 1.0 Water scaling, healing ${WAVE_RIDER_WA_HEAL} HP. The healing can proc other effects (compatible-heal list → Radiance).`,
   },
 ]
 

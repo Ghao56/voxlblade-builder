@@ -388,3 +388,12 @@ export const COMPATIBLE_HEAL_SOURCE_PATTERNS: RegExp[] = [
 
 // ── Explosive Honey ─────────────────────────────────────
 export const EXPLOSIVE_HONEY_BASE_DMG = 3
+
+// Wave Rider
+// At max Wave Rider stacks the next Weapon Art or RMB is empowered by water:
+// a single hit (no ramping) that deals Water damage and heals the user.
+export const WAVE_RIDER_M2_BASE_DMG = 40
+export const WAVE_RIDER_M2_HEAL = 5
+export const WAVE_RIDER_WA_BASE_DMG = 35
+export const WAVE_RIDER_WA_HEAL = 4.5
+export const WAVE_RIDER_LABEL = 'Wave Rider'
