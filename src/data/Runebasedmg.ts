@@ -77,6 +77,21 @@ function resolveHighestWeaponDmgType(types: Record<string, number> | undefined):
   return pickHighestDmgType(Object.entries(types ?? {}).filter(([, v]) => v > 0))
 }
 
+function highestWeaponDmgType(ctx: RuneDmgCtx): string | null {
+  return resolveHighestWeaponDmgType(ctx.weaponDmgTypesBase ?? ctx.weaponDmgTypes)
+}
+
+function resolveDmgTypesFromHighest(ctx: RuneDmgCtx): Record<string, number> {
+  const highest = highestWeaponDmgType(ctx)
+  return highest ? { [highest]: 1 } : {}
+}
+
+function resolveScalingsFromHighest(ctx: RuneDmgCtx): Record<string, number> {
+  const highest = highestWeaponDmgType(ctx)
+  if (!highest) return {}
+  return highest === 'true' ? { magic: 1.0 } : { [highest]: 1.0 }
+}
+
 const ENCHANTED_SWORD_BASE_DMG_BY_TYPE: Record<number, number> = {
   0: ENCHANTED_SWORD_DAGGER_BASE_DMG,
   1: ENCHANTED_SWORD_SWORD_BASE_DMG,
@@ -120,12 +135,9 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
       dmgTypes: {},
       scalings: {},
       hits: MAGIC_MISSILE_HITS,
-      resolveDmgTypes: ({ weaponDmgTypesBase, weaponDmgTypes }) => {
-        const highest = resolveHighestWeaponDmgType(weaponDmgTypesBase ?? weaponDmgTypes)
-        return highest ? { [highest]: 1 } : {}
-      },
-      resolveScalings: ({ weaponDmgTypesBase, weaponDmgTypes }) => {
-        const highest = resolveHighestWeaponDmgType(weaponDmgTypesBase ?? weaponDmgTypes)
+      resolveDmgTypes: resolveDmgTypesFromHighest,
+      resolveScalings: (ctx) => {
+        const highest = highestWeaponDmgType(ctx)
         if (!highest) return { magic: 0.5 }
         if (highest === 'true') return { magic: 1.0 }
         return { ...(highest === 'magic' ? {} : { [highest]: 0.5 }), magic: highest === 'magic' ? 1.0 : 0.5 }
@@ -378,15 +390,8 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     dmgTypes: {},
     scalings: {},
     hits: 1,
-    resolveDmgTypes: ({ weaponDmgTypesBase, weaponDmgTypes }) => {
-      const highest = resolveHighestWeaponDmgType(weaponDmgTypesBase ?? weaponDmgTypes)
-      return highest ? { [highest]: 1 } : {}
-    },
-    resolveScalings: ({ weaponDmgTypesBase, weaponDmgTypes }) => {
-      const highest = resolveHighestWeaponDmgType(weaponDmgTypesBase ?? weaponDmgTypes)
-      if (!highest) return {}
-      return highest === 'true' ? { magic: 1.0 } : { [highest]: 1.0 }
-    },
+    resolveDmgTypes: resolveDmgTypesFromHighest,
+    resolveScalings: resolveScalingsFromHighest,
     isFinisher: true,
     guardbreak: true,
     getForceCrit: ({ sliderVal = 0 }) => sliderVal === 0,
@@ -407,15 +412,8 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
       hits: RUNIC_GLASS_TICKS,
       getHits: ({ perks }) => getRunicGlassDuration(perks ?? {}),
       activeIf: ({ sliderVal = 0 }) => sliderVal === 1,
-      resolveDmgTypes: ({ weaponDmgTypesBase, weaponDmgTypes }) => {
-        const highest = resolveHighestWeaponDmgType(weaponDmgTypesBase ?? weaponDmgTypes)
-        return highest ? { [highest]: 1 } : {}
-      },
-      resolveScalings: ({ weaponDmgTypesBase, weaponDmgTypes }) => {
-        const highest = resolveHighestWeaponDmgType(weaponDmgTypesBase ?? weaponDmgTypes)
-        if (!highest) return {}
-        return highest === 'true' ? { magic: 1.0 } : { [highest]: 1.0 }
-      },
+      resolveDmgTypes: resolveDmgTypesFromHighest,
+      resolveScalings: resolveScalingsFromHighest,
     },
   },
 ]

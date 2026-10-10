@@ -14,7 +14,7 @@
 import { COMPATIBLE_HEAL_SOURCE_PATTERNS } from './lib/constants/perk-base-damage'
   import { procChanceScale } from './lib/procRegistry'
   import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
-  import { vitalMistActive, isVitalMistConvertibleTag } from './lib/vitalMist'
+  import { isVitalMistConvertibleTag } from './lib/vitalMist'
   // ARCHITECTURE: Level Damage Bonus (levelMult) is EXPLICIT and separate
   // from Effective Boost (effectiveMult / combatMult). Perk damage inheritance
   // (Ignition, Poisonous, Glacial, Static Buildup, Snarl) uses this split:
@@ -759,12 +759,10 @@ note?: string
   }
  
   $: _vmConvertedBySource = new Map<string, number>()
-  let _vmConvertedAny = false
   $: computedHits = typedBoostEntries && effectiveDefenses && (void starRerollSeed, () => {
     const lcConsumed = new Set<string>()
     const cdPerkConsumed = new Set<string>()
     _vmConvertedBySource.clear()
-    _vmConvertedAny = false
     // Void Contract — mirrors Channeled Depths: the user designates ONE hit instance
     // (target group + hit #, see DamageAnalyzer). That hit and everything it spawns
     // (procs, blub, stars, on-hit perks, DS, LC) inherits the buff via vcDilution / vcContext.
@@ -1542,7 +1540,6 @@ note?: string
         if (!type.isHeal) continue
         const convert = isVitalMistConvertibleTag(type.tag) || (hit.label === 'Dark Harvest Heal') || (hit.label === 'Woof Spirit') || (type.tag === 'Woof Spirit') || (hit.label === 'Life Drinker') || (type.tag === 'Life Drinker') || (hit.label === 'Vampire') || (type.tag === 'Vampire') || (hit.label === 'Beastial Rage') || (type.tag === 'Beastial Rage') || (hit.label === 'Ichor Spark') || (type.tag === 'Ichor Spark') || (hit.label === 'Blood Thirsty') || (type.tag === 'Blood Thirsty') || (hit.label === 'Curse Rip') || (type.tag === 'Curse Rip') || (hit.label === 'Venom Eater') || (type.tag === 'Venom Eater') || (hit.label === 'Honey Gather') || (type.tag === 'Honey Gather') || (hit.label === 'Snarled') || (type.tag === 'Snarled') || (hit.label === 'Dark Harvest') || (type.tag === 'Dark Harvest')
         if (convert) {
-          _vmConvertedAny = true
           vmPotencyGainedThisHit += type.raw * 10
           types.splice(t, 1)
         }
@@ -1647,8 +1644,6 @@ note?: string
     return [result]
     })
   })()
-
-  $: vitalMistActive.set((vitalMistPerkAmount ?? 0) > 0 && _vmConvertedAny)
 
   $: m1Hits   = computedHits.filter(h => h.group === 'M1')
   $: m2Hits   = computedHits.filter(h => h.group === 'M2')

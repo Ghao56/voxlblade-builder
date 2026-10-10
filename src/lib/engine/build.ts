@@ -31,7 +31,7 @@ import {
 } from './data'
 import { applyEnchantmentsToSlot, applyPerkEffectiveness, applyInfusion } from './enchant'
 import { applyShrineToStats, SHRINE_MULTIPLIERS } from './shrine'
-import { MONK_RANK_MULTIPLIER, calcWeapon, calcMonkWeapon } from './weapon'
+import { MONK_RANK_MULTIPLIER, calcBuildWeapon } from './weapon'
 import { WEAPON_ARTS } from '../../data/weaponArts'
 import { isUnbalancedWeaponry } from '../../data/weaponConditionalBoosts'
 import { getFinalWaDmgTypes, weaponHitsCountAsWa } from '../damageTypeResolve'
@@ -523,9 +523,7 @@ function deriveResults(
     state.cdrToggles,
   )
 
-  const _weaponResult = isMonkGuild(state.guild)
-    ? ((state.monkGlove || state.monkEssence) ? calcMonkWeapon(state.monkGlove, state.monkEssence, state.shrineActive, state.guildRank) : null)
-    : ((state.weaponBlade || state.weaponHandle) ? calcWeapon(state.weaponBlade, state.weaponHandle, state.shrineActive) : null)
+  const _weaponResult = calcBuildWeapon(state)
 
   const boostedStats = applyStatBoostPerks(finalStats, finalPerks)
   applyEmotionalAttackSpeed(boostedStats, finalPerks, state.emotionalState, state.emotionalDisabled)

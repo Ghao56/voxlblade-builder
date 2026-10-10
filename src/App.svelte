@@ -7,7 +7,7 @@
     getGuild, getRace, getArmorPart, getRing, getRune, getEnchant, getPerk,
     getBlade, getHandle, getGlove, getEssence,
     formatStat, formatLabel, applyEnchantmentsToSlot, applyInfusion,
-    calcWeapon, calcMonkWeapon, isMonkGuild, MONK_RANK_MULTIPLIER,
+    calcBuildWeapon, isMonkGuild, MONK_RANK_MULTIPLIER,
     type CDRResult
   } from './lib/engine'
   import { setEnchantment, setGuild, moveArmorSlot, canArmorMoveToSlot, moveRingSlot } from './lib/store'
@@ -1342,9 +1342,7 @@ $: weaponDamageTypesWithBonus = (() => {
 
 $: highestDamageType = pickHighestDmgType(Object.entries(weaponDamageTypesWithBonus))
   // ── Weapon result ──────────────────────────────────────────────────────────
- $: weaponResult = isMonk
-  ? (($build.monkGlove || $build.monkEssence) ? calcMonkWeapon($build.monkGlove, $build.monkEssence, shrineActive, $build.guildRank) : null)
-  : (($build.weaponBlade || $build.weaponHandle) ? calcWeapon($build.weaponBlade, $build.weaponHandle, shrineActive) : null)
+ $: weaponResult = calcBuildWeapon($build)
 
   $: summaryWeaponLabel = weaponResult?.part1Name && weaponResult?.part2Name && weaponResult.finalWeaponType
     ? weaponResult.finalWeaponType : 'None'

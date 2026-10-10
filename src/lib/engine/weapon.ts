@@ -1,6 +1,7 @@
-import type { StatMap, WeaponBlade, WeaponHandle, MonkGlove, MonkEssence } from '../types'
+import type { StatMap, WeaponBlade, WeaponHandle, MonkGlove, MonkEssence, BuildState } from '../types'
 import { STAT_KEYS } from '../types'
 import { getBlade, getHandle, getGlove, getEssence } from './data'
+import { isMonkGuild } from './data/character'
 import { applyShrineToScalings, applyShrineToStats, SHRINE_MULTIPLIERS } from './shrine'
 import { round2, round4 } from './_utils'
 
@@ -413,11 +414,11 @@ function applyMonkStatBonus(
 
 // ─── Public API ───────────────────────────────────────────────────────────────
 
-export function calcWeapon(bladeName: string, handleName: string, shrineActive = false): WeaponResult | null {
+function calcWeapon(bladeName: string, handleName: string, shrineActive = false): WeaponResult | null {
   return calcWeaponGeneric(getBlade(bladeName) ?? null, getHandle(handleName) ?? null, "Blade", "Handle", "bladeType", "handleType", false, shrineActive)
 }
 
-export function calcMonkWeapon(gloveName: string, essenceName: string, shrineActive = false, monkRank = 1): WeaponResult | null {
+function calcMonkWeapon(gloveName: string, essenceName: string, shrineActive = false, monkRank = 1): WeaponResult | null {
   const glove  = getGlove(gloveName)
   const result = calcWeaponGeneric(glove ?? null, getEssence(essenceName) ?? null, "Glove", "Essence", "gloveType", "essenceType", true, shrineActive)
   if (!result) return null
@@ -440,4 +441,16 @@ export function calcMonkWeapon(gloveName: string, essenceName: string, shrineAct
   }
 
   return result
+}
+
+/** Resolves a build's active weapon (monk or blade/handle) in one place. */
+export function calcBuildWeapon(build: BuildState): WeaponResult | null {
+  if (isMonkGuild(build.guild)) {
+    return (build.monkGlove || build.monkEssence)
+      ? calcMonkWeapon(build.monkGlove, build.monkEssence, build.shrineActive, build.guildRank)
+      : null
+  }
+  return (build.weaponBlade || build.weaponHandle)
+    ? calcWeapon(build.weaponBlade, build.weaponHandle, build.shrineActive)
+    : null
 }

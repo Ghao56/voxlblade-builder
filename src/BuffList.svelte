@@ -3,9 +3,7 @@
   import { build, result } from './lib/store'
   import { calcWardingDebuffMultiplier, roundMultiplier } from './lib/utils'
   import { calcDotDisplayPotency, getCursedFlamesBurnGradient } from './data/DoTDamage'
-  import { vitalMistActive } from './lib/vitalMist'
-  import { calcWeapon, calcMonkWeapon } from './lib/engine/weapon'
-import { isMonkGuild } from './lib/engine/data/character'
+  import { calcBuildWeapon } from './lib/engine/weapon'
   import Badge from './lib/ui/Badge.svelte'
   import {
     BUFF_DEFS,
@@ -43,13 +41,7 @@ import { buildDmgTypeBonuses } from './lib/engine/dmgTypeBonuses'
 import { SPIRIT_WINDS_PCT_PER_STACK, DARK_MAGIC_HEX_CONVERSION_PCT_PER_STACK, TRUE_MOON_TRUE_CONVERSION_PCT_PER_STACK, EMOTIONAL_PCT_PER_STACK, TOXIN_TRANSFER_PCT_PER_STACK, DARKENING_HEX_MAX_ACTIVATIONS } from './lib/constants/perks'
 import { calcBaseMaxHP } from './lib/constants/game'
 
-  $: buffListWeapon = isMonkGuild($build.guild)
-    ? ($build.monkGlove && $build.monkEssence)
-      ? calcMonkWeapon($build.monkGlove, $build.monkEssence, $build.shrineActive, $build.guildRank)
-      : null
-    : ($build.weaponBlade || $build.weaponHandle)
-      ? calcWeapon($build.weaponBlade, $build.weaponHandle, $build.shrineActive)
-      : null
+  $: buffListWeapon = calcBuildWeapon($build)
   $: buffListSelectedWA = WEAPON_ARTS.find(a => a.name === $build.selectedWeaponArt) ?? WEAPON_ARTS[0]
 
   $: darkeningHexModifierOptions = {
@@ -105,7 +97,7 @@ import { calcBaseMaxHP } from './lib/constants/game'
   })()
 
   $: perkBuffs = (() => {
-    const vmPotency = $vitalMistActive ? (($build as any).vitalMistPotency ?? 0) : 0
+    const vmPotency = (($build as any).vitalMistPotency ?? 0)
     const buffs = (getPerkBuffs as any)($result.perks, $build.lastCroakStacks, undefined, buffListWeapon?.weaponModifier, $build.airPressurePotency, vmPotency)
     const idx = buffs.findIndex((b: any) => b.buffName === 'Exhaust')
     if (idx !== -1) {
@@ -259,13 +251,7 @@ import { calcBaseMaxHP } from './lib/constants/game'
     if (_ffAmt > 0) {
       const _pc = WA_PROC_COEFFS[$build.selectedWeaponArt] ?? DEFAULT_PROC_COEFF
       if (canProc(_pc)) {
-        const _w = isMonkGuild($build.guild)
-          ? ($build.monkGlove && $build.monkEssence)
-            ? calcMonkWeapon($build.monkGlove, $build.monkEssence, $build.shrineActive)
-            : null
-          : ($build.weaponBlade || $build.weaponHandle)
-            ? calcWeapon($build.weaponBlade, $build.weaponHandle, $build.shrineActive)
-            : null
+        const _w = calcBuildWeapon($build)
         let _hasWaterDmg = _w
           ? Object.entries(resolveWaDamageTypeKeys(
               (WEAPON_ARTS.find(a => a.name === $build.selectedWeaponArt))?.damageType,

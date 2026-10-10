@@ -738,6 +738,15 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectUnit: 'flat',
     isNeutral: true,
   },
+  'Vital Mist': {
+    name: 'Vital Mist',
+    color: '#f70101',
+    description: 'Slowly drains to heal people around yourself. Resource for Vital Mist.',
+    dynamicDescription: (_perks, potency) => `Charges: ${+potency.toFixed(1)} · passively consumed to heal Allies in an AoE · 1 HP → 10 potency (Lifesteal) · at ≥50 charge gains increased AoE and grants Tailwind`,
+    effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
+    effectUnit: 'flat',
+    isNeutral: true,
+  },
   'Steam Buildup': {
     name: 'Steam Buildup',
     color: '#94a3b8',
@@ -1310,16 +1319,27 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
   ],
   'Vital Mist': (amount, _allPerks, _v, _p, _w, _a, vitalMistPotency) => {
     const potency = Math.min(vitalMistMaxPotency(amount), vitalMistPotency ?? 0)
-    if (potency <= 50) return []
-    return [{
-      buffName: 'Tailwind',
-      potency: vitalMistTailwindPotency(amount),
-      duration: VITAL_MIST_TAILWIND_DURATION,
-      condition: 'Vital Mist charge above 50',
+    const status: GrantedBuff[] = [{
+      buffName: 'Vital Mist',
+      potency,
+      duration: 0,
+      condition: 'Lifesteal is consumed to build charges instead · passively drains to heal Allies in an AoE',
       sourceName: 'Vital Mist',
       sourceType: 'perk',
-      target: 'self',
     }]
+    if (potency <= 50) return status
+    return [
+      ...status,
+      {
+        buffName: 'Tailwind',
+        potency: vitalMistTailwindPotency(amount),
+        duration: VITAL_MIST_TAILWIND_DURATION,
+        condition: 'Vital Mist charge above 50',
+        sourceName: 'Vital Mist',
+        sourceType: 'perk',
+        target: 'self',
+      },
+    ]
   },
   'Smoldering': (amount) => [
     {

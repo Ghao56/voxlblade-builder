@@ -1,7 +1,7 @@
 <script lang="ts">
   import { fade } from 'svelte/transition'
   import { build, result, effectiveDarknessOverride, orkBuffTenacity, buildReplaceSeq } from './lib/store'
-  import { calcWeapon, calcMonkWeapon, isMonkGuild } from './lib/engine'
+  import { calcBuildWeapon } from './lib/engine'
   import BaseDamageCalc from './BaseDamageCalc.svelte'
   import ScalingBreakdownRow from './ScalingBreakdownRow.svelte'
   import SummonCard from './SummonCard.svelte'
@@ -12,7 +12,7 @@
   import { BUFF_DEFS, getActiveBuildBuffs, getPerkBuffs, getWeaponArtBuffs, getHealingArtsRegenBuff, applyBuffPerkModifiers, calcBuffEffect, getBuffDescription, convertTailwindToWhirlwind, getTrueBalanceBuffs, assembleActiveBuffs, applyCauterizeConversion, getBurnApplicationCount, hasEligibleDarkeningHexSource, applyDarkeningHexPotency, resolveBuffTarget, isSelfBurnBuff } from './data/BuffData'
   import { DEBUFF_COMBAT_EFFECTS } from './data/debuffCombatEffects'
   import { getDraconicInfusionBuff, getDraconicAbilityDebuffs, getEffectiveDraconicInfusionPotency, getDraconicInfusionPotMult, getDraconicInfusionDurMult } from './data/draconicBuffs'
-  import { vitalMistMaxPotency, vitalMistConsumption, vitalMistHealPerTick, vitalMistTailwindPotency, vitalMistActive } from './lib/vitalMist'  
+  import { vitalMistMaxPotency, vitalMistConsumption, vitalMistHealPerTick, vitalMistTailwindPotency } from './lib/vitalMist'
   import { WA_SUMMON_MAP, SUMMON_MAP, calcSummonStat, calcMaxSummonCount, createSummonInstance, type SummonDef, type SummonInstance } from './data/SummonData'
   import CritIcon from './CritIcon.svelte'
   import { PERK_DMG_DEFS, findPerkDmgDef, SECONDARY_TONE_COLORS, isHpGateActive, DRAGON_STATE_HP_GATE, calcSpringblastBaseDamage, type TriggerChainEntry } from './data/Perkbasedmg'
@@ -496,10 +496,8 @@ const trimNum = (n: number, maxDecimals = 4): string => {
 
   // ── Active Buffs Assembly ──────────────────────────────────────────────────
   $: _allActiveBuffsRaw = (() => {
-    const _weaponModifier = isMonkGuild($build.guild)
-      ? (($build.monkGlove || $build.monkEssence) ? calcMonkWeapon($build.monkGlove, $build.monkEssence, $build.shrineActive, $build.guildRank) : null)?.weaponModifier
-      : (($build.weaponBlade || $build.weaponHandle) ? calcWeapon($build.weaponBlade, $build.weaponHandle, $build.shrineActive) : null)?.weaponModifier
-    const baseBuffs = assembleActiveBuffs($build, $result.perks, wardingDebuffMult, darkeningHexEligible, _weaponModifier, $vitalMistActive ? ($build.vitalMistPotency ?? 0) : 0)
+    const _weaponModifier = calcBuildWeapon($build)?.weaponModifier
+    const baseBuffs = assembleActiveBuffs($build, $result.perks, wardingDebuffMult, darkeningHexEligible, _weaponModifier, $build.vitalMistPotency ?? 0)
 
     if ($build.rune === 'Ancient Cleric Rune') {
       const dynamicPotency = ANCIENT_CLERIC_SHIELD_BASE + ANCIENT_CLERIC_SHIELD_PER_VAL * ($build.buffsConsumed ?? 0)
@@ -555,9 +553,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     if (_ffAmt > 0) {
       const _pc = WA_PROC_COEFFS[$build.selectedWeaponArt] ?? DEFAULT_PROC_COEFF
       if (canProc(_pc)) {
-        const _w = isMonkGuild($build.guild)
-          ? (($build.monkGlove || $build.monkEssence) ? calcMonkWeapon($build.monkGlove, $build.monkEssence, $build.shrineActive, $build.guildRank) : null)
-          : (($build.weaponBlade || $build.weaponHandle) ? calcWeapon($build.weaponBlade, $build.weaponHandle, $build.shrineActive) : null)
+        const _w = calcBuildWeapon($build)
         let _hasWaterDmg = _w
           ? Object.entries(resolveWaDamageTypeKeys(
               (WEAPON_ARTS.find(a => a.name === $build.selectedWeaponArt))?.damageType,
@@ -1628,7 +1624,6 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     })
   }
 
-  $: _isMonk = isMonkGuild($build.guild)
   $: _isDragonBlooded = $build.race === 'DRAGON BLOODED'
   $: _effDraconicColor = _isDragonBlooded ? ($build.draconicColor || 'physical') : 'physical'
 
@@ -1637,9 +1632,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
 
   $: _hasLockedAndLoaded = ($result.perks['Locked And Loaded'] ?? 0) > 0
 
-  $: _weaponResult = _isMonk
-    ? (($build.monkGlove || $build.monkEssence) ? calcMonkWeapon($build.monkGlove, $build.monkEssence, $build.shrineActive, $build.guildRank) : null)
-    : (($build.weaponBlade || $build.weaponHandle) ? calcWeapon($build.weaponBlade, $build.weaponHandle, $build.shrineActive) : null)
+  $: _weaponResult = calcBuildWeapon($build)
 
   $: _baseWeaponType = _weaponResult?.finalWeaponType ?? ''
   $: _weaponPerks = _weaponResult?.perks ?? {}
@@ -2585,6 +2578,20 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       totalEffectivePct,
       multiplier: roundMultiplier(applyScalingMult(totalEffectivePct / 100)),
       label: REJUVENATING_FLAME_HEAL_LABEL,
+    }
+  })()
+
+  // Vital Mist heal Air/Physical-scaling breakdown (1.0 Air + 1.0 Physical Scaling)
+  $: _vitalMistHealScalingBreakdown = (() => {
+    if (!((perks['Vital Mist'] ?? 0) > 0)) return null
+    const rows = buildScalingRows({ air: 1.0, physical: 1.0 })
+    if (!rows.length) return null
+    const totalEffectivePct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 1000) / 1000
+    return {
+      rows,
+      totalEffectivePct,
+      multiplier: roundMultiplier(applyScalingMult(totalEffectivePct / 100)),
+      label: 'Vital Mist Heal',
     }
   })()
 
@@ -4582,7 +4589,10 @@ alliesOnly: true,
     }
 
     // ── Vital Mist ─────────────────────────────────────────────
-    if ((perks['Vital Mist'] ?? 0) > 0 && $vitalMistActive) {
+    // Passively consumed to heal Allies in an AoE. Base Heal = consumed / 5
+    // (1 HP per 5 Potency consumed), on 1.0 Air + 1.0 Physical scaling, and
+    // is affected by the Level Damage Bonus like other heal sources.
+    if ((perks['Vital Mist'] ?? 0) > 0) {
       const vmAmt = perks['Vital Mist'] ?? 0
       const potency = Math.min(vitalMistMaxPotency(vmAmt), $build.vitalMistPotency ?? 0)
       if (potency > 0) {
@@ -4595,8 +4605,8 @@ alliesOnly: true,
             index: result.length,
             count: 1,
             base: baseHeal,
-            scalingMult: 1,
-            combatMult: _healFinalMultiplierNoLevel,
+            scalingMult: _computePerkScalingMult({ air: 1.0, physical: 1.0 }),
+            combatMult: _healFinalMultiplier,
             radianceHealMult: _healDealtMultiplier,
             isFinisher: false,
             dmgTypes: { heal: 1.0 },
@@ -6886,7 +6896,7 @@ $: _groupedSelfDamageSources = (() => {
         </details>
       </div>
     {/if}
-    {#if (perks['Vital Mist'] ?? 0) > 0 && $vitalMistActive}
+    {#if (perks['Vital Mist'] ?? 0) > 0}
       <div class="da-pbd-card da-pbd-card--hex">
         <div class="da-pbd-head">
           <span class="da-pbd-name">Vital Mist</span>
@@ -6919,9 +6929,9 @@ $: _groupedSelfDamageSources = (() => {
               build.update(s => ({ ...s, vitalMistPotency: val }) as any)
             }}
             class="da-sb-slider"
-            style="--tc:#60a5fa; --fill:{((($build.vitalMistPotency ?? 0) - 0) / (vitalMistMaxPotency(perks['Vital Mist'] ?? 0) || 1)) * 100}%"
+            style="--tc:#f70101; --fill:{((($build.vitalMistPotency ?? 0) - 0) / (vitalMistMaxPotency(perks['Vital Mist'] ?? 0) || 1)) * 100}%"
           />
-          <span class="da-sb-slider-val" style="color:#60a5fa">{$build.vitalMistPotency ?? 0}</span>
+          <span class="da-sb-slider-val" style="color:#f70101">{$build.vitalMistPotency ?? 0}</span>
         </div>
         <div class="da-pbd-condition">
           1 HP → 10 potency (Lifesteal conversion). Max potency {vitalMistMaxPotency(perks['Vital Mist'] ?? 0)}. 
@@ -7668,7 +7678,7 @@ $: _groupedSelfDamageSources = (() => {
 </div>
 {/if}
 
-{#if _waHealScalingBreakdown || _perkHealScalingBreakdown || _rainstormHealScalingBreakdown || _rejuvenatingFlameHealScalingBreakdown || _regenHealScalingBreakdown}
+{#if _waHealScalingBreakdown || _perkHealScalingBreakdown || _rainstormHealScalingBreakdown || _rejuvenatingFlameHealScalingBreakdown || _vitalMistHealScalingBreakdown || _regenHealScalingBreakdown}
 <div class="da-section da-section--scaling" style="border-color:rgba(74,222,128,.2);background:linear-gradient(160deg,var(--surface,#141715) 60%,rgba(74,222,128,.03) 100%)">
   <div class="da-section-title" style="color:#4ade80">✦ Heal Scaling</div>
 
@@ -7746,8 +7756,23 @@ $: _groupedSelfDamageSources = (() => {
     </div>
   {/if}
 
-  {#if _regenHealScalingBreakdown}
+  <!-- Vital Mist heal scaling subsection (1.0 Air + 1.0 Physical Scaling) -->
+  {#if _vitalMistHealScalingBreakdown}
     <div class="ds-wa-subsection" style="margin-top:{_waHealScalingBreakdown || _perkHealScalingBreakdown || _rainstormHealScalingBreakdown || _rejuvenatingFlameHealScalingBreakdown ? '12px' : '0'}">
+      <div class="ds-wa-header">
+        <Badge color="#38bdf8">Perk</Badge>
+        <span class="ds-wa-name" style="color:#38bdf8">{_vitalMistHealScalingBreakdown.label}</span>
+      </div>
+      <div class="ds-table">
+        {@render scalingHead()}
+
+        {@render healScalingBody(_vitalMistHealScalingBreakdown)}
+      </div>
+    </div>
+  {/if}
+
+  {#if _regenHealScalingBreakdown}
+    <div class="ds-wa-subsection" style="margin-top:{_waHealScalingBreakdown || _perkHealScalingBreakdown || _rainstormHealScalingBreakdown || _rejuvenatingFlameHealScalingBreakdown || _vitalMistHealScalingBreakdown ? '12px' : '0'}">
       <div class="ds-wa-header">
         <Badge color="#4ade80">Buff</Badge>
         <span class="ds-wa-name" style="color:#4ade80">{_regenHealScalingBreakdown.label}</span>
