@@ -8,6 +8,7 @@
   import Highlight from '../../Highlight.svelte'
   import WeaponStatsDisplay from '../../WeaponStatsDisplay.svelte'
 
+  // fallow-ignore-next-line code-duplication
   export let close: () => void
   export let modalSearch = ''
   export let showSuggestions: boolean

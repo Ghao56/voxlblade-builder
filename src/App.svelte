@@ -1555,6 +1555,14 @@ $: highestDamageType = pickHighestDmgType(Object.entries(weaponDamageTypesWithBo
   function onSearchFocus() { showSuggestions = true }
   function onSearchBlur() { setTimeout(() => { showSuggestions = false }, SEARCH_BLUR_DELAY_MS) }
 
+  $: searchProps = {
+    close: closeModal,
+    showSuggestions, modalSuggestions, noExactResults, didYouMean,
+    onFocus: onSearchFocus, onBlur: onSearchBlur,
+    onSelect: (e: CustomEvent<{label: string; type: 'name' | 'perk'}>) => applySuggestion(e.detail.label, e.detail.type),
+    selectedTags, toggleTag, clearTags,
+  }
+
   function modalItems(type: string): any[] {
     switch (type) {
       case 'race': return searchedRaces
@@ -1734,17 +1742,9 @@ $: _appWaAvgTotal = (() => {
     onFocus={onSearchFocus} onBlur={onSearchBlur}
     onSelect={(e) => applySuggestion(e.detail.label, e.detail.type)} />
 {:else if activeModal === 'guild'}
-  <GuildModal close={closeModal} bind:modalSearch
-    {showSuggestions} {modalSuggestions} {noExactResults} {didYouMean}
-    onFocus={onSearchFocus} onBlur={onSearchBlur}
-    onSelect={(e) => applySuggestion(e.detail.label, e.detail.type)}
-    {selectedTags} {toggleTag} {clearTags} onChange={onStatFilterChange} />
+  <GuildModal bind:modalSearch {...searchProps} onChange={onStatFilterChange} />
 {:else if activeModal === 'blade' || activeModal === 'handle' || activeModal === 'glove' || activeModal === 'essence'}
-  <WeaponPartModal close={closeModal} bind:modalSearch
-    {showSuggestions} {modalSuggestions} {noExactResults} {didYouMean}
-    onFocus={onSearchFocus} onBlur={onSearchBlur}
-    onSelect={(e) => applySuggestion(e.detail.label, e.detail.type)}
-    {selectedTags} {toggleTag} {clearTags}
+  <WeaponPartModal bind:modalSearch {...searchProps}
     modalType={activeModal}
     searchedItems={searchedModalItems}
     {weaponStatFilter}
@@ -1758,11 +1758,7 @@ $: _appWaAvgTotal = (() => {
     atkSpeedSortMode={weaponAtkSpeedSortMode}
     onAtkSpeedSortMode={(mode) => weaponAtkSpeedSortMode = mode} />
 {:else if activeModal}
-  <AccessorySelectModal close={closeModal} bind:modalSearch
-    {showSuggestions} {modalSuggestions} {noExactResults} {didYouMean}
-    onFocus={onSearchFocus} onBlur={onSearchBlur}
-    onSelect={(e) => applySuggestion(e.detail.label, e.detail.type)}
-    {selectedTags} {toggleTag} {clearTags} onChange={onStatFilterChange}
+  <AccessorySelectModal bind:modalSearch {...searchProps} onChange={onStatFilterChange}
     modalType={activeModal}
     searchedItems={searchedModalItems}
     showSortButtons={true}
@@ -1776,6 +1772,9 @@ $: _appWaAvgTotal = (() => {
 
 <!-- ═══════════════════════════════ MAIN APP ═══════════════════════════════ -->
 <div class="app">
+  {#snippet statRow(k: string, v: number)}
+  <div class="stat-row"><span>{formatLabel(k)}</span><span class="stat-val" class:neg={v < 0}>{formatStat(k, v)}</span></div>
+  {/snippet}
   <AppHeader bind:activeAppTab on:switchTab={e => switchTab(e.detail)} />
   {#if activeAppTab === 'overview'}
     <div class="workspace" in:fade={{ duration: 200 }}>
@@ -2643,7 +2642,7 @@ $: _appWaAvgTotal = (() => {
                             {#if Object.keys(group.main.stats).length}
                               <div class="stat-list">
                                 {#each Object.entries(group.main.stats).filter(([,v]) => v !== 0) as [k,v]}
-                                  <div class="stat-row"><span>{formatLabel(k)}</span><span class="stat-val" class:neg={v < 0}>{formatStat(k, v as number)}</span></div>
+{@render statRow(k, v as number)}
                                 {/each}
                               </div>
                             {/if}
