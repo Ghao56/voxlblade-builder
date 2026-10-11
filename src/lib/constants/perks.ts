@@ -78,6 +78,8 @@ export const CRITICAL_MASTER_CRIT_DMG_PER_STACK = 5
 /** Critical Master: crits on an attack that guard-breaks without the perk deal
  *  ×(1 + 0.2 × perkAmount) damage on top of the normal crit multiplier. */
 export const CRITICAL_MASTER_GUARDBREAK_CRIT_DMG_PER_STACK = 0.2
+/** Weapon types whose M1 finisher guard-breaks on its own (without Critical Master). */
+export const M1_FINISHER_GUARDBREAK_WEAPON_TYPES: string[] = ['War Hammer', 'Dual Mallets', 'Great Spear']
 export const SPLINTER_CRIT_DMG_PER_STACK = 10
 
 // ── Mortal Will ──────────────────────────────────

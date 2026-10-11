@@ -34,6 +34,7 @@
   import { resolveDamageTypes, resolveWaDamageTypeKeys, applyAirToMagicConversion, computeEffectiveWaDmgTypes, pickHighestDmgType } from './lib/damageTypeResolve'
   import { buildDmgTypeBonuses } from './lib/engine/dmgTypeBonuses'
   import { FEROCITY_TENACITY_MULT, DARKENING_HEX_MAX_ACTIVATIONS, DARKENING_HEX_POTENCY_ADD_PER_AMOUNT, DARKENING_HEX_POTENCY_MULT_PER_AMOUNT, DARKENING_HEX_DURATION_ADD_PER_AMOUNT, KINDLING_DMG_ADD_PER_AMOUNT, CURSED_FLAMES_BURN_DMG_PER_AMOUNT, CURSED_FLAMES_DR_BASE, CURSED_FLAMES_DR_PER_BURN_POTENCY, VASSALS_CROAK_MULT_PER_STACK, MAX_INVENTORY_ITEMS, MAX_MONEY_SMART_VOXOS } from './lib/constants'
+import { M1_FINISHER_GUARDBREAK_WEAPON_TYPES } from './lib/constants/perks'
 import { calcTypedDmgBoosts } from './data/TypedDmgBoost'
 import { TRACKED_TYPES_WITH_TRUE } from './lib/constants/damage-types'
 import { getRunicGlassDuration, ENCHANTED_SWORD_CD_BY_TYPE, ANCIENT_CLERIC_SHIELD_BASE, ANCIENT_CLERIC_SHIELD_PER_VAL } from './lib/constants/rune-base-damage'
@@ -3617,7 +3618,7 @@ note?: string
     const result: BDCHit[] = []
     const row = _displayRows[0]
     // Weapons whose M1 finisher guard-breaks on its own (without Critical Master).
-    const _m1FinisherGuardbreaks = ['War Hammer', 'Dual Mallets', 'Great Spear'].includes(row?.type ?? '')
+    const _m1FinisherGuardbreaks = M1_FINISHER_GUARDBREAK_WEAPON_TYPES.includes(row?.type ?? '')
     const _deltabitRank = disableWeaponBoost ? 0 : (perks['Deltabit'] ?? 0)
     const _deltabitCombo = _deltabitRank > 0 && !!row && !!row.m1 && row.m1.length > 0 && isFinisher(row, 'm1', row.m1.length - 1)
     const _deltaDrillReps = disableWeaponBoost ? 0 : Math.round(perks['Delta Drill'] ?? 0)
