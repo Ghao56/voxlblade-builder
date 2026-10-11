@@ -173,8 +173,9 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   ) {
     const _hasProtection = (resultVal.stats.protection ?? 0) > 0
     const _debuffCount = dummyDebuffs.filter((d: any) => !disabledDebuffs.has(d.name)).length
+    const _opponentTaunted = dummyDebuffs.some((d: any) => d.name === 'Taunt' && !disabledDebuffs.has(d.name))
     let baseSources = getActiveDefensivePerkSources(
-      perka, hpFillPct, adaptivePlateTriggered, effectiveInDarkness, rageActive, ragePotency, mountActive, _hasProtection, _debuffCount, buildVal.airPressurePotency ?? 0
+      perka, hpFillPct, adaptivePlateTriggered, effectiveInDarkness, rageActive, ragePotency, mountActive, _hasProtection, _debuffCount, buildVal.airPressurePotency ?? 0, _opponentTaunted
     )
     if (carapaceDisabled) {
       baseSources = baseSources.filter(s => s.name !== 'Carapace')

@@ -53,6 +53,12 @@ import {
   AIR_PRESSURE_MAX_POTENCY_PER_AMOUNT,
   AIR_PRESSURE_DEF_PER_POTENCY,
   AIR_BARRIER_DMG_PER_STACK,
+  SCREECHING_SOUND_BASE_DMG,
+  SCREECHING_SOUND_POISE_PER_STACK,
+  SCREECHING_SOUND_STUN_BASE,
+  SCREECHING_SOUND_STUN_PER_STACK,
+  SCREECHING_SOUND_TAUNT_BASE,
+  SCREECHING_SOUND_TAUNT_PER_STACK,
   APOLLO_BOOST_BASE,
   APOLLO_BOOST_SUB_BASE,
   APOLLO_BOOST_PER_STACK,
@@ -1461,6 +1467,38 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
         tone: 'utility',
       },
     ],
+  },
+  // ── Screeching Sound ────────────────────────────────────────────────────
+  {
+    perkName: 'Screeching Sound',
+    condition: 'Blocking an Attack (chance)',
+    getBaseDamage: () => SCREECHING_SOUND_BASE_DMG,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { air: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { air: 1.0 },
+    procCoefficient: { type: 'hasCoeff', value: 1.0 },
+    secondaryEffects: [
+      {
+        label: 'Poise Damage',
+        getValue: ({ perkAmount }) => SCREECHING_SOUND_POISE_PER_STACK * perkAmount,
+        format: v => `${v}`,
+        tone: 'offense',
+      },
+      {
+        label: 'Stun',
+        getValue: ({ perkAmount }) => SCREECHING_SOUND_STUN_BASE + SCREECHING_SOUND_STUN_PER_STACK * perkAmount,
+        format: v => `${Math.round(v * 100) / 100}s`,
+        tone: 'utility',
+      },
+      {
+        label: 'Taunt',
+        getValue: ({ perkAmount }) => SCREECHING_SOUND_TAUNT_BASE + SCREECHING_SOUND_TAUNT_PER_STACK * perkAmount,
+        format: v => `${v}s`,
+        tone: 'utility',
+      },
+    ],
+    note: 'Has a chance to create an Air shockwave when blocking an attack.',
   },
   // ── Gravity Well ──────────────────────────────────────────────────────
   {

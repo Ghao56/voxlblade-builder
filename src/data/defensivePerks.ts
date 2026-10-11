@@ -23,6 +23,7 @@ import {
   MOUNTED_DEFENSE_DR_PER_STACK,
   CARAPACE_DR_PER_STACK,
   CURSED_BARK_DR_PER_DEBUFF,
+  SCREECHING_SOUND_DEF_PER_STACK,
 } from '../lib/constants'
 import { fmtPctVal } from '../lib/utils'
 import { getDraconicInfusionPotMult } from './draconicBuffs'
@@ -38,6 +39,7 @@ interface DefensivePerkSourceContext {
   hasProtection: boolean
   uniqueDebuffCount: number
   airPressurePotency: number
+  opponentTaunted: boolean
 }
 
 // ── Def definitions ────────────────────────────────────────────────────────
@@ -156,6 +158,13 @@ const DEFENSIVE_PERK_SOURCES: DefensivePerkSource[] = [
     conditionLabel: 'Per unique debuff on target',
     drPctFn: (amt, ctx) => CURSED_BARK_DR_PER_DEBUFF * ctx.uniqueDebuffCount * amt,
   },
+  {
+    perkName: 'Screeching Sound',
+    drPctPerStack: SCREECHING_SOUND_DEF_PER_STACK,
+    label: 'Screeching Sound',
+    conditionLabel: 'Against Taunted opponents',
+    dependsOn: ctx => ctx.opponentTaunted,
+  },
 ]
 
 // ── Exports ────────────────────────────────────────────────────────────────
@@ -170,9 +179,10 @@ export function getActiveDefensivePerkSources(
   hasProtection: boolean = false,
   uniqueDebuffCount: number = 0,
   airPressurePotency: number = 0,
+  opponentTaunted: boolean = false,
 ): Array<{ name: string; defPct: number; isFlat?: boolean; condition: string; potencyCapped?: boolean; grantsStunImmunity?: boolean }> {
   const out: Array<{ name: string; defPct: number; isFlat?: boolean; condition: string; potencyCapped?: boolean; grantsStunImmunity?: boolean }> = []
-  const ctx: DefensivePerkSourceContext = { hpFillPct, adaptivePlateTriggered, inDarkness, rageActive, ragePotency: ragePotencyVal, isMounted, hasProtection, uniqueDebuffCount, airPressurePotency }
+  const ctx: DefensivePerkSourceContext = { hpFillPct, adaptivePlateTriggered, inDarkness, rageActive, ragePotency: ragePotencyVal, isMounted, hasProtection, uniqueDebuffCount, airPressurePotency, opponentTaunted }
 
   for (const def of DEFENSIVE_PERK_SOURCES) {
     const amt = perks[def.perkName] ?? 0

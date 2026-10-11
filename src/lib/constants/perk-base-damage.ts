@@ -105,6 +105,14 @@ export const AIR_PRESSURE_DMG_PER_POTENCY = 0.65
 // Air Barrier
 export const AIR_BARRIER_DMG_PER_STACK = 3
 
+// Screeching Sound
+export const SCREECHING_SOUND_BASE_DMG = 1
+export const SCREECHING_SOUND_POISE_PER_STACK = 8
+export const SCREECHING_SOUND_STUN_BASE = 0.4
+export const SCREECHING_SOUND_STUN_PER_STACK = 0.4
+export const SCREECHING_SOUND_TAUNT_BASE = 3
+export const SCREECHING_SOUND_TAUNT_PER_STACK = 3
+
 // Roaring Heads
 export const ROARING_HEADS_BASE_DMG = 5
 export const ROARING_HEADS_DMG_PER_STACK = 2.5
