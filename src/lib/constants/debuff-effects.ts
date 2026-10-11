@@ -1,6 +1,4 @@
-// ──────────────────────────────────────────────
 // Debuff combat effect multipliers (from debuffCombatEffects.ts)
-// ──────────────────────────────────────────────
 
 export const DEBUFF_STICKY_DMG_MULT = 1.2
 

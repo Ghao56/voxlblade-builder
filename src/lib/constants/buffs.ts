@@ -1,6 +1,4 @@
-// ──────────────────────────────────────────────
 // Buff/debuff potency & duration constants (from BuffData.ts)
-// ──────────────────────────────────────────────
 
 // Potion constants
 export const RAGE_POTION_POTENCY = 0.4
@@ -26,9 +24,7 @@ export const INSPIRED_EFFECT_PER_TENTH = 0.075
 // Luminescent % per potency (not 0.1 scale)
 export const LUMINESCENT_PCT_PER_POTENCY = 5
 
-// ──────────────────────────────────────────────
 // Item buff potencies & durations
-// ──────────────────────────────────────────────
 
 // Rune-granted buffs
 export const RAGE_RUNE_BUFF_POTENCY = 0.3

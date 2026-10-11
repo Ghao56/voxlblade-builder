@@ -1,6 +1,4 @@
-// ──────────────────────────────────────────────
 // DoT damage constants (from DoTDamage.ts)
-// ──────────────────────────────────────────────
 
 export const DOT_BASE_DAMAGE = 1.75
 export const DOT_INFLICTION_DIVISOR = 1.1

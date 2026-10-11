@@ -1,6 +1,4 @@
-// ──────────────────────────────────────────────
 // Draconic color multipliers (from draconicColorEffects.ts)
-// ──────────────────────────────────────────────
 
 export const DRACONIC_FIRE_SPEED_MULT = 1.2
 

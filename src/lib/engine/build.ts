@@ -37,7 +37,7 @@ import { isUnbalancedWeaponry } from '../../data/weaponConditionalBoosts'
 import { getFinalWaDmgTypes, weaponHitsCountAsWa } from '../damageTypeResolve'
 import { buildDmgTypeBonuses } from './dmgTypeBonuses'
 
-// ─── Section: CDR (Cooldown Reduction) ── calculates rune & WA step breakdowns ─
+// Section: CDR (Cooldown Reduction) - calculates rune & WA step breakdowns
 
 export interface CDRStep   { source: string; pct: number; multiplier: number; isMultiply?: boolean }
 export interface CDRResult { runeCDR: number; waCDR: number; runeSetCD?: number; runeBreakdown: CDRStep[]; waBreakdown: CDRStep[] }
@@ -116,7 +116,7 @@ function calcCDR(
   }
 }
 
-// ─── Section: Boosts ── applies stat/perk/weapon boosts; skips isLevel here ─
+// Section: Boosts - applies stat/perk/weapon boosts; skips isLevel here
 
 function calcBoosts(
   perks:             Record<string, number>,
@@ -235,11 +235,11 @@ function calcBoosts(
   }
 }
 
-// ─── Section: Build result derivation ── final stats, shield/protection, inheritance ─
+// Section: Build result derivation - final stats, shield/protection, inheritance
 
 export interface BuildResult { stats: StatMap; perks: Record<string, number>; cdr: CDRResult; boosts: BoostResult; crit: CritResult }
 
-// ─── Section: Equipment accumulation ── aggregates weapon/rune/armor stats ─
+// Section: Equipment accumulation - aggregates weapon/rune/armor stats
 
 function accumulateMonkWeapon(
   state:    BuildState,

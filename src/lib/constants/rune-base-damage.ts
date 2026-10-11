@@ -1,6 +1,4 @@
-// ──────────────────────────────────────────────
 // Rune base damage values (from Runebasedmg.ts)
-// ──────────────────────────────────────────────
 
 // Magic Missile
 export const MAGIC_MISSILE_BASE_DMG = 6

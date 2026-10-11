@@ -1,6 +1,4 @@
-// ──────────────────────────────────────────────
 // Defensive perk DR values (from defensivePerks.ts)
-// ──────────────────────────────────────────────
 
 export const BARBSKIN_DR_PER_STACK = 20
 export const STONESKIN_DR_PER_STACK = 30

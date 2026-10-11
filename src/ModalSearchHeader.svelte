@@ -117,7 +117,7 @@
 {/if}
 <style>
 .modal-title { font-family:var(--font-display); font-size:1.3rem; font-weight:400; color:var(--ink); margin-bottom:16px; }
-/* ── Search suggestions ── */
+/* Search suggestions */
 :global(.search-wrap) { position: relative; margin-bottom: 12px; }
 :global(.search-wrap .modal-search-input) { margin-bottom: 0; }
 :global(.modal-search-input) {

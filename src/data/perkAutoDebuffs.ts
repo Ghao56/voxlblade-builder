@@ -1,4 +1,4 @@
-// ── Perk Auto-Debuffs ──────────────────────────────────────────────────────
+// Perk Auto-Debuffs
 // Perks that automatically apply debuffs (Bleed, Poison, Burn, Sticky, etc.)
 // calcAutoDebuffs() returns all debuffs a perk set would apply, used by DamageAnalyzer for display.
 // Each entry checks perk presence, existing debuffs, and optional proc coefficient gates.
@@ -25,7 +25,7 @@ export interface AutoDebuffInput {
   hasMagicOrPhysicalDmg?: boolean
 }
 
-// ── HP fill helper ──────────────────────────────────────────────────────────
+// HP fill helper
 export function calcActualHpFillPct(
   hpFill: number,
   level: number,
@@ -37,7 +37,7 @@ export function calcActualHpFillPct(
   return Math.min(100, hpFill * effMaxHP / baseMaxHP)
 }
 
-// ── Auto-debuff entries ────────────────────────────────────────────────────
+// Auto-debuff entries
 export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
   const debuffs: GrantedBuff[] = []
   const { existingBuffNames, playerBuffNames, perks, hpFill, level, protection, selectedWAProcCoefficient, enemyHpFillPct } = input

@@ -393,7 +393,7 @@ function calcIchorSparkChargeTime(perkAmount: number): number {
 }
 
 export const PERK_DMG_DEFS: PerkDmgDef[] = [
-  // ── Springblast ────────────────────────────────────────────────────────────
+  // Springblast
   {
     perkName: 'Springblast',
     condition: 'On every Finisher hit while Bounce active',
@@ -407,7 +407,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     guardbreak: true,
     note: 'Explodes on every finisher hit while Bounce is active, dealing 1.0 Physical damage type with 1.0 Physical scaling. Base Damage per proc = (7 + 0.7·perk + (0.25 + 0.15·perk)·proccing hit base damage) / (0.5 + min(hits in finisher, 5)/2) — per-proc damage drops with more finisher hits, total damage still rises. Reduced chance to proc other effects. Deals high knockback. Half activations with Dual Guns or Storm Caster.',
   },
-  // ── Bastion Ballista ─────────────────────────────────────────────────────
+  // Bastion Ballista
   {
     perkName: 'Bastion Ballista',
     label: 'Bastion Ballista',
@@ -437,7 +437,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     },
     note: 'Fires additional arrows the further from the target. Reduced proc chance (0.2). Arrows restore after 12s without firing.',
   },
-  // ── Basic Spirit ───────────────────────────────────────────────────────────
+  // Basic Spirit
   {
     perkName: 'Basic Spirit',
     condition: 'On RMB (Monk)',
@@ -451,7 +451,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     guardbreak: true,
     note: 'Each hit counts as individual M1/M2 and procs related effects.',
   },
-  // ── Buni Spirit ────────────────────────────────────────────────────────────
+  // Buni Spirit
   {
     perkName: 'Buni Spirit',
     condition: 'On RMB (Monk)',
@@ -464,7 +464,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     isFinisher: true,
     note: 'Each hit counts as individual M1/M2 and procs related effects.',
   },
-  // ── Mageling Spirit ────────────────────────────────────────────────────────
+  // Mageling Spirit
   {
     perkName: 'Mageling Spirit',
     condition: 'On WA or Rune use (Monk)',
@@ -477,7 +477,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     guardbreak: true,
     note: 'Resets cooldown of the activating WA/Rune. Counts as rune damage.',
   },
-  // ── Toadzerker Spirit ────────────────────────────────────────────────────────
+  // Toadzerker Spirit
   {
     perkName: 'Toadzerker Spirit',
     condition: 'On RMB (Monk)',
@@ -489,7 +489,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     guardbreak: true,
     note: 'Each hit counts as individual M1/M2 and procs related effects.',
   },
-  // ── Dire Buni Spirit ───────────────────────────────────────────────────────
+  // Dire Buni Spirit
   {
     perkName: 'Dire Buni Spirit',
     condition: 'On RMB (Monk)',
@@ -503,7 +503,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     guardbreak: true,
     note: 'Counts as an M1/M2 and will proc related effects.',
   },
-  // ── Void Root Spirit ───────────────────────────────────────────────────────
+  // Void Root Spirit
   {
     perkName: 'Void Root Spirit',
     condition: 'On RMB (Monk)',
@@ -517,7 +517,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     countAsM2: true,
     note: 'Each hit has a chance to inflict random debuffs.',
   },
-  // ── Bomber Spirit ──────────────────────────────────────────────────────────
+  // Bomber Spirit
   {
     perkName: 'Bomber Spirit',
     condition: 'On RMB (Monk)',
@@ -532,7 +532,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     guardbreak: true,
     note: 'Each hit counts as individual M1/M2 and procs related effects. Grants Bursting for 10s on activation (Bombardier proc rate 40% → 80% while active — proc-rate logic itself not modeled, see P2).',
   },
-  // ── Roguent Spirit ───────────────────────────────────────────────────────
+  // Roguent Spirit
   {
     perkName: 'Roguent Spirit',
     condition: 'On RMB (Monk)',
@@ -548,7 +548,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     forceCrit: true,
     note: 'All hits are guaranteed crits. Throws 4 individual projectiles. Only requires 50% Spiritual Energy to activate.',
   },
-  // ── Caci Spirit ────────────────────────────────────────────────────────────
+  // Caci Spirit
   {
     perkName: 'Caci Spirit',
     condition: 'On RMB (Monk)',
@@ -574,7 +574,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     ],
     note: `${CACI_SPIRIT_THORN_HITS} thorn hits (${CACI_SPIRIT_THORN_DMG} dmg, no guardbreak) then ${CACI_SPIRIT_SLAM_HITS} slam hits (${CACI_SPIRIT_SLAM_DMG} dmg, guardbreak). Every hit inflicts Bleed for ${CACI_SPIRIT_BLEED_DURATION}s. User can move during thorn barrage, locked in place for slams.`,
   },
-  // ── Woof Spirit ──────────────────────────────────────────────────────────
+  // Woof Spirit
   {
     perkName: 'Woof Spirit',
     condition: 'On RMB (Monk)',
@@ -604,7 +604,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     ],
     note: 'Release Spiritual Energy as a large howl on RMB. Heals 10 HP on successful hit; healing counts as lifesteal. Applies Weakness at 1 Potency for 15s.',
   },
-  // ── Winter Woof Spirit ────────────────────────────────────────────────────
+  // Winter Woof Spirit
   {
     perkName: 'Winter Woof Spirit',
     condition: 'On RMB (Monk)',
@@ -637,7 +637,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     ],
     note: `RMB howl deals ${WINTER_WOOF_SPIRIT_HOWL_DMG} dmg, inflicts Shatter at ${WINTER_WOOF_SPIRIT_SHATTER_POTENCY} Potency for ${WINTER_WOOF_SPIRIT_SHATTER_DURATION}s and guardbreaks. Two Spiritual Winter Woofs then bite separately (${WINTER_WOOF_SPIRIT_BITE_DMG} dmg each, ~1s cooldown between bites), each bite inflicting Bleed for ${WINTER_WOOF_SPIRIT_BLEED_DURATION}s (once per M1/M2). Woofs last ${WINTER_WOOF_SPIRIT_DURATION}s. Can proc other effects.`,
   },
-  // ── Snoeman Spirit ────────────────────────────────────────────────────
+  // Snoeman Spirit
   {
     perkName: 'Snoeman Spirit',
     label: 'Snoeman Roar',
@@ -677,7 +677,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     ],
     note: `The ice storm conjured after the Roar: ${SNOEMAN_SPIRIT_HITS} hits of ${SNOEMAN_SPIRIT_ICESTORM_BASE_DMG} dmg each, does not guardbreak. Applies Slowness at ${SNOEMAN_SPIRIT_SLOWNESS_POTENCY} Potency on every hit. Has a Spirit Gain Multiplier of 0.75 (see Spirit Commune). Has chance to proc other effects.`,
   },
-  // ── Dragigator Spirit ───────────────────────────────────────────────────
+  // Dragigator Spirit
   {
     perkName: 'Dragigator Spirit',
     label: 'Dragigator Spirit',
@@ -703,7 +703,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     ],
     note: `RMB summons a Spiritual Dragigator performing their Flame Blast: ${DRAGIGATOR_SPIRIT_HITS} hits of ${DRAGIGATOR_SPIRIT_BASE_DMG} dmg each. Damage increases by ${DRAGIGATOR_SPIRIT_BURN_POTENCY_DMG_MULT * 100}% per Burn Potency. Applies Burn.`,
   },
-  // ── Bounce Momentum ────────────────────────────────────────────────────────
+  // Bounce Momentum
   {
     perkName: 'Bounce Momentum',
     condition: 'On Finisher (Tongue Shot active after jumping with Bounce)',
@@ -716,7 +716,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     requiredBuff: 'Bounce',
     note: 'Stuns and briefly immobilizes the target.',
   },
-  // ── Bomber Charge ────────────────────────────────────────────────────────
+  // Bomber Charge
   {
     perkName: 'Bomber Charge',
     condition: 'Retaliate Weapon Art selected',
@@ -753,7 +753,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     ],
     note: 'Spirit fires one beam at a time. Beam + DR both active simultaneously at 2+ stacks.',
   },
-  // ── Air Pressure ───────────────────────────────────────────────────────────
+  // Air Pressure
   {
     perkName: 'Air Pressure',
     condition: 'Upon using a rune release an air burst',
@@ -780,7 +780,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
       }
     ]
   },
-  // ── Air Barrier ────────────────────────────────────────────────────────
+  // Air Barrier
   {
     perkName: 'Air Barrier',
     condition: 'Blocking an attack',
@@ -792,7 +792,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     guardbreak: true,
     note: 'Each hit counts as individual M1/M2 and procs related effects.',
   },
-  // ── Apollo Boost ───────────────────────────────────────────────────────────
+  // Apollo Boost
   {
     perkName: 'Apollo Boost',
     condition: 'On Rune use (after cast finishes)',
@@ -814,7 +814,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     ],
     note: 'Overrides Launch Rune boost / Combat Roll Rune roll if used together. Launch height also scales with perk amount (not modeled).',
   },
-  // ── Dragon Claw (Draconic Rune Infusion ability) ────────────────────────────
+  // Dragon Claw (Draconic Rune Infusion ability)
   {
     perkName: 'Draconic Blood',
     label: 'Dragon Claw',
@@ -850,7 +850,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
       },
     ],
   },
-  // ── Dragon Bubble (Draconic Rune Infusion ability) ───────────────────────────
+  // Dragon Bubble (Draconic Rune Infusion ability)
   {
     perkName: 'Draconic Blood',
     label: 'Dragon Bubble',
@@ -886,7 +886,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
       },
     ],
   },
-  // ── Roaring Heads (Roar) ───────────────────────────
+  // Roaring Heads (Roar)
   {
     perkName: 'Roaring Heads',
     label: 'Roaring Heads (Roar)',
@@ -899,7 +899,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     procCoefficient: { type: 'noProc' },
     note: 'Stuns on roar',
   },
-  // ── Barbed Flurry ───────────────────────────────────────────────────────────
+  // Barbed Flurry
   {
     perkName: 'Barbed Flurry',
     condition: 'Reapplying Bleed on already Bleeding enemies',
@@ -911,7 +911,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     procCoefficient: { type: 'noProc' },
     note: 'Cannot proc other effects. No internal cooldown. Proccing Bleed multiple times in the same hit will proc this perk multiple times.',
   },
-  // ── Honey Arts ────────────────────────────────────────────────────────────
+  // Honey Arts
   {
     perkName: 'Honey Arts',
     condition: 'On Weapon Art use',
@@ -932,7 +932,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     ],
     note: 'Maximum globs depend on WA cooldown. Each glob has small AoE. Cannot proc other effects.',
   },
-  // ── Sickness ──────────────────────────────────────────────────────────────
+  // Sickness
   {
     perkName: 'Sickness',
     condition: 'On sneeze',
@@ -943,7 +943,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     scalings: { earth: 1.0, hex: 1.0 },
     note: '10% chance to sneeze per second per 1 of this perk. Applies Sticky (Sickness).',
   },
-  // ── Melting Slime ──────────────────────────────────────────────────────────
+  // Melting Slime
   {
     perkName: 'Melting Slime',
     condition: 'On Sticky DoT tick',
@@ -957,7 +957,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     }),
     note: 'Fire/Earth DoT · Multi-hit over duration · Poise Damage',
   },
-  // ── Whirlwind ───────────────────────────────────────────────────────────────
+  // Whirlwind
   {
     perkName: 'Whirlwind',
     condition: 'On Weapon Art or Rune use',
@@ -968,7 +968,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     scalings: { air: 1.0 },
     note: 'AoE wind slash triggered by WA/Rune use. Applies Bleed for 5s. Can proc other effects.',
   },
-  // ── Dragon State ──────────────────────────────────────────────────────────
+  // Dragon State
   {
     perkName: 'Dragon State',
     condition: 'On M1/M2 while above HP threshold · Once per M1/M2',
@@ -983,7 +983,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
       { perk: 'Bombardier', trigger: 'chance' },
     ],
   },
-  // ── Ignition ────────────────────────────────────────────────────────────────
+  // Ignition
   {
     perkName: 'Ignition',
     condition: `${fmtPct(IGNITION_PROC_CHANCE_PER_AMOUNT)} × perk chance on hit`,
@@ -1002,7 +1002,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     applyEffective: true,
     note: 'Bonus Fire damage on hit. Cannot proc other effects. Unaffected by most general damage bonuses (Smoldering, Ferocity, Dark One). Inflicts Burn for 5 + 0.5 × perk seconds.',
   },
-  // ── Poisonous ────────────────────────────────────────────────────────────────
+  // Poisonous
   {
     perkName: 'Poisonous',
     condition: '10% × perk chance on hit',
@@ -1021,7 +1021,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     applyEffective: true,
     note: 'Bonus Hex damage on hit. Cannot proc other effects. Unaffected by most general damage bonuses (Smoldering, Ferocity, Dark One). Small chance to inflict Poison.',
   },
-  // ── Glacial Buildup (flat crystals) ─────────────────────────────────────────
+  // Glacial Buildup (flat crystals)
   {
     perkName: 'Glacial Buildup',
     label: 'Ice Crystals',
@@ -1040,7 +1040,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     applyEffective: false,
     note: 'Hitting opponents applies ice crystals which adds flat Water damage to all incoming attacks. The flat damage is equal to perk amount and is unaffected by damage modifiers except its own Water scaling.',
   },
-  // ── Glacial Buildup (crystal shatter burst) ─────────────────────────────────
+  // Glacial Buildup (crystal shatter burst)
   {
     perkName: 'Glacial Buildup',
     label: 'Crystal Shatter',
@@ -1060,7 +1060,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     slider: { buildKey: 'glacialBuildupCrystals', label: 'Crystal Stacks', min: 0, max: 6, step: 1 },
     note: 'At high enough stacks or upon Poisebreaking the opponent, the crystals shatter, dealing 16 × perk Water damage. The burst follows its own damage rules. Poisebreaking is not modeled; use the Crystal Stacks slider to represent a shatter.',
   },
-  // ── Volatile Shell ──────────────────────────────────────────────────────────
+  // Volatile Shell
   {
     perkName: 'Volatile Shell',
     condition: 'When your Shield is depleted completely',
@@ -1098,7 +1098,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     ],
     note: 'Explosion size scales with Protection (13 + 1.3 × Protection, capped at 120) · Protection is not a % like other Stat Boosts, making it 100x more effective in scaling',
   },
-  // ── Spore Burst ─────────────────────────────────────────────────────────
+  // Spore Burst
   {
     perkName: 'Spore Burst',
     condition: 'On Finisher',
@@ -1119,7 +1119,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     procCoefficient: { type: 'noProc' },
     note: 'Only activates once per finisher. Inflicts Poison on self and enemies.',
   },
-  // ── Royal Finisher ────────────────────────────────────────────────────
+  // Royal Finisher
   {
     perkName: 'Royal Finisher',
     condition: 'On Finisher',
@@ -1133,7 +1133,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     finisherOnly: true,
     note: 'Only activates once per finisher.',
   },
-  // ── Grounded Despair ─────────────────────────────────────────────────
+  // Grounded Despair
   {
     perkName: 'Grounded Despair',
     condition: 'On jump and land',
@@ -1143,7 +1143,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     scalingMode: 'fixed',
     scalings: { physical: 1.0, magic: 1.0 },
   },
-  // ── Echo Incineration ─────────────────────────────────────────────
+  // Echo Incineration
   {
     perkName: 'Echo Incineration',
     condition: 'On hit · (10 + 2.5 × perkAmount)% chance',
@@ -1156,7 +1156,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     isProcHit: true,
     procCoefficient: { type: 'noProc' },
   },
-  // ── Stormcaller ────────────────────────────────────────────────
+  // Stormcaller
   {
     perkName: 'Stormcaller',
     condition: `On hit · ${fmtPct(STORM_CALLER_PROC_CHANCE)} proc chance (unaffected by perk amount)`,
@@ -1170,7 +1170,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
     note: 'Can proc other effects · Can also proc itself.',
   },
-  // ── Bombardier ───────────────────────────────────────────────────
+  // Bombardier
   {
     perkName: 'Bombardier',
     condition: 'On any hit · RNG chance (40% at 2 stacks per wiki — see TODO in note)',
@@ -1184,7 +1184,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     procCoefficient: { type: 'noProc' },
     note: 'Cannot proc other effects. Deals 0.5s Stun (not modeled — no stun-duration system in codebase). Self-damage (~6.66% of pre-modifier explosion damage) implemented — applies to M1/M2/WA/Rune/Perk hit groups (no multi-target falloff). Proc-chance display not added (non-linear scaling undocumented).',
   },
-  // ── Venom Spitter ────────────────────────────────────────────────
+  // Venom Spitter
   {
     perkName: 'Venom Spitter',
     label: 'Venom Spitter',
@@ -1212,7 +1212,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     halfActivations: true,
     note: 'Cannot proc other effects. Half activations on Dual Guns or Storm Caster. Grants +10% damage vs Poisoned per 1 of this perk.',
   },
-  // ── Cauterize ──────────────────────────────────────────────────────────────
+  // Cauterize
   {
     perkName: 'Cauterize',
     condition: 'On Burn proc — replaces Burn DoT with a single Fire burst (Singed)',
@@ -1229,7 +1229,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     procCoefficient: { type: 'noProc' },
     note: 'Singed counts as Burn for other perks but deals no DoT damage — only this initial burst. Not a separate debuff. Incompatible with Cursed Flames. Cannot proc other effects. Proccing Burn multiple times in one hit procs this multiple times.',
   },
-  // ── Steam Charge ─────────────────────────────────────────────────────────
+  // Steam Charge
   {
     perkName: 'Steam Charge',
     condition: 'On RMB (replaced by Steam Blast at max Steam Buildup)',
@@ -1247,7 +1247,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     requiredBuff: 'Steam Buildup',
     note: 'Replaces RMB with a 10-hit Steam Blast at max Steam Buildup. Guardsbreak. Reduced chance to proc other effects.',
   },
-  // ── Quarry ─────────────────────────────────────────────────────────
+  // Quarry
   {
     perkName: 'Quarry',
     condition: 'After building 4 Hidden Treasure stacks on an opponent',
@@ -1259,7 +1259,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     procCoefficient: { type: 'noProc' },
     note: '2.5 second cooldown, cooldown is per enemy',
   },
-  // ── Wind Drill ─────────────────────────────────────────────────────────
+  // Wind Drill
   {
     perkName: 'Wind Drill',
     condition: 'Replaces your roll',
@@ -1272,7 +1272,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
     note: 'Can be held for up to 2 seconds, dealing damage every 0.2 seconds',
   },
-  // ── Fiery Pursuit ──────────────────────────────────────────────────────
+  // Fiery Pursuit
   {
     perkName: 'Fiery Pursuit',
     condition: 'On Weapon Art activation',
@@ -1296,7 +1296,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     ],
     note: 'Dash forward. Counts as Weapon Art damage. Grants Iframes during dash. AoE scales on perk amount.',
   },
-  // ── Bulfrogg Spirit ──────────────────────────────────────────────────────
+  // Bulfrogg Spirit
   {
     perkName: 'Bulfrogg Spirit',
     condition: 'on RMB (Monk)',
@@ -1309,7 +1309,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     guardbreak: true,
     note: 'Stuns targets for 4.5 seconds'
   },
-  // ── Gremlin Spirit ──────────────────────────────────────────────────────
+  // Gremlin Spirit
   {
     perkName: 'Gremlin Spirit',
     condition: 'on Bleed (Monk)',
@@ -1322,7 +1322,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
     guardbreak: true,
   },
-  // ── Queen Bumblz Spirit ──────────────────────────────────────────────────────
+  // Queen Bumblz Spirit
   {
     perkName: 'Queen Bumblz Spirit',
     condition: 'on summon (Monk)',
@@ -1335,7 +1335,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
     note: 'Targets the closest enemy. Fires 9 times over 15 second. Cannot gain spiritual energy while this spirit is active. Does not count as a summon'
   },
-  // ── Pyre Bloom ──────────────────────────────────────────────────────────
+  // Pyre Bloom
   {
     perkName: 'Pyre Bloom',
     condition: 'On Weapon Art activation — summon a stationary Pyrebloom that shoots fireballs',
@@ -1405,7 +1405,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     ],
     note: 'Damage counts as Weapon Art damage and will proc related effects. Uses base Weapon Art cooldown in all calculations. Does not count as a summon — unaffected by summon-based perks or effects. Fireballs go through walls. Prioritizes closest target to player. Disappears on armor change.',
   },
-  // ── Dark Harvest ──────────────────────────────────────────────────────
+  // Dark Harvest
   {
     perkName: 'Dark Harvest',
     condition: 'On hit vs enemy ≤50% HP',
@@ -1426,7 +1426,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     ],
     note: `Activates on the hit that brings the enemy below 50% HP. ${DARK_HARVEST_COOLDOWN}s cooldown per enemy. Cannot be procced by attacks without a proc coefficient. Healing counts as lifesteal.`,
   },
-  // ── Blastshield ──────────────────────────────────────────────────────
+  // Blastshield
   {
     perkName: 'Blastshield',
     condition: 'When Hit',
@@ -1446,7 +1446,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     ],
     note: 'Has a cooldown of 5 seconds. Shockwave does not activate from Self Damage or Debuffs',
   },
-  // ── Frozen Waste ──────────────────────────────────────────────────────
+  // Frozen Waste
   {
     perkName: 'Frozen Waste',
     condition: 'When Blocking an attack',
@@ -1468,7 +1468,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
       },
     ],
   },
-  // ── Screeching Sound ────────────────────────────────────────────────────
+  // Screeching Sound
   {
     perkName: 'Screeching Sound',
     condition: 'Blocking an Attack (chance)',
@@ -1500,7 +1500,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     ],
     note: 'Has a chance to create an Air shockwave when blocking an attack.',
   },
-  // ── Gravity Well ──────────────────────────────────────────────────────
+  // Gravity Well
   {
     perkName: 'Gravity Well',
     condition: 'on Weapon Art or Rune use',
@@ -1511,7 +1511,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     scalings: { earth: 1.0, magic: 1.0 },
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
   },
-  // ── Gravitational Enforcer ────────────────────────────────────────────────
+  // Gravitational Enforcer
   {
     perkName: 'Gravitational Enforcer',
     condition: 'On RMB activation — pulls opponents before your normal RMB',
@@ -1534,7 +1534,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     ],
     note: 'Increases RMB cooldown. Your normal RMB immediately follows once this perk\'s animation ends.',
   },
-// ── Heavy Slate ──────────────────────────────────────────────────────
+// Heavy Slate
   {
     perkName: 'Heavy Slate',
     condition: 'When hit by an attack that doesn\'t Stun you',
@@ -1546,7 +1546,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
     note: 'Has a cooldown of 0.5 seconds.',
   },
-  // ── Runic Blades ──────────────────────────────────────────────────────
+  // Runic Blades
   {
     perkName: 'Runic Blades',
     condition: 'On Weapon Art or Rune hit — launches a magical blade at target marked with Runic Blades debuff',
@@ -1569,7 +1569,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     note: 'Applies Runic Blades debuff on WA/Rune hit. Hits against marked targets launch blades. Very short internal cooldown (~0.05-0.1s). Cannot proc other effects.',
     requiredEnemyDebuff: 'Runic Blades',
   },
-  // ── Gnawing Poison ─────────────────────────────────────────────────────
+  // Gnawing Poison
   {
     perkName: 'Gnawing Poison',
     condition: 'On Finisher',
@@ -1584,7 +1584,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     requiredEnemyDebuff: 'Poison',
     note: `Bites all enemies you have Poisoned, dealing burst damage. ${GNAWING_POISON_COOLDOWN}s cooldown. Can proc other effects. You don't have to hit an opponent — just using your finisher after having inflicted a target with Poison activates it. Grants Poison Potency. Damage may increase depending on how many enemies you have Poisoned (unknown scaling).`,
   },
-  // ── Ice Burst ─────────────────────────────────────────────────────────
+  // Ice Burst
   {
     perkName: 'Ice Burst',
     condition: 'Inflicting Shatter creates an icicle burst that inflicts brief Bleed and does Water and Physical Damage in a radius',
@@ -1606,7 +1606,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     ],
     note: `Size appears to increase with perk amount (?). Cannot proc other effects.`,
   },
-  // ── Propelling Fun ────────────────────────────────────────────────────────
+  // Propelling Fun
   {
     perkName: 'Propelling Fun',
     condition: 'On jump',
@@ -1622,7 +1622,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
     note: `${PROPELLING_FUN_COOLDOWN}s cooldown. Jumping creates an air current. If burning, activates Cinderpull instead (Fire Damage Type). Cloudpush/Cinderpull grant bonus damage type to allies and also apply to the user of this perk.`,
   },
-  // ── Quake ─────────────────────────────────────────────────────────
+  // Quake
   {
     perkName: 'Quake',
     condition: `On hit · (${QUAKE_CHANCE_BASE} + ${QUAKE_CHANCE_PER_STACK} × perkAmount)% chance`,
@@ -1637,7 +1637,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     note: 'Cannot proc other effects. Deals Stun and Knockback (not modeled).',
   },
 
-  // ── Ruler Of The Sands ─────────────────────────────────────────────────────
+  // Ruler Of The Sands
   {
     perkName: 'Ruler Of The Sands',
     condition: 'On Weapon Art or Rune use — summon a sandnado',
@@ -1675,7 +1675,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     ],
     note: 'Chance scales on base cooldown. Reduced proc coefficient. Lasts ~5s.',
   },
-  // ── Lodestone Barrage ───────────────────────────────────────────────────────
+  // Lodestone Barrage
   {
     perkName: 'Lodestone Barrage',
     condition: 'On Rune use — barrage of rocks at nearby mobs',
@@ -1706,7 +1706,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     ],
     note: 'Rock count scales on the Rune\'s base cooldown, not its cooldown-reduced value.',
   },
-  // ── Vile Presence ─────────────────────────────────────────────────────
+  // Vile Presence
   {
     perkName: 'Vile Presence',
     condition: 'Passively deals damage in an AoE',
@@ -1718,7 +1718,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     procCoefficient: { type: 'noProc' },
     note: 'Size increases with perk amount',
   },
-  // ── Magic Guard ─────────────────────────────────────────────────────
+  // Magic Guard
   {
     perkName: 'Magic Guard',
     condition: 'When Blocking an attack',
@@ -1730,7 +1730,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     procCoefficient: { type: 'hasCoeff', value: 1.0 },
     note: '8 second cooldown',
   },
-  // ── Icestorm ─────────────────────────────────────────────────────
+  // Icestorm
   {
     perkName: 'Icestorm',
     condition: 'Land 10 hits in a short timeframe',
@@ -1743,7 +1743,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     procCoefficient: { type: 'hasCoeff', value: 0.2 },
     note: 'Duration extends if the user keeps hitting enemies',
   },
-  // ── Ichor Spark: Charged RMB ────────────────────────────────────────────────
+  // Ichor Spark: Charged RMB
   {
     perkName: 'Ichor Spark',
     label: 'Charged RMB',
@@ -1783,7 +1783,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     },
     note: 'Finisher, guardbreak, high knockback. Not affected by Cleave effects. Charge rate affected by attack speed.',
   },
-  // ── Ichor Spark: Ranged Slash ────────────────────────────────────────────────
+  // Ichor Spark: Ranged Slash
   {
     perkName: 'Ichor Spark',
     label: 'Ranged Slash',
@@ -1818,7 +1818,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     ],
     note: 'Guardbreak, no knockback. Applies Bleed 5s, lifesteals. Only activates at ≥37.5% charge bonus.',
   },
-  // ── Blazing Finisher ──────────────────────────────────────────────────────
+  // Blazing Finisher
   {
     perkName: 'Blazing Finisher',
     condition: 'On Finisher vs Burning enemies',
@@ -1834,7 +1834,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     requiredEnemyDebuff: 'Burn',
     note: `Removes Burn on hit. Additional 20% of finisher's pre-mit base damage (inherits finisher's damage type distribution and scaling). ${0.2}s cooldown per enemy. Explosion size scales on perk amount. Can proc other effects.`,
   },
-  // ── Deathmist Slash ───────────────────────────────────────────────────────
+  // Deathmist Slash
   {
     perkName: 'Deathmist Slash',
     condition: 'On Finisher (additional slash)',
@@ -1866,7 +1866,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     ],
     note: 'Once per finisher. Additional slash deals 0.5 Water + 0.5 Hex damage (1.6 × perk amount base, 1.0 Water/Hex scaling). Heals and cleanses allies; the user is not cleansed and heals much less. Healing is doubled when the finisher connects with an enemy (use the HIT/MISS toggle on this card; HIT is the default). Can proc other effects, but cannot proc heal-based effects on self.',
   },
-  // ── Divine Crash ────────────────────────────────────────────────
+  // Divine Crash
   {
     perkName: 'Divine Crash',
     condition: 'On RMB in air (Finisher, Guardbreak)',
@@ -1907,7 +1907,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     },
     note: 'Cancels default RMB. Deals no knockback. Short cooldown. Explosion size scales with perk amount and distance. Combines with Fell Rush for stronger variant.',
   },
-  // ── Fell Rush ─────────────────────────────────────────────────
+  // Fell Rush
   {
     perkName: 'Fell Rush',
     condition: 'On RMB after linking with a Debuff (Guardbreak)',
@@ -1934,7 +1934,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     },
     note: 'Does regular M2 after teleporting. Deals no knockback. ~1s cooldown. One tether at a time. Combines with Divine Crash for stronger variant (handled by Divine Crash entry).',
   },
-  // ── Grandmagic Guard ─────────────────────────────────────────────────
+  // Grandmagic Guard
   {
     perkName: 'Grandmagic Guard',
     condition: 'While Blocking',
@@ -1945,7 +1945,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     scalings: { magic: 1.0 },
     procCoefficient: { type: 'noProc' },
   },
-  // ── Final Act ─────────────────────────────────────────────────
+  // Final Act
   {
     perkName: 'Final Act',
     condition: 'Using a Rune while you have minions',
@@ -1958,7 +1958,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     guardbreak: true,
     note: 'Explosion size scales with perk amount.',
   },
-  // ── Star Struck ─────────────────────────────────────────────────
+  // Star Struck
   {
     perkName: 'Star Struck',
     label: 'Star Struck',
@@ -1975,7 +1975,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     procCoefficient: { type: 'hasCoeff', value: 1 },
     note: 'Stars deal 3 base damage with 1.0 of their type and 1.0 scaling of that type. True stars instead deal 6 base with 0.5 Magic scaling. 100% activation chance. Stars can proc other on-hit effects (Chain, Luminescent, Lifesteal, etc.). Star type is random per recalculation — actual damage appears next to M1/M2.',
   },
-  // ── Power Inhale ─────────────────────────────────────────────────
+  // Power Inhale
   {
     perkName: 'Power Inhale',
     condition: 'when Fully Charged',
@@ -1989,7 +1989,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     procCoefficient: { type: 'hasCoeff', value: 1 },
     note: 'roughly 3.33 second charge time at 1 of this perk, and roughly 1.66 seconds at 2 of this perk.',
   },
-  // ── True Moon ───────────────────────────────────────────────────
+  // True Moon
   {
     perkName: 'True Moon',
     label: 'True Moon',
@@ -2020,7 +2020,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     ],
     note: 'Chance to shoot a True Damage moon at the opponent on hit. Also converts 30% of the user\'s weapon Magic Damage Type to True Damage Type per 1 of the perk (capped at 100%), and boosts damage on attacks that contain any amount of True Damage Type by 15% per 1 of the perk. The conversion only applies to the user\'s weapon damage, not to perk proc damage.',
   },
-  // ── Proto Tech ─────────────────────────────────────────────────
+  // Proto Tech
   {
     perkName: 'Proto Tech',
     condition: 'Chance to activate once per second',
@@ -2039,7 +2039,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
       },
     ],
   },
-  // ── Voltaic Body ───────────────────────────────────────────────
+  // Voltaic Body
   {
     perkName: 'Voltaic Body',
     condition: 'On Weapon Art use',
@@ -2075,7 +2075,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     ],
     note: 'First hit (1 Buff Potency) deals full damage; each activation within the 3s window adds +1 potency, reducing that hit to 0.85^potency. Can proc other effects. Guardbreaks.',
   },
-  // ── Explosive Honey ──────────────────────────────────────
+  // Explosive Honey
   // Damage: base 3 × perkAmt, magic 1.0 type, magic+physical 1.0 scaling.
   // Boost vs Sticky: in Boost.ts (multiplierPerPerk), toggled by DamageAnalyzer._condDisabledSources.
   // Sticky apply: in perkAutoDebuffs.ts (no proc-coeff gate — same as other finisher debuffs).
@@ -2104,7 +2104,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     ],
     note: 'Honey ring burst on first finisher hit. Applies Sticky. Cannot proc other effects.',
   },
-  // ── Thorns ───────────────────────────────────────────────
+  // Thorns
   {
     perkName: 'Thorns',
     condition: 'When Hit',
@@ -2131,7 +2131,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     ],
     note: 'Activates in an area around the user, but will always hit the target that cused the user to activate this perk regardless of distance.'
   },
-  // ── Tesla Cannon ───────────────────────────────────────────────
+  // Tesla Cannon
   {
     perkName: 'Tesla Cannon',
     condition: 'When striking enemies from range',
@@ -2144,7 +2144,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     procCoefficient: { type: 'hasCoeff', value: 0.5 },
     note: 'Tesla Orb hits roughly every 0.5 seconds and lasts for roughly 7.5 seconds, or until it reaches its target. Only one Tesla Orb can be active at a time. Can proc other effects.'
   },
-  // ── Rainstorm ─────────────────────────────────────────────────
+  // Rainstorm
   // One Raindrop per rotation. This def is the Perk Base Damage CARD only: the
   // damage + heal rows in the breakdown are emitted by DamageAnalyzer's
   // hand-written Rainstorm block, so the generic perk loop skips this entry
@@ -2171,7 +2171,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     ],
     note: 'One Raindrop per rotation on 1.0 Water scaling. Base Damage = 4 + 2 × perk amount, Base Healing = 0.5 + 0.2 × perk amount. The drop cannot proc other effects, but its healing can — it is on the compatible-heal list, so each drop triggers a Radiance burst.',
   },
-  // ── Wave Rider ─────────────────────────────────────────────────
+  // Wave Rider
   // At max stacks the next Weapon Art / RMB is empowered by water: one hit
   // dealing Water damage and healing the user. Like Rainstorm, these defs are
   // the Perk Base Damage CARDS only — the breakdown rows are mixed

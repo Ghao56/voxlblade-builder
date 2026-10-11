@@ -9,7 +9,7 @@
 
   const dispatch = createEventDispatcher<{ change: string }>()
 
-  // ── Enchantment color map ─────────────────────────────────────────────────
+  // Enchantment color map
   const ENCHANT_COLORS: Record<string, string> = {
     'Legendary':     'rgb(255, 238, 0)',
     'Refined':       'rgb(245, 255, 124)',
@@ -65,7 +65,6 @@
 
   const DEFAULT_COLOR = 'rgb(138, 141, 133)'
 
-  // ── State ─────────────────────────────────────────────────────────────────
   let open = false
   let containerEl: HTMLElement
   let triggerEl: HTMLElement

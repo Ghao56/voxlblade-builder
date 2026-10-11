@@ -16,7 +16,7 @@ const DMG_TYPE_KEYS = [
   "trueType","physicalType","magicType","fireType","waterType","earthType","airType","hexType","holyType","summonType",
 ] as const
 
-// ─── Hybrid check ─────────────────────────────────────────────────────────────
+// Hybrid check
 
 function checkHybrid(
   part1: { [key: string]: any } | undefined,
@@ -43,7 +43,7 @@ function checkHybrid(
   return true
 }
 
-// ─── Weapon type resolution ───────────────────────────────────────────────────
+// Weapon type resolution
 
 const WEAPON_TYPE_MAP: Record<string, Record<string, string>> = {
   "Medium Handle": { "Small Blade": "Dagger",  "Medium Blade": "1-Handed Sword",  "Heavy Blade": "Unbalanced Sword", "Hammer Head": "Mallet" },
@@ -99,7 +99,7 @@ function resolveWeaponType(
   return { base, final: base, modifier: "" }
 }
 
-// ─── Monk weapon type resolution ──────────────────────────────────────────────
+// Monk weapon type resolution
 
 const MONK_WEAPON_TYPE_MAP: Record<string, Record<string, string>> = {
   "Monk Essence": { "Gloves": "Fists", "Shield": "Shield" },
@@ -121,7 +121,7 @@ function resolveMonkWeaponType(
   return { base, final: base, modifier: "" }
 }
 
-// ─── WeaponResult ─────────────────────────────────────────────────────────────
+// WeaponResult
 
 export interface WeaponResult {
   part1DamageTypes:    Record<string, number>
@@ -167,7 +167,7 @@ export interface WeaponResult {
   baseScalings:        Record<string, number>
 }
 
-// ─── Extraction helpers ───────────────────────────────────────────────────────
+// Extraction helpers
 
 function extractDamageAndScalings(part: any) {
   const damageTypes: Record<string, number> = {}
@@ -385,7 +385,7 @@ function calcWeaponGeneric(
   })
 }
 
-// ─── Monk stat bonus helper (deduplicates two formerly-cloned loops) ──────────
+// Monk stat bonus helper (deduplicates two formerly-cloned loops)
 
 /**
  * Applies shrine + monk-rank bonus to one weapon part's base stats,
@@ -412,7 +412,6 @@ function applyMonkStatBonus(
   }
 }
 
-// ─── Public API ───────────────────────────────────────────────────────────────
 
 function calcWeapon(bladeName: string, handleName: string, shrineActive = false): WeaponResult | null {
   return calcWeaponGeneric(getBlade(bladeName) ?? null, getHandle(handleName) ?? null, "Blade", "Handle", "bladeType", "handleType", false, shrineActive)

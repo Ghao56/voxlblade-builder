@@ -1,6 +1,4 @@
-// ──────────────────────────────────────────────
 // Perk base damage values (from Perkbasedmg.ts)
-// ──────────────────────────────────────────────
 
 // Dragon Claw
 export const DRAGON_CLAW_BASE_DAMAGE = 25
@@ -217,7 +215,7 @@ export const PYRE_BLOOM_MAX_ACTIVE_BASE = 3
 export const PYRE_BLOOM_MAX_ACTIVE_PER_STACK = 1
 export const PYRE_BLOOM_BURN_DURATION = 4
 
-// ── Bastion Ballista ─────────────────────────────
+// Bastion Ballista
 export const BASTION_BALLISTA_BASE_DMG = 1.25
 export const BASTION_BALLISTA_DMG_PER_STACK = 0.75
 export const BASTION_BALLISTA_MAX_POTENCY_BASE = 50
@@ -394,7 +392,7 @@ export const COMPATIBLE_HEAL_SOURCE_PATTERNS: RegExp[] = [
   /meditate/i,
 ]
 
-// ── Explosive Honey ─────────────────────────────────────
+// Explosive Honey
 export const EXPLOSIVE_HONEY_BASE_DMG = 3
 
 // Wave Rider

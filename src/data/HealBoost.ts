@@ -151,7 +151,6 @@ export function calculateHealBoost(
 ): HealBoostResult {
   const entriesMap = new Map<string, { rawMultiplier: number; condition?: string; sourceType: HealSource; direction: HealDirection }>()
   
-  // Calculate level healing
   const level = ctx.level ?? 0
   const lvlMult = roundMultiplier(1 + Math.max(0, Math.min(MAX_LEVEL, level)) / MAX_LEVEL)
   entriesMap.set('Level Healing', {

@@ -188,7 +188,7 @@
 
   let dragMode: 'move' | 'clone' = 'clone'
 
-  // ── Grid mouse/touch drag (replaces HTML5 DnD) ───────────────────────
+  // Grid mouse/touch drag (replaces HTML5 DnD)
   type GridDragKind = 'armor' | 'ring'
   let gridDragging = false
   let gridDragSlot: string | null = null
@@ -472,7 +472,7 @@
   let weaponStatFilterSortMode:'highest'|'lowest'|'alphabetical'= 'highest'
   let weaponAtkSpeedSortMode: 'default' | 'highest' | 'lowest' = 'default'
 
-  // ── Armor effective-boost sort helpers ────────────────────────────────────
+  // Armor effective-boost sort helpers
   function computeArmorEffectiveBoost(
     armorStats: Record<string, number>,
     weaponScalings: Record<string, number>,
@@ -529,7 +529,7 @@ function weaponMatchesFilter(item: any): boolean {
     activeAppTab = tab
   }
 
-  // ── Undo clear ─────────────────────────────────────────────────────────────
+  // Undo clear
   import type { BuildState } from './lib/types'
   let _previousBuild: BuildState | null = null
   let _undoVisible = false
@@ -583,11 +583,11 @@ function weaponMatchesFilter(item: any): boolean {
     if (potionBtnEl) toastOffsetTop = potionBtnEl.getBoundingClientRect().bottom + 12
   })
 
-  // ── Armor drag/tap helpers ────────────────────────────────────────────────
+  // Armor drag/tap helpers
   $: isDraggingArmor = !!draggingArmorSlot || !!selectedArmorSlot
   $: isDraggingRing = !!draggingRing || !!selectedRing
 
-// ── Modal state ────────────────────────────────────────────────────────────
+// Modal state
   type ModalType = 'race' | 'guild' | 'armor-helmet' | 'armor-chestplate' | 'armor-leggings' | 'infusion-helmet' | 'infusion-chestplate' | 'infusion-leggings' | 'ring' | 'infusion-ring' | 'rune' | 'blade' | 'handle' | 'glove' | 'essence' | null
   let activeModal: ModalType = null
   let modalSearch = ''
@@ -612,7 +612,7 @@ function weaponMatchesFilter(item: any): boolean {
   }
 
 
-  // ── Collapsible panels ─────────────────────────────────────────────────────
+  // Collapsible panels
   let showDetailsPanel = true
   let showPerksPanel = true
   let showPotionsDrawer = false
@@ -622,13 +622,13 @@ function weaponMatchesFilter(item: any): boolean {
   let activePerksTab: 'perks' | 'boosts' = 'perks'
   let activeDetailsTab: 'selection' | 'weapon' = 'selection'
 
-  // ── Inline enchant panel ───────────────────────────────────────────────────
+  // Inline enchant panel
   let inlineEnchantSlot: EnchantSlot | null = null
   function toggleInlineEnchant(slot: EnchantSlot) {
     inlineEnchantSlot = inlineEnchantSlot === slot ? null : slot
   }
 
-  // ── Equipment enchantment swap mode ──────────────────────────────────────
+  // Equipment enchantment swap mode
   let swapMode: EnchantSlot | null = null
   const ENCHANT_SLOTS: EnchantSlot[] = ['helmet', 'chestplate', 'leggings', 'ring', 'rune']
 
@@ -664,7 +664,6 @@ function weaponMatchesFilter(item: any): boolean {
       toggleInlineEnchant(slot)
     }
   }
-  // ── Derived ────────────────────────────────────────────────────────────────
   $: guildData = getGuild($build.guild)
   $: isMonk = isMonkGuild($build.guild)
 
@@ -818,7 +817,7 @@ $: statRows = Object.entries($result.stats).filter(([k, v]) => {
     return 1 + Math.max(0, $build.guildRank - 1) * MONK_RANK_MULTIPLIER
   })()
 
-  // ── Enchant helpers ────────────────────────────────────────────────────────
+  // Enchant helpers
   let enchantCats: Record<EnchantSlot, 'unAscended' | 'Ascended'> = {
     helmet: 'unAscended', chestplate: 'unAscended', leggings: 'unAscended',
     ring: 'unAscended', rune: 'unAscended'
@@ -893,12 +892,12 @@ function applyEnchantToAll(slot: EnchantSlot) {
   enchantCats = { ...enchantCats }
 }
 
-  // ── Inline enchant reactive values ─────────────────────────────────────────
+  // Inline enchant reactive values
   $: iepSlot = inlineEnchantSlot
   $: iepS0 = iepSlot ? $build.enchantments[iepSlot][0] : ''
   $: iepS1 = iepSlot ? $build.enchantments[iepSlot][1] : ''
   $: iepS2 = iepSlot ? $build.enchantments[iepSlot][2] : ''
-  // ── Reactive exclusive map ─────────────────────────
+  // Reactive exclusive map
   $: exclMap = {
     helmet:     isExclusiveEnchant(ge($build.enchantments.helmet[0])),
     chestplate: isExclusiveEnchant(ge($build.enchantments.chestplate[0])),
@@ -913,7 +912,7 @@ function applyEnchantToAll(slot: EnchantSlot) {
   $: iepOpts1 = iepSlot ? enchantments.filter(e => e.category === enchantCats[iepSlot] && e.name !== iepS0 && e.name !== iepS2) : []
   $: iepOpts2 = iepSlot ? enchantments.filter(e => e.category === enchantCats[iepSlot] && e.name !== iepS0 && e.name !== iepS1) : []
 
-// ── Modal search suggestions ───────────────────────────────────────────────
+// Modal search suggestions
   let showSuggestions = false
   let modalCandidates: Array<{label: string; type: 'name' | 'perk'}> = []
   let modalSuggestions: Array<{label: string; type: 'name' | 'perk'}> = []
@@ -1187,7 +1186,7 @@ function applyEnchantToAll(slot: EnchantSlot) {
   let gloveFilterType = ''
   let essenceFilterTier = ''
 
-  // ── Perk tag filter ─────────────────────────────────────────────────────
+  // Perk tag filter
   let selectedTags: Set<string> = new Set()
   let statFilter: Map<string, 'include' | 'exclude'> = new Map()
 
@@ -1310,7 +1309,7 @@ function onStatFilterChange( e: CustomEvent<{
   $: filteredHandles = tierFilter(handles, handleFilterTier, handleFilterType, 'handleType')
   $: filteredGloves = tierFilter(gloves, gloveFilterTier, gloveFilterType, 'gloveType')
   $: filteredEssences = tierFilter(essences, essenceFilterTier)
-// ── Weapon enchant damage type bonuses ────────────────────────────────────────
+// Weapon enchant damage type bonuses
 interface PerkDmgTypeBonusDef {
   perkName: string
   type: string
@@ -1341,7 +1340,7 @@ $: weaponDamageTypesWithBonus = (() => {
 })()
 
 $: highestDamageType = pickHighestDmgType(Object.entries(weaponDamageTypesWithBonus))
-  // ── Weapon result ──────────────────────────────────────────────────────────
+  // Weapon result
  $: weaponResult = calcBuildWeapon($build)
 
   $: summaryWeaponLabel = weaponResult?.part1Name && weaponResult?.part2Name && weaponResult.finalWeaponType
@@ -1376,7 +1375,7 @@ $: highestDamageType = pickHighestDmgType(Object.entries(weaponDamageTypesWithBo
     return `${Math.max(1, Math.floor(effectiveBase * cdr.runeCDR))}s`
   }
 
-  // ── Detail cards ───────────────────────────────────────────────────────────
+  // Detail cards
   interface EnchantInfo { name: string; notes: string | undefined }
   interface DetailCard {
     title: string; label: string; description?: string
@@ -1635,7 +1634,7 @@ $: highestDamageType = pickHighestDmgType(Object.entries(weaponDamageTypesWithBo
     return false
   }
 
-  // ── Weapon Art helpers ─────────────────────────────────────────────────────
+  // Weapon Art helpers
   $: _waScalings = weaponResult?.baseScalings ?? {} as Record<string, number>
   $: _waStats = weaponResult?.stats ?? {} as Record<string, number>
   $: _waWeaponTypes = [...new Set([weaponResult?.weaponType, weaponResult?.finalWeaponType].filter((t): t is string => !!t))]
@@ -1664,7 +1663,7 @@ $: highestDamageType = pickHighestDmgType(Object.entries(weaponDamageTypesWithBo
 
   $: waUnmetReqs = getUnmetReqs(selectedWA, _waScalings, _waStats, _waWeaponTypes, isMonk, _waBlade, _waHandle)
 
-// ── Weapon stat groups ──────────────────────────────────────────────────────
+// Weapon stat groups
 const DMG_TYPE_KEYS = new Set(['physicalType','magicType','fireType','waterType','earthType','airType','hexType','holyType','trueType','summonType'])
 const SCALING_KEYS = new Set(['physicalScaling','magicScaling','fireScaling','waterScaling','earthScaling','airScaling','hexScaling','holyScaling','dexterityScaling','summonScaling'])
 
@@ -1770,7 +1769,7 @@ $: _appWaAvgTotal = (() => {
 
 
 
-<!-- ═══════════════════════════════ MAIN APP ═══════════════════════════════ -->
+<!-- MAIN APP -->
 <div class="app">
   {#snippet statRow(k: string, v: number)}
   <div class="stat-row"><span>{formatLabel(k)}</span><span class="stat-val" class:neg={v < 0}>{formatStat(k, v)}</span></div>
@@ -2258,7 +2257,7 @@ $: _appWaAvgTotal = (() => {
             {/if}
           </div>
           
-          <!-- ── WEAPON ART PANEL ── -->
+          <!-- WEAPON ART PANEL -->
           <div class="right-column">
             <div class="wa-panel">
               <div class="wa-panel-header">
@@ -2398,7 +2397,7 @@ $: _appWaAvgTotal = (() => {
       {/if}
       <BuffList />
 
-          <!-- ── DRACONIC RUNE PANEL ── -->
+          <!-- DRACONIC RUNE PANEL -->
       {#if isDraconic}
         <div class="panel draconic-panel">
           <div class="draconic-panel-header">
@@ -3279,7 +3278,7 @@ $: _appWaAvgTotal = (() => {
 
 
 
-  /* ── Tooltip ── */
+  /* Tooltip */
   :global(.enchant-tooltip) {
     position:fixed; z-index:var(--z-toast);
     background: var(--glass-bg);
@@ -3293,7 +3292,7 @@ $: _appWaAvgTotal = (() => {
   }
   :global(.enchant-tooltip p) { margin:0 0 4px; font-size:.76rem; color:var(--ink); line-height:1.45; }
 
-  /* ── SUMMARY ── */
+  /* SUMMARY */
   .panel {
     background: linear-gradient(180deg, var(--surface2) 0%, var(--surface) 100%);
     border: 1px solid var(--border);
@@ -3679,8 +3678,8 @@ $: _appWaAvgTotal = (() => {
   .iep-slot-num { font-size:.65rem; font-weight:800; color:var(--accent3); width:14px; flex-shrink:0; opacity:.7; }
   .iep-excl-note { font-size:.72rem; color:var(--accent2); margin-top:8px; padding:6px 10px; background:rgba(245,158,11,.08); border:1px solid rgba(245,158,11,.2); border-radius:6px; }
 
-  /* ── Collapsible panel title buttons ── */
-/* ── PERKS PANEL TABS ── */
+  /* Collapsible panel title buttons */
+/* PERKS PANEL TABS */
 .perks-panel { 
   border-color: rgba(245,158,11,0.12); 
   background: linear-gradient(160deg, var(--surface2) 50%, rgba(245,158,11,0.025) 100%);
@@ -3733,7 +3732,7 @@ $: _appWaAvgTotal = (() => {
 
   .perks-grid { display:flex; flex-direction:column; gap:6px; margin-top:10px; }
 
-  /* ── Details panel with tabs ── */
+  /* Details panel with tabs */
   .details-panel { padding:0; overflow:hidden; transition: border-color var(--transition-base), box-shadow var(--transition-smooth); }
   .details-panel:hover {
     border-color: var(--border-hover);
@@ -3948,7 +3947,7 @@ $: _appWaAvgTotal = (() => {
     background:rgba(251,191,36,.22); border-color:rgba(251,191,36,.5);
     box-shadow: 0 0 6px rgba(251,191,36,.3);
   }
-  /* ── WEAPON ART PANEL ── */
+  /* WEAPON ART PANEL */
 .wa-panel {
   order: 1;
   background: linear-gradient(160deg, rgba(167,139,250,0.06) 0%, rgba(167,139,250,0.02) 100%);
@@ -4150,7 +4149,7 @@ $: _appWaAvgTotal = (() => {
   margin-left: 4px;
   font-weight: 600;
 }
-/* ── DRACONIC RUNE ── */
+/* DRACONIC RUNE */
 
 .sg-draconic-rune-cell {
   background:
@@ -4424,7 +4423,7 @@ $: _appWaAvgTotal = (() => {
   border-color:rgba(248,113,113,.3); background:rgba(248,113,113,.08); color:var(--neg); opacity:.7;
 }
 
-/* ── Responsive ── */
+/* Responsive */
 @media (max-width: 640px) {
   .app { padding: 12px 10px 40px; }
   .sg-cell { padding: 8px 10px; min-height: 72px; }

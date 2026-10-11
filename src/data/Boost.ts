@@ -1,4 +1,4 @@
-// ── Boost Definitions ──────────────────────────────────────────────────────
+// Boost Definitions
 // Defines damage/heal multipliers from perks (Hemorrhage, Stealth, Serrated Edge, etc.)
 // Simple boosts: multiplierPerPerk × perkAmount (no context needed).
 // Complex boosts: calcFn(ctx) → { multiplier, condition } (reads BoostContext for dynamic state).
@@ -50,13 +50,11 @@ export function calcFrenzyPct(ragePotency: number): number {
   return FRENZY_BASE + FRENZY_RAGE_MULT * ragePotency
 }
 
-// ── Constants ──────────────────────────────────────────────────────────────
 export const PENANCE_HP_THRESHOLD = 35       // percent (≤35% HP → max boost + bleed proc)
 const PENANCE_MAX_BOOST = 0.25
 export const PENANCE_BLEED_POTENCY = 0       // status-only bleed, no damage
 export const PENANCE_BLEED_DURATION = 5      // seconds
 
-// ── Context ────────────────────────────────────────────────────────────────
 export interface BoostContext {
   perks: Record<string, number>
   naturalCritChance: number
@@ -90,7 +88,7 @@ export interface BoostContext {
   voxos?: number
 }
 
-// ── Boost definitions ──────────────────────────────────────────────────────
+// Boost definitions
 export interface BoostDef {
   sourceName: string
   type: 'dmg' | 'heal'
@@ -106,7 +104,7 @@ export interface BoostDef {
   baseProcChance?: number
 }
 
-// ── Simple dmg boosts ──────────────────────────────────────────────────────
+// Simple dmg boosts
 export const BOOST_DEFS: BoostDef[] = [
   { sourceName: 'Hemorrhage', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Hemorrhage'] ?? 0; if (a <= 0) return null; return { multiplier: roundMultiplier(1 + HEMORRHAGE_DMG_BASE + HEMORRHAGE_DMG_PER_STACK * a), condition: `against Bleeding opponents · +${HEMORRHAGE_STUN_PCT_PER_STACK}% Stun · +${HEMORRHAGE_POISE_PCT_PER_STACK}% Poise Dmg per stack` } },},
   {sourceName: 'Blood Thirsty', multiplierPerPerk: BLOOD_THIRSTY_MULT_PER_STACK, type: 'dmg', condition: 'against Bleeding opponents', needsProcCoeff: true},
@@ -191,7 +189,7 @@ export const BOOST_DEFS: BoostDef[] = [
   },
 
 
-  // ── Complex dmg boosts ─────────────────────────────
+  // Complex dmg boosts
   {
     sourceName: 'Primal',
     type: 'dmg',

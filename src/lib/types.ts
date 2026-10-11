@@ -1,4 +1,4 @@
-// ── Core Types ─────────────────────────────────────────────────────────────
+// Core Types
 // Central type definitions for the entire codebase: stats, equipment, build state, damage types.
 // Import from here rather than defining locally — keeps types consistent across files.
 
@@ -91,7 +91,7 @@ export function applyUpgrade(stats: StatMap, level: number): StatMap {
   return result
 }
 
-// ── Weapon Types (Blade/Handle) ───────────────────────────────────────────────
+// Weapon Types (Blade/Handle)
 
 export type BladeType = "Small Blade" | "Medium Blade" | "Heavy Blade" | "Hammer Head"
 export type HandleType = "Medium Handle" | "Long Handle" | "Pole"
@@ -120,7 +120,7 @@ export type WeaponHandle = {
   perkAmount?: number
 } & Partial<Record<ScalingKey, number>>
 
-// ── Monk Weapon Types (Glove/Essence) ─────────────────────────────────────────
+// Monk Weapon Types (Glove/Essence)
 
 export type GloveType = "Gloves" | "Shield"
 export type EssenceType = "Monk Essence"
@@ -175,7 +175,7 @@ export interface MonkEssence {
   perkAmount?: number
 }
 
-// ── Build State ───────────────────────────────────────────────────────────────
+// Build State
 
 export interface BuildState {
   race: string

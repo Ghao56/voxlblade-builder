@@ -4,7 +4,6 @@
   import { MAX_LEVEL, calcBaseMaxHP, STORAGE_KEY_LEVEL, STORAGE_KEY_HP_FILL } from './lib/constants'
   import Badge from './lib/ui/Badge.svelte'
 
-  // ── Props ─────────────────────────────────────────────────────────────────
   export let protection: number = 0
   export let shield: number = 0
   export let hpThreshold: number | undefined = undefined
@@ -88,7 +87,6 @@
     dragging = false 
   }
 
-  // ── Display helpers ───────────────────────────────────────────────────────
   $: currentHP = Math.round(effectiveMaxHP * fillPct / 100)
   $: fillFrac  = Math.min(1, (effectiveMaxHP / baseMaxHP) * (fillPct / 100))
   $: thumbPos  = fillFrac * 100
@@ -192,7 +190,7 @@
     font-family: 'Trebuchet MS', 'Segoe UI', system-ui, sans-serif;
   }
 
-  /* ── LV block ── */
+  /* LV block */
   .lb-lv-block {
     display: flex;
     align-items: center;
@@ -249,7 +247,7 @@
   .lb-lv-input::-webkit-inner-spin-button,
   .lb-lv-input::-webkit-outer-spin-button { -webkit-appearance: none; }
 
-  /* ── Bar column ── */
+  /* Bar column */
   .lb-bar-col {
     display: flex;
     flex-direction: column;
@@ -287,7 +285,7 @@
   .lb-hp-sep  { color: rgba(138,141,133,0.35); }
   .lb-hp-max  { color: #8a8d85; }
 
-  /* ── Bar track ── */
+  /* Bar track */
   .lb-bar-track {
     position: relative;
     height: 14px;

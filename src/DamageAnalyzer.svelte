@@ -121,7 +121,7 @@ import {
   FRENZY_SPEED_PCT_PER_STACK,
 } from './lib/constants'
 
-// ── Cross-Toggle Mappings ──────────────────────────────────────────────────
+// Cross-Toggle Mappings
 // Centralized mappings for cross-toggle relationships
 const _isSpiritPerk = (name: string) => name === 'Deathmist Slash' || name.endsWith(' Spirit')
 
@@ -161,7 +161,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   $: _pursuitRank = disableWeaponBoost ? 0 : (perks['Pursuit'] ?? 0)
   $: _pursuitActive = _pursuitRank > 0 && ((_displayRows[0] as any)?.m1Finisher ?? true)
 
-  // ── Defensive Perk Sources ────────────────────────────────────────────────
+  // Defensive Perk Sources
   $: _activeRaceEffect = getActiveRaceEffect($build.race, _hpFillPct)
   const _DEF_TYPE_LIST = TRACKED_TYPES_WITH_TRUE
   
@@ -241,7 +241,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     ? `${SOLAR_LIGHT_HOLY_SCALING} Holy + ${SOLAR_LIGHT_FIRE_SCALING} Fire`
     : `${SOLAR_LIGHT_HOLY_SCALING} Holy`
 
-  // ── Heal Scaling ──────────────────────────────────────────────────────────
+  // Heal Scaling
   $: _healScalingCtx = {
     perks,
     emotionalState: $build.emotionalState,
@@ -349,7 +349,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     return 1 / (1 + effectivePotency)
   })()
 
-  // ── Defense Calculation ───────────────────────────────────────────────────
+  // Defense Calculation
   $: _selfDebuffDefenseEffects = (() => {
     const effects: Partial<Record<string, number>> = {}
     for (const b of _allActiveBuffs) {
@@ -496,7 +496,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       .filter((i): i is SummonInstance => !!i)
   })()
 
-  // ── Active Buffs Assembly ──────────────────────────────────────────────────
+  // Active Buffs Assembly
   $: _allActiveBuffsRaw = (() => {
     const _weaponModifier = calcBuildWeapon($build)?.weaponModifier
     const baseBuffs = assembleActiveBuffs($build, $result.perks, wardingDebuffMult, darkeningHexEligible, _weaponModifier, $build.vitalMistPotency ?? 0)
@@ -681,7 +681,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     return [...map.values()].map(b => ({ ...b, sourceName: b._allSources.join(', ') }))
   })())
 
-  // ── Rage (still needed directly: defensive perk gating, PERK_DMG_DEFS condition, UI toggle row) ──
+  // Rage (still needed directly: defensive perk gating, PERK_DMG_DEFS condition, UI toggle row)
   $: _activeRageBuffs = _allActiveBuffs.filter(b => b.buffName === 'Rage')
   $: _ragePotency = _activeRageBuffs.length > 0
     ? Math.max(..._activeRageBuffs.map(b => b.potency))
@@ -915,7 +915,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
 
   $: _venomEaterCanShow = (perks['Venom Eater'] ?? 0) > 0 && _dummyHasPoisonActive
 
-  // ── Mycotic Bloom: below 50% enemy HP → Poison DoT multiplier ──
+  // Mycotic Bloom: below 50% enemy HP → Poison DoT multiplier
   $: _mycoticBloomAmt = perks['Mycotic Bloom'] ?? 0
   $: _mycoticBloomBelow50Active = _mycoticBloomAmt > 0 && _enemyHpFillPct <= 50 && _dummyHasPoisonActive
   $: _mycoticBloomDotMult = _mycoticBloomBelow50Active ? 1 + 0.25 * _mycoticBloomAmt : 1
@@ -1435,7 +1435,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     return chips
   })()
 
-  // ── Ork race: +0.1 tenacity per active buff (excludes debuffs & self-debuffs) ──
+  // Ork race: +0.1 tenacity per active buff (excludes debuffs & self-debuffs)
   $: _orkBuffs = $build.race === 'ORK' ? getOrkTenacityBuffs(_allActiveBuffs, BUFF_DEFS) : []
   $: _orkBuffTenacity = $build.race === 'ORK' ? calcOrkTenacityBonus(_allActiveBuffs, BUFF_DEFS) : 0
   $: orkBuffTenacity.set(_orkBuffTenacity)
@@ -1443,7 +1443,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
 
   let disabledDebuffs = new Set<string>()
 
-  // ── Curse Rip ─────────────────────────────────────────────────────────────
+  // Curse Rip
   $: _curseRipPerkAmount = perks['Curse Rip'] ?? 0
   $: _curseRipActiveDebuffCount = (() => {
     if (_curseRipPerkAmount <= 0) return 0
@@ -3099,7 +3099,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     }
   }
 
-  // ── Mount Runes (override M1 + WA while riding) ──────────────────────────
+  // Mount Runes (override M1 + WA while riding)
   $: _activeMountRuneDef = MOUNT_RUNE_DEFS.find(d => d.runeName === $build.rune) ?? null
   let mountActive = true
   $: if (!_activeMountRuneDef && mountActive) mountActive = false
@@ -3130,7 +3130,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     return map
   })()
 
-  // ── Perk Base Damage ───────────────────────────────────────────────────────
+  // Perk Base Damage
   $: springblastFinisherHits = _m2FinisherHits
 
   /** Total hit count in the current weapon's M2 (used as finisher hits context) */
@@ -4124,7 +4124,6 @@ note?: string
         continue
       }
 
-      // Add damage if available
       if (entry.typedHits_m2.length === 0) continue
       
       const _colorMult = entry.perkName === 'Draconic Blood'
@@ -4504,7 +4503,7 @@ note?: string
       }
     }
 
-    // ── Light Bearer ─────────────────────────────────────────────
+    // Light Bearer
     // LMB (M1) and RMB (M2) hits release a Holy healing pulse. Possesses a
     // Proc Coefficient (gated on the weapon's M1/M2 coefficient). Base
     // Healing = 0.25 + 0.025 × perkAmount · 1.0 Holy Scaling. Emitted as a
@@ -4531,7 +4530,7 @@ note?: string
       pushLbPulse('M2')
     }
 
-    // ── Rainstorm ───────────────────────────────────────────────
+    // Rainstorm
     // One Raindrop per rotation. Base Damage = 4 + 2 × perkAmount, Base Healing =
     // 0.5 + 0.2 × perkAmount, both on 1.0 Water scaling. The drop cannot proc
     // other effects; its healing can (it is on the compatible-heal list).
@@ -4559,7 +4558,7 @@ note?: string
       })
     }
 
-    // ── Rejuvenating Flame ─────────────────────────────────
+    // Rejuvenating Flame
     // Passive AoE heal around the user, hitting Allies only (never the user) on
     // 0.7 Fire scaling. Base Healing = 0.1 + 0.05 × perkAmount, multiplied by 5
     // while the user is Burning; the AoE grows further while Burning but that
@@ -4588,7 +4587,7 @@ alliesOnly: true,
       })
     }
 
-    // ── Hex Shield ──────────────────────────────────────────────
+    // Hex Shield
     // Neutral status perk: blocks one debuff per stack and heals 2.5 HP per
     // stack when it blocks. Flat heal, no stat scaling, no Proc Coefficient,
     // absent from COMPATIBLE_HEAL_SOURCE_PATTERNS (no Radiance burst, no heal
@@ -4608,7 +4607,7 @@ alliesOnly: true,
       })
     }
 
-    // ── Vital Mist ─────────────────────────────────────────────
+    // Vital Mist
     // Passively consumed to heal Allies in an AoE. Base Heal = consumed / 5
     // (1 HP per 5 Potency consumed), on 1.0 Air + 1.0 Physical scaling, and
     // is affected by the Level Damage Bonus like other heal sources.
@@ -4639,7 +4638,7 @@ alliesOnly: true,
       }
     }
 
-    // ── Radiance ────────────────────────────────────────────────
+    // Radiance
     // Each proccable healing source emits its own Holy-damage burst, spliced
     // directly AFTER the source hit so it renders adjacent to it. Healing is
     // never aggregated across sources — every burst keys off its own source's
@@ -5168,7 +5167,7 @@ $: _groupedSelfDamageSources = (() => {
     waDebuffWarning={_waDebuffWarning}
   />
 
-  <!-- ══════════════════ TOP ROW: CRIT + ENV + APEN ══════════════════ -->
+  <!-- TOP ROW: CRIT + ENV + APEN -->
   <div class="da-top-row">
 
     <!-- Crit column -->
@@ -5321,7 +5320,7 @@ $: _groupedSelfDamageSources = (() => {
 
   </div>
 
-<!-- ══════════════════ COMBAT MULTIPLIERS ══════════════════ -->
+<!-- COMBAT MULTIPLIERS -->
 <div class="da-section">
   <div class="da-section-title"><i class="fa fa-crosshairs"></i> Combat Multipliers</div>
     {#if !_hasSpecificBoosts}
@@ -5723,7 +5722,7 @@ $: _groupedSelfDamageSources = (() => {
   {/if}
 </div>
 
-<!-- ══════════════════ DEFENSE ══════════════════ -->
+<!-- DEFENSE -->
 <div class="da-section da-section--defense">
   <div class="da-section-title">Damage Taken</div>
 
@@ -5801,7 +5800,7 @@ $: _groupedSelfDamageSources = (() => {
 </div>
 
 <div class="da-main-row">
-<!-- ══════════════════ WEAPON BASE DAMAGE + PERK BASE DAMAGE ══════════════════ -->
+<!-- WEAPON BASE DAMAGE + PERK BASE DAMAGE -->
 <div class="da-wbd-outer" class:da-wbd-outer--expanded={showAllWeapons}>
 
 <!-- Weapon Base Damage -->
@@ -6600,7 +6599,7 @@ $: _groupedSelfDamageSources = (() => {
 </div><!-- end da-wbd-body -->
 </div><!-- end da-section--wbd -->
 
-<!-- ── Summons ── -->
+<!-- Summons -->
 {#if _summonInstances.length}
 <div class="da-section da-section--summon">
   <div class="da-section-title-row">
@@ -6615,7 +6614,7 @@ $: _groupedSelfDamageSources = (() => {
 </div>
 {/if}
 
-<!-- ── Perk Base Damage ── -->
+<!-- Perk Base Damage -->
 {#if _nonDraconicPerkEntries.length > 0 || darkeningHexAmt > 0 || _vassalsCroakAmt > 0 || _cdAmt > 0 || _vcAmt > 0 || packagedPowerAmt > 0 || _radianceAmt > 0 || moneySmartAmt > 0}
 <div class="da-section da-section--pbd">
   <div class="da-section-title-row">
@@ -7255,7 +7254,7 @@ $: _groupedSelfDamageSources = (() => {
   </div>
 </div>
 {/if}
-<!-- ══════════════════ DAMAGE SCALING ══════════════════ -->
+<!-- DAMAGE SCALING -->
 {#if _weaponResult && scalingBreakdown.rows.length > 0}
 <div class="da-section da-section--scaling">
   <div class="da-section-title">📐 Damage Scaling</div>
@@ -7842,7 +7841,7 @@ $: _groupedSelfDamageSources = (() => {
     }
   }
 
-  /* ── Section ── */
+  /* Section */
   .da-section {
     background: var(--surface, #141715);
     border: 1px solid var(--border, rgba(255,255,255,.06));
@@ -7879,7 +7878,7 @@ $: _groupedSelfDamageSources = (() => {
   }
   .da-collapse-btn:hover { opacity: 1; border-color: var(--ink-muted, #8a8d85); }
 
-  /* ── Crit grid ── */
+  /* Crit grid */
   .da-crit-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -7946,7 +7945,7 @@ $: _groupedSelfDamageSources = (() => {
     font-style: italic;
   }
 
-  /* ── Boost row ── */
+  /* Boost row */
   .da-boost-row {
     display: flex;
     align-items: center;
@@ -8034,7 +8033,7 @@ $: _groupedSelfDamageSources = (() => {
   text-decoration: line-through;
 }
 
-/* ── Top row: 3 columns ── */
+/* Top row: 3 columns */
 .da-top-row {
   display: flex;
   flex-wrap: wrap;
@@ -8051,7 +8050,7 @@ $: _groupedSelfDamageSources = (() => {
   }
 }
 
-/* ── Top-row panel base ── */
+/* Top-row panel base */
 .da-section--top {
   background: var(--surface, #141715);
   border: 1px solid rgba(212,175,55,.1);
@@ -8071,7 +8070,7 @@ $: _groupedSelfDamageSources = (() => {
 .da-section--apen { flex: 0 1 160px; text-align: center; }
 .da-section--paspd { flex: 0 1 160px; text-align: center; }
 
-/* ── Crit stat cards ── */
+/* Crit stat cards */
 .da-section--top .da-stat-card {
   background: var(--surface2, #1a1d1b);
   border-radius: 8px;
@@ -8082,7 +8081,7 @@ $: _groupedSelfDamageSources = (() => {
   font-size: 2rem;
 }
 
-/* ── Armor Penetration ── */
+/* Armor Penetration */
 .da-apen-inner {
   display: flex;
   flex-direction: column;
@@ -8108,7 +8107,7 @@ $: _groupedSelfDamageSources = (() => {
   color: var(--ink-muted, #8a8d85);
 }
 
-/* ── Weapon Base Damage ── */
+/* Weapon Base Damage */
 .da-section--wbd {
   border-color: rgba(251,146,60,.15);
 }
@@ -8215,7 +8214,7 @@ $: _groupedSelfDamageSources = (() => {
   margin-top: 2px;
 }
 
-/* ── Typed hits — pill card design ── */
+/* Typed hits — pill card design */
 .da-hits-row {
   display: flex;
   flex-wrap: wrap;
@@ -8330,7 +8329,7 @@ $: _groupedSelfDamageSources = (() => {
   letter-spacing: .1em;
   font-family: var(--font-body, 'Trebuchet MS', sans-serif);
 }
-/* ── Damage Scaling section ── */
+/* Damage Scaling section */
 .da-section--scaling {
   border-color: rgba(52,211,153,.18);
   background: linear-gradient(160deg, var(--surface, #141715) 60%, rgba(52,211,153,.03) 100%);
@@ -9000,7 +8999,7 @@ $: _groupedSelfDamageSources = (() => {
   font-size: 0.6rem !important;
 }
 
-/* ── WBD outer: fixed 360px right column ── */
+/* WBD outer: fixed 360px right column */
 .da-wbd-outer {
   flex: 0 0 360px;
   order: 1;
@@ -9012,14 +9011,14 @@ $: _groupedSelfDamageSources = (() => {
   min-width: 0;
 }
 
-/* ── Perk Base Damage section ── */
+/* Perk Base Damage section */
 .da-section--pbd {
   width: 100%;
   border-color: rgba(167,139,250,.2);
   background: linear-gradient(160deg, var(--surface, #141715) 60%, rgba(167,139,250,.04) 100%);
 }
 
-/* ── Summon section ── */
+/* Summon section */
 .da-section--summon {
   width: 100%;
   border-color: rgba(192,132,252,.28);
@@ -9368,7 +9367,7 @@ $: _groupedSelfDamageSources = (() => {
     width: 100%;
   }
 }
-/* ── Perk scaling section ── */
+/* Perk scaling section */
 .ds-heal-subsection {
   margin-top: 14px;
   padding-top: 14px;
@@ -10045,7 +10044,7 @@ $: _groupedSelfDamageSources = (() => {
   border-style: dotted;
 }
 
-/* ── Perk Slider (Bastion Ballista etc.) ─────────────────────────────── */
+/* Perk Slider (Bastion Ballista etc.) */
 .da-sb-slider-wrap {
   display: flex;
   align-items: center;
@@ -10159,7 +10158,7 @@ $: _groupedSelfDamageSources = (() => {
   white-space: nowrap;
 }
 
-/* ── Segmented control (valueLabels sliders) ────────────────────────── */
+/* Segmented control (valueLabels sliders) */
 .da-sb-slider-wrap--stack {
   flex-direction: column;
   align-items: stretch;

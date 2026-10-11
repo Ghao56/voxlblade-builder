@@ -70,7 +70,6 @@
   for (const s of SCALING_GROUP.stats) STAT_TAG_MAP.set(s.key, 'SCL')
   for (const s of BOOST_GROUP.stats) STAT_TAG_MAP.set(s.key, 'STAT')
 
-  // ── State ───────────────────────────────────────────────────────────────────
   let active: Map<string, 'include' | 'exclude'> = new Map(filterValue)
   const { toggle, remove, clear, handleChipKeyDown } = createFilterActions(
     () => active,

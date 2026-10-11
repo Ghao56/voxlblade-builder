@@ -426,7 +426,7 @@ note?: string
 
   $: try { localStorage.setItem(DEF_STORAGE_KEY, JSON.stringify(defenses)) } catch {}
 
-  // ── Daily Challenge presets ────────────────────────────────────────────────
+  // Daily Challenge presets
   interface Preset {
     id: string
     label: string
@@ -483,11 +483,11 @@ note?: string
     activePresets = new Set()
   }
 
-  // ── Armor pen ─────────────────────────────────────────────────────────────
+  // Armor pen
   $: armorPen   = (stats as any)?.armorPenetration ?? 0
   $: penDecimal = armorPen / 100
 
-  // ── Active debuff combat effects ───────────────────────────────────────────
+  // Active debuff combat effects
   // Product of all active damageMult debuffs (Weakness on enemy doesn't affect damage you deal)
   function calcActiveDebuffDamageMult(resolved: Array<any>, disabled: Set<string>): number {
     return resolved
@@ -1743,7 +1743,7 @@ note?: string
     ...(alliesHits.length > 0 ? [{ label: 'Allies', allies: true, list: _splitVcHits(alliesHits) }] : []),
   ]
 
-  // ── Totals ──────────────────────────────────────────────────
+  // Totals
   /**
    * Whether a type's displayed value is its crit value. Damage follows the
    * global "Crit ON/OFF" switch; a heal follows it too, plus the Critical
@@ -2468,7 +2468,7 @@ note?: string
                                   <span class="bdc-fr-val bdc-fr-val--crit">× {fmtMult(_critMultFor(t))}</span>
                                 </div>
                               {/if}
-                              {#if t.critGuardbreakMult}
+                              {#if t.critGuardbreakMult && isCritShown(t)}
                                 <div class="bdc-fr">
                                   <span class="bdc-fr-label">Guardbreak Crit Bonus (Critical Master)</span>
                                   <span class="bdc-fr-val bdc-fr-val--crit">× {fmtMult(t.critGuardbreakMult)}</span>
@@ -2800,7 +2800,7 @@ note?: string
         <span class="bdc-fr-val bdc-fr-val--crit">× {fmtMult(_critMultFor(t))}</span>
       </div>
     {/if}
-    {#if t.critGuardbreakMult}
+    {#if t.critGuardbreakMult && isCritShown(t)}
       <div class="bdc-fr">
         <span class="bdc-fr-label">Guardbreak Crit Bonus (Critical Master)</span>
         <span class="bdc-fr-val bdc-fr-val--crit">× {fmtMult(t.critGuardbreakMult)}</span>
@@ -2871,7 +2871,7 @@ note?: string
   align-items: flex-start;
 }
 
-/* ── Dummy column ── */
+/* Dummy column */
 .bdc-dummy-col {
   display: flex;
   flex-direction: column;
@@ -3174,7 +3174,7 @@ note?: string
   opacity: .55;
 }
 
-/* ── Calc column ── */
+/* Calc column */
 .bdc-calc-col {
   flex: 1 1 0;
   min-width: 0;
@@ -3270,7 +3270,7 @@ note?: string
   box-shadow: 0 0 8px rgba(251,191,36,.15);
 }
 
-/* ── Group header with total ── */
+/* Group header with total */
 .bdc-grp-head {
   display: flex;
   align-items: center;
@@ -3341,7 +3341,7 @@ note?: string
 }
 .bdc-heal-crit-toggle--off:hover { background: rgba(140, 140, 140, .2); }
 
-/* ── Per-hit type sum (multi-type only) ── */
+/* Per-hit type sum (multi-type only) */
 .bdc-hit-type-sum-sep {
   font-size: .7rem;
   color: var(--ink-muted, #8a8d85);
@@ -3393,7 +3393,7 @@ note?: string
   margin-left: 4px;
 }
 
-/* ── Full hit list (no selection needed) ── */
+/* Full hit list (no selection needed) */
 .bdc-wa-debuff-warn {
   display: flex;
   align-items: center;

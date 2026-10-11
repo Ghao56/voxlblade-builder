@@ -1,6 +1,4 @@
-// ──────────────────────────────────────────────
 // CDR perk values (from cdr.ts)
-// ──────────────────────────────────────────────
 
 export const CDR_CASTER_RUNE_PCT = 0.2
 export const CDR_CASTER_WA_PCT = 0.1

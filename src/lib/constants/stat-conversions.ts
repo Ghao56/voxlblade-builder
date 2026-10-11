@@ -1,6 +1,4 @@
-// ──────────────────────────────────────────────
 // Stat boost conversion rates (from statboost.ts)
-// ──────────────────────────────────────────────
 
 export const WEIGHT_DISTRIBUTION_SPLIT_RATIO = 0.5
 export const WEIGHT_DISTRIBUTION_MULTIPLIER = 0.5
