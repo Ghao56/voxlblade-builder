@@ -741,7 +741,8 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
   'Vital Mist': {
     name: 'Vital Mist',
     color: '#f70101',
-    description: 'Slowly drains to heal people around yourself.',
+    description: 'Slowly drains to heal people around yourself. Resource for Vital Mist.',
+    dynamicDescription: (_perks, potency) => `Charges: ${+potency.toFixed(1)} · passively consumed to heal Allies in an AoE · 1 HP → 10 potency (Lifesteal) · at ≥50 charge gains increased AoE and grants Tailwind`,
     effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
     effectUnit: 'flat',
     isNeutral: true,

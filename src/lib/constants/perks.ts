@@ -75,6 +75,9 @@ export const VENOM_EATER_CRIT_DMG_MULT = 10
 export const VITAL_STRIKES_CRIT_DMG_PER_STACK = 25
 export const SPARK_CRIT_DMG_PER_STACK = 50
 export const CRITICAL_MASTER_CRIT_DMG_PER_STACK = 5
+/** Critical Master: crits on an attack that guard-breaks without the perk deal
+ *  ×(1 + 0.2 × perkAmount) damage on top of the normal crit multiplier. */
+export const CRITICAL_MASTER_GUARDBREAK_CRIT_DMG_PER_STACK = 0.2
 export const SPLINTER_CRIT_DMG_PER_STACK = 10
 
 // ── Mortal Will ──────────────────────────────────

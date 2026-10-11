@@ -54,6 +54,8 @@ export interface ComputedType {
   defMult: number; enemyDefPct: number
   spellPiercerIgnored?: boolean
   raw: number; critVal: number
+  /** Critical Master guard-break crit bonus (×1 when not applicable). */
+  critGuardbreakMult?: number
   isHeal: boolean
   tag?: string
   noSelfDebuff?: boolean

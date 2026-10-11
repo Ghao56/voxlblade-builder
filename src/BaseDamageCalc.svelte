@@ -47,6 +47,7 @@ import { COMPATIBLE_HEAL_SOURCE_PATTERNS } from './lib/constants/perk-base-damag
     BLUB_BLUB_DMG_TYPES,
   } from './lib/constants'
   import { RADIANCE_LABEL } from './lib/constants/perk-base-damage'
+  import { CRITICAL_MASTER_GUARDBREAK_CRIT_DMG_PER_STACK } from './lib/constants/perks'
   import { DEFAULT_PROC_COEFF } from './data/procCoefficients'
 
   export let perkDmgTypeBonuses: Record<string, number> = {}
@@ -67,6 +68,7 @@ import { COMPATIBLE_HEAL_SOURCE_PATTERNS } from './lib/constants/perk-base-damag
   export let selfDebuffDamageMult: number = 1
   export let selfDebuffNames: string[] = []
   export let antiHealSelfMult: number = 1
+  export let criticalMasterStacks: number = 0
   export let lightningCloakPct: number = 0
   export let ichorSparkChainPct: number = 0
   export let stormRendPct: number = 0
@@ -210,9 +212,11 @@ import { COMPATIBLE_HEAL_SOURCE_PATTERNS } from './lib/constants/perk-base-damag
     finisherHitIndex?: number
     eachHitM1M2?: boolean
     cdWater?: number
-vcBuffedCount?: number
+    vcBuffedCount?: number
 isRadianceProc?: boolean
 sourceLabel?: string
+/** Guard-breaks the target on its own (without Critical Master). */
+guardbreak?: boolean
 /** Lands on the user's ALLIES, not on the user — rendered in its own badged
  *  branch of the hit list (still counted in the totals). */
 alliesOnly?: boolean
@@ -994,8 +998,13 @@ note?: string
 
       const healCritActive = typeIsHeal && healCritEnabled && healCritDmgMult > 0 && isHealCritEligible(hit)
       const effectiveCrit = healCritActive ? healCritDmgMult : critDmgMult
-      const critVal = typeNoCrit ? raw : raw * effectiveCrit / 100
-      const critValNoVC = typeNoCrit ? rawNoVC : rawNoVC * effectiveCrit / 100
+      // Critical Master: an attack that guard-breaks without the perk deals
+      // +20% × perkAmount on top of the crit multiplier.
+      const critGuardbreakMult = (!typeIsHeal && (hit.guardbreak ?? false) && criticalMasterStacks > 0)
+        ? 1 + CRITICAL_MASTER_GUARDBREAK_CRIT_DMG_PER_STACK * criticalMasterStacks
+        : 1
+      const critVal = typeNoCrit ? raw : raw * effectiveCrit / 100 * critGuardbreakMult
+      const critValNoVC = typeNoCrit ? rawNoVC : rawNoVC * effectiveCrit / 100 * critGuardbreakMult
       const healCritChanceUsed = healCritActive ? healCritChance * getProcCoeffValue(hit.procCoefficient) : 0
 
       return {
@@ -1006,6 +1015,7 @@ note?: string
         defMult, enemyDefPct,
         raw, critVal, isHeal: typeIsHeal, isCritExempt: typeNoCrit, forceCrit: hit.forceCrit ?? false,
         rawNoVC, critValNoVC,
+        ...(critGuardbreakMult !== 1 ? { critGuardbreakMult } : {}),
         ...(healCritChanceUsed > 0 ? { healCritChance: healCritChanceUsed } : {}),
         ...(hit.isRadianceProc ? { tag: RADIANCE_LABEL } : {}),
         ...(spellPiercer && baseDefPct > 0 ? { spellPiercerIgnored: true } : {}),
@@ -2458,6 +2468,12 @@ note?: string
                                   <span class="bdc-fr-val bdc-fr-val--crit">× {fmtMult(_critMultFor(t))}</span>
                                 </div>
                               {/if}
+                              {#if t.critGuardbreakMult}
+                                <div class="bdc-fr">
+                                  <span class="bdc-fr-label">Guardbreak Crit Bonus (Critical Master)</span>
+                                  <span class="bdc-fr-val bdc-fr-val--crit">× {fmtMult(t.critGuardbreakMult)}</span>
+                                </div>
+                              {/if}
                               <div class="bdc-fr-divider"></div>
                                <div class="bdc-fr bdc-fr--result">
                                 <span class="bdc-fr-label">{t.isHeal ? 'Final Heal' : 'Final Damage'}</span>
@@ -2782,6 +2798,12 @@ note?: string
       <div class="bdc-fr">
         <span class="bdc-fr-label">{_critMultLabel(t)}</span>
         <span class="bdc-fr-val bdc-fr-val--crit">× {fmtMult(_critMultFor(t))}</span>
+      </div>
+    {/if}
+    {#if t.critGuardbreakMult}
+      <div class="bdc-fr">
+        <span class="bdc-fr-label">Guardbreak Crit Bonus (Critical Master)</span>
+        <span class="bdc-fr-val bdc-fr-val--crit">× {fmtMult(t.critGuardbreakMult)}</span>
       </div>
     {/if}
     <div class="bdc-fr-divider"></div>

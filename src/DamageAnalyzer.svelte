@@ -3597,6 +3597,8 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     cdWater?: number
 isRadianceProc?: boolean
 sourceLabel?: string
+/** Guard-breaks the target on its own (without Critical Master). */
+guardbreak?: boolean
 /** Output that lands on the user's ALLIES, not on the user. Kept in the totals
  *  but rendered in its own badged branch of the hit list (see BaseDamageCalc). */
 alliesOnly?: boolean
@@ -3607,6 +3609,8 @@ note?: string
     void weaponCharge
     const result: BDCHit[] = []
     const row = _displayRows[0]
+    // Weapons whose M1 finisher guard-breaks on its own (without Critical Master).
+    const _m1FinisherGuardbreaks = ['War Hammer', 'Dual Mallets', 'Great Spear'].includes(row?.type ?? '')
     const _deltabitRank = disableWeaponBoost ? 0 : (perks['Deltabit'] ?? 0)
     const _deltabitCombo = _deltabitRank > 0 && !!row && !!row.m1 && row.m1.length > 0 && isFinisher(row, 'm1', row.m1.length - 1)
     const _deltaDrillReps = disableWeaponBoost ? 0 : Math.round(perks['Delta Drill'] ?? 0)
@@ -3655,7 +3659,7 @@ note?: string
           if (group === 'M1') vcM1Consumed += Math.min(1, vcBuffed); else vcM2Consumed += Math.min(1, vcBuffed)
           result.push({
             group, index: i, count: 1, base, scalingMult: _scalingMult, combatMult: _m2CombatMult, effectiveMult: _m2EffectiveMult,
-            isFinisher: true, dmgTypes: finalDmgTypes,
+            isFinisher: true, dmgTypes: finalDmgTypes, guardbreak: true,
             baseDmgTypes: _weaponDmgTypesBase,
             ...(group === 'M1' ? { isM2: true } : {}),
             ...(piercerRank > 0 ? { boostDmgTypes } : {}),
@@ -3673,7 +3677,7 @@ note?: string
         if (group === 'M1') vcM1Consumed += vcBuffed; else vcM2Consumed += vcBuffed
         result.push({
           group, index: i, count, base, scalingMult: _scalingMult, combatMult: _m2CombatMult, effectiveMult: _m2EffectiveMult,
-          isFinisher: true, dmgTypes: finalDmgTypes,
+          isFinisher: true, dmgTypes: finalDmgTypes, guardbreak: true,
           baseDmgTypes: _weaponDmgTypesBase,
           ...(group === 'M1' ? { isM2: true } : {}),
           ...(piercerRank > 0 ? { boostDmgTypes } : {}),
@@ -3743,6 +3747,7 @@ note?: string
                 base: finMult !== 1 ? roundMultiplier(base * finMult) : base,
                 scalingMult: _scalingMult, combatMult: _m1CombatMult, effectiveMult: _m1EffectiveMult,
                 isFinisher: finisherHit, dmgTypes: finalDmgTypes,
+                ...(finisherHit && _m1FinisherGuardbreaks ? { guardbreak: true } : {}),
                 baseDmgTypes: _weaponDmgTypesBase,
                 ...(piercerRank > 0 ? { boostDmgTypes } : {}),
                 ...(combinedWbMult !== 1 ? { weaponBoostMult: combinedWbMult, weaponBoostLabel: wbLabel } : {}),
@@ -3761,6 +3766,7 @@ note?: string
               base: finMult !== 1 ? roundMultiplier(base * finMult) : base,
               scalingMult: _scalingMult, combatMult: _m1CombatMult, effectiveMult: _m1EffectiveMult,
               isFinisher: finisherHit, dmgTypes: finalDmgTypes,
+              ...(finisherHit && _m1FinisherGuardbreaks ? { guardbreak: true } : {}),
               baseDmgTypes: _weaponDmgTypesBase,
               ...(piercerRank > 0 ? { boostDmgTypes } : {}),
               ...(combinedWbMult !== 1 ? { weaponBoostMult: combinedWbMult, weaponBoostLabel: wbLabel } : {}),
@@ -4142,6 +4148,9 @@ note?: string
           ...(entry.workOnM2 && entry.isFinisher && entry.procCoefficient?.type !== 'noProc' ? { procCount: 1 } : {}),
           canApplyBurn: _hasSingedBurn,
           ...(entry.forceCrit ? { forceCrit: true } : {}),
+          // ponytail: perk-level guardbreak flag; mixed-hit perks (Caci Spirit
+          // thorns, Snoweman icestorm) mark all their hits. Split per-hit if that matters.
+          ...(entry.guardbreak ? { guardbreak: true } : {}),
           ...(finisherIndex != null ? { finisherIndex } : {}),
           ...((() => {
             const perkSunburnMult = _sunburnActive && _sunburnEnemyBurning
@@ -5093,6 +5102,7 @@ $: _groupedSelfDamageSources = (() => {
     starRerollSeed={starRerollSeed}
     perkCombatMult={_perkCombatMult}
     perkEffectiveCombatMult={_perkEffectiveMult}
+    criticalMasterStacks={perks['Critical Master'] ?? 0}
     staticBuildupAmt={perks['Static Buildup'] ?? 0}
     staticBuildupCharge={$build.staticBuildupCharge ?? 0}
     m1Label={_activeMountRuneDef && mountActive ? 'M1/M2' : 'M1'}
