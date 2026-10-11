@@ -70,6 +70,11 @@ export interface WeaponArt {
   charge?: WeaponArtCharge;
   /** Guard-breaks on its own (charge WAs that bypass the per-hit `hits` path). */
   guardbreak?: boolean;
+  /**
+   * Only the WA's final hit guard-breaks. Splits a trailing multi-count segment
+   * into single hits so the displayed listings and the per-hit flags line up.
+   */
+  finalHitGuardbreaks?: boolean;
 }
 
 /**
@@ -447,9 +452,11 @@ export const WEAPON_ARTS: WeaponArt[] = [
     baseDamage: "20 × 2 Hits",
     damageType: "1 Air",
     scaling: "Same as weapon",
-    // ponytail: modelled as one 2-count segment, so the flag applies to both hits;
-    // split the segment in _waHitsSeq if the first hit must not guard-break.
-    hits: [{ damageType: "1 Air", guardbreak: true }],
+    finalHitGuardbreaks: true,
+    hits: [
+      { damageType: "1 Air" },
+      { damageType: "1 Air", guardbreak: true }
+    ],
     requirements: { airScaling: 0.5 },
   },
   {

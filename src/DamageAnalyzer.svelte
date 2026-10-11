@@ -2707,11 +2707,17 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       const a = _solarLightAmt
       return [{ n: Math.round(((SOLAR_LIGHT_DMG_BASE + SOLAR_LIGHT_DMG_PER_STACK * a) * _solarStage) * 1000) / 1000, count: SOLAR_LIGHT_TICKS }]
     }
-    return _waAllHits.dmg.length > 0 ? _waAllHits.dmg.map(h => 
+    const seq = _waAllHits.dmg.length > 0 ? _waAllHits.dmg.map(h => 
       _wildBoltAmt > 0 && selectedWA.name === 'Laser' 
         ? { ...h, n: parseWAHitsAll(selectedWA.baseDamage).dmg[0]?.n - WILD_BOLT_DMG_REDUCTION } 
         : h
     ) : null
+    if (selectedWA.finalHitGuardbreaks && seq) {
+      const last = seq[seq.length - 1]
+      if (last && last.count > 1)
+        return [...seq.slice(0, -1), { n: last.n, count: last.count - 1 }, { n: last.n, count: 1 }]
+    }
+    return seq
   })()
   // Charge-based WAs with a `baseHealing` ride the same charge curve as their
   // damage, so the flat healing is scaled by the min→max range ratio.
