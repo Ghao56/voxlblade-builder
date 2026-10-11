@@ -10,6 +10,7 @@ export interface WAIndividualHit {
   scaling?: string
   isFinisher?: boolean
   isCrit?: boolean
+  guardbreak?: boolean
 }
 
 export interface WeaponArtRequirement {
@@ -67,6 +68,8 @@ export interface WeaponArt {
   category?: string;
   baseDamagePerDebuff?: number;
   charge?: WeaponArtCharge;
+  /** Guard-breaks on its own (charge WAs that bypass the per-hit `hits` path). */
+  guardbreak?: boolean;
 }
 
 /**
@@ -100,6 +103,10 @@ export const WEAPON_ARTS: WeaponArt[] = [
     baseDamage: "3.5 × 5 Hits + 17.5",
     damageType: "Same as weapon",
     scaling: "Same as weapon",
+    hits: [
+      { damageType: "Same as weapon" },
+      { damageType: "Same as weapon", guardbreak: true }
+    ],
     requirements: { weaponType: ["2-Handed Sword", "Greatsword", "Unbalanced Sword"] },
   },
   {
@@ -136,7 +143,7 @@ export const WEAPON_ARTS: WeaponArt[] = [
     cooldown: 20,
     baseDamage: "35",
      hits: [
-      { damageType: "Same as weapon", isCrit: true },
+      { damageType: "Same as weapon", isCrit: true, guardbreak: true },
     ],
     scaling: "Same as weapon",
     requirements: { weaponType: ["Greatsword"] },
@@ -148,6 +155,7 @@ export const WEAPON_ARTS: WeaponArt[] = [
     baseDamage: "30",
     damageType: "Same as weapon",
     scaling: "Same as weapon",
+    hits: [{ damageType: "Same as weapon", guardbreak: true }],
     requirements: { weaponType: ["Unbalanced Sword", "Greatsword", "Great Spear", "Mallet", "War Hammer"], physicalScaling: 0.5 },
   },
   {
@@ -166,6 +174,10 @@ export const WEAPON_ARTS: WeaponArt[] = [
     baseDamage: "5 + 25",
     damageType: "Same as weapon",
     scaling: "Same as weapon",
+    hits: [
+      { damageType: "Same as weapon", guardbreak: true },
+      { damageType: "Same as weapon", guardbreak: true }
+    ],
     extras: ["Shatter Potency: 0.2", "Shatter Duration: ~8s","Guardbreaks"],
     requirements: { weaponType: ["1-Handed Sword", "2-Handed Sword"], dexterityScaling: 0.4, physicalScaling: 0.4 },
   },
@@ -177,8 +189,8 @@ export const WEAPON_ARTS: WeaponArt[] = [
     damageType: "1 True + Same as weapon",
     hitDamageTypes: ["1 True", "Same as weapon"],
     hits: [
-      { damageType: "1 True", isCrit: true },
-      { damageType: "Same as weapon" },
+      { damageType: "1 True", isCrit: true, guardbreak: true },
+      { damageType: "Same as weapon", guardbreak: true },
     ],
     scaling: "Same as weapon",
     extras: ["Poise Damage: 100 per hit"],
@@ -211,6 +223,7 @@ export const WEAPON_ARTS: WeaponArt[] = [
     baseDamage: "50",
     damageType: "Same as weapon",
     scaling: "Same as weapon",
+    hits: [{ damageType: "Same as weapon", guardbreak: true }],
     extras: ["Shatter Potency: 0.3", "Shatter Duration: 10s"],
     requirements: { guild: "Monk", physicalScaling: 0.6 },
     isMonk: true,
@@ -233,6 +246,7 @@ export const WEAPON_ARTS: WeaponArt[] = [
     baseDamage: "15 (Base) – 175 (Fully Charged)",
     damageType: "0.5 Physical + 0.5 True",
     scaling: "None",
+    guardbreak: true,
     requirements: { tenacity: 0.1 },
   },
   {
@@ -251,6 +265,7 @@ export const WEAPON_ARTS: WeaponArt[] = [
     baseDamage: "15 (each Mine)",
     damageType: "1 Highest damage type",
     scaling: "Same as weapon",
+    hits: [{ damageType: "1 Highest damage type", guardbreak: true }],
     extras: ["Mine Lifespan: 30s"],
     requirements: { magicScaling: 0.5 },
   },
@@ -261,6 +276,7 @@ export const WEAPON_ARTS: WeaponArt[] = [
     baseDamage: "70",
     damageType: "Highest damage type",
     scaling: "Same as weapon",
+    hits: [{ damageType: "Highest damage type", guardbreak: true }],
     requirements: { magicBoost: 11 },
   },
   {
@@ -332,7 +348,7 @@ export const WEAPON_ARTS: WeaponArt[] = [
     baseDamage: " 1.5 × 20 Hits + 10 + 4.5 Healing",
     hits: [
       { damageType: "1 Holy", isFinisher: true },
-      { damageType: "1 Holy", isFinisher: true }
+      { damageType: "1 Holy", isFinisher: true, guardbreak: true }
     ],
     damageType: "1 Holy",
     scaling: "Same as weapon",
@@ -378,6 +394,7 @@ export const WEAPON_ARTS: WeaponArt[] = [
     baseDamage: "7",
     damageType: "1 Hex",
     scaling: "1 Hex",
+    hits: [{ damageType: "1 Hex", guardbreak: true }],
     requirements: { hexScaling: 0.8 },
   },
   {
@@ -411,6 +428,7 @@ export const WEAPON_ARTS: WeaponArt[] = [
       "Overcharging past ~6s backfires for 27.5 Holy and 27.5 Hex Self Damage",
       "Can heal the same target more than once",
     ],
+    guardbreak: true,
     requirements: { holyScaling: 0.5, hexScaling: 0.5 },
   },
   {
@@ -429,6 +447,9 @@ export const WEAPON_ARTS: WeaponArt[] = [
     baseDamage: "20 × 2 Hits",
     damageType: "1 Air",
     scaling: "Same as weapon",
+    // ponytail: modelled as one 2-count segment, so the flag applies to both hits;
+    // split the segment in _waHitsSeq if the first hit must not guard-break.
+    hits: [{ damageType: "1 Air", guardbreak: true }],
     requirements: { airScaling: 0.5 },
   },
   {
@@ -464,6 +485,10 @@ export const WEAPON_ARTS: WeaponArt[] = [
     baseDamage: "45 (Explosion) + 15 × 5 (Magma Balls)",
     damageType: "1 Fire",
     scaling: "Same as weapon",
+    hits: [
+      { damageType: "1 Fire", guardbreak: true },
+      { damageType: "1 Fire" }
+    ],
     requirements: { fireScaling: 0.3, earthScaling: 0.3 },
   },
   {
@@ -482,6 +507,7 @@ export const WEAPON_ARTS: WeaponArt[] = [
     baseDamage: "40 Damage + 5 Healing",
     damageType: "0.5 Physical + 0.5 Water",
     scaling: "Same as weapon",
+    hits: [{ damageType: "0.5 Physical + 0.5 Water", guardbreak: true }],
     requirements: { waterScaling: 0.6 },
   },
   {
@@ -500,6 +526,7 @@ export const WEAPON_ARTS: WeaponArt[] = [
     baseDamage: "36",
     damageType: "0.5 Water + 0.5 Physical",
     scaling: "Same as weapon",
+    hits: [{ damageType: "0.5 Water + 0.5 Physical", guardbreak: true }],
     requirements: { waterScaling: 0.5, heatResistance: 50 },
   },
   {
@@ -519,6 +546,10 @@ export const WEAPON_ARTS: WeaponArt[] = [
     damageType: "1 Physical + 1 Earth",
     hitDamageTypes: ["1 Physical", "1 Earth"],
     scaling: "Same as weapon",
+    hits: [
+      { damageType: "1 Physical", guardbreak: true },
+      { damageType: "1 Earth" }
+    ],
     requirements: { earthScaling: 0.8 },
   },
   {

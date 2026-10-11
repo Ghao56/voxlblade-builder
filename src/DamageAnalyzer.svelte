@@ -3851,6 +3851,7 @@ note?: string
       result.push({
         group: 'WA', index: 0, count: 1, base: _bomberChargeWaHit.base, scalingMult: _bomberChargeWaHit.scalingMult, combatMult: _waCombatMult, effectiveMult: _waEffectiveMult,
         isFinisher: false, dmgTypes: chargeWaDmgTypes(_bomberChargeWaHit.dmgTypes), baseDmgTypes: _bomberChargeWaHit.baseDmgTypes,
+        ...(selectedWA.guardbreak ? { guardbreak: true } : {}),
         ...(chargeWaCdWater > 0 ? { cdWater: chargeWaCdWater } : {}),
         ...(chargeWaVcBuffed > 0 ? { vcBuffedCount: chargeWaVcBuffed } : {}),
         label: chargeWaCdWater > 0 ? 'Retaliate (modified by Bomber Charge) · Channeled Depths' : 'Retaliate (modified by Bomber Charge)',
@@ -3863,6 +3864,7 @@ note?: string
         group: 'WA', index: 0, count: 1, base: _waChargeBase,
         scalingMult: _waScalingMult, combatMult: _waCombatMult, effectiveMult: _waEffectiveMult,
         isFinisher: false, dmgTypes: chargeWaDmgTypes(_waDmgTypes), baseDmgTypes: _waDmgTypesBase,
+        ...(selectedWA.guardbreak ? { guardbreak: true } : {}),
         ...(chargeWaCdWater > 0 ? { cdWater: chargeWaCdWater } : {}),
         ...(chargeWaVcBuffed > 0 ? { vcBuffedCount: chargeWaVcBuffed } : {}),
         label: chargeWaCdWater > 0 ? `${_waDisplayName} · Channeled Depths` : _waDisplayName,
@@ -3939,6 +3941,7 @@ note?: string
           group: 'WA' as const, index: i, base: h.n, scalingMult: sc, combatMult: _waCombatMult, effectiveMult: _waEffectiveMult,
           isFinisher: waIsFinisher, baseDmgTypes: hitDtBase,
           ...(selectedWA.hits?.[i]?.isCrit ? { forceCrit: true } : {}),
+          ...(selectedWA.hits?.[i]?.guardbreak ? { guardbreak: true } : {}),
           ...(combinedWbMult !== 1 ? { weaponBoostMult: combinedWbMult, weaponBoostLabel: wbLabel } : {}),
           canApplyBurn: _hasSingedBurn,
           ...(waIsFinisher ? { finisherGroupHitCount: h.count } : {}),
@@ -6127,6 +6130,7 @@ $: _groupedSelfDamageSources = (() => {
                 {/each}
                 {#if selectedWA.hits?.[hi]?.isCrit}<CritIcon size={12}/>{/if}
                 {#if selectedWA.hits?.[hi]?.isFinisher}<span class="da-finisher-crown">✦</span>{/if}
+                {#if selectedWA.hits?.[hi]?.guardbreak}<Badge color="#f87171" square size="xs">Guardbreak</Badge>{/if}
                 {#if hit.count > 1}
                   <span class="da-hit-repeat">×{hit.count}<span class="da-hit-repeat-label">hits</span></span>
                 {/if}
@@ -6148,6 +6152,7 @@ $: _groupedSelfDamageSources = (() => {
                     {/each}
                   </div>
                 </div>
+                {#if selectedWA.guardbreak}<Badge color="#f87171" square size="xs">Guardbreak</Badge>{/if}
                 {#if selectedWA.scaling && selectedWA.scaling !== 'Same as weapon'}
                   <span class="da-range-scl">
                     {selectedWA.scaling === 'None'

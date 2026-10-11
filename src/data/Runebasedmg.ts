@@ -181,6 +181,7 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
         getHits: ({ potency }) => 1 + potency,
         maxPotency: BEENADE_MAX_POTENCY,
         potencyLabel: 'Beenades potency',
+        guardbreak: true,
     },
     {
     runeName: 'Boostshroom Rune',
@@ -197,6 +198,7 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     dmgTypes: { air: 0.5, magic: 0.5 },
     scalings: { air: 1.0, magic: 1.0 },
     hits: 1,
+    guardbreak: true,
   },
   {
     runeName: 'Sporeling Toss Rune',
@@ -221,6 +223,7 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     dmgTypes: { physical: 1.0 },
     scalings: { physical: 1.0, dexterity: 1.0 },
     hits: 1,
+    guardbreak: true,
   },
   {
     runeName: 'Caci Rune',
@@ -245,6 +248,7 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     dmgTypes: { hex: 1.0 },
     scalings: { hex: 1.0 },
     hits: HEX_WEB_HITS,
+    guardbreak: true,
   },
     {
     runeName: 'Brainblast Rune',
@@ -253,6 +257,7 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     dmgTypes: { fire: 0.33, earth: 0.33, magic: 0.33 },
     scalings: { fire: 1.0, earth: 1.0, magic: 1.0 },
     hits: BRAINBLAST_HITS,
+    guardbreak: true,
   },
   {
     runeName: 'Fireball Rune',
@@ -288,6 +293,7 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     getBaseDamage: () => 30,
     dmgTypes: { water: 0.5, air: 0.5 },
     scalings: { water: 1.0, magic: 1.0 },
+    guardbreak: true,
   },
   {
     runeName: 'Rage Rune',
@@ -349,6 +355,7 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     getBaseDamage: () => 18,
     dmgTypes: { earth: 1.0 },
     scalings: { earth: 0.7, physical: 0.3 },
+    guardbreak: true,
   },
   {
     runeName: 'Static Field Rune',
@@ -382,6 +389,7 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
     getBaseDamage: () => 20,
     dmgTypes: { physical: 1.0 },
     scalings: { physical: 1.0 },
+    guardbreak: true,
   },
   {
     runeName: 'Enchanted Sword Rune',
