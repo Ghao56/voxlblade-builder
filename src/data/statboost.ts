@@ -204,7 +204,7 @@ const PERK_REGISTRY: Record<string, PerkHandler> = {
   'Weight Distribution': (s, Amount) => {
     const total = get(s, 'dexterityBoost') + get(s, 'physicalBoost')
     const split = total * WEIGHT_DISTRIBUTION_SPLIT_RATIO
-    const multiplier = 1 + WEIGHT_DISTRIBUTION_MULTIPLIER * Amount
+    const multiplier = 1 + WEIGHT_DISTRIBUTION_MULTIPLIER
 
     s['dexterityBoost'] = split * multiplier
     s['physicalBoost'] = split * multiplier
