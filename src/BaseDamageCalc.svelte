@@ -88,6 +88,7 @@ import { COMPATIBLE_HEAL_SOURCE_PATTERNS } from './lib/constants/perk-base-damag
   export let weaponHitsCountAsWa: boolean = false
   export let globalArmorPenetration: number = 0
   export let crushingPressureAmt: number = 0
+  export let sharpCritsAmt: number = 0
   export let echoIncinerationBaseDmg: number = 0
   export let echoIncinerationScalingMult: number = 1
   export let stormcallerBaseDmg: number = 0
@@ -763,6 +764,30 @@ note?: string
   }
  
   $: _vmConvertedBySource = new Map<string, number>()
+
+  /** Sharp Crits: crits gain +20 Armor Penetration per 1 of the perk. Applied
+   *  per-type here so it covers EVERY crit (proc/DoT entries too, not just the
+   *  main weapon-hit chunks). Entries built with a non-base pen set penUsedDec. */
+  function _applySharpCrits(hit: ComputedHit): ComputedHit {
+    if (sharpCritsAmt <= 0) return hit
+    const basePen = (armorPen + globalArmorPenetration) / 100
+    let changed = false
+    const types = hit.types.map((t): ComputedType => {
+      if (t.isHeal || t.sharpCritsCritDefMult || t.critVal === t.raw) return t
+      const pen = t.penUsedDec ?? (basePen + crushingPenForType(t.key) / 100)
+      const scd = calcArmorMult(t.enemyDefPct, pen + sharpCritsAmt * 20 / 100, t.key).mult / (t.defMult || 1)
+      if (!(scd > 0) || scd === 1) return t
+      changed = true
+      return {
+        ...t,
+        critVal: Math.round(t.critVal * scd * 10000) / 10000,
+        ...(t.critValNoVC != null ? { critValNoVC: Math.round(t.critValNoVC * scd * 10000) / 10000 } : {}),
+        sharpCritsCritDefMult: scd,
+      }
+    })
+    return changed ? { ...hit, types } : hit
+  }
+
   $: computedHits = typedBoostEntries && effectiveDefenses && (void starRerollSeed, () => {
     const lcConsumed = new Set<string>()
     const cdPerkConsumed = new Set<string>()
@@ -987,6 +1012,10 @@ note?: string
 
       const weaponBoostMult = hit.weaponBoostMult ?? 1
       const defMult = typeIsHeal ? 1 : calcArmorMult(enemyDefPct, hitPenDecimal + crushPen / 100, k).mult
+      // Sharp Crits: crits gain +20 Armor Penetration per 1 of this perk.
+      const sharpCritsCritDefMult = (!typeIsHeal && sharpCritsAmt > 0)
+        ? calcArmorMult(enemyDefPct, hitPenDecimal + crushPen / 100 + sharpCritsAmt * 20 / 100, k).mult / defMult
+        : 1
       const typeBase = hit.base * mult
 
       const typeDebuffMult = _activeDebuffTypeDamageMult[k] ?? 1
@@ -1003,8 +1032,8 @@ note?: string
       const critGuardbreakMult = (!typeIsHeal && (hit.guardbreak ?? false) && criticalMasterStacks > 0)
         ? 1 + CRITICAL_MASTER_GUARDBREAK_CRIT_DMG_PER_STACK * criticalMasterStacks
         : 1
-      const critVal = typeNoCrit ? raw : raw * effectiveCrit / 100 * critGuardbreakMult
-      const critValNoVC = typeNoCrit ? rawNoVC : rawNoVC * effectiveCrit / 100 * critGuardbreakMult
+      const critVal = typeNoCrit ? raw : raw * effectiveCrit / 100 * critGuardbreakMult * sharpCritsCritDefMult
+      const critValNoVC = typeNoCrit ? rawNoVC : rawNoVC * effectiveCrit / 100 * critGuardbreakMult * sharpCritsCritDefMult
       const healCritChanceUsed = healCritActive ? healCritChance * getProcCoeffValue(hit.procCoefficient) : 0
 
       return {
@@ -1019,6 +1048,7 @@ note?: string
         ...(healCritChanceUsed > 0 ? { healCritChance: healCritChanceUsed } : {}),
         ...(hit.isRadianceProc ? { tag: RADIANCE_LABEL } : {}),
         ...(spellPiercer && baseDefPct > 0 ? { spellPiercerIgnored: true } : {}),
+        ...(sharpCritsCritDefMult !== 1 ? { sharpCritsCritDefMult } : {}),
         ...(hit.perHitCounts ? { subHits: hit.count } : {}),
       }
     }
@@ -1090,6 +1120,7 @@ note?: string
             typeBase: starBase, scalingMult: starScalingMult, combatMult: starCombatMult, effectiveMult: starEffectiveCombatMult,
             applicableBoosts, weaponBoostMult: sunburnUniversalDmgMult, typeDebuffMult,
             defMult, enemyDefPct: defPct,
+            penUsedDec: hitPenDecimal + crushPen / 100,
             raw, critVal: Math.round(raw * critDmgMult / 100 * 10000) / 10000,
             isHeal: false, tag: 'Star Struck', forceCrit: false, procCoefficient: DEFAULT_PROC_COEFF,
             ...(count > 1 ? { hitCount: count } : {}),
@@ -1653,7 +1684,7 @@ note?: string
     }
     return [result]
     })
-  })()
+  })().map(_applySharpCrits)
 
   $: m1Hits   = computedHits.filter(h => h.group === 'M1')
   $: m2Hits   = computedHits.filter(h => h.group === 'M2')
@@ -1926,8 +1957,8 @@ note?: string
           <div class="bdc-enemy-hp-fill {enemyHpFill > 50 ? 'hp-high' : enemyHpFill > 25 ? 'hp-medium' : 'hp-low'}" style="width:{enemyHpFill}%"></div>
           <span class="bdc-enemy-hp-label">{enemyHpFill}% HP</span>
         </div>
-        {#if armorPen + globalArmorPenetration + crushingPressureAmt * 10 > 0}
-          <Badge color="#e5e5e5" size="xs">🗡 {fmt(armorPen + globalArmorPenetration + crushingPressureAmt * 10)} Pen</Badge>
+        {#if armorPen + globalArmorPenetration + crushingPressureAmt * 10 + (showCritValues ? sharpCritsAmt * 20 : 0) > 0}
+          <Badge color="#e5e5e5" size="xs">🗡 {fmt(armorPen + globalArmorPenetration + crushingPressureAmt * 10 + (showCritValues ? sharpCritsAmt * 20 : 0))} Pen</Badge>
         {/if}
         {#if resolvedDebuffs.length > 0}
           <div class="bdc-debuff-row">
@@ -2437,11 +2468,12 @@ note?: string
                                   <span class="bdc-fr-val bdc-fr-val--weaponboost">× {fmtMult(t.weaponBoostMult)}</span>
                                 </div>
                               {/if}
-                              {#if t.defMult !== 1}
-                                {@const totalPen = armorPen + globalArmorPenetration + crushingPenForType(t.key)}
+{#if t.defMult !== 1 || (isCritShown(t) && t.sharpCritsCritDefMult)}
+                                  {@const totalPen = armorPen + globalArmorPenetration + crushingPenForType(t.key) + ((isCritShown(t) && t.sharpCritsCritDefMult) ? sharpCritsAmt * 20 : 0)}
+                                  {@const shownDefMult = isCritShown(t) && t.sharpCritsCritDefMult ? t.defMult * t.sharpCritsCritDefMult : t.defMult}
                                 <div class="bdc-fr">
                                   <span class="bdc-fr-label">Defense ({fmt(t.enemyDefPct)}% / Pen {fmt(Math.round(totalPen * 100) / 100)}){t.spellPiercerIgnored ? ' · Spell Piercer' : ''}</span>
-                                  <span class="bdc-fr-val bdc-fr-val--def" class:bdc-fr-val--amplify={t.defMult > 1}>× {fmtMult(t.defMult)}</span>
+                                  <span class="bdc-fr-val bdc-fr-val--def" class:bdc-fr-val--amplify={shownDefMult > 1}>× {fmtMult(shownDefMult)}</span>
                                 </div>
                               {/if}
                               {#if t.subHits}
@@ -2770,11 +2802,12 @@ note?: string
         <span class="bdc-fr-val bdc-fr-val--weaponboost">× {fmtMult(t.weaponBoostMult)}</span>
       </div>
     {/if}
-    {#if t.defMult !== 1}
-      {@const totalPen = armorPen + globalArmorPenetration + crushingPenForType(t.key)}
+    {#if t.defMult !== 1 || (isCritShown(t) && t.sharpCritsCritDefMult)}
+      {@const totalPen = armorPen + globalArmorPenetration + crushingPenForType(t.key) + ((isCritShown(t) && t.sharpCritsCritDefMult) ? sharpCritsAmt * 20 : 0)}
+      {@const shownDefMult = isCritShown(t) && t.sharpCritsCritDefMult ? t.defMult * t.sharpCritsCritDefMult : t.defMult}
       <div class="bdc-fr">
         <span class="bdc-fr-label">Defense ({fmt(t.enemyDefPct)}% / Pen {fmt(Math.round(totalPen * 100) / 100)}){t.spellPiercerIgnored ? ' · Spell Piercer' : ''}</span>
-        <span class="bdc-fr-val bdc-fr-val--def" class:bdc-fr-val--amplify={t.defMult > 1}>× {fmtMult(t.defMult)}</span>
+        <span class="bdc-fr-val bdc-fr-val--def" class:bdc-fr-val--amplify={shownDefMult > 1}>× {fmtMult(shownDefMult)}</span>
       </div>
     {/if}
     {#if t.hitCount && t.tag === 'Blub'}

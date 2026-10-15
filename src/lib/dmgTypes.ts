@@ -35,6 +35,7 @@ export const BADGE_CONFIG: Record<string, { color: string; label: string; title:
   'Quake': { color: '#a3722a', label: '✦ Quake', title: 'Quake: Earth shockwave on hit · RNG chance · Guardbreak · Cannot proc other effects' },
   'Sandnado': { color: '#d4a547', label: '✦ Sandnado', title: 'Ruler Of The Sands: sandnado on WA/Rune use · Reduced proc coefficient · Earth+Air damage' },
   'Blazing Finisher': { color: '#f97316', label: '✦ Blazing', title: 'Blazing Finisher: fire AoE on finisher vs burning · 2×perkAmount + 20% of finisher damage' },
+  'Dragon Breath': { color: '#f97316', label: '✦ Dragon Breath', title: 'Dragon Breath: blast of Fire on finisher · 2 + 0.6×perkAmount base · Reduced per finisher hit · Inflicts Burn · +10% vs Burn per perk' },
   'Deathmist Slash': { color: '#818cf8', label: '✦ Deathmist', title: 'Deathmist Slash: extra Water+Hex slash on finisher · Heals allies and self · Once per finisher' },
   'Last Croak': { color: '#94ff88', label: '✦ Last Croak', title: 'Last Croak: consumed on RMB (M2) hit · Physical explosion = M2 base damage × potency × (1 + perkAmount) / 15 · Guardbreaks' },
   'Star Struck': { color: '#fde047', label: '✦ Star', title: 'Star Struck: landed M1/M2 shoot stars · random damage type · True star deals 6 base with 0.5 Magic scaling · stars can proc other on-hit effects' },
@@ -53,6 +54,10 @@ export interface ComputedType {
   typeDebuffMult: number
   defMult: number; enemyDefPct: number
   spellPiercerIgnored?: boolean
+  /** Sharp Crits: extra defense multiplier multiplier applied only on crits (×1 when not critting / no perk). */
+  sharpCritsCritDefMult?: number
+  /** Armor-pen decimal actually used for this entry's defMult (for Sharp Crits crit-only pen). Defaults to base pen. */
+  penUsedDec?: number
   raw: number; critVal: number
   /** Critical Master guard-break crit bonus (×1 when not applicable). */
   critGuardbreakMult?: number

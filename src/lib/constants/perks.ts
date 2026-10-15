@@ -112,6 +112,10 @@ export const CRYO_ENGINE_TAILWIND_DURATION_PER_AMOUNT = 6
 // Guiding Winds
 export const GUIDING_WINDS_TAILWIND_POTENCY_PER_AMOUNT = 0.1
 
+// Standoff
+export const STANDOFF_REGEN_MAX_POTENCY_PER_AMOUNT = 0.25
+export const STANDOFF_REGEN_DURATION = 2
+
 // Fiery Pursuit
 export const FIERY_PURSUIT_BASE_DMG = 15
 export const FIERY_PURSUIT_DMG_PER_STACK = 1.5
@@ -131,6 +135,13 @@ export const PHANTOM_PAIN_PERK_MULT = 0.1
 // Pursuit
 export const PURSUIT_BASE_MULT = 0.6
 export const PURSUIT_MULT_PER_RANK = 0.2
+
+// Rotating Blades
+// M1/M2 hit twice as often, but deal reduced damage per hit:
+// (0.5 × (1 + 0.2 × rank)) per hit → 0.6× at rank 1, 0.7× at rank 2, ...
+export const ROTATING_BLADES_BASE_MULT = 0.5
+export const ROTATING_BLADES_MULT_PER_RANK = 0.2
+export const ROTATING_BLADES_HIT_MULT = 2
 
 // Darkening Hex
 export const DARKENING_HEX_POTENCY_ADD_PER_AMOUNT = 0.005

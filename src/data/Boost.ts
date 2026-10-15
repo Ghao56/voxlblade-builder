@@ -11,6 +11,7 @@ import {
   HEMORRHAGE_DMG_BASE, HEMORRHAGE_DMG_PER_STACK,
   HEMORRHAGE_STUN_PCT_PER_STACK, HEMORRHAGE_POISE_PCT_PER_STACK,
   BLOOD_THIRSTY_MULT_PER_STACK, VENOM_SPITTER_MULT_PER_STACK,
+  DRAGON_BREATH_MULT_PER_STACK,
   PERFECTION_MULT_PER_STACK, STEALTH_MULT_PER_STACK,
   GOLDEN_CRITS_MULT_PER_STACK, GOLDEN_CRITS_BASE_PROC_CHANCE,
   ROYAL_PARRY_MULT_PER_STACK, SPELL_PIERCER_MULT_PER_STACK,
@@ -28,8 +29,8 @@ import {
   JUGGERNAUT_DMG_MULT_PER_NEGATIVE_PCT, JUGGERNAUT_KNOCKBACK_RESIST_PER_NEGATIVE_PCT, JUGGERNAUT_STUN_RESIST_PER_NEGATIVE_PCT,
   SPRING_POWERED_MULT, THIEF_TRAINING_BEHIND_MULT,
   THIEF_TRAINING_WOULD_CRIT_MULT, VASSALS_CROAK_MULT_PER_STACK,
-  RAGING_BOUNCE_MULT, GUIDING_WINDS_MULT_PER_STACK,
-  GUIDING_WINDS_WA_MULT_PER_STACK, CIVILIAN_MULT_PER_STACK,
+  RAGING_BOUNCE_MULT,   GUIDING_WINDS_MULT_PER_STACK,
+  GUIDING_WINDS_WA_MULT_PER_STACK, STANDOFF_MULT_PER_STACK, CIVILIAN_MULT_PER_STACK,
   VAMPIRE_DIVISOR, TOXIN_CASTER_MULT_PER_STACK,
   CUT_DOWN_MULT_PER_AMOUNT, EXECUTIONER_MULT_PER_AMOUNT,
   FREQUENT_FLIER_MULT_PER_STACK,
@@ -109,6 +110,7 @@ export const BOOST_DEFS: BoostDef[] = [
   { sourceName: 'Hemorrhage', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Hemorrhage'] ?? 0; if (a <= 0) return null; return { multiplier: roundMultiplier(1 + HEMORRHAGE_DMG_BASE + HEMORRHAGE_DMG_PER_STACK * a), condition: `against Bleeding opponents · +${HEMORRHAGE_STUN_PCT_PER_STACK}% Stun · +${HEMORRHAGE_POISE_PCT_PER_STACK}% Poise Dmg per stack` } },},
   {sourceName: 'Blood Thirsty', multiplierPerPerk: BLOOD_THIRSTY_MULT_PER_STACK, type: 'dmg', condition: 'against Bleeding opponents', needsProcCoeff: true},
   {sourceName: 'Venom Spitter', multiplierPerPerk: VENOM_SPITTER_MULT_PER_STACK, type: 'dmg', condition: 'against Poisoned opponents'},
+  {sourceName: 'Dragon Breath', multiplierPerPerk: DRAGON_BREATH_MULT_PER_STACK, type: 'dmg', condition: 'against opponents with Burn'},
   {sourceName: 'Frostbite', multiplierPerPerk: 0.10, type: 'dmg', condition: 'against Slowed or Frostbitten opponents'},
   {sourceName: 'Gelid Lance', multiplierPerPerk: 0.10, type: 'dmg', condition: 'against Bleeding opponents'},
   {sourceName: 'Vicious Edge', multiplierPerPerk: VICIOUS_EDGE_MULT_PER_STACK, type: 'dmg', condition: 'against Bleeding opponents'},
@@ -308,6 +310,18 @@ export const BOOST_DEFS: BoostDef[] = [
       return null
     },
     appliesTo: ['wa', 'rune'],
+    needsProcCoeff: true,
+  },
+  {
+    sourceName: 'Standoff',
+    type: 'dmg',
+    calcFn: (ctx) => {
+      const stacks = ctx.perks['Standoff'] ?? 0
+      if (stacks > 0) {
+        return { multiplier: 1 + STANDOFF_MULT_PER_STACK * stacks, condition: 'Standing still (at max)' }
+      }
+      return null
+    },
     needsProcCoeff: true,
   },
   {

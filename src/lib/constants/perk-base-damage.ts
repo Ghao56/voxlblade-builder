@@ -168,6 +168,12 @@ export const VENOM_SPITTER_BASE_DMG = 2
 export const VENOM_SPITTER_DMG_PER_STACK = 0.6
 export const VENOM_SPITTER_HIT_DIVISOR = 3
 
+// Dragon Breath
+export const DRAGON_BREATH_BASE_DMG = 2
+export const DRAGON_BREATH_DMG_PER_STACK = 0.6
+export const DRAGON_BREATH_HIT_DIVISOR = 3
+export const DRAGON_BREATH_BURN_DURATION = 5
+
 // Spore Burst
 export const SPORE_BURST_POTENCY_MULT = 0.1
 export const SPORE_BURST_BASE = 0.875

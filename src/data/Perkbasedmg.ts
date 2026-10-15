@@ -92,6 +92,9 @@ import {
   VENOM_SPITTER_BASE_DMG,
   VENOM_SPITTER_DMG_PER_STACK,
   VENOM_SPITTER_HIT_DIVISOR,
+  DRAGON_BREATH_BASE_DMG,
+  DRAGON_BREATH_DMG_PER_STACK,
+  DRAGON_BREATH_HIT_DIVISOR,
   FIERY_PURSUIT_BASE_DMG,
   FIERY_PURSUIT_DMG_PER_STACK,
   FIERY_PURSUIT_BURN_DURATION,
@@ -1212,7 +1215,34 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     halfActivations: true,
     note: 'Cannot proc other effects. Half activations on Dual Guns or Storm Caster. Grants +10% damage vs Poisoned per 1 of this perk.',
   },
-  // Cauterize
+  // Dragon Breath
+  {
+    perkName: 'Dragon Breath',
+    label: 'Dragon Breath',
+    condition: 'On Finisher hit',
+    getBaseDamage: ({ perkAmount, finisherHits = 1 }) => {
+      const base = DRAGON_BREATH_BASE_DMG + DRAGON_BREATH_DMG_PER_STACK * perkAmount
+      let total = 0
+      for (let i = 0; i < finisherHits; i++) {
+        total += base / (1 + i / DRAGON_BREATH_HIT_DIVISOR)
+      }
+      return Math.round(total * 1000) / 1000
+    },
+    getFinisherHitBaseDmg: ({ baseDmg, hitIndex }) =>
+      Math.round(baseDmg * 1000 / (1 + hitIndex / DRAGON_BREATH_HIT_DIVISOR)) / 1000,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { fire: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { fire: 1.0 },
+    isProcHit: true,
+    finisherOnly: true,
+    isFinisher: true,
+    workOnM2: true,
+    countAsM2: true,
+    procCoefficient: { type: 'noProc' },
+    halfActivations: true,
+    note: 'Cannot proc other effects. Half activations on Dual Guns or Storm Caster. Applies Burn for 5s. Grants +10% damage vs Burn per 1 of this perk.',
+  },
   {
     perkName: 'Cauterize',
     condition: 'On Burn proc — replaces Burn DoT with a single Fire burst (Singed)',

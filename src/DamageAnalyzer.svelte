@@ -98,6 +98,7 @@ import {
   CLOUDPUSH_PCT_PER_POTENCY, CINDERPULL_PCT_PER_POTENCY,
   CLOUDPUSH_PCT_PER_STACK, CINDERPULL_PCT_PER_STACK,
   PURSUIT_BASE_MULT, PURSUIT_MULT_PER_RANK,
+  ROTATING_BLADES_BASE_MULT, ROTATING_BLADES_MULT_PER_RANK, ROTATING_BLADES_HIT_MULT,
   RULER_SANDS_BASE_DMG_PER_HIT, RULER_SANDS_HITS, RULER_SANDS_CHANCE_CD_MULT, RULER_SANDS_CHANCE_PERK_MULT,
   getWADisplayName,
   ICHOR_SPARK_CHAIN_DMG_PCT,
@@ -3130,15 +3131,22 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     return map
   })()
 
+  // Rotating Blades — M1/M2 hit twice as often for reduced per-hit damage.
+  $: _rotatingBladesRank = disableWeaponBoost ? 0 : (perks['Rotating Blades'] ?? 0)
+  $: _rotatingBladesMult = _rotatingBladesRank > 0
+    ? ROTATING_BLADES_BASE_MULT * (1 + ROTATING_BLADES_MULT_PER_RANK * _rotatingBladesRank)
+    : 1
+
   // Perk Base Damage
   $: springblastFinisherHits = _m2FinisherHits
 
   /** Total hit count in the current weapon's M2 (used as finisher hits context) */
   $: _m2FinisherHits = (() => {
     if (!_displayRows.length || !_displayRows[0].m2) return 1
-    return _displayRows[0].m2.reduce(
+    const total = _displayRows[0].m2.reduce(
       (s: number, h: any) => s + (typeof h === 'number' ? 1 : (h.count ?? 1)), 0
     )
+    return _rotatingBladesRank > 0 ? total * ROTATING_BLADES_HIT_MULT : total
   })()
 
   /** Hit count of the last element in M1 (M1 finisher) */
@@ -3147,7 +3155,8 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     if (!_displayRows.length || !_displayRows[0].m1) return 1
     const m1 = _displayRows[0].m1
     const last = m1[m1.length - 1]
-    return typeof last === 'number' ? 1 : (last.count ?? 1)
+    const n = typeof last === 'number' ? 1 : (last.count ?? 1)
+    return _rotatingBladesRank > 0 ? n * ROTATING_BLADES_HIT_MULT : n
   })()
 
   /** Distinct values → how many hits had that value. */
@@ -3190,10 +3199,22 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     }
     return out
   }
-  $: _finisherHitBasesM2 = _expandHitBases(_displayRows[0]?.m2)
+  $: _finisherHitBasesM2 = (() => {
+    const bases = _expandHitBases(_displayRows[0]?.m2)
+    if (_rotatingBladesRank <= 0) return bases
+    const out: number[] = []
+    for (const b of bases) for (let i = 0; i < ROTATING_BLADES_HIT_MULT; i++) out.push(roundMultiplier(b * _rotatingBladesMult))
+    return out
+  })()
   $: _finisherHitBasesM1f = ((perks['Deltabit'] ?? 0) > 0 && !disableWeaponBoost)
     ? _finisherHitBasesM2
-    : _expandHitBases((_displayRows[0]?.m1 ?? []).slice(-1))
+    : (() => {
+        const bases = _expandHitBases((_displayRows[0]?.m1 ?? []).slice(-1))
+        if (_rotatingBladesRank <= 0) return bases
+        const out: number[] = []
+        for (const b of bases) for (let i = 0; i < ROTATING_BLADES_HIT_MULT; i++) out.push(roundMultiplier(b * _rotatingBladesMult))
+        return out
+      })()
   $: _finisherHitBaseAvg = _finisherHitBasesM2.length
     ? _finisherHitBasesM2.reduce((s: number, v: number) => s + v, 0) / _finisherHitBasesM2.length
     : 0
@@ -3760,7 +3781,7 @@ note?: string
                 ...(piercerRank > 0 ? { boostDmgTypes } : {}),
                 ...(combinedWbMult !== 1 ? { weaponBoostMult: combinedWbMult, weaponBoostLabel: wbLabel } : {}),
                 canApplyBurn: _hasSingedBurn,
-                finisherGroupHitCount: finisherHit ? _m1FinisherHits : undefined,
+                finisherGroupHitCount: finisherHit ? _m1FinisherHits : (count * ROTATING_BLADES_HIT_MULT),
                 ...(cdWater > 0 ? { cdWater } : {}),
                 ...(vcBuffed > 0 ? { vcBuffedCount: 1 } : {}),
                 label: finLabel ? `${finLabel} · Channeled Depths` : 'Channeled Depths',
@@ -3779,7 +3800,7 @@ note?: string
               ...(piercerRank > 0 ? { boostDmgTypes } : {}),
               ...(combinedWbMult !== 1 ? { weaponBoostMult: combinedWbMult, weaponBoostLabel: wbLabel } : {}),
               canApplyBurn: _hasSingedBurn,
-              finisherGroupHitCount: finisherHit ? _m1FinisherHits : undefined,
+              finisherGroupHitCount: finisherHit ? _m1FinisherHits : (count * ROTATING_BLADES_HIT_MULT),
               ...(cdWater > 0 ? { cdWater } : {}),
               ...(vcBuffed > 0 ? { vcBuffedCount: vcBuffed } : {}),
               ...(cdTargetHit ? { label: finLabel ? `${finLabel} · Channeled Depths` : 'Channeled Depths' } : finLabel ? { label: finLabel } : {}),
@@ -3796,6 +3817,14 @@ note?: string
       }
       if (row.m2 && !(_activeMountRuneDef && mountActive)) {
         row.m2.forEach((h: any, i: number) => pushM2Hit(h, i))
+      }
+    }
+    // Rotating Blades — M1/M2 hit twice as often for reduced per-hit damage.
+    if (_rotatingBladesRank > 0) {
+      for (const h of result) {
+        if (h.isHeal || (h.group !== 'M1' && h.group !== 'M2')) continue
+        h.count *= ROTATING_BLADES_HIT_MULT
+        h.base = roundMultiplier(h.base * _rotatingBladesMult)
       }
     }
     if (_activeMountRuneDef && mountActive) {
@@ -5095,6 +5124,7 @@ $: _groupedSelfDamageSources = (() => {
     weaponHitsCountAsWa={_cragbladeActive}
     globalArmorPenetration={_raceGlobalArmorPen}
     crushingPressureAmt={_crushingPressureAmt}
+    sharpCritsAmt={perks['Sharp Crits'] ?? 0}
     echoIncinerationBaseDmg={_echoIncinerationBaseDmg}
     echoIncinerationScalingMult={_echoIncinerationScalingMult}
     stormcallerBaseDmg={_stormcallerBaseDmg}
@@ -5266,11 +5296,12 @@ $: _groupedSelfDamageSources = (() => {
     </div>
 
     <!-- Armor Pen column -->
-    {#if (((stats as Record<string, number>).armorPenetration ?? 0) + _raceGlobalArmorPen + _waArmorPenetration + _crushingPressureAmt * 10) > 0}
+    {#if (((stats as Record<string, number>).armorPenetration ?? 0) + _raceGlobalArmorPen + _waArmorPenetration + _crushingPressureAmt * 10 + (showCritValues ? (perks['Sharp Crits'] ?? 0) * 20 : 0)) > 0}
       {@const _apenEquipPen = ((stats as Record<string, number>).armorPenetration ?? 0) + _raceGlobalArmorPen}
       {@const _apenWaPen = _waArmorPenetration}
       {@const _apenCrushingBase = _crushingPressureAmt * 10}
-      {@const _apenTotal = _apenEquipPen + _apenWaPen + _apenCrushingBase}
+      {@const _apenSharpCrits = showCritValues ? (perks['Sharp Crits'] ?? 0) * 20 : 0}
+      {@const _apenTotal = _apenEquipPen + _apenWaPen + _apenCrushingBase + _apenSharpCrits}
       <div class="da-section da-section--top da-section--apen">
         <div class="da-section-title"><i class="fa fa-shield"></i> Armor Penetration</div>
         <div class="da-apen-inner">
@@ -5293,6 +5324,12 @@ $: _groupedSelfDamageSources = (() => {
               <div class="da-source-row">
                 <span class="da-source-name">Crushing Pressure</span>
                 <span class="da-source-val" style="color:#e5e5e5">{_apenCrushingBase}</span>
+              </div>
+            {/if}
+            {#if _apenSharpCrits > 0}
+              <div class="da-source-row">
+                <span class="da-source-name">Sharp Crits (on crit)</span>
+                <span class="da-source-val" style="color:#f97316">{_apenSharpCrits}</span>
               </div>
             {/if}
           </div>
@@ -5661,7 +5698,7 @@ $: _groupedSelfDamageSources = (() => {
         class:da-boost-chip--off={disableWeaponBoost}
         on:click={() => { disableWeaponBoost = !disableWeaponBoost }}
       >
-        <span class="da-bc-name">{[_weaponBoostLabels.join(', '), _rawPursuitRank > 0 ? 'Pursuit' : ''].filter(Boolean).join(', ')}</span>
+        <span class="da-bc-name">{[_weaponBoostLabels.join(', '), _rawPursuitRank > 0 ? 'Pursuit' : '', (_rotatingBladesRank ?? 0) > 0 ? 'Rotating Blades' : ''].filter(Boolean).join(', ')}</span>
         <span class="da-bc-val">
           {#if _wbSame}
             ×{trimNum(_m1WeaponBoostRaw.mult)}
@@ -5675,6 +5712,7 @@ $: _groupedSelfDamageSources = (() => {
             {#if _wbM2}M2 ×{trimNum(_m2WeaponBoostRaw.mult)}{/if}
           {/if}
           {#if _rawPursuitRank > 0}M1 ×{trimNum(_rawPursuitMult)}{/if}
+          {#if (_rotatingBladesRank ?? 0) > 0}M1·M2 ×{trimNum(_rotatingBladesMult)} ({ROTATING_BLADES_HIT_MULT}× hits){/if}
         </span>
         {#if _weaponBoostConditions.length > 0}<span class="da-bc-cond">{_weaponBoostConditions.join(', ')}</span>{/if}
         <span class="da-bc-toggle">{disableWeaponBoost ? 'OFF' : 'ON'}</span>

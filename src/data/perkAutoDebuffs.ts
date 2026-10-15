@@ -9,7 +9,7 @@ import type { GrantedBuff } from './BuffData'
 import { canProc, type ProcCoefficient } from '../lib/types'
 import { calcBaseMaxHP } from '../lib/constants/game'
 import { BASIC_DEBUFF_DURATION, EXPLOSIVE_HONEY_STICKY_POTENCY, EXPLOSIVE_HONEY_STICKY_DURATION, PURE_ROT_POISON_DURATION } from '../lib/constants/buffs'
-import { BELLOWING_EMBER_HP_GATE_THRESHOLD, BELLOWING_EMBER_HP_GATE_PER_STACK, PYRE_BLOOM_BURN_DURATION, RUNIC_BLADES_DEBUFF_DURATION_PER_STACK, CACI_SPIRIT_BLEED_DURATION, ICE_BURST_BLEED_DURATION, WOOF_SPIRIT_WEAKNESS_POTENCY, WOOF_SPIRIT_WEAKNESS_DURATION, WINTER_WOOF_SPIRIT_SHATTER_POTENCY, WINTER_WOOF_SPIRIT_SHATTER_DURATION, WINTER_WOOF_SPIRIT_BLEED_DURATION, SCREECHING_SOUND_TAUNT_BASE, SCREECHING_SOUND_TAUNT_PER_STACK } from '../lib/constants/perk-base-damage'
+import { BELLOWING_EMBER_HP_GATE_THRESHOLD, BELLOWING_EMBER_HP_GATE_PER_STACK, PYRE_BLOOM_BURN_DURATION, DRAGON_BREATH_BURN_DURATION, RUNIC_BLADES_DEBUFF_DURATION_PER_STACK, CACI_SPIRIT_BLEED_DURATION, ICE_BURST_BLEED_DURATION, WOOF_SPIRIT_WEAKNESS_POTENCY, WOOF_SPIRIT_WEAKNESS_DURATION, WINTER_WOOF_SPIRIT_SHATTER_POTENCY, WINTER_WOOF_SPIRIT_SHATTER_DURATION, WINTER_WOOF_SPIRIT_BLEED_DURATION, SCREECHING_SOUND_TAUNT_BASE, SCREECHING_SOUND_TAUNT_PER_STACK } from '../lib/constants/perk-base-damage'
 import { getActiveEnemyHpDebuffs } from './enemyHpEffects'
 
 export interface AutoDebuffInput {
@@ -457,19 +457,32 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
   }
 
   // Ignition: on-hit chance to inflict Burn for 5 + 0.5×perk seconds.
-  const ignitionAmt = perks['Ignition'] ?? 0
-  if (ignitionAmt > 0 && !existingBuffNames.includes('Burn')) {
-    const ignDuration = IGNITION_BURN_DURATION_BASE + IGNITION_BURN_DURATION_PER_AMOUNT * ignitionAmt
-    const ignChance = (IGNITION_PROC_CHANCE_PER_AMOUNT * ignitionAmt) * 100
-    debuffs.push({
-      buffName: 'Burn',
-      potency: 0,
-      duration: ignDuration,
-      condition: `${Math.round(ignChance * 100) / 100}% chance on hit`,
-      sourceName: 'Ignition',
-      sourceType: 'perk',
-    })
-  }
+    const ignitionAmt = perks['Ignition'] ?? 0
+    if (ignitionAmt > 0 && !existingBuffNames.includes('Burn')) {
+      const ignDuration = IGNITION_BURN_DURATION_BASE + IGNITION_BURN_DURATION_PER_AMOUNT * ignitionAmt
+      const ignChance = (IGNITION_PROC_CHANCE_PER_AMOUNT * ignitionAmt) * 100
+      debuffs.push({
+        buffName: 'Burn',
+        potency: 0,
+        duration: ignDuration,
+        condition: `${Math.round(ignChance * 100) / 100}% chance on hit`,
+        sourceName: 'Ignition',
+        sourceType: 'perk',
+      })
+    }
+
+    // Dragon Breath: finisher blast applies Burn (finisher-only, not gated by proc coeff)
+    const dragonBreathAmt = perks['Dragon Breath'] ?? 0
+    if (dragonBreathAmt > 0 && !existingBuffNames.includes('Burn')) {
+      debuffs.push({
+        buffName: 'Burn',
+        potency: 0,
+        duration: DRAGON_BREATH_BURN_DURATION,
+        condition: 'On Finisher hit',
+        sourceName: 'Dragon Breath',
+        sourceType: 'perk',
+      })
+    }
 
   // Screeching Sound: block shockwave Taunts nearby opponents for 3 + 3×perk seconds.
   const screechingAmt = perks['Screeching Sound'] ?? 0
