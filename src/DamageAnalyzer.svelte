@@ -318,10 +318,9 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     return baseMult
   })()
 
-  // Healing-DEALT-only multiplier. Radiance keys off its source's healing but
-  // must ignore "healing received" modifiers (Vampire Sunlight, Frenzy Self,
-  // Anti Heal) while still honouring "healing dealt" modifiers (Emotional,
-  // Heal Boost, Packaged Power, Level Healing, …).
+  // Heal-DEALT multiplier: excludes "healing received" mods (Vampire Sunlight,
+  // Frenzy Self, Anti Heal), includes "healing dealt" mods (Emotional, Heal Boost,
+  // Packaged Power, Level Healing). Radiance keys off this.
   $: _healDealtMultiplier = (() => {
     const baseMult = _allHealEntries
       .filter(e => (e as { direction?: string }).direction !== 'received')
@@ -791,9 +790,9 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       protection: __daResultVal.stats.protection ?? 0,
       selectedWAProcCoefficient: WA_PROC_COEFFS[selectedWA.name] ?? DEFAULT_PROC_COEFF,
       enemyHpFillPct: _enemyHpFillPct,
-      // Bleed-agnostic mirror of _waDmgTypes: differs only by the Hemorrhage 'true'
-      // weight, which these magic/physical flags never inspect, so results are
-      // identical while keeping this edge out of the bleeding-gated bonus chain.
+      // Bleed-agnostic mirror of _waDmgTypes: Hemorrhage weight differs, but the
+      // magic/physical flags never read it, so results match AND this edge stays
+      // out of the bleeding-gated bonus chain.
       hasMagicDmg: Object.entries(_waDmgTypesForDebuffFlags).some(([dt, mult]) => dt === 'magic' && mult > 0),
       hasMagicOrPhysicalDmg: Object.entries(_waDmgTypesForDebuffFlags).some(([dt, mult]) => (dt === 'magic' || dt === 'physical') && mult > 0),
 
@@ -1106,13 +1105,10 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   $: _vcDisplayHits = Math.min(_vcCharges, _vcMaxHit)
   $: _oceanSongAmt = perks['Ocean Song'] ?? 0
   $: _rainstormAmt = perks['Rainstorm'] ?? 0
-  // Rejuvenating Flame — passive AoE heal on Allies (×5 while the user is
-  // Burning) that also grants Cinder Surge to those healed. Cinder Surge is an
-  // Allies-only buff: it never touches the user's own damage, so it only shows
-  // up in the buff list (badged "Allies"), never as a damage chunk.
-  // Raw amount drives the perk chip; the gated amount drives the damage/heal
-  // math. Keeping them separate means a disabled chip still renders (showing
-  // "disabled") and can be toggled back on instead of vanishing for good.
+  // Rejuvenating Flame: passive AoE heal on Allies (×5 while user Burning),
+  // grants Allies-only Cinder Surge (never touches user damage). Raw amount
+  // drives the chip; gated amount drives the math, so a disabled chip
+  // still renders and can be re-enabled.
   $: _rfPerkAmt = perks['Rejuvenating Flame'] ?? 0
   $: _rejuvenatingFlameAmt = _rfPerkAmt > 0 && !disabledEffects.has('rejuvenatingFlame') ? _rfPerkAmt : 0
   $: _rfBurning = _allActiveBuffs.some(b => isSelfBurnBuff(b))
@@ -1417,9 +1413,8 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     }
     if (_rfPerkAmt > 0) {
       const rfAmt = _rfPerkAmt
-      // The chip reports the DEFAULT base heal (0.1 + 0.05 × amount). The
-      // Burning ×5 is a separate conditional multiplier, called out in the
-      // condition text and folded into the Allies row's Base Heal.
+      // Chip shows DEFAULT base heal; Burning ×5 is a separate conditional
+      // multiplier folded into the Allies row's Base Heal.
       const rfBase = +(REJUVENATING_FLAME_BASE_HEAL + REJUVENATING_FLAME_HEAL_PER_AMOUNT * rfAmt).toFixed(4)
       const rfAoeBonus = Math.round(REJUVENATING_FLAME_BURN_AOE_PER_AMOUNT * rfAmt * 100)
       chips.push({
@@ -1693,9 +1688,8 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     ? `${_baseWeaponType} → ${_cragbladeConvert.type}${_cragbladeConvert.retainM2 ? ' (M2 retained)' : ''}`
     : ''
 
-  // Shared context for every buildDmgTypeBonuses variant below; the variants
-  // differ only by their gating flags. Kept as its own reactive statement so
-  // every field read stays inline in a $: statement (Svelte-tracked).
+  // Shared ctx for all buildDmgTypeBonuses variants (they differ only in gating
+  // flags); own $: statement so field reads stay Svelte-tracked.
   $: _dmgTypeBonusCtx = {
     perks, ragePotency: _ragePotency, draconicRuneInfusion: $build.draconicRuneInfusion,
     emotionalState: $build.emotionalState, draconicColor: _effDraconicColor,
@@ -1704,8 +1698,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   }
   $: _perkDmgTypeBonuses = buildDmgTypeBonuses(true, { ..._dmgTypeBonusCtx, targetBleeding: _dummyHasBleedActive })
   // Bleed-agnostic variant (no targetBleeding): feeds the auto-debuff requirement
-  // flags via _waDmgTypesForDebuffFlags so the debuff graph never depends on the
-  // bleeding-gated bonus chain below (mirrors build.ts's _perkDmgTypeBonusesForBoost).
+  // flags so the debuff graph stays cycle-free (mirrors build.ts).
   $: _perkDmgTypeBonusesPre = buildDmgTypeBonuses(true, _dmgTypeBonusCtx)
   $: _perkDmgTypeBonusesNoProc = buildDmgTypeBonuses(false, { ..._dmgTypeBonusCtx, targetBleeding: _dummyHasBleedActive })
   $: _perkDmgTypeBonusesDoT = buildDmgTypeBonuses(false, { ..._dmgTypeBonusCtx, targetBleeding: _dummyHasBleedActive }, DOT_EXCLUDED_PERK_BONUSES)
@@ -1760,8 +1753,8 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   }
   $: _waDmgTypeBonuses = _computeWaDmgTypeBonuses(_perkDmgTypeBonuses, _emotionalHexBonus, _hasTailwindOrWhirlwind, perks['Wind Walker'] ?? 0)
   $: _waOnlyBonuses = _computeWaOnlyBonuses(_waDmgTypeBonuses, _perkDmgTypeBonuses)
-  // Bleed-agnostic mirrors (Pre) consumed only by _waDmgTypesForDebuffFlags;
-  // identical resolution except they never carry the Hemorrhage 'true' weight.
+  // Bleed-agnostic mirrors (Pre) for _waDmgTypesForDebuffFlags; never carry the
+  // Hemorrhage 'true' weight.
   $: _waDmgTypeBonusesPre = _computeWaDmgTypeBonuses(_perkDmgTypeBonusesPre, _emotionalHexBonus, _hasTailwindOrWhirlwind, perks['Wind Walker'] ?? 0)
   $: _waOnlyBonusesPre = _computeWaOnlyBonuses(_waDmgTypeBonusesPre, _perkDmgTypeBonusesPre)
 
@@ -2254,8 +2247,8 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   $: activeFinalMult = activeEntries.reduce((acc, e) => acc * e.rawMultiplier, 1.0)
   $: activeFinalMultRounded = roundMultiplier(activeFinalMult)
 
-  // While the Cragblade buff is active, M1/M2 hits also carry the 'wa' tag, so
-  // Weapon-Art-scoped boosts (Gorecast, Spell Piercer, …) fold into their multipliers.
+  // Cragblade: M1/M2 hits carry the 'wa' tag, so WA-scoped boosts
+  // (Gorecast, Spell Piercer, …) fold into their multipliers.
   function _boostTargetsType(entry: any, type: BoostAttackType): boolean {
     const appliesTo = entry?.appliesTo as BoostAttackType[] | undefined
     if (!appliesTo) return true
@@ -2741,8 +2734,8 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     _wildBoltElemIdx = Math.floor(Math.random() * WILD_BOLT_ELEMENTS.length)
   }
   $: _wildBoltElement = _wildBoltAmt > 0 && selectedWA.name === 'Laser' ? WILD_BOLT_ELEMENTS[_wildBoltElemIdx] : null
-  // Shared args for computeEffectiveWaDmgTypes; the two consumers below differ
-  // only in which dmg-type maps they feed (bleeding-gated vs bleed-agnostic Pre).
+  // Shared args for the two computeEffectiveWaDmgTypes calls (bleeding-gated vs
+  // bleed-agnostic Pre consumers).
   $: _waDmgTypesSharedArgs = {
     waDamageType: _solarLightActive
       ? (_solarSunSources >= 2 ? `1 Holy + ${SOLAR_LIGHT_FIRE_DMG_MULT} Fire` : '1 Holy')
@@ -2764,9 +2757,8 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     waOnlyBonuses: _waOnlyBonuses,
   })
 
-  // Bleed-agnostic mirror of _waDmgTypes for the auto-debuff requirement flags
-  // (see _perkDmgTypeBonusesPre). Same resolution, so the magic/physical flags
-  // match _waDmgTypes exactly while keeping this edge cycle-free.
+  // Bleed-agnostic mirror of _waDmgTypes for auto-debuff flags (see
+  // _perkDmgTypeBonusesPre); magic/physical flags match while edge stays cycle-free.
   $: _waDmgTypesForDebuffFlags = computeEffectiveWaDmgTypes({
     ..._waDmgTypesSharedArgs,
     weaponDmgTypes: _weaponDmgTypesPre,
@@ -2775,9 +2767,8 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     cragbladeActive: _cragbladeActive,
   })
 
-  // Bomber Charge WA override (Retaliate): single data-driven source shared by
-  // the hit list and the breakdown panels. Base/types/scalings all come from
-  // the PERK_DMG_DEFS entry; only the bonus pipeline is applied here.
+  // Bomber Charge WA override (Retaliate): single data-driven source shared by hit
+  // list + breakdown panels; base/types/scalings come from PERK_DMG_DEFS.
   $: _bomberChargeWaHit = (() => {
     const amt = perks['Bomber Charge'] ?? 0
     if (amt <= 0 || selectedWA.name !== 'Retaliate') return null
@@ -3002,9 +2993,8 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     return { minEnds: toEnds(min), minLabel, maxEnds: toEnds(max), maxLabel }
   })()
 
-  // Charge-based WAs store their base damage as a min–max range and let the
-  // charge slider interpolate between the two endpoints. Retaliate is excluded
-  // while Bomber Charge replaces its formula outright.
+  // Charge-based WAs: base damage is a min–max range, the slider interpolates.
+  // Retaliate excluded only while Bomber Charge replaces its formula.
   $: _isChargeWA = !!_waRangeDamage && (
     (selectedWA.name === 'Retaliate' && !_bomberChargeWaHit) || !!selectedWA.charge
   )
@@ -3183,11 +3173,8 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       }))
     )
   }
-  /**
-   * Base damage of every hit in a finisher group (weapon charge applied) — the
-   * proccing hit base Springblast keys off. The real per-hit values come from
-   * each hit's own base damage in BaseDamageCalc; these drive the perk card.
-   */
+  /** Per-hit bases of a finisher group (charge applied) — the Springblast
+   *  proccing base; drives the perk card. Real values live in BaseDamageCalc. */
   function _expandHitBases(group: any): number[] {
     const out: number[] = []
     if (!Array.isArray(group)) return out
@@ -3352,8 +3339,9 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         ? { ...resolvedDmgTypes, holy: Math.round(((resolvedDmgTypes.holy ?? 0) + _mortalWillHolyTypeBonus) * 10000) / 10000 }
         : resolvedDmgTypes
 
-      // Store raw pre-bonus base damage types (no dmg-type bonuses like Channeled Weapon, no Draconic/holy conversions)
-      // so effects that inherit from the hit base (e.g. Snarl healing) see only the true weapon/perk distribution.
+      // Raw pre-bonus base types (no dmg-type bonuses, no Draconic/holy conversions)
+      // so effects inheriting from the hit base (e.g. Snarl heal) see the true
+      // weapon/perk distribution.
       const baseDmgTypesForSelfDmg = def.dmgTypeMode === 'weapon' ? _weaponDmgTypesBase : baseDmgTypes
 
       const resolvedScalings = def.scalingMode === 'weapon'
@@ -3402,8 +3390,8 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       const baseDmg_m1f = def.getBaseDamage({ perkAmount, finisherHits: _fhM1f, draconicColor: _effDraconicColor, statuses: _perkCtxStatuses, sliderVal: _perkSliderVal })
 
       const isSpringblast = def.perkName === 'Springblast'
-      // Springblast is resolved per finisher hit from that hit's own base damage
-      // (see BaseDamageCalc); the card lists every distinct per-hit value.
+      // Springblast resolves per finisher hit from that hit's own base damage
+      // (see BaseDamageCalc); the card lists each distinct per-hit value.
       const springblastM2Bases = isSpringblast
         ? _finisherHitBasesM2.map(p => calcSpringblastBaseDamage(perkAmount, p, _fhM2))
         : undefined
@@ -3493,9 +3481,9 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         ...(def.slider ? { slider: { buildKey: def.slider.buildKey, label: def.slider.label, min: def.slider.min, max: _perkSliderMax, step: def.slider.step }, sliderVal: _perkSliderVal, sliderMax: _perkSliderMax } : {}),
       })
     }
-    // Springblast procs on every finisher hit no matter where that finisher
-    // comes from, so the card lists the resolved per-hit value of every source
-    // (M1 finisher, M2 finisher, and perk finishers such as Divine Crash).
+    // Springblast procs on every finisher hit regardless of finisher source;
+    // the card lists resolved per-hit values of every source (M1/M2 finisher,
+    // perk finishers like Divine Crash).
     const sbIdx = out.findIndex(e => e.perkName === 'Springblast')
     if (sbIdx >= 0) {
       const sb = out[sbIdx]
@@ -3585,9 +3573,9 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   $: _cdPerkTargets = [...new Set([
     ..._perkOnHitDamages.map(ph => ph.tag),
     ..._activePerkDmgEntries
-      // Rainstorm is excluded: its rows are emitted outside this pipeline, so a
-      // Channeled Depths target pointing at them would silently do nothing.
-      // Wave Rider is excluded for the same reason (card-only defs).
+      // Rainstorm excluded: its rows are emitted outside this pipeline, so a
+      // Channeled Depths target would silently do nothing. Wave Rider too
+      // (card-only defs).
       .filter(e => e.isActive && e.typedHits_m2.length > 0 && e.perkName !== 'Cauterize' && e.perkName !== 'Blazing Finisher' && e.perkName !== 'Draconic Blood' && e.perkName !== RAINSTORM_LABEL && e.perkName !== WAVE_RIDER_LABEL && !_isSpiritPerk(e.perkName) && !e.countAsM1 && !e.countAsM2)
       .map(e => e.displayName),
   ])]
@@ -3875,10 +3863,9 @@ note?: string
           })
         }
     }
-    // Charge-derived WAs (Polarity Cannon, Retaliate, Retaliate under Bomber Charge)
-    // emit their single interpolated/overridden hit here, outside the _waHitsSeq loop
-    // below, so they never pick up the WA-target designations that loop stamps. Both
-    // produce exactly one hit, so it is always hit #1 and no split is needed.
+    // Charge-derived WAs (Polarity Cannon, Retaliate ± Bomber Charge) emit their
+    // single interpolated/overridden hit here, outside the _waHitsSeq loop, so
+    // they never pick up that loop's WA-target designations (one hit, hit #1).
     const chargeWaCdWater = _cdActive && _cdTarget === 'WA' ? _cdWaterBonus : 0
     const chargeWaVcBuffed = _vcAmt > 0 && _vcTarget === 'WA' ? 1 : 0
     const chargeWaDmgTypes = (types: Record<string, number>) => chargeWaCdWater > 0
@@ -4060,12 +4047,10 @@ note?: string
       if (entry.isProcHit) continue 
       if (entry.perkName === 'Cauterize') continue 
       if (entry.perkName === 'Blazing Finisher') continue 
-      // Rainstorm's def is card-only — its damage + heal rows are emitted by the
-      // hand-written Rainstorm block further down (shared Water scaling, noProc
-      // damage half, Radiance-eligible heal half).
+      // Rainstorm def is card-only — damage + heal rows come from the
+      // hand-written Rainstorm block further down.
       if (entry.perkName === RAINSTORM_LABEL) continue
-      // Same arrangement as Rainstorm: the Wave Rider defs are card-only, their
-      // mixed damage + heal rows come from the hand-written block further down.
+      // Wave Rider: same as Rainstorm (card-only defs).
       if (entry.perkName === WAVE_RIDER_LABEL) continue
 
        // Check for heal effects from Draconic Blood abilities
@@ -4097,7 +4082,7 @@ note?: string
           }
        }
 
-        // Check for heal secondary effects (e.g. Dark Harvest)
+        // Heal secondary effects (e.g. Dark Harvest)
         if (entry.perkName === 'Dark Harvest') {
           const healSe = (findPerkDmgDef('Dark Harvest')
             ?.secondaryEffects ?? []).find(se => se.label === 'Heal')
@@ -4124,12 +4109,10 @@ note?: string
         // Woof Spirit heals 10 HP inline on its hit (counts as lifesteal,
         // handled in BaseDamageCalc via woofSpiritHealMult).
 
-      // Deathmist Slash damage attaches to finisher hit rows via
-      // _perkOnHitDamages + BaseDamageCalc, so no standalone damage row here.
-      // The allies heal is separated into its own standalone row. alliesOnly routes
-      // it into the badged "Allies" branch in BaseDamageCalc instead of the
-      // per-perk branch, so it is never read as self-heal (group stays 'Perk'
-      // so it still counts toward the heal totals).
+      // Deathmist Slash damage attaches to finisher rows via _perkOnHitDamages +
+      // BaseDamageCalc, so no standalone row. Allies heal gets its own row;
+      // alliesOnly routes it to BaseDamageCalc's "Allies" branch (never read as
+      // self-heal; group stays 'Perk' so it counts toward heal totals).
       if (entry.perkName === 'Deathmist Slash') {
         const healSe = (findPerkDmgDef('Deathmist Slash')
           ?.secondaryEffects ?? []).find(se => se.label === 'Heal (Allies)')
@@ -4215,12 +4198,10 @@ note?: string
         }
       }
 
-      // Per-hit grouping (e.g. Caci Spirit: 7 thorns + 3 slams).
-      // typedHits_m2 is built per (damage type x hit value), but the same hit value
-      // appears once per type (rawVal is type-independent) — dedupe so each hit
-      // value is pushed a single time with the full resolved type split.
-      // Monk spirits ("On RMB (Monk)") proc on an actual RMB press, not on the
-      // Deltabit M1-combo hits, so they are excluded from the Deltabit duplicates.
+      // Per-hit grouping (e.g. Caci Spirit: 7 thorns + 3 slams). typedHits_m2 is
+      // built per (type × hit value) but rawVal is type-independent — dedupe so
+      // each hit value pushes once with the full type split. Monk spirits proc
+      // on a real RMB press, excluded from Deltabit duplicates.
       const _pushPerkHit = (hitCount: number, hitBase: number, perHitCounts?: boolean, labelOverride?: string) => {
         _pushBdcHit(hitCount, hitBase, perHitCounts, undefined, labelOverride)
         if (entry.workOnM2 && _deltabitCombo && !_isSpiritPerk(entry.perkName)) {
@@ -4455,10 +4436,9 @@ note?: string
             * _computePerkScalingMult(_fpRuneScalings) * _runeCombatMult, 'Rune')
         }
         if (_cragbladeActive) {
-          // Cragblade makes M1 and M2 damage count as Weapon Art damage, and this
-          // perk's trigger is "Weapon Arts or Runes that hit" — so weapon attacks
-          // create clouds as well. "The damage scales on which created it": scale
-          // off the first hit of each sequence, matching the WA and Rune clouds.
+          // Cragblade: M1/M2 count as WA damage, so this perk ("WAs or Runes
+          // that hit") creates clouds from weapon attacks too. Scale off each
+          // sequence's first hit, matching the WA and Rune clouds.
           const firstHitPreMit = (seq: HitSeq | null | undefined, combatMult: number, charged: boolean) => {
             const h = seq?.[0]
             if (h == null) return 0
@@ -4501,11 +4481,9 @@ note?: string
       }
     }
 
-    // Assign each finisher hit its position within its own finisher action's
-    // hit sequence (the M1 finisher and the M2 are separate finisher actions,
-    // so the sequence restarts for each). Perks with a per-finisher-hit
-    // falloff (e.g. Venom Spitter) key off this index, not the hit's index
-    // within its own move array.
+    // Assign each finisher hit its index within its own finisher action's hit
+    // sequence (M1 finisher and M2 restart separately). Per-finisher-hit falloff
+    // perks (Venom Spitter) key off this.
     let finisherSeqIndex = 0
     let prevBaseM2 = false
     for (const h of result) {
@@ -4517,11 +4495,9 @@ note?: string
       prevBaseM2 = isBaseM2
     }
 
-    // Apply finisher-scoped boosts (e.g. Deltabit) generically to every hit
-    // flagged as a finisher (M2 hits are finishers by game design), folded into
-    // the hit's combat multiplier so the row shows `Combat Multipliers × 2.2`.
-    // The pre-finisher mult is kept so non-finisher follow-ups (e.g. Last Croak)
-    // use it instead of the finisher-boosted value.
+    // Finisher-scoped boosts (e.g. Deltabit) apply to every finisher hit (M2 is
+    // a finisher by design), folded into combatMult. Pre-finisher mult kept so
+    // non-finisher follow-ups (Last Croak) use the unboosted value.
     if (_finisherBoostMult !== 1) {
       for (const h of result) {
         if (!(h.isFinisher || h.isM2)) continue
@@ -4534,14 +4510,10 @@ note?: string
       }
     }
 
-    // Light Bearer
-    // LMB (M1) and RMB (M2) hits release a Holy healing pulse. Possesses a
-    // Proc Coefficient (gated on the weapon's M1/M2 coefficient). Base
-    // Healing = 0.25 + 0.025 × perkAmount · 1.0 Holy Scaling. Emitted as a
-    // proccable heal source BEFORE Radiance so it can itself trigger a burst
-    // (it's on the compatible-heal list). It renders under the M1/M2 group that
-    // landed it (not a separate Perk section), gated by that group's proc
-    // coefficient.
+    // Light Bearer: M1/M2 hits release a Holy healing pulse. Proccable (weapon
+    // M1/M2 coefficient), base heal 0.25 + 0.025 × amt, 1.0 Holy scaling.
+    // Emitted BEFORE Radiance (on the compatible-heal list) but renders under
+    // the M1/M2 group that landed it, gated by that group's coefficient.
     if (_lightBearerAmt > 0) {
       const lbBase = LIGHT_BEARER_BASE_HEAL + LIGHT_BEARER_HEAL_PER_AMOUNT * _lightBearerAmt
       const lbScaling = _computePerkScalingMult({ holy: 1.0 })
@@ -4561,12 +4533,9 @@ note?: string
       pushLbPulse('M2')
     }
 
-    // Rainstorm
-    // One Raindrop per rotation. Base Damage = 4 + 2 × perkAmount, Base Healing =
-    // 0.5 + 0.2 × perkAmount, both on 1.0 Water scaling. The drop cannot proc
-    // other effects; its healing can (it is on the compatible-heal list).
-    // The Perk Base Damage card is driven by the Rainstorm PerkDmgDef, which
-    // mirrors these numbers; the generic perk loop skips that def (see above).
+    // Rainstorm: one Raindrop per rotation. Damage = 4 + 2 × amt, heal =
+    // 0.5 + 0.2 × amt, both 1.0 Water. Drop cannot proc; its heal can
+    // (compatible-heal list). PerkDmgDef drives the card, generic loop skips it.
     if (_rainstormAmt > 0) {
       const rsScaling = _computePerkScalingMult({ water: 1.0 })
       result.push({
@@ -4589,18 +4558,13 @@ note?: string
       })
     }
 
-    // Rejuvenating Flame
-    // Passive AoE heal around the user, hitting Allies only (never the user) on
-    // 0.7 Fire scaling. Base Healing = 0.1 + 0.05 × perkAmount, multiplied by 5
-    // while the user is Burning; the AoE grows further while Burning but that
-    // never reaches an enemy, so it is reported by the chip tooltip only.
-    // The heal lacks a Proc Coefficient: it cannot proc other effects, and it is
-    // absent from COMPATIBLE_HEAL_SOURCE_PATTERNS so no Radiance burst follows.
-    // The healed Allies also receive Cinder Surge for 3s (an Allies-only buff that
-    // never touches the user's own damage - see BUFF_DEFS['Cinder Surge']).
-    // alliesOnly keeps this row out of the perk branches: it still counts toward
-    // the heal totals, but BaseDamageCalc renders it under its own "Allies"
-    // branch (badged) so it is never read as self-heal. Scaling is untouched.
+    // Rejuvenating Flame: passive Allies-only AoE heal, 0.7 Fire scaling,
+    // base = 0.1 + 0.05 × amt (×5 while Burning; Burning AoE growth never
+    // reaches an enemy, chip tooltip only). No Proc Coefficient and absent from
+    // COMPATIBLE_HEAL_SOURCE_PATTERNS (no Radiance burst, no heal crits). Healed
+    // Allies gain Cinder Surge 3s (Allies-only, see BUFF_DEFS). alliesOnly keeps
+    // the row out of perk branches but counts toward heal totals; BaseDamageCalc
+    // renders it under its badged "Allies" branch.
     if (_rejuvenatingFlameAmt > 0) {
       const rfBase = (REJUVENATING_FLAME_BASE_HEAL + REJUVENATING_FLAME_HEAL_PER_AMOUNT * _rejuvenatingFlameAmt) * _rfBurnHealMult
       const rfScaling = _computePerkScalingMult({ fire: REJUVENATING_FLAME_FIRE_SCALING })
@@ -4618,11 +4582,9 @@ alliesOnly: true,
       })
     }
 
-    // Hex Shield
-    // Neutral status perk: blocks one debuff per stack and heals 2.5 HP per
-    // stack when it blocks. Flat heal, no stat scaling, no Proc Coefficient,
-    // absent from COMPATIBLE_HEAL_SOURCE_PATTERNS (no Radiance burst, no heal
-    // crits). One row per block event; shown whenever the perk is ranked.
+    // Hex Shield: blocks one debuff per stack, heals 2.5 HP per block. Flat
+    // heal, no scaling, no Proc Coefficient, not on the compatible-heal list
+    // (no Radiance burst, no heal crits). One row per block, shown while ranked.
     const _hexShieldAmt = perks['Hex Shield'] ?? 0
     if (_hexShieldAmt > 0) {
       result.push({
@@ -4638,10 +4600,9 @@ alliesOnly: true,
       })
     }
 
-    // Vital Mist
-    // Passively consumed to heal Allies in an AoE. Base Heal = consumed / 5
-    // (1 HP per 5 Potency consumed), on 1.0 Air + 1.0 Physical scaling, and
-    // is affected by the Level Damage Bonus like other heal sources.
+    // Vital Mist: consumed passively to heal Allies in an AoE. Base heal =
+    // consumed / 5 on 1.0 Air + 1.0 Physical, affected by Level Damage Bonus
+    // like other heal sources.
     if ((perks['Vital Mist'] ?? 0) > 0) {
       const vmAmt = perks['Vital Mist'] ?? 0
       const potency = Math.min(vitalMistMaxPotency(vmAmt), $build.vitalMistPotency ?? 0)
@@ -4669,16 +4630,11 @@ alliesOnly: true,
       }
     }
 
-    // Radiance
-    // Each proccable healing source emits its own Holy-damage burst, spliced
-    // directly AFTER the source hit so it renders adjacent to it. Healing is
-    // never aggregated across sources — every burst keys off its own source's
-    // healing only. Damage bonuses apply via the perk-category combat mult
-    // (proc-gated boosts excluded — the burst cannot proc effects). The burst
-    // itself cannot proc other effects (noProc coefficient + 'Radiance'
-    // blockedOnNoProc in the proc registry).
-    // Runs last so it sees fully-resolved source hits (finisher boosts,
-    // combat mults, reorderings) and never feeds back into itself.
+    // Radiance: each proccable heal source emits a Holy burst spliced AFTER its
+    // source hit. Bursts are never aggregated — each keys off its own source's
+    // healing. Combat mult = perk-category (proc-gated boosts excluded; burst
+    // cannot proc: noProc + 'Radiance' blockedOnNoProc). Runs LAST so it sees
+    // fully-resolved source hits and never feeds back into itself.
     if (_radianceAmt > 0) {
       const insertions: Array<{ at: number; hit: BDCHit }> = []
       const radianceScalingMult = _computePerkScalingMult({ holy: RADIANCE_HOLY_SCALING })
@@ -4831,8 +4787,8 @@ alliesOnly: true,
       const amount = def.sourceType === 'rune' ? 1 : (perks[def.perkName] ?? 0)
       if (amount <= 0) continue
 
-      // Dark Magic's self damage only lands on attacks that activate its Hex damage
-      // boost, i.e. attacks whose resolved types actually contain Hex.
+      // Dark Magic self damage only lands on attacks whose resolved types
+      // contain Hex (the same gate as its Hex damage boost).
       const _darkMagicNeedsHex = def.perkName === 'Dark Magic'
 
       for (const key of def.appliesTo) {
@@ -5464,21 +5420,22 @@ $: _groupedSelfDamageSources = (() => {
 </div>
 {/if}
 
-      {#each [{ key: 'standoffRamp', perk: 'Standoff', label: 'Standoff Ramp (s)', unit: 's', max: 5, step: 0.5 }, { key: 'guidingWindsRamp', perk: 'Guiding Winds', label: 'Guiding Winds Ramp', unit: '', max: null, step: 0.05 }] as r}
+      {#each [{ key: 'standoffRamp', perk: 'Standoff', label: 'Standoff Ramp (s)', unit: 's', min: 0, max: 5, step: 0.5 }, { key: 'guidingWindsRamp', perk: 'Guiding Winds', label: 'Guiding Winds Charge (%)', unit: '%', min: 0, max: 100, step: 5 }] as r}
+        {@const _rampMin = r.min ?? 0}
         {@const _rampMax = r.max ?? (perks[r.perk] ?? 0)}
-        {#if (perks[r.perk] ?? 0) > 0}
-          {@const _rampVal = Math.min(($build as any)[r.key] ?? _rampMax, _rampMax)}
+        {#if (perks[r.perk] ?? 0) > 0 || (($result.basePerks?.[r.perk] ?? 0) > 0 || ($build as any)[r.key] != null)}
+          {@const _rampVal = Math.max(_rampMin, Math.min(($build as any)[r.key] ?? _rampMax, _rampMax))}
           <div class="da-sb-slider-wrap da-sb-slider-wrap--compact" style="margin-top:6px">
             <span class="da-sb-slider-label">{r.label}</span>
             <input
               type="range"
-              min="0"
+              min={_rampMin}
               max={_rampMax}
               step={r.step}
               value={_rampVal}
               on:input={(e) => build.update(s => ({ ...s, [r.key]: +(e.target as HTMLInputElement).value }) as any)}
               class="da-sb-slider"
-              style="--fill:{(_rampVal / (_rampMax || 1)) * 100}%"
+              style="--fill:{((_rampVal - _rampMin) / ((_rampMax - _rampMin) || 1)) * 100}%"
             />
             <span class="da-sb-slider-val">{+_rampVal.toFixed(2)}{r.unit}</span>
           </div>

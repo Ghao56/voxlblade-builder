@@ -28,11 +28,9 @@ export function applyFireAirConversion(types: Record<string, number>): Record<st
 }
 
 /**
- * The "Highest damage type" rule: largest value wins, ties broken by
- * DMG_TYPE_PRIORITY order (types missing from the list sort last). Returns null
- * for an empty entry list so callers can apply their own empty-case fallback.
- * Single source of truth — every Highest-damage-type consumer must use this so
- * the Weapon Art card, the engine and the rune table cannot disagree.
+ * "Highest damage type" rule: largest value wins, ties by DMG_TYPE_PRIORITY
+ * (missing types sort last). null on empty list. Single source of truth —
+ * every consumer must use this so card/engine/rune table can't disagree.
  */
 export function pickHighestDmgType(
   entries: readonly (readonly [string, number])[],
@@ -74,14 +72,10 @@ export function resolveWaDamageTypeKeys(
 }
 
 /**
- * Single place that answers "does this attack count as Weapon Art damage?".
- *
- * Cragblade's buff makes the weapon's M1/M2 damage count as Weapon Art damage,
- * so every Weapon-Art-only rule (damage-type bonuses, auto-debuff flags, armor
- * penetration, Spell Piercer, Explosive) reads this one signal instead of
- * hardcoding its own copy of the Cragblade check. Callers that already track
- * live buff state (DamageAnalyzer) pass their own value; callers that only have
- * the build state (BuffList, engine) use this helper.
+ * Single place answering "does this attack count as WA damage?" — Cragblade
+ * makes M1/M2 count, so every WA-only rule reads this signal instead of
+ * hardcoding its own check. Buff-state callers pass their own value; build-state
+ * callers (BuffList, engine) use this helper.
  */
 export function weaponHitsCountAsWa(
   selectedWeaponArt: string | undefined,
@@ -133,11 +127,9 @@ export interface EffectiveWaDmgTypesInput {
 }
 
 /**
- * Effective damage types dealt by the selected Weapon Art, including perk
- * damage-type bonuses, Spirit Winds/Dark Magic/Echo Incineration conversions
- * and WA-specific overrides (Wild Bolt, Weighty Slam, Heat Drill, Essence Ray).
- * Single source of truth shared by the damage engine and the BuffList panel so
- * auto-debuff checks (e.g. Toxin Caster magic-damage requirement) stay in sync.
+ * Effective WA damage types: perk type bonuses, Spirit Winds/Dark Magic/Echo
+ * conversions, WA overrides (Wild Bolt, Weighty Slam, Heat Drill, Essence Ray).
+ * Shared by the engine + BuffList panel so auto-debuff checks stay in sync.
  */
 function computeBaseWaDmgTypes(input: EffectiveWaDmgTypesInput): Record<string, number> {
   const apply = (types: Record<string, number>) =>
@@ -186,11 +178,9 @@ function computeBaseWaDmgTypes(input: EffectiveWaDmgTypesInput): Record<string, 
 }
 
 /**
- * Same as computeBaseWaDmgTypes, plus the Cragblade fold: when cragbladeActive
- * is true the weapon's own damage types are included, because M1/M2 damage
- * counts as Weapon Art damage. Callers only pass that on the debuff-flag
- * mirror, so the debuff graph stays cycle-free and actual Weapon Art damage is
- * never inflated.
+ * Same as computeBaseWaDmgTypes + the Cragblade fold (weapon types included).
+ * Callers pass cragbladeActive only on the debuff-flag mirror, so the debuff
+ * graph stays cycle-free and real WA damage is never inflated.
  */
 export function computeEffectiveWaDmgTypes(input: EffectiveWaDmgTypesInput): Record<string, number> {
   const types = computeBaseWaDmgTypes(input)
@@ -213,8 +203,8 @@ export function applyAirToMagicConversion(
   trueMoonTrueRate?: number,
 ): Record<string, number> {
   let result = { ...types }
-  // Spirit Winds first: convert Air → Magic BEFORE Echo Incineration
-  // so that converted Air from Fire↔Air is NOT re-converted
+  // Spirit Winds first: Air → Magic BEFORE Echo Incineration, so converted Air
+  // from Fire↔Air is not re-converted.
   if (conversionRate > 0) {
     const airAmount = result.air ?? 0
     if (airAmount > 0) {
@@ -228,17 +218,15 @@ export function applyAirToMagicConversion(
   if (echoIncinerateAmt && echoIncinerateAmt > 0) {
     result = applyFireAirConversion(result)
   }
-  // Dark Magic converts a fraction of the weapon's NATIVE magic (not magic converted
-  // from Air by Spirit Winds) into Hex. The rate is capped at 100% so the magic side can
-  // never go negative at 4+ stacks.
+  // Dark Magic converts NATIVE magic only (not Air-converted magic); rate
+  // capped at 100% so magic can't go negative at 4+ stacks.
   const nativeMagic = types.magic ?? 0
   const hexConverted = nativeMagicConversionAmount(nativeMagic, darkMagicHexRate)
   if (hexConverted > 0) {
     result.magic = round4((result.magic ?? 0) - hexConverted)
     result.hex = round4((result.hex ?? 0) + hexConverted)
   }
-  // True Moon behaves identically but targets True Damage Type. Only native magic
-  // that Dark Magic did not already claim is left to convert.
+  // True Moon: same, targets True; only magic Dark Magic didn't claim.
   const remainingMagic = Math.max(0, round4(nativeMagic - hexConverted))
   const trueConverted = nativeMagicConversionAmount(remainingMagic, trueMoonTrueRate)
   if (trueConverted > 0) {

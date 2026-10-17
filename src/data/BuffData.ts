@@ -1,8 +1,7 @@
-// Buff Data
-// Master definitions for all buffs, debuffs, neutral statuses, and potions.
+// Master buff/debuff/neutral/potion definitions. Sections group one category each.
+// Displayed by DamageAnalyzer; consumed by calcAutoDebuffs for perk-triggered debuffs.
+// See getBuffPotencyModifier for debuff scaling.
 // GrantedBuff = { buffName, potency, duration, condition, sourceName, sourceType }
-// Each section below groups one category. See also: GetBuffPotencyModifier for debuff scaling.
-// Dragged into DamageAnalyzer for display; consumed by calcAutoDebuffs for perk-triggered debuffs.
 
   import { roundMultiplier } from '../lib/utils'
   import { BASTION_BLESS_MULT, ICHOR_SPARK_BLEED_DURATION, AIR_PRESSURE_DEF_PER_POTENCY } from '../lib/constants'
@@ -142,11 +141,9 @@ export interface BuffDefinition {
   isNeutral?: boolean
   potencyCapped?: boolean
   /**
-   * Who receives this buff. 'self' (default) applies it to the user — and, when
-   * the description says so, to the user's allies too (e.g. Cloudpush /
-   * Cinderpull also apply to the perk user). 'allies' means allies ONLY
-   * (e.g. Cinder Surge), surfaced as a badge in BuffList. Debuffs are
-   * excluded — those carry `isSelfDebuff` / go to the enemy instead.
+   * Who receives the buff: 'self' (default, also allies if description says so),
+   * 'allies' (allies ONLY, e.g. Cinder Surge — badged in BuffList). Debuffs don't
+   * use this — they carry isSelfDebuff / go to the enemy.
    */
   target?: BuffTarget
 }
@@ -1630,9 +1627,8 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       sourceType: 'perk',
     },
   ],
-  // Potency = 2 + perkAmount (floors naturally: perk ranks are whole numbers),
-  // duration = 10 + 2 * perkAmount. Purely a status display — it deals no
-  // damage, so it never feeds the damage math.
+  // Autoparry: potency = 2 + amt, duration = 10 + 2 × amt. Status display only,
+  // never feeds damage math.
   'Heightened Reflexes': (amount) => [
     {
       buffName: 'Autoparry',
@@ -2378,26 +2374,21 @@ function getTricksterReflection(
   if (!isSelfDebuff) return 0
   if (!def?.isDebuff) return 0
 
-  // Only Despair (Grounded Despair) gets Trickster reflection
+  // Trickster only reflects Despair.
   if (buff.buffName !== 'Despair') return 0
 
-  // The reflection bonus must be computed from the Warding-adjusted potency.
-  // Since the UI applies Warding as a post-multiplier, we compute the raw
-  // bonus from the adjusted base and divide by wardingMult so the post-hoc
-  // multiplication produces the correct result.
+  // Compute the raw bonus from the Warding-adjusted potency and divide by
+  // wardingMult so the UI's post-hoc Warding multiplication yields the result.
   const adjustedBase = buff.potency * wardingDebuffMult
   const rawBonus = (tricksterStacks / 10) * (1 + adjustedBase)
   return roundMultiplier(rawBonus / wardingDebuffMult)
 }
 
 /**
- * Whether the build has a hex damage source that can trigger Darkening Hex.
- * Per game spec: hex from Emotional, Toxin Transfer or Void Rage does NOT
- * work; hex from Dark Magic, Concealed Edge or a Hex-colored Draconic
- * Infusion DOES. Concealed Edge only grants hex while standing in shadows.
- * Hex dealt natively by the weapon or a Weapon Art override also counts.
- * Perks whose base damage is hex and that can proc other effects (has a
- * valid proc coefficient) also trigger Darkening Hex.
+ * Does the build have a hex source that can trigger Darkening Hex? Per spec:
+ * Emotional / Toxin Transfer / Void Rage hex do NOT count; Dark Magic,
+ * Concealed Edge (in shadows), Hex Draconic Infusion, native weapon/WA hex,
+ * and hex-base perks with a valid proc coefficient DO.
  */
 export function hasEligibleDarkeningHexSource(
   perks: Record<string, number>,

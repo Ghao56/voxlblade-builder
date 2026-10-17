@@ -15,12 +15,10 @@ import { COMPATIBLE_HEAL_SOURCE_PATTERNS } from './lib/constants/perk-base-damag
   import { procChanceScale } from './lib/procRegistry'
   import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
   import { isVitalMistConvertibleTag } from './lib/vitalMist'
-  // ARCHITECTURE: Level Damage Bonus (levelMult) is EXPLICIT and separate
-  // from Effective Boost (effectiveMult / combatMult). Perk damage inheritance
-  // (Ignition, Poisonous, Glacial, Static Buildup, Snarl) uses this split:
-  // - Inherited RMB damage = post-scaling / pre-boost (includes levelMult)
-  // - Strike/Snarl damage = applies levelMult but excludes general/AP/VC bonuses
-  // - Static Buildup = double level inclusion (exception case)
+  // ARCHITECTURE: levelMult is EXPLICIT, separate from effectiveMult/combatMult.
+  // Perk inheritance uses the split: inherited RMB = post-scaling/pre-boost
+  // (levelMult included); strikes/Snarl = levelMult but no general/AP/VC boosts;
+  // Static Buildup = double level inclusion (exception).
   import {
     DMG_TYPE_META,
     DEF_TRACKED_TYPES,
@@ -52,9 +50,8 @@ import { COMPATIBLE_HEAL_SOURCE_PATTERNS } from './lib/constants/perk-base-damag
 
   export let perkDmgTypeBonuses: Record<string, number> = {}
   export let perkDmgTypeBonusesDoT: Record<string, number> = {}
-  // Bonus map for tagged proc-effect entries (Explosive Charge, Bombardier, …).
-  // Sources in ON_HIT_EXCLUDED_SOURCES (Cauterize, Lightning Cloak/Chain) fall back
-  // to the DoT map — same exclusion list as Lifesteal and Curse Rip.
+  // Tagged proc-effect bonus map. ON_HIT_EXCLUDED_SOURCES (Cauterize, Lightning
+  // Cloak/Chain) fall back to the DoT map — same list as Lifesteal/Curse Rip.
   export let perkDmgTypeBonusesOnHit: Record<string, number> = {}
   export let boosts: any
   export let crit: any
@@ -107,13 +104,11 @@ import { COMPATIBLE_HEAL_SOURCE_PATTERNS } from './lib/constants/perk-base-damag
   export let m1Label: string = 'M1'
   export let mountActive: boolean = false
   export let mountLabel: string = ''
-  // Level damage bonus (1.25% per level). Kept separate from combatMult so effects
-  // like Snarl can include level scaling while still excluding the general
-  // damage-boost (effective-boost) multiplier.
+  // Level damage bonus (1.25%/level), separate from combatMult so Snarl includes
+  // level scaling while excluding the general damage-boost multiplier.
   export let levelMult: number = 1
-  // Level-free variant of the perk-category combat multiplier (combatMult minus
-  // the Level Damage bonus). Exposes "Effective Boost" independently so spawned
-  // effects can opt into effective-only scaling where appropriate.
+  // combatMult minus the Level Damage bonus ("Effective Boost") for spawned
+  // effects that opt into effective-only scaling.
   export let perkEffectiveCombatMult: number = 1
   export let dragonStateEffectiveCombatMult: number = 1
   export let staticBuildupAmt: number = 0
@@ -727,24 +722,17 @@ note?: string
     return baseSum * (hit.scalingMult ?? 1) * (hit.combatMult ?? 1) * (hit.weaponBoostMult ?? 1)
   }
 
-  /**
-   * Critical Healing only procs on the game spec's "List of Compatible Heals —
-   * able to proc effects" and never on heals without a proc coefficient. The
-   * hit's own proc coefficient scales the crit chance (e.g. Solar Light's
-   * reduced heal proc coefficient), so a no-proc heal cannot crit at all.
-   */
+  /** Critical Healing only procs on the game spec's compatible-heals list and
+   *  never on a heal without a proc coefficient — the hit's coefficient scales
+   *  the crit chance, so a no-proc heal can't crit. */
   function isHealCritEligible(hit: { label?: string; procCoefficient?: ProcCoefficient }): boolean {
     if (!canProc(hit.procCoefficient)) return false
     const label = hit.label ?? ''
     return COMPATIBLE_HEAL_SOURCE_PATTERNS.some(rx => rx.test(label))
   }
 
-  /**
-   * True when a hit group is treated as Weapon Art damage. Cragblade's buff
-   * makes M1/M2 hits count as Weapon Art damage, so every Weapon-Art-only
-   * branch (armor penetration, typed boosts, Explosive) uses this instead of
-   * comparing the raw group string. Display grouping is unaffected.
-   */
+  /** True when a group is treated as WA damage (Cragblade makes M1/M2 count as
+   *  WA). All WA-only branches use this instead of comparing group strings. */
   function isWeaponArtGroup(group?: string): boolean {
     if (group === 'WA' || group === 'Rune') return true
     return weaponHitsCountAsWa && (group === 'M1' || group === 'M2')
@@ -793,16 +781,14 @@ note?: string
     const lcConsumed = new Set<string>()
     const cdPerkConsumed = new Set<string>()
     _vmConvertedBySource.clear()
-    // Void Contract — mirrors Channeled Depths: the user designates ONE hit instance
-    // (target group + hit #, see DamageAnalyzer). That hit and everything it spawns
-    // (procs, blub, stars, on-hit perks, DS, LC) inherits the buff via vcDilution / vcContext.
+    // Void Contract — user designates ONE hit instance (see DamageAnalyzer);
+    // that hit and everything it spawns inherits the buff via vcDilution/vcContext.
     const VC_MULT = _vcState.mult
     return weaponHits.flatMap((hit): ComputedHit[] => {
     const isHeal = hit.isHeal ?? false
-    // Radiance bursts inherit their source's group purely for rendering
-    // adjacency. Computationally they are perk procs, not weapon strikes:
-    // an empty bdcGroup strips WA/Rune-specific treatment (WA armor pen,
-    // group-restricted typed boosts, Spell Piercer).
+    // Radiance bursts keep their source's group only for rendering adjacency —
+    // computationally they're perk procs: empty bdcGroup strips the WA/Rune
+    // treatment (WA pen, group-restricted boosts, Spell Piercer).
     const bdcGroup = hit.isRadianceProc ? '' : hit.group
     const basePenDecimal = (armorPen + globalArmorPenetration) / 100
     const hitPenDecimal = isWeaponArtGroup(bdcGroup) ? (armorPen + globalArmorPenetration + waArmorPenetration) / 100 : basePenDecimal
@@ -900,11 +886,9 @@ note?: string
       if (luminescentPct > 0 && active('Luminescent')) {
         addProcEffect(opts.preMitBase, luminescentPct, { holy: 1.0 }, 'Luminescent', 1, 1, opts.count)
       }
-      // Propelling Fun's Cloudpush / Cinderpull: an extra Air (or Fire, while
-      // burning) instance worth a % of this hit's damage. Both also apply to
-      // the perk user, so unlike Cinder Surge they DO scale the user's damage.
-      // Gated by the instance's ProcCoefficient (no bonus on attacks without
-      // one) and pushed as noProc by addProcEffect (cannot proc other effects).
+      // Propelling Fun Cloudpush/Cinderpull: extra Air (Fire while burning)
+      // instance worth a % of this hit. Both apply to the perk user too, so
+      // they DO scale user damage (unlike Cinder Surge). noProc.
       if (cloudpushPct > 0 && active('Cloudpush')) {
         addProcEffect(opts.preMitBase, cloudpushPct, { air: 1.0 }, 'Cloudpush', 1, 1, opts.count)
       }
@@ -949,10 +933,8 @@ note?: string
     // Cache pre-mitigation base for this hit (used by all proc effects below)
     const _hitPreMitBase = computePreMitigationBase(hit)
     const _hitDebuffedPreMitBase = _hitPreMitBase * _activeDebuffDamageMult * selfDebuffDamageMult
-    // Void Contract: the mark (set by DamageAnalyzer) buffs the first N hits of the
-    // chosen target, N = 1 + floor(perkAmount). Each marked hit's vcBuffedCount tells
-    // how many of its sub-hits are buffed; everything the hit spawns (procs, blub,
-    // stars, on-hit perks, DS, LC) inherits the buff via vcDilution / vcContext.
+    // Void Contract: mark buffs the first N hits of the chosen target,
+    // N = 1 + floor(perkAmount); spawned effects inherit via vcDilution/vcContext.
     const vcBuffedCount = !isHeal ? Math.max(0, hit.vcBuffedCount ?? 0) : 0
     const vcDilution = vcBuffedCount > 0 ? VC_MULT : 1
     // Sub-source inheritance factor for every proc/blub/star/perk spawned by this hit.
@@ -996,11 +978,9 @@ note?: string
         }
         return getApplicableBoosts(k, typeIsHeal, bdcGroup, hit.procCoefficient)
       })()
-      // Dark Magic: flat damage boost on any attack whose resolved types contain Hex.
-      // True Moon mirrors it for True Damage Type.
-      // `hit.dmgTypes` is already post weapon-bonuses and post Spirit Winds /
-      // Dark Magic / True Moon / Echo Incineration conversions, so the perk's own
-      // magic→hex/true conversion satisfies the gate.
+      // Dark Magic / True Moon: flat boost on attacks whose resolved types
+      // contain Hex / True. hit.dmgTypes is already post-conversions, so the
+      // perk's own magic→hex/true conversion satisfies the gate.
       if (!typeIsHeal) pushTypeGatedBoosts(applicableBoosts, hit.dmgTypes)
       const typedMultUsed = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
 
@@ -1127,11 +1107,8 @@ note?: string
             isHeal: false, tag: 'Star Struck', forceCrit: false, procCoefficient: DEFAULT_PROC_COEFF,
             ...(count > 1 ? { hitCount: count } : {}),
           })
-// Spawned stars RUN the SAME complete registry-driven instance procs
-          // as a normal hit (Phantom Pain, Cauterize, Echo, Stormcaller,
-          // Bombardier, Quake, Runic Blades, Luminescent, Chain, Ichor,
-          // Explosive, Blub) — each star carries its own Proc Coefficient
-          // (DEFAULT_PROC_COEFF), so no per-effect hardcoding here.
+          // Stars run the SAME registry-driven instance procs as a normal hit,
+          // each with its own coeff (DEFAULT_PROC_COEFF) — no per-effect hardcoding.
           runInstanceProcs({
             preMitBase: starPreMitBase,
             coeff: DEFAULT_PROC_COEFF,
@@ -1397,13 +1374,9 @@ note?: string
     }
 
     if (!isHeal && curseRipPerkAmount > 0 && curseRipActiveDebuffCount > 0 && !disableCurseRip && !ON_HIT_EXCLUDED_SOURCES.has(hit.label ?? '')) {
-      // Curse Rip lifesteals off the damage this hit deals, so the base carries
-      // Output Bonuses (combatMult / weapon boosts) and Type-Specific Multipliers
-      // (typed perk boosts, per-type debuff bonuses). It deliberately ignores
-      // critical and post-critical multipliers as well as enemy defense / armor
-      // penetration, so `defMult` is the only factor divided back out. `rawNoVC`
-      // keeps the Void Contract mark off the heal, as the pre-mitigation base
-      // this used to key off did.
+      // Curse Rip lifesteals off damage dealt: base carries Output Bonuses and
+      // Type-Specific Multipliers, ignores crits and defense (divides defMult
+      // back out). rawNoVC keeps the Void Contract mark off the heal.
       const preMitBase = types.slice(0, _finisherMainTypesEnd)
         .filter(t => !t.isHeal)
         .reduce((s, t) => s + (t.rawNoVC ?? t.raw) / (t.defMult || 1), 0)
@@ -1515,10 +1488,9 @@ note?: string
       }
     }
 
-    // Honey Gather: 0.5% per stack of damage dealt vs Sticky, + 0.1 flat.
-    // Scales with Output Bonuses and Type-Specific Multipliers, but NOT crits
-    // (uses `raw`, not `critVal`) and NOT enemy defense / Armor Pen — divide
-    // each type's defense multiplier back out (same trick as Phantom Pain).
+    // Honey Gather: 0.5%/stack of damage dealt vs Sticky, + 0.1 flat. Includes
+    // Output/Type-Specific bonuses but NOT crits, defense, or Armor Pen
+    // (defMult divided back out, same trick as Phantom Pain).
     if (!isHeal && _honeyGatherActive && gate('Honey Gather') && !ON_HIT_EXCLUDED_SOURCES.has(hit.label ?? '')) {
       const damageDealt = types.filter(t => !t.isHeal).reduce((s, t) => s + t.raw / (t.defMult || 1), 0)
       const healAmount = HONEY_GATHER_HEAL_PCT_PER_STACK * honeyGatherAmt * damageDealt + LIFESTEAL_FLAT_HEAL
@@ -1538,18 +1510,10 @@ note?: string
     }
 
     // Snarled: damage taken heals the ENEMY by lifesteal% of damage dealt.
-    // "Healing does not consider Damage Boosting perks or effects" — but level
-    // damage bonus is an exception and SHOULD scale the heal. We rebuild the
-    // pre-boost base from the hit (pre-bonus damage types, scaling, level mult)
-    // so armor penetration, Void Contract, damage-type bonuses, and all damage
-    // boosts are excluded.
+    // Heal = pre-boost base (raw baseDmgTypes + scaling + levelMult ONLY):
+    // general combat boosts, typed perks, Armor Pen (defMult), Void Contract
+    // and dmg-type bonuses all excluded. Level bonus is the one exception.
     if (!isHeal && _snarledLifesteal.pct > 0 && !ON_HIT_EXCLUDED_SOURCES.has(hit.label ?? '')) {
-      // Snarl's enemy heal is based on pre-boost damage affected ONLY by level
-      // damage bonus. It must not include the general damage boosts (combatMult /
-      // effective boost), typed perk boosts, armor penetration (defMult), Void
-      // Contract (vcDilution), or damage-type bonuses (baseDmgTypes are the
-      // pre-bonus distribution, so e.g. Channeled Weapon's added magic type is
-      // excluded).
       const snarledBaseTypes = hit.baseDmgTypes
       const snarledBaseSum = snarledBaseTypes
         ? Object.values(snarledBaseTypes).reduce((s, m) => s + hit.base * m, 0)
@@ -1557,10 +1521,6 @@ note?: string
       const snarledDamageDealt = snarledBaseSum * (hit.scalingMult ?? 1) * levelMult
       const enemyHeal = snarledDamageDealt * _snarledLifesteal.pct / 100 + _snarledLifesteal.flat
       if (enemyHeal > 0) {
-        // Snarl enemy heal: pre-bonus base (baseDmgTypes = raw, excludes Channeled
-        // Weapon / Stone Weapon), scaling, Level Damage Bonus only, flat lifesteal.
-        // Armor Pen (defMult=1), Void Contract (vcDilution skipped), general combat
-        // boosts (combatMult=1) and typed perks are deliberately excluded.
         types.push({
           key: 'heal', label: 'Heal', color: '#4ade80',
           typeBase: snarledBaseSum, scalingMult: hit.scalingMult ?? 1, levelMult, combatMult: 1,
@@ -1594,19 +1554,15 @@ note?: string
     }
 
     const result: ComputedHit = { group: hit.group, index: hit.index, count: hit.count, isFinisher: hit.isFinisher, label: hit.label, isHeal, types, procCount: hit.procCount, finisherGroupHitCount: hit.finisherGroupHitCount, eachHitM1M2: hit.eachHitM1M2 ?? false, vcBuffedCount, vcMult: VC_MULT, ...(hit.alliesOnly ? { alliesOnly: true as const } : {}), ...(hit.isRadianceProc ? { isRadianceProc: true as const, sourceLabel: hit.sourceLabel } : {}) }
-    // Vassals Croak: on an RMB (M2) finisher hit, consume Last Croak and explode once per RMB press.
-    // Triggers on any M2-type finisher: base M2 (group 'M2'), M2 finishers folded into the M1 combo
-    // (Deltabit → 'M1' with isM2, Delta Drill repeats it), non-standard WA finishers that count as
-    // individual RMB finishers (e.g. Rapid Stabs), and monk spirits (isM2, e.g. Dire Buni Spirit).
-    // M1 finishers never trigger. The Last Croak row is emitted into the triggering hit's own group
-    // so it appears directly below that hit.
+    // Vassals Croak: on an M2-type finisher, consume Last Croak and explode once
+    // per RMB press. Triggers base M2, combo-folded M2 finishers (Deltabit/Delta
+    // Drill), RMB finisher WAs (Rapid Stabs), monk spirits. M1 finishers never
+    // trigger; the row emits into the triggering hit's group (renders below it).
     if (!isHeal && vassalsCroakAmt > 0 && vassalsCroakPotency > 0
       && (hit.group === 'M2' || hit.isM2 || (hit.group === 'WA' && hit.isFinisher))
       && gate('Last Croak')) {
-      // One Last Croak per press: a Deltabit/Delta Drill combo replaces a single
-      // M1 finisher with several M2-type hits (all group 'M1') that must share one
-      // key, and M2-replacement perks share the base M2's key. WA finishers and
-      // monk spirits key off their own row label.
+      // One Last Croak per press: combo hits share one key, M2-replacement
+      // perks share the base M2's key; WA finishers + monk spirits use their label.
       const lcKey = (hit.group === 'M1' || hit.group === 'M2')
         ? hit.group
         : (hit.label ?? hit.group)
@@ -1643,17 +1599,13 @@ note?: string
       }
     }
 
-    // Static Buildup: landing an RMB (M2-type) hit calls down lightning strikes,
-    // the number of which scales off your weapon's charge.
+    // Static Buildup: an M2-type hit calls down strikes scaled by weapon charge.
     //   strike base = (3 + inheritedRmb × 0.1538) × (1 + 0.1 × perkAmount)
-    // inheritedRmb is the RMB damage post-scaling but pre-boost, INCLUDING the
-    // Level Damage bonus (special exception: the inherited rmb damage is affected
-    // by Level Damage Bonus while the strikes themselves also receive the Level
-    // Damage bonus via their own combat mult). The strikes do NOT inherit the
-    // RMB's other damage increases (Effective Boost, Rage, Sunburn, debuffs,
-    // armor penetration on the RMB hit), but CAN be affected by their own
-    // damage bonuses. Magic/Air split is inferred from the Lightning Hammer
-    // statline (0.5 airType / 0.5 magicType).
+    // inheritedRmb = RMB post-scaling/pre-boost, INCLUDING levelMult (double
+    // level exception: strikes also get levelMult via their combat mult).
+    // Strikes don't inherit the RMB's other boosts (Effective Boost, Rage,
+    // Sunburn, debuffs, pen) but take their own bonuses. Magic/Air 50/50
+    // from the Lightning Hammer statline.
     if (!isHeal && staticBuildupAmt > 0 && staticBuildupCharge > 0
       && (hit.group === 'M2' || hit.isM2 || (hit.group === 'WA' && hit.isFinisher))
       && gate('Static Buildup')) {
@@ -1777,13 +1729,9 @@ note?: string
   ]
 
   // Totals
-  /**
-   * Whether a type's displayed value is its crit value. Damage follows the
-   * global "Crit ON/OFF" switch; a heal follows it too, plus the Critical
-   * Healing toggle on its own — `healCritChance` is only set on heal types
-   * that are compatible, proccable sources with heal crits modelled, so an
-   * ineligible heal never shows a crit value.
-   */
+  /** Is the displayed value the crit value? Damage follows the global crit
+   *  switch; heals add the Critical Healing toggle — healCritChance is only set
+   *  on modelled, proccable heal types, so ineligible heals never show crits. */
   function useCritFor(t: ComputedType, useCrit: boolean = showCritValues): boolean {
     if (t.forceCrit) return true
     if (t.isHeal && (t.healCritChance ?? 0) > 0) return true

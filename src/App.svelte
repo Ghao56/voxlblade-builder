@@ -693,7 +693,7 @@ $: statRows = Object.entries($result.stats).filter(([k, v]) => {
     return [k, v] as [string, number]
   }).sort(([a],[b]) => a.localeCompare(b))
 
-  $: perkRows = Object.entries($result.perks).filter(([,v]) => v > 0).sort(([a],[b]) => a.localeCompare(b))
+  $: perkRows = Object.entries({ ...$result.perks, ...$result.basePerks }).filter(([,v]) => v > 0).sort(([a],[b]) => a.localeCompare(b))
   $: cdr = $result.cdr
   $: isDraconic = $build.guild === 'Draconic'
 

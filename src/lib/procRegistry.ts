@@ -5,30 +5,19 @@ import { ICHOR_SPARK_CHAIN_PROC_CHANCE, QUAKE_CHANCE_BASE } from './constants/pe
 import { STORM_CALLER_PROC_CHANCE, LIGHT_BEARER_PROC_CHANCE, TRUE_MOON_PROC_CHANCE } from './constants/perks'
 
 /**
- * Data-driven registry of proc-capable effects.
+ * Data-driven registry of proc-capable effects, keyed by damage tag
+ * (`ComputedType.tag` / `BADGE_CONFIG`). New effect = data change, no engine patch.
  *
- * Every effect that reacts to a damage instance's Proc Coefficient is declared
- * here once, keyed by its damage tag (the same tag the engine pushes into
- * `ComputedType.tag` / `BADGE_CONFIG`). Adding or changing an effect's proc
- * behavior afterwards only requires a data change - no engine patching.
+ * chanceScaling (see ProcScalingType):
+ * - `normal`       : gated by the hit's coefficient (blocked on noProc)
+ * - `ignore`       : unaffected by the coefficient (Carrying Winds)
+ * - `positiveOnly` : never below base chance, active even on noProc (crits, King's Luck)
  *
- * Three chance-scaling behaviors are declared (see `ProcScalingType`):
- * - `normal`    : chance-based effect, gated by the hit's coefficient
- *                 (blocked on a `noProc` hit, otherwise active)
- * - `ignore`    : completely unaffected by the coefficient - stays active even
- *                 on a `noProc` hit (e.g. Carrying Winds)
- * - `positiveOnly` : never reduced below its base chance; stays active even on
- *                 a `noProc` hit, only positively boosted (Natural/Golden Crits,
- *                 King's Luck)
+ * `blockedOnNoProc` marks non-chance conditional effects that can't activate
+ * on a noProc instance.
  *
- * `blockedOnNoProc` marks NON-chance, conditional effects (Blood Thirsty,
- * Luminescent, Phantom Pain, ...) that simply cannot activate on an instance
- * tagged `noProc`.
- *
- * NOTE: The damage engine is a deterministic/expected-value model, so a hit's
- * coefficient never reduces or increases an effect's AWARDED damage - an effect
- * is either active (scale 1) or blocked (scale 0). Base percentages and any
- * chance reduction math belong to the game's random rollout, not this sim.
+ * NOTE: the engine is an expected-value model — an effect is active (scale 1)
+ * or blocked (scale 0); chance math belongs to the game's random rollout.
  */
 interface ProcEffectDef {
   /** How the effect's proc chance reacts to the hit's coefficient. */

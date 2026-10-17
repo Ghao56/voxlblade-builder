@@ -1,16 +1,10 @@
 /**
- * Build engine: calculates final stats, boosts, and damage multipliers.
- * ARCHITECTURE NOTE (Level / Effective split):
- * - Level damage bonus (isLevel) is now EXPLICIT via BoostEntry.isLevel.
- *   It applies as 1 + level/MAX_LEVEL * 1.25% (capped). Previously bundled
- *   in combatMult; now separated so perks can opt-in (applyLevel?).
- * - Effective boost (types, perks, VC, etc.) stays in _categoryMult / combatMult.
- * - PerkDmgDef flags (applyLevel?, applyEffective?, noSelfDebuff?) control
- *   inheritance for proc/on-hit damage (Ignition, Poisonous, Glacial, Static).
- * - Snarl rework: uses baseDmgTypes (not dmgTypes fallback) to exclude
- *   Channeled/Stone Weapon inheritance and excludes general/AP/VC bonuses.
- * - Static Buildup: special inheritance (post-scaling/pre-boost RMB → strike)
- *   with double Level inclusion (exception case).
+ * Build engine: final stats, boosts, damage multipliers.
+ * Level/Effective split: Level Damage Bonus is explicit via BoostEntry.isLevel;
+ * perks opt in with applyLevel?/applyEffective?/noSelfDebuff? (proc/on-hit
+ * effects: Ignition, Poisonous, Glacial, Static). Snarl uses baseDmgTypes to
+ * omit Channeled/Stone inheritance and general/AP/VC bonuses. Static Buildup
+ * inherits post-scaling/pre-boost RMB with double Level inclusion (exception).
  */
 import type { StatKey, StatMap, ArmorPart, EnchantSlot, BuildState } from '../types'
 import { STAT_KEYS, applyUpgrade } from '../types'
@@ -237,7 +231,7 @@ function calcBoosts(
 
 // Section: Build result derivation - final stats, shield/protection, inheritance
 
-export interface BuildResult { stats: StatMap; perks: Record<string, number>; cdr: CDRResult; boosts: BoostResult; crit: CritResult }
+export interface BuildResult { stats: StatMap; perks: Record<string, number>; basePerks?: Record<string, number>; cdr: CDRResult; boosts: BoostResult; crit: CritResult }
 
 // Section: Equipment accumulation - aggregates weapon/rune/armor stats
 
@@ -548,7 +542,15 @@ function deriveResults(
 
   const wardingDebuffMult = calcWardingDebuffMultiplier(boostedStats.warding ?? 0)
   const isMountRune = state.rune.endsWith('Mount Rune')
-  const { allBuffs, orkBuffTenacity } = computeBuffs(state, finalPerks, wardingDebuffMult, _weaponResult?.weaponModifier)
+  const rampedPerks = (state.standoffRamp != null || state.guidingWindsRamp != null)
+    ? {
+        ...finalPerks,
+        ...(state.standoffRamp != null ? { Standoff: (finalPerks['Standoff'] ?? 0) * (state.standoffRamp / 5) } : {}),
+        ...(state.guidingWindsRamp != null ? { 'Guiding Winds': (finalPerks['Guiding Winds'] ?? 0) * ((state.guidingWindsRamp < 25) ? 0 : (state.guidingWindsRamp / 100)) } : {}),
+      }
+    : finalPerks
+
+  const { allBuffs, orkBuffTenacity } = computeBuffs(state, rampedPerks, wardingDebuffMult, _weaponResult?.weaponModifier)
   // Ice Shell & Drone Armor provide temporary HP (shield) — not protection.
   const iceShellPotency = maxBuffPotency(allBuffs, 'Ice Shell')
   if (iceShellPotency > 0 && !(state.disabledBuffKeys ?? []).includes('Ice Shell:Glacial Shell Rune')) {
@@ -594,20 +596,12 @@ function deriveResults(
   })()
   const hasMagicDmg = Object.entries(_waDmgTypesForBoost).some(([dt, mult]) => dt === 'magic' && mult > 0)
   const hasMagicOrPhysicalDmg = Object.entries(_waDmgTypesForBoost).some(([dt, mult]) => (dt === 'magic' || dt === 'physical') && mult > 0)
-  // Standoff / Guiding Winds ramp: when the user drags the ramp slider, override the
-  // perk amount fed to the boost calc so the multiplier reflects partial ramp rather
-  // than always assuming max stacks. Only the boost calc sees the override.
-  // Standoff ramps 0.05/s up to 0.25*perkAmount -> reaches max after 5s, so its slider
-  // value is seconds and the effective stacks are amount * (seconds / 5).
-  const boostPerks = (state.standoffRamp != null || state.guidingWindsRamp != null)
-    ? {
-        ...finalPerks,
-        ...(state.standoffRamp != null ? { Standoff: (finalPerks['Standoff'] ?? 0) * (state.standoffRamp / 5) } : {}),
-        ...(state.guidingWindsRamp != null ? { 'Guiding Winds': state.guidingWindsRamp } : {}),
-      }
-    : finalPerks
+  // Standoff / Guiding Winds ramp: slider overrides the perk amount fed to the
+  // boost calc (partial ramp instead of max stacks). Standoff slider = seconds
+  // (0.05/s → max at 5s): stacks = amount × (seconds / 5). Guiding Winds slider
+  // = % (25% floor): stacks = amount × (percent / 100).
   const boosts = calcBoosts(
-    boostPerks, state.emotionalState, state.emotionalDisabled, state.level ?? MAX_LEVEL,
+    rampedPerks, state.emotionalState, state.emotionalDisabled, state.level ?? MAX_LEVEL,
     crit.naturalCritChance, boostedStats.jumpBoost ?? 0,
     state.summonCount ?? 0, state.vassalsCroakSummons, ragePotency, bouncePotency,
     tailwindPotency, boostedStats.airBoost ?? 0, boostedStats.speedBoost ?? 0, boostedStats.attackSpeed ?? 0, (finalStats.tenacity ?? 0) + orkBuffTenacity,
@@ -625,7 +619,7 @@ function deriveResults(
     state.inventoryFill ?? 0,
     state.voxos ?? 0,
   )
-  return { stats: boostedStats, perks: finalPerks, cdr, boosts, crit }
+  return { stats: boostedStats, perks: rampedPerks, basePerks: finalPerks, cdr, boosts, crit }
 }
 
 export function calcBuild(state: BuildState): BuildResult {
