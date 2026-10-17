@@ -40,7 +40,7 @@ export const SAVE_KEY_MAP: Record<string, string> = {
   upgradeInfusionLeggings:'uil', upgradeInfusionRing:'uir', selectedWeaponArt:'wa', draconicColor:'dc',
   draconicRuneInfusion:'dri', emotionalState: 'es', propellingFunElement:'pfe', propellingFunBuffMode:'pfb',
   bastionBallistaArrows:'bba', ichorSparkCharge:'isc', divineCrashDistance:'dcd', vassalsCroakSummons:'vcs', lastCroakStacks:'lks', enchantedSwordType:'est',
-  airPressurePotency:'app', channeledDepthsTarget:'cdtg', channeledDepthsHit:'cdth', voidContractTarget:'vctg', voidContractHit:'vcth', deathmistHit:'dmh',
+  airPressurePotency:'app', standoffRamp:'sor', guidingWindsRamp:'gwr', channeledDepthsTarget:'cdtg', channeledDepthsHit:'cdth', voidContractTarget:'vctg', voidContractHit:'vcth', deathmistHit:'dmh',
   potion1:'p1', potion2:'p2',
   storedCorruptionAmount:'sca', darkeningHexActivations:'dha', enemyHpFill:'ehf', inventoryFill:'invf',
   emotionalDisabled:'ed', rageDisabled:'rd', glyphConduitDisabled:'gcd', extinguishDisabled:'exd',

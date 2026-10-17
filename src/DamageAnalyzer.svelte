@@ -3623,6 +3623,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     finisherHitIndex?: number
     weaponBoostMult?: number
     weaponBoostLabel?: string
+    rotatingBladesMult?: number
     cdWater?: number
 isRadianceProc?: boolean
 sourceLabel?: string
@@ -3825,6 +3826,7 @@ note?: string
         if (h.isHeal || (h.group !== 'M1' && h.group !== 'M2')) continue
         h.count *= ROTATING_BLADES_HIT_MULT
         h.base = roundMultiplier(h.base * _rotatingBladesMult)
+        h.rotatingBladesMult = _rotatingBladesMult
       }
     }
     if (_activeMountRuneDef && mountActive) {
@@ -5462,6 +5464,27 @@ $: _groupedSelfDamageSources = (() => {
 </div>
 {/if}
 
+      {#each [{ key: 'standoffRamp', perk: 'Standoff', label: 'Standoff Ramp (s)', unit: 's', max: 5, step: 0.5 }, { key: 'guidingWindsRamp', perk: 'Guiding Winds', label: 'Guiding Winds Ramp', unit: '', max: null, step: 0.05 }] as r}
+        {@const _rampMax = r.max ?? (perks[r.perk] ?? 0)}
+        {#if (perks[r.perk] ?? 0) > 0}
+          {@const _rampVal = Math.min(($build as any)[r.key] ?? _rampMax, _rampMax)}
+          <div class="da-sb-slider-wrap da-sb-slider-wrap--compact" style="margin-top:6px">
+            <span class="da-sb-slider-label">{r.label}</span>
+            <input
+              type="range"
+              min="0"
+              max={_rampMax}
+              step={r.step}
+              value={_rampVal}
+              on:input={(e) => build.update(s => ({ ...s, [r.key]: +(e.target as HTMLInputElement).value }) as any)}
+              class="da-sb-slider"
+              style="--fill:{(_rampVal / (_rampMax || 1)) * 100}%"
+            />
+            <span class="da-sb-slider-val">{+_rampVal.toFixed(2)}{r.unit}</span>
+          </div>
+        {/if}
+      {/each}
+
       {#if _mycoticBloomBelow50Active}
         <div class="da-boost-row" style="margin-top:6px">
           <button
@@ -5684,7 +5707,7 @@ $: _groupedSelfDamageSources = (() => {
           </div>
         {/if}
         {/if}
-  {#if _m1WeaponBoostRaw.mult !== 1 || _m1FinisherWeaponBoostRaw.mult !== 1 || _m2WeaponBoostRaw.mult !== 1 || _pursuitActive || disableWeaponBoost}
+  {#if _m1WeaponBoostRaw.mult !== 1 || _m1FinisherWeaponBoostRaw.mult !== 1 || _m2WeaponBoostRaw.mult !== 1 || _pursuitActive || (_rotatingBladesRank ?? 0) > 0 || disableWeaponBoost}
     {@const _wbM1 = _m1WeaponBoostRaw.mult !== 1}
     {@const _wbM1F = _m1FinisherWeaponBoostRaw.mult !== 1}
     {@const _wbM2 = _m2WeaponBoostRaw.mult !== 1}
@@ -5692,6 +5715,8 @@ $: _groupedSelfDamageSources = (() => {
     {@const _pursuitMult = _pursuitActive ? PURSUIT_BASE_MULT + PURSUIT_MULT_PER_RANK * _pursuitRank : 1}
     {@const _rawPursuitRank = perks['Pursuit'] ?? 0}
     {@const _rawPursuitMult = _rawPursuitRank > 0 ? PURSUIT_BASE_MULT + PURSUIT_MULT_PER_RANK * _rawPursuitRank : 0}
+    {@const _rbActive = (_rotatingBladesRank ?? 0) > 0}
+    {@const _rbHeadline = _rbActive && _wbSame && _m1WeaponBoostRaw.mult === 1 && _rawPursuitRank === 0}
     <div class="da-boost-row" style="margin-top: 6px;">
       <button
         class="da-boost-chip"
@@ -5701,7 +5726,7 @@ $: _groupedSelfDamageSources = (() => {
         <span class="da-bc-name">{[_weaponBoostLabels.join(', '), _rawPursuitRank > 0 ? 'Pursuit' : '', (_rotatingBladesRank ?? 0) > 0 ? 'Rotating Blades' : ''].filter(Boolean).join(', ')}</span>
         <span class="da-bc-val">
           {#if _wbSame}
-            ×{trimNum(_m1WeaponBoostRaw.mult)}
+            ×{trimNum(_rbHeadline ? _rotatingBladesMult : _m1WeaponBoostRaw.mult)}
           {:else}
             {#if _wbM1 && _wbM1F && _m1WeaponBoostRaw.mult === _m1FinisherWeaponBoostRaw.mult}
               M1·M1F ×{trimNum(_m1WeaponBoostRaw.mult)}
@@ -5712,7 +5737,7 @@ $: _groupedSelfDamageSources = (() => {
             {#if _wbM2}M2 ×{trimNum(_m2WeaponBoostRaw.mult)}{/if}
           {/if}
           {#if _rawPursuitRank > 0}M1 ×{trimNum(_rawPursuitMult)}{/if}
-          {#if (_rotatingBladesRank ?? 0) > 0}M1·M2 ×{trimNum(_rotatingBladesMult)} ({ROTATING_BLADES_HIT_MULT}× hits){/if}
+          {#if _rbActive}{#if !_rbHeadline}M1·M2 ×{trimNum(_rotatingBladesMult)}{/if} ({ROTATING_BLADES_HIT_MULT}× hits){/if}
         </span>
         {#if _weaponBoostConditions.length > 0}<span class="da-bc-cond">{_weaponBoostConditions.join(', ')}</span>{/if}
         <span class="da-bc-toggle">{disableWeaponBoost ? 'OFF' : 'ON'}</span>
@@ -10194,6 +10219,39 @@ $: _groupedSelfDamageSources = (() => {
   text-align: center;
   flex-shrink: 0;
   white-space: nowrap;
+}
+
+/* Compact variant for the Standoff / Guiding Winds ramp sliders.
+   :global so it survives Svelte's unused-CSS pruning (the class sits inside an {#each}). */
+:global(.da-sb-slider-wrap.da-sb-slider-wrap--compact) {
+  display: inline-flex;
+  align-self: flex-start;
+  gap: 7px;
+  padding: 4px 8px;
+  border-radius: 9px;
+  margin-right: 8px;
+}
+:global(.da-sb-slider-wrap--compact .da-sb-slider-label) {
+  font-size: .5rem;
+  letter-spacing: .09em;
+  min-width: 0;
+}
+:global(.da-sb-slider-wrap--compact .da-sb-slider) {
+  flex: 0 0 120px;
+  height: 4px;
+}
+:global(.da-sb-slider-wrap--compact .da-sb-slider::-webkit-slider-thumb) {
+  width: 11px;
+  height: 11px;
+}
+:global(.da-sb-slider-wrap--compact .da-sb-slider::-moz-range-thumb) {
+  width: 11px;
+  height: 11px;
+}
+:global(.da-sb-slider-wrap--compact .da-sb-slider-val) {
+  font-size: .6rem;
+  padding: 1px 7px;
+  min-width: 24px;
 }
 
 /* Segmented control (valueLabels sliders) */

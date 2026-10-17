@@ -200,6 +200,7 @@ import { COMPATIBLE_HEAL_SOURCE_PATTERNS } from './lib/constants/perk-base-damag
     isM2?: boolean
     weaponBoostMult?: number
     weaponBoostLabel?: string
+    rotatingBladesMult?: number
     isHeal?: boolean
     forceCrit?: boolean
     dmgTypeCombatMults?: Record<string, number>
@@ -1040,6 +1041,7 @@ note?: string
         key: k, label: labelOverride ?? info.label, color: info.color,
         typeBase, scalingMult: hit.scalingMult, combatMult: typeCombat, effectiveMult: typeEffective,
         applicableBoosts, weaponBoostMult, weaponBoostLabel: hit.weaponBoostLabel,
+        ...(hit.rotatingBladesMult && hit.rotatingBladesMult !== 1 ? { rotatingBladesMult: hit.rotatingBladesMult } : {}),
         typeDebuffMult,
         defMult, enemyDefPct,
         raw, critVal, isHeal: typeIsHeal, isCritExempt: typeNoCrit, forceCrit: hit.forceCrit ?? false,
@@ -2402,8 +2404,14 @@ note?: string
                               <div class="bdc-hit-type-formula">
                               <div class="bdc-fr">
                                 <span class="bdc-fr-label">{t.isHeal ? 'Base Heal' : 'Base Damage'}</span>
-                                <span class="bdc-fr-val">{fmt(t._bfBonusBase != null ? t.typeBase - t._bfBonusBase : t.typeBase)}</span>
+                                <span class="bdc-fr-val">{fmt((t._bfBonusBase != null ? t.typeBase - t._bfBonusBase : t.typeBase) / (t.rotatingBladesMult ?? 1))}</span>
                               </div>
+                              {#if t.rotatingBladesMult && t.rotatingBladesMult !== 1}
+                                <div class="bdc-fr">
+                                  <span class="bdc-fr-label">Rotating Blades</span>
+                                  <span class="bdc-fr-val bdc-fr-val--weaponboost">× {fmtMult(t.rotatingBladesMult)}</span>
+                                </div>
+                              {/if}
                               {#if t.phantomPainPct != null && t.phantomPainPct > 0}
                                 <div class="bdc-fr">
                                   <span class="bdc-fr-label">Repeat ({Math.round(t.phantomPainPct * 10000) / 100}%)</span>
@@ -2736,8 +2744,14 @@ note?: string
   <div class="bdc-tt-formula-fixed" style={_ttFormula.style}>
     <div class="bdc-fr">
       <span class="bdc-fr-label">{t.isHeal ? 'Base Heal' : 'Base Damage'}</span>
-      <span class="bdc-fr-val">{fmt(t._bfBonusBase != null ? t.typeBase - t._bfBonusBase : t.typeBase)}</span>
+      <span class="bdc-fr-val">{fmt((t._bfBonusBase != null ? t.typeBase - t._bfBonusBase : t.typeBase) / (t.rotatingBladesMult ?? 1))}</span>
     </div>
+    {#if t.rotatingBladesMult && t.rotatingBladesMult !== 1}
+      <div class="bdc-fr">
+        <span class="bdc-fr-label">Rotating Blades</span>
+        <span class="bdc-fr-val bdc-fr-val--weaponboost">× {fmtMult(t.rotatingBladesMult)}</span>
+      </div>
+    {/if}
     {#if t.phantomPainPct != null && t.phantomPainPct > 0}
       <div class="bdc-fr">
         <span class="bdc-fr-label">Repeat ({Math.round(t.phantomPainPct * 10000) / 100}%)</span>

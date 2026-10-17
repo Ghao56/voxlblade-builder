@@ -231,6 +231,8 @@ export interface BuildState {
   staticBuildupCharge: number
   divineCrashDistance: number
   airPressurePotency: number
+  standoffRamp?: number
+  guidingWindsRamp?: number
   channeledDepthsTarget: string
   channeledDepthsHit: number
   voidContractTarget: string

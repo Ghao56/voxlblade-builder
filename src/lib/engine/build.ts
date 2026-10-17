@@ -594,8 +594,20 @@ function deriveResults(
   })()
   const hasMagicDmg = Object.entries(_waDmgTypesForBoost).some(([dt, mult]) => dt === 'magic' && mult > 0)
   const hasMagicOrPhysicalDmg = Object.entries(_waDmgTypesForBoost).some(([dt, mult]) => (dt === 'magic' || dt === 'physical') && mult > 0)
+  // Standoff / Guiding Winds ramp: when the user drags the ramp slider, override the
+  // perk amount fed to the boost calc so the multiplier reflects partial ramp rather
+  // than always assuming max stacks. Only the boost calc sees the override.
+  // Standoff ramps 0.05/s up to 0.25*perkAmount -> reaches max after 5s, so its slider
+  // value is seconds and the effective stacks are amount * (seconds / 5).
+  const boostPerks = (state.standoffRamp != null || state.guidingWindsRamp != null)
+    ? {
+        ...finalPerks,
+        ...(state.standoffRamp != null ? { Standoff: (finalPerks['Standoff'] ?? 0) * (state.standoffRamp / 5) } : {}),
+        ...(state.guidingWindsRamp != null ? { 'Guiding Winds': state.guidingWindsRamp } : {}),
+      }
+    : finalPerks
   const boosts = calcBoosts(
-    finalPerks, state.emotionalState, state.emotionalDisabled, state.level ?? MAX_LEVEL,
+    boostPerks, state.emotionalState, state.emotionalDisabled, state.level ?? MAX_LEVEL,
     crit.naturalCritChance, boostedStats.jumpBoost ?? 0,
     state.summonCount ?? 0, state.vassalsCroakSummons, ragePotency, bouncePotency,
     tailwindPotency, boostedStats.airBoost ?? 0, boostedStats.speedBoost ?? 0, boostedStats.attackSpeed ?? 0, (finalStats.tenacity ?? 0) + orkBuffTenacity,

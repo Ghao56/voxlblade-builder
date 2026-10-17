@@ -51,6 +51,8 @@ export interface ComputedType {
   levelMult?: number
   applicableBoosts: Array<{ perkName: string; label: string; mult: number }>
   weaponBoostMult: number; weaponBoostLabel?: string
+  /** Rotating Blades: display-only factor already folded into `typeBase` (per-hit reduction). */
+  rotatingBladesMult?: number
   typeDebuffMult: number
   defMult: number; enemyDefPct: number
   spellPiercerIgnored?: boolean
