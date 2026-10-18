@@ -1,4 +1,5 @@
 import { DOT_BASE_DAMAGE, DOT_INFLICTION_DIVISOR, DOT_POTENCY_POWER_CAP, DOT_ROUND_FACTOR, DOT_BUILDER_TO_GAME } from '../lib/constants/dot-damage'
+import { ENDLESS_DESPAIR_POTENCY_PER_STACK, ENDLESS_DESPAIR_FLAT_BONUS } from '../lib/constants/buffs'
 
 const DOT_TYPES = ['Bleed', 'Burn', 'Poison'] as const
 export type DotType = typeof DOT_TYPES[number]
@@ -121,5 +122,5 @@ export function toGamePotency(builderValue: number): number {
 export function calcDotDisplayPotency(potPerk: number, edAmt: number): number {
   const gamePot = potPerk * DOT_BUILDER_TO_GAME
   if (edAmt <= 0) return gamePot
-  return gamePot * (1 + 0.35 * edAmt) + 0.1
+  return gamePot * (1 + ENDLESS_DESPAIR_POTENCY_PER_STACK * edAmt) + ENDLESS_DESPAIR_FLAT_BONUS
 }

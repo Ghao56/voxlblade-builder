@@ -40,6 +40,7 @@ import {
   STICKY_SWINGS_MULT_PER_STACK,
   EXPLOSIVE_HONEY_MULT_PER_STACK,
   MAX_INVENTORY_ITEMS,
+  MAX_MONEY_SMART_VOXOS,
 } from '../lib/constants'
 import type { BoostAttackType, ProcScalingType } from '../lib/types'
 
@@ -470,7 +471,7 @@ export const BOOST_DEFS: BoostDef[] = [
       const amount = ctx.perks['Money Smart'] ?? 0
       if (amount <= 0) return null
       const voxos = ctx.voxos ?? 0
-      const maxVoxos = 100000
+      const maxVoxos = MAX_MONEY_SMART_VOXOS
       const fullness = Math.min(voxos / maxVoxos, 1)
       const pct = 20 * fullness * amount
       return {
