@@ -120,6 +120,7 @@ import {
   MAGIC_REINFORCE_DEF_PER_POTENCY,
   MAGIC_REINFORCE_MAGIC_DMG_REDUCTION_PER_POTENCY,
   FRENZY_SPEED_PCT_PER_STACK,
+  calcBaseMaxHP,
 } from './lib/constants'
 
 // Cross-Toggle Mappings
@@ -428,6 +429,12 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     }).filter(r => r.percentSources.length > 0 || r.flatSources.length > 0)
 
   $: _hpFillPct = calcActualHpFillPct($build.hpFill ?? 100, $build.level ?? 80, $result.stats.protection ?? 0)
+  // Mirrors LevelBar effectiveMaxHP: base HP from level; negative protection floors max HP at 10%.
+  $: _playerMaxHp = (() => {
+    const base = calcBaseMaxHP($build.level ?? 80)
+    const prot = Math.round(($result.stats.protection ?? 0) * 100) / 100
+    return prot < 0 ? Math.max(Math.round(base * 0.1), base + prot) : base
+  })()
   $: _enemyHpFillPct = $build.enemyHpFill ?? 100
   let _adaptivePlateTriggered = false
   let _carapaceDisabled = false
@@ -4786,6 +4793,7 @@ alliesOnly: true,
       }
       const amount = def.sourceType === 'rune' ? 1 : (perks[def.perkName] ?? 0)
       if (amount <= 0) continue
+      if (def.requirePerk && (perks[def.requirePerk] ?? 0) <= 0) continue
 
       // Dark Magic self damage only lands on attacks whose resolved types
       // contain Hex (the same gate as its Hex damage boost).
@@ -4808,8 +4816,8 @@ alliesOnly: true,
               : def.perkName === 'Explosive Charge' ? _sumPreMitNoLevelHitDamage(_bdcWeaponHits, 'WA', label)
               : _sumPreBoostHitDamage(_bdcWeaponHits, 'WA', label, _darkMagicNeedsHex)
             if (preBoostDmg <= 0) continue
-            const _hc = def.flatSelfDmg ? _countHitsForLabel(_bdcWeaponHits, 'WA', label) : 1
-            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark, _hc)
+            const _hc = (def.flatSelfDmg || def.selfDmgMaxHpPct) ? _countHitsForLabel(_bdcWeaponHits, 'WA', label) : 1
+            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark, _hc, _playerMaxHp)
             sources.push({ def, amount, group, label, preBoostDmg, result })
           }
         } else if (group === 'Rune') {
@@ -4827,7 +4835,7 @@ alliesOnly: true,
             const preBoostDmg = def.perkName === 'Bombardier' ? _bombardierSelfDmgBase
               : mountM1Dmg
             const _hc = def.flatSelfDmg ? _bdcWeaponHits.filter(h => h.group === 'M1' && !h.isHeal).reduce((s, h) => s + (h.count ?? 1), 0) : 1
-            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark, _hc)
+            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark, _hc, _playerMaxHp)
             sources.push({ def, amount, group, label: `${_activeMountRuneDef!.mountLabel} M1 (Mounted)`, preBoostDmg, result })
           }
           const runeLabels = [...new Set(_bdcWeaponHits.filter(h => h.group === 'Rune' && !h.isHeal).map(h => h.label))]
@@ -4835,8 +4843,8 @@ alliesOnly: true,
             const preBoostDmg = def.perkName === 'Bombardier' ? _bombardierSelfDmgBase
               : _sumPreBoostHitDamage(_bdcWeaponHits, 'Rune', label, _darkMagicNeedsHex)
             if (preBoostDmg <= 0) continue
-            const _hc = def.flatSelfDmg ? _countHitsForLabel(_bdcWeaponHits, 'Rune', label) : 1
-            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark, _hc)
+            const _hc = (def.flatSelfDmg || def.selfDmgMaxHpPct) ? _countHitsForLabel(_bdcWeaponHits, 'Rune', label) : 1
+            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark, _hc, _playerMaxHp)
             sources.push({ def, amount, group, label: label ?? 'Rune', preBoostDmg, result })
           }
         } else if (group === 'M1') {
@@ -4845,8 +4853,8 @@ alliesOnly: true,
             const preBoostDmg = def.perkName === 'Bombardier' ? _bombardierSelfDmgBase
               : _sumPreBoostHitDamage(_bdcWeaponHits, 'M1', label === 'M1' ? undefined : label, _darkMagicNeedsHex)
             if (preBoostDmg <= 0) continue
-            const _hc = def.flatSelfDmg ? _countHitsForLabel(_bdcWeaponHits, 'M1', label === 'M1' ? undefined : label) : 1
-            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark, _hc)
+            const _hc = (def.flatSelfDmg || def.selfDmgMaxHpPct) ? _countHitsForLabel(_bdcWeaponHits, 'M1', label === 'M1' ? undefined : label) : 1
+            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark, _hc, _playerMaxHp)
             sources.push({ def, amount, group, label, preBoostDmg, result })
           }
         } else if (group === 'M2') {
@@ -4855,8 +4863,8 @@ alliesOnly: true,
             const preBoostDmg = def.perkName === 'Bombardier' ? _bombardierSelfDmgBase
               : _sumPreBoostHitDamage(_bdcWeaponHits, 'M2', label === 'M2' ? undefined : label, _darkMagicNeedsHex)
             if (preBoostDmg <= 0) continue
-            const _hc = def.flatSelfDmg ? _countHitsForLabel(_bdcWeaponHits, 'M2', label === 'M2' ? undefined : label) : 1
-            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark, _hc)
+            const _hc = (def.flatSelfDmg || def.selfDmgMaxHpPct) ? _countHitsForLabel(_bdcWeaponHits, 'M2', label === 'M2' ? undefined : label) : 1
+            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark, _hc, _playerMaxHp)
             sources.push({ def, amount, group, label, preBoostDmg, result })
           }
         } else if (group === 'Perk') {
@@ -4865,8 +4873,8 @@ alliesOnly: true,
             const preBoostDmg = def.perkName === 'Bombardier' ? _bombardierSelfDmgBase
               : _sumPreBoostHitDamage(_bdcWeaponHits, 'Perk', label === 'Perk' ? undefined : label, _darkMagicNeedsHex)
             if (preBoostDmg <= 0) continue
-            const _hc = def.flatSelfDmg ? _countHitsForLabel(_bdcWeaponHits, 'Perk', label === 'Perk' ? undefined : label) : 1
-            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark, _hc)
+            const _hc = (def.flatSelfDmg || def.selfDmgMaxHpPct) ? _countHitsForLabel(_bdcWeaponHits, 'Perk', label === 'Perk' ? undefined : label) : 1
+            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark, _hc, _playerMaxHp)
             sources.push({ def, amount, group, label, preBoostDmg, result })
           }
         }
@@ -7255,6 +7263,18 @@ $: _groupedSelfDamageSources = (() => {
             </div>
           </div>
           <div class="da-pbd-note">Heals before the self-damage lands · damage counted before defense · boosted by Heal Boosts except Level Healing</div>
+        {/if}
+        {#if activeSrc.result.perTick != null}
+          <div class="da-pbd-dmg-row">
+            <span class="da-pbd-ctx-label">Per Tick</span>
+            <div class="da-hits-row">
+              <div class="da-hit-card">
+                <div class="da-hit-chunk" style="--tc:var(--neg, #f87171)">
+                  <span class="da-hit-num" style="--tc:var(--neg, #f87171)">{fmtNum(activeSrc.result.perTick)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
         {/if}
         <div class="da-pbd-dmg-row">
           <span class="da-pbd-ctx-label">Self Damage</span>

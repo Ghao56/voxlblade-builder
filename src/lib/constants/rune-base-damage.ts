@@ -61,6 +61,8 @@ export const SLAYER_RAGE_RAGE_RUNE_BASE_DMG = 0.25
 export const SLAYER_RAGE_RAGE_RUNE_DMG_PER_STACK = 0.125
 export const SLAYER_RAGE_ROAR_RUNE_BASE_DMG = 0.5
 export const SLAYER_RAGE_ROAR_RUNE_DMG_PER_STACK = 0.1875
+export const SLAYER_RAGE_RAGE_RUNE_SELF_DMG_MAXHP_PCT = 0.015
+export const SLAYER_RAGE_ROAR_SELF_DMG_MAXHP_PCT = 0.01
 
 // Enchanted Sword Rune (Dagger -> One-Handed Sword -> Greatsword)
 export const ENCHANTED_SWORD_WEAPON_TYPES = ['Dagger', 'One-Handed Sword', 'Greatsword'] as const

@@ -3,6 +3,7 @@ export const UNDEAD_MIGHT_DR_PCT_PER_STACK = 15
 
 import { SANGUINE_BOLT_SELF_DMG } from '../lib/constants/rune-base-damage'
 import { INOCULATION_HEAL_FRACTION, INOCULATION_FLAT_HEAL_PER_STACK } from '../lib/constants/perks'
+import { SLAYER_RAGE_RAGE_RUNE_SELF_DMG_MAXHP_PCT, SLAYER_RAGE_ROAR_SELF_DMG_MAXHP_PCT } from '../lib/constants/rune-base-damage'
 
 export interface SelfDamagePerkDef {
   perkName: string
@@ -16,7 +17,9 @@ export interface SelfDamagePerkDef {
   note?: string
   noMultiTargetFalloff?: boolean
   flatSelfDmg?: number
+  selfDmgMaxHpPct?: number
   procChance?: number
+  requirePerk?: string
 }
 
 export const SELF_DAMAGE_PERK_DEFS: SelfDamagePerkDef[] = [
@@ -68,6 +71,34 @@ export const SELF_DAMAGE_PERK_DEFS: SelfDamagePerkDef[] = [
     noMultiTargetFalloff: true,
   },
   {
+    perkName: 'Rage Rune',
+    sourceType: 'rune',
+    runeName: 'Rage Rune',
+    appliesTo: ['rune'],
+    selfDmgPct: 0,
+    dmgTypes: { hex: 1 },
+    drPctPerStack: 0,
+    label: 'Rage Rune (Slayer Rage Self Damage)',
+    selfDmgMaxHpPct: SLAYER_RAGE_RAGE_RUNE_SELF_DMG_MAXHP_PCT,
+    procChance: 1,
+    requirePerk: 'Slayer Rage',
+    note: '1.5% Max HP per channel tick',
+  },
+  {
+    perkName: 'Weakening Roar Rune',
+    sourceType: 'rune',
+    runeName: 'Weakening Roar Rune',
+    appliesTo: ['rune'],
+    selfDmgPct: 0,
+    dmgTypes: { hex: 1 },
+    drPctPerStack: 0,
+    label: 'Weakening Roar Rune (Slayer Rage Self Damage)',
+    selfDmgMaxHpPct: SLAYER_RAGE_ROAR_SELF_DMG_MAXHP_PCT,
+    procChance: 1,
+    requirePerk: 'Slayer Rage',
+    note: '1% Max HP per channel tick',
+  },
+  {
     perkName: 'Steam Powered',
     appliesTo: ['m1', 'm2', 'wa', 'rune', 'perk'],
     selfDmgPct: 0,
@@ -87,17 +118,19 @@ export function calcSelfDamage(
   enemiesHit: number = 1,
   defenseMultipliers: Record<string, number> = {},
   hitCount: number = 1,
-): { total: number; byType: Record<string, number>; totalBeforeDefense: number } {
+  maxHp: number = 0,
+): { total: number; byType: Record<string, number>; totalBeforeDefense: number; perTick?: number } {
   const weightSum = Object.values(def.dmgTypes).reduce((s, m) => s + m, 0)
-  if (def.flatSelfDmg) {
-    const base = def.flatSelfDmg * (def.procChance ?? 1) * hitCount * enemiesHit
+  if (def.flatSelfDmg || def.selfDmgMaxHpPct) {
+    const flat = def.selfDmgMaxHpPct != null ? def.selfDmgMaxHpPct * maxHp : def.flatSelfDmg!
+    const base = flat * (def.procChance ?? 1) * hitCount * enemiesHit
     const byType: Record<string, number> = {}
     for (const [type, mult] of Object.entries(def.dmgTypes)) {
       const defMult = defenseMultipliers[type] ?? 1
       byType[type] = base * mult * defMult
     }
     const total = Object.values(byType).reduce((sum, v) => sum + v, 0)
-    return { total, byType, totalBeforeDefense: base * weightSum }
+    return { total, byType, totalBeforeDefense: base * weightSum, perTick: def.selfDmgMaxHpPct != null ? total / Math.max(1, hitCount * enemiesHit) : undefined }
   }
   if (perkAmount <= 0 || preBoostDamageDealt <= 0) return { total: 0, byType: {}, totalBeforeDefense: 0 }
 

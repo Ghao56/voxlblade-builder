@@ -2477,6 +2477,17 @@ export function applyBuffPerkModifiers(
     // modifiers (Endless Despair, Darkening Hex, Bastion, etc.).
     if (buff.buffName === 'Void Contract') return buff
 
+    // Slayer Rage caps the rune runes' own buff durations: Rage Rune's Rage 30s
+    // -> 10s and Weakening Roar's Weakness 15s -> 5s.
+    let effectiveDuration = buff.duration
+    if ((perks['Slayer Rage'] ?? 0) > 0) {
+      if (buff.buffName === 'Rage' && buff.sourceName === 'Rage Rune') {
+        effectiveDuration = SLAYER_RAGE_ROAR_RAGE_DURATION
+      } else if (buff.buffName === 'Weakness' && buff.sourceName === 'Weakening Roar Rune') {
+        effectiveDuration = SLAYER_RAGE_WEAK_DURATION
+      }
+    }
+
     let darkeningHexPotency = buff.potency
     let darkeningHexDurationAdd = 0
     if (darkeningHexActivations > 0 && def?.isDebuff && !isSelfDebuff) {
@@ -2522,6 +2533,7 @@ export function applyBuffPerkModifiers(
       specific.durationMult * generic.durationMult * containedMult * darkOneDurationMult * kindlingBurnDurationMult * cursedFlamesBurnDurationMult
 
     if (
+      effectiveDuration === buff.duration &&
       bonus === 0 &&
       durationMult === 1 &&
       generic.potencyMult === 1 &&
@@ -2556,7 +2568,7 @@ export function applyBuffPerkModifiers(
 
     return {
       ...buff,
-      duration: Math.round((buff.duration + darkeningHexDurationAdd) * durationMult),
+      duration: Math.round((effectiveDuration + darkeningHexDurationAdd) * durationMult),
       potency: finalPotency,
       basePotency: buff.potency,
       bonusPotency:
