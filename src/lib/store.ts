@@ -9,6 +9,7 @@ const DEFAULT_BUILD: BuildState = {
   guild: "",
   guildRank: 1,
   storedCorruptionAmount: 0,
+  slayerRageTicks: 20,
   darkeningHexActivations: 10,
   helmet: "",
   chestplate: "",

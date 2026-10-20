@@ -10,6 +10,7 @@ export interface RuneDmgCtx {
   stats?: Record<string, number>
   perks?: Record<string, number>
   selfDamage?: number
+  slayerRageTicks?: number
   weaponDmgTypes?: Record<string, number>
   weaponDmgTypesBase?: Record<string, number>
 }
@@ -297,24 +298,28 @@ export const RUNE_DMG_DEFS: RuneDmgDef[] = [
   },
   {
     runeName: 'Rage Rune',
-    condition: 'Hold to channel (Slayer Rage) — Hex damage around you · 20 ticks',
+    condition: 'Hold to channel (Slayer Rage) — Hex damage around you · up to 20 ticks',
     activeIf: ({ perks }) => (perks['Slayer Rage'] ?? 0) > 0,
     getBaseDamage: ({ perks = {} }) =>
       SLAYER_RAGE_RAGE_RUNE_BASE_DMG + SLAYER_RAGE_RAGE_RUNE_DMG_PER_STACK * (perks['Slayer Rage'] ?? 0),
     dmgTypes: { hex: 1.0 },
     scalings: { hex: 0.75, physical: 0.75 },
-    hits: SLAYER_RAGE_HITS,
+    getHits: ({ perks = {}, slayerRageTicks }) =>
+      (perks['Slayer Rage'] ?? 0) > 0 ? (slayerRageTicks ?? SLAYER_RAGE_HITS) : SLAYER_RAGE_HITS,
   },
   {
     runeName: 'Weakening Roar Rune',
-    condition: 'On cast · or hold to channel (Slayer Rage) — Hex damage around you · 20 ticks',
+    condition: 'On cast · or hold to channel (Slayer Rage) — Hex damage around you · up to 20 ticks',
     getBaseDamage: ({ perks = {} }) => {
       const sr = perks['Slayer Rage'] ?? 0
       return sr > 0
         ? SLAYER_RAGE_ROAR_RUNE_BASE_DMG + SLAYER_RAGE_ROAR_RUNE_DMG_PER_STACK * sr
         : 10
     },
-    getHits: ({ perks = {} }) => (perks['Slayer Rage'] ?? 0) > 0 ? SLAYER_RAGE_HITS : 1,
+    getHits: ({ perks = {}, slayerRageTicks }) =>
+      (perks['Slayer Rage'] ?? 0) > 0
+        ? (slayerRageTicks ?? SLAYER_RAGE_HITS)
+        : 1,
     dmgTypes: { hex: 1.0 },
     scalings: { hex: 0.7, magic: 0.3 },
     resolveScalings: ({ perks = {} }): Record<string, number> => {

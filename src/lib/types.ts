@@ -182,6 +182,7 @@ export interface BuildState {
   guild: string
   guildRank: number
   storedCorruptionAmount: number
+  slayerRageTicks: number
   darkeningHexActivations: number
   helmet: string
   chestplate: string

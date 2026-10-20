@@ -289,6 +289,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     darkeningHexActivations: $build.darkeningHexActivations ?? DARKENING_HEX_MAX_ACTIVATIONS,
     darkeningHexEligible: hasEligibleDarkeningHexSource(perks, $build, _weaponDmgTypesBase, selectedWA.damageType),
     kindlingEnabled: !disabledEffects.has('kindling'),
+    slayerRageTicks: $build.slayerRageTicks ?? 20,
   }
   $: darkeningHexAmt = perks['Darkening Hex'] ?? 0
   $: darkeningHexActivations = Math.min(Math.max($build.darkeningHexActivations ?? DARKENING_HEX_MAX_ACTIVATIONS, 0), DARKENING_HEX_MAX_ACTIVATIONS)
@@ -1601,6 +1602,16 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     return entries.reduce((acc, e) => acc * e.rawMultiplier, 1)
   }
 
+  function typedDamageRows(base: number, dmgTypes: Record<string, number>, scalingMult: number): DamageDisplayType[] {
+    return Object.entries(dmgTypes).map(([k, mult]) => ({
+      label: k.charAt(0).toUpperCase() + k.slice(1),
+      rawVal: Math.round(base * 10000) / 10000,
+      val: Math.round(base * mult * 10000) / 10000,
+      scalingMult,
+      color: DMG_TYPE_COLORS[k] ?? '#e8e4da',
+    }))
+  }
+
   function seqWithTypes(
   seq: HitSeq,
   dmgTypes: Record<string, number>,
@@ -2221,35 +2232,24 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     return levelEntry ? levelEntry.rawMultiplier : 1
   })()
   
-  $: _selfDebuffDamageMult = (() => {
-    let mult = 1
-    for (const b of _allActiveBuffs) {
-      if (!b.isSelfDebuff) continue
+  function getSelfDebuffBuffs(buffs: typeof _allActiveBuffs) {
+    return buffs.filter(b => {
+      if (!b.isSelfDebuff) return false
       const def = BUFF_DEFS[b.buffName]
-      if (!def?.isDebuff) continue
+      if (!def?.isDebuff) return false
+      return !!DEBUFF_COMBAT_EFFECTS[b.buffName]?.damageMult
+    })
+  }
 
-      const combatFx = DEBUFF_COMBAT_EFFECTS[b.buffName]
-      if (!combatFx?.damageMult) continue
+  $: _selfDebuffBuffList = getSelfDebuffBuffs(_allActiveBuffs)
 
-      const effectivePotency = wardingDebuffMult !== 1 ? b.potency * wardingDebuffMult : b.potency
+  $: _selfDebuffDamageMult = _selfDebuffBuffList.reduce((mult, b) => {
+    const combatFx = DEBUFF_COMBAT_EFFECTS[b.buffName]
+    const effectivePotency = wardingDebuffMult !== 1 ? b.potency * wardingDebuffMult : b.potency
+    return mult * combatFx.damageMult!(effectivePotency)
+  }, 1)
 
-      mult *= combatFx.damageMult(effectivePotency)
-    }
-    return mult
-  })()
-
-  $: _selfDebuffNames = (() => {
-    const names: string[] = []
-    for (const b of _allActiveBuffs) {
-      if (!b.isSelfDebuff) continue
-      const def = BUFF_DEFS[b.buffName]
-      if (!def?.isDebuff) continue
-      const combatFx = DEBUFF_COMBAT_EFFECTS[b.buffName]
-      if (!combatFx?.damageMult) continue
-      names.push(b.buffName)
-    }
-    return names
-  })()
+  $: _selfDebuffNames = _selfDebuffBuffList.map(b => b.buffName)
   
   $: activeFinalMult = activeEntries.reduce((acc, e) => acc * e.rawMultiplier, 1.0)
   $: activeFinalMultRounded = roundMultiplier(activeFinalMult)
@@ -2374,6 +2374,37 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     return rows
   }
 
+  // scalingVal phan % cua boost gop voi boost la %; con lai la fraction → nhan 100
+  function scalingPercentTotal(rows: ScalingRow[]): number {
+    return Math.round(rows.reduce((a, r) => a + (PERCENT_STATS.has(r.boostKey) ? r.contribution : r.contribution * 100), 0) * 1000) / 1000
+  }
+
+  function scalingPlainTotal(rows: ScalingRow[]): number {
+    return Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 1000) / 1000
+  }
+
+  interface ScalingBreakdown {
+    rows: ScalingRow[]
+    totalEffectivePct: number
+    multiplier: number
+    label?: string
+    isPerHit?: boolean
+  }
+
+  // rune/mount/draconic resolveScalings can include single-value keys like `weapon` where a
+  // non-percent stat matches (contributions then need a x100 conversion to pct)
+  function sumScalingBreakdown(scalings: Record<string, number>, label?: string, doubleNonPct = false): ScalingBreakdown | null {
+    const rows = buildScalingRows(scalings)
+    if (!rows.length) return null
+    const totalEffectivePct = doubleNonPct ? scalingPercentTotal(rows) : scalingPlainTotal(rows)
+    return {
+      rows,
+      totalEffectivePct,
+      multiplier: roundMultiplier(applyScalingMult(totalEffectivePct / 100)),
+      label,
+    }
+  }
+
   function computeScalingPct(scalings: Record<string, number>): number {
     let total = 0
     for (const [key, scalingVal] of Object.entries(scalings)) {
@@ -2408,12 +2439,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     if (_solarLightActive) {
       const parsed: Record<string, number> = { holy: SOLAR_LIGHT_HOLY_SCALING }
       if (_solarSunSources >= 2) parsed.fire = SOLAR_LIGHT_FIRE_SCALING
-      const rows = buildScalingRows(parsed)
-      if (!rows.length) return null
-      const totalEffectivePct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 1000) / 1000
-      return { rows, totalEffectivePct,
-        multiplier: roundMultiplier(applyScalingMult(totalEffectivePct / 100)),
-        isPerHit: false }
+      return sumScalingBreakdown(parsed)
     }
     if (selectedWA.hitScalings?.length) {
       const rows: ScalingRow[] = []
@@ -2459,12 +2485,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     let m: RegExpExecArray | null
     while ((m = re.exec(sc)) !== null)
       parsed[/dex/i.test(m[2]) ? 'dexterity' : m[2].toLowerCase()] = parseFloat(m[1])
-    const rows = buildScalingRows(parsed)
-    if (!rows.length) return null
-    const totalEffectivePct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 1000) / 1000
-    return { rows, totalEffectivePct,
-      multiplier: roundMultiplier(applyScalingMult(totalEffectivePct / 100)),
-      isPerHit: false }
+    return sumScalingBreakdown(parsed)
   })()
   $: runeScalingBreakdown = (() => {
     if (!_activeRuneDmgDef) return null
@@ -2478,36 +2499,15 @@ const trimNum = (n: number, maxDecimals = 4): string => {
           weaponDmgTypesBase: _weaponDmgTypesBase,
         })
       : _activeRuneDmgDef.scalings
-    if (!scalings || Object.keys(scalings).length === 0) return null
-
-    const rows = buildScalingRows(scalings)
-    if (!rows.length) return null
-
-    const totalEffectivePct = Math.round(rows.reduce((a, r) => a + (PERCENT_STATS.has(r.boostKey) ? r.contribution : r.contribution * 100), 0) * 1000) / 1000
-    const multiplier = roundMultiplier(applyScalingMult(totalEffectivePct / 100))
-    return { rows, totalEffectivePct, multiplier }
+    return sumScalingBreakdown(scalings ?? {}, undefined, true)
   })()
-  $: _mountRuneScalingBreakdown = (() => {
-    if (!_activeMountRuneDef || !mountActive) return null
-    const scalings = _activeMountRuneDef.m1.getScalings()
-    if (!scalings || Object.keys(scalings).length === 0) return null
-    const rows = buildScalingRows(scalings)
-    if (!rows.length) return null
-    const totalEffectivePct = Math.round(rows.reduce((a, r) => a + (PERCENT_STATS.has(r.boostKey) ? r.contribution : r.contribution * 100), 0) * 1000) / 1000
-    const multiplier = roundMultiplier(applyScalingMult(totalEffectivePct / 100))
-    return { rows, totalEffectivePct, multiplier }
-  })()
+  $: _mountRuneScalingBreakdown = _activeMountRuneDef && mountActive
+    ? sumScalingBreakdown(_activeMountRuneDef.m1.getScalings(), undefined, true)
+    : null
 
-  $: _draconicScalingBreakdown = (() => {
-    if (!_draconicBloodEntry) return null
-    const scalings = _draconicBloodEntry.resolvedScalings
-    if (!scalings || Object.keys(scalings).length === 0) return null
-    const rows = buildScalingRows(scalings)
-    if (!rows.length) return null
-    const totalEffectivePct = Math.round(rows.reduce((a, r) => a + (PERCENT_STATS.has(r.boostKey) ? r.contribution : r.contribution * 100), 0) * 1000) / 1000
-    const multiplier = roundMultiplier(applyScalingMult(totalEffectivePct / 100))
-    return { rows, totalEffectivePct, multiplier }
-  })()
+  $: _draconicScalingBreakdown = _draconicBloodEntry
+    ? sumScalingBreakdown(_draconicBloodEntry.resolvedScalings, undefined, true)
+    : null
 
   $: waScalingSameAsWeapon = selectedWA.scaling === 'Same as weapon'
   $: waScalingIsHealOnly = !_waHitsSeq && !!_waHealSeq
@@ -2529,101 +2529,37 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       )
     
     if (!healSe) return null
-    
-    const rows = buildScalingRows({ [_color]: 1.0 })
-    if (!rows.length) return null
-    
-    const totalEffectivePct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 1000) / 1000
-    return {
-      rows,
-      totalEffectivePct,
-      multiplier: roundMultiplier(applyScalingMult(totalEffectivePct / 100)),
-      label: `${_draconicBloodEntry.displayName} Heal`
-    }
+    return sumScalingBreakdown({ [_color]: 1.0 }, `${_draconicBloodEntry.displayName} Heal`)
   })()
 
   // Rainstorm heal Water-scaling breakdown (1.0 Water Scaling)
-  $: _rainstormHealScalingBreakdown = (() => {
-    if (!(_rainstormAmt > 0)) return null
-    const rows = buildScalingRows({ water: 1.0 })
-    if (!rows.length) return null
-    const totalEffectivePct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 1000) / 1000
-    return {
-      rows,
-      totalEffectivePct,
-      multiplier: roundMultiplier(applyScalingMult(totalEffectivePct / 100)),
-      label: `${RAINSTORM_LABEL} Heal`
-    }
-  })()
+  $: _rainstormHealScalingBreakdown = (_rainstormAmt > 0)
+    ? sumScalingBreakdown({ water: 1.0 }, `${RAINSTORM_LABEL} Heal`)
+    : null
 
   // Radiance Holy-scaling breakdown (10.0 Holy Scaling)
-  $: _radianceScalingBreakdown = (() => {
-    if (!(_radianceAmt > 0)) return null
-    const rows = buildScalingRows({ holy: RADIANCE_HOLY_SCALING })
-    if (!rows.length) return null
-    const totalEffectivePct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 1000) / 1000
-    return {
-      rows,
-      totalEffectivePct,
-      multiplier: roundMultiplier(applyScalingMult(totalEffectivePct / 100)),
-      label: RADIANCE_LABEL,
-    }
-  })()
+  $: _radianceScalingBreakdown = (_radianceAmt > 0)
+    ? sumScalingBreakdown({ holy: RADIANCE_HOLY_SCALING }, RADIANCE_LABEL)
+    : null
 
   // Rejuvenating Flame heal Fire-scaling breakdown (0.7 Fire Scaling)
-  $: _rejuvenatingFlameHealScalingBreakdown = (() => {
-    if (!(_rejuvenatingFlameAmt > 0)) return null
-    const rows = buildScalingRows({ fire: REJUVENATING_FLAME_FIRE_SCALING })
-    if (!rows.length) return null
-    const totalEffectivePct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 1000) / 1000
-    return {
-      rows,
-      totalEffectivePct,
-      multiplier: roundMultiplier(applyScalingMult(totalEffectivePct / 100)),
-      label: REJUVENATING_FLAME_HEAL_LABEL,
-    }
-  })()
+  $: _rejuvenatingFlameHealScalingBreakdown = (_rejuvenatingFlameAmt > 0)
+    ? sumScalingBreakdown({ fire: REJUVENATING_FLAME_FIRE_SCALING }, REJUVENATING_FLAME_HEAL_LABEL)
+    : null
 
   // Vital Mist heal Air/Physical-scaling breakdown (1.0 Air + 1.0 Physical Scaling)
-  $: _vitalMistHealScalingBreakdown = (() => {
-    if (!((perks['Vital Mist'] ?? 0) > 0)) return null
-    const rows = buildScalingRows({ air: 1.0, physical: 1.0 })
-    if (!rows.length) return null
-    const totalEffectivePct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 1000) / 1000
-    return {
-      rows,
-      totalEffectivePct,
-      multiplier: roundMultiplier(applyScalingMult(totalEffectivePct / 100)),
-      label: 'Vital Mist Heal',
-    }
-  })()
+  $: _vitalMistHealScalingBreakdown = ((perks['Vital Mist'] ?? 0) > 0)
+    ? sumScalingBreakdown({ air: 1.0, physical: 1.0 }, 'Vital Mist Heal')
+    : null
 
-  $: _regenHealScalingBreakdown = (() => {
-    if (!(_regenPotency > 0)) return null
-    const rows = buildScalingRows({ water: 1.0, holy: 1.0 })
-    if (!rows.length) return null
-    const totalEffectivePct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 1000) / 1000
-    return {
-      rows,
-      totalEffectivePct,
-      multiplier: roundMultiplier(applyScalingMult(totalEffectivePct / 100)),
-      label: 'Regen Heal',
-    }
-  })()
+  $: _regenHealScalingBreakdown = (_regenPotency > 0)
+    ? sumScalingBreakdown({ water: 1.0, holy: 1.0 }, 'Regen Heal')
+    : null
 
   // Rainstorm Water-scaling breakdown (1.0 Water Scaling)
-  $: _rainstormScalingBreakdown = (() => {
-    if (!(_rainstormAmt > 0)) return null
-    const rows = buildScalingRows({ water: 1.0 })
-    if (!rows.length) return null
-    const totalEffectivePct = Math.round(rows.reduce((a, r) => a + r.contribution, 0) * 1000) / 1000
-    return {
-      rows,
-      totalEffectivePct,
-      multiplier: roundMultiplier(applyScalingMult(totalEffectivePct / 100)),
-      label: RAINSTORM_LABEL,
-    }
-  })()
+  $: _rainstormScalingBreakdown = (_rainstormAmt > 0)
+    ? sumScalingBreakdown({ water: 1.0 }, RAINSTORM_LABEL)
+    : null
 
   // One entry per spawned Radiance burst; its healing source is the hit
   // immediately preceding it in _bdcWeaponHits (post-pass splices in place).
@@ -2905,13 +2841,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         result = applyAirToMagicConversion(result, _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt, _trueMoonTrueRate)
     return result
   })()
-      const types: DamageDisplayType[] = Object.entries(dtFinal).map(([k, mult]) => ({
-        label: k.charAt(0).toUpperCase() + k.slice(1),
-        rawVal: Math.round(base * 10000) / 10000,
-        val: Math.round(base * (mult as number) * 10000) / 10000,
-        scalingMult: effectiveMult,
-        color: DMG_TYPE_COLORS[k] ?? '#e8e4da',
-      }))
+      const types: DamageDisplayType[] = typedDamageRows(base, dtFinal as Record<string, number>, effectiveMult)
       return { base, count, types }
     })
   }
@@ -2927,13 +2857,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
             return applyAirToMagicConversion(_applyDmgBonuses({ [highestKey]: 1 }, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt, _trueMoonTrueRate)
           })()
         : applyAirToMagicConversion(_applyDmgBonuses({ fire: 0.5, air: 0.5 }, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt, _trueMoonTrueRate)
-      const types: DamageDisplayType[] = Object.entries(dtFinal).map(([k, mult]) => ({
-        label: k.charAt(0).toUpperCase() + k.slice(1),
-        rawVal: Math.round(base * 10000) / 10000,
-        val: Math.round(base * (mult as number) * 10000) / 10000,
-        scalingMult: _waScalingMult * _waCombatMult,
-        color: DMG_TYPE_COLORS[k] ?? '#e8e4da',
-      }))
+      const types: DamageDisplayType[] = typedDamageRows(base, dtFinal as Record<string, number>, _waScalingMult * _waCombatMult)
       return { base, count, types }
     })
   }
@@ -2943,13 +2867,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       const base = typeof h === 'number' ? h : h.n
       const count = typeof h === 'number' ? 1 : h.count
       const dtFinal = applyAirToMagicConversion(_applyDmgBonuses({ true: 1 }, _waDmgTypeBonuses), _spiritWindsConversionRate, _darkMagicHexRate, _echoIncinerationAmt, _trueMoonTrueRate)
-      const types: DamageDisplayType[] = Object.entries(dtFinal).map(([k, mult]) => ({
-        label: k.charAt(0).toUpperCase() + k.slice(1),
-        rawVal: Math.round(base * 10000) / 10000,
-        val: Math.round(base * (mult as number) * 10000) / 10000,
-        scalingMult: _waScalingMult * _waCombatMult,
-        color: DMG_TYPE_COLORS[k] ?? '#e8e4da',
-      }))
+      const types: DamageDisplayType[] = typedDamageRows(base, dtFinal as Record<string, number>, _waScalingMult * _waCombatMult)
       return { base, count, types }
     })
   }
@@ -3018,14 +2936,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
 
   $: _waChargeTyped = (() => {
     if (!_isChargeWA || Object.keys(_waDmgTypes).length === 0) return null
-    const base = _waChargeBase
-    return Object.entries(_waDmgTypes).map(([k, mult]) => ({
-      label: k.charAt(0).toUpperCase() + k.slice(1),
-      rawVal: Math.round(base * 10000) / 10000,
-      val: Math.round(base * mult * 10000) / 10000,
-      scalingMult: _waScalingMult * _waCombatMult,
-      color: DMG_TYPE_COLORS[k] ?? '#e8e4da',
-    }))
+    return typedDamageRows(_waChargeBase, _waDmgTypes, _waScalingMult * _waCombatMult)
   })()
 
   $: selectedWeaponData = WEAPON_BASE_DMG.find(w => w.type === (_gunOverlay?.type ?? _baseWeaponType))
@@ -4253,6 +4164,7 @@ note?: string
         stats,
         perks,
         selfDamage: _runeSelfDamagePerHit,
+          slayerRageTicks: $build.slayerRageTicks ?? 20,
         weaponDmgTypes: _weaponDmgTypes,
         weaponDmgTypesBase: _weaponDmgTypesBase,
       }
@@ -4302,11 +4214,13 @@ note?: string
           : runeSunburnMult !== 1 ? { weaponBoostMult: runeSunburnMult, weaponBoostLabel: 'Sunburn' } : {}),
         canApplyBurn: _hasSingedBurn,
       }
-      if (cdRune && runeCount > 1) {
-        result.push({ ...runeHitBase, count: 1, cdWater: _cdWaterBonus, dmgTypes: runeDmgTypesForCd, label: `${_activeRuneDmgDef.runeName} · Channeled Depths` })
-        result.push({ ...runeHitBase, count: runeCount - 1, dmgTypes: _runeDmgTypesWithBonus, label: _activeRuneDmgDef.runeName })
-      } else {
-        result.push({ ...runeHitBase, count: runeCount, ...(cdRune ? { cdWater: _cdWaterBonus } : {}), dmgTypes: runeDmgTypesForCd, label: cdRune ? `${_activeRuneDmgDef.runeName} · Channeled Depths` : _activeRuneDmgDef.runeName })
+      if (runeCount > 0) {
+        if (cdRune && runeCount > 1) {
+          result.push({ ...runeHitBase, count: 1, cdWater: _cdWaterBonus, dmgTypes: runeDmgTypesForCd, label: `${_activeRuneDmgDef.runeName} · Channeled Depths` })
+          result.push({ ...runeHitBase, count: runeCount - 1, dmgTypes: _runeDmgTypesWithBonus, label: _activeRuneDmgDef.runeName })
+        } else {
+          result.push({ ...runeHitBase, count: runeCount, ...(cdRune ? { cdWater: _cdWaterBonus } : {}), dmgTypes: runeDmgTypesForCd, label: cdRune ? `${_activeRuneDmgDef.runeName} · Channeled Depths` : _activeRuneDmgDef.runeName })
+        }
       }
       const _runeSecondary = _activeRuneDmgDef.secondary
       if (_runeSecondary && (!_runeSecondary.activeIf || _runeSecondary.activeIf(_runeCtx)) && !(_runeSecondary.debuffName && disabledDebuffs.has(_runeSecondary.debuffName))) {
@@ -4435,6 +4349,7 @@ note?: string
             stats,
             perks,
             selfDamage: _runeSelfDamagePerHit,
+          slayerRageTicks: $build.slayerRageTicks ?? 20,
             weaponDmgTypes: _weaponDmgTypes,
             weaponDmgTypesBase: _weaponDmgTypesBase,
           }
@@ -4776,7 +4691,7 @@ alliesOnly: true,
     group: string
     label: string
     preBoostDmg: number
-    result: { total: number; byType: Record<string, number>; totalBeforeDefense: number }
+    result: { total: number; byType: Record<string, number>; totalBeforeDefense: number; perTick?: number }
   }
 
   $: _bombardierSelfDmgBase = (() => {
@@ -4803,22 +4718,22 @@ alliesOnly: true,
         const group = SELF_DAMAGE_APPLIES_TO_GROUP[key]
         if (!group) continue
 
+        const labelsFor = <G extends typeof group, T extends string | undefined>(hitGroup: G, fallback: T) =>
+          [...new Set(_bdcWeaponHits.filter(h => h.group === hitGroup && !h.isHeal).map(h => h.label ?? fallback))]
+
+        const pushLabelSource = (label: string, labelArg: string | undefined, preBoostDmg: number) => {
+          if (preBoostDmg <= 0) return
+          const _hc = (def.flatSelfDmg || def.selfDmgMaxHpPct) ? _countHitsForLabel(_bdcWeaponHits, group, labelArg) : 1
+          const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark, _hc, _playerMaxHp)
+          sources.push({ def, amount, group, label, preBoostDmg, result })
+        }
+
         if (group === 'WA') {
-          const waLabels = [
-            ...new Set(
-              _bdcWeaponHits
-                .filter(h => h.group === 'WA' && !h.isHeal)
-                .map(h => h.label ?? _waDisplayName)
-            )
-          ]
-          for (const label of waLabels) {
+          for (const label of labelsFor('WA', _waDisplayName)) {
             const preBoostDmg = def.perkName === 'Bombardier' ? _bombardierSelfDmgBase
               : def.perkName === 'Explosive Charge' ? _sumPreMitNoLevelHitDamage(_bdcWeaponHits, 'WA', label)
               : _sumPreBoostHitDamage(_bdcWeaponHits, 'WA', label, _darkMagicNeedsHex)
-            if (preBoostDmg <= 0) continue
-            const _hc = (def.flatSelfDmg || def.selfDmgMaxHpPct) ? _countHitsForLabel(_bdcWeaponHits, 'WA', label) : 1
-            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark, _hc, _playerMaxHp)
-            sources.push({ def, amount, group, label, preBoostDmg, result })
+            pushLabelSource(label, label, preBoostDmg)
           }
         } else if (group === 'Rune') {
           const mountM1Dmg = (_activeMountRuneDef && mountActive)
@@ -4838,44 +4753,28 @@ alliesOnly: true,
             const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark, _hc, _playerMaxHp)
             sources.push({ def, amount, group, label: `${_activeMountRuneDef!.mountLabel} M1 (Mounted)`, preBoostDmg, result })
           }
-          const runeLabels = [...new Set(_bdcWeaponHits.filter(h => h.group === 'Rune' && !h.isHeal).map(h => h.label))]
-          for (const label of runeLabels) {
+          for (const label of labelsFor('Rune', undefined)) {
             const preBoostDmg = def.perkName === 'Bombardier' ? _bombardierSelfDmgBase
               : _sumPreBoostHitDamage(_bdcWeaponHits, 'Rune', label, _darkMagicNeedsHex)
-            if (preBoostDmg <= 0) continue
-            const _hc = (def.flatSelfDmg || def.selfDmgMaxHpPct) ? _countHitsForLabel(_bdcWeaponHits, 'Rune', label) : 1
-            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark, _hc, _playerMaxHp)
-            sources.push({ def, amount, group, label: label ?? 'Rune', preBoostDmg, result })
+            pushLabelSource(label ?? 'Rune', label, preBoostDmg)
           }
         } else if (group === 'M1') {
-          const labels = [...new Set(_bdcWeaponHits.filter(h => h.group === 'M1' && !h.isHeal).map(h => h.label ?? 'M1'))]
-          for (const label of labels) {
+          for (const label of labelsFor('M1', 'M1')) {
             const preBoostDmg = def.perkName === 'Bombardier' ? _bombardierSelfDmgBase
               : _sumPreBoostHitDamage(_bdcWeaponHits, 'M1', label === 'M1' ? undefined : label, _darkMagicNeedsHex)
-            if (preBoostDmg <= 0) continue
-            const _hc = (def.flatSelfDmg || def.selfDmgMaxHpPct) ? _countHitsForLabel(_bdcWeaponHits, 'M1', label === 'M1' ? undefined : label) : 1
-            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark, _hc, _playerMaxHp)
-            sources.push({ def, amount, group, label, preBoostDmg, result })
+            pushLabelSource(label, label === 'M1' ? undefined : label, preBoostDmg)
           }
         } else if (group === 'M2') {
-          const labels = [...new Set(_bdcWeaponHits.filter(h => h.group === 'M2' && !h.isHeal).map(h => h.label ?? 'M2'))]
-          for (const label of labels) {
+          for (const label of labelsFor('M2', 'M2')) {
             const preBoostDmg = def.perkName === 'Bombardier' ? _bombardierSelfDmgBase
               : _sumPreBoostHitDamage(_bdcWeaponHits, 'M2', label === 'M2' ? undefined : label, _darkMagicNeedsHex)
-            if (preBoostDmg <= 0) continue
-            const _hc = (def.flatSelfDmg || def.selfDmgMaxHpPct) ? _countHitsForLabel(_bdcWeaponHits, 'M2', label === 'M2' ? undefined : label) : 1
-            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark, _hc, _playerMaxHp)
-            sources.push({ def, amount, group, label, preBoostDmg, result })
+            pushLabelSource(label, label === 'M2' ? undefined : label, preBoostDmg)
           }
         } else if (group === 'Perk') {
-          const labels = [...new Set(_bdcWeaponHits.filter(h => h.group === 'Perk' && !h.isHeal).map(h => h.label ?? 'Perk'))]
-          for (const label of labels) {
+          for (const label of labelsFor('Perk', 'Perk')) {
             const preBoostDmg = def.perkName === 'Bombardier' ? _bombardierSelfDmgBase
               : _sumPreBoostHitDamage(_bdcWeaponHits, 'Perk', label === 'Perk' ? undefined : label, _darkMagicNeedsHex)
-            if (preBoostDmg <= 0) continue
-            const _hc = (def.flatSelfDmg || def.selfDmgMaxHpPct) ? _countHitsForLabel(_bdcWeaponHits, 'Perk', label === 'Perk' ? undefined : label) : 1
-            const result = calcSelfDamage(def, amount, preBoostDmg, enemiesHit, _defenseMultipliersNoBark, _hc, _playerMaxHp)
-            sources.push({ def, amount, group, label, preBoostDmg, result })
+            pushLabelSource(label, label === 'Perk' ? undefined : label, preBoostDmg)
           }
         }
       }
@@ -5428,7 +5327,7 @@ $: _groupedSelfDamageSources = (() => {
 </div>
 {/if}
 
-      {#each [{ key: 'standoffRamp', perk: 'Standoff', label: 'Standoff Ramp (s)', unit: 's', min: 0, max: 5, step: 0.5 }, { key: 'guidingWindsRamp', perk: 'Guiding Winds', label: 'Guiding Winds Charge (%)', unit: '%', min: 0, max: 100, step: 5 }] as r}
+      {#each [{ key: 'standoffRamp', perk: 'Standoff', label: 'Standoff Ramp (s)', unit: 's', min: 0, max: 5, step: 0.5 }, { key: 'guidingWindsRamp', perk: 'Guiding Winds', label: 'Guiding Winds Charge (%)', unit: '%', min: 0, max: 100, step: 5 }, { key: 'slayerRageTicks', perk: 'Slayer Rage', label: 'Slayer Rage Ticks', unit: '×', min: 0, max: 20, step: 1 }] as r}
         {@const _rampMin = r.min ?? 0}
         {@const _rampMax = r.max ?? (perks[r.perk] ?? 0)}
         {#if (perks[r.perk] ?? 0) > 0 || (($result.basePerks?.[r.perk] ?? 0) > 0 || ($build as any)[r.key] != null)}
@@ -6404,6 +6303,7 @@ $: _groupedSelfDamageSources = (() => {
           stats,
           perks,
           selfDamage: _runeSelfDamagePerHit,
+          slayerRageTicks: $build.slayerRageTicks ?? 20,
           weaponDmgTypes: _weaponDmgTypes,
           weaponDmgTypesBase: _weaponDmgTypesBase,
         }}

@@ -2339,10 +2339,10 @@ $: _appWaAvgTotal = (() => {
                     {#if name === 'Propelling Fun'}
                       <PropellingFunTracker />
                     {/if}
-                    {#if name === 'Perfection'}
-                      <PerfectionTracker />
-                    {/if}
-                    {#if name === 'Cursed'}
+                     {#if name === 'Perfection'}
+                       <PerfectionTracker />
+                     {/if}
+                      {#if name === 'Cursed'}
                        <div class="corruption-widget">
                          <div class="corruption-head">
                            <div class="corruption-head-text">

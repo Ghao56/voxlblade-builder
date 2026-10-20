@@ -65,7 +65,7 @@ import {
   MARSH_FLOW_POTENCY, MARSH_FLOW_DURATION_BASE, MARSH_FLOW_DURATION_PER_AMOUNT,
   BOUNCE_DURATION_BASE, BOUNCE_DURATION_PER_STACK,
   MOD_GLADIATORIAL_POTENCY, MOD_GLADIATORIAL_DURATION, MOD_MAGE_RAGE_POTENCY, MOD_OCEANS_RAGE_POTENCY,
-  MOD_SLAYER_RAGE_POTENCY, MOD_SLAYER_WEAKNESS_POTENCY,
+  MOD_SLAYER_RAGE_POTENCY, MOD_SLAYER_WEAKNESS_POTENCY, SLAYER_RAGE_POTENCY_PER_TICK, SLAYER_RAGE_WEAK_MAX_TICKS,
   SLAYER_RAGE_RAGE_RUNE_WEAK_POTENCY, SLAYER_RAGE_WEAK_DURATION,
   SLAYER_RAGE_ROAR_WEAK_BASE_POTENCY, SLAYER_RAGE_ROAR_RAGE_POTENCY, SLAYER_RAGE_ROAR_RAGE_DURATION,
   WEAKENING_ROAR_WEAKNESS_POTENCY, WEAKENING_ROAR_WEAKNESS_DURATION,
@@ -2192,6 +2192,8 @@ interface BuffPotencyModifier {
   runeFilter?: string
   durationMultiplierPerStack?: number
   durationMultiplierFormula?: (stacks: number) => number
+  perTickPerStack?: number
+  maxTicks?: number
 }
 
 function durationMultFromStack(base: number, perStack: number): (stacks: number) => number {
@@ -2207,8 +2209,8 @@ const BUFF_POTENCY_MODIFIERS: BuffPotencyModifier[] = [
   { buffName: 'Rage', potencyPerStack: MOD_GLADIATORIAL_POTENCY, label: 'Gladiatorial Rage', durationMultiplierPerStack: MOD_GLADIATORIAL_DURATION },
   { buffName: 'Rage', potencyPerStack: MOD_MAGE_RAGE_POTENCY, label: 'Mage Rage' },
   { buffName: 'Rage', potencyPerStack: MOD_OCEANS_RAGE_POTENCY, label: 'Oceans Rage' },
-  { buffName: 'Rage', potencyPerStack: MOD_SLAYER_RAGE_POTENCY, label: 'Slayer Rage', runeFilter: 'Rage Rune' },
-  { buffName: 'Weakness', potencyPerStack: MOD_SLAYER_WEAKNESS_POTENCY, label: 'Slayer Rage', runeFilter: 'Weakening Roar Rune' },
+  { buffName: 'Rage', potencyPerStack: MOD_SLAYER_RAGE_POTENCY, label: 'Slayer Rage', runeFilter: 'Rage Rune', perTickPerStack: SLAYER_RAGE_POTENCY_PER_TICK, maxTicks: 20 },
+  { buffName: 'Weakness', potencyPerStack: MOD_SLAYER_WEAKNESS_POTENCY, label: 'Slayer Rage', runeFilter: 'Weakening Roar Rune', perTickPerStack: SLAYER_RAGE_POTENCY_PER_TICK, maxTicks: SLAYER_RAGE_WEAK_MAX_TICKS },
   { buffName: 'Rage', potencyPerStack: MOD_IRON_SLAYER_POTENCY, label: 'Iron Slayer Spirit', durationMultiplierPerStack: MOD_IRON_SLAYER_DURATION },
   { buffName: 'Rage', potencyPerStack: MOD_FURY_POTENCY, label: 'Fury', durationMultiplierPerStack: MOD_FURY_DURATION },
   { buffName: 'Rage', potencyPerStack: 0,   label: 'Void Rage', durationMultiplierPerStack: MOD_VOID_RAGE_DURATION },
@@ -2262,7 +2264,8 @@ function getItemBuffs(itemName: string): GrantedBuff[] {
 function getSpecificBuffModifiers(
   buff: GrantedBuff,
   def: BuffDefinition | undefined,
-  perks: Record<string, number>
+  perks: Record<string, number>,
+  slayerRageTicks?: number
 ) {
   let bonus = 0
   let durationMult = 1
@@ -2283,7 +2286,10 @@ function getSpecificBuffModifiers(
 
     if (isSelfDebuff && !isContained && !isDespair) continue
 
-    bonus += mod.potencyPerStack * stacks
+    const tickScale = mod.perTickPerStack !== undefined
+      ? Math.min(Math.max(slayerRageTicks ?? mod.maxTicks ?? 20, 0), mod.maxTicks ?? 20) / (mod.maxTicks ?? 20)
+      : 1
+    bonus += mod.potencyPerStack * stacks * tickScale
 
     if (mod.durationMultiplierFormula) {
       durationMult *= mod.durationMultiplierFormula(stacks)
@@ -2451,7 +2457,7 @@ export function applyBuffPerkModifiers(
   perks: Record<string, number>,
   activeRune?: string,
   wardingDebuffMult?: number,
-  options?: { darkeningHexActivations?: number; darkeningHexEligible?: boolean; kindlingEnabled?: boolean }
+  options?: { darkeningHexActivations?: number; darkeningHexEligible?: boolean; kindlingEnabled?: boolean; slayerRageTicks?: number }
 ): GrantedBuff[] {
   if (buffs.length === 0) return buffs
 
@@ -2499,7 +2505,7 @@ export function applyBuffPerkModifiers(
       darkeningHexDurationAdd = DARKENING_HEX_DURATION_ADD_PER_AMOUNT * darkeningHexAmt * darkeningHexActivations
     }
 
-    const specific = getSpecificBuffModifiers(buff, def, perks)
+    const specific = getSpecificBuffModifiers(buff, def, perks, options?.slayerRageTicks)
     const bastionBonus = getBastionBlessBonus(buff, def, perks)
     const tricksterBonus = getTricksterReflection(buff, def, perks, wMult)
     const generic = getGenericDebuffModifiers(buff, def, perks)
@@ -2682,14 +2688,18 @@ export function getBuffDescription(
   return desc.replace(/x%/g, `${+(pct).toFixed(4).replace(/\.?0+$/, '')}%`)
 }
 
-export function getPerkBuffs(perks: Record<string, number>, vassalsCroakStacks?: number, perfectionStacks?: number, weaponModifier?: string, airPressurePotency?: number, vitalMistPotency?: number): GrantedBuff[] {
+export function getPerkBuffs(perks: Record<string, number>, vassalsCroakStacks?: number, perfectionStacks?: number, weaponModifier?: string, airPressurePotency?: number, vitalMistPotency?: number, slayerRageTicks?: number, activeRune?: string): GrantedBuff[] {
   const buffs: GrantedBuff[] = []
 
   for (const [perkName, amount] of Object.entries(perks)) {
     if (amount <= 0) continue
     const factory = PERK_BUFFS[perkName]
     if (!factory) continue
+    // Slayer Rage hold-channels produce nothing at 0 ticks: no Weakness/Rage grants
+    if (perkName === 'Slayer Rage' && slayerRageTicks !== undefined && slayerRageTicks <= 0) continue
     for (const b of factory(amount, perks, vassalsCroakStacks, perfectionStacks, weaponModifier, airPressurePotency, vitalMistPotency)) {
+      // Slayer Rage grants are per-rune: only the equipped rune's entries apply
+      if (perkName === 'Slayer Rage' && activeRune !== undefined && b.sourceType === 'rune' && b.sourceName !== activeRune) continue
       buffs.push({ ...b, duration: Math.round(b.duration * 100) / 100 })
     }
   }
@@ -2780,6 +2790,7 @@ export interface ActiveBuffsBuildInput {
   perfectionStacks?: number
   hpFill?: number
   level?: number
+  slayerRageTicks?: number
 }
 
 /**
@@ -2844,13 +2855,14 @@ export function assembleActiveBuffs(
 
   const vmPotency = vitalMistPotency ?? 0
   const buffs = convertTailwindToWhirlwind(applyBuffPerkModifiers(
-    [...itemBuffs, ...potionBuffs, ...getPerkBuffs(perks, build.lastCroakStacks, build.perfectionStacks, weaponModifier, build.airPressurePotency, vmPotency), ...getWeaponArtBuffs(build.selectedWeaponArt)],
+    [...itemBuffs, ...potionBuffs, ...getPerkBuffs(perks, build.lastCroakStacks, build.perfectionStacks, weaponModifier, build.airPressurePotency, vmPotency, build.slayerRageTicks, build.rune), ...getWeaponArtBuffs(build.selectedWeaponArt)],
     perks,
     build.rune || undefined,
     wardingDebuffMult,
     {
       darkeningHexActivations: build.darkeningHexActivations,
       darkeningHexEligible: darkeningHexEligible ?? hasEligibleDarkeningHexSource(perks, build),
+      slayerRageTicks: build.slayerRageTicks,
     },
   ), perks)
   const hpGated = build.hpFill != null

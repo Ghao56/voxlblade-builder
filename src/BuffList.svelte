@@ -48,6 +48,7 @@ import { calcBaseMaxHP } from './lib/constants/game'
     darkeningHexActivations: $build.darkeningHexActivations ?? DARKENING_HEX_MAX_ACTIVATIONS,
     darkeningHexEligible: hasEligibleDarkeningHexSource($result.perks, $build, buffListWeapon?.damageTypes, buffListSelectedWA.damageType),
     kindlingEnabled: !($build.disabledEffects ?? []).includes('kindling'),
+    slayerRageTicks: $build.slayerRageTicks ?? 20,
   }
   $: darkeningHexAmt = $result.perks['Darkening Hex'] ?? 0
   $: darkeningHexActiveActivations = darkeningHexAmt > 0 && darkeningHexModifierOptions.darkeningHexEligible
@@ -98,7 +99,7 @@ import { calcBaseMaxHP } from './lib/constants/game'
 
   $: perkBuffs = (() => {
     const vmPotency = (($build as any).vitalMistPotency ?? 0)
-    const buffs = (getPerkBuffs as any)($result.perks, $build.lastCroakStacks, undefined, buffListWeapon?.weaponModifier, $build.airPressurePotency, vmPotency)
+    const buffs = (getPerkBuffs as any)($result.perks, $build.lastCroakStacks, undefined, buffListWeapon?.weaponModifier, $build.airPressurePotency, vmPotency, $build.slayerRageTicks, $build.rune)
     const idx = buffs.findIndex((b: any) => b.buffName === 'Exhaust')
     if (idx !== -1) {
       const wa = WEAPON_ARTS.find(wa => wa.name === $build.selectedWeaponArt)
