@@ -339,7 +339,7 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
   }
 
   const weakeningAmt = perks['Weakening'] ?? 0
-  if (weakeningAmt > 0 && !existingBuffNames.includes('Weakness')) {
+  if (weakeningAmt > 0) {
     debuffs.push({
       buffName: 'Weakness',
       potency: 0.2 * weakeningAmt,

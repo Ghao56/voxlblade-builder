@@ -59,6 +59,9 @@ import {
   SCREECHING_SOUND_STUN_PER_STACK,
   SCREECHING_SOUND_TAUNT_BASE,
   SCREECHING_SOUND_TAUNT_PER_STACK,
+  HEX_RAY_BASE_DMG,
+  HEX_RAY_DMG_PER_STACK,
+  HEX_RAY_WEAKNESS_POTENCY_MULT,
   APOLLO_BOOST_BASE,
   APOLLO_BOOST_SUB_BASE,
   APOLLO_BOOST_PER_STACK,
@@ -1258,6 +1261,20 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     scalings: { fire: 1.5 },
     procCoefficient: { type: 'noProc' },
     note: 'Singed counts as Burn for other perks but deals no DoT damage — only this initial burst. Not a separate debuff. Incompatible with Cursed Flames. Cannot proc other effects. Proccing Burn multiple times in one hit procs this multiple times.',
+  },
+  {
+    perkName: 'Hex Ray',
+    condition: "On applying Weakness to a target — one hex ray per Weakness source applied · per ray: (3 + 0.6 × perkAmount) × (1 + 4 × that source potency)",
+    getBaseDamage: ({ perkAmount, statuses }) => {
+      const base = (HEX_RAY_BASE_DMG + HEX_RAY_DMG_PER_STACK * perkAmount) * (1 + HEX_RAY_WEAKNESS_POTENCY_MULT * (statuses?.weaknessPotency ?? 0))
+      return Math.round(base * 10000) / 10000
+    },
+    dmgTypeMode: 'fixed',
+    dmgTypes: { hex: 1.0 },
+    scalingMode: 'fixed',
+    scalings: { hex: 1.0 },
+    procCoefficient: { type: 'noProc' },
+    note: 'Every Weakness source (Rune / Race / Perk) applied on the same hit fires its own ray, each scaled by that source potency. Burn (Cursed Flames) procs one extra ray at 0 effective potency = flat base. Cannot proc other effects.',
   },
   // Steam Charge
   {

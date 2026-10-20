@@ -409,3 +409,11 @@ export const WAVE_RIDER_M2_HEAL = 5
 export const WAVE_RIDER_WA_BASE_DMG = 35
 export const WAVE_RIDER_WA_HEAL = 4.5
 export const WAVE_RIDER_LABEL = 'Wave Rider'
+
+// Hex Ray
+// Base Damage = (3 + 0.6·perkAmount) × (1 + 4×Weakness potency). 1.0 Hex damage
+// type + 1.0 Hex scaling. Burn (Cursed Flames) also triggers it at 0 effective
+// potency → the potency multiplier is 1.
+export const HEX_RAY_BASE_DMG = 3
+export const HEX_RAY_DMG_PER_STACK = 0.6
+export const HEX_RAY_WEAKNESS_POTENCY_MULT = 4

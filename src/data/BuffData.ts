@@ -2461,6 +2461,11 @@ export function applyBuffPerkModifiers(
 ): GrantedBuff[] {
   if (buffs.length === 0) return buffs
 
+  // Slayer Rage replaces Weakening Roar's own cast Weakness with its every-other-hit channel grant.
+  if ((perks['Slayer Rage'] ?? 0) > 0) {
+    buffs = buffs.filter(b => !(b.buffName === 'Weakness' && b.sourceName === 'Weakening Roar Rune' && b.condition === 'On cast'))
+  }
+
   const wMult = wardingDebuffMult ?? 1
 
   const darkeningHexAmt = perks['Darkening Hex'] ?? 0

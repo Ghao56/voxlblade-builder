@@ -231,6 +231,7 @@ note?: string
     damageMult?: number; defReduction?: Partial<Record<string, number>>; typeDamageMult?: Record<string, number>
     lifestealMult?: number
     variants?: Array<{
+      buffName?: string
       sourceName: string; potency: number
       effectLabel: string | null; descLabel: string | null
       damageMult?: number; defReduction?: Partial<Record<string, number>>; typeDamageMult?: Record<string, number>
@@ -377,11 +378,20 @@ note?: string
 
   $: resolvedDebuffs = appliedDebuffs.map(d => {
     if (!d.variants?.length) return d
-    const idx = activeVariants.get(d.name) ?? 0
+    const idx = effVariantIdx(d)
     const v = d.variants[idx]
     if (!v) return d
     return { ...d, ...v, variants: d.variants }
   })
+
+  // Default to the highest-potency variant until the user cycles manually
+  function effVariantIdx(d: { name: string; variants?: Array<{ potency?: number } | Record<string, unknown>> }): number {
+    const vs = d.variants ?? []
+    if (!vs.length) return 0
+    const stored = activeVariants.get(d.name)
+    if (stored !== undefined && stored < vs.length) return stored
+    return vs.reduce((best, v, i) => ((v.potency ?? 0) > (vs[best]?.potency ?? 0) ? i : best), 0)
+  }
 
   function cycleVariant(name: string) {
     const d = appliedDebuffs.find(d => d.name === name)
@@ -1373,7 +1383,8 @@ note?: string
       }
     }
 
-    if (!isHeal && curseRipPerkAmount > 0 && curseRipActiveDebuffCount > 0 && !disableCurseRip && !ON_HIT_EXCLUDED_SOURCES.has(hit.label ?? '')) {
+    const _onHitKey = (hit.label ?? '').replace(/\s*\(.*\)$/, '')
+    if (!isHeal && curseRipPerkAmount > 0 && curseRipActiveDebuffCount > 0 && !disableCurseRip && !ON_HIT_EXCLUDED_SOURCES.has(_onHitKey)) {
       // Curse Rip lifesteals off damage dealt: base carries Output Bonuses and
       // Type-Specific Multipliers, ignores crits and defense (divides defMult
       // back out). rawNoVC keeps the Void Contract mark off the heal.
@@ -1657,6 +1668,9 @@ note?: string
    *  sourceLabel). */
   function _perkGroupKey(h: ComputedHit): string {
     const raw = h.isRadianceProc && h.sourceLabel ? h.sourceLabel : (h.label ?? 'Perk')
+    // Hex Ray rows carry a per-source label "Hex Ray (Dark ELF)"; the section
+    // head stays source-free — sources live on the individual rows below it.
+    if (raw.startsWith('Hex Ray (')) return 'Hex Ray'
     return raw
       .replace(/ Heal$/, '')
       .replace(/\s*\((M1|M2|WA)\)$/, '')
@@ -1914,14 +1928,14 @@ note?: string
           <div class="bdc-debuff-row">
             {#each resolvedDebuffs as d (d.name)}
               {@const isOff = disabledDebuffs.has(d.name)}
-              {@const hasVariants = d.variants && d.variants.length > 1}
+              {@const hasVariants = d.variants && d.variants.length > 1 && new Set((d.variants ?? []).map(v => v.sourceName)).size > 1}
               <div class="bdc-debuff-group">
                 <button
                   class="bdc-debuff-pill"
                   class:bdc-debuff-pill--burn-cursed={d.name === 'Burn' && cursedFlamesAmt > 0}
                   class:bdc-debuff-pill--off={isOff}
                   style="--dc:{d.color}"
-                  title="{(d.variants ?? [])[activeVariants.get(d.name) ?? 0]?.sourceName ?? d.name}{d.effectLabel ? ` · ${d.effectLabel}` : ''} — click to toggle"
+                  title="{(d.variants ?? [])[effVariantIdx(d)]?.sourceName ?? d.name}{d.effectLabel ? ` · ${d.effectLabel}` : ''} — click to toggle"
                   on:click={() => {
                     if (disabledDebuffs.has(d.name)) disabledDebuffs.delete(d.name)
                     else disabledDebuffs.add(d.name)
@@ -1937,7 +1951,7 @@ note?: string
                   <button
                     class="bdc-variant-btn"
                     style="--dc:{d.color}"
-                    title="{(d.variants ?? [])[activeVariants.get(d.name) ?? 0]?.sourceName ?? d.name}"
+                    title="{(d.variants ?? [])[effVariantIdx(d)]?.sourceName ?? d.name}"
                     on:click|stopPropagation={() => cycleVariant(d.name)}
                   >▾</button>
                 {/if}
@@ -2322,9 +2336,9 @@ note?: string
                                   <span class="bdc-crit-inline-icon"><CritIcon size={12} /></span>
                                 {/if}
                                 <span class="bdc-hit-type-val">{fmt(isCritShown(t) ? (t.subHits ? t.critVal : (t.hitCount ? t.critVal / t.hitCount : t.critVal)) : (t.subHits ? t.raw : (t.hitCount ? t.raw / t.hitCount : t.raw)))}</span>
-                                {#if t.subHits}
+                                {#if t.subHits && t.subHits > 1}
                                   <span class="bdc-hit-cnt">×{t.subHits}</span>
-                                {:else if t.hitCount && t.tag !== 'Blub'}
+                                {:else if t.hitCount && t.hitCount > 1 && t.tag !== 'Blub'}
                                   <span class="bdc-hit-cnt">×{t.hitCount}</span>
                                 {/if}
                               </div>
@@ -2432,7 +2446,7 @@ note?: string
                                   <span class="bdc-fr-val bdc-fr-val--def" class:bdc-fr-val--amplify={shownDefMult > 1}>× {fmtMult(shownDefMult)}</span>
                                 </div>
                               {/if}
-                              {#if t.subHits}
+                              {#if t.subHits && t.subHits > 1}
                                 <div class="bdc-fr">
                                   <span class="bdc-fr-label">Hits</span>
                                   <span class="bdc-fr-val bdc-fr-val--hits">× {t.subHits}</span>

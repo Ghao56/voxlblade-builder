@@ -28,7 +28,7 @@
   import { applyDraconicBonuses, getDraconicBonuses } from './data/draconicRunes'
   import { calculateHealBoost, type HealSource } from './data/HealBoost'
   import { buildRadianceProcHit, isRadianceEligible, radianceSourceHealing } from './data/radianceProcs'
-  import { RADIANCE_HOLY_SCALING, RADIANCE_LABEL, RADIANCE_COLOR, RAINSTORM_BASE_DMG, RAINSTORM_DMG_PER_STACK, RAINSTORM_BASE_HEAL, RAINSTORM_HEAL_PER_STACK, RAINSTORM_LABEL, REJUVENATING_FLAME_BASE_HEAL, REJUVENATING_FLAME_HEAL_PER_AMOUNT, REJUVENATING_FLAME_FIRE_SCALING, REJUVENATING_FLAME_BURN_HEAL_MULT, REJUVENATING_FLAME_BURN_AOE_PER_AMOUNT, REJUVENATING_FLAME_HEAL_LABEL, WAVE_RIDER_LABEL } from './lib/constants/perk-base-damage'
+  import { RADIANCE_HOLY_SCALING, RADIANCE_LABEL, RADIANCE_COLOR, RAINSTORM_BASE_DMG, RAINSTORM_DMG_PER_STACK, RAINSTORM_BASE_HEAL, RAINSTORM_HEAL_PER_STACK, RAINSTORM_LABEL, REJUVENATING_FLAME_BASE_HEAL, REJUVENATING_FLAME_HEAL_PER_AMOUNT, REJUVENATING_FLAME_FIRE_SCALING, REJUVENATING_FLAME_BURN_HEAL_MULT, REJUVENATING_FLAME_BURN_AOE_PER_AMOUNT, REJUVENATING_FLAME_HEAL_LABEL, WAVE_RIDER_LABEL, HEX_RAY_BASE_DMG, HEX_RAY_DMG_PER_STACK, HEX_RAY_WEAKNESS_POTENCY_MULT } from './lib/constants/perk-base-damage'
   import { roundMultiplier, calcWardingDebuffMultiplier, calcProcChance, applyScalingMult, fmtPctVal } from './lib/utils'
   import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage, calcInoculationHeal, UNDEAD_MIGHT_SELF_DMG_FRACTION, UNDEAD_MIGHT_DR_PCT_PER_STACK, type SelfDamagePerkDef } from './data/selfDamage'
   import { resolveDamageTypes, resolveWaDamageTypeKeys, applyAirToMagicConversion, computeEffectiveWaDmgTypes, pickHighestDmgType } from './lib/damageTypeResolve'
@@ -763,7 +763,10 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       ['Sticky (Sickness)', 'Sticky'],
       ['Sticky (Hex Web)', 'Sticky'],
     ])
-    const groups = new Map<string, Map<string, number>>()
+    // Inner map is keyed per SOURCE ("buffName::sourceName"), not just buffName, so
+    // multiple sources of the same debuff (e.g. 4x Weakness from Rune/Race/Perk/Bolt)
+    // each stay their own variant — Hex Ray fires one ray per source.
+    const groups = new Map<string, Map<string, { buffName: string; potency: number; sourceName?: string }>>()
     for (const b of [..._allActiveBuffs, ..._cauterizedAbilityDebuffs]) {
       if (b.isSelfDebuff) continue
       const def = BUFF_DEFS[b.buffName]
@@ -771,9 +774,10 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       const key = variantBase.get(b.buffName) ?? b.buffName
       if (!groups.has(key)) groups.set(key, new Map())
       const inner = groups.get(key)!
-      const existing = inner.get(b.buffName)
-      if (!existing || b.potency > existing) {
-        inner.set(b.buffName, b.potency)
+      const srcKey = `${b.buffName}::${b.sourceName ?? ''}`
+      const existing = inner.get(srcKey)
+      if (!existing || b.potency > existing.potency) {
+        inner.set(srcKey, { buffName: b.buffName, potency: b.potency, sourceName: b.sourceName })
       }
     }
     for (const atk of _waSummonDef?.scaledAttacks ?? []) {
@@ -783,10 +787,11 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         const key = variantBase.get(st.name) ?? st.name
         if (!groups.has(key)) groups.set(key, new Map())
         const inner = groups.get(key)!
-        const existing = inner.get(st.name)
-        if (!existing || st.potency > existing) {
-          inner.set(st.name, st.potency)
-        }
+          const srcKey = `${st.name}::${'sourceName' in st ? String(st.sourceName ?? '') : ''}`
+          const existing = inner.get(srcKey)
+          if (!existing || st.potency > existing.potency) {
+            inner.set(srcKey, { buffName: st.name, potency: st.potency, sourceName: 'sourceName' in st && typeof st.sourceName === 'string' ? st.sourceName : undefined })
+          }
       }
     }
     const autoDebuffs = applyBuffPerkModifiers(getAutoDebuffs({
@@ -808,8 +813,10 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     for (const d of autoDebuffs) {
       if (!groups.has(d.buffName)) groups.set(d.buffName, new Map())
       const inner = groups.get(d.buffName)!
-      if (!inner.has(d.buffName) || d.potency > (inner.get(d.buffName) ?? 0)) {
-        inner.set(d.buffName, d.potency)
+      const srcKey = `${d.buffName}::${d.sourceName ?? ''}`
+      const existing = inner.get(srcKey)
+      if (!existing || d.potency > existing.potency) {
+        inner.set(srcKey, { buffName: d.buffName, potency: d.potency, sourceName: d.sourceName })
       }
     }
 
@@ -818,10 +825,11 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       const slownessMap = groups.get('Slowness')!
       if (!groups.has('Frostbite')) groups.set('Frostbite', new Map())
       const frostbiteMap = groups.get('Frostbite')!
-      for (const [key, potency] of slownessMap) {
-        const newKey = key === 'Slowness' ? 'Frostbite' : key
-        if (!frostbiteMap.has(newKey) || potency > (frostbiteMap.get(newKey) ?? 0)) {
-          frostbiteMap.set(newKey, potency)
+      for (const [key, v] of slownessMap) {
+        const newBuff = v.buffName === 'Slowness' ? 'Frostbite' : v.buffName
+        const newKey = newBuff + key.slice(key.indexOf('::'))
+        if (!frostbiteMap.has(newKey) || v.potency > (frostbiteMap.get(newKey)?.potency ?? 0)) {
+          frostbiteMap.set(newKey, { ...v, buffName: newBuff })
         }
       }
       groups.delete('Slowness')
@@ -832,36 +840,37 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       for (const inner of groups.values()) {
         let maxPotency = 0
         let hasSticky = false
-        for (const k of inner.keys()) {
-          if (k.startsWith('Sticky')) {
+        for (const [k, v] of inner.entries()) {
+          if (v.buffName.startsWith('Sticky')) {
             hasSticky = true
-            maxPotency = Math.max(maxPotency, inner.get(k)!)
+            maxPotency = Math.max(maxPotency, v.potency)
             inner.delete(k)
           }
         }
-        if (hasSticky) inner.set('Sticky (Melting Slime)', maxPotency)
+        if (hasSticky) inner.set('Sticky (Melting Slime)', { buffName: 'Sticky (Melting Slime)', potency: maxPotency })
       }
     }
-    const buildVariant = (buffName: string, potency: number) => {
-      const combatFx = DEBUFF_COMBAT_EFFECTS[buffName]
-      const effect = potency > 0 ? calcBuffEffect(buffName, potency) : null
+    const buildVariant = (v: { buffName: string; potency: number; sourceName?: string }) => {
+      const combatFx = DEBUFF_COMBAT_EFFECTS[v.buffName]
+      const effect = v.potency > 0 ? calcBuffEffect(v.buffName, v.potency) : null
       return {
-        sourceName: buffName,
-        potency,
+        buffName: v.buffName,
+        sourceName: v.sourceName || v.buffName,
+        potency: v.potency,
         effectLabel: effect ? `${effect.value}${effect.unit === '%' ? '%' : ''}` : null,
-        descLabel: combatFx ? combatFx.descFn(potency, perks) : null,
-        damageMult: combatFx?.damageMult ? combatFx.damageMult(potency) : undefined,
-        defReduction: combatFx?.defReduction ? combatFx.defReduction(potency) : undefined,
-        typeDamageMult: combatFx?.typeDamageMult ? combatFx.typeDamageMult(potency, perks) : undefined,
-        lifestealMult: combatFx?.lifestealMult ? combatFx.lifestealMult(potency) : undefined,
+        descLabel: combatFx ? combatFx.descFn(v.potency, perks) : null,
+        damageMult: combatFx?.damageMult ? combatFx.damageMult(v.potency) : undefined,
+        defReduction: combatFx?.defReduction ? combatFx.defReduction(v.potency) : undefined,
+        typeDamageMult: combatFx?.typeDamageMult ? combatFx.typeDamageMult(v.potency, perks) : undefined,
+        lifestealMult: combatFx?.lifestealMult ? combatFx.lifestealMult(v.potency) : undefined,
         lifestealFlat: combatFx?.lifestealFlat,
       }
     }
     const result = [...groups.entries()].map(([name, inner]) => {
-      const variants = [...inner.entries()].map(([bn, p]) => buildVariant(bn, p))
+      const variants = [...inner.values()].map(buildVariant)
       variants.sort((a, b) => {
-        if (a.sourceName === name && b.sourceName !== name) return 1
-        if (a.sourceName !== name && b.sourceName === name) return -1
+        if (a.buffName === name && b.buffName !== name) return 1
+        if (a.buffName !== name && b.buffName === name) return -1
         return 0
       })
       const def = BUFF_DEFS[name]
@@ -920,6 +929,33 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   $: _dummyHasSlowActive = _dummyDebuffs.some(d => d.name === 'Slowness' && !disabledDebuffs.has(d.name))
   $: _dummyHasFrostbiteActive = _dummyDebuffs.some(d => d.name === 'Frostbite' && !disabledDebuffs.has(d.name))
   $: _dummyHasStickyActive = _dummyDebuffs.some(d => d.name === 'Sticky' && !disabledDebuffs.has(d.name))
+
+  // Hex Ray: fires on applying Weakness, or Burn with Cursed Flames (weakening Burn, 0 weakness potency → 1×)
+  $: _dummyHasWeaknessActive = _dummyDebuffs.some(d => d.name === 'Weakness' && !disabledDebuffs.has(d.name))
+  $: _hexRayTriggerActive = _dummyHasWeaknessActive || ((perks['Cursed Flames'] ?? 0) > 0 && _dummyHasBurnActive)
+  $: _weaknessPotency = _dummyDebuffs.reduce(
+    (m, d) => (d.name === 'Weakness' && !disabledDebuffs.has(d.name)
+      ? d.variants.reduce((mm, v) => Math.max(mm, v.potency ?? 0), m)
+      : m),
+    0,
+  )
+
+  // Hex Ray procs once per Weakness source (each with its own potency), plus a Burn
+  // (Cursed Flames) ray at 0 effective potency when Cursed Flames is owned + Burn active.
+  interface HexRaySource { label: string; potency: number }
+  $: _hexRaySources = (() => {
+    const byLabel = new Map<string, HexRaySource>()
+    for (const d of _dummyDebuffs) {
+      if (d.name !== 'Weakness' || disabledDebuffs.has(d.name)) continue
+      for (const v of d.variants) {
+        const label = v.sourceName || v.buffName || d.name
+        const prior = byLabel.get(label)
+        if (!prior || (v.potency ?? 0) > prior.potency) byLabel.set(label, { label, potency: v.potency ?? 0 })
+      }
+    }
+    if ((perks['Cursed Flames'] ?? 0) > 0 && _dummyHasBurnActive && !disabledDebuffs.has('Burn')) byLabel.set('Burn (Cursed Flames)', { label: 'Burn (Cursed Flames)', potency: 0 })
+    return [...byLabel.values()]
+  })()
 
   $: _venomEaterCanShow = (perks['Venom Eater'] ?? 0) > 0 && _dummyHasPoisonActive
 
@@ -3079,17 +3115,23 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       .map(([v, count]) => count > 1 ? `${fmtNum(roundMultiplier(v))} ×${count}` : fmtNum(roundMultiplier(v)))
       .join(' · ')
   }
-  /** One chunk per distinct per-hit value, with the hit count of that value. */
-  function buildTypedHitsFromBases(baseValues: number[], dmgTypes: Record<string, number>) {
+  /** One chunk per distinct per-hit value, with the hit count of that value.
+   *  When perBaseLabels is provided (aligned with baseValues), no grouping
+   *  happens — every base gets its own chunk tagged with its source label. */
+  function buildTypedHitsFromBases(baseValues: number[], dmgTypes: Record<string, number>, perBaseLabels?: string[]) {
+    const makeChunk = (k: string, mult: number, dmg: number, count: number, subLabel?: string) => ({
+      rawVal: roundMultiplier(dmg),
+      val: roundMultiplier(dmg * mult),
+      color: DMG_TYPE_COLORS[k] ?? '#e8e4da',
+      label: (k.charAt(0).toUpperCase() + k.slice(1)) + (subLabel ? ` · ${subLabel}` : ''),
+      count,
+    })
+    if (perBaseLabels && perBaseLabels.length === baseValues.length) {
+      return Object.entries(dmgTypes).flatMap(([k, mult]) =>
+        baseValues.map((dmg, i) => makeChunk(k, mult, dmg, 1, perBaseLabels[i])))
+    }
     return Object.entries(dmgTypes).flatMap(([k, mult]) =>
-      Array.from(groupByValue(baseValues).entries()).map(([dmg, count]) => ({
-        rawVal: roundMultiplier(dmg),
-        val: roundMultiplier(dmg * mult),
-        color: DMG_TYPE_COLORS[k] ?? '#e8e4da',
-        label: k.charAt(0).toUpperCase() + k.slice(1),
-        count,
-      }))
-    )
+      Array.from(groupByValue(baseValues).entries()).map(([dmg, count]) => makeChunk(k, mult, dmg, count)))
   }
   /** Per-hit bases of a finisher group (charge applied) — the Springblast
    *  proccing base; drives the perk card. Real values live in BaseDamageCalc. */
@@ -3215,6 +3257,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       const _perkCtxStatuses: Record<string, number> = {
         poisonPotency: perks['Poison Potency'] ?? 0,
         burnPotency: _perkCtxBurnPotency,
+        weaknessPotency: _weaknessPotency,
         missingHpPct: Math.min(50, Math.max(0, 100 - (_hpFillPct ?? 100))),
         waCooldown: _waCooldown,
         waCdrMult: $result.cdr.waCDR,
@@ -3299,8 +3342,8 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         )
       }
 
-      const buildTypedHitsFromBasesLocal = (baseValues: number[]) =>
-        buildTypedHitsFromBases(baseValues, resolvedDmgTypesWithMw)
+      const buildTypedHitsFromBasesLocal = (baseValues: number[], perBaseLabels?: string[]) =>
+        buildTypedHitsFromBases(baseValues, resolvedDmgTypesWithMw, perBaseLabels)
 
       const _fhM2  = _m2FinisherHits
       const _fhM1f = _m1FinisherHits
@@ -3319,7 +3362,15 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       const baseDmg = isSpringblast
         ? (springblastM2Bases?.length ? springblastM2Bases[0] : calcSpringblastBaseDamage(perkAmount, _finisherHitBaseAvg, _fhM2))
         : baseDmg_m1f
-      const totalDmg = isSpringblast ? 1 : baseDmg * scalingMult * finalCombatMult
+      // Hex Ray: one distinct base per Weakness source (+ Burn/Cursed Flames ray at 0 potency)
+      const isHexRay = def.perkName === 'Hex Ray'
+      const hexRayBases = isHexRay
+        ? _hexRaySources.map(s => Math.round((HEX_RAY_BASE_DMG + HEX_RAY_DMG_PER_STACK * perkAmount) * (1 + HEX_RAY_WEAKNESS_POTENCY_MULT * s.potency) * 10000) / 10000)
+        : undefined
+      const hexRayLabels = isHexRay ? _hexRaySources.map(s => s.label) : undefined
+      const totalDmg = isSpringblast ? 1 : isHexRay
+        ? (hexRayBases?.reduce((a, b) => a + b, 0) ?? baseDmg) * scalingMult * finalCombatMult
+        : baseDmg * scalingMult * finalCombatMult
       const hasHalfActivations = def.halfActivations && perkAmount > 0 && ((_gunOverlay?.type === 'Dual Guns') || _baseWeaponType === 'Storm Caster')
       const halfActivations = hasHalfActivations || undefined
       const oncePerFinisher = isSpringblast ? false : (def.oncePerFinisher ?? (def.finisherOnly ? true : undefined))
@@ -3327,7 +3378,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       const perkKey = `${def.perkName}:${def.label ?? def.perkName}`
       const manualOff = _disabledPerkKeySet.has(perkKey)
 
-      const isActive = !manualOff && isHpGateActive(def.hpGate, _hpFillPct, perkAmount) && isHpGateActive(def.enemyHpGate, _enemyHpFillPct, perkAmount) && (!isSpringblast || _allActiveBuffs.some(b => b.buffName === 'Bounce')) && (!def.requiredBuff || _allActiveBuffs.some(b => b.buffName === def.requiredBuff)) && (!def.requiredEnemyDebuff || (_dummyDebuffs.some(d => d.name === def.requiredEnemyDebuff) && !disabledDebuffs.has(def.requiredEnemyDebuff!))) && !(_sliderDef && _perkSliderVal <= 0) && !(def.label === 'Ranged Slash' && _sliderDef && _perkSliderVal < ICHOR_SPARK_SLASH_CHARGE_THRESHOLD * 100)
+      const isActive = !manualOff && isHpGateActive(def.hpGate, _hpFillPct, perkAmount) && isHpGateActive(def.enemyHpGate, _enemyHpFillPct, perkAmount) && (!isSpringblast || _allActiveBuffs.some(b => b.buffName === 'Bounce')) && (!def.requiredBuff || _allActiveBuffs.some(b => b.buffName === def.requiredBuff)) && (!def.requiredEnemyDebuff || (_dummyDebuffs.some(d => d.name === def.requiredEnemyDebuff) && !disabledDebuffs.has(def.requiredEnemyDebuff!))) && (def.perkName !== 'Hex Ray' || _hexRayTriggerActive) && !(_sliderDef && _perkSliderVal <= 0) && !(def.label === 'Ranged Slash' && _sliderDef && _perkSliderVal < ICHOR_SPARK_SLASH_CHARGE_THRESHOLD * 100)
 
       const secondaryEffects = (def.secondaryEffects ?? []).filter(se => !se.showIf || se.showIf({ draconicColor: _effDraconicColor })).map(se => {
         let raw = Math.round(se.getValue({ perkAmount, draconicColor: _effDraconicColor, statuses: _perkCtxStatuses, sliderVal: _perkSliderVal }) * 1000) / 1000
@@ -3348,18 +3399,22 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         }
       })
 
-      const entryHits = def.getHits ? def.getHits({ perkAmount, statuses: _perkCtxStatuses, sliderVal: _perkSliderVal }) : def.hits
+      const entryHits = isHexRay ? undefined : def.getHits ? def.getHits({ perkAmount, statuses: _perkCtxStatuses, sliderVal: _perkSliderVal }) : def.hits
 
       const typedHitsM2 = isSpringblast
         ? buildTypedHitsFromBasesLocal(springblastM2Bases ?? [baseDmg])
-        : (def.getFinisherHitBaseDmg && entryHits)
-          ? buildPerHitTypedHits(baseDmg_m2, entryHits, def.getFinisherHitBaseDmg)
-          : buildTypedHits(baseDmg_m2)
+        : isHexRay
+          ? buildTypedHitsFromBasesLocal(hexRayBases ?? [baseDmg], hexRayLabels)
+          : (def.getFinisherHitBaseDmg && entryHits)
+            ? buildPerHitTypedHits(baseDmg_m2, entryHits, def.getFinisherHitBaseDmg)
+            : buildTypedHits(baseDmg_m2)
       const typedHitsM1f = isSpringblast
         ? buildTypedHitsFromBasesLocal(springblastM1fBases ?? [baseDmg])
-        : (def.getFinisherHitBaseDmg && entryHits)
-          ? buildPerHitTypedHits(baseDmg_m1f, entryHits, def.getFinisherHitBaseDmg)
-          : buildTypedHits(baseDmg_m1f)
+        : isHexRay
+          ? buildTypedHitsFromBasesLocal(hexRayBases ?? [baseDmg], hexRayLabels)
+          : (def.getFinisherHitBaseDmg && entryHits)
+            ? buildPerHitTypedHits(baseDmg_m1f, entryHits, def.getFinisherHitBaseDmg)
+            : buildTypedHits(baseDmg_m1f)
 
       out.push({
         perkName: def.perkName,
@@ -3398,6 +3453,9 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         triggerChain: def.triggerChain,
         ...(def.slider ? { slider: { buildKey: def.slider.buildKey, label: def.slider.label, min: def.slider.min, max: _perkSliderMax, step: def.slider.step }, sliderVal: _perkSliderVal, sliderMax: _perkSliderMax } : {}),
       })
+      if (isHexRay && hexRayBases && hexRayBases.length > 0) {
+        out[out.length - 1].finisherSummaries = _hexRaySources.map((s, i) => `${s.label} → ${fmtNum(hexRayBases[i])} Hex`)
+      }
     }
     // Springblast procs on every finisher hit regardless of finisher source;
     // the card lists resolved per-hit values of every source (M1/M2 finisher,
@@ -4135,10 +4193,13 @@ note?: string
       }
       const hasPerHitCounts = entry.typedHits_m2.some(t => t.count != null)
       if (hasPerHitCounts) {
-        const pushedBases = new Set<number>()
+        const pushedKeys = new Set<string>()
         for (const typedHit of entry.typedHits_m2) {
-          if (!typedHit.count || pushedBases.has(typedHit.rawVal)) continue
-          pushedBases.add(typedHit.rawVal)
+          // Same rawVal can still be distinct rays (Hex Ray per Weakness source),
+          // so dedupe by value+label, not value alone.
+          const pushKey = `${typedHit.rawVal}|${typedHit.label ?? ''}`
+          if (!typedHit.count || pushedKeys.has(pushKey)) continue
+          pushedKeys.add(pushKey)
           const _wwsLabelOverride = entry.perkName === 'Winter Woof Spirit'
             ? typedHit.rawVal === WINTER_WOOF_SPIRIT_BITE_DMG
               ? `${entry.displayName} (Bite)`
@@ -4146,7 +4207,15 @@ note?: string
                 ? `${entry.displayName} (Howl)`
                 : undefined
             : undefined
-          _pushPerkHit(typedHit.count, typedHit.rawVal, true, _wwsLabelOverride)
+          // Hex Ray: each chunk is one ray from a named source → row + type label
+          // carry the source, e.g. "Hex Ray (DARK ELF)".
+          const hexSource = typedHit.label?.includes(' · ')
+            ? typedHit.label.slice(typedHit.label.indexOf(' · ') + 3)
+            : undefined
+          const _hexLabelOverride = entry.perkName === 'Hex Ray' && hexSource
+            ? `${entry.displayName} (${hexSource})`
+            : undefined
+          _pushPerkHit(typedHit.count, typedHit.rawVal, true, _wwsLabelOverride ?? _hexLabelOverride)
         }
       } else {
         _pushPerkHit(
