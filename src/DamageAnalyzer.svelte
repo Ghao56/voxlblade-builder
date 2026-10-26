@@ -5399,7 +5399,8 @@ $: _groupedSelfDamageSources = (() => {
       {#each [{ key: 'standoffRamp', perk: 'Standoff', label: 'Standoff Ramp (s)', unit: 's', min: 0, max: 5, step: 0.5 }, { key: 'guidingWindsRamp', perk: 'Guiding Winds', label: 'Guiding Winds Charge (%)', unit: '%', min: 0, max: 100, step: 5 }, { key: 'slayerRageTicks', perk: 'Slayer Rage', label: 'Slayer Rage Ticks', unit: '×', min: 0, max: 20, step: 1 }] as r}
         {@const _rampMin = r.min ?? 0}
         {@const _rampMax = r.max ?? (perks[r.perk] ?? 0)}
-        {#if (perks[r.perk] ?? 0) > 0 || (($result.basePerks?.[r.perk] ?? 0) > 0 || ($build as any)[r.key] != null)}
+        // slayerRageTicks is a required default (20) so a stale-key check only makes sense for the optional ramp keys
+        {#if (perks[r.perk] ?? 0) > 0 || ($result.basePerks?.[r.perk] ?? 0) > 0 || (r.key !== 'slayerRageTicks' && ($build as any)[r.key] != null)}
           {@const _rampVal = Math.max(_rampMin, Math.min(($build as any)[r.key] ?? _rampMax, _rampMax))}
           <div class="da-sb-slider-wrap da-sb-slider-wrap--compact" style="margin-top:6px">
             <span class="da-sb-slider-label">{r.label}</span>
