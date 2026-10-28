@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fade } from 'svelte/transition'
-  import { build, result, clearBuild, orkBuffTenacity, replaceBuild } from './lib/store'
+  import { build, result, clearBuild, orkBuffTenacity, replaceBuild, randomizeBuild } from './lib/store'
   import DraconicAbilityStats from './DraconicAbilityStats.svelte'
   import {
     races, guilds, armors, rings, runes, blades, handles, gloves, essences,
@@ -550,6 +550,15 @@ function weaponMatchesFilter(item: any): boolean {
     _previousBuild = null
     _undoVisible = false
     if (_undoTimer) { clearTimeout(_undoTimer); _undoTimer = null }
+  }
+
+  function handleRandomBuild() {
+    _previousBuild = { ...$build, enchantments: JSON.parse(JSON.stringify($build.enchantments)) }
+    randomizeBuild()
+    _undoVisible = true
+    if (_undoTimer) clearTimeout(_undoTimer)
+    _undoTimer = setTimeout(() => { _undoVisible = false; _previousBuild = null }, UNDO_WINDOW_MS)
+    addToast('Random build generated', 'info')
   }
 
   function toggleUpgrade(key: 'upgradeHelmet'|'upgradeChestplate'|'upgradeLeggings'|'upgradeRing'|'upgradeRune') {
@@ -1793,6 +1802,9 @@ $: _appWaAvgTotal = (() => {
               <i class="fa fa-clone"></i> Clone
             </button>
           </div>
+          <Button variant="info" size="md" onclick={handleRandomBuild} disabled={false}>
+            🎲 Random
+          </Button>
           <Button variant="negative" size="md" onclick={handleClearBuild} disabled={false}>
             ✕ Clear All
           </Button>

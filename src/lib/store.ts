@@ -2,6 +2,7 @@ import { writable, derived, get } from 'svelte/store'
 import type { BuildState, EnchantSlot } from './types'
 import { calcBuild, races, enforceEnchantSlot, armorSupportsSlot } from './engine'
 import { isMonkGuild } from './engine/data/character'
+import { randomizeBuildState } from './random'
 import { STORAGE_KEY_BUILD, DEFAULT_LEVEL, DEFAULT_HP_FILL, DEFAULT_ENEMY_HP_FILL, DEFAULT_INVENTORY_FILL, SAVE_DEBOUNCE_MS } from './constants'
 
 const DEFAULT_BUILD: BuildState = {
@@ -172,6 +173,10 @@ export function replaceBuild(state: BuildState) {
 
 export function clearBuild() {
   replaceBuild({ ...DEFAULT_BUILD })
+}
+
+export function randomizeBuild() {
+  replaceBuild(randomizeBuildState(get(build)))
 }
 
 export function setGuild(guildName: string, guildRank: number) {
