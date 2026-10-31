@@ -75,7 +75,7 @@ export type EnchantSlot = "helmet" | "chestplate" | "leggings" | "ring" | "rune"
 export const UPGRADE_MAX = 5
 const UPGRADE_MULTIPLIER = 1.1
 
-export function applyUpgrade(stats: StatMap, level: number): StatMap {
+export function applyUpgrade(stats: StatMap, level: number, keepNegativeStats = false): StatMap {
   if (level <= 0) return { ...stats }
   const mult = 1 + level * (UPGRADE_MULTIPLIER - 1)
   const result: StatMap = {}
@@ -85,7 +85,7 @@ export function applyUpgrade(stats: StatMap, level: number): StatMap {
     const v = stats[k]
     if (v == null) continue
     if (v > 0) result[k] = v * mult
-    else if (v < 0) result[k] = v / mult
+    else if (v < 0) result[k] = keepNegativeStats ? v : v / mult
     else result[k] = 0
   }
   return result

@@ -107,6 +107,7 @@ import {
   WARDING_TIDES_REINFORCE_POTENCY_BASE, WARDING_TIDES_REINFORCE_POTENCY_PER_AMOUNT, WARDING_TIDES_REINFORCE_DURATION,
   PURE_ROT_ROTTED_POTENCY_PER_AMOUNT, PURE_ROT_ROTTED_DURATION,
   INSPIRED_BASE_POTENCY,
+  DARK_POWER_POTENCY_PER_AMOUNT,
 } from '../lib/constants/buffs'
 import {
   CRYO_ENGINE_TAILWIND_BASE_POTENCY, CRYO_ENGINE_TAILWIND_POTENCY_PER_AMOUNT,
@@ -690,6 +691,15 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
     effectUnit: 'flat',
     statKey: 'shield',
+    isNeutral: true,
+  },
+  'Dark Power': {
+    name: 'Dark Power',
+    color: '#483a85',
+    description: 'Deal x% more damage. Increases damage dealt by 10% per 0.1 potency (per unique debuff on self, per Dark One perk amount).',
+    dynamicDescription: (_perks, potency) => `Deal ${+(potency * 100).toFixed(2)}% more damage`,
+    effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
+    effectUnit: 'flat',
     isNeutral: true,
   },
   'Quickdraw': {
@@ -1558,6 +1568,18 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       condition: 'rank 2 in the Gladiator Guild.',
       sourceName: 'HUNT(Gladiator cantrip)',
       sourceType: 'cantrip',
+    },
+  ],
+  'Dark One': (amount) => [
+    {
+      buffName: 'Dark Power',
+      // 0.1 potency per perk amount; BuffList/DamageAnalyzer override potency with
+      // 0.1 × unique self-debuffs × amount (10% dmg per 0.1 potency).
+      potency: DARK_POWER_POTENCY_PER_AMOUNT * amount,
+      duration: 0,
+      condition: 'Per unique debuff on self',
+      sourceName: 'Dark One',
+      sourceType: 'perk',
     },
   ],
   'Minion Absorption': (amount) => [

@@ -373,10 +373,11 @@ export const BOOST_DEFS: BoostDef[] = [
     calcFn: (ctx) => {
       const stacks = ctx.perks['Dark One'] ?? 0
       if (stacks > 0 && ctx.selfDebuffCount > 0) {
-        const mult = 1 + (ctx.selfDebuffCount * stacks) / 15
+        // +10% damage per unique self-debuff, per Dark One perk amount (was 1/15).
+        const mult = 1 + (ctx.selfDebuffCount * stacks) / 10
         return {
           multiplier: mult,
-          condition: `${ctx.selfDebuffCount} debuff(s) · +${(ctx.selfDebuffCount * stacks / 15 * 100).toFixed(2)}% dmg`,
+          condition: `${ctx.selfDebuffCount} debuff(s) · +${(ctx.selfDebuffCount * stacks / 10 * 100).toFixed(2)}% dmg`,
         }
       }
       return null

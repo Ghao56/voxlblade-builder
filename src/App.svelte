@@ -1150,8 +1150,8 @@ function applyEnchantToAll(slot: EnchantSlot) {
         return [...filtered].sort((a, b) => {
           const pa = getArmorPart(a.name, slotName as any)
           const pb = getArmorPart(b.name, slotName as any)
-          const sa = computeArmorEffectiveBoost(applyUpgrade(pa?.stats as StatMap ?? {}, UPGRADE_MAX), scalings)
-          const sb = computeArmorEffectiveBoost(applyUpgrade(pb?.stats as StatMap ?? {}, UPGRADE_MAX), scalings)
+          const sa = computeArmorEffectiveBoost(applyUpgrade(pa?.stats as StatMap ?? {}, UPGRADE_MAX, a.name === 'Steel Legion' || a.name === 'Prisoner'), scalings)
+          const sb = computeArmorEffectiveBoost(applyUpgrade(pb?.stats as StatMap ?? {}, UPGRADE_MAX, b.name === 'Steel Legion' || b.name === 'Prisoner'), scalings)
           return sb - sa || a.name.localeCompare(b.name)
         })
       }
@@ -1161,8 +1161,8 @@ function applyEnchantToAll(slot: EnchantSlot) {
         return [...filtered].sort((a, b) => {
           const pa = getArmorPart(a.name, slotName as any)
           const pb = getArmorPart(b.name, slotName as any)
-          const sa = computeArmorBrawnyEffectiveBoost(applyUpgrade(pa?.stats as StatMap ?? {}, UPGRADE_MAX), scalings, brawnyAmt)
-          const sb = computeArmorBrawnyEffectiveBoost(applyUpgrade(pb?.stats as StatMap ?? {}, UPGRADE_MAX), scalings, brawnyAmt)
+          const sa = computeArmorBrawnyEffectiveBoost(applyUpgrade(pa?.stats as StatMap ?? {}, UPGRADE_MAX, a.name === 'Steel Legion' || a.name === 'Prisoner'), scalings, brawnyAmt)
+          const sb = computeArmorBrawnyEffectiveBoost(applyUpgrade(pb?.stats as StatMap ?? {}, UPGRADE_MAX, b.name === 'Steel Legion' || b.name === 'Prisoner'), scalings, brawnyAmt)
           return sb - sa || a.name.localeCompare(b.name)
         })
       }

@@ -59,6 +59,7 @@ export function applyEnchantmentsToSlot(
   basePerks:    Record<string, number>,
   enchantNames: string[],
   upgradeLevel: number = 0,
+  keepNegativeStats = false,
 ): { stats: StatMap; perks: Record<string, number> } {
   const ordered = [...enchantNames].reverse()
 
@@ -92,7 +93,7 @@ export function applyEnchantmentsToSlot(
   // Apply upgrade to modified base (keep armorPen unaffected)
   if (upgradeLevel > 0) {
     const preUpgradeArmorPen = currentStats.armorPenetration
-    currentStats = applyUpgrade(currentStats, upgradeLevel)
+    currentStats = applyUpgrade(currentStats, upgradeLevel, keepNegativeStats)
     if (currentStats.armorPenetration !== preUpgradeArmorPen) {
       currentStats.armorPenetration = preUpgradeArmorPen
     }

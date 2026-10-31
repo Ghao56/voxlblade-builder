@@ -26,6 +26,7 @@
   } from './data/BuffData'
   import { getDraconicInfusionBuff, getDraconicAbilityDebuffs, getDraconicInfusionPotMult, getDraconicInfusionDurMult } from './data/draconicBuffs'
   import { calcMinionAbsorptionPotency } from './data/Boost'
+  import { DARK_POWER_POTENCY_PER_AMOUNT } from './lib/constants'
   import { WEAPON_ARTS } from './data/weaponArts'
   import { POTION_MAP } from './data/potions'
   import { UI_COLORS, SOURCE_LABELS } from './lib/uiConstants'
@@ -139,6 +140,19 @@ import { calcBaseMaxHP } from './lib/constants/game'
       for (let i = 0; i < modified.length; i++) {
         if (modified[i].buffName === 'Minion Absorbed') {
           modified[i] = { ...modified[i], potency: _minionAbsPotency }
+        }
+      }
+    }
+
+    const _darkOneAmt = $result.perks['Dark One'] ?? 0
+    if (_darkOneAmt > 0) {
+      const _dpDebuffCount = new Set(modified.filter(b => {
+        const def = BUFF_DEFS[b.buffName]
+        return (b.isSelfDebuff || def?.isSelfDebuff) && def?.isDebuff
+      }).map(b => b.buffName)).size
+      for (let i = 0; i < modified.length; i++) {
+        if (modified[i].buffName === 'Dark Power') {
+          modified[i] = { ...modified[i], potency: DARK_POWER_POTENCY_PER_AMOUNT * _dpDebuffCount * _darkOneAmt }
         }
       }
     }

@@ -3,7 +3,8 @@ export const FRENZY_RAGE_MULT = 1 / 6
 /** Movement speed % granted per Frenzy perk amount while Rage is active. */
 export const FRENZY_SPEED_PCT_PER_STACK = 5
 
-export const MINION_ABSORPTION_MULT = 0.2
+/** Minion Absorption: portion of Summon Boost granted as "Minion Absorbed" potency per perk amount. Was 1/5, nerfed to 2/15. */
+export const MINION_ABSORPTION_MULT = 2 / 15
 
 export const VENOM_EATER_HEAL_PER_STACK = 0.1
 export const LIFESTEAL_HEAL_PCT_PER_STACK = 0.0025

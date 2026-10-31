@@ -109,6 +109,8 @@ const TRUE_BALANCE_INSPIRED_DURATION_BASE = 4
 
 // PERK_BUFFS factory constants
 const PERFECTION_POTENCY_PER_AMOUNT = 5
+/** Dark Power: potency per Dark One perk amount (bonus = 10% per 0.1 potency per debuff). */
+export const DARK_POWER_POTENCY_PER_AMOUNT = 1 / 10
 export const BOUNCE_MOMENTUM_BUFF_POTENCY = 1.0
 export const BOUNCE_MOMENTUM_DURATION_PER_AMOUNT = 3
 export const TOADZERKER_BUFF_POTENCY = 0.2

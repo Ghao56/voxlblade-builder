@@ -382,6 +382,8 @@ function accumulateEquipment(state: BuildState): { stats: StatMap; perks: Record
     const part = getArmorPart(armorName, partType)
     if (!part) continue
     const upgrade = state[upgradeKey] ?? 0
+    // Steel Legion & Prisoner: upgrades no longer shrink their negative stats.
+    const keepNegativeStats = armorName === 'Steel Legion' || armorName === 'Prisoner'
     const armorPerks: Record<string, number> = {}
     for (const p of part.perks) armorPerks[p.name] = (armorPerks[p.name] ?? 0) + p.amount
     let slotResult = applyEnchantmentsToSlot(
@@ -389,6 +391,7 @@ function accumulateEquipment(state: BuildState): { stats: StatMap; perks: Record
       armorPerks,
       state.enchantments[enchSlot],
       upgrade,
+      keepNegativeStats,
     )
     addStats(slotResult.stats)
     addPerkMap(slotResult.perks)
