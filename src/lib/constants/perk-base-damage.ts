@@ -97,7 +97,7 @@ export const PROTECTOR_SPIRIT_BASE_DMG = 0.4
 export const PROTECTOR_SPIRIT_DMG_PER_STACK = 0.1
 
 // Air Pressure
-export const AIR_PRESSURE_BASE_DMG = 6
+export const AIR_PRESSURE_BASE_DMG = 0
 export const AIR_PRESSURE_DMG_PER_POTENCY = 0.65
 
 // Air Barrier
@@ -275,8 +275,8 @@ export const TRUE_MOON_BASE_DMG = 2
 export const TRUE_MOON_DMG_PER_STACK = 1.5
 
 // Tesla Cannon
-export const TESLA_ORB_BASE_DMG = 2
-export const TESLA_ORB_DMG_PER_STACK = 4
+export const TESLA_ORB_BASE_DMG = 4
+export const TESLA_ORB_DMG_PER_STACK = 2
 // Orb zaps every ~0.5s for ~7.5s -> 15 zaps (only one Orb may be active at a time).
 export const TESLA_ORB_HITS = 15
 

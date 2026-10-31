@@ -316,13 +316,13 @@ export const WEAPON_ARTS: WeaponArt[] = [
   {
     name: "Blessedlings Summon",
     description: "Summon 2 Blessedlings to help fight!",
-    cooldown: 20,
+    cooldown: 15,
     requirements: { holyScaling: 0.3, summonBoost: 10 },
   },
   {
     name: "Toaladin Summon",
     description: "Summon a Toaladin!",
-    cooldown: 40,
+    cooldown: 25,
     requirements: { holyScaling: 0.01, summonBoost: 20 },
   },
   {
@@ -334,7 +334,7 @@ export const WEAPON_ARTS: WeaponArt[] = [
   {
     name: "Skeletal Woof Summon",
     description: "Summon a skeletal woof!",
-    cooldown: 25,
+    cooldown: 20,
     requirements: { hexScaling: 0.3, summonBoost: 20 },
   },
   {
