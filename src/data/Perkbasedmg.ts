@@ -124,6 +124,9 @@ import {
   WOOF_SPIRIT_HEAL,
   WOOF_SPIRIT_WEAKNESS_POTENCY,
   WOOF_SPIRIT_WEAKNESS_DURATION,
+  BOWLDUR_SPIRIT_BASE_DMG,
+  BOWLDUR_SPIRIT_DURATION,
+  BOWLDUR_SPIRIT_DEF_PCT,
   WINTER_WOOF_SPIRIT_HOWL_DMG,
   WINTER_WOOF_SPIRIT_BITE_DMG,
   WINTER_WOOF_SPIRIT_BITES,
@@ -609,6 +612,18 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
       },
     ],
     note: 'Release Spiritual Energy as a large howl on RMB. Heals 10 HP on successful hit; healing counts as lifesteal. Applies Weakness at 1 Potency for 15s.',
+  },
+  // Bowldur Spirit
+  {
+    perkName: 'Bowldur Spirit',
+    condition: 'On RMB (Monk)',
+    getBaseDamage: () => BOWLDUR_SPIRIT_BASE_DMG,
+    dmgTypeMode: 'fixed',
+    dmgTypes: { earth: 0.5, physical: 0.5 },
+    scalingMode: 'fixed',
+    scalings: { earth: 1.0, physical: 1.0 },
+    guardbreak: true,
+    note: `Single-hit RMB release (${BOWLDUR_SPIRIT_BASE_DMG} base dmg, guardbreaks, can proc other effects). Perk damage — not M1/M2. Grants +${BOWLDUR_SPIRIT_DEF_PCT}% defense for ${BOWLDUR_SPIRIT_DURATION}s while the spirit is active — uses the damageTaken/(1+defense%) formula. You cannot gain Spiritual Energy while this spirit is active.`,
   },
   // Winter Woof Spirit
   {

@@ -13,6 +13,8 @@ import {
   PROTECTOR_SPIRIT_DR_PER_STACK,
   PROTECTOR_SPIRIT_HP_THRESHOLD,
   PROTECTOR_SPIRIT_ALWAYS_ON_AT,
+  BOWLDUR_SPIRIT_DEF_PCT,
+  BOWLDUR_SPIRIT_DURATION,
   AIR_PRESSURE_DEF_PER_POTENCY,
   VALOR_SHIELD_DR_PER_STACK,
   VALOR_MAX_DR,
@@ -104,6 +106,12 @@ const DEFENSIVE_PERK_SOURCES: DefensivePerkSource[] = [
     label: 'Air Pressure',
     conditionLabel: `${AIR_PRESSURE_DEF_PER_POTENCY}% defense per 1 potency · damage taken ÷ (1 + defense%)`,
     potencyCapped: true,
+  },
+  {
+    perkName: 'Bowldur Spirit',
+    fixedDefPct: BOWLDUR_SPIRIT_DEF_PCT,
+    label: 'Bowldur Spirit',
+    conditionLabel: `While the Bowldur Spirit is active (${BOWLDUR_SPIRIT_DURATION}s) · damage taken ÷ (1 + defense%)`,
   },
   {
     perkName: 'Valor',

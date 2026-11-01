@@ -20,7 +20,8 @@ import {
   VICIOUS_EDGE_MULT_PER_STACK,
   UNDEAD_MIGHT_MULT_PER_STACK, HIGHLANDER_MULT_PER_STACK,
   QUEENS_POWER_POTENCY_PER_AMOUNT, QUEENS_POWER_SUMMON_SCALING_PER_TENTH_POTENCY,
-  
+  DARK_POWER_POTENCY_PER_AMOUNT,
+
   VENOM_EATER_DMG_MULT_PER_STACK, FEROCITY_TENACITY_MULT,
   SPIRIT_WINDS_TAILWIND_MULT, SPIRIT_WINDS_PER_STACK, STEAM_POWERED_MULT_PER_AIR_BOOST,
   GUARDIAN_SPIN_BASE, GUARDIAN_SPIN_MULT_PER_STACK,
@@ -373,11 +374,11 @@ export const BOOST_DEFS: BoostDef[] = [
     calcFn: (ctx) => {
       const stacks = ctx.perks['Dark One'] ?? 0
       if (stacks > 0 && ctx.selfDebuffCount > 0) {
-        // +10% damage per unique self-debuff, per Dark One perk amount (was 1/15).
-        const mult = 1 + (ctx.selfDebuffCount * stacks) / 10
+        // +8% damage per unique self-debuff, per Dark One perk amount (was 10%).
+        const mult = 1 + (ctx.selfDebuffCount * stacks) * DARK_POWER_POTENCY_PER_AMOUNT
         return {
           multiplier: mult,
-          condition: `${ctx.selfDebuffCount} debuff(s) · +${(ctx.selfDebuffCount * stacks / 10 * 100).toFixed(2)}% dmg`,
+          condition: `${ctx.selfDebuffCount} debuff(s) · +${(ctx.selfDebuffCount * stacks * DARK_POWER_POTENCY_PER_AMOUNT * 100).toFixed(2)}% dmg`,
         }
       }
       return null

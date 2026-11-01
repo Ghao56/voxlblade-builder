@@ -67,6 +67,11 @@ export const WOOF_SPIRIT_HEAL = 10
 export const WOOF_SPIRIT_WEAKNESS_POTENCY = 1
 export const WOOF_SPIRIT_WEAKNESS_DURATION = 15
 
+// Bowldur Spirit
+export const BOWLDUR_SPIRIT_BASE_DMG = 5
+export const BOWLDUR_SPIRIT_DURATION = 15
+export const BOWLDUR_SPIRIT_DEF_PCT = 30
+
 // Winter Woof Spirit
 export const WINTER_WOOF_SPIRIT_HOWL_DMG = 6
 export const WINTER_WOOF_SPIRIT_BITE_DMG = 2

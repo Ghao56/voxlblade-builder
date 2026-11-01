@@ -2202,7 +2202,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       })
       const debuffCount = new Set(uniqueSelfDebuffs.map(b => b.buffName)).size
       if (debuffCount > 0) {
-        const pct = (debuffCount * darkOneStacks) / 10
+        const pct = (debuffCount * darkOneStacks) * DARK_POWER_POTENCY_PER_AMOUNT
         entries.push({
           sourceName: 'Dark One',
           rawMultiplier: 1 + pct,

@@ -696,7 +696,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
   'Dark Power': {
     name: 'Dark Power',
     color: '#483a85',
-    description: 'Deal x% more damage. Increases damage dealt by 10% per 0.1 potency (per unique debuff on self, per Dark One perk amount).',
+    description: 'Deal x% more damage. Increases damage dealt by 8% per 0.08 potency (per unique debuff on self, per Dark One perk amount).',
     dynamicDescription: (_perks, potency) => `Deal ${+(potency * 100).toFixed(2)}% more damage`,
     effectPerTenthPotency: BUFF_EFFECT_PER_TENTH,
     effectUnit: 'flat',
@@ -1573,8 +1573,8 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
   'Dark One': (amount) => [
     {
       buffName: 'Dark Power',
-      // 0.1 potency per perk amount; BuffList/DamageAnalyzer override potency with
-      // 0.1 × unique self-debuffs × amount (10% dmg per 0.1 potency).
+      // 0.08 potency per perk amount; BuffList/DamageAnalyzer override potency with
+      // 0.08 × unique self-debuffs × amount (8% dmg per 0.08 potency).
       potency: DARK_POWER_POTENCY_PER_AMOUNT * amount,
       duration: 0,
       condition: 'Per unique debuff on self',
