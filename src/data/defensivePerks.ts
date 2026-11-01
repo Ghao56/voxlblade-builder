@@ -14,7 +14,6 @@ import {
   PROTECTOR_SPIRIT_HP_THRESHOLD,
   PROTECTOR_SPIRIT_ALWAYS_ON_AT,
   BOWLDUR_SPIRIT_DEF_PCT,
-  BOWLDUR_SPIRIT_DURATION,
   AIR_PRESSURE_DEF_PER_POTENCY,
   VALOR_SHIELD_DR_PER_STACK,
   VALOR_MAX_DR,
@@ -25,6 +24,8 @@ import {
   MOUNTED_DEFENSE_DR_PER_STACK,
   CARAPACE_DR_PER_STACK,
   CURSED_BARK_DR_PER_DEBUFF,
+  BULWARK_DEF_PCT,
+  BULWARK_STUN_RES_PER_AMOUNT,
   SCREECHING_SOUND_DEF_PER_STACK,
 } from '../lib/constants'
 import { fmtPctVal } from '../lib/utils'
@@ -51,7 +52,9 @@ interface DefensivePerkSource {
   maxDrPct?: number
   isFlat?: boolean
   label: string
-  conditionLabel: string
+  conditionLabel?: string
+  /** Overrides conditionLabel when the text depends on perk amount */
+  conditionLabelFn?: (amt: number) => string
   hpBelowThreshold?: number
   minPerkForAlways?: number
   matchedOnly?: boolean
@@ -111,7 +114,7 @@ const DEFENSIVE_PERK_SOURCES: DefensivePerkSource[] = [
     perkName: 'Bowldur Spirit',
     fixedDefPct: BOWLDUR_SPIRIT_DEF_PCT,
     label: 'Bowldur Spirit',
-    conditionLabel: `While the Bowldur Spirit is active (${BOWLDUR_SPIRIT_DURATION}s) · damage taken ÷ (1 + defense%)`,
+    conditionLabel: '',
   },
   {
     perkName: 'Valor',
@@ -166,6 +169,15 @@ const DEFENSIVE_PERK_SOURCES: DefensivePerkSource[] = [
     drPctFn: (amt, ctx) => CURSED_BARK_DR_PER_DEBUFF * ctx.uniqueDebuffCount * amt,
   },
   {
+    perkName: 'Bulwark',
+    fixedDefPct: BULWARK_DEF_PCT,
+    label: 'Bulwark',
+    conditionLabelFn: amt => {
+      const stunRes = Math.round(BULWARK_STUN_RES_PER_AMOUNT * amt * 100) / 100
+      return `Provides a conditional ${stunRes}s of stun resistance`
+    },
+  },
+  {
     perkName: 'Screeching Sound',
     drPctPerStack: SCREECHING_SOUND_DEF_PER_STACK,
     label: 'Screeching Sound',
@@ -211,7 +223,7 @@ export function getActiveDefensivePerkSources(
       name: def.label, 
       defPct, 
       isFlat: def.isFlat, 
-      condition: def.conditionLabel,
+      condition: def.conditionLabelFn ? def.conditionLabelFn(amt) : (def.conditionLabel ?? ''),
       potencyCapped: def.potencyCapped,
       grantsStunImmunity: def.grantsStunImmunity,
     })

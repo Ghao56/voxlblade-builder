@@ -2270,7 +2270,7 @@ note?: string
                     </span>
                     {/if}
                     {#if gHealTotal > 0}
-                      {@const gHealCrit = grp.list.some(h => h.types.some(t => t.isHeal && useCritFor(t)))}
+                      {@const gHealCrit = grp.list.some(h => h.types.some(t => t.isHeal && isCritShown(t)))}
                       <span class="bdc-grp-heal-total" class:bdc-grp-heal-total--crit={gHealCrit}>
                         {#if gHealCrit}<CritIcon size={10}/>{/if}
                         {fmt1(gHealTotal)} Heal
@@ -2335,7 +2335,7 @@ note?: string
                                 {#if isCritShown(t)}
                                   <span class="bdc-crit-inline-icon"><CritIcon size={12} /></span>
                                 {/if}
-                                <span class="bdc-hit-type-val">{fmt(isCritShown(t) ? (t.subHits ? t.critVal : (t.hitCount ? t.critVal / t.hitCount : t.critVal)) : (t.subHits ? t.raw : (t.hitCount ? t.raw / t.hitCount : t.raw)))}</span>
+                                <span class="bdc-hit-type-val">{fmt(useCritFor(t) ? (t.subHits ? t.critVal : (t.hitCount ? t.critVal / t.hitCount : t.critVal)) : (t.subHits ? t.raw : (t.hitCount ? t.raw / t.hitCount : t.raw)))}</span>
                                 {#if t.subHits && t.subHits > 1}
                                   <span class="bdc-hit-cnt">×{t.subHits}</span>
                                 {:else if t.hitCount && t.hitCount > 1 && t.tag !== 'Blub'}
@@ -2469,6 +2469,12 @@ note?: string
                                   <span class="bdc-fr-label">{_critMultLabel(t)}</span>
                                   <span class="bdc-fr-val bdc-fr-val--crit">× {fmtMult(_critMultFor(t))}</span>
                                 </div>
+                              {:else if useCritFor(t) && t.critVal !== t.raw}
+                                <!-- crit-sourced heals (Lifesteal etc.): amount rises with crit damage but the heal itself never crits -->
+                                <div class="bdc-fr">
+                                  <span class="bdc-fr-label">Crit Damage Included</span>
+                                  <span class="bdc-fr-val bdc-fr-val--crit">× {fmtMult(t.critVal / t.raw)}</span>
+                                </div>
                               {/if}
                               {#if t.critGuardbreakMult && isCritShown(t)}
                                 <div class="bdc-fr">
@@ -2479,7 +2485,7 @@ note?: string
                               <div class="bdc-fr-divider"></div>
                                <div class="bdc-fr bdc-fr--result">
                                 <span class="bdc-fr-label">{t.isHeal ? 'Final Heal' : 'Final Damage'}</span>
-                                <span class="bdc-fr-val bdc-fr-val--result" style="--tc:{t.color}">{fmt(isCritShown(t) ? (t.hitCount ? t.critVal / t.hitCount : t.critVal) : (t.hitCount ? t.raw / t.hitCount : t.raw))}</span>
+                                <span class="bdc-fr-val bdc-fr-val--result" style="--tc:{t.color}">{fmt(useCritFor(t) ? (t.hitCount ? t.critVal / t.hitCount : t.critVal) : (t.hitCount ? t.raw / t.hitCount : t.raw))}</span>
                               </div>
                             </div>
                           </div>
@@ -2808,6 +2814,11 @@ note?: string
         <span class="bdc-fr-label">{_critMultLabel(t)}</span>
         <span class="bdc-fr-val bdc-fr-val--crit">× {fmtMult(_critMultFor(t))}</span>
       </div>
+    {:else if useCritFor(t) && t.critVal !== t.raw}
+      <div class="bdc-fr">
+        <span class="bdc-fr-label">Crit Damage Included</span>
+        <span class="bdc-fr-val bdc-fr-val--crit">× {fmtMult(t.critVal / t.raw)}</span>
+      </div>
     {/if}
     {#if t.critGuardbreakMult && isCritShown(t)}
       <div class="bdc-fr">
@@ -2818,7 +2829,7 @@ note?: string
     <div class="bdc-fr-divider"></div>
     <div class="bdc-fr bdc-fr--result">
       <span class="bdc-fr-label">{t.isHeal ? 'Final Heal' : 'Final Damage'}</span>
-      <span class="bdc-fr-val bdc-fr-val--result" style="--tc:{t.color}">{fmt(isCritShown(t) ? (t.hitCount && t.tag !== 'Blub' ? t.critVal / t.hitCount : t.critVal) : (t.hitCount && t.tag !== 'Blub' ? t.raw / t.hitCount : t.raw))}</span>
+      <span class="bdc-fr-val bdc-fr-val--result" style="--tc:{t.color}">{fmt(useCritFor(t) ? (t.hitCount && t.tag !== 'Blub' ? t.critVal / t.hitCount : t.critVal) : (t.hitCount && t.tag !== 'Blub' ? t.raw / t.hitCount : t.raw))}</span>
     </div>
   </div>
 {/if}
