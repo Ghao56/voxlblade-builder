@@ -225,6 +225,7 @@ export interface BuildState {
   lastCroakStacks?: number
   buffsConsumed: number
   sporelingsSummoned: number
+  cannonballSummonsFired: number
   enchantedSwordType: number
   bastionBallistaArrows: number
   ichorSparkCharge: number

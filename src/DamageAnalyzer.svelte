@@ -28,7 +28,7 @@
   import { applyDraconicBonuses, getDraconicBonuses } from './data/draconicRunes'
   import { calculateHealBoost, type HealSource } from './data/HealBoost'
   import { buildRadianceProcHit, isRadianceEligible, radianceSourceHealing } from './data/radianceProcs'
-  import { RADIANCE_HOLY_SCALING, RADIANCE_LABEL, RADIANCE_COLOR, RAINSTORM_BASE_DMG, RAINSTORM_DMG_PER_STACK, RAINSTORM_BASE_HEAL, RAINSTORM_HEAL_PER_STACK, RAINSTORM_LABEL, REJUVENATING_FLAME_BASE_HEAL, REJUVENATING_FLAME_HEAL_PER_AMOUNT, REJUVENATING_FLAME_FIRE_SCALING, REJUVENATING_FLAME_BURN_HEAL_MULT, REJUVENATING_FLAME_BURN_AOE_PER_AMOUNT, REJUVENATING_FLAME_HEAL_LABEL, WAVE_RIDER_LABEL, HEX_RAY_BASE_DMG, HEX_RAY_DMG_PER_STACK, HEX_RAY_WEAKNESS_POTENCY_MULT } from './lib/constants/perk-base-damage'
+  import { RADIANCE_HOLY_SCALING, RADIANCE_LABEL, RADIANCE_COLOR, RAINSTORM_BASE_DMG, RAINSTORM_DMG_PER_STACK, RAINSTORM_BASE_HEAL, RAINSTORM_HEAL_PER_STACK, RAINSTORM_LABEL, CACI_KING_SPIRIT_DANCING_BASE_HEAL, CACI_KING_SPIRIT_MAX_HEAL_TICKS, CACI_KING_SPIRIT_AIR_SCALING, CACI_KING_SPIRIT_EARTH_SCALING, CACI_KING_SPIRIT_HEAL_LABEL, REJUVENATING_FLAME_BASE_HEAL, REJUVENATING_FLAME_HEAL_PER_AMOUNT, REJUVENATING_FLAME_FIRE_SCALING, REJUVENATING_FLAME_BURN_HEAL_MULT, REJUVENATING_FLAME_BURN_AOE_PER_AMOUNT, REJUVENATING_FLAME_HEAL_LABEL, WAVE_RIDER_LABEL, HEX_RAY_BASE_DMG, HEX_RAY_DMG_PER_STACK, HEX_RAY_WEAKNESS_POTENCY_MULT } from './lib/constants/perk-base-damage'
   import { roundMultiplier, calcWardingDebuffMultiplier, calcProcChance, applyScalingMult, fmtPctVal } from './lib/utils'
   import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage, calcInoculationHeal, UNDEAD_MIGHT_SELF_DMG_FRACTION, UNDEAD_MIGHT_DR_PCT_PER_STACK, type SelfDamagePerkDef } from './data/selfDamage'
   import { resolveDamageTypes, resolveWaDamageTypeKeys, applyAirToMagicConversion, computeEffectiveWaDmgTypes, pickHighestDmgType } from './lib/damageTypeResolve'
@@ -202,6 +202,13 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     const _apMax = _apDef?.slider?.getMax ? _apDef.slider.getMax({ perks }) : 0
     if (_apDef?.slider?.defaultToMax && _apMax > 0 && ($build.airPressurePotency ?? 0) === 0) {
       build.update(s => ({ ...s, airPressurePotency: _apMax }) as any)
+    }
+  }
+  $: {
+    const _cbDef = PERK_DMG_DEFS.find(d => d.perkName === 'Cannonball' && d.slider)
+    const _cbMax = _cbDef?.slider?.getMax ? _cbDef.slider.getMax({ perks }) : 0
+    if (_cbDef?.slider?.defaultToMax && _cbMax > 0 && ($build.cannonballSummonsFired ?? 0) === 0) {
+      build.update(s => ({ ...s, cannonballSummonsFired: _cbMax }) as any)
     }
   }
   $: vitalMistPerkAmount = perks['Vital Mist'] ?? 0
@@ -2598,6 +2605,11 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     ? sumScalingBreakdown({ fire: REJUVENATING_FLAME_FIRE_SCALING }, REJUVENATING_FLAME_HEAL_LABEL)
     : null
 
+  // Caci King Spirit heal Air+Earth scaling breakdown (1.0 Air + 1.0 Earth)
+  $: _caciKingSpiritHealScalingBreakdown = ((perks['Caci King Spirit'] ?? 0) > 0)
+    ? sumScalingBreakdown({ air: CACI_KING_SPIRIT_AIR_SCALING, earth: CACI_KING_SPIRIT_EARTH_SCALING }, CACI_KING_SPIRIT_HEAL_LABEL)
+    : null
+
   // Vital Mist heal Air/Physical-scaling breakdown (1.0 Air + 1.0 Physical Scaling)
   $: _vitalMistHealScalingBreakdown = ((perks['Vital Mist'] ?? 0) > 0)
     ? sumScalingBreakdown({ air: 1.0, physical: 1.0 }, 'Vital Mist Heal')
@@ -3244,7 +3256,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     for (const def of PERK_DMG_DEFS) {
       const perkAmount = perks[def.perkName] ?? 0
       if (perkAmount <= 0) continue
-      if (def.activeIf && !def.activeIf({ draconicRuneInfusion: $build.draconicRuneInfusion, draconicColor: _effDraconicColor, selectedWeaponArt: $build.selectedWeaponArt, perks })) continue
+      if (def.activeIf && !def.activeIf({ draconicRuneInfusion: $build.draconicRuneInfusion, draconicColor: _effDraconicColor, selectedWeaponArt: $build.selectedWeaponArt, rune: $build.rune, perks })) continue
       if (def.perkName === 'Bomber Charge' && selectedWA.name === 'Retaliate') continue
       if (def.perkName === 'Ruler Of The Sands' && disabledEffects.has('rulerOfTheSands')) continue
 
@@ -4634,6 +4646,27 @@ alliesOnly: true,
           })
         }
       }
+    }
+
+    // Caci King Spirit: while dancing the user heals 0.1 base HP per tick on
+    // 1.0 Air + 1.0 Earth scaling, once every 0.3s for up to 99 ticks total
+    // (the 30s max dance is capped at 99 ticks). Can proc heal-related effects
+    // (compatible-heal list: Radiance bursts, Critical Healing), so it keeps a
+    // default 1.0 proc coefficient. Radiance handler runs after and keys off
+    // the label pattern /caci king spirit/i.
+    const _caciKingSpiritAmt = perks['Caci King Spirit'] ?? 0
+    if (_caciKingSpiritAmt > 0) {
+      const cksScaling = _computePerkScalingMult({ air: CACI_KING_SPIRIT_AIR_SCALING, earth: CACI_KING_SPIRIT_EARTH_SCALING })
+      result.push({
+        group: 'Perk', index: result.length, count: CACI_KING_SPIRIT_MAX_HEAL_TICKS,
+        base: CACI_KING_SPIRIT_DANCING_BASE_HEAL,
+        scalingMult: cksScaling, combatMult: _healFinalMultiplier,
+        radianceHealMult: _healDealtMultiplier,
+        isFinisher: false, dmgTypes: { heal: 1.0 },
+        dmgTypeIsCritExempt: { heal: true },
+        label: CACI_KING_SPIRIT_HEAL_LABEL,
+        isHeal: true,
+      })
     }
 
     // Radiance: each proccable heal source emits a Holy burst spliced AFTER its
@@ -7711,7 +7744,7 @@ $: _groupedSelfDamageSources = (() => {
 </div>
 {/if}
 
-{#if _waHealScalingBreakdown || _perkHealScalingBreakdown || _rainstormHealScalingBreakdown || _rejuvenatingFlameHealScalingBreakdown || _vitalMistHealScalingBreakdown || _regenHealScalingBreakdown}
+{#if _waHealScalingBreakdown || _perkHealScalingBreakdown || _rainstormHealScalingBreakdown || _rejuvenatingFlameHealScalingBreakdown || _vitalMistHealScalingBreakdown || _caciKingSpiritHealScalingBreakdown || _regenHealScalingBreakdown}
 <div class="da-section da-section--scaling" style="border-color:rgba(74,222,128,.2);background:linear-gradient(160deg,var(--surface,#141715) 60%,rgba(74,222,128,.03) 100%)">
   <div class="da-section-title" style="color:#4ade80">✦ Heal Scaling</div>
 
@@ -7795,8 +7828,23 @@ $: _groupedSelfDamageSources = (() => {
     </div>
   {/if}
 
-  {#if _regenHealScalingBreakdown}
+  <!-- Caci King Spirit heal scaling subsection (1.0 Air + 1.0 Earth Scaling) -->
+  {#if _caciKingSpiritHealScalingBreakdown}
     <div class="ds-wa-subsection" style="margin-top:{_waHealScalingBreakdown || _perkHealScalingBreakdown || _rainstormHealScalingBreakdown || _rejuvenatingFlameHealScalingBreakdown || _vitalMistHealScalingBreakdown ? '12px' : '0'}">
+      <div class="ds-wa-header">
+        <Badge color="#38bdf8">Perk</Badge>
+        <span class="ds-wa-name" style="color:#38bdf8">{_caciKingSpiritHealScalingBreakdown.label}</span>
+      </div>
+      <div class="ds-table">
+        {@render scalingHead()}
+
+        {@render healScalingBody(_caciKingSpiritHealScalingBreakdown)}
+      </div>
+    </div>
+  {/if}
+
+  {#if _regenHealScalingBreakdown}
+    <div class="ds-wa-subsection" style="margin-top:{_waHealScalingBreakdown || _perkHealScalingBreakdown || _rainstormHealScalingBreakdown || _rejuvenatingFlameHealScalingBreakdown || _vitalMistHealScalingBreakdown || _caciKingSpiritHealScalingBreakdown ? '12px' : '0'}">
       <div class="ds-wa-header">
         <Badge color="#4ade80">Buff</Badge>
         <span class="ds-wa-name" style="color:#4ade80">{_regenHealScalingBreakdown.label}</span>

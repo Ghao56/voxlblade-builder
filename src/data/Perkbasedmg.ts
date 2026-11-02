@@ -235,7 +235,11 @@ import {
   WAVE_RIDER_WA_BASE_DMG,
   WAVE_RIDER_WA_HEAL,
   WAVE_RIDER_LABEL,
+  CANNONBALL_BASE_FLAT,
+  CANNONBALL_SUMMONS_FIRED_MULT,
+  CANNONBALL_SUMMON_SCALING_PER_STACK,
 } from '../lib/constants'
+import { WA_SUMMON_MAP, calcMaxSummonCount } from './SummonData'
 
 export interface PerkSliderDef {
   buildKey: keyof BuildState
@@ -350,7 +354,7 @@ export interface PerkDmgDef {
   enemyHpGate?: HpGate
   secondaryEffects?: SecondaryEffect[]
   triggerChain?: TriggerChainEntry[]
-  activeIf?: (ctx: { draconicRuneInfusion: string; draconicColor: string; selectedWeaponArt?: string; perks?: Record<string, number> }) => boolean
+  activeIf?: (ctx: { draconicRuneInfusion: string; draconicColor: string; selectedWeaponArt?: string; rune?: string; perks?: Record<string, number> }) => boolean
   requiredBuff?: string
   requiredEnemyDebuff?: string
   slider?: PerkSliderDef
@@ -366,6 +370,23 @@ export function calcSpringblastBaseDamage(perkAmount: number, proccingBaseDmg = 
   const hits = Math.min(Math.max(finisherHits, 1), SPRINGBLAST_MAX_FINISHER_HITS)
   const denom = SPRINGBLAST_DENOM_HALF + hits / 2
   return Math.round((flat + procCoeff * proccingBaseDmg) / denom * SPRINGBLAST_ROUND) / SPRINGBLAST_ROUND
+}
+
+/** Cannonball base damage = (10 + perkAmount) * (1 + 0.1 * summonsFired) */
+export function calcCannonballBaseDamage(perkAmount: number, summonsFired = 0): number {
+  return Math.round((CANNONBALL_BASE_FLAT + perkAmount) * (1 + CANNONBALL_SUMMONS_FIRED_MULT * Math.max(0, summonsFired)) * 100) / 100
+}
+
+/** Cannonball is only active while the player can summon (Possession
+ *  perk, or a summoning Weapon Art / Rune such as Mage Bomber Summon,
+ *  Swarm Rune, Pack Leader Rune, ...). */
+export function canSummonCannonball(ctx: { selectedWeaponArt?: string; rune?: string; perks?: Record<string, number> }): boolean {
+  const perks = ctx.perks ?? {}
+  if ((perks['Possession'] ?? 0) > 0) return true
+  if (!ctx.selectedWeaponArt && !ctx.rune) return false
+  if (ctx.selectedWeaponArt && WA_SUMMON_MAP[ctx.selectedWeaponArt]) return true
+  if (ctx.rune && WA_SUMMON_MAP[ctx.rune]) return true
+  return false
 }
 
 function calcBomberChargeBaseDamage(perkAmount: number, missingHpPct: number): number {
@@ -415,6 +436,27 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
     scalings: { physical: 1.0 },
     guardbreak: true,
     note: 'Explodes on every finisher hit while Bounce is active, dealing 1.0 Physical damage type with 1.0 Physical scaling. Base Damage per proc = (7 + 0.7·perk + (0.25 + 0.15·perk)·proccing hit base damage) / (0.5 + min(hits in finisher, 5)/2) — per-proc damage drops with more finisher hits, total damage still rises. Reduced chance to proc other effects. Deals high knockback. Half activations with Dual Guns or Storm Caster.',
+  },
+  // Cannonball
+  {
+    perkName: 'Cannonball',
+    condition: 'On RMB launch — stored minions fired forward',
+    getBaseDamage: ({ perkAmount, sliderVal = 0 }) => calcCannonballBaseDamage(perkAmount, sliderVal),
+    dmgTypeMode: 'fixed',
+    dmgTypes: { physical: 1.0 },
+    scalingMode: 'dynamic',
+    getScalings: ({ perkAmount = 0 }) => ({ summon: 1 + CANNONBALL_SUMMON_SCALING_PER_STACK * perkAmount }),
+    guardbreak: true,
+    activeIf: (ctx) => canSummonCannonball(ctx),
+    slider: {
+      buildKey: 'cannonballSummonsFired',
+      label: 'Summons Fired',
+      min: 0,
+      step: 1,
+      getMax: ({ perks }) => calcMaxSummonCount(perks),
+      defaultToMax: true,
+    },
+    note: 'Base Damage = (10 + perkAmount) × (1 + 0.1 × Summons Fired). Deals 1.0 Physical damage type with (1 + 0.05 × perkAmount) Summon scaling. Can proc other effects. Guardbreaks. Only active while the player can summon (Possession or a summoning Weapon Art / Rune).',
   },
   // Bastion Ballista
   {

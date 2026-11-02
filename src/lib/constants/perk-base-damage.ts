@@ -332,6 +332,18 @@ export const RAINSTORM_BASE_HEAL = 0.5
 export const RAINSTORM_HEAL_PER_STACK = 0.2
 export const RAINSTORM_LABEL = 'Rainstorm'
 
+// Caci King Spirit
+// While dancing the user heals once every 0.3s, up to 99 ticks total (the
+// 30s max dance is capped at 99 ticks). Dancing Base Heal = 0.1 per tick on
+// 1.0 Air + 1.0 Earth scaling. The heal is on the game spec's compatible-heal
+// list (procs heal-related effects: Radiance bursts, Critical Healing).
+export const CACI_KING_SPIRIT_DANCING_BASE_HEAL = 0.1
+export const CACI_KING_SPIRIT_HEAL_TICK_INTERVAL = 0.3
+export const CACI_KING_SPIRIT_MAX_HEAL_TICKS = 99
+export const CACI_KING_SPIRIT_AIR_SCALING = 1.0
+export const CACI_KING_SPIRIT_EARTH_SCALING = 1.0
+export const CACI_KING_SPIRIT_HEAL_LABEL = 'Caci King Spirit Heal (per tick)'
+
 // Rejuvenating Flame
 // Passive AoE heal around the user (Allies only, never the user) on 0.7 Fire
 // scaling. Base Healing = 0.1 + 0.05 × perkAmount, multiplied by 5 while the
@@ -422,3 +434,11 @@ export const WAVE_RIDER_LABEL = 'Wave Rider'
 export const HEX_RAY_BASE_DMG = 3
 export const HEX_RAY_DMG_PER_STACK = 0.6
 export const HEX_RAY_WEAKNESS_POTENCY_MULT = 4
+
+// Cannonball
+// Base Damage = (10 + perkAmount) * (1 + 0.1 * summonsFired).
+// 1.0 Physical damage type + Summon scaling (1 + 0.05 * perkAmount).
+// Summons Fired = the number of stored minions the player chooses to launch.
+export const CANNONBALL_BASE_FLAT = 10
+export const CANNONBALL_SUMMONS_FIRED_MULT = 0.1
+export const CANNONBALL_SUMMON_SCALING_PER_STACK = 0.05
