@@ -109,7 +109,7 @@ const EXTRA_CRIT_SOURCES: Array<CritSource> = [
     gatingPerks: ['Carrying Winds'],
   },
   {
-    label: "Caci King Spirit(King's Luck)",
+    label: "King's Luck",
     calc: (_stats, perks) => {
       const stacks = perks['Caci King Spirit'] ?? 0
       return stacks > 0 ? round(stacks * CACI_KING_SPIRIT_CRIT_PER_STACK) : 0

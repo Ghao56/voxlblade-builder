@@ -67,6 +67,17 @@ const PERFECTION_CRIT_PER_STACK = 5
 export const CACI_KING_SPIRIT_CRIT_PER_STACK = 20
 export const HEIGHTENED_REFLEXES_CRIT_PER_STACK = 1.5
 
+// Caci King Spirit — King's Luck status
+// Activation releases a 20s pulsing aura (1 pulse/s) that applies King's Luck
+// at 0.1 potency for 5s per pulse (each pulse re-applies before expiry).
+export const CACI_KING_SPIRIT_AURA_DURATION = 20
+export const CACI_KING_SPIRIT_PULSE_INTERVAL = 1
+export const KINGS_LUCK_POTENCY = 0.1
+export const KINGS_LUCK_DURATION = 5
+// "Equivalent of +2 Lucky" (Lucky's reroll mechanic is not modeled in this calc).
+export const KINGS_LUCK_LUCKY_EQUIVALENT = 2
+export const KINGS_LUCK_LABEL = "King's Luck"
+
 // Perk crit-damage formulas
 export const THIEF_TRAINING_CRIT_DMG_MULT = 10
 export const THIEF_TRAINING_CRIT_DMG_SUB = 50

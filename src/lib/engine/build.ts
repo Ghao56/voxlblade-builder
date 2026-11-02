@@ -19,6 +19,7 @@ import type { CritResult } from '../crit'
 import { roundMultiplier, calcWardingDebuffMultiplier } from '../utils'
 import { MAX_LEVEL, calcBaseMaxHP } from '../constants'
 import { ANCIENT_CLERIC_SHIELD_BASE, ANCIENT_CLERIC_SHIELD_PER_VAL } from '../constants/rune-base-damage'
+import { KINGS_LUCK_LABEL } from '../constants/perks'
 import {
   getRace, getGuild, getGuildRank, getArmorPart, getRing, getRune,
   getBlade, getHandle, getGlove, getEssence, isMonkGuild, getPerk,
@@ -522,6 +523,12 @@ function deriveResults(
 
   const _weaponResult = calcBuildWeapon(state)
 
+  // King's Luck (Caci King Spirit) grants the equivalent of +2 Lucky for its
+  // chance-based effects, but does NOT carry Lucky's stat payload (−25%
+  // Warding / −6 Protection / −0.1 Tenacity) — only the real Lucky perk
+  // amount (e.g. Lucky Ring) changes the stats screen. Lucky's reroll
+  // mechanic itself is not modeled.
+
   const boostedStats = applyStatBoostPerks(finalStats, finalPerks)
   applyEmotionalAttackSpeed(boostedStats, finalPerks, state.emotionalState, state.emotionalDisabled)
   applyBerserkingStrength(boostedStats, finalPerks, _weaponResult?.finalWeaponType ?? '')
@@ -541,7 +548,13 @@ function deriveResults(
     }
   }
 
-  const crit = calcCrit(boostedStats, finalPerks, undefined, state.perfectionStacks)
+  // King's Luck (Caci King Spirit): the buff chip's OFF toggle disables the
+  // status's crit contribution (buff key "King's Luck:Caci King Spirit"),
+  // mirroring the Ice Shell / Drone Armor buff-disable checks above.
+  const _kingsLuckPerks = (state.disabledBuffKeys ?? []).includes(`${KINGS_LUCK_LABEL}:Caci King Spirit`)
+    ? { ...finalPerks, ['Caci King Spirit']: 0 }
+    : finalPerks
+  const crit = calcCrit(boostedStats, _kingsLuckPerks, undefined, state.perfectionStacks)
 
   const wardingDebuffMult = calcWardingDebuffMultiplier(boostedStats.warding ?? 0)
   const isMountRune = state.rune.endsWith('Mount Rune')

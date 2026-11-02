@@ -142,3 +142,23 @@ export function calcProcChance(
       return baseChance * Math.max(1, procCoeff.value)
   }
 }
+
+/**
+ * Lucky perk: if a chance roll fails, each integer perk amount adds a reroll
+ * at (2/3) of the original chance; decimal amounts add one extra reroll whose
+ * chance is the (2/3) reroll's chance multiplied by the decimal portion.
+ * Returns the overall success chance in percent (0..100).
+ *
+ * Pure utility — the caller decides the effective Lucky amount and which
+ * effects are exempt (the spec excludes e.g. Bunikin's Dodge, Magic Surge).
+ */
+export function applyLuckyReroll(chancePct: number, luckyAmount: number): number {
+  if (!(chancePct > 0) || !(luckyAmount > 0)) return chancePct
+  const p = Math.min(1, Math.max(0, chancePct / 100))
+  const rerollChance = (2 / 3) * p
+  const full = Math.floor(luckyAmount)
+  const frac = luckyAmount - full
+  let fail = (1 - p) * Math.pow(1 - rerollChance, full)
+  if (frac > 0) fail *= 1 - rerollChance * frac
+  return Math.min(100, (1 - fail) * 100)
+}

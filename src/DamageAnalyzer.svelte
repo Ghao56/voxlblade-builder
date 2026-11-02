@@ -29,7 +29,8 @@
   import { calculateHealBoost, type HealSource } from './data/HealBoost'
   import { buildRadianceProcHit, isRadianceEligible, radianceSourceHealing } from './data/radianceProcs'
   import { RADIANCE_HOLY_SCALING, RADIANCE_LABEL, RADIANCE_COLOR, RAINSTORM_BASE_DMG, RAINSTORM_DMG_PER_STACK, RAINSTORM_BASE_HEAL, RAINSTORM_HEAL_PER_STACK, RAINSTORM_LABEL, CACI_KING_SPIRIT_DANCING_BASE_HEAL, CACI_KING_SPIRIT_MAX_HEAL_TICKS, CACI_KING_SPIRIT_AIR_SCALING, CACI_KING_SPIRIT_EARTH_SCALING, CACI_KING_SPIRIT_HEAL_LABEL, REJUVENATING_FLAME_BASE_HEAL, REJUVENATING_FLAME_HEAL_PER_AMOUNT, REJUVENATING_FLAME_FIRE_SCALING, REJUVENATING_FLAME_BURN_HEAL_MULT, REJUVENATING_FLAME_BURN_AOE_PER_AMOUNT, REJUVENATING_FLAME_HEAL_LABEL, WAVE_RIDER_LABEL, HEX_RAY_BASE_DMG, HEX_RAY_DMG_PER_STACK, HEX_RAY_WEAKNESS_POTENCY_MULT } from './lib/constants/perk-base-damage'
-  import { roundMultiplier, calcWardingDebuffMultiplier, calcProcChance, applyScalingMult, fmtPctVal } from './lib/utils'
+  import { KINGS_LUCK_LABEL, KINGS_LUCK_LUCKY_EQUIVALENT } from './lib/constants/perks'
+  import { roundMultiplier, calcWardingDebuffMultiplier, calcProcChance, applyLuckyReroll, applyScalingMult, fmtPctVal } from './lib/utils'
   import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage, calcInoculationHeal, UNDEAD_MIGHT_SELF_DMG_FRACTION, UNDEAD_MIGHT_DR_PCT_PER_STACK, type SelfDamagePerkDef } from './data/selfDamage'
   import { resolveDamageTypes, resolveWaDamageTypeKeys, applyAirToMagicConversion, computeEffectiveWaDmgTypes, pickHighestDmgType } from './lib/damageTypeResolve'
   import { buildDmgTypeBonuses } from './lib/engine/dmgTypeBonuses'
@@ -1170,6 +1171,13 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   $: _vcDisplayHits = Math.min(_vcCharges, _vcMaxHit)
   $: _oceanSongAmt = perks['Ocean Song'] ?? 0
   $: _rainstormAmt = perks['Rainstorm'] ?? 0
+  // King's Luck (Caci King Spirit) is active while the perk exists and its
+  // granted buff isn't toggled OFF — same gate as calcCrit's buff-disable path.
+  $: _kingsLuckActive = (perks['Caci King Spirit'] ?? 0) > 0 && !disabledBuffKeys.has(`${KINGS_LUCK_LABEL}:Caci King Spirit`)
+  // Effective Lucky for chance rerolls: real Lucky perk (e.g. Lucky Ring)
+  // stacks with King's Luck's "+2 Lucky" equivalent while that status is active.
+  $: _effectiveLuckyAmt = (perks['Lucky'] ?? 0) + (_kingsLuckActive ? KINGS_LUCK_LUCKY_EQUIVALENT : 0)
+
   // Rejuvenating Flame: passive AoE heal on Allies (×5 while user Burning),
   // grants Allies-only Cinder Surge (never touches user damage). Raw amount
   // drives the chip; gated amount drives the math, so a disabled chip
@@ -1457,14 +1465,23 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     }
     if ((perks['Ruler Of The Sands'] ?? 0) > 0) {
       const amt = perks['Ruler Of The Sands'] ?? 0
-      const waChance = _waCooldown * (RULER_SANDS_CHANCE_CD_MULT + RULER_SANDS_CHANCE_PERK_MULT * amt)
-      const runeChance = _runeBaseCd * (RULER_SANDS_CHANCE_CD_MULT + RULER_SANDS_CHANCE_PERK_MULT * amt)
+      // King's Luck active => guaranteed activation, rerolls are moot. Without
+      // it, the base chance is resolved through Lucky's reroll mechanic (2/3
+      // of the original chance per integer Lucky stack, decimal adds a partial
+      // reroll) — see applyLuckyReroll.
+      const waBase = _waCooldown * (RULER_SANDS_CHANCE_CD_MULT + RULER_SANDS_CHANCE_PERK_MULT * amt)
+      const runeBase = _runeBaseCd * (RULER_SANDS_CHANCE_CD_MULT + RULER_SANDS_CHANCE_PERK_MULT * amt)
+      const waChance = _kingsLuckActive ? 100 : applyLuckyReroll(waBase, _effectiveLuckyAmt)
+      const runeChance = _kingsLuckActive ? 100 : applyLuckyReroll(runeBase, _effectiveLuckyAmt)
       const totalDmg = (RULER_SANDS_BASE_DMG_PER_HIT * amt * RULER_SANDS_HITS).toFixed(1)
+      const rotSOff = disabledEffects.has('rulerOfTheSands')
       chips.push({
         key: 'rulerOfTheSands', name: 'Ruler Of The Sands',
-        title: `Ruler Of The Sands (${amt}): sandnado on WA/Rune · Earth+Air · ${RULER_SANDS_HITS} hits · Reduced proc`,
-        val: disabledEffects.has('rulerOfTheSands') ? '—' : `${totalDmg}`,
-        cond: disabledEffects.has('rulerOfTheSands') ? 'disabled' : `WA ${waChance.toFixed(1)}% · Rune ${runeChance.toFixed(1)}%`,
+        title: `Ruler Of The Sands (${amt}): sandnado on WA/Rune · Earth+Air · ${RULER_SANDS_HITS} hits · Reduced proc${_effectiveLuckyAmt > 0 && !_kingsLuckActive ? ` · Lucky ×${_effectiveLuckyAmt} rerolls the base chance` : ''}`,
+        val: rotSOff ? '—' : `${totalDmg}`,
+        cond: rotSOff ? 'disabled' : _kingsLuckActive
+          ? `Guaranteed (King's Luck)`
+          : `WA ${waChance.toFixed(1)}% · Rune ${runeChance.toFixed(1)}%`,
       })
     }
     if ((perks['Kindling'] ?? 0) > 0) {
@@ -3412,6 +3429,13 @@ const trimNum = (n: number, maxDecimals = 4): string => {
 
         if (def.perkName === 'Deathmist Slash') raw = Math.round(raw * _deathmistHealMult * 1000) / 1000
 
+        // Ruler Of The Sands WA/Rune chances: guaranteed while King's Luck is
+        // active; otherwise resolved through Lucky's reroll mechanic (base
+        // cd-derived chance → applyLuckyReroll).
+        if (def.perkName === 'Ruler Of The Sands' && (se.label === 'WA Chance' || se.label === 'Rune Chance')) {
+          raw = _kingsLuckActive ? 100 : Math.round(applyLuckyReroll(raw, _effectiveLuckyAmt) * 1000) / 1000
+        }
+
         if (se.tone === 'defense') {
           const potMult = calcDefensivePotencyMult(perks, $build.draconicRuneInfusion, _effDraconicColor)
           raw = Math.round(raw * potMult * 1000) / 1000
@@ -5234,7 +5258,7 @@ $: _groupedSelfDamageSources = (() => {
                 <span class="da-source-val" style="color:#4ade80">+{CRIT_HEALING_CHANCE_BASE.toFixed(2)}%</span>
               </div>
               <div class="da-source-row">
-                <span class="da-source-name">Holy Boost {(stats.holyBoost ?? 0).toFixed(0)}</span>
+                <span class="da-source-name">Critical Healing</span>
                 <span class="da-source-val" style="color:#4ade80">+{((stats.holyBoost ?? 0) / CRIT_HEALING_HOLY_BOOST_DIVISOR).toFixed(2)}%</span>
               </div>
               <div class="da-source-formula">{CRIT_HEALING_MULT_BASE} + {CRIT_HEALING_PERK_BONUS} + {CRIT_HEALING_PER_STACK} × {perks['Critical Healing'] ?? 0} = ×{fmtCritMult(_healCritDmgMult)} healing on a heal crit (the full heal plus the perk bonus — not the normal crit multiplier). Only compatible, proccable heals can crit (Solar Light's reduced proc coefficient lowers its chance).</div>

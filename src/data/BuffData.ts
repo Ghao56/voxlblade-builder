@@ -118,6 +118,9 @@ import {
   DARKENING_HEX_DURATION_ADD_PER_AMOUNT, DARKENING_HEX_MAX_ACTIVATIONS,
   KINDLING_BURN_DURATION_MULT,
   CURSED_FLAMES_BURN_DURATION_PER_AMOUNT,
+  KINGS_LUCK_POTENCY, KINGS_LUCK_DURATION, KINGS_LUCK_LABEL,
+  KINGS_LUCK_LUCKY_EQUIVALENT,
+  CACI_KING_SPIRIT_AURA_DURATION, CACI_KING_SPIRIT_PULSE_INTERVAL,
 } from '../lib/constants/perks'
 import { DRAGIGATOR_SPIRIT_BURN_DURATION } from '../lib/constants/perk-base-damage'
 import { CRAGBLADE_BUFF_DURATION } from './cragblade'
@@ -762,6 +765,13 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectPerTenthPotency: 0,
     effectUnit: 'flat',
     isNeutral: true,
+  },
+  "King's Luck": {
+    name: "King's Luck",
+    color: '#ffd54a',
+    description: "Dramatically increase the chance of many chance based combat effects. Additionally grant a chance to dodge attacks and crit on any attack.",
+    effectPerTenthPotency: 0,
+    effectUnit: 'flat',
   },
   'Bursting': {
     name: 'Bursting',
@@ -1933,6 +1943,16 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       duration: 20,
       condition: 'on Spirit activation',
       sourceName: 'Croakernaut Spirit',
+      sourceType: 'perk',
+    },
+  ],
+  'Caci King Spirit': () => [
+    {
+      buffName: KINGS_LUCK_LABEL,
+      potency: KINGS_LUCK_POTENCY,
+      duration: KINGS_LUCK_DURATION,
+      condition: `On ${CACI_KING_SPIRIT_AURA_DURATION}s pulsing aura (1 pulse/${CACI_KING_SPIRIT_PULSE_INTERVAL}s) · each pulse re-applies the ${KINGS_LUCK_DURATION}s status · granted to nearby Allies · equivalent of +${KINGS_LUCK_LUCKY_EQUIVALENT} Lucky while active`,
+      sourceName: 'Caci King Spirit',
       sourceType: 'perk',
     },
   ],

@@ -1777,7 +1777,7 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
         tone: 'offense',
       },
     ],
-    note: 'Chance scales on base cooldown. Reduced proc coefficient. Lasts ~5s.',
+    note: "Chance scales on base cooldown. Reduced proc coefficient. Lasts ~5s. While King's Luck (Caci King Spirit aura/dance) is active, Ruler Of The Sands is guaranteed to activate.",
   },
   // Lodestone Barrage
   {
