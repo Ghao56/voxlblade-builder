@@ -1,6 +1,6 @@
 import { getDotPotencyMult } from './DoTDamage'
 import { getDraconicColorDmgMultiplier } from '../data/draconicColorEffects'
-import { fmtPct } from '../lib/utils'
+import { fmtPct, staticBuildupStrikes } from '../lib/utils'
 import type { BuildState, ProcCoefficient } from '../lib/types'
 import {
   DRAGON_STATE_HP_BASE,
@@ -226,6 +226,13 @@ import {
   TRUE_MOON_DMG_MULT_PER_STACK,
   TRUE_MOON_PROC_CHANCE,
   TRUE_MOON_TRUE_CONVERSION_PCT_PER_STACK,
+  STATIC_BUILDUP_STRIKE_FLAT,
+  STATIC_BUILDUP_RMB_INHERIT_MULT,
+  STATIC_BUILDUP_DMG_PER_AMT,
+  STATIC_BUILDUP_TYPES,
+  STATIC_BUILDUP_SCALINGS,
+  STATIC_BUILDUP_MAX_CHARGE,
+  STATIC_BUILDUP_MIN_CHARGE,
   RAINSTORM_BASE_DMG,
   RAINSTORM_DMG_PER_STACK,
   RAINSTORM_BASE_HEAL,
@@ -372,8 +379,13 @@ export function calcSpringblastBaseDamage(perkAmount: number, proccingBaseDmg = 
   return Math.round((flat + procCoeff * proccingBaseDmg) / denom * SPRINGBLAST_ROUND) / SPRINGBLAST_ROUND
 }
 
-/** Cannonball base damage = (10 + perkAmount) * (1 + 0.1 * summonsFired) */
-export function calcCannonballBaseDamage(perkAmount: number, summonsFired = 0): number {
+/** Strike base = (3 + inheritedRmb × 0.1538) × (1 + 0.1 × perkAmount); BaseDamageCalc passes the real inherited RMB value. */
+export function calcStaticBuildupStrikeBase(perkAmount: number, inheritedRmb = 0): number {
+  return (STATIC_BUILDUP_STRIKE_FLAT + inheritedRmb * STATIC_BUILDUP_RMB_INHERIT_MULT)
+    * (1 + STATIC_BUILDUP_DMG_PER_AMT * perkAmount)
+}
+
+/** Cannonball base damage = (10 + perkAmount) * (1 + 0.1 * summonsFired) */export function calcCannonballBaseDamage(perkAmount: number, summonsFired = 0): number {
   return Math.round((CANNONBALL_BASE_FLAT + perkAmount) * (1 + CANNONBALL_SUMMONS_FIRED_MULT * Math.max(0, summonsFired)) * 100) / 100
 }
 
@@ -2326,6 +2338,27 @@ export const PERK_DMG_DEFS: PerkDmgDef[] = [
       },
     ],
     note: `Empowered Weapon Art: ${WAVE_RIDER_WA_BASE_DMG} Water damage on 1.0 Water scaling, healing ${WAVE_RIDER_WA_HEAL} HP. The healing can proc other effects (compatible-heal list → Radiance).`,
+  },
+  // Card-only def: strike rows are emitted by BaseDamageCalc's Static Buildup block.
+  {
+    perkName: 'Static Buildup',
+    condition: 'On RMB (M2) hit — lightning strikes scale with weapon charge',
+    getBaseDamage: ({ perkAmount }) => calcStaticBuildupStrikeBase(perkAmount),
+    getHits: ({ perkAmount, sliderVal = 0 }) => staticBuildupStrikes(sliderVal, perkAmount),
+    dmgTypeMode: 'fixed',
+    dmgTypes: { ...STATIC_BUILDUP_TYPES },
+    scalingMode: 'fixed',
+    scalings: { ...STATIC_BUILDUP_SCALINGS },
+    procCoefficient: { type: 'noProc' },
+    guardbreak: true,
+    slider: {
+      buildKey: 'staticBuildupCharge',
+      label: 'Weapon Charge',
+      min: 0,
+      max: STATIC_BUILDUP_MAX_CHARGE,
+      step: 1,
+    },
+    note: `Any hit with a Proc Coefficient grants 1 charge, up to ${STATIC_BUILDUP_MAX_CHARGE}. Charges are only consumed at ${STATIC_BUILDUP_MIN_CHARGE}+ charge (LMB, LMB, RMB = 3 charges → 1 strike) and are generated then consumed. Strike amount: 0 below ${STATIC_BUILDUP_MIN_CHARGE} charge; floor(1 + (charge ÷ ${STATIC_BUILDUP_MAX_CHARGE}) × perkAmount) from ${STATIC_BUILDUP_MIN_CHARGE}; ×2 perk scaling at ${STATIC_BUILDUP_MAX_CHARGE} charge — always rounded down. Lightning Strike damage = (3 + RMB damage × ${STATIC_BUILDUP_RMB_INHERIT_MULT}) × (1 + ${STATIC_BUILDUP_DMG_PER_AMT} × perkAmount) as ${STATIC_BUILDUP_TYPES.air * 100}% Air / ${STATIC_BUILDUP_TYPES.magic * 100}% Magic on ${STATIC_BUILDUP_SCALINGS.air} Air / ${STATIC_BUILDUP_SCALINGS.magic} Magic scaling. RMB damage is inherited after the Effective Boost Multiplier and Level Damage Bonus, but before other damage bonuses — strikes don't inherit boosts that affected the proccing RMB, but can be affected by damage bonuses themselves. Cannot proc other effects. Guardbreaks.`,
   },
 ]
 

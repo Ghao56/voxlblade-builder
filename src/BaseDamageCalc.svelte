@@ -5,7 +5,9 @@
   const dispatch = createEventDispatcher()
   import DmgTotalTooltip from './DmgTotalTooltip.svelte'
   import { resolveDamageTypes, applyFireAirConversion } from './lib/damageTypeResolve'
-  import { roundMultiplier } from './lib/utils'
+  import { roundMultiplier, staticBuildupStrikes } from './lib/utils'
+  import { calcStaticBuildupStrikeBase } from './data/Perkbasedmg'
+  import { STATIC_BUILDUP_TYPES } from './lib/constants/perk-base-damage'
   import type { TypedDmgBoostEntry } from './data/TypedDmgBoost'
   import { BADGE_CONFIG, type ComputedType, type ComputedHit, type PerkOnHitDmg } from './lib/dmgTypes'
   import Badge from './lib/ui/Badge.svelte'
@@ -113,6 +115,7 @@ import { COMPATIBLE_HEAL_SOURCE_PATTERNS } from './lib/constants/perk-base-damag
   export let dragonStateEffectiveCombatMult: number = 1
   export let staticBuildupAmt: number = 0
   export let staticBuildupCharge: number = 0
+  export let staticBuildupScalingMult: number = 1
 
   const DOT_COLORS: Record<string, string> = {
     Bleed: '#ff0004',
@@ -1610,38 +1613,34 @@ note?: string
       }
     }
 
-    // Static Buildup: an M2-type hit calls down strikes scaled by weapon charge.
-    //   strike base = (3 + inheritedRmb × 0.1538) × (1 + 0.1 × perkAmount)
-    // inheritedRmb = RMB post-scaling/pre-boost, INCLUDING levelMult (double
-    // level exception: strikes also get levelMult via their combat mult).
-    // Strikes don't inherit the RMB's other boosts (Effective Boost, Rage,
-    // Sunburn, debuffs, pen) but take their own bonuses. Magic/Air 50/50
-    // from the Lightning Hammer statline.
-    if (!isHeal && staticBuildupAmt > 0 && staticBuildupCharge > 0
+    // Strikes don't inherit the RMB's other boosts (Rage/Sunburn/debuffs) —
+    // inheritedRmb = post-scaling × levelMult; Level applies twice (exception,
+    // strikes also get it via perkCombatMult). Strike count + base formula in
+    // Perkbasedmg.ts (single source of truth, shared with the card def).
+    if (!isHeal && staticBuildupAmt > 0 && staticBuildupStrikes(staticBuildupCharge, staticBuildupAmt) > 0
       && (hit.group === 'M2' || hit.isM2 || (hit.group === 'WA' && hit.isFinisher))
       && gate('Static Buildup')) {
+      const strikeCount = staticBuildupStrikes(staticBuildupCharge, staticBuildupAmt)
       const rmbBase = hit.baseDmgTypes
         ? Object.entries(hit.baseDmgTypes).reduce((sum, [, m]) => sum + hit.base * m, 0)
         : hit.base
       const inheritedRmb = rmbBase * (hit.scalingMult ?? 1) * levelMult
-      const strikeBase = (3 + inheritedRmb * 0.1538) * (1 + 0.1 * staticBuildupAmt)
-      const strikeTotal = strikeBase * staticBuildupCharge
-      const sbTypeRows = Object.entries({ magic: 0.5, air: 0.5 }).map(([k, weight]) => {
+      const strikeBase = calcStaticBuildupStrikeBase(staticBuildupAmt, inheritedRmb)
+    const sbTypeRows = Object.entries(STATIC_BUILDUP_TYPES).map(([k, weight]) => {
         const sbInfo = resolveTypeInfo(k, basePenDecimal, { type: 'noProc' }, hit.group)
         const sbDefPct = defPctForType(k)
-        const sbRaw = strikeTotal * weight * perkCombatMult * sbInfo.typedMultUsed * sunburnUniversalDmgMult * sbInfo.defMult * sbInfo.typeDebuffMult * _activeDebuffDamageMult * selfDebuffDamageMult * vcDilution
+        const sbRaw = strikeBase * weight * staticBuildupScalingMult * perkCombatMult * sbInfo.typedMultUsed * sunburnUniversalDmgMult * sbInfo.defMult * sbInfo.typeDebuffMult * _activeDebuffDamageMult * selfDebuffDamageMult * vcDilution
         return {
           key: k, label: sbInfo.info.label, color: sbInfo.info.color,
-          typeBase: Math.round(strikeBase * weight * 10000) / 10000, scalingMult: 1, combatMult: perkCombatMult,
+          typeBase: Math.round(strikeBase * weight * 10000) / 10000, scalingMult: staticBuildupScalingMult, combatMult: perkCombatMult,
           applicableBoosts: sbInfo.applicableBoosts, weaponBoostMult: sunburnUniversalDmgMult, typeDebuffMult: sbInfo.typeDebuffMult,
           defMult: sbInfo.defMult, enemyDefPct: sbDefPct,
           raw: Math.round(sbRaw * 10000) / 10000, critVal: Math.round(sbRaw * critDmgMult / 100 * 10000) / 10000,
           isHeal: false, tag: 'Static Buildup', forceCrit: false, procCoefficient: { type: 'noProc' },
-          oncePerRmb: true,
         }
       })
       const sbHit: ComputedHit = {
-        group: hit.group, index: 0, count: 1, isFinisher: false, label: `Static Buildup (×${staticBuildupCharge})`,
+        group: hit.group, index: 0, count: strikeCount, isFinisher: false, label: 'Static Buildup',
         isHeal: false, eachHitM1M2: false,
         types: sbTypeRows as any,
       }

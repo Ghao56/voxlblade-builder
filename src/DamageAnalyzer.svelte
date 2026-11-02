@@ -15,7 +15,7 @@
   import { vitalMistMaxPotency, vitalMistConsumption, vitalMistHealPerTick, vitalMistTailwindPotency } from './lib/vitalMist'
   import { WA_SUMMON_MAP, SUMMON_MAP, calcSummonStat, calcMaxSummonCount, createSummonInstance, type SummonDef, type SummonInstance } from './data/SummonData'
   import CritIcon from './CritIcon.svelte'
-  import { PERK_DMG_DEFS, findPerkDmgDef, SECONDARY_TONE_COLORS, isHpGateActive, DRAGON_STATE_HP_GATE, calcSpringblastBaseDamage, type TriggerChainEntry } from './data/Perkbasedmg'
+  import { PERK_DMG_DEFS, findPerkDmgDef, SECONDARY_TONE_COLORS, isHpGateActive, DRAGON_STATE_HP_GATE, calcSpringblastBaseDamage, calcStaticBuildupStrikeBase, type TriggerChainEntry } from './data/Perkbasedmg'
   import { resolveDefenseSources, calcBaseArmorDefPct, DEF_GROUP, type DefenseSource } from './lib/defense'
   import { getActiveRaceEffect, getOrkTenacityBuffs, calcOrkTenacityBonus } from './data/raceEffects'
   import { getActiveDefensivePerkSources, calcDefensivePotencyMult } from './data/defensivePerks'
@@ -28,7 +28,7 @@
   import { applyDraconicBonuses, getDraconicBonuses } from './data/draconicRunes'
   import { calculateHealBoost, type HealSource } from './data/HealBoost'
   import { buildRadianceProcHit, isRadianceEligible, radianceSourceHealing } from './data/radianceProcs'
-  import { RADIANCE_HOLY_SCALING, RADIANCE_LABEL, RADIANCE_COLOR, RAINSTORM_BASE_DMG, RAINSTORM_DMG_PER_STACK, RAINSTORM_BASE_HEAL, RAINSTORM_HEAL_PER_STACK, RAINSTORM_LABEL, CACI_KING_SPIRIT_DANCING_BASE_HEAL, CACI_KING_SPIRIT_MAX_HEAL_TICKS, CACI_KING_SPIRIT_AIR_SCALING, CACI_KING_SPIRIT_EARTH_SCALING, CACI_KING_SPIRIT_HEAL_LABEL, REJUVENATING_FLAME_BASE_HEAL, REJUVENATING_FLAME_HEAL_PER_AMOUNT, REJUVENATING_FLAME_FIRE_SCALING, REJUVENATING_FLAME_BURN_HEAL_MULT, REJUVENATING_FLAME_BURN_AOE_PER_AMOUNT, REJUVENATING_FLAME_HEAL_LABEL, WAVE_RIDER_LABEL, HEX_RAY_BASE_DMG, HEX_RAY_DMG_PER_STACK, HEX_RAY_WEAKNESS_POTENCY_MULT } from './lib/constants/perk-base-damage'
+  import { RADIANCE_HOLY_SCALING, RADIANCE_LABEL, RADIANCE_COLOR, RAINSTORM_BASE_DMG, RAINSTORM_DMG_PER_STACK, RAINSTORM_BASE_HEAL, RAINSTORM_HEAL_PER_STACK, RAINSTORM_LABEL, STATIC_BUILDUP_SCALINGS, CACI_KING_SPIRIT_DANCING_BASE_HEAL, CACI_KING_SPIRIT_MAX_HEAL_TICKS, CACI_KING_SPIRIT_AIR_SCALING, CACI_KING_SPIRIT_EARTH_SCALING, CACI_KING_SPIRIT_HEAL_LABEL, REJUVENATING_FLAME_BASE_HEAL, REJUVENATING_FLAME_HEAL_PER_AMOUNT, REJUVENATING_FLAME_FIRE_SCALING, REJUVENATING_FLAME_BURN_HEAL_MULT, REJUVENATING_FLAME_BURN_AOE_PER_AMOUNT, REJUVENATING_FLAME_HEAL_LABEL, WAVE_RIDER_LABEL, HEX_RAY_BASE_DMG, HEX_RAY_DMG_PER_STACK, HEX_RAY_WEAKNESS_POTENCY_MULT } from './lib/constants/perk-base-damage'
   import { KINGS_LUCK_LABEL, KINGS_LUCK_LUCKY_EQUIVALENT } from './lib/constants/perks'
   import { roundMultiplier, calcWardingDebuffMultiplier, calcProcChance, applyLuckyReroll, applyScalingMult, fmtPctVal } from './lib/utils'
   import { SELF_DAMAGE_PERK_DEFS, calcSelfDamage, calcInoculationHeal, UNDEAD_MIGHT_SELF_DMG_FRACTION, UNDEAD_MIGHT_DR_PCT_PER_STACK, type SelfDamagePerkDef } from './data/selfDamage'
@@ -1299,6 +1299,9 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     : 0
   $: _runicBladesScalings = _runicBladesDef?.scalings ?? {}
   $: _runicBladesScalingMult = _runicBladesAmt > 0 ? _computePerkScalingMult(_runicBladesScalings) : 1
+
+  $: _staticBuildupAmt = perks['Static Buildup'] ?? 0
+  $: _staticBuildupScalingMult = _staticBuildupAmt > 0 ? _computePerkScalingMult(STATIC_BUILDUP_SCALINGS) : 1
 
   $: _starStruckAmt = perks['Star Struck'] ?? 0
   let starRerollSeed = 0
@@ -3395,6 +3398,11 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       const baseDmg_m1f = def.getBaseDamage({ perkAmount, finisherHits: _fhM1f, draconicColor: _effDraconicColor, statuses: _perkCtxStatuses, sliderVal: _perkSliderVal })
 
       const isSpringblast = def.perkName === 'Springblast'
+      const isStaticBuildup = def.perkName === 'Static Buildup'
+      const staticBuildupM2Bases = isStaticBuildup
+        // Engine inherits the RMB post-scaling × level — mirror it here.
+        ? _finisherHitBasesM2.map(p => calcStaticBuildupStrikeBase(perkAmount, p * _scalingMult * _levelMult))
+        : undefined
       // Springblast resolves per finisher hit from that hit's own base damage
       // (see BaseDamageCalc); the card lists each distinct per-hit value.
       const springblastM2Bases = isSpringblast
@@ -3405,7 +3413,9 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         : undefined
       const baseDmg = isSpringblast
         ? (springblastM2Bases?.length ? springblastM2Bases[0] : calcSpringblastBaseDamage(perkAmount, _finisherHitBaseAvg, _fhM2))
-        : baseDmg_m1f
+        : isStaticBuildup
+          ? (staticBuildupM2Bases?.length ? staticBuildupM2Bases[0] : calcStaticBuildupStrikeBase(perkAmount))
+          : baseDmg_m1f
       // Hex Ray: one distinct base per Weakness source (+ Burn/Cursed Flames ray at 0 potency)
       const isHexRay = def.perkName === 'Hex Ray'
       const hexRayBases = isHexRay
@@ -3452,20 +3462,25 @@ const trimNum = (n: number, maxDecimals = 4): string => {
 
       const entryHits = isHexRay ? undefined : def.getHits ? def.getHits({ perkAmount, statuses: _perkCtxStatuses, sliderVal: _perkSliderVal }) : def.hits
 
-      const typedHitsM2 = isSpringblast
-        ? buildTypedHitsFromBasesLocal(springblastM2Bases ?? [baseDmg])
-        : isHexRay
-          ? buildTypedHitsFromBasesLocal(hexRayBases ?? [baseDmg], hexRayLabels)
-          : (def.getFinisherHitBaseDmg && entryHits)
-            ? buildPerHitTypedHits(baseDmg_m2, entryHits, def.getFinisherHitBaseDmg)
-            : buildTypedHits(baseDmg_m2)
-      const typedHitsM1f = isSpringblast
-        ? buildTypedHitsFromBasesLocal(springblastM1fBases ?? [baseDmg])
-        : isHexRay
-          ? buildTypedHitsFromBasesLocal(hexRayBases ?? [baseDmg], hexRayLabels)
-          : (def.getFinisherHitBaseDmg && entryHits)
-            ? buildPerHitTypedHits(baseDmg_m1f, entryHits, def.getFinisherHitBaseDmg)
-            : buildTypedHits(baseDmg_m1f)
+      const typedHitsM2 = isStaticBuildup
+        ? buildTypedHitsFromBasesLocal(staticBuildupM2Bases ?? [calcStaticBuildupStrikeBase(perkAmount)])
+        : isSpringblast
+          ? buildTypedHitsFromBasesLocal(springblastM2Bases ?? [baseDmg])
+          : isHexRay
+            ? buildTypedHitsFromBasesLocal(hexRayBases ?? [baseDmg], hexRayLabels)
+            : (def.getFinisherHitBaseDmg && entryHits)
+              ? buildPerHitTypedHits(baseDmg_m2, entryHits, def.getFinisherHitBaseDmg)
+              : buildTypedHits(baseDmg_m2)
+      // No M1f context — Static Buildup does not proc on M1 finishers.
+      const typedHitsM1f = isStaticBuildup
+        ? []
+        : isSpringblast
+          ? buildTypedHitsFromBasesLocal(springblastM1fBases ?? [baseDmg])
+          : isHexRay
+            ? buildTypedHitsFromBasesLocal(hexRayBases ?? [baseDmg], hexRayLabels)
+            : (def.getFinisherHitBaseDmg && entryHits)
+              ? buildPerHitTypedHits(baseDmg_m1f, entryHits, def.getFinisherHitBaseDmg)
+              : buildTypedHits(baseDmg_m1f)
 
       out.push({
         perkName: def.perkName,
@@ -3603,7 +3618,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       // Rainstorm excluded: its rows are emitted outside this pipeline, so a
       // Channeled Depths target would silently do nothing. Wave Rider too
       // (card-only defs).
-      .filter(e => e.isActive && e.typedHits_m2.length > 0 && e.perkName !== 'Cauterize' && e.perkName !== 'Blazing Finisher' && e.perkName !== 'Draconic Blood' && e.perkName !== RAINSTORM_LABEL && e.perkName !== WAVE_RIDER_LABEL && !_isSpiritPerk(e.perkName) && !e.countAsM1 && !e.countAsM2)
+      .filter(e => e.isActive && e.typedHits_m2.length > 0 && e.perkName !== 'Cauterize' && e.perkName !== 'Blazing Finisher' && e.perkName !== 'Draconic Blood' && e.perkName !== RAINSTORM_LABEL && e.perkName !== WAVE_RIDER_LABEL && e.perkName !== 'Static Buildup' && !_isSpiritPerk(e.perkName) && !e.countAsM1 && !e.countAsM2)
       .map(e => e.displayName),
   ])]
   interface BDCHit {
@@ -4079,6 +4094,8 @@ note?: string
       if (entry.perkName === RAINSTORM_LABEL) continue
       // Wave Rider: same as Rainstorm (card-only defs).
       if (entry.perkName === WAVE_RIDER_LABEL) continue
+      // Card-only def — strike rows come from BaseDamageCalc's SB block.
+      if (entry.perkName === 'Static Buildup') continue
 
        // Check for heal effects from Draconic Blood abilities
        if (entry.perkName === 'Draconic Blood') {
@@ -5151,6 +5168,7 @@ $: _groupedSelfDamageSources = (() => {
     criticalMasterStacks={perks['Critical Master'] ?? 0}
     staticBuildupAmt={perks['Static Buildup'] ?? 0}
     staticBuildupCharge={$build.staticBuildupCharge ?? 0}
+    staticBuildupScalingMult={_staticBuildupScalingMult}
     m1Label={_activeMountRuneDef && mountActive ? 'M1/M2' : 'M1'}
     draconicRunesBonus={getDraconicBonuses({
       draconicRunesStacks: perks['Draconic Runes'] ?? 0,
@@ -6685,7 +6703,7 @@ $: _groupedSelfDamageSources = (() => {
 {/if}
 
 <!-- Perk Base Damage -->
-{#if _nonDraconicPerkEntries.length > 0 || darkeningHexAmt > 0 || _vassalsCroakAmt > 0 || _cdAmt > 0 || _vcAmt > 0 || packagedPowerAmt > 0 || _radianceAmt > 0 || moneySmartAmt > 0}
+{#if _nonDraconicPerkEntries.length > 0 || darkeningHexAmt > 0 || _vassalsCroakAmt > 0 || _cdAmt > 0 || _vcAmt > 0 || packagedPowerAmt > 0 || _radianceAmt > 0 || moneySmartAmt > 0 || (perks['Vital Mist'] ?? 0) > 0}
 <div class="da-section da-section--pbd">
   <div class="da-section-title-row">
     <span class="da-section-title">Perk Base Damage</span>
@@ -6845,38 +6863,6 @@ $: _groupedSelfDamageSources = (() => {
             <p>When a minion dies, gain a stack of the neutral status <b>Last Croak</b> (max <b>{maxSummons}</b> stacks). Consuming it on RMB/M2 hit explodes for <b>M2 base damage × Last Croak potency × (1 + perk amount) ÷ 15</b> physical damage. Use the slider to test with fewer stacks.</p>
             <p>The explosion does not inherit the triggering attack's output multipliers, but its own damage can still be affected directly by post-output multipliers (damage boosts, <b>Rage</b>, <b>Sunburn</b>, debuff multipliers). Last Croak also grants <b>Rage</b> on consumption.</p>
             <p>Granted by the <b>Boglord Ring</b>.</p>
-          </div>
-        </details>
-      </div>
-    {/if}
-    {#if (perks['Static Buildup'] ?? 0) > 0}
-      <div class="da-pbd-card da-pbd-card--hex">
-        <div class="da-pbd-head">
-          <span class="da-pbd-name">Static Buildup</span>
-          <span class="da-pbd-amt">+{perks['Static Buildup']}</span>
-        </div>
-        <div class="da-sb-slider-wrap">
-          <span class="da-sb-slider-label">Weapon Charge</span>
-          <input
-            type="range"
-            min="0"
-            max="10"
-            step="1"
-            value={$build.staticBuildupCharge ?? 0}
-            on:input={(e) => {
-              const val = Math.min(Math.max(+(e.target as HTMLInputElement).value, 0), 10)
-              build.update(s => ({ ...s, staticBuildupCharge: val }) as any)
-            }}
-            class="da-sb-slider"
-            style="--tc:#e8e4da; --fill:{Math.max(0, Math.min(($build.staticBuildupCharge ?? 0) / 10, 1)) * 100}%"
-          />
-          <span class="da-sb-slider-val" style="color:#e8e4da">{Math.floor($build.staticBuildupCharge ?? 0)}</span>
-        </div>
-        <div class="da-pbd-condition">RMB/M2 hits call down {Math.floor($build.staticBuildupCharge ?? 0)} lightning strike(s). Strike damage = (3 + inherited RMB damage × 0.1538) × (1 + 0.1 × perk amount). Inherited RMB damage is post-scaling/pre-boost and includes Level Damage Bonus (special exception); the strikes can also receive weapon-category damage bonuses.</div>
-        <details class="da-pbd-details">
-          <summary class="da-pbd-details-summary">Perk Details</summary>
-          <div class="da-pbd-details-body">
-            <p>Hitting enemies visibly builds up a yellow charge on your weapon. Landing an RMB calls down multiple lightning strikes, the amount of which scales off of your charge.</p>
           </div>
         </details>
       </div>

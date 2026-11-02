@@ -143,6 +143,14 @@ export function calcProcChance(
   }
 }
 
+import { STATIC_BUILDUP_MAX_CHARGE, STATIC_BUILDUP_MIN_CHARGE } from './constants/perk-base-damage'
+
+/** Strike amount from weapon charge (0–20): 0 below 3, floor(1 + charge/20 × amt), ×2 amt at 20. */
+export function staticBuildupStrikes(charge: number, perkAmount: number): number {
+  if (charge < STATIC_BUILDUP_MIN_CHARGE) return 0
+  return Math.floor(1 + (charge / STATIC_BUILDUP_MAX_CHARGE) * perkAmount * (charge >= STATIC_BUILDUP_MAX_CHARGE ? 2 : 1))
+}
+
 /**
  * Lucky perk: if a chance roll fails, each integer perk amount adds a reroll
  * at (2/3) of the original chance; decimal amounts add one extra reroll whose

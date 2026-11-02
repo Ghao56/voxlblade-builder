@@ -332,6 +332,15 @@ export const RAINSTORM_BASE_HEAL = 0.5
 export const RAINSTORM_HEAL_PER_STACK = 0.2
 export const RAINSTORM_LABEL = 'Rainstorm'
 
+// Static Buildup
+export const STATIC_BUILDUP_STRIKE_FLAT = 3
+export const STATIC_BUILDUP_RMB_INHERIT_MULT = 0.1538
+export const STATIC_BUILDUP_DMG_PER_AMT = 0.1
+export const STATIC_BUILDUP_TYPES: Record<string, number> = { air: 0.5, magic: 0.5 }
+export const STATIC_BUILDUP_SCALINGS: Record<string, number> = { air: 1.0, magic: 1.0 }
+export const STATIC_BUILDUP_MAX_CHARGE = 20
+export const STATIC_BUILDUP_MIN_CHARGE = 3
+
 // Caci King Spirit
 // While dancing the user heals once every 0.3s, up to 99 ticks total (the
 // 30s max dance is capped at 99 ticks). Dancing Base Heal = 0.1 per tick on
