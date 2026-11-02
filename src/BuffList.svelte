@@ -574,7 +574,7 @@ $: groupedBuffs = (() => {
           {@const def = BUFF_DEFS[group.buffName]}
           {@const isSelf = group.isSelfDebuff}
           {@const effectivePotency = isSelf && wardingDebuffMult !== 1
-            ? Math.round(group.strongest.potency * wardingDebuffMult * 1000) / 1000
+            ? group.strongest.potency * wardingDebuffMult
             : group.strongest.potency}
           {@const effect = calcBuffEffect(group.strongest.buffName, effectivePotency)}
           
@@ -605,7 +605,7 @@ $: groupedBuffs = (() => {
 
                   <div class="bl-value-box">
                     <span class="bl-value" style="color:{def.color}">
-                      {+effectivePotency.toFixed(6)}
+                      {+effectivePotency.toFixed(4)}
                       {def.isDebuff && !group.isSelfDebuff ? ' to enemy' : ''}
                     </span>
                   </div>

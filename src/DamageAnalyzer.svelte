@@ -5685,7 +5685,7 @@ $: _groupedSelfDamageSources = (() => {
                 {@const key = `${buff.buffName}:${buff.sourceName}`}
                 {@const isOff = disabledBuffKeys.has(key)}
                 {@const effectivePotency = wardingDebuffMult !== 1
-                  ? Math.round(buff.potency * wardingDebuffMult * 1000) / 1000
+                  ? buff.potency * wardingDebuffMult
                   : roundMultiplier(buff.potency)}
                 {#if def}
                   <span class="da-buff" transition:fade={{ duration: 200 }}>
@@ -5693,7 +5693,7 @@ $: _groupedSelfDamageSources = (() => {
                       style="background:color-mix(in srgb,{def.color} 10%,transparent);border-color:color-mix(in srgb,{def.color} 35%,transparent)"
                       on:click={() => toggleBuffKey(key)}>
                       <span class="da-bc-name">{def.name}</span>
-                      <span class="da-bc-val" style="color:{def.color}">{isOff ? '—' : effectivePotency}</span>
+                      <span class="da-bc-val" style="color:{def.color}">{isOff ? '—' : +effectivePotency.toFixed(4)}</span>
                       <span class="da-bc-cond">{getBuffDescription(buff.buffName, $result.perks, effectivePotency)}</span>
                     <span class="da-bc-toggle" style={isOff ? '' : `background:color-mix(in srgb,${def.color} 25%,transparent);color:${def.color}`}>{isOff ? 'OFF' : 'ON'}</span>
                     <span class="da-buff-sources">{buff.sourceName}</span>
