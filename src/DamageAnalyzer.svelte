@@ -6,6 +6,7 @@
   import ScalingBreakdownRow from './ScalingBreakdownRow.svelte'
   import SummonPanel from './SummonPanel.svelte'
   import { buildSummonVM, fmtSummonNum } from './lib/summonView'
+  import { MAX_LEVEL } from './lib/constants'
   import { WEAPON_ARTS, waChargeBase, waChargeMult } from './data/weaponArts'
   import { CRAGBLADE_NAME, CRAGBLADE_M1_M2_DMG_MULT, resolveCragbladeType } from './data/cragblade'
   import { WEAPON_BASE_DMG } from './data/weapon base dmg'
@@ -471,6 +472,20 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     const sb = (($result.stats as Record<string,number>).summonBoost ?? 0)
     const lv = $build.level ?? 80
     return enrichSummonDef(def, !!runeSummonName, sb, lv, $build.summonCount ?? def.count)
+  })()
+
+  // Owner 2026-11: display-only def for the WA row — resolves the WA's OWN
+  // summon (no rune priority). _waSummonDef stays rune-first for engine use;
+  // without this the row labeled "Blessedlings Summon" showed the rune
+  // summon's attacks whenever a rune was equipped.
+  $: _waSummonRowDef = (() => {
+    const summonName = WA_SUMMON_MAP[selectedWA.name]
+    if (!summonName) return null
+    const def = SUMMON_MAP[summonName]
+    if (!def) return null
+    const sb = (($result.stats as Record<string,number>).summonBoost ?? 0)
+    const lv = $build.level ?? 80
+    return enrichSummonDef(def, false, sb, lv, def.count)
   })()
 
   $: _summonInstances = (() => {
@@ -3055,9 +3070,12 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   //   slider, clamped above) — never recomputed inside summonView.
   //   BUG-0001 (Trusty Servant cap=1) fixed in calcMaxSummonCount itself — all
   //   four callers now derive it from perks.
-  // - Owner 2026-11: BOTH panels' sliders share the global cap as their max,
-  //   but keep fully independent state — rune → build.vassalsCroakSummons,
-  //   WA → _waSummonCounts keyed by summon name (defaults to def.count).
+  // - Owner 2026-11 (UPDATED same day): sliders share the global cap — the
+  //   TOTAL of all panels' active counts must not exceed `maxSummons`. Each
+  //   slider keeps its own stored state, but raising one is clamped to the
+  //   budget left by the others. Trusty Servant (cap 1) still zeroes the rest.
+  // - rune → build.vassalsCroakSummons, WA → _waSummonCounts keyed by summon
+  //   name (defaults to def.count).
   // - Toggle key `source::buffName` so the same buff name from rune vs weapon
   //   sources toggles independently.
   let _summonBuffOff: Record<string, boolean> = {}
@@ -3078,10 +3096,16 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       build.update(s => ({ ...s, vassalsCroakSummons: vm.isRune ? clamped : 0 }) as any)
       return
     }
+    // Shared-total cap: this panel can only claim what the other panels have
+    // not already claimed (its own old count is in the budget being freed).
+    const othersTotal = _summonVMs
+      .filter(m => m.isRune !== vm.isRune || m.name !== vm.name)
+      .reduce((acc, m) => acc + m.count, 0)
+    const allowed = Math.max(0, Math.min(clamped, maxSummons - othersTotal))
     if (vm.isRune) {
-      build.update(s => ({ ...s, vassalsCroakSummons: clamped }) as any)
+      build.update(s => ({ ...s, vassalsCroakSummons: allowed }) as any)
     } else {
-      _waSummonCounts = { ..._waSummonCounts, [vm.name]: clamped }
+      _waSummonCounts = { ..._waSummonCounts, [vm.name]: allowed }
     }
   }
   // Trusty Servant owner rule 2026-11: when the perk is equipped ALL panels'
@@ -3121,6 +3145,18 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       offBuffKeys: _summonBuffKeys,
     })
   )
+  // Shared scaling chip in the section header only when EVERY summon scales
+  // identically — never assume _summonVMs[0] speaks for the rest. When it
+  // differs, each panel renders its own full formula and the header chip hides.
+  $: _summonsSharedScaling =
+    _summonVMs.length > 0 &&
+    _summonVMs.every(v =>
+      v.scaling.boostPct === _summonVMs[0].scaling.boostPct &&
+      v.scaling.levelFactor === _summonVMs[0].scaling.levelFactor &&
+      v.scaling.mult === _summonVMs[0].scaling.mult
+    )
+      ? _summonVMs[0].scaling
+      : null
   // Chip in Base Damage (SPEC §5): scrolls to the panel, numbers NOT
   // recalculated — uses exactly the VM of the summon tied to the selected
   // weapon art. NO first-VM fallback: with no name-matching VM the chip is
@@ -6447,28 +6483,22 @@ $: _groupedSelfDamageSources = (() => {
               {/if}
             </div>
 
-          {:else if _waSummonDef}
+          {:else if (_waSummonRowDef ?? _waSummonDef)}
+            {@const rowDef = (_waSummonRowDef ?? _waSummonDef)!}
             <div class="da-range-row" style="gap: 8px; align-items: center;">
+              <!-- Same link language as the rune summon chip: click scrolls to the Summons panel -->
+              <button
+                type="button"
+                class="da-summon-chip"
+                on:click={() => document.getElementById('summon-panel')?.scrollIntoView({ behavior: 'smooth' })}
+                title="Merged into the Summons panel — click to scroll to details"
+              >
               <div class="da-hit-card">
-                {#if _waSummonDef.scaledAttacks}
-                  {#each _waSummonDef.scaledAttacks as atk, ai}
-                    {#if ai > 0}<span class="da-hit-plus">+</span>{/if}
-                    <div class="da-hit-chunk" style="--tc:#c084fc">
-                      <span class="da-hit-num" style="--tc:#c084fc">{atk.baseDmg}</span>
-                      <span class="da-hit-type">{atk.label}</span>
-                    </div>
-                    {#if atk.guardbreak}<Badge color="#f87171" square size="xs" class="da-badge-self-center">Guardbreak</Badge>{/if}
-                  {/each}
-                {:else}
-                  <div class="da-hit-chunk" style="--tc:#c084fc">
-                    <span class="da-hit-num" style="--tc:#c084fc">{_waSummonDef.baseDmg}</span>
-                    <span class="da-hit-type">{_waSummonDef.dmgType}</span>
-                  </div>
-                {/if}
-                <span class="da-hit-repeat" style="background:rgba(192,132,252,.12);border-color:rgba(192,132,252,.3);color:#c084fc">
-                  ×{_waSummonDef.count}<span class="da-hit-repeat-label">summons</span>
-                </span>
+                <!-- Same chip body the rune chip uses: summon name + count, no damage (full stats live in the Summons panel) -->
+                <span class="da-summon-chip-name">{rowDef.name}</span>
+                <span class="da-summon-chip-count">×{_summonVMs.find(v => v.name === rowDef.name)?.count ?? rowDef.count}</span>
               </div>
+              </button>
             </div>
           {:else}
             <span class="da-wbd-na">—</span>
@@ -6683,18 +6713,18 @@ $: _groupedSelfDamageSources = (() => {
 
           {#if _waSummonDef && _summonChipVM}
             <div class="da-wbd-section">
+              <!-- Same row-label structure the WA section uses — rune gets its own badge + name -->
+              <div class="da-wbd-row-label da-wbd-row-label--wa">
+                <Badge color="#38bdf8" square size="xs">Rune</Badge>
+                <span class="da-wbd-lbl-text da-wbd-lbl-text--wa">{_summonChipVM.source}</span>
+              </div>
               <button
                 type="button"
                 class="da-summon-chip"
                 on:click={() => document.getElementById('summon-panel')?.scrollIntoView({ behavior: 'smooth' })}
                 title="Merged into the Summons panel — click to scroll to details"
               >
-                <Badge color="#c084fc" square size="xs">S</Badge>
                 <span class="da-summon-chip-name">{_summonChipVM.name}</span>
-                {#each _summonChipVM.stats.filter(s => s.key === 'attack') as atk, ai}
-                  {#if ai > 0}<span class="da-hit-plus">+</span>{/if}
-                  <span class="da-summon-chip-atk" style="color:{atk.dmgColor ?? '#e8e4da'}">{atk.label} {fmtSummonNum(atk.scaled)}</span>
-                {/each}
                 <span class="da-summon-chip-count">×{_summonChipVM.count}</span>
               </button>
             </div>
@@ -6758,18 +6788,31 @@ $: _groupedSelfDamageSources = (() => {
   <div class="da-section-title-row">
     <span class="da-section-title">Summons</span>
     <span class="da-summon-source">cap {_summonVMs[0].cap}</span>
+    {#if _summonsSharedScaling}
+    <!-- Shown only when every panel's scaling matches — never assumed from the first VM. -->
+    <span
+      class="da-summon-scaling"
+      title="Summon Boost {_summonsSharedScaling.boostPct}% (buff-based) × level factor (1 + level/{MAX_LEVEL}) — at level {MAX_LEVEL} the boost doubles. Same input calcSummonStat uses."
+    >
+      (1 + {fmtSummonNum(_summonsSharedScaling.boostPct)}% × (1 + {fmtSummonNum((_summonsSharedScaling.levelFactor - 1) * MAX_LEVEL)}/{MAX_LEVEL}))
+      <span class="da-summon-scaling-mult">×{fmtSummonNum(_summonsSharedScaling.mult)}</span>
+    </span>
+    {/if}
   </div>
-  {#each _summonVMs as vmKey (vmKey.name + '::' + vmKey.source)}
-    <SummonPanel
-      vm={vmKey}
-      vassalsCroakStacks={_vassalsCroakAmt}
+  <div class="da-summon-grid">
+    {#each _summonVMs as vmKey (vmKey.name + '::' + vmKey.source)}
+      <SummonPanel
+        vm={vmKey}
+        sharedScaling={_summonsSharedScaling}
+        vassalsCroakStacks={_vassalsCroakAmt}
       vassalsCroakBoostPct={_vassalsCroakBoostPct}
       minionAbsorptionStacks={perks['Minion Absorption'] ?? 0}
       minionAbsorptionPotency={_minionAbsorptionPotency}
       onSummonCountChange={(v: number) => handleSummonCountChange(vmKey, v)}
       onToggleBuff={(name: string) => toggleSummonBuff(vmKey.source, name)}
     />
-  {/each}
+    {/each}
+  </div>
 </div>
 {/if}
 
@@ -8995,11 +9038,6 @@ $: _groupedSelfDamageSources = (() => {
   outline: none;
 }
 .da-summon-chip-name { color: #c084fc; font-style: normal; font-weight: var(--weight-semibold, 600); }
-.da-summon-chip-atk {
-  font-family: var(--font-mono, 'Courier New', monospace);
-  font-size: .82rem;
-  font-weight: 800;
-}
 .da-summon-chip-count {
   font-family: var(--font-mono, 'Courier New', monospace);
   font-size: .82rem;
@@ -9103,6 +9141,37 @@ $: _groupedSelfDamageSources = (() => {
   border-radius: 999px;
   padding: 2px 10px;
   align-self: center;
+}
+
+/* Summon panels fill the section width — auto-fill collapses to 1 column on narrow screens. */
+.da-summon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+/* auto-fill's 380px track minimum cannot shrink — drop to a single fluid
+   column on narrow screens (fixes horizontal overflow at ~375px). */
+@media (max-width: 820px) {
+  .da-summon-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Shared scaling formula, shown once in the section header */
+.da-summon-scaling {
+  font-family: var(--font-mono, monospace);
+  font-size: .78rem;
+  color: var(--ink, #e8e4da);
+  background: rgba(192,132,252,.1);
+  border: 1px solid rgba(192,132,252,.25);
+  border-radius: var(--radius-sm, 5px);
+  padding: 3px 8px;
+  align-self: center;
+  cursor: help;
+  white-space: nowrap;
+}
+.da-summon-scaling-mult {
+  color: #c084fc;
+  font-weight: 800;
 }
 
 .da-pbd-list {

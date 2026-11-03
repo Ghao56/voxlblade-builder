@@ -26,7 +26,7 @@
   <div class="sl-row">
     <span class="sl-arrow">→</span>
     {#if vassalsCroakStacks > 0}
-      <span class="sl-text">Vassals Croak: swarm <b>{activeCount}</b> × {vassalsCroakStacks} stacks → <span class="sl-num" style="color:#93ff87">×{fmtSummonNum(1 + vassalsCroakBoostPct / 100)}</span> damage boost</span>
+      <span class="sl-text">Vassals Croak: swarm <b>{activeCount}</b> × {vassalsCroakStacks} stacks → <span class="sl-num sl-num--mult">×{fmtSummonNum(1 + vassalsCroakBoostPct / 100)}</span> damage boost</span>
     {:else}
       <span class="sl-text sl-text--muted">Vassals Croak: perk required (0 stacks)</span>
     {/if}
@@ -55,10 +55,11 @@
     font-weight: var(--weight-semibold, 600);
     margin-bottom: 4px;
   }
-  .sl-row { display: flex; gap: 6px; align-items: baseline; padding: 2px 0; font-size: var(--text-base-plus, 13px); }
-  .sl-arrow { color: #c084fc; font-weight: var(--weight-bold, 700); }
+  .sl-row { display: flex; gap: 6px; align-items: baseline; padding: 2px 0; font-size: 13px; }
+  .sl-arrow { color: var(--sum-accent, #c084fc); font-weight: var(--weight-bold, 700); }
   .sl-text { color: var(--ink, #e8e4da); }
-  .sl-text b { color: #c084fc; font-family: 'Courier New', monospace; }
-  .sl-text--muted { color: var(--ink-muted, #8a8694); }
-  .sl-num { font-family: 'Courier New', monospace; font-weight: var(--weight-extrabold, 800); }
+  .sl-text b { color: var(--sum-accent, #c084fc); font-family: var(--font-mono, monospace); }
+  .sl-text--muted { color: var(--sum-muted, #a6a2b0); }
+  .sl-num { font-family: var(--font-mono, monospace); font-variant-numeric: tabular-nums; font-weight: var(--weight-extrabold, 800); }
+  .sl-num--mult { color: var(--sum-accent, #c084fc); } /* damage multiplier → same purple language as the other mult readouts */
 </style>

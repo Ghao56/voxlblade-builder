@@ -191,6 +191,18 @@
   --tracking-widest: 0.1em;
 }
 
+/* ── Summon panel (semantic colors: purple = summon & multiplier,
+   green = positive/survival, red = negative, amber = damage type/warning) ── */
+:root {
+  --sum-accent: #c084fc;
+  --sum-accent-border: rgba(192,132,252,.3);
+  --sum-muted: #a6a2b0;          /* ≥ 4.5:1 on --surface2 */
+  --sum-ok: #4ade80;
+  --sum-bad: #f87171;
+  --sum-warn: #facc15;
+  --sum-zebra: rgba(192,132,252,.035);
+}
+
 /* ═══════════════════════════════════════════════════════════════
    END DESIGN TOKENS
    ═══════════════════════════════════════════════════════════════ */
