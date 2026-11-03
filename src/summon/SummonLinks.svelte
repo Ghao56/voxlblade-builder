@@ -1,10 +1,10 @@
 <script lang="ts">
-  // ⑥ PERK LINKS — nguồn số liệu KHÔNG tính lại ở đây:
-  // - Vassals Croak: boost % đến từ DamageAnalyzer (cùng công thức
-  //   BOOST_DEF_MAP['Vassals Croak'] hiển thị trong Perk Base Damage).
-  // - Minion Absorption: potency đến từ calcMinionAbsorptionPotency (gọi ở
-  //   DamageAnalyzer), prop truyền xuống.
-  // Block ẨN TOÀN BỘ khi không có perk nào active (yêu cầu chủ dự án 2026-11).
+  // PERK LINKS — values are NOT recalculated here:
+  // - Vassals Croak: boost % comes from DamageAnalyzer (same BOOST_DEF_MAP
+  //   ['Vassals Croak'] formula shown in Perk Base Damage).
+  // - Minion Absorption: potency comes from calcMinionAbsorptionPotency
+  //   (called in DamageAnalyzer), passed down via props.
+  // The whole block is HIDDEN when no perk is active (owner request, 2026-11).
   import { fmtSummonNum } from '../lib/summonView'
 
   export let vassalsCroakStacks = 0
@@ -13,7 +13,7 @@
   export let minionAbsorptionPotency = 0
   export let activeCount = 0
 
-  // có ít nhất một liên kết đang thực sự "sống" (không phải dòng muted)
+  // at least one link is genuinely "live" (not a muted row)
   $: hasActiveLink =
     vassalsCroakStacks > 0 ||
     (minionAbsorptionStacks > 0 && minionAbsorptionPotency > 0)

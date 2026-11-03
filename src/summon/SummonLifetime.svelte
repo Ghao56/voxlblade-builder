@@ -1,14 +1,15 @@
 <script lang="ts">
-  // ③ SỐNG CÒN — thanh HP + decay. HP/decay từ instance (khoá lúc spawn).
-  // decay gốc đến từ VM (lifetime.baseDecay, qua hàm gốc getSummonBaseDecay)
-  // — component chỉ hiển thị, KHÔNG dựng lại phép tính ÷ (1 + boost).
+  // SURVIVAL — HP bar + decay. HP/decay from the instance (locked at spawn).
+  // Base decay comes from the VM (lifetime.baseDecay, via the original
+  // getSummonBaseDecay) — display-only, this component never rebuilds
+  // the ÷ (1 + boost) formula.
   import type { SummonPanelVM } from '../lib/summonView'
   import { fmtSummonNum, fmtSummonDuration } from '../lib/summonView'
 
   export let vm: SummonPanelVM
 
   $: pct = vm.lifetime.maxHp > 0 ? Math.max(0, Math.min(100, (vm.lifetime.hp / vm.lifetime.maxHp) * 100)) : 0
-  // xanh → vàng → đỏ theo ngưỡng %
+  // green → yellow → red by percent thresholds
   $: barColor = pct >= 50 ? '#4ade80' : pct >= 25 ? '#facc15' : '#ef4444'
   $: secondsText = vm.lifetime.seconds === null ? '∞' : '~' + fmtSummonDuration(vm.lifetime.seconds)
 </script>

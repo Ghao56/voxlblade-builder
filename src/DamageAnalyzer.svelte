@@ -499,7 +499,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         const enriched = enrichSummonDef(def, name === runeSummonName, sb, lv, $build.summonCount ?? def.count)
         return {
           inst: createSummonInstance(enriched, lv, sb, perkEntries, undefined, appliedDebuffsFor(enriched)),
-          // raw def (chưa đè count) — nguồn cho "số con / lần triệu hồi"
+          // raw def (count not yet overwritten) — source for "X per cast"
           rawCount: def.count,
           isRune: name === runeSummonName,
         }
@@ -796,9 +796,9 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         inner.set(srcKey, { buffName: b.buffName, potency: b.potency, sourceName: b.sourceName })
       }
     }
-    // summon-ui: các status đến từ attacks của summon được gắn fromSummon=true —
-    // DoT của summon là HỆ THỐNG RIÊNG, không được sinh player DoT tick
-    // (xem filter trong _dotTicks). Debuff vẫn hiển thị bình thường ở pills/panel.
+    // summon-ui: statuses coming from summon attacks are tagged fromSummon=true —
+    // summon DoT is a SEPARATE SYSTEM and must not spawn player DoT ticks
+    // (see the filter in _dotTicks). Debuffs still show normally in pills/panel.
     for (const atk of _waSummonDef?.scaledAttacks ?? []) {
       for (const st of atk.appliesStatus ?? []) {
         const def = BUFF_DEFS[st.name]
@@ -1027,12 +1027,14 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       cursedFlamesMult?: number
       scalingRows: ScalingRow[]; totalEffectivePct: number
     }> = (_hasSingedBurn ? DOT_TYPE_LIST.filter(t => t !== 'Burn') : DOT_TYPE_LIST).filter(type => {
-      // summon-ui: status DoT đến từ summon (tagged fromSummon trong
-      // _dummyDebuffs) KHÔNG sinh player DoT tick — hệ thống DoT tách riêng
-      // (quyết định chủ dự án 2026-11). Tick chỉ xuất hiện khi nguồn player:
-      // perk {type} Potency > 0, HOẶC debuff trên dummy từ nguồn non-summon.
-      // TODO(summon-ui): xác nhận rule trường hợp summon + player cùng gây
-      // một loại DoT (hiện tick theo nguồn player, debuff summon vẫn pill).
+      // summon-ui: DoT statuses coming from a summon (tagged fromSummon in
+      // _dummyDebuffs) do NOT spawn player DoT ticks — the DoT systems are
+      // separate (owner decision 2026-11). A tick appears only for player
+      // sources: perk {type} Potency > 0, OR a dummy debuff from a
+      // non-summon source.
+      // TODO(summon-ui): confirm the rule when summon AND player both apply
+      // the same DoT type (currently the tick follows the player source;
+      // the summon debuff still shows as a pill).
       if ((perks[`${type} Potency`] ?? 0) > 0) return true
       return _dummyDebuffs.some(d =>
         d.name === type && !disabledDebuffs.has(type) &&
@@ -3051,7 +3053,11 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   // - VM numbers come from the same instances the damage pipeline uses (1:1 parity).
   // - `cap` = maxSummons; active rune count = _vassalsCroakSummons (player
   //   slider, clamped above) — never recomputed inside summonView.
-  //   BUG-0001 (Trusty Servant cap=1 branch) stays open, decided separately.
+  //   BUG-0001 (Trusty Servant cap=1) fixed in calcMaxSummonCount itself — all
+  //   four callers now derive it from perks.
+  // - Owner 2026-11: BOTH panels' sliders share the global cap as their max,
+  //   but keep fully independent state — rune → build.vassalsCroakSummons,
+  //   WA → _waSummonCounts keyed by summon name (defaults to def.count).
   // - Toggle key `source::buffName` so the same buff name from rune vs weapon
   //   sources toggles independently.
   let _summonBuffOff: Record<string, boolean> = {}
@@ -3062,8 +3068,37 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   $: _summonBuffKeys = new Set(
     Object.keys(_summonBuffOff).filter(k => _summonBuffOff[k])
   )
-  // Minion Absorption potency — dùng đúng hàm gốc của Boost.ts (§0.5), tính
-  // một lần ở đây rồi truyền prop xuống SummonLinks (không tính lại trong panel).
+  let _waSummonCounts: Record<string, number> = {}
+  function handleSummonCountChange(vm: { name: string; isRune: boolean }, v: number) {
+    const clamped = Math.max(0, Math.min(Math.floor(v), maxSummons))
+    if (hasTrustyServant && clamped > 0) {
+      // Trusty single-slot rule (owner 2026-11): pulling one summon type up
+      // zeroes every other summon type — cap is 1 and the cap is shared.
+      _waSummonCounts = vm.isRune ? {} : { [vm.name]: clamped }
+      build.update(s => ({ ...s, vassalsCroakSummons: vm.isRune ? clamped : 0 }) as any)
+      return
+    }
+    if (vm.isRune) {
+      build.update(s => ({ ...s, vassalsCroakSummons: clamped }) as any)
+    } else {
+      _waSummonCounts = { ..._waSummonCounts, [vm.name]: clamped }
+    }
+  }
+  // Trusty Servant owner rule 2026-11: when the perk is equipped ALL panels'
+  // sliders start at 0 (stored counts are reset on equip), so the user picks
+  // which summon to pull. Dropping the perk stops the reset (picks persist).
+  let _trustyReset = false
+  $: hasTrustyServant = !!(perks['Trusty Servant'])
+  $: if (_trustyReset !== hasTrustyServant) {
+    _trustyReset = hasTrustyServant
+    if (hasTrustyServant) {
+      build.update(s => ({ ...s, vassalsCroakSummons: 0 }) as any)
+      _waSummonCounts = {}
+    }
+  }
+  // Minion Absorption potency — uses the original Boost.ts function (§0.5),
+  // computed once here then passed down as a prop to SummonLinks (never
+  // recalculated inside the panel).
   $: _minionAbsorptionPotency = calcMinionAbsorptionPotency(
     ($result.stats as Record<string, number>).summonBoost ?? 0,
     perks['Minion Absorption'] ?? 0
@@ -3074,16 +3109,24 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       level: $build.level ?? 80,
       perks: ($result.perks ?? {}) as Record<string, number>,
       cap: maxSummons,
-      // rune summon → player slider; weapon-art summon → def.count (per cast)
-      activeCount: p.isRune ? _vassalsCroakSummons : p.rawCount,
+      // rune summon → player slider state; weapon-art summon → per-name state.
+      // Default = 0 under Trusty (single shared slot — the user pulls what
+      // they want), else def.count. The per-name STATE is always read, so the
+      // WA slider keeps its own value under Trusty too.
+      activeCount: p.isRune
+        ? _vassalsCroakSummons
+        : _waSummonCounts[p.inst.def.name] ?? (hasTrustyServant ? 0 : Math.min(p.rawCount, maxSummons)),
+      isRune: p.isRune,
       spawnCount: p.rawCount,
       offBuffKeys: _summonBuffKeys,
     })
   )
-  // Chip trong Base Damage (SPEC §5): cuộn về panel, KHÔNG tính lại số —
-  // lấy đúng VM của summon gắn với weapon-art đang chọn.
+  // Chip in Base Damage (SPEC §5): scrolls to the panel, numbers NOT
+  // recalculated — uses exactly the VM of the summon tied to the selected
+  // weapon art. NO first-VM fallback: with no name-matching VM the chip is
+  // not rendered (avoids pointing at the wrong summon).
   $: _summonChipVM = _waSummonDef
-    ? (_summonVMs.find(v => v.name === _waSummonDef.name) ?? _summonVMs[0] ?? null)
+    ? (_summonVMs.find(v => v.name === _waSummonDef.name) ?? null)
     : null
   $: _activeRuneDmgDef = (() => {
     const def = RUNE_DMG_DEFS.find(d => d.runeName === $build.rune) ?? null
@@ -6708,13 +6751,13 @@ $: _groupedSelfDamageSources = (() => {
 </div><!-- end da-wbd-body -->
 </div><!-- end da-section--wbd -->
 
-<!-- Summons — Phase 3: section cũ (SummonCard) đã thay bằng SummonPanel.
-     Panel đọc từ _summonVMs (bên dưới), số liệu 1:1 với pipeline tính toán. -->
+<!-- Summons — Phase 3: the old section (SummonCard) is replaced by SummonPanel.
+     The panel reads from _summonVMs (below), 1:1 with the calculation pipeline. -->
 {#if _summonVMs.length}
 <div class="da-section da-section--summon" id="summon-panel">
   <div class="da-section-title-row">
     <span class="da-section-title">Summons</span>
-    <span class="da-summon-source">{_summonVMs[0].count} / {_summonVMs[0].cap} cap</span>
+    <span class="da-summon-source">cap {_summonVMs[0].cap}</span>
   </div>
   {#each _summonVMs as vmKey (vmKey.name + '::' + vmKey.source)}
     <SummonPanel
@@ -6723,7 +6766,7 @@ $: _groupedSelfDamageSources = (() => {
       vassalsCroakBoostPct={_vassalsCroakBoostPct}
       minionAbsorptionStacks={perks['Minion Absorption'] ?? 0}
       minionAbsorptionPotency={_minionAbsorptionPotency}
-      onSummonCountChange={(v: number) => build.update(s => ({ ...s, vassalsCroakSummons: v }) as any)}
+      onSummonCountChange={(v: number) => handleSummonCountChange(vmKey, v)}
       onToggleBuff={(name: string) => toggleSummonBuff(vmKey.source, name)}
     />
   {/each}
@@ -6849,8 +6892,8 @@ $: _groupedSelfDamageSources = (() => {
           <span class="da-pbd-name">Vassals Croak</span>
           <span class="da-pbd-amt">+{Math.round(_vassalsCroakAmt * 1000) / 1000}</span>
         </div>
-        <!-- summon-ui: slider "Active Summons" đã chuyển vào panel Summons khối ④
-             (SummonSwarmTotal) — đúng một nguồn duy nhất cho build.vassalsCroakSummons. -->
+        <!-- summon-ui: the "Active Summons" slider moved to the Summons panel block ④
+             (SummonSwarmTotal) — the single source writing build.vassalsCroakSummons. -->
         <div class="da-sb-slider-wrap">
           <span class="da-sb-slider-label">Last Croak Potency</span>
           <input
@@ -7045,7 +7088,7 @@ $: _groupedSelfDamageSources = (() => {
             class="da-pbd-toggle"
             class:da-pbd-toggle--off={entry.manualOff}
             on:click={() => togglePerkEntry(entry.key)}
-            title="Bật/tắt hit damage của perk này"
+            title="Toggle this perk's hit damage"
           >{entry.manualOff ? 'OFF' : 'ON'}</button>
         </div>
         <!-- Badges -->
@@ -8928,7 +8971,7 @@ $: _groupedSelfDamageSources = (() => {
   border-radius: 7px;
   width: fit-content;
 }
-/* summon-ui chip trong Base Damage (SPEC §5) — cuộn về #summon-panel */
+/* summon-ui chip in Base Damage (SPEC §5) — scrolls to #summon-panel */
 .da-summon-chip {
   display: inline-flex;
   align-items: center;
@@ -8962,6 +9005,9 @@ $: _groupedSelfDamageSources = (() => {
   font-size: .82rem;
   font-weight: 800;
   color: #c084fc;
+}
+@media (max-width: 600px) {
+  .da-summon-chip { flex-wrap: wrap; width: 100%; row-gap: 4px; }
 }
 .da-hit-chunk--rage .da-hit-num {
   text-shadow: 0 0 14px color-mix(in srgb, var(--tc) 80%, #f70201);

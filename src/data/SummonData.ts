@@ -80,6 +80,11 @@ export interface SummonInstance {
   decayPerSec: number // computed at summon, static after
   source: SummonSource
   spawnedAt: number // timestamp ms
+  // Trusty Servant (1 without the perk). currentHp already includes the HP
+  // mult; damage consumers multiply calcSummonDamage output by trustyDmgMult.
+  trustyDmgMult: number
+  trustyHpMult: number
+  trustyTiers: TrustyServantTiers | null // null when the perk is absent
   buffs?: SummonBuffOrDebuff[]     // from Inspiration / Blessing / Sweet Tooth...
   debuffs?: SummonBuffOrDebuff[]   // external statuses applied to summon
 }
@@ -95,6 +100,32 @@ export function calcSummonMaxHp(baseHp: number, spawnBoostPct: number, level: nu
 export function calcSummonDamage(baseDmg: number, currentBoostPct: number, spawnBoostPct: number, level: number): number {
   const effectiveBoost = Math.min(currentBoostPct, spawnBoostPct)
   return calcSummonStat(baseDmg, effectiveBoost, level)
+}
+
+// ── Trusty Servant multipliers (perk card, owner-confirmed reading 2026-11) ──
+// Base boost stays 300% (damage) / 100% (HP) for EVERY summon; only the
+// per-stack INCREMENT changes with the summon's base HP tier. Boost
+// semantics = tool convention: member ×(1 + boostPct/100).
+export interface TrustyServantTiers {
+  dmgIncr: number // +100%/stack, or 150 (base HP ≤ 150) / 200 (≤ 75)
+  hpIncr: number  // +50%/stack, or 75 (base HP < 200) / 100 (< 100)
+}
+
+export function getTrustyServantTiers(baseHp: number): TrustyServantTiers {
+  return {
+    dmgIncr: baseHp <= 75 ? 200 : baseHp <= 150 ? 150 : 100,
+    hpIncr: baseHp < 100 ? 100 : baseHp < 200 ? 75 : 50,
+  }
+}
+
+export function calcTrustyServantDmgBoostPct(baseHp: number, stacks: number): number {
+  const t = getTrustyServantTiers(baseHp)
+  return 300 + t.dmgIncr * Math.max(0, Math.floor(stacks))
+}
+
+export function calcTrustyServantHpBoostPct(baseHp: number, stacks: number): number {
+  const t = getTrustyServantTiers(baseHp)
+  return 100 + t.hpIncr * Math.max(0, Math.floor(stacks))
 }
 
 export function calcSummonBuffDmgMult(
@@ -115,9 +146,16 @@ function calcSummonDecayPercent(baseDecayPercent: number, spawnBoostPct: number)
 }
 
 export function calcMaxSummonCount(perks: Record<string, number>, hasTrustyServant: boolean = false): number {
-  if (hasTrustyServant) return 1
+  // Trusty Servant caps summons at 1 and Swarm cannot raise the cap under it
+  // (perk card: "you may only have one minion at a time" / "Does not increase
+  // summon cap when the user has Trusty Servant").
+  if (hasTrustyServant || !!(perks['Trusty Servant'])) return 1
   return BASE_SUMMON_CAP + Math.floor(perks['Swarm'] ?? 0)
 }
+
+// TODO(summon-ui): unmodeled Swarm effects — "Reduces Summon HP and Damage by
+// 25% - 5% * perkAmount" and "Doubles amount of summons spawned (any source)".
+// Not fixed here; report-only per task scope.
 
 function applySacrificialSummoning(decayPercent: number): number {
   // Sacrificial Summoning reduces decay by 25% relative to current decay
@@ -184,8 +222,6 @@ export const SUMMON_DEFS: SummonDef[] = [
       { label: 'Slash', baseDmg: 20, dmgType: 'Physical' },
       { label: 'Body Slam', baseDmg: 25, dmgType: 'Physical' },
     ],
-    buffs: [{ name: 'Rage Potency', value: 0.3 }],
-    notes: ['Rage Potency 0.3 buff (summon only)'],
   },
   {
     name: 'Undead Buni',
@@ -309,7 +345,9 @@ const SUMMON_PERK_DEFS: SummonPerkDef[] = [
     description: 'Removes decay from affected summons; limits to 1 summon total',
     mode: 'passive',
     affectsCount: true,
-    notes: 'Decay becomes 0',
+    affectsDmg: true,
+    affectsHp: true,
+    notes: 'Decay becomes 0. Dmg/HP multipliers implemented via calcTrustyServant*BoostPct (owner-confirmed per-stack-increment reading, 2026-11). TODO: tenacity multiplier — perk desc mentions one but the card gives no formula.',
   },
   {
     perkName: 'Sweet Tooth',
@@ -366,16 +404,22 @@ export function createSummonInstance(
   }
 
   const maxHp = calcSummonMaxHp(def.baseHp, spawnBoostPct, level)
+  const trustyStacks = Math.max(0, Math.floor(perks['Trusty Servant'] ?? 0))
+  const trustyDmgMult = trustyStacks > 0 ? 1 + calcTrustyServantDmgBoostPct(def.baseHp, trustyStacks) / 100 : 1
+  const trustyHpMult = trustyStacks > 0 ? 1 + calcTrustyServantHpBoostPct(def.baseHp, trustyStacks) / 100 : 1
 
   return {
     def,
     level,
     spawnBoostPct,
-    currentHp: maxHp,
+    currentHp: maxHp * trustyHpMult,
     currentBoostPct: playerBoostPct,
     decayPerSec,
     source,
     spawnedAt: Date.now(),
+    trustyDmgMult,
+    trustyHpMult,
+    trustyTiers: trustyStacks > 0 ? getTrustyServantTiers(def.baseHp) : null,
     buffs: buffs ?? def.buffs ?? [],
     debuffs: debuffs ?? [],
   }

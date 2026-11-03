@@ -1,28 +1,32 @@
 <script lang="ts">
-  // SummonPanel — container, luồng hiển thị:
-  // Scaling ──► Stats (Base→Scaled) ──► Survival ──► Swarm Total ──► Debuffs ──► Perk Links.
-  // Các block KHÔNG dùng ký hiệu số (①②③…) trên nhãn — theo yêu cầu 2026-11.
-  // Mọi số đến từ SummonPanelVM (lib/summonView) — hàm thuần trên instance
-  // của DamageAnalyzer giữ state ở DamageAnalyzer.
+  // SummonPanel — container, display flow:
+  // Scaling ──► Stats (Base→Scaled) ──► Survival ──► Swarm Total ──► Applied
+  // Buffs ──► Applied Debuffs ──► Perk Links. Buffs own a titled block like
+  // debuffs (owner request 2026-11); the header shows no alive count (the
+  // sliders are the single source for that). NO circled-number symbols.
+  // NO circled-number symbols (①②③…) on block labels — owner request 2026-11.
+  // Every number comes from SummonPanelVM (lib/summonView) — pure functions
+  // built on the instance DamageAnalyzer holds.
   import type { SummonPanelVM } from './lib/summonView'
   import SummonScalingStrip from './summon/SummonScalingStrip.svelte'
   import SummonStatTable from './summon/SummonStatTable.svelte'
   import SummonLifetime from './summon/SummonLifetime.svelte'
   import SummonSwarmTotal from './summon/SummonSwarmTotal.svelte'
+  import SummonBuffs from './summon/SummonBuffs.svelte'
   import SummonDebuffs from './summon/SummonDebuffs.svelte'
   import SummonLinks from './summon/SummonLinks.svelte'
 
   export let vm: SummonPanelVM
 
-  // Liên kết perk — giá trị đến từ DamageAnalyzer (tính bằng hàm gốc)
+  // Perk links — values come from DamageAnalyzer (computed by the original functions)
   export let vassalsCroakStacks = 0
   export let vassalsCroakBoostPct = 0
   export let minionAbsorptionStacks = 0
   export let minionAbsorptionPotency = 0
 
-  /** (value:number) — số summon đang hoạt động, viết về build.vassalsCroakSummons */
+  /** (value:number) — active summons count, writes back to build.vassalsCroakSummons */
   export let onSummonCountChange: (value: number) => void = () => {}
-  /** (buffName:string) — toggle buff, key `source::name` ở DamageAnalyzer */
+  /** (buffName:string) — buff toggle, key `source::name` handled in DamageAnalyzer */
   export let onToggleBuff: (buffName: string) => void = () => {}
 
   $: summonCount = vm.count
@@ -32,12 +36,6 @@
   <div class="sum-header">
     <span class="sum-name">{vm.name}</span>
     <span class="sum-source">{vm.source}</span>
-    <span class="sum-count">
-      <b>×{vm.count}</b> alive
-      {#if vm.spawnCount !== vm.count}
-        <span class="sum-count-detail" title="Raw def.count — minions per cast">({vm.spawnCount}/cast · {vm.count} active)</span>
-      {/if}
-    </span>
   </div>
 
   <SummonScalingStrip {vm} />
@@ -49,17 +47,17 @@
       <span class="sum-stats-head--col">MULT</span>
       <span class="sum-stats-head--col">SCALED</span>
     </div>
-    {#each vm.stats as st (st.key + st.label)}
-      <SummonStatTable stat={st} />
+    {#each vm.stats as st, i (st.key + st.label)}
+      <SummonStatTable
+        stat={st}
+        dividerAbove={i > 0 && st.key === 'attack' && vm.stats[i - 1].key !== 'attack'}
+      />
     {/each}
   </div>
 
   <SummonLifetime {vm} />
-  <SummonSwarmTotal
-    {vm}
-    {onSummonCountChange}
-    {onToggleBuff}
-  />
+  <SummonSwarmTotal {vm} {onSummonCountChange} />
+  <SummonBuffs {vm} {onToggleBuff} />
   <SummonDebuffs {vm} />
   <SummonLinks
     {vassalsCroakStacks}
@@ -99,14 +97,6 @@
     text-transform: uppercase;
     letter-spacing: var(--tracking-wider, .06em);
   }
-  .sum-count {
-    margin-left: auto;
-    font-size: var(--text-base-plus, 13px);
-    color: var(--ink-muted, #8a8694);
-    white-space: nowrap;
-  }
-  .sum-count b { color: #c084fc; font-family: 'Courier New', monospace; font-weight: var(--weight-extrabold, 800); }
-  .sum-count-detail { font-size: var(--text-2xs, 10px); cursor: help; }
   .sum-stats { padding: 4px 0; border-top: 1px solid color-mix(in srgb, #c084fc 15%, transparent); }
   .sum-stats-head {
     display: grid;
@@ -130,7 +120,7 @@
     text-transform: uppercase;
   }
   @media (max-width: 600px) {
+    .sum-header { flex-wrap: wrap; row-gap: 2px; }
     .sum-panel { max-width: 100%; }
-    .sum-count { margin-left: 0; }
   }
 </style>

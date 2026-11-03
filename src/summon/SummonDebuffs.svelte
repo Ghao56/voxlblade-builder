@@ -1,7 +1,7 @@
 <script lang="ts">
-  // ⑤ DEBUFF GÂY RA — CHỈ danh sách trạng thái: tên debuff + potency (> 0).
-  // KHÔNG hiển thị damage DoT và KHÔNG nhân perk của player — hệ thống
-  // DoT/Debuff của summon tách riêng với của player (quyết định chủ dự án).
+  // APPLIED DEBUFFS — status list only: debuff name + potency. NO DoT damage
+  // shown and NO player perk applied — the summon DoT/Debuff system is
+  // SEPARATE from the player's (owner decision, 2026-11).
   import type { SummonPanelVM } from '../lib/summonView'
   import { BUFF_DEFS } from '../data/BuffData'
 

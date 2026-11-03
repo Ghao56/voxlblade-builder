@@ -1,14 +1,15 @@
 <script lang="ts">
-  // SCALING — Summon Boost × (1 + Lv/MAX). Số mult đến từ VM (trong đó mult
-  // đã qua calcSummonStat(1, boost, level)), panel chỉ format.
+  // SCALING — real formula: base × (1 + (boost/100) × (1 + level/MAX)).
+  // The mult comes from the VM (already computed via calcSummonStat); this
+  // component only formats and substitutes current numbers into the display.
   import type { SummonPanelVM } from '../lib/summonView'
   import { fmtSummonNum } from '../lib/summonView'
   import { MAX_LEVEL } from '../lib/constants'
 
   export let vm: SummonPanelVM
 
-  // level phục hồi ngược từ levelFactor (levelFactor = 1 + level/MAX_LEVEL)
-  // — chỉ để THẾ SỐ vào công thức hiển thị, không tính phép mới.
+  // level recovered backwards from levelFactor (= 1 + level/MAX_LEVEL) —
+  // DISPLAY-ONLY substitution into the formula, never a new calculation.
   $: lvl = (vm.scaling.levelFactor - 1) * MAX_LEVEL
 </script>
 
@@ -18,6 +19,14 @@
     <span class="ssp-chip">(1 + {fmtSummonNum(vm.scaling.boostPct)}% × (1 + {fmtSummonNum(lvl)}/{MAX_LEVEL}))</span>
     <span class="ssp-op">=</span>
     <span class="ssp-mult">×{fmtSummonNum(vm.scaling.mult)}</span>
+    {#if vm.trustyTiers}
+      <span
+        class="ssp-chip"
+        title="Trusty Servant — dmg &times;(1 + (300 + {vm.trustyTiers.dmgIncr}%/stack)/100), HP &times;(1 + (100 + {vm.trustyTiers.hpIncr}%/stack)/100). Tier increments come from the summon's base HP (getTrustyServantTiers)."
+      >
+        [ Trusty dmg ×{fmtSummonNum(vm.trustyDmgMult)} · HP ×{fmtSummonNum(vm.trustyHpMult)} ]
+      </span>
+    {/if}
   </div>
 </div>
 

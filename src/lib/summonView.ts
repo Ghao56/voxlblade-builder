@@ -22,7 +22,7 @@ import { roundMultiplier } from './utils'
 import { getSummonBaseDecay } from '../data/SummonData'
 
 export interface SummonStatRow {
-  key: 'hp' | 'tenacity' | 'defense' | 'attack'
+  key: 'tenacity' | 'defense' | 'attack'
   label: string
   base: number | null       // null if stat does not scale (e.g. Magic Def)
   mult: number | null       // boost factor applied to THIS stat only
@@ -31,35 +31,39 @@ export interface SummonStatRow {
   dmgType?: string          // attacks: lowercase key for DMG_TYPE_COLORS
   dmgColor?: string         // resolved color, null-safe fallback handled in component
   ignoresArmor?: boolean    // true when the hit's dmgType === 'summon' (calcArmorMult shortcut)
-  note?: string             // e.g. 'locked at spawn' (user-facing)
+  note?: string             // e.g. 'locked at spawn' (user-facing) — currently unused
 }
 
 export interface SummonPanelVM {
   name: string
   source: SummonSource
-  count: number             // ACTIVE minions — từ summonCount/slider của player, clamp [0, cap]
-  spawnCount: number        // def.count NGUYÊN BẢN — "X con / lần triệu hồi"
+  count: number             // ACTIVE minions — from the player slider / summonCount, clamped to [0, cap]
+  spawnCount: number        // RAW def.count — minions per cast
   cap: number               // passed in from caller (maxSummons), never recomputed here — see BUG-0001
+  isRune: boolean           // routes slider writes (rune → vassalsCroakSummons state, WA → per-name state)
+  trustyDmgMult: number     // 1 without the perk; from instance.trustyDmgMult
+  trustyHpMult: number
+  trustyTiers: { dmgIncr: number; hpIncr: number } | null // null without the perk — shown in the scaling strip
   scaling: { boostPct: number; levelFactor: number; mult: number }
   stats: SummonStatRow[]
   lifetime: { hp: number; maxHp: number; decayPerSec: number; baseDecay: number | null; seconds: number | null } // null = infinite
   swarm: { label: string; perHit: number; count: number; total: number; dmgType: string }[]
   buffs: { name: string; value: number; active: boolean; affectsDamage: boolean }[]
-  /** Danh sách debuff summon áp lên địch — TẤT CẢ (kể cả potency 0). KHÔNG
-   *  có damage DoT ở đây: hệ thống DoT/Debuff của summon KHÁC của player,
-   *  không nhận perk của player (quyết định của chủ dự án, 2026-11). */
+  /** Debuffs the summon applies on hit — ALL of them (even potency 0). NO
+   *  DoT damage here: the summon DoT/Debuff system is SEPARATE from the
+   *  player's and never receives player perks (owner decision, 2026-11). */
   debuffs: { name: string; potency: number }[]
 }
 
-/** Format số theo §6: tối đa 4 chữ số thập phân, bỏ số 0 thừa. Dùng lại
- *  roundMultiplier của lib/utils — không tự viết công thức làm tròn. */
+/** Number formatting (SPEC §6): max 4 decimal places, trim trailing zeros.
+ *  Reuses roundMultiplier from lib/utils — never invent rounding. */
 export function fmtSummonNum(n: number): string {
   const r = roundMultiplier(n)
   return Number.isInteger(r) ? String(r) : r.toFixed(4).replace(/\.?0+$/, '')
 }
 
-/** Định dạng thời gian sống còn (giây) — cùng format Duration hiển thị ở
- *  khối ③ của SummonPanel: "45s", "1m 30s". Chỉ format, không tính toán. */
+/** Formats survival time (seconds) — same Duration format shown in the
+ *  SummonPanel Survival block: "45s", "1m 30s". Format-only, no math. */
 export function fmtSummonDuration(secs: number): string {
   const s = Math.round(secs)
   if (s < 60) return `${s}s`
@@ -73,10 +77,14 @@ export interface SummonVMInput {
   level: number
   perks: Record<string, number>
   cap: number // REQUIRED — the single source of truth stays in DamageAnalyzer/App (maxSummons)
-  activeCount: number // REQUIRED — "đang hoạt động", nguồn: build.summonCount / VS slider (rune) hoặc def.count (WA)
-  spawnCount: number // REQUIRED — def.count nguyên bản (trước enrichSummonDef ghi đè)
-  /** Tên buff đang OFF; caller truyền key `source::buffName` để cùng tên buff từ
-   *  hai nguồn (rune + vũ khí) không đụng nhau. */
+  activeCount: number // REQUIRED — "active now"; source: build.vassalsCroakSummons slider (rune) or per-summon WA state, default def.count
+  spawnCount: number // REQUIRED — raw def.count (before enrichSummonDef overwrites it)
+  /** True for the rune summon (Swarm Rune). DamageAnalyzer only needs it to
+   *  route slider writes to the right independent state (owner 2026-11: both
+   *  sliders share the global cap as max but keep separate values). */
+  isRune?: boolean
+  /** Buff names currently OFF; caller passes keys `source::buffName` so the
+   *  same buff name from two sources (rune + weapon) toggles independently. */
   offBuffKeys?: Iterable<string>
 }
 
@@ -113,19 +121,12 @@ export function buildSummonVM(input: SummonVMInput): SummonPanelVM {
   const activeBuffs = (instance.buffs ?? []).filter(b => isBuffActive(b.name))
   const buffMult = calcSummonBuffDmgMult(activeBuffs)
 
-  // ② stat rows — HP scales from spawnBoostPct (locked), damage from
-  // min(currentBoost, spawnBoost), exactly like the panel scaling strip shows. Blocks with
-  // separate mults carry their own mult in the row; shared one lives at ①.
+  // ② stat rows — damage scales from min(currentBoost, spawnBoost), exactly
+  // like the panel scaling strip shows. HP is NOT listed here (owner request
+  // 2026-11): the only HP display is the Survival block, so no stat is printed
+  // twice. Blocks with separate mults carry their own mult in the row; the
+  // shared one lives at ①.
   const stats: SummonStatRow[] = []
-
-  stats.push({
-    key: 'hp',
-    label: 'HP',
-    base: def.baseHp,
-    mult: spawnMult,
-    scaled: calcSummonMaxHp(def.baseHp, instance.spawnBoostPct, level),
-    note: 'locked at spawn',
-  })
 
   if (def.tenacity !== undefined) {
     stats.push({
@@ -151,10 +152,10 @@ export function buildSummonVM(input: SummonVMInput): SummonPanelVM {
   }
 
   // ④ swarm rows — one line per attack (or the def's base attack).
-  // Active count (số con đang hoạt động) lấy từ INPUT (summonCount/slider của
-  // player hoặc def.count với WA summon), KHÔNG đọc từ def đã enrich — vì
-  // enrichSummonDef đè def.count của rune-summon bằng summonCount, làm mất
-  // info "X con / lần triệu hồi". spawnCount từ raw def, truyền qua input.
+  // Active count comes from the INPUT (player summonCount/slider, or def.count
+  // for WA summons) — NEVER from the enriched def, because enrichSummonDef
+  // overwrites def.count of rune summons with summonCount and loses the
+  // "X per cast" info. spawnCount comes from the raw def via input.
   const count = Math.max(0, Math.min(Math.floor(input.activeCount), input.cap))
   const swarmRows: SummonPanelVM['swarm'] = []
   if (def.attacks && def.attacks.length > 0) {
@@ -162,7 +163,7 @@ export function buildSummonVM(input: SummonVMInput): SummonPanelVM {
       const dmgType = atk.dmgType.toLowerCase()
       const perHit = Math.round(
         calcSummonDamage(atk.baseDmg, instance.currentBoostPct, instance.spawnBoostPct, level) *
-          buffMult * 100,
+          buffMult * instance.trustyDmgMult * 100,
       ) / 100
       swarmRows.push({
         label: atk.label,
@@ -186,7 +187,7 @@ export function buildSummonVM(input: SummonVMInput): SummonPanelVM {
     const dmgType = def.dmgType.toLowerCase()
     const perHit = Math.round(
       calcSummonDamage(def.baseDmg, instance.currentBoostPct, instance.spawnBoostPct, level) *
-        buffMult * 100,
+        buffMult * instance.trustyDmgMult * 100,
     ) / 100
     swarmRows.push({
       label: 'Base Attack',
@@ -223,11 +224,11 @@ export function buildSummonVM(input: SummonVMInput): SummonPanelVM {
     affectsDamage: calcSummonBuffDmgMult([b]) !== 1,
   }))
 
-  // ⑤ applied debuffs — HIỂN THỊ TẤT CẢ debuff def áp lên địch, kể cả potency 0
-  // (vd Poison của Bumblz potency 0 vẫn phải liệt kê để biết summon áp gì —
-  // yêu cầu của chủ dự án 2026-11). KHÔNG hiển thị damage DoT: hệ thống
-  // DoT/Debuff của summon tách riêng với của player và KHÔNG nhận perk của
-  // player (poison/burn/bleed potency…).
+  // ⑤ applied debuffs — LIST ALL debuffs the def applies, even potency 0
+  // (e.g. Bumblz Poison potency 0 must still be listed so the user knows what
+  // the summon applies — owner requirement 2026-11). NO DoT damage shown: the
+  // summon DoT/Debuff system is separate from the player's and never receives
+  // player perks (poison/burn/bleed potency…).
   const debuffs = (instance.debuffs ?? [])
     .map(d => ({ name: d.name, potency: d.value }))
 
@@ -237,14 +238,19 @@ export function buildSummonVM(input: SummonVMInput): SummonPanelVM {
     count,
     spawnCount: input.spawnCount,
     cap: input.cap,
+    isRune: input.isRune ?? false,
+    trustyDmgMult: instance.trustyDmgMult,
+    trustyHpMult: instance.trustyHpMult,
+    trustyTiers: instance.trustyTiers,
     scaling,
     stats,
     lifetime: {
-      hp: Math.round(instance.currentHp * 100) / 100,
-      maxHp: calcSummonMaxHp(def.baseHp, instance.spawnBoostPct, level),
+      hp: Math.round(instance.currentHp * 100) / 100, // already carries trustyHpMult (set at summon)
+      // calcSummonMaxHp × Trusty HP mult — matches currentHp at spawn
+      maxHp: calcSummonMaxHp(def.baseHp, instance.spawnBoostPct, level) * instance.trustyHpMult,
       decayPerSec,
-      // decay gốc từ hàm gốc của SummonData — UI chỉ hiển thị, không dựng lại
-      // phép tính ÷ (1 + boost) (giữ single source of truth).
+      // base decay from the original SummonData accessor — display-only, the
+      // UI never rebuilds the ÷ (1 + boost) formula (single source of truth).
       baseDecay: getSummonBaseDecay(instance.source) ?? null,
       seconds,
     },
