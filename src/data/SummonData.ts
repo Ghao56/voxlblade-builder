@@ -26,6 +26,11 @@ const DECAY_BY_SOURCE: Record<SummonSource, number> = {
   'Toaladin Summon': 1,
   'Undead Buni Summon': 2,
 }
+// display-only accessor (SPEC ③): SummonPanel shows the RAW decay value
+// beside the computed decayPerSec. Reading only — no logic here.
+export function getSummonBaseDecay(source: SummonSource): number {
+  return DECAY_BY_SOURCE[source]
+}
 
 const BASE_SUMMON_CAP = 15
 
@@ -123,7 +128,7 @@ function applyTrustyServant(): { maxCount: number; decayPercent: number } {
   return { maxCount: 1, decayPercent: 0 }
 }
 
-const SUMMON_DEFS: SummonDef[] = [
+export const SUMMON_DEFS: SummonDef[] = [
   {
     name: 'Mage Bomber',
     count: 2,

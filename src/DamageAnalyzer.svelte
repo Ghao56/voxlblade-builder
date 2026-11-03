@@ -4,7 +4,8 @@
   import { calcBuildWeapon } from './lib/engine'
   import BaseDamageCalc from './BaseDamageCalc.svelte'
   import ScalingBreakdownRow from './ScalingBreakdownRow.svelte'
-  import SummonCard from './SummonCard.svelte'
+  import SummonPanel from './SummonPanel.svelte'
+  import { buildSummonVM, fmtSummonNum } from './lib/summonView'
   import { WEAPON_ARTS, waChargeBase, waChargeMult } from './data/weaponArts'
   import { CRAGBLADE_NAME, CRAGBLADE_M1_M2_DMG_MULT, resolveCragbladeType } from './data/cragblade'
   import { WEAPON_BASE_DMG } from './data/weapon base dmg'
@@ -472,18 +473,6 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     return enrichSummonDef(def, !!runeSummonName, sb, lv, $build.summonCount ?? def.count)
   })()
 
-  $: _summonBaseStats = (() => {
-    const def = _waSummonDef
-    if (!def) return [] as { label: string; display: string }[]
-    const out: { label: string; display: string }[] = []
-    if (def.tenacity !== undefined) out.push({ label: 'Tenacity', display: String(def.tenacity) })
-    if (def.physicalDefenseBoost !== undefined) out.push({ label: 'Phys Def', display: fmtPct(def.physicalDefenseBoost) })
-    if (def.magicDefenseBoost !== undefined) out.push({ label: 'Magic Def', display: fmtPct(def.magicDefenseBoost) })
-    if (def.airDefenseBoost !== undefined) out.push({ label: 'Air Def', display: fmtPct(def.airDefenseBoost) })
-    if (def.waterDefenseBoost !== undefined) out.push({ label: 'Water Def', display: fmtPct(def.waterDefenseBoost) })
-    return out
-  })()
-
   $: _summonInstances = (() => {
     const lv = $build.level ?? 80
     const sb = (($result.stats as Record<string,number>).summonBoost ?? 0)
@@ -508,9 +497,14 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         const def = SUMMON_MAP[name]
         if (!def) return null
         const enriched = enrichSummonDef(def, name === runeSummonName, sb, lv, $build.summonCount ?? def.count)
-        return createSummonInstance(enriched, lv, sb, perkEntries, undefined, appliedDebuffsFor(enriched))
+        return {
+          inst: createSummonInstance(enriched, lv, sb, perkEntries, undefined, appliedDebuffsFor(enriched)),
+          // raw def (chưa đè count) — nguồn cho "số con / lần triệu hồi"
+          rawCount: def.count,
+          isRune: name === runeSummonName,
+        }
       })
-      .filter((i): i is SummonInstance => !!i)
+      .filter((p): p is { inst: SummonInstance; rawCount: number; isRune: boolean } => !!p)
   })()
 
   // Active Buffs Assembly
@@ -788,7 +782,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     // Inner map is keyed per SOURCE ("buffName::sourceName"), not just buffName, so
     // multiple sources of the same debuff (e.g. 4x Weakness from Rune/Race/Perk/Bolt)
     // each stay their own variant — Hex Ray fires one ray per source.
-    const groups = new Map<string, Map<string, { buffName: string; potency: number; sourceName?: string }>>()
+    const groups = new Map<string, Map<string, { buffName: string; potency: number; sourceName?: string; fromSummon?: boolean }>>()
     for (const b of [..._allActiveBuffs, ..._cauterizedAbilityDebuffs]) {
       if (b.isSelfDebuff) continue
       const def = BUFF_DEFS[b.buffName]
@@ -802,6 +796,9 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         inner.set(srcKey, { buffName: b.buffName, potency: b.potency, sourceName: b.sourceName })
       }
     }
+    // summon-ui: các status đến từ attacks của summon được gắn fromSummon=true —
+    // DoT của summon là HỆ THỐNG RIÊNG, không được sinh player DoT tick
+    // (xem filter trong _dotTicks). Debuff vẫn hiển thị bình thường ở pills/panel.
     for (const atk of _waSummonDef?.scaledAttacks ?? []) {
       for (const st of atk.appliesStatus ?? []) {
         const def = BUFF_DEFS[st.name]
@@ -812,7 +809,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
           const srcKey = `${st.name}::${'sourceName' in st ? String(st.sourceName ?? '') : ''}`
           const existing = inner.get(srcKey)
           if (!existing || st.potency > existing.potency) {
-            inner.set(srcKey, { buffName: st.name, potency: st.potency, sourceName: 'sourceName' in st && typeof st.sourceName === 'string' ? st.sourceName : undefined })
+            inner.set(srcKey, { buffName: st.name, potency: st.potency, sourceName: 'sourceName' in st && typeof st.sourceName === 'string' ? st.sourceName : undefined, fromSummon: true })
           }
       }
     }
@@ -872,13 +869,14 @@ const trimNum = (n: number, maxDecimals = 4): string => {
         if (hasSticky) inner.set('Sticky (Melting Slime)', { buffName: 'Sticky (Melting Slime)', potency: maxPotency })
       }
     }
-    const buildVariant = (v: { buffName: string; potency: number; sourceName?: string }) => {
+    const buildVariant = (v: { buffName: string; potency: number; sourceName?: string; fromSummon?: boolean }) => {
       const combatFx = DEBUFF_COMBAT_EFFECTS[v.buffName]
       const effect = v.potency > 0 ? calcBuffEffect(v.buffName, v.potency) : null
       return {
         buffName: v.buffName,
         sourceName: v.sourceName || v.buffName,
         potency: v.potency,
+        fromSummon: !!v.fromSummon,
         effectLabel: effect ? `${effect.value}${effect.unit === '%' ? '%' : ''}` : null,
         descLabel: combatFx ? combatFx.descFn(v.potency, perks) : null,
         damageMult: combatFx?.damageMult ? combatFx.damageMult(v.potency) : undefined,
@@ -1028,7 +1026,19 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       kindlingMult?: number
       cursedFlamesMult?: number
       scalingRows: ScalingRow[]; totalEffectivePct: number
-    }> = (_hasSingedBurn ? DOT_TYPE_LIST.filter(t => t !== 'Burn') : DOT_TYPE_LIST).filter(type => (perks[`${type} Potency`] ?? 0) > 0 || _dummyDebuffs.some(d => d.name === type && !disabledDebuffs.has(type))).map(type => {
+    }> = (_hasSingedBurn ? DOT_TYPE_LIST.filter(t => t !== 'Burn') : DOT_TYPE_LIST).filter(type => {
+      // summon-ui: status DoT đến từ summon (tagged fromSummon trong
+      // _dummyDebuffs) KHÔNG sinh player DoT tick — hệ thống DoT tách riêng
+      // (quyết định chủ dự án 2026-11). Tick chỉ xuất hiện khi nguồn player:
+      // perk {type} Potency > 0, HOẶC debuff trên dummy từ nguồn non-summon.
+      // TODO(summon-ui): xác nhận rule trường hợp summon + player cùng gây
+      // một loại DoT (hiện tick theo nguồn player, debuff summon vẫn pill).
+      if ((perks[`${type} Potency`] ?? 0) > 0) return true
+      return _dummyDebuffs.some(d =>
+        d.name === type && !disabledDebuffs.has(type) &&
+        (!(d.variants ?? []).length || (d.variants as Array<{ fromSummon?: boolean }>).some(v => !v.fromSummon))
+      )
+    }).map(type => {
       let dotPot = perks[`${type} Potency`] ?? 0
       if (__daBuildVal.draconicRuneInfusion === 'infusion') {
         const draconicBloodAmt = perks['Draconic Blood'] ?? 0
@@ -1669,10 +1679,6 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   function fmtNum(n: number): string {
     const r = roundMultiplier(n)
     return Number.isInteger(r) ? String(r) : r.toFixed(4).replace(/\.?0+$/, '')
-  }
-
-  function fmtPct(v: number): string {
-    return (v >= 0 ? '+' : '') + `${Math.round(v * 100)}%`
   }
 
   function calcGroupMultiplier(entries: Array<{ rawMultiplier: number }>): number {
@@ -3034,13 +3040,51 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   $: maxSummons = calcMaxSummonCount(perks);
   $: _vassalsCroakSummons = Math.min(Math.max($build.vassalsCroakSummons ?? $build.summonCount, 0), maxSummons)
   $: _vassalsCroakBoostPct = _vassalsCroakAmt > 0 ? Math.round(VASSALS_CROAK_MULT_PER_STACK * Math.floor(_vassalsCroakSummons) * _vassalsCroakAmt * 10000) / 100 : 0
-  $: _vassalsCroakFillPct = maxSummons > 0 ? (Math.floor(_vassalsCroakSummons) / maxSummons) * 100 : 0
   $: if ($build.vassalsCroakSummons != null && $build.vassalsCroakSummons > maxSummons) {
     build.update(s => ({ ...s, vassalsCroakSummons: maxSummons }) as any)
   }
   $: if ($build.lastCroakStacks != null && $build.lastCroakStacks > maxSummons) {
     build.update(s => ({ ...s, lastCroakStacks: maxSummons }) as any)
   }
+
+  // Phase 2 (summon-ui): SummonPanel view models + hoisted buff-toggle state.
+  // - VM numbers come from the same instances the damage pipeline uses (1:1 parity).
+  // - `cap` = maxSummons; active rune count = _vassalsCroakSummons (player
+  //   slider, clamped above) — never recomputed inside summonView.
+  //   BUG-0001 (Trusty Servant cap=1 branch) stays open, decided separately.
+  // - Toggle key `source::buffName` so the same buff name from rune vs weapon
+  //   sources toggles independently.
+  let _summonBuffOff: Record<string, boolean> = {}
+  function toggleSummonBuff(source: string, buffName: string) {
+    const key = `${source}::${buffName}`
+    _summonBuffOff = { ..._summonBuffOff, [key]: !_summonBuffOff[key] }
+  }
+  $: _summonBuffKeys = new Set(
+    Object.keys(_summonBuffOff).filter(k => _summonBuffOff[k])
+  )
+  // Minion Absorption potency — dùng đúng hàm gốc của Boost.ts (§0.5), tính
+  // một lần ở đây rồi truyền prop xuống SummonLinks (không tính lại trong panel).
+  $: _minionAbsorptionPotency = calcMinionAbsorptionPotency(
+    ($result.stats as Record<string, number>).summonBoost ?? 0,
+    perks['Minion Absorption'] ?? 0
+  )
+  $: _summonVMs = _summonInstances.map(p =>
+    buildSummonVM({
+      instance: p.inst,
+      level: $build.level ?? 80,
+      perks: ($result.perks ?? {}) as Record<string, number>,
+      cap: maxSummons,
+      // rune summon → player slider; weapon-art summon → def.count (per cast)
+      activeCount: p.isRune ? _vassalsCroakSummons : p.rawCount,
+      spawnCount: p.rawCount,
+      offBuffKeys: _summonBuffKeys,
+    })
+  )
+  // Chip trong Base Damage (SPEC §5): cuộn về panel, KHÔNG tính lại số —
+  // lấy đúng VM của summon gắn với weapon-art đang chọn.
+  $: _summonChipVM = _waSummonDef
+    ? (_summonVMs.find(v => v.name === _waSummonDef.name) ?? _summonVMs[0] ?? null)
+    : null
   $: _activeRuneDmgDef = (() => {
     const def = RUNE_DMG_DEFS.find(d => d.runeName === $build.rune) ?? null
     if (!def) return null
@@ -6594,45 +6638,22 @@ $: _groupedSelfDamageSources = (() => {
         </div>
          {/if}
 
-          {#if _waSummonDef}
+          {#if _waSummonDef && _summonChipVM}
             <div class="da-wbd-section">
-              <div class="da-wbd-row-label da-wbd-row-label--sum">
+              <button
+                type="button"
+                class="da-summon-chip"
+                on:click={() => document.getElementById('summon-panel')?.scrollIntoView({ behavior: 'smooth' })}
+                title="Merged into the Summons panel — click to scroll to details"
+              >
                 <Badge color="#c084fc" square size="xs">S</Badge>
-                <span class="da-wbd-lbl-text">{_waSummonDef.name}</span>
-                <Badge color="#c084fc" size="xs" class="da-sb-base-pill">Base Stats</Badge>
-              </div>
-              <div class="da-sb">
-                <div class="da-sb-hp">
-                  <span class="da-sb-hp-label">HP</span>
-                  <span class="da-sb-hp-val">{_waSummonDef.baseHp}</span>
-                </div>
-                {#if _summonBaseStats.length > 0}
-                  <div class="da-sb-stats">
-                    {#each _summonBaseStats as st}
-                      <span class="da-sb-stat">
-                        <span class="da-sb-stat-label">{st.label}</span>
-                        <span class="da-sb-stat-val">{st.display}</span>
-                      </span>
-                    {/each}
-                  </div>
-                {/if}
-                <div class="da-sb-attacks">
-                  {#if _waSummonDef.attacks && _waSummonDef.attacks.length > 0}
-                    {#each _waSummonDef.attacks as atk, ai}
-                      {#if ai > 0}<span class="da-hit-plus">+</span>{/if}
-                      <div class="da-hit-chunk" style="--tc:#c084fc">
-                        <span class="da-hit-num" style="--tc:#c084fc">{atk.baseDmg}</span>
-                        <span class="da-hit-type">{atk.label}</span>
-                      </div>
-                    {/each}
-                  {:else}
-                    <div class="da-hit-chunk" style="--tc:#c084fc">
-                      <span class="da-hit-num" style="--tc:#c084fc">{_waSummonDef.baseDmg}</span>
-                      <span class="da-hit-type">{_waSummonDef.dmgType}</span>
-                    </div>
-                  {/if}
-                </div>
-              </div>
+                <span class="da-summon-chip-name">{_summonChipVM.name}</span>
+                {#each _summonChipVM.stats.filter(s => s.key === 'attack') as atk, ai}
+                  {#if ai > 0}<span class="da-hit-plus">+</span>{/if}
+                  <span class="da-summon-chip-atk" style="color:{atk.dmgColor ?? '#e8e4da'}">{atk.label} {fmtSummonNum(atk.scaled)}</span>
+                {/each}
+                <span class="da-summon-chip-count">×{_summonChipVM.count}</span>
+              </button>
             </div>
           {/if}
      </div>
@@ -6687,18 +6708,25 @@ $: _groupedSelfDamageSources = (() => {
 </div><!-- end da-wbd-body -->
 </div><!-- end da-section--wbd -->
 
-<!-- Summons -->
-{#if _summonInstances.length}
-<div class="da-section da-section--summon">
+<!-- Summons — Phase 3: section cũ (SummonCard) đã thay bằng SummonPanel.
+     Panel đọc từ _summonVMs (bên dưới), số liệu 1:1 với pipeline tính toán. -->
+{#if _summonVMs.length}
+<div class="da-section da-section--summon" id="summon-panel">
   <div class="da-section-title-row">
     <span class="da-section-title">Summons</span>
-    <span class="da-summon-source">Summon Cap &times;{maxSummons}</span>
+    <span class="da-summon-source">{_summonVMs[0].count} / {_summonVMs[0].cap} cap</span>
   </div>
-  <div class="da-summons-list">
-    {#each _summonInstances as s}
-      <SummonCard summon={s} />
-    {/each}
-  </div>
+  {#each _summonVMs as vmKey (vmKey.name + '::' + vmKey.source)}
+    <SummonPanel
+      vm={vmKey}
+      vassalsCroakStacks={_vassalsCroakAmt}
+      vassalsCroakBoostPct={_vassalsCroakBoostPct}
+      minionAbsorptionStacks={perks['Minion Absorption'] ?? 0}
+      minionAbsorptionPotency={_minionAbsorptionPotency}
+      onSummonCountChange={(v: number) => build.update(s => ({ ...s, vassalsCroakSummons: v }) as any)}
+      onToggleBuff={(name: string) => toggleSummonBuff(vmKey.source, name)}
+    />
+  {/each}
 </div>
 {/if}
 
@@ -6821,23 +6849,8 @@ $: _groupedSelfDamageSources = (() => {
           <span class="da-pbd-name">Vassals Croak</span>
           <span class="da-pbd-amt">+{Math.round(_vassalsCroakAmt * 1000) / 1000}</span>
         </div>
-        <div class="da-sb-slider-wrap">
-          <span class="da-sb-slider-label">Active Summons</span>
-          <input
-            type="range"
-            min="0"
-            max={maxSummons}
-            step="1"
-            value={_vassalsCroakSummons}
-            on:input={(e) => {
-              const val = Math.min(Math.max(+(e.target as HTMLInputElement).value, 0), maxSummons)
-              build.update(s => ({ ...s, vassalsCroakSummons: val }) as any)
-            }}
-            class="da-sb-slider"
-            style="--tc:#93ff87; --fill:{_vassalsCroakFillPct}%"
-          />
-          <span class="da-sb-slider-val" style="color:#93ff87">{Math.floor(_vassalsCroakSummons)}</span>
-        </div>
+        <!-- summon-ui: slider "Active Summons" đã chuyển vào panel Summons khối ④
+             (SummonSwarmTotal) — đúng một nguồn duy nhất cho build.vassalsCroakSummons. -->
         <div class="da-sb-slider-wrap">
           <span class="da-sb-slider-label">Last Croak Potency</span>
           <input
@@ -8915,114 +8928,40 @@ $: _groupedSelfDamageSources = (() => {
   border-radius: 7px;
   width: fit-content;
 }
-.da-summon-label {
-  font-size: .62rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .1em;
-  color: #c084fc;
-  opacity: .8;
-}
-.da-summon-input {
-  font-family: 'Courier New', monospace;
-  font-size: .9rem;
-  font-weight: 800;
-  color: #c084fc;
-  background: none;
-  border: none;
-  outline: none;
-  width: 36px;
-  text-align: center;
-  -moz-appearance: textfield;
-  appearance: textfield;
-}
-.da-summon-input::-webkit-inner-spin-button,
-.da-summon-input::-webkit-outer-spin-button { -webkit-appearance: none; }
-.da-summon-max {
-  font-size: .62rem;
-  color: #c084fc;
-  opacity: .45;
-  font-family: 'Courier New', monospace;
-}
-.da-sb {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3, 12px);
-  padding: var(--space-3, 12px) var(--space-4, 16px);
-  min-width: 200px;
-  width: fit-content;
+/* summon-ui chip trong Base Damage (SPEC §5) — cuộn về #summon-panel */
+.da-summon-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font: inherit;
   background:
     linear-gradient(165deg, rgba(192,132,252,.08), rgba(192,132,252,.02) 55%),
     var(--surface, #0f1210);
   border: 1px solid rgba(192,132,252,.20);
   border-radius: var(--radius-md, 8px);
-  box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,.3));
+  transition: border-color .15s, background-color .15s;
 }
-.da-sb-hp {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  border-radius: var(--radius-sm, 5px);
-  background: rgba(192,132,252,.10);
-  border: 1px solid rgba(192,132,252,.28);
-  width: fit-content;
+.da-summon-chip:hover,
+.da-summon-chip:focus-visible {
+  border-color: rgba(192,132,252,.45);
+  background:
+    linear-gradient(165deg, rgba(192,132,252,.14), rgba(192,132,252,.04) 55%),
+    var(--surface, #0f1210);
+  outline: none;
 }
-.da-sb-hp-label {
-  font-size: .6rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .12em;
-  color: #c084fc;
-  opacity: .8;
-}
-.da-sb-hp-val {
+.da-summon-chip-name { color: #c084fc; font-style: normal; font-weight: var(--weight-semibold, 600); }
+.da-summon-chip-atk {
   font-family: var(--font-mono, 'Courier New', monospace);
-  font-size: 1rem;
+  font-size: .82rem;
+  font-weight: 800;
+}
+.da-summon-chip-count {
+  font-family: var(--font-mono, 'Courier New', monospace);
+  font-size: .82rem;
   font-weight: 800;
   color: #c084fc;
-}
-.da-sb-stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-.da-sb-stat {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 9px;
-  border-radius: var(--radius-full, 999px);
-  background: rgba(255,255,255,.04);
-  border: 1px solid var(--border, rgba(255,255,255,.05));
-}
-.da-sb-stat-label {
-  font-size: .58rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .08em;
-  color: var(--ink-muted, #7a7d75);
-}
-.da-sb-stat-val {
-  font-family: var(--font-mono, 'Courier New', monospace);
-  font-size: .78rem;
-  font-weight: 800;
-  color: var(--ink, #e8e4da);
-}
-.da-sb-attacks {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-  padding-top: var(--space-2, 8px);
-  border-top: 1px solid rgba(192,132,252,.14);
-}
-.da-wbd-row-label--sum .da-wbd-lbl-text {
-  color: #c084fc;
-  font-style: normal;
-}
-.da-sb-base-pill {
-  opacity: .9;
 }
 .da-hit-chunk--rage .da-hit-num {
   text-shadow: 0 0 14px color-mix(in srgb, var(--tc) 80%, #f70201);
@@ -9118,13 +9057,6 @@ $: _groupedSelfDamageSources = (() => {
   border-radius: 999px;
   padding: 2px 10px;
   align-self: center;
-}
-
-.da-summons-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  width: 100%;
 }
 
 .da-pbd-list {
