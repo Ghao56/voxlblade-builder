@@ -167,7 +167,6 @@
   let draggingFrom: number | null = null
   let dragOverIdx: number | null = null
 
-  // Mouse drag state
   let mouseDragging = false
   let mouseStartIdx: number | null = null
   let mouseGhostEl: HTMLDivElement | null = null
@@ -178,7 +177,6 @@
   let mouseGrabOffsetY = 0
   const MOUSE_DRAG_THRESHOLD = 5
 
-  // Touch drag state
   let touchDragging = false
   let touchStartIdx: number | null = null
   let touchGhostEl: HTMLDivElement | null = null
@@ -188,7 +186,6 @@
   let touchMoved = false
   const TOUCH_DRAG_THRESHOLD = 8
 
-  // Auto-scroll during drag
   let autoScrollRaf: number | null = null
   let autoScrollY = 0
 

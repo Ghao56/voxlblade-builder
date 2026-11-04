@@ -1,10 +1,9 @@
 <script lang="ts">
-  // PERK LINKS — values are NOT recalculated here:
-  // - Vassals Croak: boost % comes from DamageAnalyzer (same BOOST_DEF_MAP
-  //   ['Vassals Croak'] formula shown in Perk Base Damage).
-  // - Minion Absorption: potency comes from calcMinionAbsorptionPotency
-  //   (called in DamageAnalyzer), passed down via props.
-  // The whole block is HIDDEN when no perk is active (owner request, 2026-11).
+  // PERK LINKS — values are NOT recalculated here: Vassals Croak boost % comes
+  // from DamageAnalyzer (same BOOST_DEF_MAP ['Vassals Croak'] formula shown in
+  // Perk Base Damage); Minion Absorption potency comes from
+  // calcMinionAbsorptionPotency (called in DamageAnalyzer), passed via props.
+  // Whole block HIDDEN when no perk is active (owner, 2026-11).
   import { fmtSummonNum } from '../lib/summonView'
 
   export let vassalsCroakStacks = 0

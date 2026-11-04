@@ -349,7 +349,6 @@ import { calcBaseMaxHP } from './lib/constants/game'
   $: draconicInfusionBuff = (() => {
     if (rawDraconicInfusionBuff.length === 0) return []
     
-    // Apply Bastion Bless and other modifiers
     return applyBuffPerkModifiers(rawDraconicInfusionBuff, $result.perks, $build.rune || undefined)
   })()
 

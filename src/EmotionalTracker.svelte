@@ -133,7 +133,6 @@
     font-family: 'Trebuchet MS','Segoe UI',system-ui,sans-serif;
   }
 
-  /* Header */
   .et-head { display:flex; align-items:center; justify-content:space-between; gap:6px; }
   .et-head-right { display:flex; align-items:center; gap:6px; }
   .et--disabled { opacity:.45; }
@@ -142,7 +141,6 @@
     font-weight:700; color:var(--c); opacity:.7;
   }
 
-  /* Quick buttons */
   .et-btns { display:flex; gap:5px; }
   .et-btn {
     flex:1; display:flex;
@@ -165,7 +163,6 @@
   .et-btn-icon { font-size:.8rem; }
   .et-btn-label { font-size:.6rem; text-transform:uppercase; letter-spacing:.1em; font-weight:700; }
 
-  /* Slider track row */
   .et-track-row { display:flex; align-items:center; gap:8px; }
   .et-tick-label {
     font-size:.58rem; font-weight:700; text-transform:uppercase;
@@ -173,7 +170,6 @@
   }
   .et-slider-wrap { flex:1; position:relative; display:flex; flex-direction:column; gap:3px; }
 
-  /* Segment visual track */
   .et-seg-track {
     position:absolute; top:50%; transform:translateY(calc(-50% - 5px));
     left:0; right:0; height:6px;
@@ -186,7 +182,6 @@
   .et-seg--both   { background:linear-gradient(90deg,#f87171,#a78bfa,#4ade80); }
   .et-seg--buff   { background:#4ade80; }
 
-  /* Range input */
   .et-slider {
     -webkit-appearance:none; appearance:none;
     width:100%; height:6px;
@@ -222,7 +217,6 @@
     transition:background .2s, box-shadow .2s;
   }
 
-  /* Dot ticks */
   .et-dots { display:flex; justify-content:space-between; padding:0 10px; pointer-events:none; }
   .et-dot {
     width:5px; height:5px; border-radius:50%;

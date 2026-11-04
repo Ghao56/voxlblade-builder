@@ -27,7 +27,7 @@ const DECAY_BY_SOURCE: Record<SummonSource, number> = {
   'Undead Buni Summon': 2,
 }
 // display-only accessor (SPEC ③): SummonPanel shows the RAW decay value
-// beside the computed decayPerSec. Reading only — no logic here.
+// beside the computed decayPerSec.
 export function getSummonBaseDecay(source: SummonSource): number {
   return DECAY_BY_SOURCE[source]
 }
@@ -76,10 +76,10 @@ export interface SummonInstance {
   level: number
   spawnBoostPct: number // locked at summon time
   currentHp: number
-  currentBoostPct: number // player's current boost
+  currentBoostPct: number
   decayPerSec: number // computed at summon, static after
   source: SummonSource
-  spawnedAt: number // timestamp ms
+  spawnedAt: number
   // Trusty Servant (1 without the perk). currentHp already includes the HP
   // mult; damage consumers multiply calcSummonDamage output by trustyDmgMult.
   trustyDmgMult: number
@@ -102,10 +102,10 @@ export function calcSummonDamage(baseDmg: number, currentBoostPct: number, spawn
   return calcSummonStat(baseDmg, effectiveBoost, level)
 }
 
-// ── Trusty Servant multipliers (perk card, owner-confirmed reading 2026-11) ──
-// Base boost stays 300% (damage) / 100% (HP) for EVERY summon; only the
-// per-stack INCREMENT changes with the summon's base HP tier. Boost
-// semantics = tool convention: member ×(1 + boostPct/100).
+// Trusty Servant multipliers (owner-confirmed reading, 2026-11): base boost
+// stays 300% (damage) / 100% (HP) for EVERY summon; only the per-stack
+// INCREMENT changes with the summon's base HP tier. Boost semantics = tool
+// convention: member ×(1 + boostPct/100).
 export interface TrustyServantTiers {
   dmgIncr: number // +100%/stack, or 150 (base HP ≤ 150) / 200 (≤ 75)
   hpIncr: number  // +50%/stack, or 75 (base HP < 200) / 100 (< 100)

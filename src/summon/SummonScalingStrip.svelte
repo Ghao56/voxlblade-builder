@@ -1,9 +1,9 @@
 <script lang="ts">
-  // SCALING — real formula: base × (1 + (boost/100) × (1 + level/MAX)).
-  // The mult comes from the VM (already computed via calcSummonStat); this
-  // component only formats and substitutes current numbers into the display.
-  // When `shared` is passed (this panel's scaling matches the formula already
-  // shown once in the section header), render compact: only the ×mult chip.
+  // SCALING — real formula: base × (1 + (boost/100) × (1 + level/MAX)). The
+  // mult comes from the VM (already computed via calcSummonStat); this
+  // component only formats and substitutes numbers. With `shared` passed
+  // (this panel's scaling matches the formula shown in the section header),
+  // render compact: only the ×mult chip.
   import type { SummonPanelVM } from '../lib/summonView'
   import { fmtSummonNum } from '../lib/summonView'
   import { MAX_LEVEL } from '../lib/constants'

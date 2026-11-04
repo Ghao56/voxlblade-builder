@@ -230,10 +230,9 @@ export interface CritResult {
   primalStacks: number
   hasCritRelevantPerks: boolean
   /**
-   * Natural crit sources are positiveOnly-scaled.
-   * Carrying Winds is ignore-scaled.
-   * King's Luck is positiveOnly-scaled.
-   * Golden Crits is a boost (not a crit source), handled separately.
+   * Natural crit sources and King's Luck are positiveOnly-scaled.
+   * Carrying Winds is ignore-scaled. Golden Crits is a boost (not a crit
+   * source), handled separately.
    */
   procScalingInfo?: {
     naturalCritChanceWithProcCoeff: number

@@ -207,12 +207,10 @@ export function calculateHealBoost(
     finalMultiplier *= entry.rawMultiplier
   }
   
-  // Apply Anti Heal reduction from self-debuffs
   if (ctx.activeBuffs) {
     for (const buff of ctx.activeBuffs) {
       if (buff.buffName === 'Anti Heal' && buff.isSelfDebuff && buff.potency > 0) {
         // Anti Heal reduces healing by: 1 - (1 / (1 + potency))
-        // So the multiplier is divided by (1 + potency)
         finalMultiplier = roundMultiplier(finalMultiplier / (1 + buff.potency))
       }
     }

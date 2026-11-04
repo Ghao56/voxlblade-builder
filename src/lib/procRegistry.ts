@@ -8,16 +8,13 @@ import { STORM_CALLER_PROC_CHANCE, LIGHT_BEARER_PROC_CHANCE, TRUE_MOON_PROC_CHAN
  * Data-driven registry of proc-capable effects, keyed by damage tag
  * (`ComputedType.tag` / `BADGE_CONFIG`). New effect = data change, no engine patch.
  *
- * chanceScaling (see ProcScalingType):
- * - `normal`       : gated by the hit's coefficient (blocked on noProc)
- * - `ignore`       : unaffected by the coefficient (Carrying Winds)
- * - `positiveOnly` : never below base chance, active even on noProc (crits, King's Luck)
+ * chanceScaling (see ProcScalingType): `normal` = gated by the hit's
+ * coefficient (blocked on noProc); `ignore` = unaffected (Carrying Winds);
+ * `positiveOnly` = never below base chance, active even on noProc (crits,
+ * King's Luck). `blockedOnNoProc` = non-chance conditional effects.
  *
- * `blockedOnNoProc` marks non-chance conditional effects that can't activate
- * on a noProc instance.
- *
- * NOTE: the engine is an expected-value model — an effect is active (scale 1)
- * or blocked (scale 0); chance math belongs to the game's random rollout.
+ * NOTE: expected-value engine — an effect is active (scale 1) or blocked
+ * (scale 0); chance math belongs to the game's random rollout.
  */
 interface ProcEffectDef {
   /** How the effect's proc chance reacts to the hit's coefficient. */
@@ -66,15 +63,14 @@ const PROC_EFFECT_DEFS: Readonly<Record<string, ProcEffectDef>> = {
 }
 
 /**
- * Whether an effect can activate for a hit with the given coefficient.
- * Returns 0 (blocked) or 1 (active) per the model above.
+ * Whether an effect can activate for a hit with the given coefficient
+ * (0 = blocked, 1 = active, per the model above).
  */
 export function procChanceScale(tag: string, pc: ProcCoefficient | undefined): number {
   const def = PROC_EFFECT_DEFS[tag] ?? {}
   return procScaleForDefinition(def, tag, pc)
 }
 
-/** Behavior of a single effect definition. */
 function procScaleForDefinition(def: ProcEffectDef, _tag: string, pc: ProcCoefficient | undefined): number {
   const scaling = def.chanceScaling ?? (def.blockedOnNoProc ? undefined : 'normal')
   // PositiveOnly/ignore-scaled effects (Carrying Winds, Golden Crits, ...) never drop

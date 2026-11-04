@@ -1,6 +1,5 @@
 // Perk base damage values (from Perkbasedmg.ts)
 
-// Dragon Claw
 export const DRAGON_CLAW_BASE_DAMAGE = 25
 export const DRAGON_CLAW_DAMAGE_PER_STACK = 2.5
 export const DRAGON_CLAW_HOLY_HEAL_BASE = 5
@@ -9,7 +8,6 @@ export const DRAGON_CLAW_WATER_HEAL_BASE = 1.923
 export const DRAGON_CLAW_WATER_HEAL_PER_STACK = 0.1923
 export const DRAGON_CLAW_POISE_DAMAGE = 60
 
-// Dragon Bubble
 export const DRAGON_BUBBLE_BASE_DAMAGE = 20
 export const DRAGON_BUBBLE_DAMAGE_PER_STACK = 2
 export const DRAGON_BUBBLE_HOLY_HEAL_BASE = 4
@@ -18,9 +16,7 @@ export const DRAGON_BUBBLE_WATER_HEAL_BASE = 1.538
 export const DRAGON_BUBBLE_WATER_HEAL_PER_STACK = 0.1538
 export const DRAGON_BUBBLE_POISE_DAMAGE = 45
 
-// Springblast
-// Base Damage per proc ≈ (7 + 0.7·perkAmount + (0.25 + 0.15·perkAmount)·proccingFinisherBaseDamage)
-//                      / (0.5 + min(finisherHits, 5)/2)
+// Per-proc base = (7 + 0.7·perkAmount + (0.25 + 0.15·perkAmount)·proccingFinisherBaseDamage) / (0.5 + min(finisherHits, 5)/2)
 export const SPRINGBLAST_BASE_FLAT = 7
 export const SPRINGBLAST_BASE_PER_STACK = 0.7
 export const SPRINGBLAST_PROC_COEFF_BASE = 0.25
@@ -29,50 +25,39 @@ export const SPRINGBLAST_MAX_FINISHER_HITS = 5
 export const SPRINGBLAST_DENOM_HALF = 0.5
 export const SPRINGBLAST_ROUND = 1000
 
-// Basic Spirit
 export const BASIC_SPIRIT_BASE_DMG = 9
 export const BASIC_SPIRIT_HITS = 3
 
-// Buni Spirit
 export const BUNI_SPIRIT_BASE_DMG = 2
 export const BUNI_SPIRIT_HITS = 20
 
-// Mageling Spirit
 export const MAGELING_SPIRIT_BASE_DMG = 27.5
 
-// Toadzerker Spirit
 export const TOADZERKER_SPIRIT_BASE_DMG = 30
 
-// Dire Buni Spirit
 export const DIRE_BUNI_SPIRIT_BASE_DMG = 25
 
-// Void Root Spirit
 export const VOID_ROOT_SPIRIT_BASE_DMG = 1
 export const VOID_ROOT_SPIRIT_HITS = 23
 
-// Roguent Spirit
 export const ROGUENT_SPIRIT_BASE_DMG = 4
 export const ROGUENT_SPIRIT_HITS = 4
 
-// Caci Spirit
 export const CACI_SPIRIT_THORN_DMG = 5
 export const CACI_SPIRIT_SLAM_DMG = 15
 export const CACI_SPIRIT_THORN_HITS = 7
 export const CACI_SPIRIT_SLAM_HITS = 3
 export const CACI_SPIRIT_BLEED_DURATION = 5
 
-// Woof Spirit
 export const WOOF_SPIRIT_BASE_DMG = 24
 export const WOOF_SPIRIT_HEAL = 10
 export const WOOF_SPIRIT_WEAKNESS_POTENCY = 1
 export const WOOF_SPIRIT_WEAKNESS_DURATION = 15
 
-// Bowldur Spirit
 export const BOWLDUR_SPIRIT_BASE_DMG = 5
 export const BOWLDUR_SPIRIT_DURATION = 15
 export const BOWLDUR_SPIRIT_DEF_PCT = 30
 
-// Winter Woof Spirit
 export const WINTER_WOOF_SPIRIT_HOWL_DMG = 6
 export const WINTER_WOOF_SPIRIT_BITE_DMG = 2
 export const WINTER_WOOF_SPIRIT_BITES = 2
@@ -81,34 +66,27 @@ export const WINTER_WOOF_SPIRIT_SHATTER_DURATION = 10
 export const WINTER_WOOF_SPIRIT_BLEED_DURATION = 5
 export const WINTER_WOOF_SPIRIT_DURATION = 15
 
-// Snoeman Spirit
 export const SNOEMAN_SPIRIT_ROAR_DMG = 12
 export const SNOEMAN_SPIRIT_ICESTORM_BASE_DMG = 4.5
 export const SNOEMAN_SPIRIT_HITS = 10
 export const SNOEMAN_SPIRIT_SLOWNESS_POTENCY = 1.5
 
-// Dragigator Spirit
 export const DRAGIGATOR_SPIRIT_BASE_DMG = 5
 export const DRAGIGATOR_SPIRIT_HITS = 4
 export const DRAGIGATOR_SPIRIT_BURN_POTENCY_DMG_MULT = 0.1
 export const DRAGIGATOR_SPIRIT_BURN_DURATION = 5
 
-// Bounce Momentum
 export const BOUNCE_MOMENTUM_BASE_DMG = 5
 export const BOUNCE_MOMENTUM_DMG_PER_STACK = 2.5
 
-// Protector Spirit
 export const PROTECTOR_SPIRIT_BASE_DMG = 0.4
 export const PROTECTOR_SPIRIT_DMG_PER_STACK = 0.1
 
-// Air Pressure
 export const AIR_PRESSURE_BASE_DMG = 0
 export const AIR_PRESSURE_DMG_PER_POTENCY = 0.65
 
-// Air Barrier
 export const AIR_BARRIER_DMG_PER_STACK = 3
 
-// Screeching Sound
 export const SCREECHING_SOUND_BASE_DMG = 1
 export const SCREECHING_SOUND_POISE_PER_STACK = 8
 export const SCREECHING_SOUND_STUN_BASE = 0.4
@@ -116,39 +94,31 @@ export const SCREECHING_SOUND_STUN_PER_STACK = 0.4
 export const SCREECHING_SOUND_TAUNT_BASE = 3
 export const SCREECHING_SOUND_TAUNT_PER_STACK = 3
 
-// Roaring Heads
 export const ROARING_HEADS_BASE_DMG = 5
 export const ROARING_HEADS_DMG_PER_STACK = 2.5
 
-// Barbed Flurry
 export const BARBED_FLURRY_BASE_DMG = 1.6
 export const BARBED_FLURRY_DMG_PER_STACK = 0.32
 
-// Honey Arts
 export const HONEY_ARTS_DMG_PER_STACK = 2
 export const HONEY_ARTS_STICKY_DURATION = 5
 
-// Sickness
 export const SICKNESS_BASE_DMG = 2
 export const SICKNESS_DMG_PER_STACK = 0.5
 
-// Melting Slime
 export const MELTING_SLIME_BASE_DMG = 2.5
 export const MELTING_SLIME_FIRE_SCALE_BASE = 0.75
 export const MELTING_SLIME_FIRE_SCALE_PER_STACK = 0.25
 export const MELTING_SLIME_EARTH_SCALE_BASE = 1.5
 export const MELTING_SLIME_EARTH_SCALE_PER_STACK = 0.25
 
-// Whirlwind
 export const WHIRLWIND_BASE_DMG = 3
 export const WHIRLWIND_DMG_PER_STACK = 0.3
 
-// Volatile Shell
 export const VOLATILE_SHELL_BASE_DMG = 25
 export const VOLATILE_SHELL_DMG_PER_STACK = 20
 export const VOLATILE_SHELL_POISON_DURATION = 5
-// Explosion radius = VOLATILE_SHELL_AOE_BASE + VOLATILE_SHELL_AOE_PER_PROTECTION * Protection,
-// capped at VOLATILE_SHELL_AOE_MAX (no longer scales with perk amount).
+// Explosion radius = AOE_BASE + AOE_PER_PROTECTION × Protection, capped at AOE_MAX (no longer perk-scaled).
 export const VOLATILE_SHELL_AOE_BASE = 13
 export const VOLATILE_SHELL_AOE_PER_PROTECTION = 1.3
 export const VOLATILE_SHELL_AOE_MAX = 120
@@ -156,35 +126,28 @@ export const VOLATILE_SHELL_AOE_MAX = 120
 export const VOLATILE_SHELL_ABSORB_BASE_PCT = 70
 export const VOLATILE_SHELL_ABSORB_PER_STACK = 15
 
-// Royal Finisher
 export const ROYAL_FINISHER_BASE_DMG = 3
 export const ROYAL_FINISHER_DMG_PER_STACK = 1
 
-// Grounded Despair
 export const GROUNDED_DESPAIR_BASE_DMG = 0.45
 export const GROUNDED_DESPAIR_DMG_PER_STACK = 0.45
 
-// Echo Incineration
 export const ECHO_INCINERATION_BASE_DMG = 7
 export const ECHO_INCINERATION_DMG_PER_STACK = 1.25
 
-// Venom Spitter
 export const VENOM_SPITTER_BASE_DMG = 2
 export const VENOM_SPITTER_DMG_PER_STACK = 0.6
 export const VENOM_SPITTER_HIT_DIVISOR = 3
 
-// Dragon Breath
 export const DRAGON_BREATH_BASE_DMG = 2
 export const DRAGON_BREATH_DMG_PER_STACK = 0.6
 export const DRAGON_BREATH_HIT_DIVISOR = 3
 export const DRAGON_BREATH_BURN_DURATION = 5
 
-// Spore Burst
 export const SPORE_BURST_POTENCY_MULT = 0.1
 export const SPORE_BURST_BASE = 0.875
 export const SPORE_BURST_ROUND = 1000
 
-// Apollo Boost
 export const APOLLO_BOOST_BASE = 5
 export const APOLLO_BOOST_SUB_BASE = 0.15
 export const APOLLO_BOOST_PER_STACK = 0.25
@@ -192,26 +155,22 @@ export const APOLLO_BOOST_HITS_BASE = 1
 export const APOLLO_BOOST_HITS_PER_STACK = 2
 export const APOLLO_BOOST_TAUNT_DURATION = 15
 
-// HP Gates
 export const BELLOWING_EMBER_HP_GATE_THRESHOLD = 40
 export const BELLOWING_EMBER_HP_GATE_PER_STACK = 5
 export const PROTECTOR_SPIRIT_HP_GATE = 50
 export const PROTECTOR_SPIRIT_ALWAYS_ACTIVE_AT = 2
 
-// Bomber Charge
 export const BOMBER_CHARGE_BASE = 12.5
 export const BOMBER_CHARGE_PCT_PER_STACK = 0.15
 export const BOMBER_CHARGE_MISSING_HP_MULT = 12.8
 export const BOMBER_CHARGE_MISSING_HP_CAP = 0.5
 
-// Dark Harvest
 export const DARK_HARVEST_BASE_DAMAGE = 20
 export const DARK_HARVEST_DAMAGE_PER_STACK = 20
 export const DARK_HARVEST_HP_GATE_THRESHOLD = 50
 export const DARK_HARVEST_HEAL_PER_STACK = 1
 export const DARK_HARVEST_COOLDOWN = 2
 
-// Pyre Bloom
 export const PYRE_BLOOM_BASE_DMG = 1.5
 export const PYRE_BLOOM_DMG_PER_STACK = 0.325
 export const PYRE_BLOOM_CD_DMG_DIVISOR = 120
@@ -226,7 +185,6 @@ export const PYRE_BLOOM_MAX_ACTIVE_BASE = 3
 export const PYRE_BLOOM_MAX_ACTIVE_PER_STACK = 1
 export const PYRE_BLOOM_BURN_DURATION = 4
 
-// Bastion Ballista
 export const BASTION_BALLISTA_BASE_DMG = 1.25
 export const BASTION_BALLISTA_DMG_PER_STACK = 0.75
 export const BASTION_BALLISTA_MAX_POTENCY_BASE = 50
@@ -234,40 +192,33 @@ export const BASTION_BALLISTA_RESTORE_DELAY = 12
 export const BASTION_BALLISTA_FIRE_COOLDOWN = 0.1
 export const BASTION_BALLISTA_PROC_COEFF = 0.2
 
-// Runic Blades
 export const RUNIC_BLADES_BASE_DMG = 2
 export const RUNIC_BLADES_DMG_PER_STACK = 1.5
 export const RUNIC_BLADES_DEBUFF_DURATION_PER_STACK = 6.5
 export const RUNIC_BLADES_INNER_COOLDOWN = 0.075
 
-// Gnawing Poison
 export const GNAWING_POISON_BASE_DMG = 0
 export const GNAWING_POISON_DMG_PER_STACK = 8
 export const GNAWING_POISON_COOLDOWN = 1.5
 
-// Ice Burst
 export const ICE_BURST_BASE_DMG = 8
 export const ICE_BURST_DMG_PER_STACK = 4
 export const ICE_BURST_BLEED_DURATION = 5
 
-// Propelling Fun
 export const PROPELLING_FUN_BASE_DMG = 5
 export const PROPELLING_FUN_DMG_PER_STACK = 4
 export const PROPELLING_FUN_COOLDOWN = 2
 
-// Quake
 export const QUAKE_BASE_DMG = 2.5
 export const QUAKE_DMG_PER_STACK = 2.5
 export const QUAKE_CHANCE_BASE = 30
 export const QUAKE_CHANCE_PER_STACK = 5
 
-// Ruler Of The Sands
 export const RULER_SANDS_BASE_DMG_PER_HIT = 0.3
 export const RULER_SANDS_HITS = 25
 export const RULER_SANDS_CHANCE_CD_MULT = 1.0
 export const RULER_SANDS_CHANCE_PERK_MULT = 0.5
 
-// Lodestone Barrage
 export const LODESTONE_BARRAGE_BASE_DMG = 2
 export const LODESTONE_BARRAGE_DMG_PER_STACK = 0.75
 // Rocks fired = round(1 + (Base Cooldown / 3) * (1 + 0.2 * perkAmount))
@@ -275,7 +226,6 @@ export const LODESTONE_BARRAGE_ROCKS_BASE = 1
 export const LODESTONE_BARRAGE_CD_DIVISOR = 3
 export const LODESTONE_BARRAGE_ROCKS_PERK_MULT = 0.2
 
-// True Moon
 export const TRUE_MOON_BASE_DMG = 2
 export const TRUE_MOON_DMG_PER_STACK = 1.5
 
@@ -285,7 +235,6 @@ export const TESLA_ORB_DMG_PER_STACK = 2
 // Orb zaps every ~0.5s for ~7.5s -> 15 zaps (only one Orb may be active at a time).
 export const TESLA_ORB_HITS = 15
 
-// Ichor Spark
 export const ICHOR_SPARK_SWIPE_BASE_A = 4.75
 export const ICHOR_SPARK_SWIPE_BASE_B = 2.75
 export const ICHOR_SPARK_SLASH_BASE_A = 2.375
@@ -300,22 +249,18 @@ export const ICHOR_SPARK_SLASH_CHARGE_THRESHOLD = 0.375
 export const ICHOR_SPARK_CHAIN_PROC_CHANCE = 0.125
 export const ICHOR_SPARK_BLEED_DURATION = 5
 
-// Blazing Finisher
 export const BLAZING_FINISHER_BASE_DMG = 2
 export const BLAZING_FINISHER_FINISHER_PCT = 0.20
 
-// Deathmist Slash
 export const DEATHMIST_SLASH_BASE_DMG = 1.6
 export const DEATHMIST_SLASH_ALLIES_HEAL_BASE = 0.15
 export const DEATHMIST_SLASH_ALLIES_HEAL_PER_STACK = 0.15
 export const DEATHMIST_SLASH_SELF_HEAL_BASE = 0.15
 export const DEATHMIST_SLASH_HEAL_ON_HIT_MULT = 2
 
-// Stormcaller
 export const STORM_CALLER_BASE_DMG = 20
 export const STORM_CALLER_DMG_PER_STACK = 4
 
-// Voltaic Body
 export const VOLTAIC_BODY_BASE_DMG = 8
 export const VOLTAIC_BODY_DMG_PER_STACK = 4
 export const VOLTAIC_BODY_POTENCY_DMG_MULT = 0.85
@@ -323,16 +268,13 @@ export const VOLTAIC_BODY_ACTIVATION_WINDOW = 3
 export const VOLTAIC_BODY_DURATION_WA_CD_DIVISOR = 2
 export const VOLTAIC_BODY_DURATION_PER_STACK = 3
 
-// Rainstorm
-// One Raindrop per rotation: 1.0 Water damage type + 1.0 Water scaling on the
-// damage, and 1.0 Water scaling on its healing.
+// One Raindrop per rotation: 1.0 Water type + 1.0 Water scaling on the damage, and 1.0 Water scaling on its healing.
 export const RAINSTORM_BASE_DMG = 4
 export const RAINSTORM_DMG_PER_STACK = 2
 export const RAINSTORM_BASE_HEAL = 0.5
 export const RAINSTORM_HEAL_PER_STACK = 0.2
 export const RAINSTORM_LABEL = 'Rainstorm'
 
-// Static Buildup
 export const STATIC_BUILDUP_STRIKE_FLAT = 3
 export const STATIC_BUILDUP_RMB_INHERIT_MULT = 0.1538
 export const STATIC_BUILDUP_DMG_PER_AMT = 0.1
@@ -341,11 +283,9 @@ export const STATIC_BUILDUP_SCALINGS: Record<string, number> = { air: 1.0, magic
 export const STATIC_BUILDUP_MAX_CHARGE = 20
 export const STATIC_BUILDUP_MIN_CHARGE = 3
 
-// Caci King Spirit
-// While dancing the user heals once every 0.3s, up to 99 ticks total (the
-// 30s max dance is capped at 99 ticks). Dancing Base Heal = 0.1 per tick on
-// 1.0 Air + 1.0 Earth scaling. The heal is on the game spec's compatible-heal
-// list (procs heal-related effects: Radiance bursts, Critical Healing).
+// While dancing: heals every 0.3s, up to 99 ticks (30s max dance is capped at 99 ticks).
+// Base Heal = 0.1 per tick on 1.0 Air + 1.0 Earth scaling; the heal is on the game spec's
+// compatible-heal list (procs heal-related effects: Radiance bursts, Critical Healing).
 export const CACI_KING_SPIRIT_DANCING_BASE_HEAL = 0.1
 export const CACI_KING_SPIRIT_HEAL_TICK_INTERVAL = 0.3
 export const CACI_KING_SPIRIT_MAX_HEAL_TICKS = 99
@@ -353,15 +293,12 @@ export const CACI_KING_SPIRIT_AIR_SCALING = 1.0
 export const CACI_KING_SPIRIT_EARTH_SCALING = 1.0
 export const CACI_KING_SPIRIT_HEAL_LABEL = 'Caci King Spirit Heal (per tick)'
 
-// Rejuvenating Flame
-// Passive AoE heal around the user (Allies only, never the user) on 0.7 Fire
-// scaling. Base Healing = 0.1 + 0.05 × perkAmount, multiplied by 5 while the
-// user is Burning. AoE radius grows further while Burning (display only — the
-// AoE never reaches enemies, so it cannot change the user's own damage).
-// The heal lacks a Proc Coefficient, so it never procs other effects and is
-// absent from COMPATIBLE_HEAL_SOURCE_PATTERNS (no Radiance burst).
-// The healed allies also receive Cinder Surge (constants/buffs.ts) for 3s;
-// being Burning does NOT multiply that potency.
+// Passive AoE heal around the user (Allies only, never the user) on 0.7 Fire scaling:
+// Base = 0.1 + 0.05 × perkAmount, ×5 while the user is Burning (AoE radius grows further
+// while Burning — display only, it never reaches enemies so can't change the user's damage).
+// No Proc Coefficient, so it never procs other effects and is absent from
+// COMPATIBLE_HEAL_SOURCE_PATTERNS (no Radiance burst). Healed allies also receive Cinder Surge
+// (constants/buffs.ts) for 3s; being Burning does NOT multiply that potency.
 export const REJUVENATING_FLAME_BASE_HEAL = 0.1
 export const REJUVENATING_FLAME_HEAL_PER_AMOUNT = 0.05
 export const REJUVENATING_FLAME_FIRE_SCALING = 0.7
@@ -375,7 +312,6 @@ export const REJUVENATING_FLAME_HEAL_LABEL = 'Rejuvenating Flame Heal'
 // COMPATIBLE_HEAL_SOURCE_PATTERNS (no Radiance burst, no heal crits).
 export const HEX_SHIELD_HEAL_PER_STACK = 2.5
 
-// Radiance
 export const RADIANCE_LABEL = 'Radiance'
 export const RADIANCE_COLOR = '#ffe9a8'
 export const RADIANCE_NOTE = 'Triggered by compatible proccable healing'
@@ -383,17 +319,14 @@ export const RADIANCE_BASE = 1
 export const RADIANCE_HEAL_RATIO = 4 / 45
 export const RADIANCE_HOLY_TYPE_MULT = 1.0
 export const RADIANCE_HOLY_SCALING = 10.0
-// The game spec's closed "List of Compatible Heals — able to proc effects",
-// shared by every proc-on-heal effect (Radiance bursts, Critical Healing crits).
-// Heal sources in the "unable to proc effects" list (Cleansed Blade, Curse Rip,
-// Dark Harvest, Deepcrystal Calling, Hex Shield, Inspiration, Inoculation,
-// Lifesteal, Regen, Rejuvenating Flame, Vital Mist, consumable items) and any
-// other unlisted source never proc these effects.
-// Radiance damage is boosted by "outgoing healing" modifiers (Emotional, Heal
-// Boost, Packaged Power, …) and ignores "healing received" modifiers (Vampire,
-// Frenzy) via _healDealtMultiplier — Vampire can still TRIGGER a burst (it is
-// a compatible heal) but its received modifier does not boost the burst.
-// Matched against the source hit's label.
+// The game spec's closed "List of Compatible Heals — able to proc effects", shared by every
+// proc-on-heal effect (Radiance bursts, Critical Healing). Heal sources in the "unable to proc"
+// list (Cleansed Blade, Curse Rip, Dark Harvest, Deepcrystal Calling, Hex Shield, Inspiration,
+// Inoculation, Lifesteal, Regen, Rejuvenating Flame, Vital Mist, consumable items) and any other
+// unlisted source never proc these effects. Radiance damage is boosted by "outgoing healing"
+// modifiers (Emotional, Heal Boost, Packaged Power, …) and ignores "healing received" modifiers
+// (Vampire, Frenzy) via _healDealtMultiplier — Vampire can still TRIGGER a burst (compatible
+// heal) but its received modifier does not boost the burst. Matched against the source hit's label.
 export const COMPATIBLE_HEAL_SOURCE_PATTERNS: RegExp[] = [
   /lesser heal/i,
   /holy shrine/i,
@@ -424,10 +357,8 @@ export const COMPATIBLE_HEAL_SOURCE_PATTERNS: RegExp[] = [
   /meditate/i,
 ]
 
-// Explosive Honey
 export const EXPLOSIVE_HONEY_BASE_DMG = 3
 
-// Wave Rider
 // At max Wave Rider stacks the next Weapon Art or RMB is empowered by water:
 // a single hit (no ramping) that deals Water damage and heals the user.
 export const WAVE_RIDER_M2_BASE_DMG = 40
@@ -437,16 +368,14 @@ export const WAVE_RIDER_WA_HEAL = 4.5
 export const WAVE_RIDER_LABEL = 'Wave Rider'
 
 // Hex Ray
-// Base Damage = (3 + 0.6·perkAmount) × (1 + 4×Weakness potency). 1.0 Hex damage
-// type + 1.0 Hex scaling. Burn (Cursed Flames) also triggers it at 0 effective
-// potency → the potency multiplier is 1.
+// Base Damage = (3 + 0.6·perkAmount) × (1 + 4×Weakness potency). 1.0 Hex type + 1.0 Hex scaling.
+// Burn (Cursed Flames) also triggers it at 0 effective potency → the potency multiplier is 1.
 export const HEX_RAY_BASE_DMG = 3
 export const HEX_RAY_DMG_PER_STACK = 0.6
 export const HEX_RAY_WEAKNESS_POTENCY_MULT = 4
 
 // Cannonball
-// Base Damage = (10 + perkAmount) * (1 + 0.1 * summonsFired).
-// 1.0 Physical damage type + Summon scaling (1 + 0.05 * perkAmount).
+// Base Damage = (10 + perkAmount) * (1 + 0.1 * summonsFired); 1.0 Physical type + Summon scaling (1 + 0.05 * perkAmount).
 // Summons Fired = the number of stored minions the player chooses to launch.
 export const CANNONBALL_BASE_FLAT = 10
 export const CANNONBALL_SUMMONS_FIRED_MULT = 0.1

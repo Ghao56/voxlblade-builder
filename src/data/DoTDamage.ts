@@ -42,11 +42,7 @@ export function getDotDmgType(type: string, ghastlyRotAmt: number): string {
   return DOT_DMG_TYPE_MAP[type] ?? 'hex'
 }
 
-/**
- * Returns the base mitigation damage-type weights for a DoT debuff.
- * Defaults to a single type at weight 1.0, but Burns affected by Cursed
- * Flames resolve as 0.5 Fire / 0.5 Hex.
- */
+/** Base mitigation damage-type weights for a DoT; Cursed Flames Burns resolve as 0.5 Fire / 0.5 Hex, default single type at weight 1.0. */
 export function getDotBaseDmgTypes(type: string, ghastlyRotAmt: number, cursedFlamesAmt: number): Record<string, number> {
   if (type === 'Burn' && isBurnSplitByCursedFlames(cursedFlamesAmt)) {
     return { fire: 0.5, hex: 0.5 }
@@ -90,10 +86,8 @@ export function getDotPotencyMult(dotPotency: number): number {
 }
 
 /**
- * Compute a single DoT tick for a given potency type.
- *
- * InflictionPotency starts equal to DoTPotency but can be modified
- * externally (e.g. by Darkening Hex).  Pass the modified value here.
+ * Compute a single DoT tick. InflictionPotency starts equal to DoTPotency but
+ * can be modified externally (e.g. by Darkening Hex) — pass the modified value.
  */
 function calcDotTick(
   dotPotency: number,

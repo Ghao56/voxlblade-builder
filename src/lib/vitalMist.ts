@@ -1,6 +1,6 @@
 // Vital Mist charge is a manual build control (the Potency slider); everything
-// derives from it directly. Conversion eligibility uses the single source of
-// truth — VITAL_MIST_CONVERTIBLE_TAGS — instead of a second hand-maintained list.
+// derives from it. Conversion eligibility uses single source of truth
+// VITAL_MIST_CONVERTIBLE_TAGS instead of a hand-maintained list.
 const VITAL_MIST_CONSUMPTION_BASE_PER_TICK = 2
 const VITAL_MIST_CONSUMPTION_PER_POTENCY = 0.5
 const VITAL_MIST_CONSUMPTION_THRESHOLD = 50

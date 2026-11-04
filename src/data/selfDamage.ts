@@ -157,9 +157,9 @@ export function calcSelfDamage(
 }
 
 /**
- * Inoculation heals for 30% of the self-damage taken (before defense) plus a
- * small flat amount per stack. Affected by every outgoing-heal boost EXCEPT
- * Level Healing — pass `_healFinalMultiplierNoLevel` as `healMult`.
+ * Inoculation heals for 30% of self-damage taken (before defense) plus a small flat
+ * amount per stack. Affected by every outgoing-heal boost EXCEPT Level Healing —
+ * pass `_healFinalMultiplierNoLevel` as `healMult`.
  */
 export function calcInoculationHeal(
   damageTakenBeforeDefense: number,

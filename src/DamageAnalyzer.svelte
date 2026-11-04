@@ -127,8 +127,6 @@ import {
   calcBaseMaxHP,
 } from './lib/constants'
 
-// Cross-Toggle Mappings
-// Centralized mappings for cross-toggle relationships
 const _isSpiritPerk = (name: string) => name === 'Deathmist Slash' || name.endsWith(' Spirit')
 
 const BUFF_KEY_BOOST_LINKS: Record<string, string> = {
@@ -167,7 +165,6 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   $: _pursuitRank = disableWeaponBoost ? 0 : (perks['Pursuit'] ?? 0)
   $: _pursuitActive = _pursuitRank > 0 && ((_displayRows[0] as any)?.m1Finisher ?? true)
 
-  // Defensive Perk Sources
   $: _activeRaceEffect = getActiveRaceEffect($build.race, _hpFillPct)
   const _DEF_TYPE_LIST = TRACKED_TYPES_WITH_TRUE
   
@@ -254,7 +251,6 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     ? `${SOLAR_LIGHT_HOLY_SCALING} Holy + ${SOLAR_LIGHT_FIRE_SCALING} Fire`
     : `${SOLAR_LIGHT_HOLY_SCALING} Holy`
 
-  // Heal Scaling
   $: _healScalingCtx = {
     perks,
     emotionalState: $build.emotionalState,
@@ -362,7 +358,6 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     return 1 / (1 + effectivePotency)
   })()
 
-  // Defense Calculation
   $: _selfDebuffDefenseEffects = (() => {
     const effects: Partial<Record<string, number>> = {}
     for (const b of _allActiveBuffs) {
@@ -474,10 +469,9 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     return enrichSummonDef(def, !!runeSummonName, sb, lv, $build.summonCount ?? def.count)
   })()
 
-  // Owner 2026-11: display-only def for the WA row — resolves the WA's OWN
-  // summon (no rune priority). _waSummonDef stays rune-first for engine use;
-  // without this the row labeled "Blessedlings Summon" showed the rune
-  // summon's attacks whenever a rune was equipped.
+  // Owner 2026-11: display-only def for the WA row — resolves the WA's OWN summon
+  // (no rune priority); _waSummonDef stays rune-first for engine use, else the
+  // "Blessedlings Summon" row showed the rune summon's attacks.
   $: _waSummonRowDef = (() => {
     const summonName = WA_SUMMON_MAP[selectedWA.name]
     if (!summonName) return null
@@ -522,7 +516,6 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       .filter((p): p is { inst: SummonInstance; rawCount: number; isRune: boolean } => !!p)
   })()
 
-  // Active Buffs Assembly
   $: _allActiveBuffsRaw = (() => {
     const _weaponModifier = calcBuildWeapon($build)?.weaponModifier
     const baseBuffs = assembleActiveBuffs($build, $result.perks, wardingDebuffMult, darkeningHexEligible, _weaponModifier, $build.vitalMistPotency ?? 0)
@@ -1042,14 +1035,11 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       cursedFlamesMult?: number
       scalingRows: ScalingRow[]; totalEffectivePct: number
     }> = (_hasSingedBurn ? DOT_TYPE_LIST.filter(t => t !== 'Burn') : DOT_TYPE_LIST).filter(type => {
-      // summon-ui: DoT statuses coming from a summon (tagged fromSummon in
-      // _dummyDebuffs) do NOT spawn player DoT ticks — the DoT systems are
-      // separate (owner decision 2026-11). A tick appears only for player
-      // sources: perk {type} Potency > 0, OR a dummy debuff from a
-      // non-summon source.
-      // TODO(summon-ui): confirm the rule when summon AND player both apply
-      // the same DoT type (currently the tick follows the player source;
-      // the summon debuff still shows as a pill).
+      // summon-ui: DoT statuses from a summon (tagged fromSummon in _dummyDebuffs) do NOT
+      // spawn player DoT ticks — the DoT systems are separate (owner decision 2026-11).
+      // A tick appears only from player sources: perk {type} Potency > 0 or a non-summon dummy debuff.
+      // TODO(summon-ui): confirm the rule when summon AND player both apply the same
+      // DoT type (currently the tick follows the player source; the summon debuff still shows as a pill).
       if ((perks[`${type} Potency`] ?? 0) > 0) return true
       return _dummyDebuffs.some(d =>
         d.name === type && !disabledDebuffs.has(type) &&
@@ -1205,10 +1195,9 @@ const trimNum = (n: number, maxDecimals = 4): string => {
   // stacks with King's Luck's "+2 Lucky" equivalent while that status is active.
   $: _effectiveLuckyAmt = (perks['Lucky'] ?? 0) + (_kingsLuckActive ? KINGS_LUCK_LUCKY_EQUIVALENT : 0)
 
-  // Rejuvenating Flame: passive AoE heal on Allies (×5 while user Burning),
-  // grants Allies-only Cinder Surge (never touches user damage). Raw amount
-  // drives the chip; gated amount drives the math, so a disabled chip
-  // still renders and can be re-enabled.
+  // Rejuvenating Flame: passive AoE heal on Allies (×5 while user Burning), grants
+  // Allies-only Cinder Surge (never touches user damage). Raw amount drives the chip;
+  // gated amount drives the math, so a disabled chip still renders and can be re-enabled.
   $: _rfPerkAmt = perks['Rejuvenating Flame'] ?? 0
   $: _rejuvenatingFlameAmt = _rfPerkAmt > 0 && !disabledEffects.has('rejuvenatingFlame') ? _rfPerkAmt : 0
   $: _rfBurning = _allActiveBuffs.some(b => isSelfBurnBuff(b))
@@ -1495,10 +1484,9 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     }
     if ((perks['Ruler Of The Sands'] ?? 0) > 0) {
       const amt = perks['Ruler Of The Sands'] ?? 0
-      // King's Luck active => guaranteed activation, rerolls are moot. Without
-      // it, the base chance is resolved through Lucky's reroll mechanic (2/3
-      // of the original chance per integer Lucky stack, decimal adds a partial
-      // reroll) — see applyLuckyReroll.
+      // King's Luck active => guaranteed activation, rerolls are moot. Else the base
+      // chance resolves via Lucky's reroll mechanic (2/3 of the original chance per
+      // integer Lucky stack, decimal adds a partial reroll) — see applyLuckyReroll.
       const waBase = _waCooldown * (RULER_SANDS_CHANCE_CD_MULT + RULER_SANDS_CHANCE_PERK_MULT * amt)
       const runeBase = _runeBaseCd * (RULER_SANDS_CHANCE_CD_MULT + RULER_SANDS_CHANCE_PERK_MULT * amt)
       const waChance = _kingsLuckActive ? 100 : applyLuckyReroll(waBase, _effectiveLuckyAmt)
@@ -1551,7 +1539,6 @@ const trimNum = (n: number, maxDecimals = 4): string => {
 
   let disabledDebuffs = new Set<string>()
 
-  // Curse Rip
   $: _curseRipPerkAmount = perks['Curse Rip'] ?? 0
   $: _curseRipActiveDebuffCount = (() => {
     if (_curseRipPerkAmount <= 0) return 0
@@ -3064,20 +3051,14 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     build.update(s => ({ ...s, lastCroakStacks: maxSummons }) as any)
   }
 
-  // Phase 2 (summon-ui): SummonPanel view models + hoisted buff-toggle state.
-  // - VM numbers come from the same instances the damage pipeline uses (1:1 parity).
-  // - `cap` = maxSummons; active rune count = _vassalsCroakSummons (player
-  //   slider, clamped above) — never recomputed inside summonView.
-  //   BUG-0001 (Trusty Servant cap=1) fixed in calcMaxSummonCount itself — all
-  //   four callers now derive it from perks.
-  // - Owner 2026-11 (UPDATED same day): sliders share the global cap — the
-  //   TOTAL of all panels' active counts must not exceed `maxSummons`. Each
-  //   slider keeps its own stored state, but raising one is clamped to the
-  //   budget left by the others. Trusty Servant (cap 1) still zeroes the rest.
-  // - rune → build.vassalsCroakSummons, WA → _waSummonCounts keyed by summon
-  //   name (defaults to def.count).
-  // - Toggle key `source::buffName` so the same buff name from rune vs weapon
-  //   sources toggles independently.
+  // Phase 2 (summon-ui): SummonPanel VMs share the damage pipeline's instances (1:1
+  // parity); `cap` = maxSummons — BUG-0001 (Trusty Servant cap=1) fixed in
+  // calcMaxSummonCount, all callers derive it from perks. Owner 2026-11 (updated same
+  // day): sliders share the global cap — the TOTAL of all panels' active counts must
+  // not exceed maxSummons; raising one clamps to the budget the others left; Trusty
+  // Servant (cap 1) still zeroes the rest. rune → vassalsCroakSummons, WA →
+  // _waSummonCounts by summon name (default def.count). Toggle key `source::buffName`
+  // so the same buff from rune vs weapon sources toggles independently.
   let _summonBuffOff: Record<string, boolean> = {}
   function toggleSummonBuff(source: string, buffName: string) {
     const key = `${source}::${buffName}`
@@ -3134,9 +3115,8 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       perks: ($result.perks ?? {}) as Record<string, number>,
       cap: maxSummons,
       // rune summon → player slider state; weapon-art summon → per-name state.
-      // Default = 0 under Trusty (single shared slot — the user pulls what
-      // they want), else def.count. The per-name STATE is always read, so the
-      // WA slider keeps its own value under Trusty too.
+      // Under Trusty the default is 0 (single shared slot), else def.count; the
+      // per-name STATE is always read so the WA slider keeps its own value too.
       activeCount: p.isRune
         ? _vassalsCroakSummons
         : _waSummonCounts[p.inst.def.name] ?? (hasTrustyServant ? 0 : Math.min(p.rawCount, maxSummons)),
@@ -3157,10 +3137,9 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     )
       ? _summonVMs[0].scaling
       : null
-  // Chip in Base Damage (SPEC §5): scrolls to the panel, numbers NOT
-  // recalculated — uses exactly the VM of the summon tied to the selected
-  // weapon art. NO first-VM fallback: with no name-matching VM the chip is
-  // not rendered (avoids pointing at the wrong summon).
+  // Chip in Base Damage (SPEC §5): uses exactly the VM of the summon tied to the
+  // selected weapon art; NO first-VM fallback — with no name-matching VM the chip
+  // is not rendered (avoids pointing at the wrong summon).
   $: _summonChipVM = _waSummonDef
     ? (_summonVMs.find(v => v.name === _waSummonDef.name) ?? null)
     : null
@@ -3251,10 +3230,8 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     ? ROTATING_BLADES_BASE_MULT * (1 + ROTATING_BLADES_MULT_PER_RANK * _rotatingBladesRank)
     : 1
 
-  // Perk Base Damage
   $: springblastFinisherHits = _m2FinisherHits
 
-  /** Total hit count in the current weapon's M2 (used as finisher hits context) */
   $: _m2FinisherHits = (() => {
     if (!_displayRows.length || !_displayRows[0].m2) return 1
     const total = _displayRows[0].m2.reduce(
@@ -3263,7 +3240,6 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     return _rotatingBladesRank > 0 ? total * ROTATING_BLADES_HIT_MULT : total
   })()
 
-  /** Hit count of the last element in M1 (M1 finisher) */
   $: _m1FinisherHits = (() => {
     if ((perks['Deltabit'] ?? 0) > 0 && !disableWeaponBoost) return _m2FinisherHits
     if (!_displayRows.length || !_displayRows[0].m1) return 1
@@ -3273,21 +3249,18 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     return _rotatingBladesRank > 0 ? n * ROTATING_BLADES_HIT_MULT : n
   })()
 
-  /** Distinct values → how many hits had that value. */
   function groupByValue(values: number[]): Map<number, number> {
     const m = new Map<number, number>()
     for (const v of values) m.set(v, (m.get(v) ?? 0) + 1)
     return m
   }
-  /** "10.06 ×3 · 7.4" — per-hit values collapsed to distinct values + counts. */
   function fmtGroupedHits(values: number[]) {
     return Array.from(groupByValue(values).entries())
       .map(([v, count]) => count > 1 ? `${fmtNum(roundMultiplier(v))} ×${count}` : fmtNum(roundMultiplier(v)))
       .join(' · ')
   }
-  /** One chunk per distinct per-hit value, with the hit count of that value.
-   *  When perBaseLabels is provided (aligned with baseValues), no grouping
-   *  happens — every base gets its own chunk tagged with its source label. */
+  /** With perBaseLabels (aligned with baseValues) no grouping happens — every base
+   *  gets its own chunk tagged with its source label. */
   function buildTypedHitsFromBases(baseValues: number[], dmgTypes: Record<string, number>, perBaseLabels?: string[]) {
     const makeChunk = (k: string, mult: number, dmg: number, count: number, subLabel?: string) => ({
       rawVal: roundMultiplier(dmg),
@@ -3303,8 +3276,8 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     return Object.entries(dmgTypes).flatMap(([k, mult]) =>
       Array.from(groupByValue(baseValues).entries()).map(([dmg, count]) => makeChunk(k, mult, dmg, count)))
   }
-  /** Per-hit bases of a finisher group (charge applied) — the Springblast
-   *  proccing base; drives the perk card. Real values live in BaseDamageCalc. */
+  /** Per-hit bases of a finisher group (charge applied) — the Springblast proccing
+   *  base; drives the perk card. Real values live in BaseDamageCalc. */
   function _expandHitBases(group: any): number[] {
     const out: number[] = []
     if (!Array.isArray(group)) return out
@@ -5344,10 +5317,7 @@ $: _groupedSelfDamageSources = (() => {
     waDebuffWarning={_waDebuffWarning}
   />
 
-  <!-- TOP ROW: CRIT + ENV + APEN -->
   <div class="da-top-row">
-
-    <!-- Crit column -->
     <div class="da-section da-section--top da-section--crit">
       <div class="da-section-title"><CritIcon size={13}/> Crit Statistics</div>
       <div class="da-crit-grid">
@@ -5410,7 +5380,6 @@ $: _groupedSelfDamageSources = (() => {
       </div>
     </div>
 
-    <!-- Environment column -->
     <div class="da-section da-section--top da-section--env">
       <div class="da-section-title"><i class="fa fa-globe"></i> Environment</div>
       <div class="da-env-rows">
@@ -5442,7 +5411,6 @@ $: _groupedSelfDamageSources = (() => {
       </div>
     </div>
 
-    <!-- Armor Pen column -->
     {#if (((stats as Record<string, number>).armorPenetration ?? 0) + _raceGlobalArmorPen + _waArmorPenetration + _crushingPressureAmt * 10 + (showCritValues ? (perks['Sharp Crits'] ?? 0) * 20 : 0)) > 0}
       {@const _apenEquipPen = ((stats as Record<string, number>).armorPenetration ?? 0) + _raceGlobalArmorPen}
       {@const _apenWaPen = _waArmorPenetration}
@@ -5504,7 +5472,6 @@ $: _groupedSelfDamageSources = (() => {
 
   </div>
 
-<!-- COMBAT MULTIPLIERS -->
 <div class="da-section">
   <div class="da-section-title"><i class="fa fa-crosshairs"></i> Combat Multipliers</div>
     {#if !_hasSpecificBoosts}
@@ -5932,7 +5899,6 @@ $: _groupedSelfDamageSources = (() => {
   {/if}
 </div>
 
-<!-- DEFENSE -->
 <div class="da-section da-section--defense">
   <div class="da-section-title">Damage Taken</div>
 
@@ -6003,17 +5969,14 @@ $: _groupedSelfDamageSources = (() => {
         </div>
       {/each}
     </div>
-    <!--<p class="da-empty-hint">Additional defense sources (flat-DR buffs, etc.) will stack here as separate multiplicative layers once added.</p>-->
   {:else}
     <p class="da-empty-hint">No defense stats equipped — incoming damage is currently unmitigated.</p>
   {/if}
 </div>
 
 <div class="da-main-row">
-<!-- WEAPON BASE DAMAGE + PERK BASE DAMAGE -->
 <div class="da-wbd-outer" class:da-wbd-outer--expanded={showAllWeapons}>
 
-<!-- Weapon Base Damage -->
 <div class="da-section da-section--wbd da-section--wbd-inner">
   <div class="da-section-title-row">
     <span class="da-section-title">Base Damage</span>
@@ -6486,7 +6449,6 @@ $: _groupedSelfDamageSources = (() => {
           {:else if (_waSummonRowDef ?? _waSummonDef)}
             {@const rowDef = (_waSummonRowDef ?? _waSummonDef)!}
             <div class="da-range-row" style="gap: 8px; align-items: center;">
-              <!-- Same link language as the rune summon chip: click scrolls to the Summons panel -->
               <button
                 type="button"
                 class="da-summon-chip"
@@ -6494,7 +6456,6 @@ $: _groupedSelfDamageSources = (() => {
                 title="Merged into the Summons panel — click to scroll to details"
               >
               <div class="da-hit-card">
-                <!-- Same chip body the rune chip uses: summon name + count, no damage (full stats live in the Summons panel) -->
                 <span class="da-summon-chip-name">{rowDef.name}</span>
                 <span class="da-summon-chip-count">×{_summonVMs.find(v => v.name === rowDef.name)?.count ?? rowDef.count}</span>
               </div>
@@ -6713,7 +6674,6 @@ $: _groupedSelfDamageSources = (() => {
 
           {#if _waSummonDef && _summonChipVM}
             <div class="da-wbd-section">
-              <!-- Same row-label structure the WA section uses — rune gets its own badge + name -->
               <div class="da-wbd-row-label da-wbd-row-label--wa">
                 <Badge color="#38bdf8" square size="xs">Rune</Badge>
                 <span class="da-wbd-lbl-text da-wbd-lbl-text--wa">{_summonChipVM.source}</span>
@@ -6770,7 +6730,7 @@ $: _groupedSelfDamageSources = (() => {
       {/if}
     </div>
   {/if}
-</div><!-- end da-wbd-cards (current weapon) -->{/if}
+</div>{/if}
 
 
 
@@ -6778,18 +6738,15 @@ $: _groupedSelfDamageSources = (() => {
   <p class="da-wbd-note">M1 = light attack combo · M2 = heavy attack · × = repeated hits</p>
 {/if}
 {/if}
-</div><!-- end da-wbd-body -->
-</div><!-- end da-section--wbd -->
+</div>
+</div>
 
-<!-- Summons — Phase 3: the old section (SummonCard) is replaced by SummonPanel.
-     The panel reads from _summonVMs (below), 1:1 with the calculation pipeline. -->
 {#if _summonVMs.length}
 <div class="da-section da-section--summon" id="summon-panel">
   <div class="da-section-title-row">
     <span class="da-section-title">Summons</span>
     <span class="da-summon-source">cap {_summonVMs[0].cap}</span>
     {#if _summonsSharedScaling}
-    <!-- Shown only when every panel's scaling matches — never assumed from the first VM. -->
     <span
       class="da-summon-scaling"
       title="Summon Boost {_summonsSharedScaling.boostPct}% (buff-based) × level factor (1 + level/{MAX_LEVEL}) — at level {MAX_LEVEL} the boost doubles. Same input calcSummonStat uses."
@@ -6816,7 +6773,6 @@ $: _groupedSelfDamageSources = (() => {
 </div>
 {/if}
 
-<!-- Perk Base Damage -->
 {#if _nonDraconicPerkEntries.length > 0 || darkeningHexAmt > 0 || _vassalsCroakAmt > 0 || _cdAmt > 0 || _vcAmt > 0 || packagedPowerAmt > 0 || _radianceAmt > 0 || moneySmartAmt > 0 || (perks['Vital Mist'] ?? 0) > 0}
 <div class="da-section da-section--pbd">
   <div class="da-section-title-row">
@@ -7122,7 +7078,6 @@ $: _groupedSelfDamageSources = (() => {
     {/if}
     {#each _nonDraconicPerkEntries as entry}
       <div class="da-pbd-card">
-        <!-- Header row -->
         <div class="da-pbd-head">
           <span class="da-pbd-name">{entry.displayName}</span>
           <span class="da-pbd-amt">+{Math.round(entry.perkAmount * 1000) / 1000}</span>
@@ -7134,7 +7089,6 @@ $: _groupedSelfDamageSources = (() => {
             title="Toggle this perk's hit damage"
           >{entry.manualOff ? 'OFF' : 'ON'}</button>
         </div>
-        <!-- Badges -->
         <div class="da-pbd-badges">
           {#if entry.isFinisher}<Badge color="#facc15" square size="xs">Finisher</Badge>{/if}
           {#if entry.workOnM1}<Badge color="#fb923c" square size="xs">M1</Badge>{/if}
@@ -7144,7 +7098,6 @@ $: _groupedSelfDamageSources = (() => {
           {#if entry.guardbreak}<Badge color="#f87171" square size="xs">Guardbreak</Badge>{/if}
           {#if entry.isProcHit}<Badge color="#f472b6" square size="xs">Proc Hit</Badge>{/if}
         </div>
-        <!-- Condition -->
         {#if entry.condition}
           <div class="da-pbd-condition">{entry.condition}</div>
         {/if}
@@ -7167,7 +7120,6 @@ $: _groupedSelfDamageSources = (() => {
             </div>
           </div>
         {/if}
-        <!-- Slider -->
         {#if entry.slider}
           <div class="da-sb-slider-wrap" style="margin-bottom:6px">
             <span class="da-sb-slider-label">{entry.slider.label}</span>
@@ -7189,7 +7141,6 @@ $: _groupedSelfDamageSources = (() => {
             <span class="da-sb-slider-val" style="color:{DMG_TYPE_COLORS.earth ?? '#a3e635'}">{entry.sliderVal}</span>
           </div>
         {/if}
-        <!-- Typed damage: M2/main finisher -->
         <div class="da-pbd-dmg-row" class:da-pbd-dmg-row--inactive={!entry.isActive}>
           {#if entry.isFinisher && _m2FinisherHits > 1}
             <span class="da-pbd-ctx-label">M2 ({_m2FinisherHits} hits)</span>
@@ -7238,7 +7189,6 @@ $: _groupedSelfDamageSources = (() => {
             </div>
           {/if}
         </div>
-        <!-- M1 finisher context (only when different from M2) -->
         {#if entry.isFinisher && !entry.countAsM2 && !entry.typedHitsSameM2 && Number(_m1FinisherHits) !== Number(_m2FinisherHits)}
           <div class="da-pbd-dmg-row">
             <span class="da-pbd-ctx-label">M1 fin ({_m1FinisherHits} hit{_m1FinisherHits > 1 ? 's' : ''})</span>
@@ -7276,7 +7226,6 @@ $: _groupedSelfDamageSources = (() => {
             {/each}
           </div>
         {/if}
-        <!-- Note -->
         {#if entry.note}
           <div class="da-pbd-note">{entry.note}</div>
         {/if}
@@ -7315,7 +7264,7 @@ $: _groupedSelfDamageSources = (() => {
 </div>
 {/if}
 
-</div><!-- end da-wbd-outer -->
+</div>
 
 <div class="da-right-col" class:da-right-col--collapsed={showAllWeapons}>
 {#if _selfDamageSources.length > 0}
@@ -7421,7 +7370,6 @@ $: _groupedSelfDamageSources = (() => {
   </div>
 </div>
 {/if}
-<!-- DAMAGE SCALING -->
 {#if _weaponResult && scalingBreakdown.rows.length > 0}
 <div class="da-section da-section--scaling">
   <div class="da-section-title">📐 Damage Scaling</div>
@@ -7438,12 +7386,10 @@ $: _groupedSelfDamageSources = (() => {
           {@render scalingRow(row)}
         {/each}
 
-    <!-- Total row -->
     {@render scalingTotal(scalingBreakdown)}
 
   </div>
 
-  <!-- Multiplier result -->
   <div class="ds-result-row">
     <div style="display:flex;flex-direction:column;gap:2px;flex:1;">
       <span class="ds-result-label">Scaling Multiplier</span>
@@ -7457,7 +7403,6 @@ $: _groupedSelfDamageSources = (() => {
     <p class="ds-warn">⚠ Some scalings have no matching boost stat — those contribute 0%</p>
   {/if}
 
-  <!-- WA-specific scaling subsection (only when WA has its own formula) -->
   {#if waScalingBreakdown && !waScalingIsHealOnly}
     <div class="ds-wa-subsection">
       <div class="ds-wa-header">
@@ -7877,7 +7822,6 @@ $: _groupedSelfDamageSources = (() => {
     {/if}
   {/if}
 
-  <!-- Perk heal scaling subsection (e.g., Dragon Claw Heal) -->
   {#if _perkHealScalingBreakdown}
     <div class="ds-wa-subsection" style="margin-top:{_waHealScalingBreakdown ? '12px' : '0'}">
       <div class="ds-wa-header">
@@ -7892,7 +7836,6 @@ $: _groupedSelfDamageSources = (() => {
     </div>
   {/if}
 
-  <!-- Rainstorm heal scaling subsection -->
   {#if _rainstormHealScalingBreakdown}
     <div class="ds-wa-subsection" style="margin-top:{_waHealScalingBreakdown || _perkHealScalingBreakdown ? '12px' : '0'}">
       <div class="ds-wa-header">
@@ -7978,8 +7921,8 @@ $: _groupedSelfDamageSources = (() => {
 </div>
 {/if}
 
-</div><!-- end da-right-col -->
-</div><!-- end da-main-row -->
+</div>
+</div>
 
 </div>
 
@@ -8023,7 +7966,6 @@ $: _groupedSelfDamageSources = (() => {
     }
   }
 
-  /* Section */
   .da-section {
     background: var(--surface, #141715);
     border: 1px solid var(--border, rgba(255,255,255,.06));
@@ -8060,7 +8002,6 @@ $: _groupedSelfDamageSources = (() => {
   }
   .da-collapse-btn:hover { opacity: 1; border-color: var(--ink-muted, #8a8d85); }
 
-  /* Crit grid */
   .da-crit-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -8127,7 +8068,6 @@ $: _groupedSelfDamageSources = (() => {
     font-style: italic;
   }
 
-  /* Boost row */
   .da-boost-row {
     display: flex;
     align-items: center;
@@ -8215,7 +8155,6 @@ $: _groupedSelfDamageSources = (() => {
   text-decoration: line-through;
 }
 
-/* Top row: 3 columns */
 .da-top-row {
   display: flex;
   flex-wrap: wrap;
@@ -8232,7 +8171,6 @@ $: _groupedSelfDamageSources = (() => {
   }
 }
 
-/* Top-row panel base */
 .da-section--top {
   background: var(--surface, #141715);
   border: 1px solid rgba(212,175,55,.1);
@@ -8252,7 +8190,6 @@ $: _groupedSelfDamageSources = (() => {
 .da-section--apen { flex: 0 1 160px; text-align: center; }
 .da-section--paspd { flex: 0 1 160px; text-align: center; }
 
-/* Crit stat cards */
 .da-section--top .da-stat-card {
   background: var(--surface2, #1a1d1b);
   border-radius: 8px;
@@ -8263,7 +8200,6 @@ $: _groupedSelfDamageSources = (() => {
   font-size: 2rem;
 }
 
-/* Armor Penetration */
 .da-apen-inner {
   display: flex;
   flex-direction: column;
@@ -8289,7 +8225,6 @@ $: _groupedSelfDamageSources = (() => {
   color: var(--ink-muted, #8a8d85);
 }
 
-/* Weapon Base Damage */
 .da-section--wbd {
   border-color: rgba(251,146,60,.15);
 }
@@ -8350,8 +8285,6 @@ $: _groupedSelfDamageSources = (() => {
   padding: 1px 6px;
   font-weight: 800;
 }
-/* Table */
-
 .da-wbd-na {
   color: var(--ink-muted, #8a8d85);
   opacity: .3;
@@ -8394,7 +8327,6 @@ $: _groupedSelfDamageSources = (() => {
   margin-top: 2px;
 }
 
-/* Typed hits — pill card design */
 .da-hits-row {
   display: flex;
   flex-wrap: wrap;
@@ -8506,7 +8438,6 @@ $: _groupedSelfDamageSources = (() => {
   letter-spacing: .1em;
   font-family: var(--font-body, 'Trebuchet MS', sans-serif);
 }
-/* Damage Scaling section */
 .da-section--scaling {
   border-color: rgba(52,211,153,.18);
   background: linear-gradient(160deg, var(--surface, #141715) 60%, rgba(52,211,153,.03) 100%);
@@ -8810,7 +8741,6 @@ $: _groupedSelfDamageSources = (() => {
   border-top: 1px dashed rgba(255,255,255,.05);
 }
 
-/* Row label — badge + text side by side */
 .da-wbd-row-label {
   display: flex;
   align-items: center;
@@ -8839,7 +8769,6 @@ $: _groupedSelfDamageSources = (() => {
   font-size: .72rem;
 }
 
-/* Range damage display */
 .da-range-row {
   display: flex;
   align-items: center;
@@ -8899,10 +8828,9 @@ $: _groupedSelfDamageSources = (() => {
   border-color: rgba(74,222,128,.2);
   background: rgba(74,222,128,.06);
 }
-/* Charge slider — shared by the Rifle M2 charge and the charge-based Weapon Arts.
-   `flex: 1 0 100%` pins it to its own full-width row so the hit card above can
-   resize as its numbers change without yanking the slider out from under the
-   cursor mid-drag. */
+/* Charge slider (Rifle M2 + charge-based WAs): `flex: 1 0 100%` pins it to its own
+   full-width row so the hit card above can resize without yanking the slider
+   out from under the cursor mid-drag. */
 .da-charge-control {
   flex: 1 0 100%;
   margin-top: 10px;
@@ -9084,7 +9012,6 @@ $: _groupedSelfDamageSources = (() => {
   font-size: 0.6rem !important;
 }
 
-/* WBD outer: fixed 360px right column */
 .da-wbd-outer {
   flex: 0 0 360px;
   order: 1;
@@ -9096,14 +9023,12 @@ $: _groupedSelfDamageSources = (() => {
   min-width: 0;
 }
 
-/* Perk Base Damage section */
 .da-section--pbd {
   width: 100%;
   border-color: rgba(167,139,250,.2);
   background: linear-gradient(160deg, var(--surface, #141715) 60%, rgba(167,139,250,.04) 100%);
 }
 
-/* Summon section */
 .da-section--summon {
   width: 100%;
   border-color: rgba(192,132,252,.28);
@@ -9135,7 +9060,6 @@ $: _groupedSelfDamageSources = (() => {
   .da-summon-grid { grid-template-columns: minmax(0, 1fr); }
 }
 
-/* Shared scaling formula, shown once in the section header */
 .da-summon-scaling {
   font-family: var(--font-mono, monospace);
   font-size: .78rem;
@@ -9433,7 +9357,6 @@ $: _groupedSelfDamageSources = (() => {
   transform: translateY(1px);
 }
 
-/* Wild Bolt / Solar Light info box — quiet sub-panel with mini icon controls */
 .da-wild-bolt-box {
   background: var(--surface2, #1a1d1b);
   border: 1px solid rgba(255,255,255,.08);
@@ -9537,7 +9460,6 @@ $: _groupedSelfDamageSources = (() => {
     width: 100%;
   }
 }
-/* Perk scaling section */
 .ds-heal-subsection {
   margin-top: 14px;
   padding-top: 14px;
@@ -9625,14 +9547,12 @@ $: _groupedSelfDamageSources = (() => {
   padding: 0 4px;
 }
 
-/* Perk scaling rows — tinted amber */
 .ds-table--perk .ds-row {
   background: rgba(245,158,11,.04);
   border-radius: 5px;
   margin-bottom: 2px;
 }
 
-/* Perk result row */
 .ds-result-row--perk {
   background: rgba(245,158,11,.07) !important;
   border-color: rgba(245,158,11,.22) !important;
@@ -10198,7 +10118,6 @@ $: _groupedSelfDamageSources = (() => {
   border-style: dotted;
 }
 
-/* Perk Slider (Bastion Ballista etc.) */
 .da-sb-slider-wrap {
   display: flex;
   align-items: center;
@@ -10342,7 +10261,6 @@ $: _groupedSelfDamageSources = (() => {
   min-width: 24px;
 }
 
-/* Segmented control (valueLabels sliders) */
 .da-sb-slider-wrap--stack {
   flex-direction: column;
   align-items: stretch;

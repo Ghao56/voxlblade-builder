@@ -16,8 +16,6 @@ const DMG_TYPE_KEYS = [
   "trueType","physicalType","magicType","fireType","waterType","earthType","airType","hexType","holyType","summonType",
 ] as const
 
-// Hybrid check
-
 function checkHybrid(
   part1: { [key: string]: any } | undefined,
   part2: { [key: string]: any } | undefined,
@@ -42,8 +40,6 @@ function checkHybrid(
   }
   return true
 }
-
-// Weapon type resolution
 
 const WEAPON_TYPE_MAP: Record<string, Record<string, string>> = {
   "Medium Handle": { "Small Blade": "Dagger",  "Medium Blade": "1-Handed Sword",  "Heavy Blade": "Unbalanced Sword", "Hammer Head": "Mallet" },
@@ -99,8 +95,6 @@ function resolveWeaponType(
   return { base, final: base, modifier: "" }
 }
 
-// Monk weapon type resolution
-
 const MONK_WEAPON_TYPE_MAP: Record<string, Record<string, string>> = {
   "Monk Essence": { "Gloves": "Fists", "Shield": "Shield" },
   "Essence":      { "Gloves": "Fists", "Shield": "Shield" },
@@ -120,8 +114,6 @@ function resolveMonkWeaponType(
   if ((perks["Saw Heart"]         ?? 0) > 0 && base === "Fists") return { base, final: "Chain Fists",  modifier: "Saw Heart" }
   return { base, final: base, modifier: "" }
 }
-
-// WeaponResult
 
 export interface WeaponResult {
   part1DamageTypes:    Record<string, number>
@@ -166,8 +158,6 @@ export interface WeaponResult {
   handleFinalStats:    StatMap
   baseScalings:        Record<string, number>
 }
-
-// Extraction helpers
 
 function extractDamageAndScalings(part: any) {
   const damageTypes: Record<string, number> = {}
@@ -385,7 +375,7 @@ function calcWeaponGeneric(
   })
 }
 
-// Monk stat bonus helper (deduplicates two formerly-cloned loops)
+// Monk stat bonus helper (shared by glove & essence, dedup of two cloned loops)
 
 /**
  * Applies shrine + monk-rank bonus to one weapon part's base stats,

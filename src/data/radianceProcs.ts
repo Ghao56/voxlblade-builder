@@ -10,10 +10,9 @@ import {
 } from '../lib/constants/perk-base-damage'
 
 /**
- * Structural subset of a BDCHit that Radiance evaluation needs.
- * A source is any hit in the BDC pipeline that carries healing — either a
- * pure heal (`isHeal`) or a mixed damage hit with a heal component
- * (`dmgTypeIsHeal.heal` + `dmgTypes.heal` fraction of `base`).
+ * Structural subset of a BDCHit that Radiance evaluation needs: any hit in the
+ * BDC pipeline that carries healing — pure heal (`isHeal`) or mixed damage hit
+ * with a heal component (`dmgTypeIsHeal.heal` + `dmgTypes.heal` fraction of `base`).
  */
 export interface RadianceHealSource {
   base: number

@@ -70,7 +70,6 @@
                 border-color var(--duration-fast) var(--ease-out);
   }
 
-  /* Size variants */
   .ui-badge--xs {
     padding: 1px var(--space-1-5);
     font-size: var(--text-2xs);
@@ -80,22 +79,18 @@
     font-size: var(--text-2xs);
   }
 
-  /* Shape */
   .ui-badge--square {
     border-radius: var(--radius-xs);
   }
 
-  /* Solid (opaque bg, no border) */
   .ui-badge--solid {
     border-color: transparent;
   }
 
-  /* Monospace font */
   .ui-badge--mono {
     font-family: var(--font-mono);
   }
 
-  /* Tag variant — minimal, no border */
   .ui-badge--tag {
     border: none;
     padding: 0 var(--space-1);
@@ -104,7 +99,6 @@
     opacity: 0.7;
   }
 
-  /* Color variants */
   .ui-badge--green {
     background: rgba(74,222,128,0.12);
     border-color: rgba(74,222,128,0.25);

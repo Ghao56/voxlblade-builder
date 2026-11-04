@@ -29,8 +29,8 @@ export function applyFireAirConversion(types: Record<string, number>): Record<st
 
 /**
  * "Highest damage type" rule: largest value wins, ties by DMG_TYPE_PRIORITY
- * (missing types sort last). null on empty list. Single source of truth —
- * every consumer must use this so card/engine/rune table can't disagree.
+ * (missing types sort last). null on empty. Single source of truth so
+ * card/engine/rune table can't disagree.
  */
 export function pickHighestDmgType(
   entries: readonly (readonly [string, number])[],
@@ -74,8 +74,8 @@ export function resolveWaDamageTypeKeys(
 /**
  * Single place answering "does this attack count as WA damage?" — Cragblade
  * makes M1/M2 count, so every WA-only rule reads this signal instead of
- * hardcoding its own check. Buff-state callers pass their own value; build-state
- * callers (BuffList, engine) use this helper.
+ * hardcoding its own check. Buff-state callers pass their own value;
+ * build-state callers (BuffList, engine) use this helper.
  */
 export function weaponHitsCountAsWa(
   selectedWeaponArt: string | undefined,
@@ -129,7 +129,7 @@ export interface EffectiveWaDmgTypesInput {
 /**
  * Effective WA damage types: perk type bonuses, Spirit Winds/Dark Magic/Echo
  * conversions, WA overrides (Wild Bolt, Weighty Slam, Heat Drill, Essence Ray).
- * Shared by the engine + BuffList panel so auto-debuff checks stay in sync.
+ * Shared by engine + BuffList so auto-debuff checks stay in sync.
  */
 function computeBaseWaDmgTypes(input: EffectiveWaDmgTypesInput): Record<string, number> {
   const apply = (types: Record<string, number>) =>
@@ -178,9 +178,9 @@ function computeBaseWaDmgTypes(input: EffectiveWaDmgTypesInput): Record<string, 
 }
 
 /**
- * Same as computeBaseWaDmgTypes + the Cragblade fold (weapon types included).
- * Callers pass cragbladeActive only on the debuff-flag mirror, so the debuff
- * graph stays cycle-free and real WA damage is never inflated.
+ * Same as computeBaseWaDmgTypes + the Cragblade fold. Callers pass
+ * cragbladeActive only on the debuff-flag mirror, so the debuff graph stays
+ * cycle-free and real WA damage is never inflated.
  */
 export function computeEffectiveWaDmgTypes(input: EffectiveWaDmgTypesInput): Record<string, number> {
   const types = computeBaseWaDmgTypes(input)
@@ -203,8 +203,8 @@ export function applyAirToMagicConversion(
   trueMoonTrueRate?: number,
 ): Record<string, number> {
   let result = { ...types }
-  // Spirit Winds first: Air → Magic BEFORE Echo Incineration, so converted Air
-  // from Fire↔Air is not re-converted.
+  // Spirit Winds first: Air → Magic BEFORE Echo Incineration, so Fire↔Air-
+  // converted Air is not re-converted.
   if (conversionRate > 0) {
     const airAmount = result.air ?? 0
     if (airAmount > 0) {

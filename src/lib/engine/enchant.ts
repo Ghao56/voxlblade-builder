@@ -3,8 +3,6 @@ import { STAT_KEYS, PERCENT_STATS, applyUpgrade } from '../types'
 import { getEnchant, enchantmentsRaw } from './data'
 import { round2 } from './_utils'
 
-// Stat modifier helpers
-
 function applyMod(value: number, mod: StatModifier): number {
   return mod.type === "multiplier" ? value * mod.value : value + mod.value
 }
@@ -38,8 +36,6 @@ function applyModsWhere(
     if (predicate(currentVal, key)) applyModsToKey(key, mods, mult, add)
   }
 }
-
-// Enchantment application
 
 type StatSelectorEntry = {
   key:  'positiveStats' | 'negativeStats' | 'defenseStats' | 'positiveDefenses' | 'negativeDefenses'
@@ -148,7 +144,6 @@ export function applyEnchantmentsToSlot(
   return { stats, perks }
 }
 
-// Perk effectiveness
 
 const ENCHANT_EFFECT_PERK_NAMES = new Set(
   (enchantmentsRaw as Enchantment[]).flatMap(e => (e.effects ?? []).map(ef => ef.name))
@@ -178,8 +173,6 @@ export function applyPerkEffectiveness(
   return result
 }
 
-// Infusion
-
 export function applyInfusion(
   baseStats: StatMap,
   basePerks: Record<string, number>,
@@ -192,8 +185,6 @@ export function applyInfusion(
   }
   return { stats, perks: { ...basePerks } }
 }
-
-// Enchant slot enforcement
 
 export function isExclusiveEnchant(e: Enchantment | undefined): boolean {
   return e?.stacking === "exclusive"

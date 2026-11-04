@@ -1,7 +1,6 @@
-// Defensive Perks
-// Defines damage-reduction sources from perks (Barbskin, Stoneskin, Adaptive Plate, etc.)
-// Consumed by DamageAnalyzer via getActiveDefensivePerkSources().
-// See also: src/data/defensivePerks.ts → calcDefensivePotencyMult for potency scaling.
+// Defensive perk damage-reduction sources (Barbskin, Stoneskin, Adaptive Plate, etc.),
+// consumed by DamageAnalyzer via getActiveDefensivePerkSources().
+// See also calcDefensivePotencyMult in this file for potency scaling.
 
 import {
   BASTION_BLESS_MULT,
@@ -44,7 +43,6 @@ interface DefensivePerkSourceContext {
   opponentTaunted: boolean
 }
 
-// Def definitions
 interface DefensivePerkSource {
   perkName: string
   drPctPerStack?: number
@@ -64,7 +62,6 @@ interface DefensivePerkSource {
   drPctFn?: (amt: number, ctx: DefensivePerkSourceContext) => number
 }
 
-// Active sources
 const DEFENSIVE_PERK_SOURCES: DefensivePerkSource[] = [
   {
     perkName: 'Barbskin',

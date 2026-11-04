@@ -1,6 +1,5 @@
 // Buff/debuff potency & duration constants (from BuffData.ts)
 
-// Potion constants
 export const RAGE_POTION_POTENCY = 0.4
 export const RAGE_POTION_DURATION = 15
 export const POISON_POTION_POTENCY = 0
@@ -24,9 +23,6 @@ export const INSPIRED_EFFECT_PER_TENTH = 0.075
 // Luminescent % per potency (not 0.1 scale)
 export const LUMINESCENT_PCT_PER_POTENCY = 5
 
-// Item buff potencies & durations
-
-// Rune-granted buffs
 export const RAGE_RUNE_BUFF_POTENCY = 0.3
 export const RAGE_RUNE_BUFF_DURATION = 30
 export const TOAD_SLAM_RAGE_POTENCY = 0.2
@@ -74,14 +70,12 @@ export const PLAN_BEE_HP_GATE = 20
 export const SNARL_SNARLED_POTENCY = 0.1
 export const SNARL_SNARLED_DURATION = 10
 
-// Basic debuff pool
 export const BASIC_DEBUFF_POTENCY = 0
 export const BASIC_DEBUFF_DURATION = 5
 export const BASIC_SHATTER_POTENCY = 0.2
 export const BASIC_SLOWNESS_POTENCY = 0.2
 export const BASIC_WEAKNESS_POTENCY = 0.5
 
-// Weapon-art-granted buffs
 export const WARRIOR_STOMP_RAGE_POTENCY = 0.3
 export const WARRIOR_STOMP_RAGE_DURATION = 10
 export const WARRIOR_STOMP_TAUNT_POTENCY = 1.0
@@ -99,7 +93,6 @@ export const SHATTER_SHATTER_DURATION = 10
 export const FLAME_SLASH_BURN_DURATION = 5
 export const ICICLE_WAVE_FROSTBITE_DURATION = 12
 
-// True Balance conversions
 const TRUE_BALANCE_POTENCY_COEFF = 0.1
 const TRUE_BALANCE_REGEN_DURATION_BASE = 1
 const TRUE_BALANCE_TAILWIND_DURATION_BASE = 3
@@ -107,7 +100,6 @@ const TRUE_BALANCE_REINFORCE_POTENCY_BASE = 0.1
 const TRUE_BALANCE_RAGE_DURATION_BASE = 3
 const TRUE_BALANCE_INSPIRED_DURATION_BASE = 4
 
-// PERK_BUFFS factory constants
 const PERFECTION_POTENCY_PER_AMOUNT = 5
 /** Dark Power: potency per Dark One perk amount per unique self-debuff (unchanged, base game: 0.1).
  *  The Eldritch nerf changed the damage ratio, not potency: 8% per 0.1 potency (was 10% per 0.1). */
@@ -219,7 +211,6 @@ export const PURE_ROT_ROTTED_POTENCY_PER_AMOUNT = 0.1
 export const PURE_ROT_ROTTED_DURATION = 20
 export const PURE_ROT_POISON_DURATION = 20
 
-// BUFF_POTENCY_MODIFIERS
 export const BOUNCE_DURATION_BASE = 1.0
 export const BOUNCE_DURATION_PER_STACK = 0.3
 export const MOD_GLADIATORIAL_POTENCY = 0.1
@@ -247,13 +238,11 @@ export const MOD_WIND_WALKER_DURATION_DIVISOR = 8
 export const MOD_SLOW_LEAK_DURATION = 1.5
 export const MOD_VAPOR_AEGIS_REINFORCE_DURATION = 1.1
 
-// GENERIC_DEBUFF_MODIFIERS
 export const ENDLESS_DESPAIR_POTENCY_PER_STACK = 0.35
 export const ENDLESS_DESPAIR_FLAT_BONUS = 0.1
 export const ENDLESS_DESPAIR_DURATION_PER_STACK = 0.75
 export const STORED_CORRUPTION_DURATION_PER_STACK = 0.1
 
-// Propelling Fun
 export const PROPELLING_FUN_POTENCY_PER_AMOUNT = 0.1
 export const PROPELLING_FUN_DURATION_MULTIPLIER = 5
 export const CLOUDPUSH_PCT_PER_POTENCY = 7.5

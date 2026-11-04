@@ -1,8 +1,6 @@
-// summonView.ts — Phase 1 of the Summoner UI rework (SPEC §4.1).
-// Pure functions: gather summon data into a view model for SummonPanel.svelte.
-// NO calculation logic is duplicated here — every displayed number comes from
-// the same functions the calculators use (calcSummonStat, calcSummonDamage,
-// calcSummonBuffDmgMult, createSummonInstance, calcMaxSummonCount).
+// summonView.ts — Phase 1 of the Summoner UI rework (SPEC §4.1). Pure
+// view-model functions: NO calculation logic duplicated — every displayed
+// number comes from the same functions the calculators use.
 // TODO(summon-ui): display-only layer. If any formula below looks wrong,
 // log it in the phase report instead of fixing it here.
 
@@ -50,8 +48,8 @@ export interface SummonPanelVM {
   swarm: { label: string; perHit: number; count: number; total: number; dmgType: string }[]
   buffs: { name: string; value: number; active: boolean; affectsDamage: boolean }[]
   /** Debuffs the summon applies on hit — ALL of them (even potency 0). NO
-   *  DoT damage here: the summon DoT/Debuff system is SEPARATE from the
-   *  player's and never receives player perks (owner decision, 2026-11). */
+   *  DoT damage: the summon DoT/Debuff system is SEPARATE from the player's
+   *  and never receives player perks (owner decision, 2026-11). */
   debuffs: { name: string; potency: number }[]
 }
 
@@ -79,18 +77,16 @@ export interface SummonVMInput {
   cap: number // REQUIRED — the single source of truth stays in DamageAnalyzer/App (maxSummons)
   activeCount: number // REQUIRED — "active now"; source: build.vassalsCroakSummons slider (rune) or per-summon WA state, default def.count
   spawnCount: number // REQUIRED — raw def.count (before enrichSummonDef overwrites it)
-  /** True for the rune summon (Swarm Rune). DamageAnalyzer only needs it to
-   *  route slider writes to the right independent state (owner 2026-11: both
-   *  sliders share the global cap as max but keep separate values). */
+  /** True for the rune summon (Swarm Rune) — DamageAnalyzer uses it only to
+   *  route slider writes to the right independent state (both sliders share
+   *  the global cap as max but keep separate values; owner 2026-11). */
   isRune?: boolean
   /** Buff names currently OFF; caller passes keys `source::buffName` so the
    *  same buff name from two sources (rune + weapon) toggles independently. */
   offBuffKeys?: Iterable<string>
 }
 
-// Defense fields are part of the shared SummonDef contract, so reading them
-// generically keeps labels in sync with the SummonPanel stat table
-// without hardcoding names.
+// Read generically so labels stay in sync with the shared SummonDef contract.
 const DEFENSE_FIELD_LABELS: Record<string, string> = {
   physicalDefenseBoost: 'Physical Def',
   magicDefenseBoost: 'Magic Def',
@@ -101,7 +97,7 @@ const DEFENSE_FIELD_LABELS: Record<string, string> = {
 export function buildSummonVM(input: SummonVMInput): SummonPanelVM {
   const { instance, level } = input
   const def = instance.def
-  // Highlight colour per attack/dmgType, lowercase key (DMG_TYPE_COLORS keys).
+
   const colorOf = (rawType: string): string =>
     DMG_TYPE_COLORS[rawType.toLowerCase()] ?? '#e8e4da'
 
@@ -111,10 +107,10 @@ export function buildSummonVM(input: SummonVMInput): SummonPanelVM {
   const levelFactor = 1 + level / MAX_LEVEL
   const scaling = { boostPct: instance.spawnBoostPct, levelFactor, mult: spawnMult }
 
-  // Damage mult (bonus-dmg buff chain) — same function the damage pipeline uses.
-  // Toggle state lives in DamageAnalyzer (hoisted per TODO(summon-ui)): key
-  // `source::buffName` so the same buff name arriving from two sources (rune
-  // + weapon) toggles independently. Only active buffs enter the mult chain.
+  // Damage mult (buff chain) — same function the damage pipeline uses. Toggle
+  // state lives in DamageAnalyzer: key `source::buffName` so the same buff
+  // name arriving from rune + weapon toggles independently. Only active buffs
+  // enter the mult chain.
   const offKeys = new Set(input.offBuffKeys ?? [])
   const isBuffActive = (buffName: string): boolean =>
     !offKeys.has(`${instance.source}::${buffName}`)
@@ -122,10 +118,8 @@ export function buildSummonVM(input: SummonVMInput): SummonPanelVM {
   const buffMult = calcSummonBuffDmgMult(activeBuffs)
 
   // ② stat rows — damage scales from min(currentBoost, spawnBoost), exactly
-  // like the panel scaling strip shows. HP is NOT listed here (owner request
-  // 2026-11): the only HP display is the Survival block, so no stat is printed
-  // twice. Blocks with separate mults carry their own mult in the row; the
-  // shared one lives at ①.
+  // like the panel scaling strip shows. HP is NOT listed here (owner 2026-11):
+  // the Survival block is the only HP display, so no stat is printed twice.
   const stats: SummonStatRow[] = []
 
   if (def.tenacity !== undefined) {
@@ -151,11 +145,10 @@ export function buildSummonVM(input: SummonVMInput): SummonPanelVM {
     })
   }
 
-  // ④ swarm rows — one line per attack (or the def's base attack).
-  // Active count comes from the INPUT (player summonCount/slider, or def.count
-  // for WA summons) — NEVER from the enriched def, because enrichSummonDef
+  // ④ swarm rows — Active count comes from the INPUT (player slider or raw
+  // def.count for WA summons), NEVER from the enriched def: enrichSummonDef
   // overwrites def.count of rune summons with summonCount and loses the
-  // "X per cast" info. spawnCount comes from the raw def via input.
+  // "X per cast" info.
   const count = Math.max(0, Math.min(Math.floor(input.activeCount), input.cap))
   const swarmRows: SummonPanelVM['swarm'] = []
   if (def.attacks && def.attacks.length > 0) {
@@ -208,15 +201,14 @@ export function buildSummonVM(input: SummonVMInput): SummonPanelVM {
     })
   }
 
-  // ③ lifetime — numbers come straight off the instance (created once, static).
+  // ③ lifetime — numbers straight off the instance (created once, static).
   const decayPerSec = Math.round(instance.decayPerSec * 100) / 100
   const seconds =
     instance.decayPerSec > 0 && isFinite(instance.decayPerSec)
       ? (instance.currentHp ?? 0) / instance.decayPerSec
       : null
 
-  // a buff affects damage only if removing/keeping it changes the mult chain —
-  // checked through calcSummonBuffDmgMult itself, no perk name hardcoding.
+  // affectsDamage via calcSummonBuffDmgMult itself — no perk name hardcoding.
   const buffs = (instance.buffs ?? []).map(b => ({
     name: b.name,
     value: b.value,
@@ -224,11 +216,10 @@ export function buildSummonVM(input: SummonVMInput): SummonPanelVM {
     affectsDamage: calcSummonBuffDmgMult([b]) !== 1,
   }))
 
-  // ⑤ applied debuffs — LIST ALL debuffs the def applies, even potency 0
-  // (e.g. Bumblz Poison potency 0 must still be listed so the user knows what
-  // the summon applies — owner requirement 2026-11). NO DoT damage shown: the
-  // summon DoT/Debuff system is separate from the player's and never receives
-  // player perks (poison/burn/bleed potency…).
+  // ⑤ applied debuffs — LIST ALL, even potency 0 (e.g. Bumblz Poison potency 0
+  // must still be listed — owner requirement 2026-11). NO DoT damage shown:
+  // the summon DoT/Debuff system is separate from the player's and never
+  // receives player perks.
   const debuffs = (instance.debuffs ?? [])
     .map(d => ({ name: d.name, potency: d.value }))
 

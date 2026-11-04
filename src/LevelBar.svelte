@@ -190,7 +190,6 @@
     font-family: 'Trebuchet MS', 'Segoe UI', system-ui, sans-serif;
   }
 
-  /* LV block */
   .lb-lv-block {
     display: flex;
     align-items: center;
@@ -245,7 +244,6 @@
   .lb-lv-input::-webkit-inner-spin-button,
   .lb-lv-input::-webkit-outer-spin-button { -webkit-appearance: none; }
 
-  /* Bar column */
   .lb-bar-col {
     display: flex;
     flex-direction: column;
@@ -283,7 +281,6 @@
   .lb-hp-sep  { color: rgba(138,141,133,0.35); }
   .lb-hp-max  { color: #8a8d85; }
 
-  /* Bar track */
   .lb-bar-track {
     position: relative;
     height: 14px;
@@ -298,7 +295,6 @@
       inset 0 -1px 0 rgba(255,255,255,0.06);
   }
 
-  /* ① Lost zone */
   .lb-bar-lost {
     position: absolute;
     right: 0; top: 0; bottom: 0;
@@ -323,7 +319,6 @@
                 background var(--duration-normal) var(--ease-out);
   }
 
-  /* ③ Shield overlay */
   .lb-bar-shield {
     position: absolute;
     left: 0; top: 0; bottom: 0;
@@ -356,7 +351,6 @@
     100% { transform: translateX(120%); }
   }
 
-  /* Notches */
   .lb-bar-notches {
     position: absolute;
     inset: 0;
@@ -371,7 +365,6 @@
     transform: translateX(-50%);
   }
 
-  /* Threshold line */
   .lb-threshold-line {
     position: absolute;
     top: 0; bottom: 0;
@@ -383,7 +376,6 @@
     box-shadow: 0 0 6px rgba(251,191,36,0.6);
   }
 
-  /* Drag thumb */
   .lb-thumb {
     position: absolute;
     top: 50%;

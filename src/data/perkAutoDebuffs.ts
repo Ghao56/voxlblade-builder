@@ -1,7 +1,5 @@
-// Perk Auto-Debuffs
-// Perks that automatically apply debuffs (Bleed, Poison, Burn, Sticky, etc.)
-// calcAutoDebuffs() returns all debuffs a perk set would apply, used by DamageAnalyzer for display.
-// Each entry checks perk presence, existing debuffs, and optional proc coefficient gates.
+// Perk auto-debuffs: perks that automatically apply debuffs (Bleed, Poison, Burn, Sticky, etc.).
+// getAutoDebuffs() returns all debuffs a perk set would apply, used by DamageAnalyzer for display.
 
 import { PENANCE_HP_THRESHOLD, PENANCE_BLEED_POTENCY, PENANCE_BLEED_DURATION } from './Boost'
 import { HYPNOTIST_POTENCY_BASE, HYPNOTIST_POTENCY_PER_PERK, HYPNOTIST_DURATION_BASE, HYPNOTIST_DURATION_PER_PERK, FIERY_PURSUIT_BURN_DURATION, SUNBURN_BURN_BASE_CHANCE, SUNBURN_BURN_CHANCE_PER_STACK, FROSTBITE_SLOW_POTENCY_PER_STACK, FROSTBITE_CHANCE_PER_STACK, CRYO_ENGINE_PROC_CHANCE_PER_AMOUNT, IGNITION_BURN_DURATION_BASE, IGNITION_BURN_DURATION_PER_AMOUNT, IGNITION_PROC_CHANCE_PER_AMOUNT } from '../lib/constants/perks'
@@ -25,7 +23,6 @@ export interface AutoDebuffInput {
   hasMagicOrPhysicalDmg?: boolean
 }
 
-// HP fill helper
 export function calcActualHpFillPct(
   hpFill: number,
   level: number,
@@ -37,7 +34,6 @@ export function calcActualHpFillPct(
   return Math.min(100, hpFill * effMaxHP / baseMaxHP)
 }
 
-// Auto-debuff entries
 export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
   const debuffs: GrantedBuff[] = []
   const { existingBuffNames, playerBuffNames, perks, hpFill, level, protection, selectedWAProcCoefficient, enemyHpFillPct } = input
@@ -137,10 +133,9 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
     })
   }
 
-  // Rotted (granted by Pure Rot on cleanse): every hit with a Proc Coefficient
-  // applies the applier's own Poison, so potency stays 0 and is filled in from
-  // Poison Potency downstream — Rotted potency does not scale it. Resolved before
-  // Gnawing Poison / Curse Rip read the enemy's active debuffs.
+  // Rotted (granted by Pure Rot on cleanse): hits with a Proc Coefficient apply the applier's
+  // own Poison, so potency stays 0 and is filled in from Poison Potency downstream. Resolved
+  // before Gnawing Poison / Curse Rip read the enemy's active debuffs.
   if (playerBuffNames.includes('Rotted') && exhaustCanProc && !existingBuffNames.includes('Poison')) {
     debuffs.push({
       buffName: 'Poison',
@@ -484,7 +479,6 @@ export function getAutoDebuffs(input: AutoDebuffInput): GrantedBuff[] {
       })
     }
 
-  // Screeching Sound: block shockwave Taunts nearby opponents for 3 + 3×perk seconds.
   const screechingAmt = perks['Screeching Sound'] ?? 0
   if (screechingAmt > 0 && !existingBuffNames.includes('Taunt')) {
     debuffs.push({

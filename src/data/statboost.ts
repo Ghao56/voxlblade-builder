@@ -1,8 +1,6 @@
-// Stat Boost Perks
-// Perks that modify character stats (e.g. Quick Witted converts speed → dexterity).
-// Each handler receives the stat map + perk amount and mutates stats in place.
-// Execution order defined in PERK_EXECUTION_ORDER — matters for conversion chains.
-// Called from engine/build.ts via applyStatBoostPerks().
+// Stat boost perks (e.g. Quick Witted converts speed → dexterity).
+// Handlers mutate the stat map in place; execution order below matters for conversion chains,
+// and this is called from engine/build.ts via applyStatBoostPerks().
 
 import { type StatMap, type StatKey, PERCENT_STATS } from '../lib/types'
 import {
@@ -33,7 +31,6 @@ import {
   LUCKY_TENACITY_SUB,
 } from '../lib/constants/stat-conversions'
 
-// Stat groups
 export const OFFENSIVE_BOOSTS: StatKey[] = [
   'physicalBoost', 'magicBoost', 'fireBoost', 'waterBoost',
   'earthBoost', 'airBoost', 'hexBoost', 'holyBoost', 'dexterityBoost',
@@ -75,7 +72,6 @@ function negSum(s: StatMap, keys: StatKey[]): number {
   return keys.reduce((acc, k) => acc + negMagnitude(get(s, k)), 0)
 }
 
-// Perk handlers
 type PerkHandler = (s: StatMap, Amount: number) => void;
 
 const PERK_REGISTRY: Record<string, PerkHandler> = {
@@ -211,7 +207,6 @@ const PERK_REGISTRY: Record<string, PerkHandler> = {
   }
 };
 
-// Execution order
 const PERK_EXECUTION_ORDER: string[] = [
   'Roaring Heads',
   'Lucky',

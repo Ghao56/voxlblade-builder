@@ -1,7 +1,5 @@
-// Master buff/debuff/neutral/potion definitions. Sections group one category each.
-// Displayed by DamageAnalyzer; consumed by calcAutoDebuffs for perk-triggered debuffs.
-// See getBuffPotencyModifier for debuff scaling.
-// GrantedBuff = { buffName, potency, duration, condition, sourceName, sourceType }
+// Master buff/debuff/neutral/potion definitions. Displayed by DamageAnalyzer;
+// consumed by calcAutoDebuffs for perk-triggered debuffs. See getBuffPotencyModifier for debuff scaling.
 
   import { roundMultiplier } from '../lib/utils'
   import { BASTION_BLESS_MULT, ICHOR_SPARK_BLEED_DURATION, AIR_PRESSURE_DEF_PER_POTENCY } from '../lib/constants'
@@ -144,11 +142,7 @@ export interface BuffDefinition {
   isSelfDebuff?: boolean
   isNeutral?: boolean
   potencyCapped?: boolean
-  /**
-   * Who receives the buff: 'self' (default, also allies if description says so),
-   * 'allies' (allies ONLY, e.g. Cinder Surge — badged in BuffList). Debuffs don't
-   * use this — they carry isSelfDebuff / go to the enemy.
-   */
+  /** 'self' (default, also allies if description says so) or 'allies' (allies ONLY, e.g. Cinder Surge — badged in BuffList). Debuffs don't use this. */
   target?: BuffTarget
 }
 
@@ -176,7 +170,6 @@ export interface GrantedBuff {
 
 
 export const BUFF_DEFS: Record<string, BuffDefinition> = {
-  // Buffs
   Rage: {
     name: 'Rage',
     color: '#f70201',
@@ -404,7 +397,6 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectUnit: 'flat',
   },
 
-  // Debuffs
   Slowness: {
     name: 'Slowness',
     color: '#7eb4ad',
@@ -642,7 +634,6 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
 
 
 
-  // Neutral
   'Last Croak': {
     name: 'Last Croak',
     color: '#94ff88',
@@ -739,8 +730,7 @@ export const BUFF_DEFS: Record<string, BuffDefinition> = {
     effectUnit: 'flat',
     potencyCapped: true,
   },
-  // Plain description only: the per-block heal is reported by the damage
-  // calculator (DamageAnalyzer "Hex Shield Heal" row), not the buff chip.
+  // Plain description only: the per-block heal is reported by DamageAnalyzer's "Hex Shield Heal" row, not the chip.
   'Hex Shield': {
     name: 'Hex Shield',
     color: '#00fd66',
@@ -991,7 +981,6 @@ const ITEM_BUFF_MAP: GrantedBuff[] = [
     sourceName: 'Snoeball Rune',
     sourceType: 'rune',
   },
-  // Potions
   {
     buffName: 'Rage',
     potency: RAGE_POTION_POTENCY,
@@ -1093,7 +1082,6 @@ export const BASIC_DEBUFF_POOL: Array<{ buffName: string; potency: number; durat
   { buffName: 'Weakness', potency: BASIC_WEAKNESS_POTENCY, duration: BASIC_DEBUFF_DURATION },
 ]
 
-// Perk-triggered buffs
 type PerkBuffFactory = (amount: number, allPerks: Record<string, number>, vassalsCroakStacks?: number, perfectionStacks?: number, weaponModifier?: string, airPressurePotency?: number, vitalMistPotency?: number) => GrantedBuff[]
 
 const PERK_BUFFS: Record<string, PerkBuffFactory> = {
@@ -1583,9 +1571,8 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
   'Dark One': (amount) => [
     {
       buffName: 'Dark Power',
-      // 0.1 potency per perk amount; BuffList/DamageAnalyzer override potency with
-      // 0.1 × unique self-debuffs × amount. Damage applies the nerfed ratio
-      // (8% dmg per 0.1 potency, was 10%) via DARK_POWER_BONUS_PER_POTENCY.
+      // BuffList/DamageAnalyzer override potency with 0.1 × unique self-debuffs × amount;
+      // damage applies the nerfed ratio (8% dmg per 0.1 potency, was 10%) via DARK_POWER_BONUS_PER_POTENCY.
       potency: DARK_POWER_POTENCY_PER_AMOUNT * amount,
       duration: 0,
       condition: 'Per unique debuff on self',
@@ -1660,8 +1647,7 @@ const PERK_BUFFS: Record<string, PerkBuffFactory> = {
       sourceType: 'perk',
     },
   ],
-  // Autoparry: potency = 2 + amt, duration = 10 + 2 × amt. Status display only,
-  // never feeds damage math.
+  // Autoparry: potency = 2 + amt, duration = 10 + 2 × amt; status display only, never feeds damage math.
   'Heightened Reflexes': (amount) => [
     {
       buffName: 'Autoparry',
@@ -2245,7 +2231,6 @@ function durationMultFromStack(base: number, perStack: number): (stacks: number)
 
 const BOUNCE_DURATION_MULT = durationMultFromStack(BOUNCE_DURATION_BASE, BOUNCE_DURATION_PER_STACK)
 
-// Buff potency modifiers
 const BUFF_POTENCY_MODIFIERS: BuffPotencyModifier[] = [
   { buffName: 'Bounce', potencyPerStack: 0, label: 'Bounce Momentum', durationMultiplierFormula: BOUNCE_DURATION_MULT },
 
@@ -2426,8 +2411,7 @@ function getTricksterReflection(
   // Trickster only reflects Despair.
   if (buff.buffName !== 'Despair') return 0
 
-  // Compute the raw bonus from the Warding-adjusted potency and divide by
-  // wardingMult so the UI's post-hoc Warding multiplication yields the result.
+  // Divide by wardingMult so the UI's post-hoc Warding multiplication cancels out.
   const adjustedBase = buff.potency * wardingDebuffMult
   const rawBonus = (tricksterStacks / 10) * (1 + adjustedBase)
   return roundMultiplier(rawBonus / wardingDebuffMult)
@@ -2526,13 +2510,11 @@ export function applyBuffPerkModifiers(
     const def = BUFF_DEFS[buff.buffName]
     const isSelfDebuff = buff.isSelfDebuff || def?.isSelfDebuff
 
-    // Void Contract's "potency" is its raw perk amount (+30% damage taken per
-    // amount, covering 1 + amount hits) and is never scaled by debuff potency
-    // modifiers (Endless Despair, Darkening Hex, Bastion, etc.).
+    // Void Contract's "potency" is its raw perk amount (+30% damage taken per amount,
+    // 1 + amount hits); never scaled by debuff potency modifiers (Endless Despair, etc.).
     if (buff.buffName === 'Void Contract') return buff
 
-    // Slayer Rage caps the rune runes' own buff durations: Rage Rune's Rage 30s
-    // -> 10s and Weakening Roar's Weakness 15s -> 5s.
+    // Slayer Rage caps rune buffs: Rage Rune's Rage 30s -> 10s, Weakening Roar's Weakness 15s -> 5s.
     let effectiveDuration = buff.duration
     if ((perks['Slayer Rage'] ?? 0) > 0) {
       if (buff.buffName === 'Rage' && buff.sourceName === 'Rage Rune') {
@@ -2598,9 +2580,8 @@ export function applyBuffPerkModifiers(
       return buff
     }
 
-    // Endless Despair flat +0.1 must not be multiplied by Warding.
-    // Since the UI applies Warding as a post-multiplier, we divide
-    // the flat bonus by wardingMult so the UI multiplication cancels out.
+    // Flat +0.1 must not be multiplied by Warding; divide by wardingMult so the
+    // UI's post-hoc Warding multiplication cancels out.
     const effectiveFlatBonus = isSelfDebuff
       ? generic.flatBonus / wMult
       : generic.flatBonus
@@ -2689,16 +2670,14 @@ export function resolveBuffTarget(buffName: string, granted?: GrantedBuff): Buff
 }
 
 /**
- * Whether this buff means the USER is Burning, as opposed to the user's attacks
- * Burning an opponent. Only self debuffs count: Smoldering and Steam Powered
- * set you on fire, while Ignition / Exhaust / Sunburn / Bellowing Ember / Fiery
- * Pursuit / Pyre Bloom / Solar Light / Fireball & Brainblast Runes / Flame Slash /
- * Wild Bolt / Heat Drill / Dragigator Spirit and the plain Burn dummy debuff all
- * Burn the enemy. Singed (Cauterize) is an enemy debuff as well and never counts.
- *
- * "While the user is Burning" effects (Rejuvenating Flame's ×5 heal, Smoldering's
- * damage boost) must use this instead of a bare `buffName === 'Burn'` check, or
- * they trigger off the enemy's Burn.
+ * Whether the USER is Burning, as opposed to the user's attacks Burning an
+ * opponent. Only self debuffs count: Smoldering and Steam Powered set you on
+ * fire, while Ignition / Exhaust / Sunburn / Bellowing Ember / Fiery Pursuit /
+ * Pyre Bloom / Solar Light / Fireball & Brainblast Runes / Flame Slash /
+ * Wild Bolt / Heat Drill / Dragigator Spirit and the plain Burn dummy debuff
+ * all Burn the enemy. Singed (Cauterize) is an enemy debuff and never counts.
+ * "While the user is Burning" effects (Rejuvenating Flame's ×5 heal,
+ * Smoldering's damage boost) must use this, not a bare `buffName === 'Burn'` check.
  */
 export function isSelfBurnBuff(buff: { buffName: string; isSelfDebuff?: boolean }): boolean {
   if (buff.buffName !== 'Burn') return false
@@ -2787,8 +2766,6 @@ export function getActiveBuildBuffs(build: {
   if (build.race) buffs.push(...getRaceBuffs(build.race))
   return buffs
 }
-// Race buffs
-
 const RACE_BUFF_MAP: Record<string, GrantedBuff[]> = {
   'BUNIKIN': [
     {
@@ -2842,9 +2819,8 @@ export interface ActiveBuffsBuildInput {
 }
 
 /**
- * When Cauterize is active (and Cursed Flames is not), marks all enemy-applied
- * Burn entries with `burnMode: 'singed'` to signal that they burst on application
- * instead of ticking as DoT. Non-self-debuff Burn entries are converted.
+ * When Cauterize is active (and Cursed Flames is not), marks enemy-applied Burn
+ * entries `burnMode: 'singed'` — they burst on application instead of ticking as DoT.
  */
 export function applyCauterizeConversion(
   buffs: GrantedBuff[],
@@ -2862,21 +2838,17 @@ export function applyCauterizeConversion(
 }
 
 /**
- * Returns the number of enemy Burn application entries in the buff list.
- * Used to multiply the Cauterize/Singed single-burst damage.
- * Extracted as a helper so the counting strategy can evolve independently
- * of the damage formula.
+ * Number of enemy Burn application entries in the buff list — used to
+ * multiply the Cauterize/Singed single-burst damage.
  */
 export function getBurnApplicationCount(buffs: GrantedBuff[]): number {
   return buffs.filter(b => b.buffName === 'Burn').length
 }
 
 /**
- * Shared assembly pipeline: item buffs + raw perk buffs + weapon art buffs,
- * merged through convertTailwindToWhirlwind(applyBuffPerkModifiers(...)).
- * Only use this where perk buffs are NOT pre-modified/filtered before assembly
- * (e.g. BuffList.svelte customizes Exhaust/Wild Bolt before merging and must
- * NOT use this helper).
+ * Shared assembly pipeline: item + potion + perk + weapon art buffs, merged via
+ * convertTailwindToWhirlwind(applyBuffPerkModifiers(...)). BuffList.svelte
+ * customizes Exhaust/Wild Bolt before merging and must NOT use this helper.
  */
 export function assembleActiveBuffs(
   build: ActiveBuffsBuildInput,

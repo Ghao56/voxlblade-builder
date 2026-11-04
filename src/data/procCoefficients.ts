@@ -2,7 +2,6 @@ import type { ProcCoefficient } from '../lib/types'
 
 /**
  * M1/M2 proc coefficient per weapon type.
- * User to provide values.
  * Default fallback: 1.0 if not listed.
  */
 export const WEAPON_PROC_COEFFS: Record<string, { m1: ProcCoefficient; m2: ProcCoefficient }> = {
@@ -39,7 +38,6 @@ export const WEAPON_PROC_COEFFS: Record<string, { m1: ProcCoefficient; m2: ProcC
   'Rifle':                { m1: { type: 'hasCoeff', value: 1.0 }, m2: { type: 'hasCoeff', value: 1.0 } },
 }
 
-/** Weapon Art proc coefficients. User to provide values. */
 export const WA_PROC_COEFFS: Record<string, ProcCoefficient> = {
   'Lunge':     { type: 'hasCoeff', value: 1.0 },
   'Spin':      { type: 'hasCoeff', value: 1.0 },

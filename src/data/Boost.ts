@@ -1,9 +1,8 @@
-// Boost Definitions
-// Defines damage/heal multipliers from perks (Hemorrhage, Stealth, Serrated Edge, etc.)
+// Defines damage/heal multipliers from perks (Hemorrhage, Stealth, Serrated Edge, etc.).
 // Simple boosts: multiplierPerPerk × perkAmount (no context needed).
-// Complex boosts: calcFn(ctx) → { multiplier, condition } (reads BoostContext for dynamic state).
-// Consumed by engine/build.ts calcBoosts() → BuildResult.boostEntries[].
-// UI toggles in DamageAnalyzer._condDisabledSources gate debuff-conditional boosts.
+// Complex boosts: calcFn(ctx) → { multiplier, condition } (reads BoostContext for dynamic state),
+// consumed by engine/build.ts calcBoosts(); DamageAnalyzer._condDisabledSources toggles
+// gate debuff-conditional boosts.
 
 import { roundMultiplier, applyScalingMult, fmtPct, fmtPctVal, calcKnockbackResistancePct } from '../lib/utils'
 import {
@@ -91,7 +90,6 @@ export interface BoostContext {
   voxos?: number
 }
 
-// Boost definitions
 export interface BoostDef {
   sourceName: string
   type: 'dmg' | 'heal'
@@ -107,7 +105,6 @@ export interface BoostDef {
   baseProcChance?: number
 }
 
-// Simple dmg boosts
 export const BOOST_DEFS: BoostDef[] = [
   { sourceName: 'Hemorrhage', type: 'dmg', calcFn: (ctx) => { const a = ctx.perks['Hemorrhage'] ?? 0; if (a <= 0) return null; return { multiplier: roundMultiplier(1 + HEMORRHAGE_DMG_BASE + HEMORRHAGE_DMG_PER_STACK * a), condition: `against Bleeding opponents · +${HEMORRHAGE_STUN_PCT_PER_STACK}% Stun · +${HEMORRHAGE_POISE_PCT_PER_STACK}% Poise Dmg per stack` } },},
   {sourceName: 'Blood Thirsty', multiplierPerPerk: BLOOD_THIRSTY_MULT_PER_STACK, type: 'dmg', condition: 'against Bleeding opponents', needsProcCoeff: true},
@@ -120,7 +117,7 @@ export const BOOST_DEFS: BoostDef[] = [
   {sourceName: 'Marsh Flow', multiplierPerPerk: MARSH_FLOW_MULT_PER_STACK, type: 'dmg', condition: 'while you have Regen'},
   {sourceName: 'Cleave', multiplierPerPerk: CLEAVE_MULT_PER_STACK, type: 'dmg', condition: 'against opponents with Shatter'},
   {sourceName: 'Sticky Swings', multiplierPerPerk: STICKY_SWINGS_MULT_PER_STACK, type: 'dmg', condition: 'against opponents with Sticky',},
-  {sourceName: 'Explosive Honey', multiplierPerPerk: EXPLOSIVE_HONEY_MULT_PER_STACK, type: 'dmg', condition: 'against opponents with Sticky',}, // see also: DamageAnalyzer._condDisabledSources toggles this off when Sticky is inactive
+  {sourceName: 'Explosive Honey', multiplierPerPerk: EXPLOSIVE_HONEY_MULT_PER_STACK, type: 'dmg', condition: 'against opponents with Sticky',}, // DamageAnalyzer._condDisabledSources toggles this off when Sticky is inactive
   {sourceName: 'Serrated Edge', multiplierPerPerk: SERRATED_EDGE_MULT_PER_STACK, type: 'dmg', condition: 'on Finisher', appliesTo: ['finisher'] },
   {sourceName:'Perfection',calcFn:(ctx)=>{const a=ctx.perks['Perfection']??0;const s=ctx.perfectionStacks??5;if(a<=0||s<=0)return null;return{multiplier:1+PERFECTION_MULT_PER_STACK*a*(s/5),condition:`${s}/5 stacks`}}, type: 'dmg',},
   {sourceName:'Stealth',multiplierPerPerk: STEALTH_MULT_PER_STACK, type: 'dmg', condition: "against opponents not targeting you",},
@@ -193,7 +190,6 @@ export const BOOST_DEFS: BoostDef[] = [
   },
 
 
-  // Complex dmg boosts
   {
     sourceName: 'Primal',
     type: 'dmg',

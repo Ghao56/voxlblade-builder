@@ -70,9 +70,8 @@ export interface RuneDmgDef {
 }
 
 /**
- * Picks the weapon's highest damage type, ignoring types that resolve to zero.
- * Shares the DMG_TYPE_PRIORITY tie-break with computeEffectiveWaDmgTypes via
- * pickHighestDmgType. Returns null when the weapon has no positive damage types.
+ * Picks the weapon's highest damage type, ignoring types that resolve to zero. Shares the
+ * DMG_TYPE_PRIORITY tie-break with computeEffectiveWaDmgTypes; null when none are positive.
  */
 function resolveHighestWeaponDmgType(types: Record<string, number> | undefined): string | null {
   return pickHighestDmgType(Object.entries(types ?? {}).filter(([, v]) => v > 0))

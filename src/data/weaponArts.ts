@@ -43,9 +43,9 @@ export interface WeaponArtCharge {
   maxSeconds: number
   /** Fractional damage/healing bonus gained per second of charging. */
   pctPerSecond: number
-  /** Seconds of charging at which the charge backfires. */
+  /** Seconds of charging that make the charge backfire. */
   backfireSeconds?: number
-  /** Flat self-damage by damage type dealt when the charge backfires. */
+  /** Flat self-damage dealt on backfire, keyed by damage type. */
   backfireSelfDamage?: Record<string, number>
 }
 
@@ -71,16 +71,15 @@ export interface WeaponArt {
   /** Guard-breaks on its own (charge WAs that bypass the per-hit `hits` path). */
   guardbreak?: boolean;
   /**
-   * Only the WA's final hit guard-breaks. Splits a trailing multi-count segment
-   * into single hits so the displayed listings and the per-hit flags line up.
+   * Only the WA's final hit guard-breaks. Splits a trailing multi-count segment into single
+   * hits so the displayed listings and the per-hit flags line up.
    */
   finalHitGuardbreaks?: boolean;
 }
 
 /**
- * Charge curve for Weapon Arts whose base damage is stored as a `min – max`
- * range. The slider drives `chargePct` from 0 (released immediately) to 100
- * (fully charged), and every other charged quantity rides the same curve.
+ * Charge curve for WAs whose base damage is a `min – max` range: the slider drives `chargePct`
+ * from 0 (released immediately) to 100 (fully charged), and every other charged quantity rides the same curve.
  */
 export function waChargeMult(min: number, max: number, chargePct: number): number {
   if (min <= 0) return 1

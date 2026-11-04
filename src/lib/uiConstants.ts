@@ -1,5 +1,4 @@
 export const UI_COLORS = {
-  // Damage type colors
   physical: '#e8e4da',
   magic: '#a78bfa',
   fire: '#fb923c',
@@ -10,14 +9,12 @@ export const UI_COLORS = {
   holy: '#facc15',
   true: '#f87171',
 
-  // Tag group colors
   combat: '#fb923c',
   support: '#4ade80',
   status: '#f87171',
   weaponArtRune: '#a78bfa',
   special: '#facc15',
 
-  // Source type colors
   rune: '#a78bfa',
   perk: '#fb923c',
   weaponArt: '#4ade80',
@@ -25,7 +22,6 @@ export const UI_COLORS = {
   cantrip: '#38bdf8',
   item: '#f472b6',
 
-  // Enchant rarity colors
   refined: '#e5e7eb',
   strengthened: '#4ade80',
   dexterous: '#38bdf8',
@@ -34,7 +30,6 @@ export const UI_COLORS = {
   earthen: '#22c55e',
   magical: '#a78bfa',
 
-  // Negative stat colors
   statusNegative: '#fca5a5',
   supportNegative: '#86efac',
 } as const

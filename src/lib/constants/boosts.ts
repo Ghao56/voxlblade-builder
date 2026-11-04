@@ -12,7 +12,6 @@ export const LIFESTEAL_FLAT_HEAL = 0.1
 export const SIPHONING_ROT_HEAL_PER_STACK = LIFESTEAL_HEAL_PCT_PER_STACK
 export const HONEY_GATHER_HEAL_PCT_PER_STACK = 0.005
 
-// On-hit exclusion
 // Damage sources that on-hit effects (Lifesteal, Channeled Weapon, Curse Rip) do NOT apply to.
 export const ON_HIT_EXCLUDED_SOURCES: ReadonlySet<string> = new Set([
   'Barbed Flurry',
@@ -22,9 +21,8 @@ export const ON_HIT_EXCLUDED_SOURCES: ReadonlySet<string> = new Set([
   'Lightning Cloak',
 ])
 
-// Perks whose dmg-type bonuses never apply to DoT ticks (also excluded from
-// ON_HIT_EXCLUDED_SOURCES and no-proc effects, which resolve via the DoT map —
-// same exclusion list as Lifesteal and Channeled Weapon).
+// Also excluded from ON_HIT_EXCLUDED_SOURCES and no-proc effects, which resolve
+// via the DoT map — same exclusion list as Lifesteal and Channeled Weapon.
 export const DOT_EXCLUDED_PERK_BONUSES: ReadonlySet<string> = new Set(['Channeled Weapon', 'Emotional'])
 
 export const HOLY_INFUSION_POTENCY_MULT = 0.115
@@ -32,7 +30,6 @@ export const HOLY_INFUSION_POTENCY_MULT = 0.115
 export const BELLOWING_EMBER_BASE_MULT = 1.10
 export const BELLOWING_EMBER_FIRE_MULT = 1.23
 
-// Simple multiplier-per-stack boosts
 export const HEMORRHAGE_DMG_BASE = 0.10
 export const HEMORRHAGE_DMG_PER_STACK = 0.10
 export const HEMORRHAGE_STUN_PCT_PER_STACK = 20
@@ -65,7 +62,6 @@ export const EMOTIONAL_MULT_PER_STACK = 0.20
 export const HEAL_BOOST_MULT_PER_STACK = 0.10
 export const OCEANS_RAGE_MULT_PER_STACK = 0.1
 
-// Complex boost calcFn internals
 export const VENOM_EATER_DMG_MULT_PER_STACK = 0.10
 export const FEROCITY_TENACITY_MULT = 11
 export const SPIRIT_WINDS_TAILWIND_MULT = 1 / 3
@@ -94,7 +90,6 @@ export const TOXIN_CASTER_MULT_PER_STACK = 0.05
 export const CUT_DOWN_MULT_PER_AMOUNT = 0.30
 export const EXECUTIONER_MULT_PER_AMOUNT = 0.60
 
-// Heat Drill
 export const HEAT_DRILL_COOLDOWN = 15
 export const HEAT_DRILL_LUNGE_BASE = 15
 export const HEAT_DRILL_LUNGE_PER_STACK = 7.5
@@ -104,7 +99,6 @@ export const HEAT_DRILL_SMALL_EXPLOSION_BASE = 3.75
 export const HEAT_DRILL_SMALL_EXPLOSION_PER_STACK = 1.875
 export const HEAT_DRILL_SMALL_EXPLOSION_HITS = 6
 
-// Essence Ray
 export const ESSENCE_RAY_BASE = 1.1
 export const ESSENCE_RAY_PER_STACK = 0.275
 export const ESSENCE_RAY_HITS = 23

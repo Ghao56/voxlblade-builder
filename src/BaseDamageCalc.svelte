@@ -18,8 +18,8 @@ import { COMPATIBLE_HEAL_SOURCE_PATTERNS } from './lib/constants/perk-base-damag
   import { getDotDmgType, getDotBaseDmgTypes } from './data/DoTDamage'
   import { isVitalMistConvertibleTag } from './lib/vitalMist'
   // ARCHITECTURE: levelMult is EXPLICIT, separate from effectiveMult/combatMult.
-  // Perk inheritance uses the split: inherited RMB = post-scaling/pre-boost
-  // (levelMult included); strikes/Snarl = levelMult but no general/AP/VC boosts;
+  // Perk inheritance split: inherited RMB = post-scaling/pre-boost (levelMult
+  // included); strikes/Snarl = levelMult but no general/AP/VC boosts;
   // Static Buildup = double level inclusion (exception).
   import {
     DMG_TYPE_META,
@@ -107,7 +107,7 @@ import { COMPATIBLE_HEAL_SOURCE_PATTERNS } from './lib/constants/perk-base-damag
   export let mountActive: boolean = false
   export let mountLabel: string = ''
   // Level damage bonus (1.25%/level), separate from combatMult so Snarl includes
-  // level scaling while excluding the general damage-boost multiplier.
+  // level scaling but excludes the general damage-boost multiplier.
   export let levelMult: number = 1
   // combatMult minus the Level Damage bonus ("Effective Boost") for spawned
   // effects that opt into effective-only scaling.
@@ -130,9 +130,9 @@ import { COMPATIBLE_HEAL_SOURCE_PATTERNS } from './lib/constants/perk-base-damag
   }
 
   /**
-   * Dark Magic's flat damage boost, gated on the attack containing any Hex Damage
-   * Type. Appended to `applicableBoosts` so it both multiplies the hit and shows
-   * up in the boost breakdown.
+   * Dark Magic's flat boost, gated on the attack containing any Hex damage type.
+   * Appended to `applicableBoosts` so it multiplies the hit and appears in the
+   * boost breakdown.
    */
   function darkMagicHexBoostEntry() {
     return {
@@ -143,8 +143,8 @@ import { COMPATIBLE_HEAL_SOURCE_PATTERNS } from './lib/constants/perk-base-damag
   }
 
   /**
-   * True Moon's flat damage boost, gated on the attack containing any True Damage
-   * Type. Same shape as Dark Magic's hex boost.
+   * True Moon's flat boost, gated on the attack containing any True damage
+   * type. Same shape as Dark Magic's hex boost.
    */
   function trueMoonTrueBoostEntry() {
     return {
@@ -217,8 +217,8 @@ isRadianceProc?: boolean
 sourceLabel?: string
 /** Guard-breaks the target on its own (without Critical Master). */
 guardbreak?: boolean
-/** Lands on the user's ALLIES, not on the user — rendered in its own badged
- *  branch of the hit list (still counted in the totals). */
+/** Lands on the user's ALLIES, not on the user — badged branch of the hit list
+ *  (still counted in the totals). */
 alliesOnly?: boolean
 note?: string
   }> = []
@@ -408,7 +408,8 @@ note?: string
 
   const DMG_TYPE_MAP = new Map(Object.entries(DMG_TYPE_META).map(([id, meta]) => [id, meta]))
 
-  // Pre-built index: damage type → matching typedBoostEntries (avoids scanning entire array per call)
+  // Pre-built damage type → typedBoostEntries index (avoids scanning the
+  // whole array per call)
   let _boostsByType = new Map<string, Array<{ perkName: string; label: string; dmgMult: number; healMult: number; types: string[]; appliesToGroups?: string[]; needsProcCoeff?: boolean }>>()
   $: {
     const map = new Map<string, typeof typedBoostEntries[0][]>()
@@ -436,7 +437,6 @@ note?: string
 
   $: try { localStorage.setItem(DEF_STORAGE_KEY, JSON.stringify(defenses)) } catch {}
 
-  // Daily Challenge presets
   interface Preset {
     id: string
     label: string
@@ -493,12 +493,11 @@ note?: string
     activePresets = new Set()
   }
 
-  // Armor pen
   $: armorPen   = (stats as any)?.armorPenetration ?? 0
   $: penDecimal = armorPen / 100
 
-  // Active debuff combat effects
-  // Product of all active damageMult debuffs (Weakness on enemy doesn't affect damage you deal)
+  // Product of all active damageMult debuffs (Weakness on the enemy doesn't
+  // affect damage you deal)
   function calcActiveDebuffDamageMult(resolved: Array<any>, disabled: Set<string>): number {
     return resolved
       .filter(d => !disabled.has(d.name) && (d.damageMult ?? 1) !== 1 && d.name !== 'Weakness')
@@ -542,20 +541,20 @@ note?: string
   }
   $: _debuffTypeLabels = calcDebuffTypeLabels(resolvedDebuffs, disabledDebuffs)
 
-  // Armor-reduction contributions from active enemy debuffs (e.g. Shatter strips armor), keyed by damage type
+  // Armor-reduction contributions from active enemy debuffs (e.g. Shatter strips armor), by damage type
   $: debuffDefReductions = (() => {
     const reductions: Record<string, number> = {}
     for (const d of resolvedDebuffs) {
       if (disabledDebuffs.has(d.name) || !d.defReduction) continue
       for (const [k, v] of Object.entries(d.defReduction as Record<string, number>)) {
-        // Map defense stat keys to damage type keys
+        // Map defense stat keys ('MagicDefense') to damage type keys
         const typeKey = k.replace('Defense', '')
         reductions[typeKey] = (reductions[typeKey] ?? 0) + v
       }
     }
     return reductions
   })()
-  // Effective enemy defenses after applying debuff reductions (e.g. Shatter strips armor)
+  // Effective enemy defenses after applying debuff reductions
   $: effectiveDefenses = (() => {
     if (Object.keys(debuffDefReductions).length === 0) return { ...defenses }
     const out = { ...defenses }
@@ -603,8 +602,8 @@ note?: string
   $: _honeyGatherActive = honeyGatherAmt > 0 && resolvedDebuffs.some(d => d.name.startsWith('Sticky') && !disabledDebuffs.has(d.name))
   $: _spellPiercerActive = !disabledBoosts.has('Spell Piercer') && (boosts?.dmgEntries ?? []).some((e: any) => e.sourceName === 'Spell Piercer')
 
-  // Void Contract state — the mark fully buffs the designated hit instance (target
-  // group + hit # chosen in the analyzer UI), mirroring Channeled Depths' designation.
+  // Void Contract: the mark fully buffs the designated hit instance (target
+  // group + hit # chosen in the analyzer UI), mirroring Channeled Depths.
   $: _vcState = (() => {
     const d = resolvedDebuffs.find(r => r.name === 'Void Contract')
     const active = !!d && !disabledDebuffs.has('Void Contract')
@@ -735,9 +734,9 @@ note?: string
     return baseSum * (hit.scalingMult ?? 1) * (hit.combatMult ?? 1) * (hit.weaponBoostMult ?? 1)
   }
 
-  /** Critical Healing only procs on the game spec's compatible-heals list and
-   *  never on a heal without a proc coefficient — the hit's coefficient scales
-   *  the crit chance, so a no-proc heal can't crit. */
+  /** Critical Healing only procs on the game spec's compatible-heals list, and
+   *  never on a heal without a proc coefficient (the coefficient scales the
+   *  crit chance, so a no-proc heal can't crit). */
   function isHealCritEligible(hit: { label?: string; procCoefficient?: ProcCoefficient }): boolean {
     if (!canProc(hit.procCoefficient)) return false
     const label = hit.label ?? ''
@@ -745,7 +744,7 @@ note?: string
   }
 
   /** True when a group is treated as WA damage (Cragblade makes M1/M2 count as
-   *  WA). All WA-only branches use this instead of comparing group strings. */
+   *  WA). All WA-only branches use this, never group-string compares. */
   function isWeaponArtGroup(group?: string): boolean {
     if (group === 'WA' || group === 'Rune') return true
     return weaponHitsCountAsWa && (group === 'M1' || group === 'M2')
@@ -767,9 +766,9 @@ note?: string
  
   $: _vmConvertedBySource = new Map<string, number>()
 
-  /** Sharp Crits: crits gain +20 Armor Penetration per 1 of the perk. Applied
-   *  per-type here so it covers EVERY crit (proc/DoT entries too, not just the
-   *  main weapon-hit chunks). Entries built with a non-base pen set penUsedDec. */
+  /** Sharp Crits: crits gain +20 Armor Penetration per perk stack. Applied
+   *  per-type here so it covers EVERY crit (proc/DoT entries too). Entries
+   *  built with a non-base pen set penUsedDec. */
   function _applySharpCrits(hit: ComputedHit): ComputedHit {
     if (sharpCritsAmt <= 0) return hit
     const basePen = (armorPen + globalArmorPenetration) / 100
@@ -795,7 +794,7 @@ note?: string
     const cdPerkConsumed = new Set<string>()
     _vmConvertedBySource.clear()
     // Void Contract — user designates ONE hit instance (see DamageAnalyzer);
-    // that hit and everything it spawns inherits the buff via vcDilution/vcContext.
+    // that hit and everything it spawns inherits via vcDilution/vcContext.
     const VC_MULT = _vcState.mult
     return weaponHits.flatMap((hit): ComputedHit[] => {
     const isHeal = hit.isHeal ?? false
@@ -835,11 +834,10 @@ note?: string
       }
     }
 
-    // Instance procs: the complete data-driven set of per-instance effects,
-    // gated entirely through the Proc Registry (lib/procRegistry.ts) with the
-    // instance's own ProcCoefficient. Shared by the main hit AND any spawned
-    // Star Struck stars, so stars proc the SAME effects as normal hits — no
-    // per-effect hardcoding or reduced "star" subsets.
+    // Instance procs: complete data-driven per-instance effect set, gated
+    // through the Proc Registry (lib/procRegistry.ts) with the instance's own
+    // ProcCoefficient. Shared by the main hit AND spawned Star Struck stars, so
+    // stars proc the SAME effects as normal hits — no per-effect hardcoding.
     const runInstanceProcs = (opts: {
       preMitBase: number
       coeff: ProcCoefficient | undefined
@@ -899,9 +897,9 @@ note?: string
       if (luminescentPct > 0 && active('Luminescent')) {
         addProcEffect(opts.preMitBase, luminescentPct, { holy: 1.0 }, 'Luminescent', 1, 1, opts.count)
       }
-      // Propelling Fun Cloudpush/Cinderpull: extra Air (Fire while burning)
-      // instance worth a % of this hit. Both apply to the perk user too, so
-      // they DO scale user damage (unlike Cinder Surge). noProc.
+      // Cloudpush/Cinderpull: extra Air (Fire while burning) instance worth a %
+      // of this hit. Both apply to the perk user too, so they DO scale user
+      // damage (unlike Cinder Surge). noProc.
       if (cloudpushPct > 0 && active('Cloudpush')) {
         addProcEffect(opts.preMitBase, cloudpushPct, { air: 1.0 }, 'Cloudpush', 1, 1, opts.count)
       }
@@ -943,7 +941,6 @@ note?: string
       }
     }
 
-    // Cache pre-mitigation base for this hit (used by all proc effects below)
     const _hitPreMitBase = computePreMitigationBase(hit)
     const _hitDebuffedPreMitBase = _hitPreMitBase * _activeDebuffDamageMult * selfDebuffDamageMult
     // Void Contract: mark buffs the first N hits of the chosen target,
@@ -952,12 +949,11 @@ note?: string
     const vcDilution = vcBuffedCount > 0 ? VC_MULT : 1
     // Sub-source inheritance factor for every proc/blub/star/perk spawned by this hit.
     let vcContext = vcDilution
-    // Data-driven proc gate: decides per tag whether the effect can activate for
-    // this hit, powered by the Proc Registry (see lib/procRegistry.ts).
+    // Data-driven proc gate: per tag, powered by the Proc Registry (lib/procRegistry.ts).
     const gate = (tag: string) => procChanceScale(tag, hit.procCoefficient) > 0
 
-    // Blood Thirsty's Bleed-remove heal. Pushes from three places (this hit,
-    // the on-hit perk pass, the proc pass) — one helper so they can't drift.
+    // Blood Thirsty's Bleed-remove heal. Pushed from three places (this hit,
+    // on-hit perk pass, proc pass) — one helper so they can't drift.
     const pushBloodThirstyHeal = () => {
       const btHeal = BLOOD_THIRSTY_HEAL_BASE + BLOOD_THIRSTY_HEAL_PER_STACK * bloodThirstyStacks
       if (btHeal <= 0) return
@@ -992,21 +988,22 @@ note?: string
         return getApplicableBoosts(k, typeIsHeal, bdcGroup, hit.procCoefficient)
       })()
       // Dark Magic / True Moon: flat boost on attacks whose resolved types
-      // contain Hex / True. hit.dmgTypes is already post-conversions, so the
-      // perk's own magic→hex/true conversion satisfies the gate.
+      // contain Hex / True. hit.dmgTypes is post-conversions, so the perk's own
+      // magic→hex/true conversion satisfies the gate.
       if (!typeIsHeal) pushTypeGatedBoosts(applicableBoosts, hit.dmgTypes)
       const typedMultUsed = applicableBoosts.reduce((acc, b) => acc * b.mult, 1)
 
       const baseDefPct = typeIsHeal ? 0 : baseDefForType(k)
       const debuffDefReduction = defReductionForType(k)
       const spellPiercer = !typeIsHeal && !hit.isRadianceProc && _spellPiercerActive && (showCritValues || hit.forceCrit) && isWeaponArtGroup(bdcGroup)
-      // Spell Piercer ignores the target's positive defense first; armor-reduction debuffs (e.g. Shatter) apply on top of the ignored value
+      // Spell Piercer ignores the target's positive defense first; armor-reduction
+      // debuffs (e.g. Shatter) apply on top of the ignored value
       const enemyDefPct = (spellPiercer ? Math.min(baseDefPct, 0) : baseDefPct) - debuffDefReduction
       const crushPen = typeIsHeal ? 0 : crushingPenForType(k)
 
       const weaponBoostMult = hit.weaponBoostMult ?? 1
       const defMult = typeIsHeal ? 1 : calcArmorMult(enemyDefPct, hitPenDecimal + crushPen / 100, k).mult
-      // Sharp Crits: crits gain +20 Armor Penetration per 1 of this perk.
+      // Sharp Crits: +20 Armor Penetration per perk stack on crits.
       const sharpCritsCritDefMult = (!typeIsHeal && sharpCritsAmt > 0)
         ? calcArmorMult(enemyDefPct, hitPenDecimal + crushPen / 100 + sharpCritsAmt * 20 / 100, k).mult / defMult
         : 1
@@ -1050,7 +1047,7 @@ note?: string
 
     const types: ComputedType[] = Object.entries(hit.dmgTypes ?? {}).flatMap(([k, mult]) => {
       if (k === 'water' && (hit.cdWater ?? 0) > 0 && mult > 0) {
-        // Split Channeled Depths' water (perk water) from the weapon's own water.
+        // Split Channeled Depths' perk water from the weapon's own water.
         const weaponWater = roundMultiplier(Math.max(0, mult - (hit.cdWater ?? 0)))
         const chunks: ComputedType[] = []
         if (weaponWater > 0) chunks.push(buildTypeChunk('water', weaponWater))
@@ -1063,10 +1060,10 @@ note?: string
     const _finisherMainTypesEnd = types.length
 
     if (!isHeal) {
-      // The complete data-driven instance-proc set (Phantom Pain, Cauterize,
-      // Echo Incineration, Stormcaller, Bombardier, Quake, Runic Blades,
-      // Luminescent, Chain, Ichor Spark, Explosive, Blub) — gated through the
-      // Proc Registry with THIS hit's own coeff. Spawned stars run the same set.
+      // Complete data-driven instance-proc set (Phantom Pain, Cauterize, Echo
+      // Incineration, Stormcaller, Bombardier, Quake, Runic Blades, Luminescent,
+      // Chain, Ichor Spark, Explosive, Blub) — gated through the Proc Registry
+      // with THIS hit's own coeff. Spawned stars run the same set.
       const ppBase = phantomPainPct > 0
         ? types.filter(t => !t.isHeal).reduce((s, t) => s + t.raw / (t.defMult || 1), 0)
         : 0
@@ -1146,7 +1143,6 @@ note?: string
       const vcDsFactor = vcDilution
       vcContext = vcDsFactor
       const dsSunburnMult = sunburnUniversalDmgMult
-      // Cache Dragon State pre-mit base for proc effects below
       const _dsPreMitBase = dragonStateBaseDmg * dragonStateScalingMult * dragonStateCombatMult * dsSunburnMult * dsDebuffMult
       if (dsDebuffMult > 0) {
         const dsResolvedTypes = resolveDamageTypes({ magic: 1.0 }, perkDmgTypeBonuses)
@@ -1375,7 +1371,7 @@ note?: string
           bfEntry.typeBase += inheritedBase
           bfEntry.raw += inheritedRawAdd
           // Keep the unbuffed snapshot in sync so the Void Contract display split
-          // doesn't drop the finisher bonus (inheritedBase already carries the VC dilution).
+          // doesn't drop the finisher bonus (inheritedBase already carries VC dilution).
           const noVcBonus = vcDilution !== 1 ? inheritedRawAdd / vcDilution : inheritedRawAdd
           bfEntry.rawNoVC = (bfEntry.rawNoVC ?? bfEntry.raw) + noVcBonus
           bfEntry.critValNoVC = (bfEntry.critValNoVC ?? bfEntry.critVal) + noVcBonus * critDmgMult / 100
@@ -1525,8 +1521,8 @@ note?: string
 
     // Snarled: damage taken heals the ENEMY by lifesteal% of damage dealt.
     // Heal = pre-boost base (raw baseDmgTypes + scaling + levelMult ONLY):
-    // general combat boosts, typed perks, Armor Pen (defMult), Void Contract
-    // and dmg-type bonuses all excluded. Level bonus is the one exception.
+    // combat boosts, typed perks, Armor Pen (defMult), Void Contract and
+    // dmg-type bonuses excluded. Level bonus is the one exception.
     if (!isHeal && _snarledLifesteal.pct > 0 && !ON_HIT_EXCLUDED_SOURCES.has(hit.label ?? '')) {
       const snarledBaseTypes = hit.baseDmgTypes
       const snarledBaseSum = snarledBaseTypes
@@ -1549,7 +1545,7 @@ note?: string
       }
     }
 
-    // Vital Mist: convert lifesteal healing to potency before finalizing result
+    // Vital Mist: convert lifesteal healing to potency before returning the hit
     let vmPotencyGainedThisHit = 0
     if ((vitalMistPerkAmount ?? 0) > 0) {
       for (let t = types.length - 1; t >= 0; t--) {
@@ -1571,7 +1567,7 @@ note?: string
     // Vassals Croak: on an M2-type finisher, consume Last Croak and explode once
     // per RMB press. Triggers base M2, combo-folded M2 finishers (Deltabit/Delta
     // Drill), RMB finisher WAs (Rapid Stabs), monk spirits. M1 finishers never
-    // trigger; the row emits into the triggering hit's group (renders below it).
+    // trigger; the row emits into the triggering hit's group.
     if (!isHeal && vassalsCroakAmt > 0 && vassalsCroakPotency > 0
       && (hit.group === 'M2' || hit.isM2 || (hit.group === 'WA' && hit.isFinisher))
       && gate('Last Croak')) {
@@ -1591,7 +1587,7 @@ note?: string
         const lcDebuffMult = _activeDebuffTypeDamageMult['physical'] ?? 1
         const lcBoosts = getApplicableBoosts('physical', false, undefined, hit.procCoefficient)
         const lcTypedMult = lcBoosts.reduce((acc, b) => acc * b.mult, 1)
-        // Last Croak is not a finisher, so the finisher-scoped boosts folded into
+        // Last Croak is not a finisher, so finisher-scoped boosts folded into
         // the triggering hit's combat mult must be excluded.
         const lcCombatMult = hit.combatMultNoFinisher ?? hit.combatMult ?? 1
         const vcLcFactor = vcDilution
@@ -1615,7 +1611,7 @@ note?: string
 
     // Strikes don't inherit the RMB's other boosts (Rage/Sunburn/debuffs) —
     // inheritedRmb = post-scaling × levelMult; Level applies twice (exception,
-    // strikes also get it via perkCombatMult). Strike count + base formula in
+    // strikes also get it via perkCombatMult). Strike count + base formula:
     // Perkbasedmg.ts (single source of truth, shared with the card def).
     if (!isHeal && staticBuildupAmt > 0 && staticBuildupStrikes(staticBuildupCharge, staticBuildupAmt) > 0
       && (hit.group === 'M2' || hit.isM2 || (hit.group === 'WA' && hit.isFinisher))
@@ -1655,20 +1651,18 @@ note?: string
   $: waHits   = computedHits.filter(h => h.group === 'WA')
   $: runeHits = computedHits.filter(h => h.group === 'Rune')
   $: spiritHits = computedHits.filter(h => h.group === 'Spirit')
-  // Allies-only output (e.g. Rejuvenating Flame's passive AoE heal). It still
-  // counts toward the totals, but gets its own badged branch instead of being
-  // filed under the perk that produces it, so it is never read as self-heal.
+  // Allies-only output (e.g. Rejuvenating Flame's passive AoE heal). Counts
+  // toward the totals but gets its own badged branch so it's never read as self-heal.
   $: alliesHits = computedHits.filter(h => h.alliesOnly)
   $: perkHits = computedHits.filter(h => h.group !== 'M1' && h.group !== 'M2' && h.group !== 'WA' && h.group !== 'Rune' && h.group !== 'Spirit' && !h.alliesOnly && h.label !== 'Springblast')
 
   /** Perk hits are grouped one section per source perk: trigger-context suffixes
    *  like "(M2)"/"(WA)"/"(Cragblade WA →)" collapse into the perk's name, and
-   *  Radiance bursts nest under the perk whose healing spawned them (via their
-   *  sourceLabel). */
+   *  Radiance bursts nest under the perk whose healing spawned them (sourceLabel). */
   function _perkGroupKey(h: ComputedHit): string {
     const raw = h.isRadianceProc && h.sourceLabel ? h.sourceLabel : (h.label ?? 'Perk')
     // Hex Ray rows carry a per-source label "Hex Ray (Dark ELF)"; the section
-    // head stays source-free — sources live on the individual rows below it.
+    // head stays source-free — sources live on individual rows.
     if (raw.startsWith('Hex Ray (')) return 'Hex Ray'
     return raw
       .replace(/ Heal$/, '')
@@ -1686,17 +1680,17 @@ note?: string
     return [...map.entries()].map(([label, list]) => ({ label, list }))
   })()
 
-  // Void Contract display split: a partially-buffed hit renders as two rows so the
-  // buffed (Void Contract) and unbuffed portions are shown separately. Totals are
-  // preserved because the diluted type raws already reflect the buffed pool.
+  // Void Contract display split: a partially-buffed hit renders as two rows so
+  // the buffed and unbuffed portions show separately. Totals are preserved
+  // because the diluted type raws already reflect the buffed pool.
   function _splitVcHits(list: ComputedHit[]): ComputedHit[] {
     if (!_vcState.active) return list
     const out: ComputedHit[] = []
     for (const hit of list) {
       const b = hit.vcBuffedCount ?? 0
       if (!(b > 0 && b < hit.count) || !hit.types.some(t => t.rawNoVC != null)) {
-        // Fully covered or not covered at all — tag the row so the mark's reach is
-        // visible even without a split (heals never consume charges).
+        // Fully covered or not covered at all — tag the row so the mark's reach
+        // is visible even without a split (heals never consume charges).
         out.push(hit.isHeal ? hit : { ...hit, vcBuffed: b > 0 })
         continue
       }
@@ -1730,7 +1724,7 @@ note?: string
     return out
   }
 
-  // Allies stay last (lowest priority) — they are appended after the perk groups.
+  // Allies stay last (lowest priority) — appended after the perk groups.
   $: hitGroups = [
     { label: m1Label, list: _splitVcHits(m1Hits) },
     { label: 'M2', list: _splitVcHits(m2Hits) },
@@ -1741,7 +1735,6 @@ note?: string
     ...(alliesHits.length > 0 ? [{ label: 'Allies', allies: true, list: _splitVcHits(alliesHits) }] : []),
   ]
 
-  // Totals
   /** Is the displayed value the crit value? Damage follows the global crit
    *  switch; heals add the Critical Healing toggle — healCritChance is only set
    *  on modelled, proccable heal types, so ineligible heals never show crits. */
@@ -1750,7 +1743,6 @@ note?: string
     if (t.isHeal && (t.healCritChance ?? 0) > 0) return true
     return useCrit
   }
-  /** Template-facing variant: mirrors the crit highlight rules for a type chip. */
   function isCritShown(t: ComputedType): boolean {
     return t.forceCrit || (useCritFor(t) && !t.isCritExempt)
   }
@@ -2473,7 +2465,7 @@ note?: string
                                   <span class="bdc-fr-val bdc-fr-val--crit">× {fmtMult(_critMultFor(t))}</span>
                                 </div>
                               {:else if useCritFor(t) && t.critVal !== t.raw}
-                                <!-- crit-sourced heals (Lifesteal etc.): amount rises with crit damage but the heal itself never crits -->
+                                <!-- Crit-sourced heals (Lifesteal etc.): amount rises with crit damage but never crits itself -->
                                 <div class="bdc-fr">
                                   <span class="bdc-fr-label">Crit Damage Included</span>
                                   <span class="bdc-fr-val bdc-fr-val--crit">× {fmtMult(t.critVal / t.raw)}</span>
@@ -2849,7 +2841,6 @@ note?: string
   gap: 12px;
 }
 
-/* Override section title inside bdc-root */
 .bdc-root :global(.da-section-title) {
   text-transform: uppercase;
   font-weight: 800;
@@ -2894,7 +2885,6 @@ note?: string
   align-items: flex-start;
 }
 
-/* Dummy column */
 .bdc-dummy-col {
   display: flex;
   flex-direction: column;
@@ -3081,7 +3071,6 @@ note?: string
   border-color: color-mix(in srgb, var(--dc) 60%, transparent);
 }
 
-/* Daily presets */
 .bdc-presets {
   display: flex;
   flex-direction: column;
@@ -3131,7 +3120,6 @@ note?: string
 }
 .bdc-preset-chip--reset:hover { opacity: .8; }
 
-/* Defense grid */
 .bdc-def-grid {
   display: flex;
   flex-direction: column;
@@ -3194,7 +3182,6 @@ note?: string
   opacity: .55;
 }
 
-/* Calc column */
 .bdc-calc-col {
   flex: 1 1 0;
   min-width: 0;
@@ -3204,7 +3191,6 @@ note?: string
   padding-top: 2px;
 }
 
-/* Crit Toggle Row */
 .bdc-toggle-row {
   display: flex;
   justify-content: flex-end;
@@ -3260,7 +3246,7 @@ note?: string
   .bdc-dummy-wrap { flex-shrink: 0; }
   .bdc-def-grid { flex: 1; }
   .bdc-hit-grp-label { font-size: .65rem; }
-  /* Narrow screens: chips flow freely, the sums get their own right-aligned row */
+  /* Sums wrap to their own right-aligned row below the chips */
   .bdc-hit-row { padding: 7px 10px; }
   .bdc-hit-row-end {
     flex-basis: 100%;
@@ -3274,7 +3260,7 @@ note?: string
   .bdc-hit-type-val { font-size: 1rem; }
 }
 
-/* Chips keep their natural width and wrap to the next line instead of squashing */
+/* Chips keep natural width; they wrap to the next line instead of squashing */
 .bdc-hit-type-chunk { flex-shrink: 0; }
 .bdc-hit-plus { flex-shrink: 0; }
 
@@ -3311,7 +3297,6 @@ note?: string
   flex-shrink: 0;
 }
 
-/* Group header with total */
 .bdc-grp-head {
   display: flex;
   align-items: center;
@@ -3399,7 +3384,6 @@ note?: string
 }
 .bdc-heal-crit-toggle--off:hover { background: rgba(140, 140, 140, .2); }
 
-/* Per-hit type sum (multi-type only) */
 .bdc-hit-type-sum-sep {
   font-size: .7rem;
   color: var(--ink-muted, #8a8d85);
@@ -3450,7 +3434,6 @@ note?: string
   margin-left: 4px;
 }
 
-/* Full hit list (no selection needed) */
 .bdc-wa-debuff-warn {
   display: flex;
   align-items: center;
@@ -3473,8 +3456,8 @@ note?: string
   opacity: .5;
   font-style: italic;
 }
-/* Flattened into the parent column so Status and Allies can be ordered against
-   the hit groups: hit groups → Status → Allies (Allies stays bottom-most). */
+/* Flattened into the parent column so Status and Allies can be ordered
+   against the hit groups: hit groups → Status → Allies (Allies bottom-most). */
 .bdc-hit-list {
   display: contents;
 }
@@ -3528,8 +3511,8 @@ note?: string
   align-items: flex-start;
   flex-wrap: wrap;
   gap: 4px;
-  /* Basis 260px: if the chips row can't co-exist with the sums block,
-     the sums wrap to their own right-aligned line instead of crushing the chips */
+  /* Basis 260px: if the chips row can't co-exist with the sums block, the
+     sums wrap to their own right-aligned line instead of crushing the chips */
   flex: 1 1 260px;
   min-width: 0;
 }

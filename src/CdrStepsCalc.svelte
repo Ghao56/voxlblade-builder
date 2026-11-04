@@ -18,13 +18,11 @@
    */
   export let setCD: number | null = null;
 
-  // The effective starting CD for perk-by-perk reduction
   $: startCD = setCD != null ? setCD : baseCd;
 </script>
 
 <div class="cdr-steps-calc">
   {#if setCD != null}
-    <!-- Show the set-bonus override first -->
     <div class="cdr-calc-row">
       <span class="cdr-cd-old">{baseCd}s</span>
       <span class="cdr-arrow">→</span>

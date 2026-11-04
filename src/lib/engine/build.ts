@@ -1,10 +1,10 @@
 /**
  * Build engine: final stats, boosts, damage multipliers.
- * Level/Effective split: Level Damage Bonus is explicit via BoostEntry.isLevel;
- * perks opt in with applyLevel?/applyEffective?/noSelfDebuff? (proc/on-hit
- * effects: Ignition, Poisonous, Glacial, Static). Snarl uses baseDmgTypes to
- * omit Channeled/Stone inheritance and general/AP/VC bonuses. Static Buildup
- * inherits post-scaling/pre-boost RMB with double Level inclusion (exception).
+ * Level/Effective split: Level Damage Bonus is BoostEntry.isLevel; perks opt in
+ * via applyLevel?/applyEffective?/noSelfDebuff? (Ignition, Poisonous, Glacial,
+ * Static). Snarl uses baseDmgTypes to omit Channeled/Stone inheritance and
+ * general/AP/VC bonuses. Static Buildup inherits post-scaling/pre-boost RMB
+ * with double Level inclusion (exception).
  */
 import type { StatKey, StatMap, ArmorPart, EnchantSlot, BuildState } from '../types'
 import { STAT_KEYS, applyUpgrade } from '../types'
@@ -31,8 +31,6 @@ import { WEAPON_ARTS } from '../../data/weaponArts'
 import { isUnbalancedWeaponry } from '../../data/weaponConditionalBoosts'
 import { getFinalWaDmgTypes, weaponHitsCountAsWa } from '../damageTypeResolve'
 import { buildDmgTypeBonuses } from './dmgTypeBonuses'
-
-// Section: CDR (Cooldown Reduction) - calculates rune & WA step breakdowns
 
 export interface CDRStep   { source: string; pct: number; multiplier: number; isMultiply?: boolean }
 export interface CDRResult { runeCDR: number; waCDR: number; runeSetCD?: number; runeBreakdown: CDRStep[]; waBreakdown: CDRStep[] }
@@ -111,7 +109,7 @@ function calcCDR(
   }
 }
 
-// Section: Boosts - applies stat/perk/weapon boosts; skips isLevel here
+// Boosts: isLevel entries skipped here (Level Damage added separately above)
 
 function calcBoosts(
   perks:             Record<string, number>,
@@ -149,7 +147,7 @@ function calcBoosts(
   const dmgMap = new Map<string, BoostEntry>()
 
   // Level Damage Bonus: +1.25% per hero level (max at MAX_LEVEL, e.g. 80 → 2×).
-  // Marked isLevel so perks can selectively include/exclude it via applyLevel? flag.
+  // isLevel so perks can selectively include/exclude it via applyLevel?.
   const lvlMult = roundMultiplier(1 + Math.max(0, Math.min(MAX_LEVEL, level)) / MAX_LEVEL)
   dmgMap.set('Level Damage', {
     sourceName:    'Level Damage',
@@ -230,11 +228,7 @@ function calcBoosts(
   }
 }
 
-// Section: Build result derivation - final stats, shield/protection, inheritance
-
 export interface BuildResult { stats: StatMap; perks: Record<string, number>; basePerks?: Record<string, number>; cdr: CDRResult; boosts: BoostResult; crit: CritResult }
-
-// Section: Equipment accumulation - aggregates weapon/rune/armor stats
 
 function accumulateMonkWeapon(
   state:    BuildState,
@@ -523,19 +517,17 @@ function deriveResults(
 
   const _weaponResult = calcBuildWeapon(state)
 
-  // King's Luck (Caci King Spirit) grants the equivalent of +2 Lucky for its
-  // chance-based effects, but does NOT carry Lucky's stat payload (−25%
-  // Warding / −6 Protection / −0.1 Tenacity) — only the real Lucky perk
-  // amount (e.g. Lucky Ring) changes the stats screen. Lucky's reroll
-  // mechanic itself is not modeled.
+  // King's Luck (Caci King Spirit): counts as +2 Lucky for chance effects but
+  // does NOT carry Lucky's stat payload (−25% Warding / −6 Protection /
+  // −0.1 Tenacity). Reroll mechanic not modeled.
 
   const boostedStats = applyStatBoostPerks(finalStats, finalPerks)
   applyEmotionalAttackSpeed(boostedStats, finalPerks, state.emotionalState, state.emotionalDisabled)
   applyBerserkingStrength(boostedStats, finalPerks, _weaponResult?.finalWeaponType ?? '')
   applyGladiatorialRage(boostedStats, finalPerks)
 
-  // Shield vs Protection fix: Ancient Cleric / Ice Shell / Drone Armor give
-  // temporary HP (shield), not damage reduction (protection). Use shield stat.
+  // Shield vs Protection: Ancient Cleric / Ice Shell / Drone Armor give
+  // temporary HP (shield), not damage reduction (protection).
   if (state.rune === 'Ancient Cleric Rune' && !(state.disabledBuffKeys ?? []).includes('Ancient Shield:Ancient Cleric Rune')) {
     const shieldHp = ANCIENT_CLERIC_SHIELD_BASE + ANCIENT_CLERIC_SHIELD_PER_VAL * (state.buffsConsumed ?? 0)
     boostedStats.shield = (boostedStats.shield ?? 0) + shieldHp
@@ -548,9 +540,8 @@ function deriveResults(
     }
   }
 
-  // King's Luck (Caci King Spirit): the buff chip's OFF toggle disables the
-  // status's crit contribution (buff key "King's Luck:Caci King Spirit"),
-  // mirroring the Ice Shell / Drone Armor buff-disable checks above.
+  // King's Luck: buff chip OFF toggle disables crit contribution (key
+  // "King's Luck:Caci King Spirit"), mirroring Ice Shell / Drone Armor above.
   const _kingsLuckPerks = (state.disabledBuffKeys ?? []).includes(`${KINGS_LUCK_LABEL}:Caci King Spirit`)
     ? { ...finalPerks, ['Caci King Spirit']: 0 }
     : finalPerks
@@ -613,9 +604,8 @@ function deriveResults(
   const hasMagicDmg = Object.entries(_waDmgTypesForBoost).some(([dt, mult]) => dt === 'magic' && mult > 0)
   const hasMagicOrPhysicalDmg = Object.entries(_waDmgTypesForBoost).some(([dt, mult]) => (dt === 'magic' || dt === 'physical') && mult > 0)
   // Standoff / Guiding Winds ramp: slider overrides the perk amount fed to the
-  // boost calc (partial ramp instead of max stacks). Standoff slider = seconds
-  // (0.05/s → max at 5s): stacks = amount × (seconds / 5). Guiding Winds slider
-  // = % (25% floor): stacks = amount × (percent / 100).
+  // boost calc. Standoff slider = seconds (0.05/s, max 5s): stacks = amount ×
+  // (seconds / 5). Guiding Winds slider = % (25% floor): stacks = amount × (pct / 100).
   const boosts = calcBoosts(
     rampedPerks, state.emotionalState, state.emotionalDisabled, state.level ?? MAX_LEVEL,
     crit.naturalCritChance, boostedStats.jumpBoost ?? 0,

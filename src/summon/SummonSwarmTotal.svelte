@@ -1,11 +1,10 @@
 <script lang="ts">
-  // SWARM TOTAL — active summons control (max = the SHARED GLOBAL cap; per-panel
-  // state routing handled by the caller via onSummonCountChange — owner
-  // 2026-11: rune and WA sliders are independent, never cross-controlling).
-  // Row math removed per owner request 2026-11 — summon damage totals are
-  // shown in the Base Damage chip / other panels. count === 0 → empty state
-  // "not summoned". Buff toggles moved to SummonBuffs (own titled block).
-  // cap <= 1 → static readout instead of a slider (nothing to drag).
+  // SWARM TOTAL — active summons control (max = the SHARED GLOBAL cap; routing
+  // to rune vs WA state handled by the caller via onSummonCountChange — owner
+  // 2026-11: the two sliders are independent, never cross-controlling). Row
+  // math removed per owner 2026-11 — damage totals shown in the Base Damage
+  // chip / other panels. count === 0 → empty "not summoned". Buff toggles
+  // live in SummonBuffs. cap <= 1 → static readout instead of a slider.
   import type { SummonPanelVM } from '../lib/summonView'
 
   export let vm: SummonPanelVM
@@ -15,9 +14,9 @@
   $: empty = vm.count === 0
   $: staticCap = vm.cap <= 1
 
-  // Drag without jank: the expensive part (build.update → full engine recalc in
-  // DamageAnalyzer) is debounced to one commit; thumb/readout/fill follow the
-  // raw drag instantly. _pending is null when the display follows vm.count.
+  // Drag without jank: the expensive part (build.update → full engine recalc
+  // in DamageAnalyzer) is debounced to one commit; thumb/readout/fill follow
+  // the raw drag instantly. _pending is null when the display follows vm.count.
   let _pending: number | null = null
   let _commitTimer: ReturnType<typeof setTimeout> | null = null
 
@@ -178,6 +177,5 @@
     color: var(--sum-muted, #a6a2b0);
   }
   .swe-static-row { flex-wrap: wrap; row-gap: 2px; }
-  /* cap ≤ 1: stepper buttons would both be dead ends — static readout only */
   .swe-static { min-width: 2ch; }
 </style>

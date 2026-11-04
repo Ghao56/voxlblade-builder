@@ -1,8 +1,8 @@
 <script lang="ts">
-  // APPLIED DEBUFFS — status list only: debuff name + potency. NO DoT damage
-  // shown and NO player perk applied — the summon DoT/Debuff system is
-  // SEPARATE from the player's (owner decision, 2026-11). Not a toggle: these
-  // apply automatically on hit — the number is the debuff potency.
+  // APPLIED DEBUFFS — status list only (name + potency). NO DoT damage shown
+  // and NO player perk applied: the summon DoT/Debuff system is SEPARATE from
+  // the player's (owner decision, 2026-11). Not a toggle: these apply
+  // automatically on hit.
   import type { SummonPanelVM } from '../lib/summonView'
   import { BUFF_DEFS } from '../data/BuffData'
 

@@ -1,10 +1,8 @@
 <script lang="ts">
-  // SummonPanel — container, display flow:
-  // Scaling ──► Stats (Base→Scaled) ──► Survival ──► Swarm Total ──► Applied
-  // Buffs ──► Applied Debuffs ──► Perk Links. Buffs own a titled block like
-  // debuffs (owner request 2026-11); the header shows no alive count (the
-  // sliders are the single source for that). NO circled-number symbols (①②③…)
-  // on block labels — owner request 2026-11.
+  // SummonPanel — container, display flow: Scaling → Stats → Survival →
+  // Swarm Total → Buffs → Debuffs → Perk Links. Buffs own a titled block like
+  // debuffs (owner 2026-11); the header shows no alive count (the sliders are
+  // the single source for that) and no circled-number labels (owner 2026-11).
   // Every number comes from SummonPanelVM (lib/summonView) — pure functions
   // built on the instance DamageAnalyzer holds.
   import type { SummonPanelVM } from './lib/summonView'
@@ -37,7 +35,7 @@
     vm.scaling.boostPct === sharedScaling.boostPct &&
     vm.scaling.levelFactor === sharedScaling.levelFactor &&
     vm.scaling.mult === sharedScaling.mult
-  // Group subheader when the stat key changes (tenacity+defense → "Defenses",
+  // Group subheader when the stat key changes (tenacity/defense → "Defenses",
   // attack rows → "Attacks"). Rendered inside the stats block.
 </script>
 

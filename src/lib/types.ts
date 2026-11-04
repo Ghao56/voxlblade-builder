@@ -1,5 +1,4 @@
-// Core Types
-// Central type definitions for the entire codebase: stats, equipment, build state, damage types.
+// Central type definitions: stats, equipment, build state, damage types.
 // Import from here rather than defining locally — keeps types consistent across files.
 
 const STAT_CONFIG = {
@@ -91,8 +90,6 @@ export function applyUpgrade(stats: StatMap, level: number, keepNegativeStats = 
   return result
 }
 
-// Weapon Types (Blade/Handle)
-
 export type BladeType = "Small Blade" | "Medium Blade" | "Heavy Blade" | "Hammer Head"
 export type HandleType = "Medium Handle" | "Long Handle" | "Pole"
 export type StatPrefix = 'physical' | 'magic' | 'fire' | 'water' | 'air' | 'hex' | 'holy' | 'earth'| 'summon' | 'dexterity'
@@ -119,8 +116,6 @@ export type WeaponHandle = {
   perkName?: string
   perkAmount?: number
 } & Partial<Record<ScalingKey, number>>
-
-// Monk Weapon Types (Glove/Essence)
 
 export type GloveType = "Gloves" | "Shield"
 export type EssenceType = "Monk Essence"
@@ -174,8 +169,6 @@ export interface MonkEssence {
   perkName?: string
   perkAmount?: number
 }
-
-// Build State
 
 export interface BuildState {
   race: string
@@ -242,10 +235,8 @@ export interface BuildState {
   deathmistHit: number
   inDarkness: boolean
   cdrToggles: Record<string, boolean>
-  // Potion slots
   potion1: string
   potion2: string
-  // Toggle state (ON/OFF for buffs, boosts, effects)
   disabledBoosts: string[]
   disabledEffects: string[]
   disabledBuffKeys: string[]

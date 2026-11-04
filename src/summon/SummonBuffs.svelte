@@ -1,8 +1,7 @@
 <script lang="ts">
-  // APPLIED BUFFS — own titled block (owner request 2026-11): buff toggles
-  // were rendered inside Swarm Total with no header of their own. Same
-  // interactive chips: key `source::name` at DamageAnalyzer level, clicked to
-  // include/exclude the buff from the damage mult chain. This IS a real
+  // APPLIED BUFFS — own titled block (owner 2026-11; toggles were previously
+  // inside Swarm Total with no header). Interactive chips: key `source::name`
+  // includes/excludes the buff from the damage mult chain. This IS a real
   // control: background + border flip with state, aria-pressed, keyboard
   // focusable (native button).
   import type { SummonPanelVM } from '../lib/summonView'
@@ -69,7 +68,7 @@
     outline: 2px solid var(--bcolor, #c084fc);
     outline-offset: 2px;
   }
-  /* off: dashed border + dimmed text instead of grayscale filter */
+  /* off: dashed border + dimmed text instead of a grayscale filter */
   .sbf-badge--off {
     background: transparent;
     border-style: dashed;

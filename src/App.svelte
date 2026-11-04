@@ -472,7 +472,6 @@
   let weaponStatFilterSortMode:'highest'|'lowest'|'alphabetical'= 'highest'
   let weaponAtkSpeedSortMode: 'default' | 'highest' | 'lowest' = 'default'
 
-  // Armor effective-boost sort helpers
   function computeArmorEffectiveBoost(
     armorStats: Record<string, number>,
     weaponScalings: Record<string, number>,
@@ -529,7 +528,6 @@ function weaponMatchesFilter(item: any): boolean {
     activeAppTab = tab
   }
 
-  // Undo clear
   import type { BuildState } from './lib/types'
   let _previousBuild: BuildState | null = null
   let _undoVisible = false
@@ -592,11 +590,9 @@ function weaponMatchesFilter(item: any): boolean {
     if (potionBtnEl) toastOffsetTop = potionBtnEl.getBoundingClientRect().bottom + 12
   })
 
-  // Armor drag/tap helpers
   $: isDraggingArmor = !!draggingArmorSlot || !!selectedArmorSlot
   $: isDraggingRing = !!draggingRing || !!selectedRing
 
-// Modal state
   type ModalType = 'race' | 'guild' | 'armor-helmet' | 'armor-chestplate' | 'armor-leggings' | 'infusion-helmet' | 'infusion-chestplate' | 'infusion-leggings' | 'ring' | 'infusion-ring' | 'rune' | 'blade' | 'handle' | 'glove' | 'essence' | null
   let activeModal: ModalType = null
   let modalSearch = ''
@@ -611,7 +607,7 @@ function weaponMatchesFilter(item: any): boolean {
     return perkNames.some(p => p.toLowerCase().includes(q))
   }
 
-  // Helper: extract perk names from a weapon part (blades/handles/gloves/essences have perks array)
+  // blades/handles/gloves/essences carry a perks[] array
   function getPerkNames(data: any): string[] {
     if (!data) return []
     const names: string[] = []
@@ -621,7 +617,6 @@ function weaponMatchesFilter(item: any): boolean {
   }
 
 
-  // Collapsible panels
   let showDetailsPanel = true
   let showPerksPanel = true
   let showPotionsDrawer = false
@@ -631,13 +626,11 @@ function weaponMatchesFilter(item: any): boolean {
   let activePerksTab: 'perks' | 'boosts' = 'perks'
   let activeDetailsTab: 'selection' | 'weapon' = 'selection'
 
-  // Inline enchant panel
   let inlineEnchantSlot: EnchantSlot | null = null
   function toggleInlineEnchant(slot: EnchantSlot) {
     inlineEnchantSlot = inlineEnchantSlot === slot ? null : slot
   }
 
-  // Equipment enchantment swap mode
   let swapMode: EnchantSlot | null = null
   const ENCHANT_SLOTS: EnchantSlot[] = ['helmet', 'chestplate', 'leggings', 'ring', 'rune']
 
@@ -826,7 +819,6 @@ $: statRows = Object.entries($result.stats).filter(([k, v]) => {
     return 1 + Math.max(0, $build.guildRank - 1) * MONK_RANK_MULTIPLIER
   })()
 
-  // Enchant helpers
   let enchantCats: Record<EnchantSlot, 'unAscended' | 'Ascended'> = {
     helmet: 'unAscended', chestplate: 'unAscended', leggings: 'unAscended',
     ring: 'unAscended', rune: 'unAscended'
@@ -901,12 +893,10 @@ function applyEnchantToAll(slot: EnchantSlot) {
   enchantCats = { ...enchantCats }
 }
 
-  // Inline enchant reactive values
   $: iepSlot = inlineEnchantSlot
   $: iepS0 = iepSlot ? $build.enchantments[iepSlot][0] : ''
   $: iepS1 = iepSlot ? $build.enchantments[iepSlot][1] : ''
   $: iepS2 = iepSlot ? $build.enchantments[iepSlot][2] : ''
-  // Reactive exclusive map
   $: exclMap = {
     helmet:     isExclusiveEnchant(ge($build.enchantments.helmet[0])),
     chestplate: isExclusiveEnchant(ge($build.enchantments.chestplate[0])),
@@ -921,7 +911,6 @@ function applyEnchantToAll(slot: EnchantSlot) {
   $: iepOpts1 = iepSlot ? enchantments.filter(e => e.category === enchantCats[iepSlot] && e.name !== iepS0 && e.name !== iepS2) : []
   $: iepOpts2 = iepSlot ? enchantments.filter(e => e.category === enchantCats[iepSlot] && e.name !== iepS0 && e.name !== iepS1) : []
 
-// Modal search suggestions
   let showSuggestions = false
   let modalCandidates: Array<{label: string; type: 'name' | 'perk'}> = []
   let modalSuggestions: Array<{label: string; type: 'name' | 'perk'}> = []
@@ -1195,7 +1184,6 @@ function applyEnchantToAll(slot: EnchantSlot) {
   let gloveFilterType = ''
   let essenceFilterTier = ''
 
-  // Perk tag filter
   let selectedTags: Set<string> = new Set()
   let statFilter: Map<string, 'include' | 'exclude'> = new Map()
 
@@ -1318,7 +1306,6 @@ function onStatFilterChange( e: CustomEvent<{
   $: filteredHandles = tierFilter(handles, handleFilterTier, handleFilterType, 'handleType')
   $: filteredGloves = tierFilter(gloves, gloveFilterTier, gloveFilterType, 'gloveType')
   $: filteredEssences = tierFilter(essences, essenceFilterTier)
-// Weapon enchant damage type bonuses
 interface PerkDmgTypeBonusDef {
   perkName: string
   type: string
@@ -1349,7 +1336,6 @@ $: weaponDamageTypesWithBonus = (() => {
 })()
 
 $: highestDamageType = pickHighestDmgType(Object.entries(weaponDamageTypesWithBonus))
-  // Weapon result
  $: weaponResult = calcBuildWeapon($build)
 
   $: summaryWeaponLabel = weaponResult?.part1Name && weaponResult?.part2Name && weaponResult.finalWeaponType
@@ -1360,7 +1346,7 @@ $: highestDamageType = pickHighestDmgType(Object.entries(weaponDamageTypesWithBo
     const dtKeys = ['true','physical','magic','fire','water','earth','air','hex','holy','summon']
     const result: Record<string, number> = {}
     for (const k of dtKeys) {
-      // Check top-level first, then inside .stats (blades/handles/gloves/essences store type keys in stats)
+      // top-level key first, then .stats (blades/handles/gloves/essences store type keys in stats)
       const v = data?.[`${k}Type`] ?? data?.stats?.[`${k}Type`]
       if (v != null && v !== 0) result[k] = v
     }
@@ -1384,7 +1370,6 @@ $: highestDamageType = pickHighestDmgType(Object.entries(weaponDamageTypesWithBo
     return `${Math.max(1, Math.floor(effectiveBase * cdr.runeCDR))}s`
   }
 
-  // Detail cards
   interface EnchantInfo { name: string; notes: string | undefined }
   interface DetailCard {
     title: string; label: string; description?: string
@@ -1643,7 +1628,6 @@ $: highestDamageType = pickHighestDmgType(Object.entries(weaponDamageTypesWithBo
     return false
   }
 
-  // Weapon Art helpers
   $: _waScalings = weaponResult?.baseScalings ?? {} as Record<string, number>
   $: _waStats = weaponResult?.stats ?? {} as Record<string, number>
   $: _waWeaponTypes = [...new Set([weaponResult?.weaponType, weaponResult?.finalWeaponType].filter((t): t is string => !!t))]
@@ -1672,7 +1656,6 @@ $: highestDamageType = pickHighestDmgType(Object.entries(weaponDamageTypesWithBo
 
   $: waUnmetReqs = getUnmetReqs(selectedWA, _waScalings, _waStats, _waWeaponTypes, isMonk, _waBlade, _waHandle)
 
-// Weapon stat groups
 const DMG_TYPE_KEYS = new Set(['physicalType','magicType','fireType','waterType','earthType','airType','hexType','holyType','trueType','summonType'])
 const SCALING_KEYS = new Set(['physicalScaling','magicScaling','fireScaling','waterScaling','earthScaling','airScaling','hexScaling','holyScaling','dexterityScaling','summonScaling'])
 
@@ -1736,14 +1719,12 @@ $: _appWaAvgTotal = (() => {
 
   <svelte:window on:keydown={onKeydown} />
 
-<!-- Tooltip -->
 {#if tooltip.visible}
   <div class="enchant-tooltip" style="left:{tooltip.x}px;top:{tooltip.y}px">
     {#each tooltip.text.split('\n') as line}<p>{line}</p>{/each}
   </div>
 {/if}
 
-<!-- Modals -->
 {#if activeModal === 'race'}
   <RaceModal close={closeModal} bind:modalSearch
     {showSuggestions} {modalSuggestions} {noExactResults} {didYouMean}
@@ -1778,7 +1759,6 @@ $: _appWaAvgTotal = (() => {
 
 
 
-<!-- MAIN APP -->
 <div class="app">
   {#snippet statRow(k: string, v: number)}
   <div class="stat-row"><span>{formatLabel(k)}</span><span class="stat-val" class:neg={v < 0}>{formatStat(k, v)}</span></div>
@@ -1787,7 +1767,6 @@ $: _appWaAvgTotal = (() => {
   {#if activeAppTab === 'overview'}
     <div class="workspace" in:fade={{ duration: 200 }}>
 
-      <!-- BUILD SUMMARY + INLINE ENCHANTS -->
       <div class="panel summary-panel">
         <div class="summary-title-row">
           <h3 class="panel-title summary-title">Build Summary</h3>
@@ -1818,7 +1797,6 @@ $: _appWaAvgTotal = (() => {
           <div class="left-column">
             <div class="summary-grid-wrap">
               <div class="summary-grid" class:sg-armor-dragging={isDraggingArmor} class:sg-ring-dragging={isDraggingRing}>
-                <!-- Weapon type row -->
                 <div class="sg-cell sg-weapon sg-span10 sg-clickable"
                   on:click={() => build.update(s => ({...s, shrineActive: !s.shrineActive}))}
                   role="button" tabindex="0"
@@ -2269,7 +2247,6 @@ $: _appWaAvgTotal = (() => {
             {/if}
           </div>
           
-          <!-- WEAPON ART PANEL -->
           <div class="right-column">
             <div class="wa-panel">
               <div class="wa-panel-header">
@@ -2409,7 +2386,6 @@ $: _appWaAvgTotal = (() => {
       {/if}
       <BuffList />
 
-          <!-- DRACONIC RUNE PANEL -->
       {#if isDraconic}
         <div class="panel draconic-panel">
           <div class="draconic-panel-header">
@@ -2428,7 +2404,6 @@ $: _appWaAvgTotal = (() => {
           </div>
           <div class="draconic-abilities">
 
-            <!-- Dragon Claw -->
              <button type="button" class="draconic-ability-card draconic-ability-card--selectable"
               class:draconic-ability-card--selected={$build.draconicRuneInfusion === 'claw'}
               class:draconic-ability-card--unselected={$build.draconicRuneInfusion && $build.draconicRuneInfusion !== 'claw'}
@@ -2463,7 +2438,6 @@ $: _appWaAvgTotal = (() => {
               </div>
               </button>
 
-            <!-- Dragon Infusion -->
             <button type="button" class="draconic-ability-card draconic-ability-card--infusion draconic-ability-card--selectable"
               class:draconic-ability-card--selected={$build.draconicRuneInfusion === 'infusion'}
               class:draconic-ability-card--unselected={$build.draconicRuneInfusion && $build.draconicRuneInfusion !== 'infusion'}
@@ -2490,7 +2464,6 @@ $: _appWaAvgTotal = (() => {
                   </span>
                 </div>
 
-                <!-- Color-specific effects -->
                 {#if draconicColorEffectRows.length > 0}
                   <div class="dab-stat-row" style="padding:2px 6px;opacity:.45;font-size:.6rem;">
                     <span style="text-transform:uppercase;letter-spacing:.12em;color:var(--ink-muted)">
@@ -2508,7 +2481,6 @@ $: _appWaAvgTotal = (() => {
               <div class="dab-notes">Does not apply to attacks without proc coefficient</div>
             </button>
 
-            <!-- Dragon Bubble -->
             <button type="button" class="draconic-ability-card draconic-ability-card--selectable"
               class:draconic-ability-card--selected={$build.draconicRuneInfusion === 'bubble'}
               class:draconic-ability-card--unselected={$build.draconicRuneInfusion && $build.draconicRuneInfusion !== 'bubble'}
@@ -2546,7 +2518,6 @@ $: _appWaAvgTotal = (() => {
         </div>
       {/if}
 
-      <!-- Combined details panel with tabs: Selection Details | Weapon -->
       <div class="panel details-panel">
         <div class="details-tabs-header">
           <button class="details-tab" class:details-tab--active={activeDetailsTab === 'selection'}
@@ -2708,7 +2679,6 @@ $: _appWaAvgTotal = (() => {
             {/if}
 
           {:else if activeDetailsTab === 'weapon' && weaponResult}
-          <!-- WA Detail card -->
   <div class="detail-card wa-detail-card" class:wa-selected--invalid={!waAvailable} style="margin-bottom:10px;">
     <div class="detail-head">
       <span class="detail-type" style="color:var(--accent3)">Weapon Art</span>
@@ -3024,7 +2994,6 @@ $: _appWaAvgTotal = (() => {
                 <div class="weapon-combine-line"></div>
               </div>
 
-              <!-- Part 2 -->
               {#if weaponResult.part2Name}
                 {@const part2Data = isMonk ? getEssence(weaponResult.part2Name) : getHandle(weaponResult.part2Name)}
                 <div class="detail-card weapon-card" class:weapon-card--handle={!isMonk} class:weapon-card--essence={isMonk}>
@@ -3290,7 +3259,6 @@ $: _appWaAvgTotal = (() => {
 
 
 
-  /* Tooltip */
   :global(.enchant-tooltip) {
     position:fixed; z-index:var(--z-toast);
     background: var(--glass-bg);
@@ -3304,7 +3272,6 @@ $: _appWaAvgTotal = (() => {
   }
   :global(.enchant-tooltip p) { margin:0 0 4px; font-size:.76rem; color:var(--ink); line-height:1.45; }
 
-  /* SUMMARY */
   .panel {
     background: var(--surface2);
     border: 1px solid var(--border);
@@ -3679,8 +3646,6 @@ $: _appWaAvgTotal = (() => {
   .iep-slot-num { font-size:.65rem; font-weight:800; color:var(--accent3); width:14px; flex-shrink:0; opacity:.7; }
   .iep-excl-note { font-size:.72rem; color:var(--accent2); margin-top:8px; padding:6px 10px; background:rgba(245,158,11,.08); border:1px solid rgba(245,158,11,.2); border-radius:6px; }
 
-  /* Collapsible panel title buttons */
-/* PERKS PANEL TABS */
 .perks-panel {
   border-color: rgba(245,158,11,0.12);
   background: var(--surface2);
@@ -3732,7 +3697,6 @@ $: _appWaAvgTotal = (() => {
 
   .perks-grid { display:flex; flex-direction:column; gap:6px; margin-top:10px; }
 
-  /* Details panel with tabs */
   .details-panel { padding:0; overflow:hidden; transition: border-color var(--transition-base); }
   .details-panel:hover {
     border-color: var(--border-hover);
@@ -3941,7 +3905,6 @@ $: _appWaAvgTotal = (() => {
   .sg-upgrade-btn--maxed {
     background:rgba(251,191,36,.22); border-color:rgba(251,191,36,.5);
   }
-  /* WEAPON ART PANEL */
 .wa-panel {
   order: 1;
   background: rgba(167,139,250,0.04);
@@ -4141,8 +4104,6 @@ $: _appWaAvgTotal = (() => {
   margin-left: 4px;
   font-weight: 600;
 }
-/* DRACONIC RUNE */
-
 .sg-draconic-rune-cell {
   background:
     linear-gradient(
@@ -4414,7 +4375,6 @@ $: _appWaAvgTotal = (() => {
   border-color:rgba(248,113,113,.3); background:rgba(248,113,113,.08); color:var(--neg); opacity:.7;
 }
 
-/* Responsive */
 @media (max-width: 640px) {
   .app { padding: 12px 10px 40px; }
   .sg-cell { padding: 8px 10px; min-height: 72px; }

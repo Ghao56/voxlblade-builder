@@ -178,7 +178,6 @@
     font-family: var(--font-body, 'Trebuchet MS', sans-serif);
   }
 
-  /* Header */
   .wsf-header {
     display: flex;
     align-items: center;
@@ -207,7 +206,6 @@
 
   .wsf-active-row { display: flex; flex-wrap: wrap; gap: 3px; align-items: center; flex: 1; }
 
-  /* Panel */
   .wsf-panel {
     display: flex;
     flex-direction: column;
@@ -216,7 +214,6 @@
     border-top: 1px solid rgba(255,255,255,.06);
   }
 
-  /* Legend */
   .wsf-legend { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-bottom: 2px; }
   .wsf-leg { font-size: .58rem; font-weight: 700; padding: 1px 6px; border-radius: 4px; }
   .wsf-leg--off  { color: #8a8d85; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); }
@@ -224,7 +221,6 @@
   .wsf-leg--exc  { color: #f87171; background: rgba(248,113,113,.1);  border: 1px solid rgba(248,113,113,.25); }
   .wsf-leg-hint  { font-size: .55rem; color: #8a8d85; opacity: .45; font-style: italic; }
 
-  /* Groups */
   .wsf-group { display: flex; flex-direction: column; gap: 5px; }
   .wsf-group-head { display: flex; align-items: center; }
   .wsf-group-label {

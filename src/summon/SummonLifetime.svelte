@@ -1,15 +1,13 @@
 <script lang="ts">
-  // SURVIVAL — HP bar + decay. HP/decay from the instance (locked at spawn).
-  // Base decay comes from the VM (lifetime.baseDecay, via the original
-  // getSummonBaseDecay) — display-only, this component never rebuilds
-  // the ÷ (1 + boost) formula.
+  // SURVIVAL — HP bar + decay. HP/decay from the instance (locked at spawn);
+  // base decay from the VM (lifetime.baseDecay) — display-only, this
+  // component never rebuilds the ÷ (1 + boost) formula.
   import type { SummonPanelVM } from '../lib/summonView'
   import { fmtSummonNum, fmtSummonDuration } from '../lib/summonView'
 
   export let vm: SummonPanelVM
 
   $: pct = vm.lifetime.maxHp > 0 ? Math.max(0, Math.min(100, (vm.lifetime.hp / vm.lifetime.maxHp) * 100)) : 0
-  // green → yellow → red by percent thresholds
   $: barColor = pct >= 50 ? 'var(--sum-ok, #4ade80)' : pct >= 25 ? 'var(--sum-warn, #facc15)' : 'var(--sum-bad, #f87171)'
   $: secondsText = vm.lifetime.seconds === null ? '∞' : '~' + fmtSummonDuration(vm.lifetime.seconds)
   // decay 0 → neutral "No decay" chip; red only when actually decaying.
@@ -77,7 +75,6 @@
     margin-top: 3px;
     font-size: 13px;
   }
-  /* Neutral chip: zero decay is not a danger — don't paint it red. */
   .slt-nodecay {
     color: var(--sum-muted, #a6a2b0);
     font-size: 12px;
