@@ -1,6 +1,8 @@
 <script lang="ts">
   import { fade, fly } from 'svelte/transition'
 
+  const quartOut = (t: number) => 1 - Math.pow(1 - t, 4)
+
   export let onclose: () => void
 
   function trapFocus(e: KeyboardEvent) {
@@ -21,9 +23,9 @@
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
-<div class="modal-overlay" transition:fade={{ duration: 200 }} on:click|self={onclose}>
+<div class="modal-overlay" transition:fade={{ duration: 180 }} on:click|self={onclose}>
   <!-- svelte-ignore a11y-autofocus -->
-  <div class="modal-box" transition:fly={{ y: 16, duration: 250, easing: t => 1 - Math.pow(1 - t, 3) }} role="dialog" aria-modal="true" tabindex="-1" on:keydown={trapFocus} use:focusOnOpen>
+  <div class="modal-box" in:fly={{ y: 14, duration: 240, opacity: 0, easing: quartOut }} out:fly={{ y: 10, duration: 160, opacity: 0, easing: quartOut }} role="dialog" aria-modal="true" tabindex="-1" on:keydown={trapFocus} use:focusOnOpen>
     <button class="modal-close" on:click={onclose} aria-label="Close modal">✕</button>
     <slot />
   </div>
@@ -91,6 +93,12 @@
     color: var(--neg);
     border-color: rgba(248,113,113,0.3);
   }
+  .modal-close:active {
+    transform: scale(0.9);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .modal-close:active { transform: none; }
+  }
 
   :global(.modal-list) {
     display: flex; flex-direction: column; gap: 6px;
@@ -122,6 +130,13 @@
       transform: translateY(-1px);
       box-shadow: var(--shadow-sm);
     }
+  }
+  :global(.modal-item:active) {
+    transform: translateY(0) scale(0.985);
+    box-shadow: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :global(.modal-item:active) { transform: none; }
   }
   :global(.modal-item--active) {
     border-color: var(--accent);

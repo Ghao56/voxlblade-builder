@@ -2,6 +2,8 @@
   import { toasts, removeToast } from './stores/toast'
   import { fly } from 'svelte/transition'
 
+  const quartOut = (t: number) => 1 - Math.pow(1 - t, 4)
+
   let { offsetTop = 16 }: { offsetTop?: number } = $props()
 
   const typeStyles: Record<string, string> = {
@@ -26,7 +28,7 @@
       style={typeStyles[toast.type]}
       role="alert"
       aria-live="polite"
-      transition:fly={{ x: 300, duration: 300 }}
+      in:fly={{ x: 280, duration: 240, easing: quartOut }} out:fly={{ x: 280, duration: 150, easing: quartOut }}
     >
       <span class="toast-icon">{typeIcons[toast.type]}</span>
       <span class="toast-msg">{toast.message}</span>
@@ -93,9 +95,13 @@
     padding: 0;
     line-height: 1;
     flex-shrink: 0;
-    transition: opacity var(--transition-fast);
+    transition: opacity var(--transition-fast), transform var(--transition-fast);
   }
   .toast-close:hover { opacity: 1; }
+  .toast-close:active { transform: scale(0.85); }
+  @media (prefers-reduced-motion: reduce) {
+    .toast-close:active { transform: none; }
+  }
   .toast-close:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
   @media (max-width: 640px) {
