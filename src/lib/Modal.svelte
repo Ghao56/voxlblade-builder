@@ -79,8 +79,12 @@
     width: 28px; height: 28px;
     cursor: pointer;
     display: flex; align-items: center; justify-content: center;
-    transition: all var(--transition-fast);
+    transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast), opacity var(--transition-fast);
     z-index: 2;
+  }
+  .modal-close:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
   }
   .modal-close:hover {
     background: rgba(248,113,113,0.12);
@@ -109,13 +113,15 @@
     padding: 12px 14px;
     cursor: pointer;
     display: flex; flex-direction: column; gap: 4px;
-    transition: all var(--transition-fast);
+    transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast), opacity var(--transition-fast);
   }
-  :global(.modal-item:hover) {
-    background: var(--surface3);
-    border-color: var(--border-hover);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-sm);
+  @media (hover: hover) and (pointer: fine) {
+    :global(.modal-item:hover) {
+      background: var(--surface3);
+      border-color: var(--border-hover);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
   }
   :global(.modal-item--active) {
     border-color: var(--accent);
@@ -147,7 +153,7 @@
     font-size:.67rem; font-weight:700; padding:2px 7px; border-radius:999px;
     background:rgba(74,222,128,0.08); border:1px solid rgba(74,222,128,0.15);
     color:var(--accent);
-    transition: all var(--transition-fast);
+    transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast), opacity var(--transition-fast);
   }
   :global(.modal-stat-pill:hover) {
     background: rgba(74,222,128,0.14);
@@ -169,7 +175,7 @@
     padding:4px 12px; border-radius:var(--radius-xs);
     border:1px solid var(--border); background:var(--surface3);
     color:var(--ink-muted); font-size:.75rem; font-weight:600;
-    cursor:pointer; transition:all var(--transition-fast);
+    cursor:pointer; transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast), opacity var(--transition-fast);
   }
   :global(.rank-btn:hover) { border-color:rgba(74,222,128,0.3); color:var(--accent); }
   :global(.rank-btn--active) {
@@ -201,7 +207,7 @@
     font-size:.7rem; font-weight:700; padding:4px 12px; border-radius:999px;
     border:1px solid var(--border-strong); background:var(--surface3);
     color:var(--ink-muted); cursor:pointer; font-family:var(--font-body);
-    transition:all var(--transition-fast);
+    transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast), opacity var(--transition-fast);
   }
   :global(.modal-sort-btn:hover) { color:var(--ink); border-color:var(--border-hover); }
   :global(.modal-sort-btn--active) {

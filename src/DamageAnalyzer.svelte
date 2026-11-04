@@ -48,7 +48,7 @@ import { getEnemyHpDotMultiplier } from './data/enemyHpEffects'
 import { getDotBase, getDotPotencyMult, toGamePotency, calcDotDisplayPotency, DOT_TYPE_LIST, DOT_SCALINGS, applyGhastlyRotScalings, applyCursedFlamesBurnScalings, getCursedFlamesBurnGradient } from './data/DoTDamage'
 import { WEAPON_PROC_COEFFS, DEFAULT_PROC_COEFF, WA_PROC_COEFFS } from './data/procCoefficients'
 import { BOOST_DEF_MAP, calcFrenzyPct, calcMinionAbsorptionPotency } from './data/Boost'
-import { DARK_POWER_POTENCY_PER_AMOUNT } from './lib/constants'
+import { DARK_POWER_POTENCY_PER_AMOUNT, DARK_POWER_BONUS_PER_POTENCY } from './lib/constants'
 import {
   WILD_BOLT_ELEMENTS,
   LIGHTNING_CLOAK_FRACTION,
@@ -2252,11 +2252,11 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       })
       const debuffCount = new Set(uniqueSelfDebuffs.map(b => b.buffName)).size
       if (debuffCount > 0) {
-        const pct = (debuffCount * darkOneStacks) * DARK_POWER_POTENCY_PER_AMOUNT
+        const pct = (debuffCount * darkOneStacks) * DARK_POWER_POTENCY_PER_AMOUNT * DARK_POWER_BONUS_PER_POTENCY
         entries.push({
           sourceName: 'Dark One',
           rawMultiplier: 1 + pct,
-          condition: `Deal ${(pct * 100).toFixed(2)}% more damage\n${debuffCount} debuff${debuffCount > 1 ? 's' : ''} · ${darkOneStacks} stack${darkOneStacks > 1 ? 's' : ''}`,
+          condition: `Deal ${(pct * 100).toFixed(2)}% more damage\n${debuffCount} debuff${debuffCount > 1 ? 's' : ''} · ${darkOneStacks} stack${darkOneStacks > 1 ? 's' : ''} · potency ${(debuffCount * darkOneStacks * DARK_POWER_POTENCY_PER_AMOUNT).toFixed(2)}`,
           type: 'dmg',
         })
       }
@@ -6532,8 +6532,8 @@ $: _groupedSelfDamageSources = (() => {
             <div class="da-wild-bolt-box">
               <div class="da-wb-row">
                 <span class="da-wb-header">Wild Bolt ×{_wildBoltAmt}</span>
-                <button class="da-wb-btn" on:click={cycleWildBoltElem} title="Cycle element">↻</button>
-                <button class="da-wb-btn" on:click={randomWildBoltElem} title="Randomize">🎲</button>
+                <button class="da-wb-btn" on:click={cycleWildBoltElem} title="Cycle element"><i class="fa fa-refresh"></i></button>
+                <button class="da-wb-btn" on:click={randomWildBoltElem} title="Randomize"><i class="fa fa-random"></i></button>
               </div>
               <div class="da-wb-line">Base 19.5 → 18.75 · +{_wildBoltAmt * 25}% Dmg</div>
               <div class="da-wb-line">
@@ -7149,7 +7149,7 @@ $: _groupedSelfDamageSources = (() => {
           <div class="da-pbd-condition">{entry.condition}</div>
         {/if}
         {#if entry.perkName === 'Star Struck'}
-          <button class="da-reroll-btn" on:click={() => starRerollSeed++} title="Re-roll the random star damage type (and the stars shown next to M1/M2)">🎲 Reroll Star</button>
+          <button class="da-reroll-btn" on:click={() => starRerollSeed++} title="Re-roll the random star damage type (and the stars shown next to M1/M2)"><i class="fa fa-random"></i> Reroll Star</button>
         {/if}
         {#if entry.perkName === 'Deathmist Slash'}
           <div class="da-cd-hit-row">
@@ -8008,7 +8008,7 @@ $: _groupedSelfDamageSources = (() => {
   .da-right-col--collapsed {
     display: flex;
   }
-  @media (max-width: 768px) {
+  @media (max-width: 980px) {
     .da-main-row {
       flex-direction: column;
     }
@@ -8323,7 +8323,7 @@ $: _groupedSelfDamageSources = (() => {
   color: #fb923c;
   cursor: pointer;
   font-family: inherit;
-  transition: all .12s;
+  transition: background-color .12s, border-color .12s, color .12s, box-shadow .12s, transform .12s, opacity .12s;
   font-size: .72rem;
   font-weight: 700;
 }
@@ -8374,11 +8374,9 @@ $: _groupedSelfDamageSources = (() => {
   border-radius: 50%;
   background: #fb923c;
   flex-shrink: 0;
-  box-shadow: 0 0 5px rgba(251,146,60,.6);
 }
 .da-wbd-dot--gun {
   background: linear-gradient(135deg, #fb923c, #38bdf8);
-  box-shadow: 0 0 5px rgba(56,189,248,.5);
 }
 .da-wbd-m2-src {
   font-size: .58rem;
@@ -8415,6 +8413,7 @@ $: _groupedSelfDamageSources = (() => {
 .da-hit-card {
   display: inline-flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 3px;
   background: rgba(255,255,255,.04);
   border: 1px solid rgba(255,255,255,.07);
@@ -8422,7 +8421,6 @@ $: _groupedSelfDamageSources = (() => {
   padding: 3px 7px 3px 6px;
   position: relative;
   max-width: 100%;
-  overflow-x: auto;
 }
 
 .da-hit-wrapper {
@@ -8497,9 +8495,6 @@ $: _groupedSelfDamageSources = (() => {
   font-family: 'Courier New', monospace;
   font-variant-numeric: tabular-nums;
   letter-spacing: -.01em;
-  text-shadow: 0 0 10px color-mix(in srgb, var(--tc, #e8e4da) 50%, transparent);
-  transition: color var(--duration-fast) var(--ease-out),
-              text-shadow var(--duration-normal) var(--ease-out);
 }
 
 .da-hit-type {
@@ -8536,7 +8531,7 @@ $: _groupedSelfDamageSources = (() => {
 
 .ds-head {
   display: grid;
-  grid-template-columns: 120px 80px 20px 90px 20px 100px;
+  grid-template-columns: minmax(72px, 1.15fr) minmax(48px, .7fr) 16px minmax(58px, .8fr) 16px minmax(74px, 1fr);
   gap: 4px;
   padding: 4px 8px;
   font-size: .55rem;
@@ -8549,7 +8544,7 @@ $: _groupedSelfDamageSources = (() => {
 
 .ds-row {
   display: grid;
-  grid-template-columns: 120px 80px 20px 90px 20px 100px;
+  grid-template-columns: minmax(72px, 1.15fr) minmax(48px, .7fr) 16px minmax(58px, .8fr) 16px minmax(74px, 1fr);
   gap: 4px;
   padding: 6px 8px;
   border-radius: 6px;
@@ -8656,7 +8651,6 @@ $: _groupedSelfDamageSources = (() => {
   font-size: 1.2rem;
   font-weight: 900;
   color: #34d399;
-  text-shadow: 0 0 12px rgba(52,211,153,.4);
 }
 
 .ds-warn {
@@ -9048,7 +9042,7 @@ $: _groupedSelfDamageSources = (() => {
   .da-summon-chip { flex-wrap: wrap; width: 100%; row-gap: 4px; }
 }
 .da-hit-chunk--rage .da-hit-num {
-  text-shadow: 0 0 14px color-mix(in srgb, var(--tc) 80%, #f70201);
+  --tc: #f70201;
 }
 .da-rage-badge {
   font-size: .75rem; font-weight: 800;
@@ -9061,20 +9055,7 @@ $: _groupedSelfDamageSources = (() => {
   position: relative;
   border: 1.5px solid rgba(250, 204, 21, 0.75) !important;
   background: linear-gradient(135deg, rgba(20, 20, 20, 0.85) 0%, rgba(250, 204, 21, 0.12) 100%) !important;
-  box-shadow: 0 0 12px rgba(250, 204, 21, 0.35), inset 0 0 8px rgba(250, 204, 21, 0.1) !important;
   overflow: visible;
-  animation: finisherPulse 3s infinite ease-in-out;
-}
-
-@keyframes finisherPulse {
-  0%, 100% {
-    box-shadow: 0 0 10px rgba(250, 204, 21, 0.25), inset 0 0 6px rgba(250, 204, 21, 0.05);
-    border-color: rgba(250, 204, 21, 0.6);
-  }
-  50% {
-    box-shadow: 0 0 16px rgba(250, 204, 21, 0.5), inset 0 0 12px rgba(250, 204, 21, 0.2);
-    border-color: rgba(250, 204, 21, 1);
-  }
 }
 
 .da-finisher-crown {
@@ -9083,7 +9064,6 @@ $: _groupedSelfDamageSources = (() => {
   right: -4px;
   font-size: 0.9rem;
   color: #facc15;
-  text-shadow: 0 0 6px #facc15, 0 0 2px #000;
   z-index: 10;
   transform: rotate(15deg);
   font-weight: bold;
@@ -9093,7 +9073,6 @@ $: _groupedSelfDamageSources = (() => {
   position: relative;
   border: 1px solid #facc15 !important;
   background: rgba(250, 204, 21, 0.1) !important;
-  box-shadow: 0 0 8px rgba(250, 204, 21, 0.2);
 }
 
 .da-finisher-badge-mini {
@@ -9182,8 +9161,7 @@ $: _groupedSelfDamageSources = (() => {
 
 .da-pbd-card {
   background: var(--surface2, #1a1d1b);
-  border: 1px solid rgba(167,139,250,.14);
-  border-left: 3px solid rgba(167,139,250,.18);
+  border: 1px solid rgba(167,139,250,.18);
   border-radius: 8px;
   padding: 11px 13px;
   display: flex;
@@ -9215,7 +9193,6 @@ $: _groupedSelfDamageSources = (() => {
 .da-cd-target--on {
   background: rgba(56,189,248,.2);
   border-color: rgba(56,189,248,.7);
-  box-shadow: 0 0 8px rgba(56,189,248,.25);
 }
 .da-cd-target--perk {
   flex: 0 0 auto;
@@ -9253,7 +9230,7 @@ $: _groupedSelfDamageSources = (() => {
   font-size: .74rem;
   font-weight: 700;
   cursor: pointer;
-  transition: background var(--duration-fast, .15s) var(--ease-out, ease-out), border-color var(--duration-fast, .15s) var(--ease-out, ease-out), box-shadow var(--duration-fast, .15s) var(--ease-out, ease-out), transform var(--duration-fast, .15s) var(--ease-out, ease-out);
+  transition: background var(--duration-fast, .15s) var(--ease-out, ease-out), border-color var(--duration-fast, .15s) var(--ease-out, ease-out), transform var(--duration-fast, .15s) var(--ease-out, ease-out);
 }
 .da-cd-hit-chip:hover {
   border-color: rgba(56,189,248,.7);
@@ -9264,7 +9241,6 @@ $: _groupedSelfDamageSources = (() => {
   background: linear-gradient(180deg, rgba(56,189,248,.38), rgba(42,73,255,.38));
   border-color: rgba(56,189,248,.95);
   color: #fff;
-  box-shadow: 0 0 12px rgba(56,189,248,.45), 0 1px 4px rgba(0,0,0,.35);
 }
 .da-cd-hit-chip--last:not(.da-cd-hit-chip--on) {
   border-color: rgba(250,204,21,.4);
@@ -9293,11 +9269,11 @@ $: _groupedSelfDamageSources = (() => {
   border-radius: 50%;
   background: #38bdf8;
   border: 2px solid rgba(0,0,0,.45);
-  box-shadow: 0 0 8px rgba(56,189,248,.45);
+  box-shadow: 0 1px 3px rgba(0,0,0,.35);
   cursor: grab;
 }
 .da-cd-hit-slider::-webkit-slider-thumb:hover {
-  box-shadow: 0 0 12px rgba(56,189,248,.6);
+  box-shadow: 0 1px 4px rgba(0,0,0,.45);
 }
 .da-cd-hit-slider::-moz-range-thumb {
   width: 16px;
@@ -9305,7 +9281,7 @@ $: _groupedSelfDamageSources = (() => {
   border-radius: 50%;
   background: #38bdf8;
   border: 2px solid rgba(0,0,0,.45);
-  box-shadow: 0 0 8px rgba(56,189,248,.45);
+  box-shadow: 0 1px 3px rgba(0,0,0,.35);
   cursor: grab;
 }
 .da-cd-hit-val {
@@ -9315,7 +9291,6 @@ $: _groupedSelfDamageSources = (() => {
   font-size: .85rem;
   font-weight: 900;
   color: #38bdf8;
-  text-shadow: 0 0 8px rgba(56,189,248,.35);
   flex-shrink: 0;
 }
 .da-cd-hit-max {
@@ -9436,6 +9411,9 @@ $: _groupedSelfDamageSources = (() => {
 
 .da-reroll-btn {
   align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   font-size: .62rem;
   font-weight: 700;
   font-family: 'Courier New', monospace;
@@ -9453,6 +9431,68 @@ $: _groupedSelfDamageSources = (() => {
 }
 .da-reroll-btn:active {
   transform: translateY(1px);
+}
+
+/* Wild Bolt / Solar Light info box — quiet sub-panel with mini icon controls */
+.da-wild-bolt-box {
+  background: var(--surface2, #1a1d1b);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.da-wb-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.da-wb-header {
+  font-size: .6rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  color: var(--ink-muted, #8a8d85);
+}
+.da-wb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  font-size: .58rem;
+  color: var(--ink-muted, #8a8d85);
+  background: var(--surface3, #212420);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 5px;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: background .12s ease, border-color .12s ease, color .12s ease;
+}
+.da-wb-btn:hover {
+  color: var(--ink, #e8e4da);
+  border-color: rgba(255,255,255,.28);
+  background: rgba(255,255,255,.06);
+}
+.da-wb-btn:active {
+  transform: translateY(1px);
+}
+.da-wb-line {
+  font-size: .66rem;
+  color: var(--ink-muted, #8a8d85);
+  opacity: .85;
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.da-wb-elem {
+  font-weight: 800;
+  font-family: 'Courier New', monospace;
 }
 
 .da-pbd-dmg-row {
@@ -9488,7 +9528,7 @@ $: _groupedSelfDamageSources = (() => {
 
 
 
-@media (max-width: 700px) {
+@media (max-width: 980px) {
   .da-wbd-outer {
     flex-direction: column;
   }
@@ -9538,7 +9578,6 @@ $: _groupedSelfDamageSources = (() => {
   border-radius: 50%;
   background: #4ade80;
   flex-shrink: 0;
-  box-shadow: 0 0 5px rgba(74,222,128,.5);
 }
 .ds-heal-source {
   font-size: .75rem;
@@ -9552,7 +9591,6 @@ $: _groupedSelfDamageSources = (() => {
   font-size: .88rem;
   font-weight: 900;
   color: #4ade80;
-  text-shadow: 0 0 8px rgba(74,222,128,.3);
   flex-shrink: 0;
 }
 .ds-heal-cond {
@@ -9622,19 +9660,17 @@ $: _groupedSelfDamageSources = (() => {
   color: var(--ink-muted, #8a8d85);
   cursor: pointer; 
   font-family: inherit;
-  transition: all .12s;
+  transition: background-color .12s, border-color .12s, color .12s, opacity .12s;
 }
 
 .da-crit-toggle--on {
   border-color: rgba(226,178,3,.6);
   background: rgba(226,178,3,.12);
   color: #e2b203;
-  box-shadow: 0 0 8px rgba(226,178,3,.2);
 }
 
 .da-hit-num--crit {
   filter: brightness(1.5) saturate(2) !important;
-  text-shadow: 0 0 16px color-mix(in srgb, var(--tc) 90%, white) !important;
 }
 .da-hit-num--gcrit-base {
   font-size: .65rem;
@@ -9643,7 +9679,6 @@ $: _groupedSelfDamageSources = (() => {
 .da-hit-num--gcrit {
   color: var(--tc);
   filter: brightness(1.4) saturate(1.9);
-  text-shadow: 0 0 14px var(--tc);
 }
 .da-hit-type--gcrit {
   color: var(--tc);
@@ -9869,7 +9904,7 @@ $: _groupedSelfDamageSources = (() => {
   background: transparent;
   color: var(--ink-muted, #8a8d85);
   cursor: pointer;
-  transition: all .15s ease;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease, transform .15s ease, opacity .15s ease;
   opacity: 0.5;
 }
 .da-selfdmg-tab:hover { opacity: 0.8; }
@@ -9941,36 +9976,31 @@ $: _groupedSelfDamageSources = (() => {
   color: var(--ink-muted, #8a8d85);
   cursor: pointer;
   font-family: inherit;
-  transition: all .12s;
+  transition: background-color .12s, border-color .12s, color .12s, opacity .12s;
 }
 .ap-toggle-btn--on {
   border-color: rgba(248,113,113,.55);
   background: rgba(248,113,113,.1);
   color: #f87171;
-  box-shadow: 0 0 8px rgba(248,113,113,.18);
 }
 .da-env-toggle {
   font-weight: 800;
 }
 .da-env-toggle--sun {
   border-color: rgba(251,191,36,.55);
-  background: linear-gradient(160deg, rgba(251,191,36,.18), rgba(251,146,60,.08));
+  background: rgba(251,191,36,.12);
   color: #fbbf24;
-  text-shadow: 0 0 8px rgba(251,191,36,.5);
-  box-shadow: 0 0 10px rgba(251,191,36,.3);
 }
 .da-env-toggle--sun:hover {
-  box-shadow: 0 0 14px rgba(251,191,36,.45);
+  background: rgba(251,191,36,.2);
 }
 .da-env-toggle--dark {
   border-color: rgba(129,140,248,.5);
-  background: linear-gradient(160deg, rgba(30,27,75,.55), rgba(15,14,38,.5));
+  background: rgba(30,27,75,.55);
   color: #a5b4fc;
-  text-shadow: 0 0 8px rgba(129,140,248,.5);
-  box-shadow: 0 0 10px rgba(67,56,202,.35) inset, 0 0 8px rgba(129,140,248,.25);
 }
 .da-env-toggle--dark:hover {
-  box-shadow: 0 0 14px rgba(67,56,202,.5) inset, 0 0 12px rgba(129,140,248,.35);
+  background: rgba(49,46,129,.7);
 }
 .da-section--env .da-env-rows {
   gap: 4px;
@@ -10012,7 +10042,7 @@ $: _groupedSelfDamageSources = (() => {
   font-size: .82rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all .2s ease;
+  transition: background-color .2s ease, border-color .2s ease, color .2s ease, box-shadow .2s ease, transform .2s ease, opacity .2s ease;
   white-space: nowrap;
 }
 .da-env-btn:disabled {
@@ -10021,25 +10051,19 @@ $: _groupedSelfDamageSources = (() => {
 }
 .da-env-btn--sun {
   border-color: rgba(251,191,36,.6);
-  background: linear-gradient(160deg, rgba(251,191,36,.2), rgba(251,146,60,.1));
+  background: rgba(251,191,36,.12);
   color: #fbbf24;
-  text-shadow: 0 0 10px rgba(251,191,36,.5);
-  box-shadow: 0 0 12px rgba(251,191,36,.3);
 }
 .da-env-btn--sun:not(:disabled):hover {
-  box-shadow: 0 0 16px rgba(251,191,36,.45);
-  transform: scale(1.03);
+  background: rgba(251,191,36,.2);
 }
 .da-env-btn--dark {
   border-color: rgba(129,140,248,.55);
-  background: linear-gradient(160deg, rgba(30,27,75,.6), rgba(15,14,38,.55));
+  background: rgba(30,27,75,.6);
   color: #a5b4fc;
-  text-shadow: 0 0 10px rgba(129,140,248,.5);
-  box-shadow: 0 0 12px rgba(67,56,202,.35) inset, 0 0 10px rgba(129,140,248,.25);
 }
 .da-env-btn--dark:not(:disabled):hover {
-  box-shadow: 0 0 16px rgba(67,56,202,.5) inset, 0 0 14px rgba(129,140,248,.35);
-  transform: scale(1.03);
+  background: rgba(49,46,129,.6);
 }
 .da-env-btn--locked {
   border-style: dashed;
@@ -10054,7 +10078,7 @@ $: _groupedSelfDamageSources = (() => {
 
 .da-section--selfdmg {
   border-color: rgba(248,113,113,.18);
-  background: linear-gradient(160deg, var(--surface, #141715) 60%, rgba(248,113,113,.03) 100%);
+  background: var(--surface, #141715);
 }
 .da-selfdmg-row {
   display: flex;
@@ -10225,9 +10249,9 @@ $: _groupedSelfDamageSources = (() => {
   border-radius: 50%;
   background: radial-gradient(circle at 35% 30%, #fff, var(--tc, #a78bfa) 50%);
   border: 1px solid rgba(0,0,0,.55);
-  box-shadow: 0 0 8px var(--tc, #a78bfa), 0 1px 3px rgba(0,0,0,.5);
+  box-shadow: 0 1px 3px rgba(0,0,0,.5);
   cursor: grab;
-  transition: transform .12s, box-shadow .15s;
+  transition: transform .12s;
 }
 .da-sb-slider::-webkit-slider-thumb:hover {
   transform: scale(1.12);
@@ -10235,10 +10259,9 @@ $: _groupedSelfDamageSources = (() => {
 .da-sb-slider::-webkit-slider-thumb:active {
   cursor: grabbing;
   transform: scale(1.3);
-  box-shadow: 0 0 15px var(--tc, #a78bfa), 0 1px 3px rgba(0,0,0,.5);
 }
 .da-sb-slider:focus-visible::-webkit-slider-thumb {
-  box-shadow: 0 0 0 3px rgba(255,255,255,.22), 0 0 12px var(--tc, #a78bfa);
+  box-shadow: 0 0 0 3px rgba(255,255,255,.22);
 }
 .da-sb-slider::-moz-range-track {
   height: 6px;
@@ -10250,7 +10273,6 @@ $: _groupedSelfDamageSources = (() => {
   height: 6px;
   border-radius: 999px;
   background: var(--tc, #a78bfa);
-  box-shadow: 0 0 6px var(--tc, #a78bfa);
 }
 .da-sb-slider::-moz-range-thumb {
   width: 15px;
@@ -10258,7 +10280,7 @@ $: _groupedSelfDamageSources = (() => {
   border-radius: 50%;
   background: radial-gradient(circle at 35% 30%, #fff, var(--tc, #a78bfa) 50%);
   border: 1px solid rgba(0,0,0,.55);
-  box-shadow: 0 0 8px var(--tc, #a78bfa), 0 1px 3px rgba(0,0,0,.5);
+  box-shadow: 0 1px 3px rgba(0,0,0,.5);
   cursor: grab;
 }
 .da-sb-slider::-moz-range-thumb:hover {
@@ -10269,7 +10291,7 @@ $: _groupedSelfDamageSources = (() => {
   transform: scale(1.3);
 }
 .da-sb-slider:focus-visible::-moz-range-thumb {
-  box-shadow: 0 0 0 3px rgba(255,255,255,.22), 0 0 12px var(--tc, #a78bfa);
+  box-shadow: 0 0 0 3px rgba(255,255,255,.22);
 }
 .da-sb-slider-val {
   font-size: .72rem;
@@ -10280,7 +10302,6 @@ $: _groupedSelfDamageSources = (() => {
   border-radius: 999px;
   background: color-mix(in srgb, currentColor 14%, transparent);
   border: 1px solid color-mix(in srgb, currentColor 32%, transparent);
-  box-shadow: 0 0 8px color-mix(in srgb, currentColor 18%, transparent), inset 0 1px 0 rgba(255,255,255,.08);
   min-width: 32px;
   max-width: 100%;
   text-align: center;
@@ -10362,7 +10383,6 @@ $: _groupedSelfDamageSources = (() => {
   background: color-mix(in srgb, #a78bfa 24%, transparent);
   border-color: color-mix(in srgb, #a78bfa 60%, transparent);
   color: #fff;
-  box-shadow: 0 0 10px color-mix(in srgb, #a78bfa 32%, transparent), inset 0 1px 0 rgba(255,255,255,.12);
 }
 .da-sb-seg-btn:focus-visible {
   outline: none;

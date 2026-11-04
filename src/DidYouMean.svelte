@@ -82,7 +82,7 @@
     color: var(--accent3);
     cursor: pointer;
     font-family: var(--font-body);
-    transition: all .12s;
+    transition: background-color .12s, border-color .12s, color .12s, box-shadow .12s, transform .12s, opacity .12s;
   }
   .dym-chip:hover {
     background: rgba(167,139,250,.22);

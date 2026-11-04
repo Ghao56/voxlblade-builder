@@ -222,12 +222,10 @@
     text-align: center;
     line-height: 1;
     letter-spacing: .04em;
-    transition: color .12s, text-shadow .12s;
-    text-shadow: 0 0 8px rgba(74,222,128,0.6);
+    transition: color .12s;
   }
   .lb-lv-num:hover {
     color: #86efac;
-    text-shadow: 0 0 12px rgba(74,222,128,0.9);
   }
   .lb-lv-input {
     font-family: 'Courier New', monospace;

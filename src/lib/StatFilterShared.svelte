@@ -66,7 +66,7 @@
   .chip {
     display:inline-flex;align-items:center;gap:3px;font-size:.62rem;font-weight:600;
     padding:2px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.08);
-    background:rgba(255,255,255,.03);color:#8a8d85;cursor:pointer;transition:all .12s;
+    background:rgba(255,255,255,.03);color:#8a8d85;cursor:pointer;transition: background-color .12s, border-color .12s, color .12s, box-shadow .12s, transform .12s, opacity .12s;
     font-family:inherit;line-height:1.5;user-select:none;
   }
   .chip:hover {

@@ -63,11 +63,13 @@
     box-shadow:
       0 4px 20px rgba(0,0,0,0.35),
       0 0 0 1px rgba(255,255,255,0.03);
-    transition: all var(--transition-fast);
+    transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast), opacity var(--transition-fast);
   }
 
-  .toast:hover {
-    transform: translateX(-4px);
+  @media (hover: hover) and (pointer: fine) {
+    .toast:hover {
+      transform: translateX(-4px);
+    }
   }
 
   .toast-icon {
@@ -94,6 +96,7 @@
     transition: opacity var(--transition-fast);
   }
   .toast-close:hover { opacity: 1; }
+  .toast-close:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
   @media (max-width: 640px) {
     .toast-container { left: 16px; right: 16px; max-width: unset; }

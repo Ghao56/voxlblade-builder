@@ -77,22 +77,7 @@
   }
   .header-bg {
     position: absolute; inset: 0;
-    background: linear-gradient(135deg, #0d100e 0%, #141815 50%, #0f1310 100%);
-  }
-  .header-bg::before {
-    content: "";
-    position: absolute; inset: 0;
-    background:
-      radial-gradient(ellipse at 85% -10%, rgba(74,222,128,0.08) 0%, transparent 55%),
-      radial-gradient(ellipse at 15% 110%, rgba(245,158,11,0.05) 0%, transparent 45%),
-      radial-gradient(circle at 50% 50%, rgba(167,139,250,0.03) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .header-bg::after {
-    content: "";
-    position: absolute; inset: 0;
-    background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 50%);
-    pointer-events: none;
+    background: var(--surface2);
   }
   .header-content {
     position: relative;
@@ -112,14 +97,12 @@
   }
   .accent {
     color: var(--accent);
-    text-shadow: 0 0 30px rgba(74,222,128,0.2);
   }
   .header-hint {
     font-size: .72rem;
     color: var(--ink-muted);
-    letter-spacing: .1em;
+    letter-spacing: .06em;
     text-transform: uppercase;
-    opacity: .5;
   }
 
   .app-tabs {
@@ -141,14 +124,12 @@
     z-index: 0;
     pointer-events: none;
     border: 1px solid rgba(74,222,128,0.22);
-    background: linear-gradient(180deg, rgba(74,222,128,0.12), rgba(74,222,128,0.05));
-    box-shadow: 0 0 16px rgba(74,222,128,0.12), inset 0 1px 0 rgba(255,255,255,0.04);
-    transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1), width 0.42s cubic-bezier(0.22, 1, 0.36, 1), background 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+    background: rgba(74,222,128,0.08);
+    transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1), width 0.42s cubic-bezier(0.22, 1, 0.36, 1), background 0.22s ease, border-color 0.22s ease;
   }
   .tab-bubble--analyze {
     border-color: rgba(226,178,3,0.28);
-    background: linear-gradient(180deg, rgba(226,178,3,0.12), rgba(226,178,3,0.05));
-    box-shadow: 0 0 16px rgba(226,178,3,0.1), inset 0 1px 0 rgba(255,255,255,0.04);
+    background: rgba(226,178,3,0.08);
   }
   .app-tab {
     position: relative;

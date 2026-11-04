@@ -140,7 +140,7 @@
     flex:1; display:flex; flex-direction:column; align-items:center; gap:2px;
     padding:6px 4px; border-radius:7px;
     border:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.03);
-    color:#6b7066; font-family:inherit; cursor:pointer; transition:all .18s;
+    color:#6b7066; font-family:inherit; cursor:pointer; transition: background-color .18s, border-color .18s, color .18s, box-shadow .18s, transform .18s, opacity .18s;
   }
   .pf-btn:hover { border-color:rgba(255,255,255,0.15); color:#a0a89a; }
   .pf-btn--active {

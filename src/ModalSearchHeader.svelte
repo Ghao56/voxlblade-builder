@@ -176,7 +176,7 @@
     color: var(--ink-muted);
     cursor: pointer;
     font-family: var(--font-body);
-    transition: all var(--transition-fast);
+    transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast), opacity var(--transition-fast);
 }
 .armor-sort-btn:hover { color: var(--ink); border-color: var(--border-hover); }
 .armor-sort-btn--active {

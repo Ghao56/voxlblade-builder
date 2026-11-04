@@ -1091,7 +1091,7 @@
     display:flex;align-items:center;gap:7px;padding:8px 14px;
     background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.2);
     border-radius:8px;color:var(--accent);font-family:var(--font-body);
-    font-size:.78rem;font-weight:700;cursor:pointer;transition:all .15s;
+    font-size:.78rem;font-weight:700;cursor:pointer;transition: background-color .15s, border-color .15s, color .15s, box-shadow .15s, transform .15s, opacity .15s;
   }
   .saves-toggle:hover{background:rgba(74,222,128,.14);border-color:rgba(74,222,128,.4);}
   .arr{font-size:.6rem;opacity:.5;transition:transform .2s;}
@@ -1188,7 +1188,7 @@
   .sort-btn{
     padding:4px 6px;border-radius:5px;border:1px solid var(--border);background:var(--surface2);
     color:var(--ink-muted);font-size:.6rem;font-weight:700;cursor:pointer;
-    transition:all .15s;line-height:1;
+    transition: background-color .15s, border-color .15s, color .15s, box-shadow .15s, transform .15s, opacity .15s;line-height:1;
   }
   .sort-btn:hover{background:var(--surface3);color:var(--ink);}
   .sort-btn.active{background:rgba(74,222,128,.12);border-color:rgba(74,222,128,.3);color:var(--accent);}
@@ -1208,7 +1208,7 @@
     width:100%;padding:8px 12px;border-radius:8px;
     background:transparent;border:1px dashed var(--border);
     color:var(--ink-muted);font-family:var(--font-body);font-size:.75rem;font-weight:600;
-    cursor:pointer;transition:all var(--duration-fast) var(--ease-out);
+    cursor:pointer;transition: background-color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out), opacity var(--duration-fast) var(--ease-out);
   }
   .add-slot-btn:hover{background:rgba(74,222,128,.08);border-color:rgba(74,222,128,.3);color:var(--accent);}
   .add-slot-btn i{font-size:.7rem;}
@@ -1260,7 +1260,7 @@
   .btn{
     font-size:.68rem;font-weight:700;font-family:var(--font-body);
     padding:4px 9px;border-radius:6px;cursor:pointer;
-    transition:all .15s;white-space:nowrap;border:1px solid transparent;
+    transition: background-color .15s, border-color .15s, color .15s, box-shadow .15s, transform .15s, opacity .15s;white-space:nowrap;border:1px solid transparent;
   }
 
 

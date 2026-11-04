@@ -1869,7 +1869,7 @@ note?: string
 
   <div class="bdc-cooldown-warning">
     <i class="fa fa-exclamation-triangle"></i>
-    Calculated damage does <strong>NOT RESPECT</strong> the <strong>COOLDOWN</strong> or <strong>PROC CHANCES</strong> of certain effects, and <strong>MAY <span style="color: #ff0000;">NOT</span> BE ACCURATE</strong>
+    <span>Calculated damage <strong>ignores cooldowns</strong> and <strong>proc chances</strong> of some effects — treat values as approximate.</span>
   </div>
 
   <div class="bdc-layout">
@@ -2263,13 +2263,16 @@ note?: string
                     <span class="bdc-hit-grp-label">{grp.label}</span>
                   {/if}
                     {#if gTotal > 0}
-                    <span class="bdc-grp-total" class:bdc-grp-total--crit={showCritValues}>
-                      {#if showCritValues}<CritIcon size={10}/>{/if}
-                      {fmt1(gTotal)}
-                    </span>
+                    <div class="bdc-grp-head-numbers">
+                      <span class="bdc-grp-total" class:bdc-grp-total--crit={showCritValues}>
+                        {#if showCritValues}<CritIcon size={10}/>{/if}
+                        {fmt1(gTotal)}
+                      </span>
+                    </div>
                     {/if}
                     {#if gHealTotal > 0}
                       {@const gHealCrit = grp.list.some(h => h.types.some(t => t.isHeal && isCritShown(t)))}
+                    <div class="bdc-grp-head-numbers">
                       <span class="bdc-grp-heal-total" class:bdc-grp-heal-total--crit={gHealCrit}>
                         {#if gHealCrit}<CritIcon size={10}/>{/if}
                         {fmt1(gHealTotal)} Heal
@@ -2285,6 +2288,7 @@ note?: string
                             : 'Heal crits OFF — heals are shown without any crit'}
                         >{healCritEnabled ? 'HEAL CRIT' : 'NO CRIT'}</button>
                       {/if}
+                    </div>
                     {/if}
                 </div>
                 <div class="bdc-hit-list-rows">
@@ -2862,26 +2866,26 @@ note?: string
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 6px;
-  background: rgba(245, 158, 11, 0.14);
-  border: 2px solid rgba(245, 158, 11, 0.45);
-  border-radius: 8px;
-  padding: 12px 16px;
+  gap: 8px;
+  background: rgba(245, 158, 11, 0.07);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: var(--radius-sm, 5px);
+  padding: 10px 14px;
   margin-bottom: 16px;
-  color: #fbbf24;
-  font-size: 0.9rem;
-  font-weight: 800;
+  color: var(--ink, #e8e4da);
+  font-size: 0.85rem;
+  font-weight: 400;
   line-height: 1.5;
   word-break: break-word;
 }
 .bdc-cooldown-warning i.fa {
-  font-size: 1.3rem;
+  font-size: .9rem;
   flex-shrink: 0;
   color: #f59e0b;
 }
 .bdc-cooldown-warning strong {
-  color: #fde68a;
-  font-size: 0.95rem;
+  color: #fbbf24;
+  font-weight: 600;
 }
 
 .bdc-layout {
@@ -3015,13 +3019,12 @@ note?: string
   white-space: nowrap;
   cursor: pointer;
   font-family: inherit;
-  transition: opacity .15s, filter .15s, box-shadow .15s;
+  transition: opacity .15s, filter .15s, border-color .15s;
   line-height: 1;
 }
 .bdc-debuff-pill--burn-cursed {
   background: linear-gradient(120deg, rgba(249,115,22,.22), rgba(232,121,249,.22));
   border-color: color-mix(in srgb, #e879f9 50%, #f97316);
-  box-shadow: 0 0 10px color-mix(in srgb, #e879f9 28%, transparent);
 }
 .bdc-debuff-pill--burn-cursed .bdc-dp-abbr,
 .bdc-debuff-pill--burn-cursed .bdc-dp-val {
@@ -3031,7 +3034,6 @@ note?: string
   color: transparent;
 }
 .bdc-debuff-pill:hover {
-  box-shadow: 0 0 8px color-mix(in srgb, var(--dc) 40%, transparent);
   border-color: color-mix(in srgb, var(--dc) 70%, transparent);
 }
 .bdc-debuff-pill--off {
@@ -3041,7 +3043,6 @@ note?: string
 }
 .bdc-debuff-pill--off:hover {
   opacity: 0.5;
-  box-shadow: none;
 }
 .bdc-dp-abbr {
   line-height: 1;
@@ -3112,7 +3113,7 @@ note?: string
   color: var(--pc, #8a8d85);
   cursor: pointer;
   font-family: inherit;
-  transition: all .15s;
+  transition: background-color .15s, border-color .15s, color .15s, box-shadow .15s, transform .15s, opacity .15s;
   white-space: nowrap;
 }
 .bdc-preset-chip:hover {
@@ -3221,13 +3222,12 @@ note?: string
   color: var(--ink-muted, #8a8d85);
   cursor: pointer;
   font-family: inherit;
-  transition: all .12s;
+  transition: background-color .12s, border-color .12s, color .12s, opacity .12s;
 }
 .bdc-crit-toggle--on {
   border-color: rgba(226,178,3,.6);
   background: rgba(226,178,3,.12);
   color: #e2b203;
-  box-shadow: 0 0 8px rgba(226,178,3,.2);
 }
 .bdc-mount-toggle {
   display: inline-flex;
@@ -3242,13 +3242,12 @@ note?: string
   color: var(--ink-muted, #8a8d85);
   cursor: pointer;
   font-family: inherit;
-  transition: all .12s;
+  transition: background-color .12s, border-color .12s, color .12s, opacity .12s;
 }
 .bdc-mount-toggle--on {
   border-color: rgba(56,189,248,.6);
   background: rgba(56,189,248,.12);
   color: #38bdf8;
-  box-shadow: 0 0 8px rgba(56,189,248,.2);
 }
 
 @media (max-width: 600px) {
@@ -3261,6 +3260,30 @@ note?: string
   .bdc-dummy-wrap { flex-shrink: 0; }
   .bdc-def-grid { flex: 1; }
   .bdc-hit-grp-label { font-size: .65rem; }
+  /* Narrow screens: chips flow freely, the sums get their own right-aligned row */
+  .bdc-hit-row { padding: 7px 10px; }
+  .bdc-hit-row-end {
+    flex-basis: 100%;
+    margin-left: 0;
+    justify-content: flex-end;
+    padding-left: 0;
+    padding-top: 6px;
+    border-top: 1px dashed rgba(255,255,255,.08);
+  }
+  .bdc-hit-type-chunk { padding: 3px 8px; }
+  .bdc-hit-type-val { font-size: 1rem; }
+}
+
+/* Chips keep their natural width and wrap to the next line instead of squashing */
+.bdc-hit-type-chunk { flex-shrink: 0; }
+.bdc-hit-plus { flex-shrink: 0; }
+
+@media (max-width: 420px) {
+  .bdc-hit-row { padding: 6px 8px; }
+  .bdc-hit-type-chunk { padding: 2px 7px; }
+  .bdc-hit-type-val { font-size: .92rem; }
+  .bdc-hit-type-label { font-size: .48rem; }
+  .bdc-grp-total, .bdc-grp-heal-total { font-size: 1rem; }
 }
 
 .bdc-hit-grp-label {
@@ -3286,19 +3309,37 @@ note?: string
   padding: 3px 12px;
   letter-spacing: -.01em;
   flex-shrink: 0;
-  box-shadow: 0 0 8px rgba(251,191,36,.15);
 }
 
 /* Group header with total */
 .bdc-grp-head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   padding: 0 2px 6px;
   border-bottom: 1px solid rgba(255,255,255,.06);
   margin-bottom: 2px;
   flex-wrap: wrap;
   gap: 6px;
+}
+
+.bdc-grp-head-numbers {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.bdc-grp-head-numbers + .bdc-grp-head-numbers {
+  margin-left: 0;
+}
+
+.bdc-grp-head-numbers {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .bdc-grp-total {
@@ -3309,14 +3350,13 @@ note?: string
   font-size: 1.1rem;
   font-weight: 900;
   color: var(--ink, #e8e4da);
-  opacity: .7;
+  opacity: .85;
   letter-spacing: -.01em;
 }
 
 .bdc-grp-total--crit {
   color: #e2b203;
   opacity: 1;
-  text-shadow: 0 0 10px rgba(226,178,3,.4);
 }
 
 .bdc-grp-heal-total {
@@ -3335,7 +3375,6 @@ note?: string
 .bdc-grp-heal-total--crit {
   color: #e2b203;
   opacity: 1;
-  text-shadow: 0 0 10px rgba(226,178,3,.4);
 }
 
 .bdc-heal-crit-toggle {
@@ -3392,7 +3431,6 @@ note?: string
   color: #e2b203;
   background: rgba(226,178,3,.12);
   border-color: rgba(226,178,3,.3);
-  text-shadow: 0 0 10px rgba(226,178,3,.35);
 }
 
 .bdc-hit-type-heal-sum {
@@ -3477,7 +3515,7 @@ note?: string
 }
 .bdc-hit-row--finisher {
   border-color: rgba(250,204,21,.4);
-  background: linear-gradient(135deg, rgba(20,20,20,.6), rgba(250,204,21,.07));
+  background: rgba(250,204,21,.05);
 }
 .bdc-hit-row-label {
   font-size: .72rem;
@@ -3487,10 +3525,12 @@ note?: string
 }
 .bdc-hit-row-types {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   flex-wrap: wrap;
   gap: 4px;
-  flex: 1;
+  /* Basis 260px: if the chips row can't co-exist with the sums block,
+     the sums wrap to their own right-aligned line instead of crushing the chips */
+  flex: 1 1 260px;
   min-width: 0;
 }
 .bdc-hit-row-end {
@@ -3509,24 +3549,20 @@ note?: string
   border-radius: 11px;
   background: color-mix(in srgb, var(--tc) 12%, transparent);
   border: 1px solid color-mix(in srgb, var(--tc) 30%, transparent);
-  transition: box-shadow .2s, border-color .2s;
+  transition: border-color .2s;
   position: relative;
 }
 .bdc-hit-type-chunk:hover {
-  box-shadow: 0 0 18px color-mix(in srgb, var(--tc) 35%, transparent);
   border-color: color-mix(in srgb, var(--tc) 50%, transparent);
 }
 .bdc-hit-type-chunk--rage {
-  box-shadow: 0 0 8px color-mix(in srgb, var(--tc) 50%, #f70201);
+  border-color: color-mix(in srgb, var(--tc) 60%, #f70201);
 }
 .bdc-hit-type-val {
   font-family: 'Courier New', monospace;
   font-size: 1.15rem;
   font-weight: 900;
   color: var(--tc, #e8e4da);
-  text-shadow:
-    0 0 14px color-mix(in srgb, var(--tc) 65%, transparent),
-    0 0 6px  color-mix(in srgb, var(--tc) 35%, transparent);
   letter-spacing: -.02em;
   line-height: 1;
 }
@@ -3542,6 +3578,7 @@ note?: string
   font-size: .6rem;
   color: var(--ink-muted, #8a8d85);
   opacity: .35;
+  align-self: center;
 }
 
 .bdc-hit-type-top {
@@ -3660,13 +3697,11 @@ note?: string
 
 .bdc-hit-type-chunk--crit .bdc-hit-type-val {
   font-weight: 900;
-  text-shadow: 0 0 4px rgba(216, 75, 85, 0.4);
   filter: hue-rotate(-15deg) saturate(1.8) brightness(1.2);
 }
 
 .bdc-hit-type-chunk--crit {
   border-color: color-mix(in srgb, var(--tc) 50%, #d84b55) !important;
-  box-shadow: inset 0 0 4px color-mix(in srgb, var(--tc) 20%, #ff9a42);
 }
 
 @keyframes bdc-pop {
@@ -3674,7 +3709,7 @@ note?: string
   100% { transform: scale(1); opacity: 1; }
 }
 .bdc-hit-type-chunk--weaponboost {
-  box-shadow: 0 0 8px color-mix(in srgb, var(--tc) 50%, #fbbf24);
+  border-color: color-mix(in srgb, var(--tc) 55%, #fbbf24);
 }
 :global(.bdc-hit-type-chunk--flip) .bdc-hit-type-formula {
   top: auto;
@@ -3687,7 +3722,6 @@ note?: string
 }
 .bdc-hit-type-chunk--heal {
   border-color: rgba(74,222,128,.35) !important;
-  box-shadow: inset 0 0 6px rgba(74,222,128,.15);
 }
 .bdc-cloak-sway {
   transform-box: fill-box;

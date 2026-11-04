@@ -237,7 +237,7 @@
     align-items: center;
     gap: 3px;
     font-family: inherit;
-    transition: all var(--transition-fast);
+    transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast), opacity var(--transition-fast);
   }
   .tf-sum-chip:hover {
     background: color-mix(in srgb, var(--c) 20%, rgba(255,255,255,0.04));
@@ -259,7 +259,7 @@
     cursor: pointer;
     font-family: inherit;
     border-radius: var(--radius-xs);
-    transition: all var(--transition-fast);
+    transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast), opacity var(--transition-fast);
   }
   .tf-clear-btn:hover { opacity: 1; background: rgba(248,113,113,0.06); }
 
@@ -305,7 +305,7 @@
     background: var(--surface3);
     color: var(--ink-muted);
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast), opacity var(--transition-fast);
     font-family: inherit;
     line-height: 1.5;
     user-select: none;

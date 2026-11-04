@@ -13,7 +13,7 @@
 <style>
   .ds-row {
     display: grid;
-    grid-template-columns: 120px 80px 20px 90px 20px 100px;
+    grid-template-columns: minmax(72px, 1.15fr) minmax(48px, .7fr) 16px minmax(58px, .8fr) 16px minmax(74px, 1fr);
     gap: 4px;
     padding: 6px 8px;
     border-radius: 6px;

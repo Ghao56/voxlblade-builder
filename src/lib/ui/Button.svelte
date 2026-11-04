@@ -51,12 +51,22 @@
     letter-spacing: 0.02em;
     cursor: pointer;
     white-space: nowrap;
-    transition: all var(--duration-fast) var(--ease-out);
+    transition: background-color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out), box-shadow var(--duration-fast) var(--ease-out), transform var(--duration-fast) var(--ease-out), opacity var(--duration-fast) var(--ease-out);
   }
   .ui-btn:hover {
     background: var(--surface4);
     border-color: var(--border-hover);
     color: var(--ink);
+  }
+  .ui-btn:active {
+    transform: scale(0.97);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ui-btn:active { transform: none; }
+  }
+  .ui-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
   }
   .ui-btn:disabled {
     opacity: 0.4;

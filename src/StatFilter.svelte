@@ -278,7 +278,7 @@
     background: rgba(255,255,255,.03);
     color: var(--ink-muted, #8a8d85);
     cursor: pointer;
-    transition: all .12s;
+    transition: background-color .12s, border-color .12s, color .12s, box-shadow .12s, transform .12s, opacity .12s;
     font-family: inherit;
   }
   .sf-tab:hover { color: var(--ink, #e8e4da); border-color: rgba(255,255,255,.15); }
@@ -315,7 +315,7 @@
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: .05em;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .sf-sort-row button:hover:not(.sf-tab--active) {
@@ -329,7 +329,5 @@
     border-color: rgba(251, 146, 60, 0.4);
     color: #fb923c;
     font-weight: 700;
-    box-shadow: 0 2px 8px rgba(251, 146, 60, 0.15);
-    text-shadow: 0 0 4px rgba(251, 146, 60, 0.2);
   }
 </style>

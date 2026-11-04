@@ -712,7 +712,7 @@ $: groupedBuffs = (() => {
     letter-spacing: .08em;
     text-transform: uppercase;
     cursor: pointer;
-    transition: all .15s;
+    transition: background-color .15s, border-color .15s, color .15s, box-shadow .15s, transform .15s, opacity .15s;
     font-family: inherit;
   }
   .bl-tab:hover { color: var(--ink, #e8e4da); }
@@ -875,7 +875,6 @@ $: groupedBuffs = (() => {
     text-transform: uppercase;
     letter-spacing: .15em;
     color: var(--ink-muted, #8a8d85);
-    opacity: .4;
     font-weight: 700;
     margin-top: 2px;
   }
