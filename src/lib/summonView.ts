@@ -90,6 +90,7 @@ export interface SummonVMInput {
 const DEFENSE_FIELD_LABELS: Record<string, string> = {
   physicalDefenseBoost: 'Physical Def',
   magicDefenseBoost: 'Magic Def',
+  hexDefenseBoost: 'Hex Def',
   airDefenseBoost: 'Air Def',
   waterDefenseBoost: 'Water Def',
 }
@@ -153,6 +154,9 @@ export function buildSummonVM(input: SummonVMInput): SummonPanelVM {
   const swarmRows: SummonPanelVM['swarm'] = []
   if (def.attacks && def.attacks.length > 0) {
     for (const atk of def.attacks) {
+      // Utility attacks (Howl: no damage, only applies Shatter) are NOT stat
+      // rows — a "0 ×mult 0" row is noise. They still show in Applied Debuffs.
+      if (atk.baseDmg <= 0) continue
       const dmgType = atk.dmgType.toLowerCase()
       const perHit = Math.round(
         calcSummonDamage(atk.baseDmg, instance.currentBoostPct, instance.spawnBoostPct, level) *
@@ -169,7 +173,10 @@ export function buildSummonVM(input: SummonVMInput): SummonPanelVM {
         key: 'attack',
         label: atk.label,
         base: atk.baseDmg,
-        mult: calcSummonStat(1, Math.min(instance.currentBoostPct, instance.spawnBoostPct), level),
+        // Mult column = FULL per-hit factor so Base × Mult = Scaled exactly:
+        // scaling × buff chain × Trusty Servant dmg mult — previously Trusty
+        // was baked into Scaled but hidden from Mult (owner complaint).
+        mult: perHit / atk.baseDmg,
         scaled: perHit,
         dmgType,
         dmgColor: colorOf(atk.dmgType),
@@ -193,7 +200,8 @@ export function buildSummonVM(input: SummonVMInput): SummonPanelVM {
       key: 'attack',
       label: 'Base Attack',
       base: def.baseDmg,
-      mult: calcSummonStat(1, Math.min(instance.currentBoostPct, instance.spawnBoostPct), level),
+      // Same rule as attack rows: Mult = Base × Mult = Scaled (Full multiplier, incl. Trusty).
+      mult: perHit / def.baseDmg,
       scaled: perHit,
       dmgType,
       dmgColor: colorOf(def.dmgType),
@@ -202,10 +210,10 @@ export function buildSummonVM(input: SummonVMInput): SummonPanelVM {
   }
 
   // ③ lifetime — numbers straight off the instance (created once, static).
-  const decayPerSec = Math.round(instance.decayPerSec * 100) / 100
+  const decayPerSec = Math.round(instance.decayPerSec * 100) / 100 // % of max HP per second
   const seconds =
     instance.decayPerSec > 0 && isFinite(instance.decayPerSec)
-      ? (instance.currentHp ?? 0) / instance.decayPerSec
+      ? 100 / instance.decayPerSec // % HP/s → survival in seconds (boost divisor already inside)
       : null
 
   // affectsDamage via calcSummonBuffDmgMult itself — no perk name hardcoding.
@@ -222,7 +230,6 @@ export function buildSummonVM(input: SummonVMInput): SummonPanelVM {
   // receives player perks.
   const debuffs = (instance.debuffs ?? [])
     .map(d => ({ name: d.name, potency: d.value }))
-
   return {
     name: def.name,
     source: instance.source,

@@ -36,9 +36,9 @@
       <span
         class="slt-decay"
         title={vm.lifetime.baseDecay !== null
-          ? `Base decay ${fmtSummonNum(vm.lifetime.baseDecay)} — reduced by Summon Boost (calcSummonDecayPercent, SummonData)`
+          ? `Base decay ${fmtSummonNum(vm.lifetime.baseDecay)}% HP/s — reduced by Summon Boost (calcSummonDecayPercent, SummonData)`
           : undefined}
-      >−{fmtSummonNum(vm.lifetime.decayPerSec)}/s decay</span>
+      >−{fmtSummonNum(vm.lifetime.decayPerSec)}% HP/s</span>
     {/if}
     <span class="slt-lifetime-val" title={noDecay ? 'No decay — lives until killed' : 'Estimated time until HP runs out'}>{secondsText}</span>
   </div>

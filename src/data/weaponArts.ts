@@ -26,6 +26,7 @@ export interface WeaponArtRequirement {
   summonScaling?: number
   physicalDefense?: number
   magicBoost?: number
+  fireBoost?: number
   holyBoost?: number
   summonBoost?: number
   heatResistance?: number
@@ -335,6 +336,12 @@ export const WEAPON_ARTS: WeaponArt[] = [
     description: "Summon a skeletal woof!",
     cooldown: 20,
     requirements: { hexScaling: 0.3, summonBoost: 20 },
+  },
+  {
+    name: "Infernal Legion",
+    description: "Summon a Swarm of imps!",
+    cooldown: 10,
+    requirements: { fireBoost: 5, summonBoost: 5 },
   },
   {
     name: "Lesser Heal",

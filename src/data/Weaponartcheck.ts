@@ -28,6 +28,7 @@ const STAT_CHECKS: Array<[keyof WeaponArtRequirement, keyof Record<string, numbe
   ['physicalDefense', 'physicalDefense', 'Physical Defense ≥ +%s%'],
   ['magicBoost', 'magicBoost', 'Magic Boost ≥ +%s%'],
   ['holyBoost', 'holyBoost', 'Holy Boost ≥ +%s%'],
+  ['fireBoost', 'fireBoost', 'Fire Boost ≥ +%s%'],
   ['summonBoost', 'summonBoost', 'Summon Boost ≥ +%s%'],
   ['heatResistance', 'heatResistance', 'Heat Resistance ≥ %s%'],
   ['tenacity', 'tenacity', 'Tenacity ≥ %s'],

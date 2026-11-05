@@ -4,7 +4,9 @@
   // 2026-11: the two sliders are independent, never cross-controlling). Row
   // math removed per owner 2026-11 — damage totals shown in the Base Damage
   // chip / other panels. count === 0 → empty "not summoned". Buff toggles
-  // live in SummonBuffs. cap <= 1 → static readout instead of a slider.
+  // Buff toggles
+  // live in SummonBuffs. cap<=1 → slider (0…1) + static note; owner asked for
+  // the control to stay draggable even under Trusty Servant's 1-summon cap.
   import type { SummonPanelVM } from '../lib/summonView'
 
   export let vm: SummonPanelVM
@@ -12,7 +14,6 @@
   export let onSummonCountChange: (value: number) => void = () => {}
 
   $: empty = vm.count === 0
-  $: staticCap = vm.cap <= 1
 
   // Drag without jank: the expensive part (build.update → full engine recalc
   // in DamageAnalyzer) is debounced to one commit; thumb/readout/fill follow
@@ -47,16 +48,26 @@
 
   {#if empty}
     <div class="swe-empty">not summoned</div>
-  {/if}
-
-  {#if staticCap}
-    <div class="swe-static-row" title="Spawns {vm.spawnCount} per cast — max {vm.cap} active at once">
+  {/if}  {#if vm.cap <= 1}
+    <div class="swe-slider-row" title="Spawns {vm.spawnCount} per cast — max {vm.cap} active at once">
       <span class="swe-slider-label">Active summons</span>
-      <span class="swe-static">
-        <span class="swe-slider-val">{vm.count}</span><span class="swe-cap">/{vm.cap}</span>
-      </span>
-      <span class="swe-cap-note">Spawns {vm.spawnCount} per cast · max {vm.cap} active</span>
+      <input
+        class="swe-slider"
+        type="range"
+        min="0"
+        max={vm.cap}
+        step="1"
+        value={displayed}
+        on:input={handleInput}
+        style="--tc:#c084fc; --fill:{fillPct}%"
+        aria-label="Active summon count"
+        aria-valuemax={vm.cap}
+        aria-valuemin={0}
+        aria-valuenow={displayed}
+      />
+      <span class="swe-slider-val" style="color:#c084fc">{displayed}<span class="swe-cap">/{vm.cap}</span></span>
     </div>
+    <div class="swe-cap-note">Spawns {vm.spawnCount} per cast · max {vm.cap} active</div>
   {:else}
     <div class="swe-slider-row">
       <span class="swe-slider-label">Active summons</span>
@@ -95,7 +106,7 @@
     font-size: 13px;
     padding: 2px 0;
   }
-  .swe-slider-row, .swe-static-row {
+  .swe-slider-row {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -162,7 +173,7 @@
   .swe-slider:focus-visible::-moz-range-thumb {
     box-shadow: 0 0 0 3px rgba(255,255,255,.22), 0 0 12px var(--tc, #c084fc);
   }
-  .swe-slider-val, .swe-static {
+  .swe-slider-val {
     font-family: var(--font-mono, monospace);
     font-variant-numeric: tabular-nums;
     font-weight: var(--weight-extrabold, 800);
@@ -176,6 +187,5 @@
     font-size: 12px;
     color: var(--sum-muted, #a6a2b0);
   }
-  .swe-static-row { flex-wrap: wrap; row-gap: 2px; }
-  .swe-static { min-width: 2ch; }
+  .swe-slider-row { flex-wrap: wrap; row-gap: 2px; }
 </style>

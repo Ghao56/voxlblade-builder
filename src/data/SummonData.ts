@@ -3,6 +3,7 @@ import { MAX_LEVEL } from '../lib/constants'
 export type SummonSource =
   | 'Possession'
   | 'Spore Trooper'
+  | 'Infernal Legion'
   | 'Croakernaut Rune'
   | 'Pack Leader Rune'
   | 'Sporeling Toss Rune'
@@ -14,8 +15,11 @@ export type SummonSource =
   | 'Undead Buni Summon'
 
 const DECAY_BY_SOURCE: Record<SummonSource, number> = {
+  // Percent of MAX HP lost per second (owner table 2026-11), BEFORE the
+  // Summon-Boost divisor in calcSummonDecayPercent.
   Possession: 1.5,
   'Spore Trooper': 1,
+  'Infernal Legion': 5,
   'Croakernaut Rune': 2,
   'Pack Leader Rune': 4,
   'Sporeling Toss Rune': 2,
@@ -38,6 +42,10 @@ export interface AppliedStatus {
   name: string
   potency: number
   durationSec: number
+  /** Optional source label — lets multiple statuses of the same debuff name
+   *  (e.g. Winter Woof Howl Shatter vs a summon attack variant) stay SEPARATE
+   *  variants in the enemy-debuff pill system instead of merging by max. */
+  sourceName?: string
 }
 
 export interface SummonAttack {
@@ -60,6 +68,7 @@ export interface SummonDef {
   tenacity?: number
   physicalDefenseBoost?: number
   magicDefenseBoost?: number
+  hexDefenseBoost?: number
   airDefenseBoost?: number
   waterDefenseBoost?: number
   buffs?: SummonBuffOrDebuff[]
@@ -234,15 +243,6 @@ export const SUMMON_DEFS: SummonDef[] = [
     physicalDefenseBoost: 0.05,
   },
   {
-    name: 'Spore Trooper',
-    count: 2,
-    baseHp: 70,
-    baseDmg: 18,
-    dmgType: 'magic',
-    source: 'Spore Trooper',
-    tenacity: 0.1,
-  },
-  {
     name: 'Possession',
     count: 1,
     baseHp: 200,
@@ -261,13 +261,33 @@ export const SUMMON_DEFS: SummonDef[] = [
     tenacity: 0.35,
   },
   {
-    name: 'Pack Leader',
-    count: 3,
-    baseHp: 60,
-    baseDmg: 15,
+    name: 'Winter Woof',
+    count: 2,
+    baseHp: 300,
+    baseDmg: 12,
     dmgType: 'physical',
     source: 'Pack Leader Rune',
-    tenacity: 0.15,
+    description: '',
+    tenacity: 0.4,
+    physicalDefenseBoost: 0.4,
+    magicDefenseBoost: 0.25,
+    attacks: [
+      {
+        label: 'Howl',
+        baseDmg: 5,
+        dmgType: 'Physical',
+        guardbreak: true,
+        appliesStatus: [{ name: 'Shatter', potency: 0.2, durationSec: 10, sourceName: 'Winter Woof (Howl)' }],
+      },
+      {
+        label: 'Bite',
+        baseDmg: 12,
+        dmgType: 'Physical',
+        guardbreak: true,
+        appliesStatus: [],
+      },
+    ],
+    notes: ['Howl Shatter does not stack with multiple howls despite the visual appearance', 'Bite heals the woof 6 HP'],
   },
   {
     name: 'Sporeling',
@@ -297,6 +317,29 @@ export const SUMMON_DEFS: SummonDef[] = [
     ],
     notes: ['Magic Defense +20%'],
   },
+  {
+    // Infernal Legion — Summons 3 Imps. Stats per game card (2026-11):
+    // HP 65, Hex Def +100%, Magic Def +10%, Tenacity 0.2, Stab ~12.28 dmg
+    // applying Burn for 2s. Burn POTENCY not stated on the card — modeled 0.
+    name: 'Imp',
+    count: 3,
+    baseHp: 65,
+    baseDmg: 12.28,
+    dmgType: 'physical',
+    source: 'Infernal Legion',
+    tenacity: 0.2,
+    hexDefenseBoost: 1.0,
+    magicDefenseBoost: 0.1,
+    attacks: [
+      {
+        label: 'Stab',
+        baseDmg: 12.28,
+        dmgType: 'Physical',
+        appliesStatus: [{ name: 'Burn', potency: 0, durationSec: 2, sourceName: 'Imp (Stab)' }],
+      },
+    ],
+    notes: ['Burn potency unknown — assume 0 until verified in-game'],
+  },
 ]
 
 export const SUMMON_MAP = Object.fromEntries(SUMMON_DEFS.map(s => [s.name, s]))
@@ -307,12 +350,23 @@ export const WA_SUMMON_MAP: Record<string, string> = {
   'Toaladin Summon': 'Toaladin',
   'Undead Buni Summon': 'Undead Buni',
   'Skeletal Woof Summon': 'Skeletal Woof',
-  'Spore Trooper': 'Spore Trooper',
   'Possession': 'Possession',
   'Croakernaut Rune': 'Croakernaut',
-  'Pack Leader Rune': 'Pack Leader',
+  'Pack Leader Rune': 'Winter Woof',
   'Sporeling Toss Rune': 'Sporeling',
   'Swarm Rune': 'Bumblz',
+  'Infernal Legion': 'Imp',
+}
+
+/** Perk → summon it spawns. Applied in DamageAnalyzer when the perk has
+ *  points allocated. Perk "Spore Trooper": around every 5s gains 1 potency
+ *  of Stored Sporelings (max potency = 2 + perkAmount); summons sporelings
+ *  equal to its potency on RMB, then removes the status. Sporeling size and
+ *  tenacity scale with perk amount — modeled here as count = 2 + perkAmount
+ *  (max potency at spawn). Shares the 'Sporeling' def with Sporeling Toss
+ *  Rune (owner 2026-11: chung def, xoá def 'Spore Trooper' riêng). */
+export const PERK_SUMMON_MAP: Record<string, string> = {
+  'Spore Trooper': 'Sporeling',
 }
 
 type SummonPerkMode = 'spawn_only' | 'adaptive' | 'passive'
@@ -385,10 +439,14 @@ export function createSummonInstance(
   playerBoostPct: number,
   perks: Record<string, number> = {},
   buffs?: SummonBuffOrDebuff[],
-  debuffs?: SummonBuffOrDebuff[]
+  debuffs?: SummonBuffOrDebuff[],
+  /** Perk summons SHARE a rune's def (Sporeling) but decay by their OWN
+   *  source (Spore Trooper perk → 1% HP/s, not the rune's 2%). Override the
+   *  decay/SUMMON instance source when the caller is a perk summon. */
+  sourceOverride?: SummonSource,
 ): SummonInstance {
   const spawnBoostPct = playerBoostPct
-  const source = def.source
+  const source = sourceOverride ?? def.source
   const baseDecay = DECAY_BY_SOURCE[source]
   let decayPerSec = calcSummonDecayPercent(baseDecay, spawnBoostPct)
 

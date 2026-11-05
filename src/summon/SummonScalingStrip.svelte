@@ -38,6 +38,14 @@
     <div class="ssp-compact" title="Same scaling formula as the Summons header: (1 + {fmtSummonNum(vm.scaling.boostPct)}% × (1 + {fmtSummonNum(lvl)}/{MAX_LEVEL}))">
       <span class="ssp-block-label">Scaling</span>
       <span class="ssp-mult">×{fmtSummonNum(vm.scaling.mult)}</span>
+      {#if vm.trustyTiers}
+        <span
+          class="ssp-chip"
+          title="Trusty Servant — dmg &times;(1 + (300 + {vm.trustyTiers.dmgIncr}%/stack)/100), HP &times;(1 + (100 + {vm.trustyTiers.hpIncr}%/stack)/100). Tier increments come from the summon's base HP (getTrustyServantTiers)."
+        >
+          [ Trusty dmg ×{fmtSummonNum(vm.trustyDmgMult)} · HP ×{fmtSummonNum(vm.trustyHpMult)} ]
+        </span>
+      {/if}
     </div>
   {/if}
 </div>

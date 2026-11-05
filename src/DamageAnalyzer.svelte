@@ -15,7 +15,7 @@
   import { DEBUFF_COMBAT_EFFECTS } from './data/debuffCombatEffects'
   import { getDraconicInfusionBuff, getDraconicAbilityDebuffs, getEffectiveDraconicInfusionPotency, getDraconicInfusionPotMult, getDraconicInfusionDurMult } from './data/draconicBuffs'
   import { vitalMistMaxPotency, vitalMistConsumption, vitalMistHealPerTick, vitalMistTailwindPotency } from './lib/vitalMist'
-  import { WA_SUMMON_MAP, SUMMON_MAP, calcSummonStat, calcMaxSummonCount, createSummonInstance, type SummonDef, type SummonInstance } from './data/SummonData'
+  import { WA_SUMMON_MAP, PERK_SUMMON_MAP, SUMMON_MAP, calcSummonStat, calcMaxSummonCount, createSummonInstance, type SummonDef, type SummonInstance } from './data/SummonData'
   import CritIcon from './CritIcon.svelte'
   import { PERK_DMG_DEFS, findPerkDmgDef, SECONDARY_TONE_COLORS, isHpGateActive, DRAGON_STATE_HP_GATE, calcSpringblastBaseDamage, calcStaticBuildupStrikeBase, type TriggerChainEntry } from './data/Perkbasedmg'
   import { resolveDefenseSources, calcBaseArmorDefPct, DEF_GROUP, type DefenseSource } from './lib/defense'
@@ -488,33 +488,64 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     const perkEntries = ($result.perks ?? {}) as Record<string, number>
     const runeSummonName = $build.rune ? WA_SUMMON_MAP[$build.rune] : undefined
     const weaponSummonName = WA_SUMMON_MAP[selectedWA.name]
-    const names = [...new Set([runeSummonName, weaponSummonName].filter((n): n is string => !!n))]
+    // Perk summons — Spore Trooper perk spawns Sporelings on RMB (max
+    // potency = 2 + perkAmount). Shares the global cap with rune/WA summons.
+    const perkSummonName = (() => {
+      for (const perkName of Object.keys(PERK_SUMMON_MAP)) {
+        if ((perkEntries[perkName] ?? 0) > 0) return PERK_SUMMON_MAP[perkName]
+      }
+      return undefined
+    })()
+    // One entry PER (source, def) — the same def can exist twice (Sporeling:
+    // Sporeling Toss Rune AND Spore Trooper perk are independent summons with
+    // different counts AND different decay). Rune/WA entries still dedup
+    // against each other (same slider semantics), the perk entry never merges.
+    const sources: { name: string; src: 'rune' | 'wa' | 'perk' }[] = []
+    if (runeSummonName) sources.push({ name: runeSummonName, src: 'rune' })
+    if (weaponSummonName && weaponSummonName !== runeSummonName) sources.push({ name: weaponSummonName, src: 'wa' })
+    if (perkSummonName) sources.push({ name: perkSummonName, src: 'perk' })
     const appliedDebuffsFor = (src: SummonDef): { name: string; value: number }[] => {
       const out: { name: string; value: number }[] = []
       for (const atk of src.attacks ?? []) {
         for (const st of atk.appliesStatus ?? []) {
           if (!BUFF_DEFS[st.name]?.isDebuff) continue
-          const existing = out.find(d => d.name === st.name)
+          // List EVERY (name · potency) pair — differing potencies from
+          // different attacks of the SAME summon (Winter Woof Howl 0.2 vs
+          // Bite 1) are distinct variants, NOT one max-merged entry.
+          const existing = out.find(d => d.name === st.name && d.value === st.potency)
           if (!existing) out.push({ name: st.name, value: st.potency })
-          else existing.value = Math.max(existing.value, st.potency)
         }
       }
       return out
     }
-    return names
-      .map(name => {
+    return sources
+      .map(({ name, src }) => {
         const def = SUMMON_MAP[name]
         if (!def) return null
-        const enriched = enrichSummonDef(def, name === runeSummonName, sb, lv, $build.summonCount ?? def.count)
+        const isRune = src === 'rune'
+        const isPerk = src === 'perk'
+        // Perk "Spore Trooper": Sporeling count = max potency = 2 + perkAmount,
+        // clamped inside the global cap; decay 1% HP/s via sourceOverride.
+        const perkSporelingCount = 2 + (perkEntries['Spore Trooper'] ?? 0)
+        const count = isPerk
+          // calcMaxSummonCount inline (maxSummons reactive var is declared later
+          // in the script — avoid TDZ by computing it here).
+          ? Math.min(perkSporelingCount, calcMaxSummonCount(perkEntries))
+          : ($build.summonCount ?? def.count)
+        const enriched = enrichSummonDef(def, isRune, sb, lv, count)
         return {
-          inst: createSummonInstance(enriched, lv, sb, perkEntries, undefined, appliedDebuffsFor(enriched)),
+          key: `${src}:${name}`,
+          inst: createSummonInstance(enriched, lv, sb, perkEntries, undefined, appliedDebuffsFor(enriched),
+            isPerk ? 'Spore Trooper' : undefined),
           // raw def (count not yet overwritten) — source for "X per cast"
           rawCount: def.count,
-          isRune: name === runeSummonName,
+          isRune,
+          src,
+          fixed: isPerk ? count : undefined,
         }
       })
-      .filter((p): p is { inst: SummonInstance; rawCount: number; isRune: boolean } => !!p)
-  })()
+      .filter((p): p is { key: string; inst: SummonInstance; rawCount: number; isRune: boolean; src: 'rune' | 'wa' | 'perk'; fixed: number | undefined } => !!p)
+  })() as Array<{ key: string; inst: SummonInstance; rawCount: number; isRune: boolean; src: 'rune' | 'wa' | 'perk'; fixed?: number }>
 
   $: _allActiveBuffsRaw = (() => {
     const _weaponModifier = calcBuildWeapon($build)?.weaponModifier
@@ -3117,9 +3148,11 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       // rune summon → player slider state; weapon-art summon → per-name state.
       // Under Trusty the default is 0 (single shared slot), else def.count; the
       // per-name STATE is always read so the WA slider keeps its own value too.
-      activeCount: p.isRune
+      activeCount: p.src === 'rune'
         ? _vassalsCroakSummons
-        : _waSummonCounts[p.inst.def.name] ?? (hasTrustyServant ? 0 : Math.min(p.rawCount, maxSummons)),
+        : p.src === 'perk'
+          ? _waSummonCounts[p.inst.def.name] ?? p.fixed
+          : _waSummonCounts[p.inst.def.name] ?? (hasTrustyServant ? 0 : Math.min(p.rawCount, maxSummons)),
       isRune: p.isRune,
       spawnCount: p.rawCount,
       offBuffKeys: _summonBuffKeys,

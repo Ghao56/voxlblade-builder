@@ -14,7 +14,7 @@
   <div class="sdb-debuffs">
     <div class="sdb-block-label">Applied Debuffs</div>
     <div class="sdb-row">
-      {#each vm.debuffs as d (d.name)}
+      {#each vm.debuffs as d, i (`${d.name}@${d.potency}@${i}`)}
         <span
           class="sdb-badge"
           title="Summon's own status system — not boosted by player DoT perks/buffs"
