@@ -3146,12 +3146,13 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       perks: ($result.perks ?? {}) as Record<string, number>,
       cap: maxSummons,
       // rune summon → player slider state; weapon-art summon → per-name state.
-      // Under Trusty the default is 0 (single shared slot), else def.count; the
-      // per-name STATE is always read so the WA slider keeps its own value too.
+      // Under Trusty the default is 0 for ALL non-rune sources (single shared
+      // slot — owner rule 2026-11); else the per-name STATE is always read so
+      // the WA/perk slider keeps its own value too (perk default = fixed count).
       activeCount: p.src === 'rune'
         ? _vassalsCroakSummons
         : p.src === 'perk'
-          ? _waSummonCounts[p.inst.def.name] ?? p.fixed
+          ? _waSummonCounts[p.inst.def.name] ?? (hasTrustyServant ? 0 : p.fixed)
           : _waSummonCounts[p.inst.def.name] ?? (hasTrustyServant ? 0 : Math.min(p.rawCount, maxSummons)),
       isRune: p.isRune,
       spawnCount: p.rawCount,
@@ -3170,12 +3171,15 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     )
       ? _summonVMs[0].scaling
       : null
-  // Chip in Base Damage (SPEC §5): uses exactly the VM of the summon tied to the
-  // selected weapon art; NO first-VM fallback — with no name-matching VM the chip
-  // is not rendered (avoids pointing at the wrong summon).
-  $: _summonChipVM = _waSummonDef
-    ? (_summonVMs.find(v => v.name === _waSummonDef.name) ?? null)
-    : null
+  // VM for the RUNE's own summon only (no WA fallback) — the "Rune"-badged
+  // merged chip must never display a weapon-art summon (owner 2026-11: the WA
+  // chip already renders in the WA row; a WA summon bled into the Rune spot).
+  $: _runeSummonChipVM = (() => {
+    const runeSummonName = $build.rune ? WA_SUMMON_MAP[$build.rune] : undefined
+    return runeSummonName
+      ? (_summonVMs.find(v => v.name === runeSummonName) ?? null)
+      : null
+  })()
   $: _activeRuneDmgDef = (() => {
     const def = RUNE_DMG_DEFS.find(d => d.runeName === $build.rune) ?? null
     if (!def) return null
@@ -6705,11 +6709,11 @@ $: _groupedSelfDamageSources = (() => {
         </div>
          {/if}
 
-          {#if _waSummonDef && _summonChipVM}
+          {#if _runeSummonChipVM}
             <div class="da-wbd-section">
               <div class="da-wbd-row-label da-wbd-row-label--wa">
                 <Badge color="#38bdf8" square size="xs">Rune</Badge>
-                <span class="da-wbd-lbl-text da-wbd-lbl-text--wa">{_summonChipVM.source}</span>
+                <span class="da-wbd-lbl-text da-wbd-lbl-text--wa">{_runeSummonChipVM.source}</span>
               </div>
               <button
                 type="button"
@@ -6717,8 +6721,8 @@ $: _groupedSelfDamageSources = (() => {
                 on:click={() => document.getElementById('summon-panel')?.scrollIntoView({ behavior: 'smooth' })}
                 title="Merged into the Summons panel — click to scroll to details"
               >
-                <span class="da-summon-chip-name">{_summonChipVM.name}</span>
-                <span class="da-summon-chip-count">×{_summonChipVM.count}</span>
+                <span class="da-summon-chip-name">{_runeSummonChipVM.name}</span>
+                <span class="da-summon-chip-count">×{_runeSummonChipVM.count}</span>
               </button>
             </div>
           {/if}
