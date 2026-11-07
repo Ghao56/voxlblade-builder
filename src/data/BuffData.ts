@@ -2764,6 +2764,22 @@ export function getActiveBuildBuffs(build: {
     }
   }
   if (build.race) buffs.push(...getRaceBuffs(build.race))
+  // Croakernaut Rune — "Reinforce" is an ALLY buff, not an enemy debuff
+  // (owner 2026-11). Potency 1 for 10s while the rune is equipped; the
+  // 0.5-potency far-variant stays in SummonData notes (spatial falloff not
+  // modeled — pipeline uses the max/close value). Lives HERE (item/rune layer)
+  // so every caller — assembleActiveBuffs → DamageAnalyzer and BuffList's own
+  // itemBuffs assembly — sees it exactly once.
+  if (build.rune === 'Croakernaut Rune') {
+    buffs.push({
+      buffName: 'Reinforce',
+      potency: 1,
+      duration: 10,
+      condition: 'Croakernaut summons Reinforce nearby allies (0.5 potency if far away)',
+      sourceName: 'Croakernaut Rune',
+      sourceType: 'rune',
+    })
+  }
   return buffs
 }
 const RACE_BUFF_MAP: Record<string, GrantedBuff[]> = {

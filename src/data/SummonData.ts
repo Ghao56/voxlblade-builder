@@ -71,6 +71,7 @@ export interface SummonDef {
   hexDefenseBoost?: number
   airDefenseBoost?: number
   waterDefenseBoost?: number
+  fireDefenseBoost?: number
   buffs?: SummonBuffOrDebuff[]
   notes?: string[]
 }
@@ -238,12 +239,17 @@ export const SUMMON_DEFS: SummonDef[] = [
   {
     name: 'Undead Buni',
     count: 2,
-    baseHp: 90,
-    baseDmg: 22,
+    baseHp: 60,
+    baseDmg: 7,
     dmgType: 'hex',
     source: 'Undead Buni Summon',
-    tenacity: 0.2,
-    physicalDefenseBoost: 0.05,
+    fireDefenseBoost: -0.5,
+    physicalDefenseBoost: 0.5,
+    attacks: [
+      { label: 'Kick', baseDmg: 7, dmgType: 'Physical' },
+      { label: 'Headbutt', baseDmg: 10, dmgType: 'Physical', guardbreak: true },
+    ],
+    notes: ['Headbutt only used when the enemy is blocking'],
   },
   {
     name: 'Possession',
@@ -257,11 +263,20 @@ export const SUMMON_DEFS: SummonDef[] = [
   {
     name: 'Croakernaut',
     count: 1,
-    baseHp: 110,
-    baseDmg: 28,
+    baseHp: 180,
+    baseDmg: 15,
     dmgType: 'hex',
     source: 'Croakernaut Rune',
-    tenacity: 0.35,
+    magicDefenseBoost: -2,
+    physicalDefenseBoost: 1,
+    waterDefenseBoost: 1,
+    attacks: [
+      { label: 'Reinforce', baseDmg: 0, dmgType: 'Physical', appliesStatus: [{ name: 'Reinforce', potency: 1, durationSec: 10 }] },
+      { label: 'Shield Bash', baseDmg: 15, dmgType: 'Physical', guardbreak: true },
+    ],
+    notes: [
+      'Reinforce buffs ALLIES (player), not the enemy — potency 1 (0.5 if you are further away), 10 seconds',
+    ],
   },
   {
     name: 'Winter Woof',

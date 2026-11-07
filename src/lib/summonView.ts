@@ -91,6 +91,7 @@ const DEFENSE_FIELD_LABELS: Record<string, string> = {
   physicalDefenseBoost: 'Physical Def',
   magicDefenseBoost: 'Magic Def',
   hexDefenseBoost: 'Hex Def',
+  fireDefenseBoost: 'Fire Def',
   airDefenseBoost: 'Air Def',
   waterDefenseBoost: 'Water Def',
 }
