@@ -30,9 +30,7 @@ export interface SummonStatRow {
   dmgColor?: string         // resolved color, null-safe fallback handled in component
   ignoresArmor?: boolean    // true when the hit's dmgType === 'summon' (calcArmorMult shortcut)
   note?: string             // e.g. 'locked at spawn' (user-facing) — currently unused
-  /** Attack rows: per-type chunks (base × weight → scaled) for the type block
-   *  under the row — bdc-hit-type-chunk structure (value + label + formula).
-   *  Single-type = 1 chunk of weight 1. */
+  /** Attack rows: per-type chunks (base × weight → scaled) for the type block. */
   dmgChunks?: Array<{ type: string; base: number; scaled: number }>
 }
 
@@ -186,8 +184,6 @@ export function buildSummonVM(input: SummonVMInput): SummonPanelVM {
         dmgType,
         dmgColor: colorOf(atk.dmgType),
         ignoresArmor: dmgType === 'summon', // calcArmorMult mult=1 shortcut for 'summon'
-        // Type block under the row: one chunk per dmgTypes entry, single-type
-        // rows get one chunk covering the full hit.
         dmgChunks: Object.entries(atk.dmgTypes ?? { [atk.dmgType.toLowerCase()]: 1 }).map(
           ([chunkType, weight]) => ({
             type: chunkType,

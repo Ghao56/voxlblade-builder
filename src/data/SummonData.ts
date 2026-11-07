@@ -52,9 +52,7 @@ export interface SummonAttack {
   label: string
   baseDmg: number
   dmgType: string
-  /** Multi-type hits — codebase convention (Explosive Charge {physical:0.5,fire:0.5}).
-   *  Weights are fractions of the hit's damage per type. Overrides dmgType
-   *  for the type-block UI when present. */
+  /** Weights per dmg type (e.g. {physical:.5, fire:.5}). Overrides dmgType. */
   dmgTypes?: Record<string, number>
   guardbreak?: boolean
   appliesStatus?: AppliedStatus[]
@@ -361,8 +359,7 @@ export const SUMMON_DEFS: SummonDef[] = [
         label: 'Stab',
         baseDmg: 12.28,
         dmgType: 'Physical',
-        // Physical + Fire 50/50 (owner 2026-11). Same convention as Explosive
-        // Charge: weights are fractions of the hit's damage per type.
+        // Physical + Fire 50/50 (owner 2026-11)
         dmgTypes: { physical: 0.5, fire: 0.5 },
         appliesStatus: [{ name: 'Burn', potency: 0, durationSec: 2, sourceName: 'Imp (Stab)' }],
       },

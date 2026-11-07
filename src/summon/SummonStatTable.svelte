@@ -99,34 +99,21 @@
     cursor: help;
     white-space: nowrap;
   }
-  /* Type block — sits directly under the row, same language as
-     bdc-hit-type-chunk: value on top with its colored label, formula rows
-     (Base Damage → Boost Multiplier → Final Damage) beneath; chunks join
-     with '+' for multi-type hits (Imp Stab: Physical + Fire, 50/50). */
+  // Type block under the row: "71.1 Physical + 71.1 Fire"
   .sst-type-line {
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-start;
+    align-items: baseline;
     justify-content: flex-end;
-    gap: 6px;
-    padding: 2px 4px 6px;
+    gap: 4px;
+    padding: 0 4px 4px;
   }
   .sst-type-line:empty { display: none; }
-  .sst-chunk {
-    border: 1px solid color-mix(in srgb, var(--tc, #e8e4da) 25%, transparent);
-    border-radius: var(--radius-sm, 6px);
-    padding: 4px 6px;
-    min-width: 0;
-  }
-  .sst-chunk-top {
-    display: flex;
-    align-items: baseline;
-    gap: 6px;
-  }
+  .sst-chunk { white-space: nowrap; }
   .sst-chunk-val {
     font-family: var(--font-mono, monospace);
     font-variant-numeric: tabular-nums;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: var(--weight-extrabold, 800);
     color: var(--tc, #e8e4da);
   }
@@ -136,34 +123,10 @@
     font-weight: var(--weight-semibold, 600);
     color: var(--tc, #e8e4da);
     opacity: .85;
-    white-space: nowrap;
+    margin-left: 3px;
   }
-  .sst-chunk-formula { display: grid; gap: 1px; margin-top: 3px; }
-  .sst-fr {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-  }
-  .sst-fr-label {
-    font-family: var(--font-body, sans-serif);
-    font-size: 11px;
-    color: var(--sum-muted, #a6a2b0);
-  }
-  .sst-fr-val {
-    font-family: var(--font-mono, monospace);
-    font-variant-numeric: tabular-nums;
-    font-size: 12px;
-    color: var(--ink, #e8e4da);
-  }
-  .sst-fr-divider {
-    height: 1px;
-    background: color-mix(in srgb, var(--tc, #e8e4da) 20%, transparent);
-    margin: 2px 0;
-  }
-  .sst-fr--result .sst-fr-label { color: var(--tc, #e8e4da); }
-  .sst-fr-val--result { font-weight: var(--weight-bold, 700); color: var(--tc, #e8e4da); }
   .sst-chunk-plus {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--sum-muted, #a6a2b0);
     line-height: 1.4;
   }
