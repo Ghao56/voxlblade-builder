@@ -38,18 +38,10 @@
   {#if stat.dmgChunks && stat.dmgChunks.length > 0}
     {#each stat.dmgChunks as chunk, i (chunk.type)}
       {#if i > 0}<span class="sst-chunk-plus">+</span>{/if}
-      <div class="sst-chunk" role="group" style="--tc:{DMG_TYPE_COLORS[chunk.type] ?? '#e8e4da'}">
-        <div class="sst-chunk-top">
-          <span class="sst-chunk-val">{fmtSummonNum(chunk.scaled)}</span>
-          <span class="sst-chunk-label">{cap(chunk.type)}</span>
-        </div>
-        <div class="sst-chunk-formula">
-          <div class="sst-fr"><span class="sst-fr-label">Base Damage</span><span class="sst-fr-val">{fmtSummonNum(chunk.base)}</span></div>
-          <div class="sst-fr"><span class="sst-fr-label">Boost Multiplier</span><span class="sst-fr-val">× {fmtSummonNum(stat.mult ?? 1)}</span></div>
-          <div class="sst-fr-divider"></div>
-          <div class="sst-fr sst-fr--result"><span class="sst-fr-label">Final Damage</span><span class="sst-fr-val sst-fr-val--result">{fmtSummonNum(chunk.scaled)}</span></div>
-        </div>
-      </div>
+      <span class="sst-chunk" role="group" style="--tc:{DMG_TYPE_COLORS[chunk.type] ?? '#e8e4da'}">
+        <span class="sst-chunk-val">{fmtSummonNum(chunk.scaled)}</span>
+        <span class="sst-chunk-label">{cap(chunk.type)}</span>
+      </span>
     {/each}
   {/if}
 </div>
