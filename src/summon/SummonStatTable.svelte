@@ -99,7 +99,7 @@
     cursor: help;
     white-space: nowrap;
   }
-  // Type block under the row: "71.1 Physical + 71.1 Fire"
+  /* Type block under the row: "71.1 Physical + 71.1 Fire" */
   .sst-type-line {
     display: flex;
     flex-wrap: wrap;
