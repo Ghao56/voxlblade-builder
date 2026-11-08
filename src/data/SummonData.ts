@@ -153,6 +153,22 @@ export function calcSummonBuffDmgMult(
   return Math.round(mult * 100) / 100
 }
 
+// Blood Rush (perk card, 2026-11): applies Rage to summons when they reach the
+// low-HP threshold. Threshold = min(15 × stacks, 90) % of max HP (~15%/~30% at
+// 1/2 stacks, caps at 90% = 6 stacks). Rage potency = 0.15 × stacks. RAGE BUFFS
+// PURE PHYSICAL ONLY (card: "Increase pure Physical damage dealt by 10% per 0.1
+// potency") — applied to physical damage chunks in summonView, NOT here.
+export function calcBloodRushThresholdPct(stacks: number): number | null {
+  const s = Math.max(0, Math.floor(stacks))
+  return s > 0 ? Math.min(15 * s, 90) : null
+}
+
+export function calcBloodRushPotency(stacks: number): number {
+  // roundMultiplier-style 2-dec rounding — 6 × 0.15 must print 0.9, not
+  // 0.8999999999999999 (float drift surfaces raw in the Buffs badge).
+  return Math.round(Math.max(0, Math.floor(stacks)) * 0.15 * 100) / 100
+}
+
 function calcSummonDecayPercent(baseDecayPercent: number, spawnBoostPct: number): number {
   return baseDecayPercent / (1 + spawnBoostPct / 100)
 }

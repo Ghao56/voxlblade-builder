@@ -1,17 +1,56 @@
 <script lang="ts">
-  // SURVIVAL — HP bar + decay. HP/decay from the instance (locked at spawn);
-  // base decay from the VM (lifetime.baseDecay) — display-only, this
-  // component never rebuilds the ÷ (1 + boost) formula.
+  // SURVIVAL — draggable HP bar + decay. HP/decay from the instance (locked at
+  // spawn); base decay from the VM (lifetime.baseDecay). The bar is a slider:
+  // drag/keys set the summon's current HP (% of max) via onSummonHpChange —
+  // the component never owns the value, DamageAnalyzer stores it per summon.
+  // Blood Rush (lifetime.rage): threshold marker + Rage chip while active.
   import type { SummonPanelVM } from '../lib/summonView'
   import { fmtSummonNum, fmtSummonDuration } from '../lib/summonView'
 
   export let vm: SummonPanelVM
+  /** Current HP as % of max (0–100) — owned by the caller (DamageAnalyzer). */
+  export let hpPct = 100
+  /** (pct:number) — bar drag / arrow keys; caller clamps and stores it. */
+  export let onSummonHpChange: (pct: number) => void = () => {}
 
-  $: pct = vm.lifetime.maxHp > 0 ? Math.max(0, Math.min(100, (vm.lifetime.hp / vm.lifetime.maxHp) * 100)) : 0
+  $: pct = Math.max(0, Math.min(100, hpPct))
+  $: hp = (vm.lifetime.maxHp * pct) / 100
   $: barColor = pct >= 50 ? 'var(--sum-ok, #4ade80)' : pct >= 25 ? 'var(--sum-warn, #facc15)' : 'var(--sum-bad, #f87171)'
+  // vm.lifetime.seconds is the remaining survival at the CURRENT hp (VM does
+  // the pct math) — ∞ when there is no decay.
   $: secondsText = vm.lifetime.seconds === null ? '∞' : '~' + fmtSummonDuration(vm.lifetime.seconds)
   // decay 0 → neutral "No decay" chip; red only when actually decaying.
   $: noDecay = vm.lifetime.decayPerSec <= 0
+  $: rage = vm.lifetime.rage
+
+  // Drag = pointer capture on the track; click-to-set comes free from
+  // pointerdown. Keys: arrows ±1, shift ±10 (slider semantics).
+  let dragging = false
+  function pctFromEvent(e: PointerEvent): number {
+    const r = (e.currentTarget as HTMLElement).getBoundingClientRect()
+    return ((e.clientX - r.left) / r.width) * 100
+  }
+  function onDragDown(e: PointerEvent) {
+    dragging = true
+    ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+    onSummonHpChange(pctFromEvent(e))
+  }
+  function onDragMove(e: PointerEvent) {
+    if (dragging) onSummonHpChange(pctFromEvent(e))
+  }
+  function onDragUp() {
+    dragging = false
+  }
+  function onKey(e: KeyboardEvent) {
+    const step = e.shiftKey ? 10 : 1
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+      e.preventDefault()
+      onSummonHpChange(Math.max(0, pct - step))
+    } else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+      e.preventDefault()
+      onSummonHpChange(Math.min(100, pct + step))
+    }
+  }
 </script>
 
 <div class="slt-lifetime">
@@ -19,15 +58,30 @@
   <div class="slt-bar-row">
     <div
       class="slt-bar"
-      role="progressbar"
+      role="slider"
+      tabindex="0"
       aria-label="Summon HP"
-      aria-valuemin="0"
-      aria-valuemax="100"
+      aria-valuemin={0}
+      aria-valuemax={100}
       aria-valuenow={Math.round(pct)}
+      aria-valuetext={`${fmtSummonNum(hp)} / ${fmtSummonNum(vm.lifetime.maxHp)} HP`}
+      on:pointerdown={onDragDown}
+      on:pointermove={onDragMove}
+      on:pointerup={onDragUp}
+      on:keydown={onKey}
     >
       <div class="slt-fill" style="--fill:{pct}%; --bc:{barColor}"></div>
+      {#if rage.thresholdPct !== null}
+        <!-- Blood Rush low-HP threshold — Rage triggers at/below this line -->
+        <div
+          class="slt-rage-marker"
+          class:slt-rage-marker--armed={rage.active}
+          style="left:{rage.thresholdPct}%"
+          title={`Blood Rush — Rage ${rage.potency} triggers at ≤ ${rage.thresholdPct}% HP`}
+        ></div>
+      {/if}
     </div>
-    <span class="slt-hp" style="color:{barColor}">{fmtSummonNum(vm.lifetime.hp)}<span class="slt-hp-max">/{fmtSummonNum(vm.lifetime.maxHp)}</span></span>
+    <span class="slt-hp" style="color:{barColor}">{fmtSummonNum(hp)}<span class="slt-hp-max">/{fmtSummonNum(vm.lifetime.maxHp)}</span></span>
   </div>
   <div class="slt-detail">
     {#if noDecay}
@@ -49,6 +103,7 @@
   .slt-block-label { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--sum-accent, #c084fc); font-weight: var(--weight-semibold, 600); margin-bottom: 4px; }
   .slt-bar-row { display: flex; align-items: center; gap: 8px; }
   .slt-bar {
+    position: relative;
     flex: 1;
     height: 10px;
     border-radius: var(--radius-full, 999px);
@@ -62,6 +117,16 @@
     border-radius: inherit;
     transition: width var(--duration-fast, .15s) var(--ease-out, ease);
   }
+  .slt-rage-marker {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    transform: translateX(-1px);
+    background: var(--sum-accent, #c084fc);
+    opacity: .55;
+  }
+  .slt-rage-marker--armed { opacity: 1; box-shadow: 0 0 6px var(--sum-accent, #c084fc); }
   .slt-hp {
     font-family: var(--font-mono, monospace);
     font-variant-numeric: tabular-nums;
@@ -71,7 +136,7 @@
   }
   .slt-hp-max { color: var(--sum-muted, #a6a2b0); font-weight: var(--weight-semibold, 600); }
   .slt-detail {
-    display: flex; justify-content: space-between; gap: 8px;
+    display: flex; justify-content: space-between; align-items: center; gap: 8px;
     margin-top: 3px;
     font-size: 13px;
   }

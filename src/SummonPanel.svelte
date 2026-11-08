@@ -29,6 +29,10 @@
   export let onSummonCountChange: (value: number) => void = () => {}
   /** (buffName:string) — buff toggle, key `source::name` handled in DamageAnalyzer */
   export let onToggleBuff: (buffName: string) => void = () => {}
+  /** Current HP % (0–100) for the draggable Survival bar — stored per summon. */
+  export let hpPct = 100
+  /** (pct:number) — Survival bar drag / arrow keys. */
+  export let onSummonHpChange: (pct: number) => void = () => {}
 
   $: summonCount = vm.count
   $: hideFormula = !!sharedScaling &&
@@ -67,7 +71,7 @@
     {/each}
   </div>
 
-  <SummonLifetime {vm} />
+  <SummonLifetime {vm} {hpPct} {onSummonHpChange} />
   <SummonSwarmTotal {vm} {onSummonCountChange} />
   <SummonBuffs {vm} {onToggleBuff} />
   <SummonDebuffs {vm} />

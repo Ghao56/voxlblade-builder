@@ -24,7 +24,11 @@
           class:sbf-badge--off={!b.active}
           style="--bcolor:{colorOf(b.name)}"
           aria-pressed={b.active}
-          title={b.affectsDamage ? 'Feeds the damage mult chain (calcSummonBuffDmgMult)' : 'Display buff, not part of the damage chain'}
+          title={b.affectsDamage
+            ? b.name === 'Rage'
+              ? 'Blood Rush — buffs pure Physical damage only (10% per 0.1 potency)'
+              : 'Feeds the damage mult chain (calcSummonBuffDmgMult)'
+            : 'Display buff, not part of the damage chain'}
           on:click={() => onToggleBuff(b.name)}
         >
           <span class="sbf-name">{b.name}</span>

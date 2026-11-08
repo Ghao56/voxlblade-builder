@@ -3095,6 +3095,13 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     const key = `${source}::${buffName}`
     _summonBuffOff = { ..._summonBuffOff, [key]: !_summonBuffOff[key] }
   }
+  // Blood Rush / draggable HP: per-summon current-HP override (% of max),
+  // keyed `src::name` like the buff toggles. Persisted in the build store so
+  // a dragged HP survives a page reload (owner request 2026-11).
+  function handleSummonHpChange(vm: { name: string; source: string }, pct: number) {
+    const key = `${vm.source}::${vm.name}`
+    build.update(s => ({ ...s, summonHpPct: { ...s.summonHpPct, [key]: Math.max(0, Math.min(100, pct)) } }) as any)
+  }
   $: _summonBuffKeys = new Set(
     Object.keys(_summonBuffOff).filter(k => _summonBuffOff[k])
   )
@@ -3157,6 +3164,12 @@ const trimNum = (n: number, maxDecimals = 4): string => {
       isRune: p.isRune,
       spawnCount: p.rawCount,
       offBuffKeys: _summonBuffKeys,
+      // Draggable HP override (100 = full) + Blood Rush stacks from the
+      // aggregated perk map — Rage activates at/below the low-HP threshold.
+      // Key matches the UI: `instance.source::name` (perk summons carry their
+      // own source override, e.g. 'Spore Trooper').
+      currentHpPct: $build.summonHpPct[`${p.inst.source}::${p.inst.def.name}`] ?? 100,
+      bloodRushStacks: (($result.perks ?? {}) as Record<string, number>)['Blood Rush'] ?? 0,
     })
   )
   // Shared scaling chip in the section header only when EVERY summon scales
@@ -3187,10 +3200,15 @@ const trimNum = (n: number, maxDecimals = 4): string => {
     return def
   })()
   $: runePotency = _activeRuneDmgDef?.maxPotency ?? 0
+  // Sporeling Toss Rune: "Already-summoned Sporelings" FOLLOWS the Summons
+  // panels — ALL active Sporelings (rune Toss + Spore Trooper perk), no
+  // separate input (owner 2026-11). Read-out only, never written back.
   $: _runeSliderVal = _activeRuneDmgDef?.slider
-    ? ((($build as any)[_activeRuneDmgDef.slider.buildKey] ?? 0) as number)
+    ? (_activeRuneDmgDef.slider.buildKey === 'sporelingsSummoned'
+        ? _summonVMs.filter(v => v.name === 'Sporeling').reduce((acc, v) => acc + v.count, 0)
+        : ((($build as any)[_activeRuneDmgDef.slider.buildKey] ?? 0) as number))
     : 0
-    
+
   $: _consumableBuffCount = (() => {
     const seen = new Set<string>()
     for (const b of _allActiveBuffsRaw) {
@@ -3208,7 +3226,7 @@ const trimNum = (n: number, maxDecimals = 4): string => {
           : _activeRuneDmgDef.slider.max)
     : 0
     
-  $: if (_activeRuneDmgDef?.slider && _runeSliderVal > _runeSliderMax) {
+  $: if (_activeRuneDmgDef?.slider && _activeRuneDmgDef.slider.buildKey !== 'sporelingsSummoned' && _runeSliderVal > _runeSliderMax) {
     const sliderDef = _activeRuneDmgDef.slider
     build.update(s => ({ ...s, [sliderDef.buildKey]: _runeSliderMax }) as any)
   }
@@ -6617,7 +6635,7 @@ $: _groupedSelfDamageSources = (() => {
             })()}
         
         <div class="da-wbd-section">
-          {#if _activeRuneDmgDef.slider}
+          {#if _activeRuneDmgDef.slider && _activeRuneDmgDef.slider.buildKey !== 'sporelingsSummoned'}
             {#if _activeRuneDmgDef.slider.valueLabels}
               <div class="da-sb-slider-wrap da-sb-slider-wrap--stack" style="margin-bottom:6px">
                 <span class="da-sb-slider-label">{_activeRuneDmgDef.slider.label}</span>
@@ -6672,6 +6690,12 @@ $: _groupedSelfDamageSources = (() => {
               <Badge color="#c084fc">{+totalBonus.toFixed(4)} {bonusTypes}</Badge>
             {/if}
           </div>
+          {#if _activeRuneDmgDef.slider?.buildKey === 'sporelingsSummoned'}
+            <div class="da-sb-slider-wrap" style="margin-bottom:6px" title="Sum of all active Sporelings — Sporeling Toss Rune + Spore Trooper perk panels (Active summons sliders)">
+              <span class="da-sb-slider-label">Already-summoned Sporelings</span>
+              <span class="da-sb-slider-val">{_runeSliderVal}</span>
+            </div>
+          {/if}
           <div class="da-hits-row">
             <div class="da-hit-card">
               {#each Object.entries(_runeDmgTypesWithBonus) as [type, mult], ti}
@@ -6804,6 +6828,8 @@ $: _groupedSelfDamageSources = (() => {
       minionAbsorptionPotency={_minionAbsorptionPotency}
       onSummonCountChange={(v: number) => handleSummonCountChange(vmKey, v)}
       onToggleBuff={(name: string) => toggleSummonBuff(vmKey.source, name)}
+      hpPct={$build.summonHpPct[`${vmKey.source}::${vmKey.name}`] ?? 100}
+      onSummonHpChange={(pct: number) => handleSummonHpChange(vmKey, pct)}
     />
     {/each}
   </div>

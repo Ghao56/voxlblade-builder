@@ -12,8 +12,11 @@ import {
   calcSummonMaxHp,
   calcSummonDamage,
   calcSummonBuffDmgMult,
+  calcBloodRushThresholdPct,
+  calcBloodRushPotency,
   type SummonInstance,
   type SummonSource,
+  type SummonBuffOrDebuff,
 } from '../data/SummonData'
 import { DMG_TYPE_COLORS } from './constants/damage-types'
 import { roundMultiplier } from './utils'
@@ -46,7 +49,14 @@ export interface SummonPanelVM {
   trustyTiers: { dmgIncr: number; hpIncr: number } | null // null without the perk — shown in the scaling strip
   scaling: { boostPct: number; levelFactor: number; mult: number }
   stats: SummonStatRow[]
-  lifetime: { hp: number; maxHp: number; decayPerSec: number; baseDecay: number | null; seconds: number | null } // null = infinite
+  lifetime: {
+    hp: number
+    maxHp: number
+    decayPerSec: number
+    baseDecay: number | null
+    seconds: number | null // null = infinite — remaining time from the CURRENT hp
+    rage: { thresholdPct: number | null; potency: number; active: boolean } // null = no Blood Rush
+  }
   swarm: { label: string; perHit: number; count: number; total: number; dmgType: string }[]
   buffs: { name: string; value: number; active: boolean; affectsDamage: boolean }[]
   /** Debuffs the summon applies on hit — ALL of them (even potency 0). NO
@@ -86,6 +96,12 @@ export interface SummonVMInput {
   /** Buff names currently OFF; caller passes keys `source::buffName` so the
    *  same buff name from two sources (rune + weapon) toggles independently. */
   offBuffKeys?: Iterable<string>
+  /** Draggable Survival bar — current HP as % of max (0–100). Default 100 =
+   *  full HP at spawn (instance.currentHp). Display-only simulation. */
+  currentHpPct?: number
+  /** Blood Rush perk stacks — Rage applies to the summon at/below its
+   *  low-HP threshold (calcBloodRush* in SummonData). */
+  bloodRushStacks?: number
 }
 
 // Read generically so labels stay in sync with the shared SummonDef contract.
@@ -118,8 +134,23 @@ export function buildSummonVM(input: SummonVMInput): SummonPanelVM {
   const offKeys = new Set(input.offBuffKeys ?? [])
   const isBuffActive = (buffName: string): boolean =>
     !offKeys.has(`${instance.source}::${buffName}`)
+  // Blood Rush (Blood Bumblz armor perk): threshold + Rage potency per stacks.
+  // RAGE BUFFS PURE PHYSICAL ONLY (card: "Increase pure Physical damage dealt
+  // by 10% per 0.1 potency") → per-chunk mult below adds ×(1+potency) to
+  // physical chunks; Rage never enters the type-agnostic buff chain.
+  // Toggleable like any buff via the Buffs block (key `source::Rage`).
+  const brStacks = Math.max(0, Math.floor(input.bloodRushStacks ?? 0))
+  const rageThresholdPct = calcBloodRushThresholdPct(brStacks)
+  const ragePotency = calcBloodRushPotency(brStacks)
+  const currentHpPct = Math.max(0, Math.min(100, input.currentHpPct ?? 100))
+  const rageActive =
+    rageThresholdPct !== null && currentHpPct <= rageThresholdPct && isBuffActive('Rage')
+
   const activeBuffs = (instance.buffs ?? []).filter(b => isBuffActive(b.name))
   const buffMult = calcSummonBuffDmgMult(activeBuffs)
+  // Per-chunk damage mult: Rage adds ×(1+potency) ONLY to physical chunks.
+  const chunkMult = (dmgType: string): number =>
+    buffMult * (rageActive && dmgType.toLowerCase() === 'physical' ? 1 + ragePotency : 1)
 
   // ② stat rows — damage scales from min(currentBoost, spawnBoost), exactly
   // like the panel scaling strip shows. HP is NOT listed here (owner 2026-11):
@@ -161,10 +192,18 @@ export function buildSummonVM(input: SummonVMInput): SummonPanelVM {
       // rows — a "0 ×mult 0" row is noise. They still show in Applied Debuffs.
       if (atk.baseDmg <= 0) continue
       const dmgType = atk.dmgType.toLowerCase()
-      const perHit = Math.round(
-        calcSummonDamage(atk.baseDmg, instance.currentBoostPct, instance.spawnBoostPct, level) *
-          buffMult * instance.trustyDmgMult * 100,
-      ) / 100
+      // Per-chunk scaling: each damage-type chunk gets its own mult — this is
+      // where Rage's physical-only boost lands (weights sum to 1 in all defs).
+      const scaledChunks = Object.entries(atk.dmgTypes ?? { [dmgType]: 1 }).map(
+        ([chunkType, weight]) => ({
+          type: chunkType,
+          weight,
+          scaled:
+            calcSummonDamage(atk.baseDmg, instance.currentBoostPct, instance.spawnBoostPct, level) *
+            weight * chunkMult(chunkType) * instance.trustyDmgMult,
+        }),
+      )
+      const perHit = Math.round(scaledChunks.reduce((acc, c) => acc + c.scaled, 0) * 100) / 100
       swarmRows.push({
         label: atk.label,
         perHit,
@@ -177,27 +216,27 @@ export function buildSummonVM(input: SummonVMInput): SummonPanelVM {
         label: atk.label,
         base: atk.baseDmg,
         // Mult column = FULL per-hit factor so Base × Mult = Scaled exactly:
-        // scaling × buff chain × Trusty Servant dmg mult — previously Trusty
+        // scaling × buff chain × Trusty Servant dmg mult (Rage boosted its
+        // share when the attack has physical chunks) — previously Trusty
         // was baked into Scaled but hidden from Mult (owner complaint).
         mult: perHit / atk.baseDmg,
         scaled: perHit,
         dmgType,
         dmgColor: colorOf(atk.dmgType),
         ignoresArmor: dmgType === 'summon', // calcArmorMult mult=1 shortcut for 'summon'
-        dmgChunks: Object.entries(atk.dmgTypes ?? { [atk.dmgType.toLowerCase()]: 1 }).map(
-          ([chunkType, weight]) => ({
-            type: chunkType,
-            base: Math.round(atk.baseDmg * weight * 100) / 100,
-            scaled: Math.round(perHit * weight * 100) / 100,
-          }),
-        ),
+        dmgChunks: scaledChunks.map(c => ({
+          type: c.type,
+          base: Math.round(atk.baseDmg * c.weight * 100) / 100,
+          scaled: Math.round(c.scaled * 100) / 100,
+        })),
       })
     }
   } else {
     const dmgType = def.dmgType.toLowerCase()
+    // Same per-chunk scaling as named attacks — Rage lands on physical here too.
     const perHit = Math.round(
       calcSummonDamage(def.baseDmg, instance.currentBoostPct, instance.spawnBoostPct, level) *
-        buffMult * instance.trustyDmgMult * 100,
+        chunkMult(dmgType) * instance.trustyDmgMult * 100,
     ) / 100
     swarmRows.push({
       label: 'Base Attack',
@@ -219,12 +258,15 @@ export function buildSummonVM(input: SummonVMInput): SummonPanelVM {
     })
   }
 
-  // ③ lifetime — numbers straight off the instance (created once, static).
+  // ③ lifetime — max HP straight off the instance formulas; current HP from
+  // the drag override (100 = full at spawn). Remaining survival = pct / decay.
   const decayPerSec = Math.round(instance.decayPerSec * 100) / 100 // % of max HP per second
-  const seconds =
+  const fullSeconds =
     instance.decayPerSec > 0 && isFinite(instance.decayPerSec)
       ? 100 / instance.decayPerSec // % HP/s → survival in seconds (boost divisor already inside)
       : null
+  const maxHp = calcSummonMaxHp(def.baseHp, instance.spawnBoostPct, level) * instance.trustyHpMult
+  const seconds = fullSeconds === null ? null : (fullSeconds * currentHpPct) / 100
 
   // affectsDamage via calcSummonBuffDmgMult itself — no perk name hardcoding.
   const buffs = (instance.buffs ?? []).map(b => ({
@@ -233,6 +275,18 @@ export function buildSummonVM(input: SummonVMInput): SummonPanelVM {
     active: isBuffActive(b.name),
     affectsDamage: calcSummonBuffDmgMult([b]) !== 1,
   }))
+  // Blood Rush surfacing in the Buffs block: listed whenever equipped, active
+  // only below the threshold — mirrors how the perk card reads in-game. Rage
+  // boosts PURE PHYSICAL damage only, so affectsDamage is set directly (the
+  // type-agnostic chain check would report false).
+  if (rageThresholdPct !== null) {
+    buffs.push({
+      name: 'Rage',
+      value: ragePotency,
+      active: rageActive,
+      affectsDamage: ragePotency > 0,
+    })
+  }
 
   // ⑤ applied debuffs — LIST ALL, even potency 0 (e.g. Bumblz Poison potency 0
   // must still be listed — owner requirement 2026-11). NO DoT damage shown:
@@ -253,14 +307,14 @@ export function buildSummonVM(input: SummonVMInput): SummonPanelVM {
     scaling,
     stats,
     lifetime: {
-      hp: Math.round(instance.currentHp * 100) / 100, // already carries trustyHpMult (set at summon)
-      // calcSummonMaxHp × Trusty HP mult — matches currentHp at spawn
-      maxHp: calcSummonMaxHp(def.baseHp, instance.spawnBoostPct, level) * instance.trustyHpMult,
+      hp: Math.round((maxHp * currentHpPct) / 100 * 100) / 100,
+      maxHp, // × Trusty HP mult — matches currentHp-at-spawn
       decayPerSec,
       // base decay from the original SummonData accessor — display-only, the
       // UI never rebuilds the ÷ (1 + boost) formula (single source of truth).
       baseDecay: getSummonBaseDecay(instance.source) ?? null,
-      seconds,
+      seconds, // remaining time from the dragged current HP
+      rage: { thresholdPct: rageThresholdPct, potency: ragePotency, active: rageActive },
     },
     swarm: swarmRows,
     buffs,

@@ -55,6 +55,7 @@ const DEFAULT_BUILD: BuildState = {
   enemyHpFill: DEFAULT_ENEMY_HP_FILL,
   inventoryFill: DEFAULT_INVENTORY_FILL,
   summonCount: 0,
+  summonHpPct: {},
   vassalsCroakSummons: undefined,
   lastCroakStacks: undefined,
   buffsConsumed: 0,

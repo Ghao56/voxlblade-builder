@@ -214,6 +214,9 @@ export interface BuildState {
   enemyHpFill: number
   inventoryFill: number
   summonCount: number
+  /** Draggable Survival-bar HP overrides (% of max), key `source::name` —
+   *  persisted so a dragged HP survives a page reload. */
+  summonHpPct: Record<string, number>
   vassalsCroakSummons?: number
   lastCroakStacks?: number
   buffsConsumed: number
