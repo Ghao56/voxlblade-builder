@@ -64,7 +64,7 @@
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={Math.round(pct)}
-      aria-valuetext={`${fmtSummonNum(hp)} / ${fmtSummonNum(vm.lifetime.maxHp)} HP`}
+      aria-valuetext={`${Math.round(hp)} / ${fmtSummonNum(vm.lifetime.maxHp)} HP`}
       on:pointerdown={onDragDown}
       on:pointermove={onDragMove}
       on:pointerup={onDragUp}
@@ -82,7 +82,7 @@
         ></div>
       {/if}
     </div>
-    <span class="slt-hp" style="color:{barColor}">{fmtSummonNum(hp)}<span class="slt-hp-max">/{fmtSummonNum(vm.lifetime.maxHp)}</span></span>
+    <span class="slt-hp" style="color:{barColor}">{Math.round(hp)}<span class="slt-hp-max">/{fmtSummonNum(vm.lifetime.maxHp)}</span></span>
   </div>
   <div class="slt-detail">
     {#if noDecay}
