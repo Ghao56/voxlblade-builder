@@ -2937,6 +2937,7 @@ note?: string
   opacity: .9;
 }
 
+.bdc-enemy-hp-wrap:active { cursor: grabbing; }
 .bdc-enemy-hp-wrap {
   position: relative;
   height: 16px;
@@ -2945,10 +2946,24 @@ note?: string
   border-radius: 3px;
   background: #1b1b1d;
   border: 1px solid #303036;
-  cursor: ew-resize;
+  cursor: grab;
   overflow: hidden;
   box-shadow: inset 0 1px 0 rgba(0,0,0,0.6), inset 0 -1px 0 rgba(255,255,255,0.06);
   z-index: 1;
+  transition: box-shadow .15s ease, border-color .15s ease;
+}
+.bdc-enemy-hp-wrap:hover {
+  border-color: #474752;
+  box-shadow:
+    inset 0 1px 0 rgba(0,0,0,0.6),
+    inset 0 -1px 0 rgba(255,255,255,0.06),
+    0 0 8px rgba(255,255,255,0.09);
+}
+.bdc-enemy-hp-wrap:hover .bdc-enemy-hp-fill { filter: brightness(1.08); }
+.bdc-enemy-hp-wrap:active {
+  box-shadow:
+    inset 0 2px 4px rgba(0,0,0,0.55),
+    0 0 5px rgba(255,255,255,0.06);
 }
 .bdc-enemy-hp-fill {
   position: absolute;
@@ -2967,6 +2982,19 @@ note?: string
 }
 .bdc-enemy-hp-fill.hp-low {
   background: linear-gradient(180deg, #e06b80 0%, #dc4c64 100%);
+}
+/* grip dots ⠿ — vertical 4-dot grip at the fill edge, tracks pointer position */
+.bdc-enemy-hp-fill::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 1px;
+  bottom: 1px;
+  width: 3px;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.65) 0.8px, transparent 1.2px);
+  background-size: 100% 4px;
+  background-repeat: repeat-y;
+  background-position: center top;
 }
 .bdc-enemy-hp-label {
   position: absolute;

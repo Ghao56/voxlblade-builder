@@ -71,6 +71,7 @@
       on:keydown={onKey}
     >
       <div class="slt-fill" style="--fill:{pct}%; --bc:{barColor}"></div>
+      <div class="slt-thumb" style="left:{pct}%; --bc:{barColor}"></div>
       {#if rage.thresholdPct !== null}
         <!-- Blood Rush low-HP threshold — Rage triggers at/below this line -->
         <div
@@ -109,7 +110,48 @@
     border-radius: var(--radius-full, 999px);
     background: var(--surface, #26232e);
     overflow: hidden;
+    cursor: grab;
   }
+  .slt-bar:active { cursor: grabbing; }
+  .slt-bar {
+    transition: box-shadow .15s ease;
+  }
+  .slt-bar:hover {
+    box-shadow: 0 0 9px color-mix(in srgb, var(--sum-accent, #c084fc) 40%, transparent);
+  }
+  .slt-bar:active {
+    /* pressed — inset shadow reads as lifted track */
+    box-shadow: inset 0 2px 3px rgba(0,0,0,0.5);
+  }
+  .slt-thumb {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    transform: translateX(-50%);
+    border-radius: 2px;
+    background: rgba(12,11,16,0.55);
+    border: 1px solid var(--bc, var(--sum-accent, #c084fc));
+    box-shadow: 0 0 4px color-mix(in srgb, var(--bc, var(--sum-accent, #c084fc)) 45%, transparent);
+    z-index: 2;
+    pointer-events: none;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  /* grip dots ⠿ — vertical grip inside the thumb */
+  .slt-thumb::after {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.6) 0.7px, transparent 1px);
+    background-size: 100% 3px;
+    background-repeat: repeat-y;
+    background-position: center top;
+  }
+  .slt-bar:hover .slt-thumb {
+    transform: translateX(-50%) scaleY(1.15);
+    box-shadow: 0 0 7px color-mix(in srgb, var(--bc, var(--sum-accent, #c084fc)) 60%, transparent);
+  }
+  .slt-bar:active .slt-thumb { transform: translateX(-50%); }
   .slt-fill {
     height: 100%;
     width: var(--fill);

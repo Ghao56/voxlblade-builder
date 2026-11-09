@@ -288,11 +288,25 @@
     border-radius: 3px;
     background: rgba(0,0,0,0.55);
     border: 1px solid rgba(255,255,255,0.1);
-    cursor: ew-resize;
+    cursor: grab;
     overflow: hidden;
     box-shadow:
       inset 0 1px 0 rgba(0,0,0,0.6),
       inset 0 -1px 0 rgba(255,255,255,0.06);
+    transition: box-shadow .15s ease, border-color .15s ease;
+  }
+  .lb-bar-track:hover {
+    border-color: color-mix(in srgb, var(--bar-color) 45%, transparent);
+    box-shadow:
+      inset 0 1px 0 rgba(0,0,0,0.6),
+      inset 0 -1px 0 rgba(255,255,255,0.06),
+      0 0 9px color-mix(in srgb, var(--bar-glow) 40%, transparent);
+  }
+  .lb-bar-track:active {
+    cursor: grabbing;
+    box-shadow:
+      inset 0 2px 4px rgba(0,0,0,0.55),
+      0 0 5px color-mix(in srgb, var(--bar-glow) 25%, transparent);
   }
 
   .lb-bar-lost {
@@ -389,7 +403,28 @@
     z-index: 5;
     pointer-events: none;
     transition: box-shadow .2s,
+                transform .15s ease,
                 left var(--duration-smooth) var(--ease-out),
                 border-color var(--duration-normal) var(--ease-out);
+  }
+  /* grip dots ⠿ — vertical 3-dot slider grip carved into the thumb */
+  .lb-thumb::after {
+    content: '';
+    position: absolute;
+    inset: 2px 0;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.55) 0.8px, transparent 1.2px);
+    background-size: 100% 4px;
+    background-repeat: repeat-y;
+    background-position: center top;
+  }
+  .lb-bar-track:hover .lb-thumb {
+    transform: translate(-50%, -50%) scale(1.15);
+    box-shadow: 0 0 10px var(--bar-glow);
+  }
+  .lb-bar-track:active .lb-thumb {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lb-thumb { transition: box-shadow .2s; }
   }
 </style>
