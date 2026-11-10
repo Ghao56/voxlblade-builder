@@ -239,7 +239,7 @@
     }
     if (gridActionLabel !== action) {
       gridActionLabel = action
-      badge.textContent = action === 'clone' ? '⊕ CLONE' : action === 'move' ? '➔ MOVE' : '? SWAP'
+      badge.textContent = action === 'clone' ? '⊕ CLONE' : action === 'move' ? '➔ MOVE' : '⇄ SWAP'
       badge.classList.toggle('grid-action-badge--clone', action === 'clone')
       badge.classList.toggle('grid-action-badge--swap', action === 'swap')
       badge.classList.toggle('grid-action-badge--move', action === 'move')
@@ -1875,7 +1875,7 @@ $: _appWaAvgTotal = (() => {
                       <button class="sg-ench-btn" class:sg-ench-btn--active={inlineEnchantSlot === 'helmet' || swapMode === 'helmet'}
                         class:sg-ench-btn--swap-source={swapMode === 'helmet'}
                         class:sg-ench-btn--swap-target={swapMode && swapMode !== 'helmet'}
-                        on:click|stopPropagation={() => handleEnchantButtonClick('helmet')} title="Enchant">?</button>
+                        on:click|stopPropagation={() => handleEnchantButtonClick('helmet')} title="Enchant">✦</button>
                     {/if}
                 </div>
                 <div class="sg-cell sg-span3 sg-clickable"
@@ -1942,7 +1942,7 @@ $: _appWaAvgTotal = (() => {
                     <button class="sg-ench-btn" class:sg-ench-btn--active={inlineEnchantSlot === 'chestplate' || swapMode === 'chestplate'}
                       class:sg-ench-btn--swap-source={swapMode === 'chestplate'}
                       class:sg-ench-btn--swap-target={swapMode && swapMode !== 'chestplate'}
-                      on:click|stopPropagation={() => handleEnchantButtonClick('chestplate')} title="Enchant">?</button>
+                      on:click|stopPropagation={() => handleEnchantButtonClick('chestplate')} title="Enchant">✦</button>
                   {/if}
                 </div>
                 <div class="sg-cell sg-infusion sg-span2 sg-clickable" class:sg-empty={!$build.infusionRing}
@@ -1989,7 +1989,7 @@ $: _appWaAvgTotal = (() => {
                     <button class="sg-ench-btn" class:sg-ench-btn--active={inlineEnchantSlot === 'ring' || swapMode === 'ring'}
                       class:sg-ench-btn--swap-source={swapMode === 'ring'}
                       class:sg-ench-btn--swap-target={swapMode && swapMode !== 'ring'}
-                      on:click|stopPropagation={() => handleEnchantButtonClick('ring')} title="Enchant">?</button>
+                      on:click|stopPropagation={() => handleEnchantButtonClick('ring')} title="Enchant">✦</button>
                   {/if}
                 </div>
                 <button class="sg-cell sg-race sg-span2 sg-clickable" on:click={() => openModal('race')}>
@@ -2048,7 +2048,7 @@ $: _appWaAvgTotal = (() => {
                     <button class="sg-ench-btn" class:sg-ench-btn--active={inlineEnchantSlot === 'leggings' || swapMode === 'leggings'}
                       class:sg-ench-btn--swap-source={swapMode === 'leggings'}
                       class:sg-ench-btn--swap-target={swapMode && swapMode !== 'leggings'}
-                      on:click|stopPropagation={() => handleEnchantButtonClick('leggings')} title="Enchant">?</button>
+                      on:click|stopPropagation={() => handleEnchantButtonClick('leggings')} title="Enchant">✦</button>
                   {/if}
                 </div>
                 {#if isDraconic}
@@ -2063,7 +2063,7 @@ $: _appWaAvgTotal = (() => {
                       {#if selectedDracoHasCDR}
                         <span class="sg-cd-row">
                           <span class="sg-cd-base">{selectedDracoBaseCD}s</span>
-                          <span class="sg-cd-arrow">?</span>
+                          <span class="sg-cd-arrow">➔</span>
                           <span class="sg-cd-final">{selectedDracoFinalCD}s</span>
                         </span>
                       {:else}
@@ -2096,7 +2096,7 @@ $: _appWaAvgTotal = (() => {
                             <span class="sg-sub">CD:</span>
                             {#if hasRuneCDR}
                               <span class="sg-cd-base">{effRuneCd}s</span>
-                              <span class="sg-cd-arrow">?</span>
+                              <span class="sg-cd-arrow">➔</span>
                             {/if}
                             <span class="sg-cd-final">{formatCD(effRuneCd, cdr)} ({$build.footDiveHit ? 'hit' : 'miss'})</span>
                           </span>
@@ -2110,7 +2110,7 @@ $: _appWaAvgTotal = (() => {
                           <span class="sg-cd-row">
                             <span class="sg-sub">CD:</span>
                             <span class="sg-cd-base">{effRuneCd}s</span>
-                            <span class="sg-cd-arrow">?</span>
+                            <span class="sg-cd-arrow">➔</span>
                             <span class="sg-cd-final">{formatCD(effRuneCd, cdr)}</span>
                           </span>
                         {:else}
@@ -2127,7 +2127,7 @@ $: _appWaAvgTotal = (() => {
                     <button class="sg-ench-btn" class:sg-ench-btn--active={inlineEnchantSlot === 'rune' || swapMode === 'rune'}
                       class:sg-ench-btn--swap-source={swapMode === 'rune'}
                       class:sg-ench-btn--swap-target={swapMode && swapMode !== 'rune'}
-                      on:click|stopPropagation={() => handleEnchantButtonClick('rune')} title="Enchant">?</button>
+                      on:click|stopPropagation={() => handleEnchantButtonClick('rune')} title="Enchant">✦</button>
                   {/if}
                 </div>
                 <div class="sg-cell sg-guild sg-span2 sg-clickable" class:sg-empty={!$build.guild}
@@ -2163,8 +2163,8 @@ $: _appWaAvgTotal = (() => {
             </div>
             {#if swapMode}
               <div class="swap-mode-banner">
-                <span class="swap-mode-icon">?</span>
-                <span class="swap-mode-text">Swap Enchantments: <strong>{swapMode.charAt(0).toUpperCase() + swapMode.slice(1)}</strong> ? click another ? to swap</span>
+                <span class="swap-mode-icon"><i class="fa fa-exchange" aria-hidden="true"></i></span>
+                <span class="swap-mode-text">Swap Enchantments: <strong>{swapMode.charAt(0).toUpperCase() + swapMode.slice(1)}</strong> ➔ click another ✦ to swap</span>
                 <button class="swap-mode-cancel" on:click={exitSwapMode}>Cancel</button>
               </div>
             {/if}
@@ -2194,7 +2194,7 @@ $: _appWaAvgTotal = (() => {
                         Swap Equipment
                       </Button>
                     {/if}
-                    <button class="iep-close-btn" on:click={() => inlineEnchantSlot = null}>?</button>
+                    <button class="iep-close-btn" on:click={() => inlineEnchantSlot = null}><i class="fa fa-times" aria-hidden="true"></i></button>
                   </div>
                 </div>
                 <div class="iep-slots">
@@ -2207,13 +2207,13 @@ $: _appWaAvgTotal = (() => {
                     />
                     {#if iepS0}
                       <button class="iep-slot-clear" title="Clear slot 1"
-                        on:click={() => setEnchantment(iepSlot, 0, '')}>?</button>
+                        on:click={() => setEnchantment(iepSlot, 0, '')}><i class="fa fa-times" aria-hidden="true"></i></button>
                     {/if}
                   </div>
                   {#if iepS0 && !iepExcl}
                     {#if iepS1}
                       <button class="iep-swap-btn" title="Swap slot 1 ? slot 2"
-                        on:click={() => swapEnchantIndices(iepSlot, 0, 1)}>?</button>
+                        on:click={() => swapEnchantIndices(iepSlot, 0, 1)}><i class="fa fa-exchange" aria-hidden="true"></i></button>
                     {/if}
                     <div class="iep-slot">
                       <span class="iep-slot-num">2</span>
@@ -2224,14 +2224,14 @@ $: _appWaAvgTotal = (() => {
                       />
                       {#if iepS1}
                         <button class="iep-slot-clear" title="Clear slot 2"
-                          on:click={() => setEnchantment(iepSlot, 1, '')}>?</button>
+                          on:click={() => setEnchantment(iepSlot, 1, '')}><i class="fa fa-times" aria-hidden="true"></i></button>
                       {/if}
                     </div>
                   {/if}
                   {#if iepS1 && !iepExcl}
                     {#if iepS2}
                       <button class="iep-swap-btn" title="Swap slot 2 ? slot 3"
-                        on:click={() => swapEnchantIndices(iepSlot, 1, 2)}>?</button>
+                        on:click={() => swapEnchantIndices(iepSlot, 1, 2)}><i class="fa fa-exchange" aria-hidden="true"></i></button>
                     {/if}
                     <div class="iep-slot">
                       <span class="iep-slot-num">3</span>
@@ -2242,7 +2242,7 @@ $: _appWaAvgTotal = (() => {
                       />
                       {#if iepS2}
                         <button class="iep-slot-clear" title="Clear slot 3"
-                          on:click={() => setEnchantment(iepSlot, 2, '')}>?</button>
+                          on:click={() => setEnchantment(iepSlot, 2, '')}><i class="fa fa-times" aria-hidden="true"></i></button>
                       {/if}
                     </div>
                   {/if}
@@ -2265,7 +2265,7 @@ $: _appWaAvgTotal = (() => {
                     {#if hasWACDR}
                       <Badge color="#34d399" size="sm">
                         <span class="wa-cd-old">{_waCooldown}s</span>
-                        <span class="wa-cd-arrow">?</span>
+                        <span class="wa-cd-arrow">➔</span>
                         {Math.max(1, Math.floor(_waCooldown * cdr.waCDR))}s
                       </Badge>
                     {:else}
@@ -2417,11 +2417,11 @@ $: _appWaAvgTotal = (() => {
               on:click={() => selectDraconicAbility('claw')}>
               <div class="dab-header">
                 <span class="dab-name">Dragon Claw</span>
-                {#if $build.draconicRuneInfusion === 'claw'}<Badge variant="draco" size="xs">? Selected</Badge>{/if}
+                {#if $build.draconicRuneInfusion === 'claw'}<Badge variant="draco" size="xs"><i class="fa fa-check"></i> Selected</Badge>{/if}
                 <div class="dab-cds">
                   {#if draconicClawBubbleHasCDR}
                     <span class="dab-cd-old">{draconicBaseCDs.claw}s</span>
-                    <span class="dab-cd-arrow">?</span>
+                    <span class="dab-cd-arrow">➔</span>
                     <span class="dab-cd">{draconicClawFinalCD}s</span>
                   {:else}
                     <span class="dab-cd">CD: {draconicBaseCDs.claw}s</span>
@@ -2451,11 +2451,11 @@ $: _appWaAvgTotal = (() => {
               on:click={() => selectDraconicAbility('infusion')}>
               <div class="dab-header">
                 <span class="dab-name">Dragon Infusion</span>
-                {#if $build.draconicRuneInfusion === 'infusion'}<Badge variant="draco" size="xs">? Selected</Badge>{/if}
+                {#if $build.draconicRuneInfusion === 'infusion'}<Badge variant="draco" size="xs"><i class="fa fa-check"></i> Selected</Badge>{/if}
                 <div class="dab-cds">
                   {#if draconicHasCDR}
                     <span class="dab-cd-old">{draconicBaseCDs.infusion}s</span>
-                    <span class="dab-cd-arrow">?</span>
+                    <span class="dab-cd-arrow">➔</span>
                     <span class="dab-cd">{draconicFinalCDs.infusion}s</span>
                   {:else}
                     <span class="dab-cd">CD: {draconicBaseCDs.infusion}s</span>
@@ -2494,11 +2494,11 @@ $: _appWaAvgTotal = (() => {
               on:click={() => selectDraconicAbility('bubble')}>
               <div class="dab-header">
                 <span class="dab-name">Dragon Bubble</span>
-                {#if $build.draconicRuneInfusion === 'bubble'}<Badge variant="draco" size="xs">? Selected</Badge>{/if}
+                {#if $build.draconicRuneInfusion === 'bubble'}<Badge variant="draco" size="xs"><i class="fa fa-check"></i> Selected</Badge>{/if}
                 <div class="dab-cds">
                   {#if draconicClawBubbleHasCDR}
                     <span class="dab-cd-old">{draconicBaseCDs.bubble}s</span>
-                    <span class="dab-cd-arrow">?</span>
+                    <span class="dab-cd-arrow">➔</span>
                     <span class="dab-cd">{draconicBubbleFinalCD}s</span>
                   {:else}
                     <span class="dab-cd">CD: {draconicBaseCDs.bubble}s</span>
@@ -2694,7 +2694,7 @@ $: _appWaAvgTotal = (() => {
         {#if hasWACDR}
           <Badge color="#34d399" size="sm">
             <span class="wa-cd-old">{_waCooldown}s</span>
-            <span class="wa-cd-arrow">?</span>
+            <span class="wa-cd-arrow">➔</span>
             {Math.max(1, Math.floor(_waCooldown * cdr.waCDR))}s
           </Badge>
         {:else}
@@ -3070,7 +3070,7 @@ $: _appWaAvgTotal = (() => {
               {#if weaponResult.part1Name && weaponResult.part2Name}
                 <div class="weapon-combine weapon-combine--arrow">
                   <div class="weapon-combine-line"></div>
-                  <div class="weapon-combine-icon">?</div>
+                  <div class="weapon-combine-icon"><i class="fa fa-plus" aria-hidden="true"></i></div>
                   <div class="weapon-combine-line"></div>
                 </div>
                 <div class="weapon-combined-card" class:weapon-combined-card--monk={isMonk}>
@@ -3175,7 +3175,7 @@ $: _appWaAvgTotal = (() => {
       style="top:{potionPopPos.top}px; left:{potionPopPos.left}px">
       <div class="sg-potion-popover-head">
         <span class="sg-potion-popover-title">Potions</span>
-        <button class="sg-potion-popover-close" on:click={() => showPotionsDrawer = false}>?</button>
+        <button class="sg-potion-popover-close" on:click={() => showPotionsDrawer = false}><i class="fa fa-times" aria-hidden="true"></i></button>
       </div>
       <div class="sg-potion-toggle-list">
         {#each POTIONS as potion}
