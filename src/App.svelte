@@ -1845,7 +1845,7 @@ $: _appWaAvgTotal = (() => {
                   <span class="sg-label">Inf. Helmet</span>
                   <span class="sg-value">{$build.infusionHelmet || 'No infused helmet'}</span>
                   {#if $build.infusionHelmet}
-                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, infusionHelmet: ''}))} title="Clear">?</button>
+                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, infusionHelmet: ''}))} title="Clear"><i class="fa fa-times" aria-hidden="true"></i></button>
                   {/if}
                 </div>
                 <div class="sg-cell sg-armor sg-span2 sg-clickable" class:sg-empty={!$build.helmet}
@@ -1871,7 +1871,7 @@ $: _appWaAvgTotal = (() => {
                         title="Cycle upgrade (+{$build.upgradeHelmet} ? +{($build.upgradeHelmet + 1) % 6})">
                         +{$build.upgradeHelmet}
                       </button>
-                      <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, helmet: ''}))} title="Clear">?</button>
+                      <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, helmet: ''}))} title="Clear"><i class="fa fa-times" aria-hidden="true"></i></button>
                       <button class="sg-ench-btn" class:sg-ench-btn--active={inlineEnchantSlot === 'helmet' || swapMode === 'helmet'}
                         class:sg-ench-btn--swap-source={swapMode === 'helmet'}
                         class:sg-ench-btn--swap-target={swapMode && swapMode !== 'helmet'}
@@ -1912,7 +1912,7 @@ $: _appWaAvgTotal = (() => {
                   <span class="sg-label">Inf. Chestplate</span>
                   <span class="sg-value">{$build.infusionChestplate || 'No infused chestplate'}</span>
                   {#if $build.infusionChestplate}
-                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, infusionChestplate: ''}))} title="Clear">?</button>
+                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, infusionChestplate: ''}))} title="Clear"><i class="fa fa-times" aria-hidden="true"></i></button>
                   {/if}
                 </div>
                 <div class="sg-cell sg-armor sg-span2 sg-clickable" class:sg-empty={!$build.chestplate}
@@ -1938,7 +1938,7 @@ $: _appWaAvgTotal = (() => {
                       title="Cycle upgrade (+{$build.upgradeChestplate} ? +{($build.upgradeChestplate + 1) % 6})">
                       +{$build.upgradeChestplate}
                     </button>
-                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, chestplate: ''}))} title="Clear">?</button>
+                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, chestplate: ''}))} title="Clear"><i class="fa fa-times" aria-hidden="true"></i></button>
                     <button class="sg-ench-btn" class:sg-ench-btn--active={inlineEnchantSlot === 'chestplate' || swapMode === 'chestplate'}
                       class:sg-ench-btn--swap-source={swapMode === 'chestplate'}
                       class:sg-ench-btn--swap-target={swapMode && swapMode !== 'chestplate'}
@@ -1959,7 +1959,7 @@ $: _appWaAvgTotal = (() => {
                   <span class="sg-label">Inf. Ring</span>
                   <span class="sg-value">{$build.infusionRing || 'No infused ring'}</span>
                   {#if $build.infusionRing}
-                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, infusionRing: ''}))} title="Clear">?</button>
+                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, infusionRing: ''}))} title="Clear"><i class="fa fa-times" aria-hidden="true"></i></button>
                   {/if}
                 </div>
                 <div class="sg-cell sg-item sg-span2 sg-clickable" class:sg-empty={!$build.ring}
@@ -1985,7 +1985,7 @@ $: _appWaAvgTotal = (() => {
                       title="Cycle upgrade (+{$build.upgradeRing} ? +{($build.upgradeRing + 1) % 6})">
                       +{$build.upgradeRing}
                     </button>
-                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, ring: ''}))} title="Clear">?</button>
+                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, ring: ''}))} title="Clear"><i class="fa fa-times" aria-hidden="true"></i></button>
                     <button class="sg-ench-btn" class:sg-ench-btn--active={inlineEnchantSlot === 'ring' || swapMode === 'ring'}
                       class:sg-ench-btn--swap-source={swapMode === 'ring'}
                       class:sg-ench-btn--swap-target={swapMode && swapMode !== 'ring'}
@@ -2018,7 +2018,7 @@ $: _appWaAvgTotal = (() => {
                   <span class="sg-label">Inf. Leggings</span>
                   <span class="sg-value">{$build.infusionLeggings || 'No infused leggings'}</span>
                   {#if $build.infusionLeggings}
-                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, infusionLeggings: ''}))} title="Clear">?</button>
+                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, infusionLeggings: ''}))} title="Clear"><i class="fa fa-times" aria-hidden="true"></i></button>
                   {/if}
                 </div>
                 <div class="sg-cell sg-armor sg-span2 sg-clickable" class:sg-empty={!$build.leggings}
@@ -2044,7 +2044,7 @@ $: _appWaAvgTotal = (() => {
                       title="Cycle upgrade (+{$build.upgradeLeggings} ? +{($build.upgradeLeggings + 1) % 6})">
                       +{$build.upgradeLeggings}
                     </button>
-                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, leggings: ''}))} title="Clear">?</button>
+                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, leggings: ''}))} title="Clear"><i class="fa fa-times" aria-hidden="true"></i></button>
                     <button class="sg-ench-btn" class:sg-ench-btn--active={inlineEnchantSlot === 'leggings' || swapMode === 'leggings'}
                       class:sg-ench-btn--swap-source={swapMode === 'leggings'}
                       class:sg-ench-btn--swap-target={swapMode && swapMode !== 'leggings'}
@@ -2123,7 +2123,7 @@ $: _appWaAvgTotal = (() => {
                       title="Cycle upgrade (+{$build.upgradeRune} ? +{($build.upgradeRune + 1) % 6})">
                       +{$build.upgradeRune}
                     </button>
-                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, rune: ''}))} title="Clear">?</button>
+                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, rune: ''}))} title="Clear"><i class="fa fa-times" aria-hidden="true"></i></button>
                     <button class="sg-ench-btn" class:sg-ench-btn--active={inlineEnchantSlot === 'rune' || swapMode === 'rune'}
                       class:sg-ench-btn--swap-source={swapMode === 'rune'}
                       class:sg-ench-btn--swap-target={swapMode && swapMode !== 'rune'}
@@ -2138,7 +2138,7 @@ $: _appWaAvgTotal = (() => {
                   <span class="sg-value">{$build.guild || '—'}</span>
                   {#if $build.guild}<span class="sg-sub">Rank {$build.guildRank}</span>{/if}
                   {#if $build.guild}
-                    <button class="sg-clear" on:click|stopPropagation={() => setGuild('', 1)} title="Clear">?</button>
+                    <button class="sg-clear" on:click|stopPropagation={() => setGuild('', 1)} title="Clear"><i class="fa fa-times" aria-hidden="true"></i></button>
                   {/if}
                 </div>
               </div>
