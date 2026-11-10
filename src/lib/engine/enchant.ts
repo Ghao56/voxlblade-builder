@@ -89,7 +89,18 @@ export function applyEnchantmentsToSlot(
   // Apply upgrade to modified base (keep armorPen unaffected)
   if (upgradeLevel > 0) {
     const preUpgradeArmorPen = currentStats.armorPenetration
+    // keepNegativeStats armors: stats negative in base data stay frozen at
+    // upgrade level 0 even after a selector enchant (Corrupt/Restored) flips
+    // them positive.
+    const frozen: StatMap = {}
+    if (keepNegativeStats) {
+      for (let j = 0; j < STAT_KEYS.length; j++) {
+        const k = STAT_KEYS[j]
+        if ((baseStats[k] ?? 0) < 0) frozen[k] = currentStats[k] ?? 0
+      }
+    }
     currentStats = applyUpgrade(currentStats, upgradeLevel, keepNegativeStats)
+    for (const k in frozen) currentStats[k] = frozen[k]
     if (currentStats.armorPenetration !== preUpgradeArmorPen) {
       currentStats.armorPenetration = preUpgradeArmorPen
     }
