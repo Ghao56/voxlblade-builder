@@ -62,6 +62,10 @@
   import Badge from './lib/ui/Badge.svelte'
   import Button from './lib/ui/Button.svelte'
   import { addToast } from './lib/stores/toast'
+  import { exportSummaryGrid, scheduleSnapRender } from './lib/snap'
+
+  // keep the share-card PNG cache in sync with build edits (debounced inside snap.ts)
+  $: scheduleSnapRender($build)
 
   type ArmorSlotKey = 'helmet' | 'chestplate' | 'leggings'
   type InfusionArmorSlotKey = 'infusionHelmet' | 'infusionChestplate' | 'infusionLeggings'
@@ -235,7 +239,7 @@
     }
     if (gridActionLabel !== action) {
       gridActionLabel = action
-      badge.textContent = action === 'clone' ? '⊕ CLONE' : action === 'move' ? '➔ MOVE' : '⇄ SWAP'
+      badge.textContent = action === 'clone' ? '⊕ CLONE' : action === 'move' ? '➔ MOVE' : '? SWAP'
       badge.classList.toggle('grid-action-badge--clone', action === 'clone')
       badge.classList.toggle('grid-action-badge--swap', action === 'swap')
       badge.classList.toggle('grid-action-badge--move', action === 'move')
@@ -1474,7 +1478,7 @@ $: highestDamageType = pickHighestDmgType(Object.entries(weaponDamageTypesWithBo
         const bp: Record<string, number> = rune.perkName ? { [rune.perkName]: rune.perkAmount ?? 1 } : {}
         const cdExtras = rune.name === 'Foot Dive Rune'
           ? [`CD: ${effRuneCd}s (${$build.footDiveHit ? 'hit' : 'miss'})`]
-          : (hasRuneCDR ? [`Base CD: ${effRuneCd}s → ${formatCD(effRuneCd, cdr)}`] : [`Cooldown: ${effRuneCd}s`])
+          : (hasRuneCDR ? [`Base CD: ${effRuneCd}s ? ${formatCD(effRuneCd, cdr)}`] : [`Cooldown: ${effRuneCd}s`])
         groups.push({ main: buildSlotCard('Rune', buildEnchantLabel(rune.name, 'rune'), rune.description, rune.stats, bp, 'rune', cdExtras, $build.upgradeRune ?? 0), infusion: null })
       }
     }
@@ -1785,17 +1789,20 @@ $: _appWaAvgTotal = (() => {
             <i class="fa fa-random"></i> Random
           </Button>
           <Button variant="negative" size="md" onclick={handleClearBuild} disabled={false}>
-            ✕ Clear All
+            ? Clear All
           </Button>
           {#if _undoVisible}
             <Button variant="positive" size="md" onclick={handleUndo} disabled={false}>
-              ↩ Undo
+              ? Undo
             </Button>
           {/if}
         </div>
         <div class="summary-layout">
           <div class="left-column">
             <div class="summary-grid-wrap">
+              <button class="share-summary-btn" on:click={exportSummaryGrid} title="Screenshot your build as an image">
+                <i class="fa fa-camera" aria-hidden="true"></i> Screenshot Your Build
+              </button>
               <div class="summary-grid" class:sg-armor-dragging={isDraggingArmor} class:sg-ring-dragging={isDraggingRing}>
                 <div class="sg-cell sg-weapon sg-span10 sg-clickable"
                   on:click={() => build.update(s => ({...s, shrineActive: !s.shrineActive}))}
@@ -1838,7 +1845,7 @@ $: _appWaAvgTotal = (() => {
                   <span class="sg-label">Inf. Helmet</span>
                   <span class="sg-value">{$build.infusionHelmet || 'No infused helmet'}</span>
                   {#if $build.infusionHelmet}
-                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, infusionHelmet: ''}))} title="Clear">✕</button>
+                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, infusionHelmet: ''}))} title="Clear">?</button>
                   {/if}
                 </div>
                 <div class="sg-cell sg-armor sg-span2 sg-clickable" class:sg-empty={!$build.helmet}
@@ -1861,14 +1868,14 @@ $: _appWaAvgTotal = (() => {
                       <button class="sg-upgrade-btn"
                         class:sg-upgrade-btn--maxed={$build.upgradeHelmet === 5}
                         on:click|stopPropagation={() => toggleUpgrade('upgradeHelmet')}
-                        title="Cycle upgrade (+{$build.upgradeHelmet} → +{($build.upgradeHelmet + 1) % 6})">
+                        title="Cycle upgrade (+{$build.upgradeHelmet} ? +{($build.upgradeHelmet + 1) % 6})">
                         +{$build.upgradeHelmet}
                       </button>
-                      <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, helmet: ''}))} title="Clear">✕</button>
+                      <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, helmet: ''}))} title="Clear">?</button>
                       <button class="sg-ench-btn" class:sg-ench-btn--active={inlineEnchantSlot === 'helmet' || swapMode === 'helmet'}
                         class:sg-ench-btn--swap-source={swapMode === 'helmet'}
                         class:sg-ench-btn--swap-target={swapMode && swapMode !== 'helmet'}
-                        on:click|stopPropagation={() => handleEnchantButtonClick('helmet')} title="Enchant">✦</button>
+                        on:click|stopPropagation={() => handleEnchantButtonClick('helmet')} title="Enchant">?</button>
                     {/if}
                 </div>
                 <div class="sg-cell sg-span3 sg-clickable"
@@ -1905,7 +1912,7 @@ $: _appWaAvgTotal = (() => {
                   <span class="sg-label">Inf. Chestplate</span>
                   <span class="sg-value">{$build.infusionChestplate || 'No infused chestplate'}</span>
                   {#if $build.infusionChestplate}
-                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, infusionChestplate: ''}))} title="Clear">✕</button>
+                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, infusionChestplate: ''}))} title="Clear">?</button>
                   {/if}
                 </div>
                 <div class="sg-cell sg-armor sg-span2 sg-clickable" class:sg-empty={!$build.chestplate}
@@ -1928,14 +1935,14 @@ $: _appWaAvgTotal = (() => {
                     <button class="sg-upgrade-btn"
                       class:sg-upgrade-btn--maxed={$build.upgradeChestplate === 5}
                       on:click|stopPropagation={() => toggleUpgrade('upgradeChestplate')}
-                      title="Cycle upgrade (+{$build.upgradeChestplate} → +{($build.upgradeChestplate + 1) % 6})">
+                      title="Cycle upgrade (+{$build.upgradeChestplate} ? +{($build.upgradeChestplate + 1) % 6})">
                       +{$build.upgradeChestplate}
                     </button>
-                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, chestplate: ''}))} title="Clear">✕</button>
+                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, chestplate: ''}))} title="Clear">?</button>
                     <button class="sg-ench-btn" class:sg-ench-btn--active={inlineEnchantSlot === 'chestplate' || swapMode === 'chestplate'}
                       class:sg-ench-btn--swap-source={swapMode === 'chestplate'}
                       class:sg-ench-btn--swap-target={swapMode && swapMode !== 'chestplate'}
-                      on:click|stopPropagation={() => handleEnchantButtonClick('chestplate')} title="Enchant">✦</button>
+                      on:click|stopPropagation={() => handleEnchantButtonClick('chestplate')} title="Enchant">?</button>
                   {/if}
                 </div>
                 <div class="sg-cell sg-infusion sg-span2 sg-clickable" class:sg-empty={!$build.infusionRing}
@@ -1952,7 +1959,7 @@ $: _appWaAvgTotal = (() => {
                   <span class="sg-label">Inf. Ring</span>
                   <span class="sg-value">{$build.infusionRing || 'No infused ring'}</span>
                   {#if $build.infusionRing}
-                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, infusionRing: ''}))} title="Clear">✕</button>
+                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, infusionRing: ''}))} title="Clear">?</button>
                   {/if}
                 </div>
                 <div class="sg-cell sg-item sg-span2 sg-clickable" class:sg-empty={!$build.ring}
@@ -1975,14 +1982,14 @@ $: _appWaAvgTotal = (() => {
                     <button class="sg-upgrade-btn"
                       class:sg-upgrade-btn--maxed={$build.upgradeRing === 5}
                       on:click|stopPropagation={() => toggleUpgrade('upgradeRing')}
-                      title="Cycle upgrade (+{$build.upgradeRing} → +{($build.upgradeRing + 1) % 6})">
+                      title="Cycle upgrade (+{$build.upgradeRing} ? +{($build.upgradeRing + 1) % 6})">
                       +{$build.upgradeRing}
                     </button>
-                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, ring: ''}))} title="Clear">✕</button>
+                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, ring: ''}))} title="Clear">?</button>
                     <button class="sg-ench-btn" class:sg-ench-btn--active={inlineEnchantSlot === 'ring' || swapMode === 'ring'}
                       class:sg-ench-btn--swap-source={swapMode === 'ring'}
                       class:sg-ench-btn--swap-target={swapMode && swapMode !== 'ring'}
-                      on:click|stopPropagation={() => handleEnchantButtonClick('ring')} title="Enchant">✦</button>
+                      on:click|stopPropagation={() => handleEnchantButtonClick('ring')} title="Enchant">?</button>
                   {/if}
                 </div>
                 <button class="sg-cell sg-race sg-span2 sg-clickable" on:click={() => openModal('race')}>
@@ -2011,7 +2018,7 @@ $: _appWaAvgTotal = (() => {
                   <span class="sg-label">Inf. Leggings</span>
                   <span class="sg-value">{$build.infusionLeggings || 'No infused leggings'}</span>
                   {#if $build.infusionLeggings}
-                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, infusionLeggings: ''}))} title="Clear">✕</button>
+                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, infusionLeggings: ''}))} title="Clear">?</button>
                   {/if}
                 </div>
                 <div class="sg-cell sg-armor sg-span2 sg-clickable" class:sg-empty={!$build.leggings}
@@ -2034,14 +2041,14 @@ $: _appWaAvgTotal = (() => {
                     <button class="sg-upgrade-btn"
                       class:sg-upgrade-btn--maxed={$build.upgradeLeggings === 5}
                       on:click|stopPropagation={() => toggleUpgrade('upgradeLeggings')}
-                      title="Cycle upgrade (+{$build.upgradeLeggings} → +{($build.upgradeLeggings + 1) % 6})">
+                      title="Cycle upgrade (+{$build.upgradeLeggings} ? +{($build.upgradeLeggings + 1) % 6})">
                       +{$build.upgradeLeggings}
                     </button>
-                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, leggings: ''}))} title="Clear">✕</button>
+                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, leggings: ''}))} title="Clear">?</button>
                     <button class="sg-ench-btn" class:sg-ench-btn--active={inlineEnchantSlot === 'leggings' || swapMode === 'leggings'}
                       class:sg-ench-btn--swap-source={swapMode === 'leggings'}
                       class:sg-ench-btn--swap-target={swapMode && swapMode !== 'leggings'}
-                      on:click|stopPropagation={() => handleEnchantButtonClick('leggings')} title="Enchant">✦</button>
+                      on:click|stopPropagation={() => handleEnchantButtonClick('leggings')} title="Enchant">?</button>
                   {/if}
                 </div>
                 {#if isDraconic}
@@ -2056,7 +2063,7 @@ $: _appWaAvgTotal = (() => {
                       {#if selectedDracoHasCDR}
                         <span class="sg-cd-row">
                           <span class="sg-cd-base">{selectedDracoBaseCD}s</span>
-                          <span class="sg-cd-arrow">→</span>
+                          <span class="sg-cd-arrow">?</span>
                           <span class="sg-cd-final">{selectedDracoFinalCD}s</span>
                         </span>
                       {:else}
@@ -2089,7 +2096,7 @@ $: _appWaAvgTotal = (() => {
                             <span class="sg-sub">CD:</span>
                             {#if hasRuneCDR}
                               <span class="sg-cd-base">{effRuneCd}s</span>
-                              <span class="sg-cd-arrow">→</span>
+                              <span class="sg-cd-arrow">?</span>
                             {/if}
                             <span class="sg-cd-final">{formatCD(effRuneCd, cdr)} ({$build.footDiveHit ? 'hit' : 'miss'})</span>
                           </span>
@@ -2103,7 +2110,7 @@ $: _appWaAvgTotal = (() => {
                           <span class="sg-cd-row">
                             <span class="sg-sub">CD:</span>
                             <span class="sg-cd-base">{effRuneCd}s</span>
-                            <span class="sg-cd-arrow">→</span>
+                            <span class="sg-cd-arrow">?</span>
                             <span class="sg-cd-final">{formatCD(effRuneCd, cdr)}</span>
                           </span>
                         {:else}
@@ -2113,14 +2120,14 @@ $: _appWaAvgTotal = (() => {
                     <button class="sg-upgrade-btn"
                       class:sg-upgrade-btn--maxed={$build.upgradeRune === 5}
                       on:click|stopPropagation={() => toggleUpgrade('upgradeRune')}
-                      title="Cycle upgrade (+{$build.upgradeRune} → +{($build.upgradeRune + 1) % 6})">
+                      title="Cycle upgrade (+{$build.upgradeRune} ? +{($build.upgradeRune + 1) % 6})">
                       +{$build.upgradeRune}
                     </button>
-                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, rune: ''}))} title="Clear">✕</button>
+                    <button class="sg-clear" on:click|stopPropagation={() => build.update(s => ({...s, rune: ''}))} title="Clear">?</button>
                     <button class="sg-ench-btn" class:sg-ench-btn--active={inlineEnchantSlot === 'rune' || swapMode === 'rune'}
                       class:sg-ench-btn--swap-source={swapMode === 'rune'}
                       class:sg-ench-btn--swap-target={swapMode && swapMode !== 'rune'}
-                      on:click|stopPropagation={() => handleEnchantButtonClick('rune')} title="Enchant">✦</button>
+                      on:click|stopPropagation={() => handleEnchantButtonClick('rune')} title="Enchant">?</button>
                   {/if}
                 </div>
                 <div class="sg-cell sg-guild sg-span2 sg-clickable" class:sg-empty={!$build.guild}
@@ -2131,7 +2138,7 @@ $: _appWaAvgTotal = (() => {
                   <span class="sg-value">{$build.guild || '—'}</span>
                   {#if $build.guild}<span class="sg-sub">Rank {$build.guildRank}</span>{/if}
                   {#if $build.guild}
-                    <button class="sg-clear" on:click|stopPropagation={() => setGuild('', 1)} title="Clear">✕</button>
+                    <button class="sg-clear" on:click|stopPropagation={() => setGuild('', 1)} title="Clear">?</button>
                   {/if}
                 </div>
               </div>
@@ -2156,8 +2163,8 @@ $: _appWaAvgTotal = (() => {
             </div>
             {#if swapMode}
               <div class="swap-mode-banner">
-                <span class="swap-mode-icon">⇄</span>
-                <span class="swap-mode-text">Swap Enchantments: <strong>{swapMode.charAt(0).toUpperCase() + swapMode.slice(1)}</strong> → click another ✦ to swap</span>
+                <span class="swap-mode-icon">?</span>
+                <span class="swap-mode-text">Swap Enchantments: <strong>{swapMode.charAt(0).toUpperCase() + swapMode.slice(1)}</strong> ? click another ? to swap</span>
                 <button class="swap-mode-cancel" on:click={exitSwapMode}>Cancel</button>
               </div>
             {/if}
@@ -2187,7 +2194,7 @@ $: _appWaAvgTotal = (() => {
                         Swap Equipment
                       </Button>
                     {/if}
-                    <button class="iep-close-btn" on:click={() => inlineEnchantSlot = null}>✕</button>
+                    <button class="iep-close-btn" on:click={() => inlineEnchantSlot = null}>?</button>
                   </div>
                 </div>
                 <div class="iep-slots">
@@ -2200,13 +2207,13 @@ $: _appWaAvgTotal = (() => {
                     />
                     {#if iepS0}
                       <button class="iep-slot-clear" title="Clear slot 1"
-                        on:click={() => setEnchantment(iepSlot, 0, '')}>✕</button>
+                        on:click={() => setEnchantment(iepSlot, 0, '')}>?</button>
                     {/if}
                   </div>
                   {#if iepS0 && !iepExcl}
                     {#if iepS1}
-                      <button class="iep-swap-btn" title="Swap slot 1 ↔ slot 2"
-                        on:click={() => swapEnchantIndices(iepSlot, 0, 1)}>⇅</button>
+                      <button class="iep-swap-btn" title="Swap slot 1 ? slot 2"
+                        on:click={() => swapEnchantIndices(iepSlot, 0, 1)}>?</button>
                     {/if}
                     <div class="iep-slot">
                       <span class="iep-slot-num">2</span>
@@ -2217,14 +2224,14 @@ $: _appWaAvgTotal = (() => {
                       />
                       {#if iepS1}
                         <button class="iep-slot-clear" title="Clear slot 2"
-                          on:click={() => setEnchantment(iepSlot, 1, '')}>✕</button>
+                          on:click={() => setEnchantment(iepSlot, 1, '')}>?</button>
                       {/if}
                     </div>
                   {/if}
                   {#if iepS1 && !iepExcl}
                     {#if iepS2}
-                      <button class="iep-swap-btn" title="Swap slot 2 ↔ slot 3"
-                        on:click={() => swapEnchantIndices(iepSlot, 1, 2)}>⇅</button>
+                      <button class="iep-swap-btn" title="Swap slot 2 ? slot 3"
+                        on:click={() => swapEnchantIndices(iepSlot, 1, 2)}>?</button>
                     {/if}
                     <div class="iep-slot">
                       <span class="iep-slot-num">3</span>
@@ -2235,7 +2242,7 @@ $: _appWaAvgTotal = (() => {
                       />
                       {#if iepS2}
                         <button class="iep-slot-clear" title="Clear slot 3"
-                          on:click={() => setEnchantment(iepSlot, 2, '')}>✕</button>
+                          on:click={() => setEnchantment(iepSlot, 2, '')}>?</button>
                       {/if}
                     </div>
                   {/if}
@@ -2258,7 +2265,7 @@ $: _appWaAvgTotal = (() => {
                     {#if hasWACDR}
                       <Badge color="#34d399" size="sm">
                         <span class="wa-cd-old">{_waCooldown}s</span>
-                        <span class="wa-cd-arrow">→</span>
+                        <span class="wa-cd-arrow">?</span>
                         {Math.max(1, Math.floor(_waCooldown * cdr.waCDR))}s
                       </Badge>
                     {:else}
@@ -2306,7 +2313,7 @@ $: _appWaAvgTotal = (() => {
               <span class="perk-count-badge">{perkRows.length}</span>
             </button>
             <button class="perks-collapse-btn" on:click={() => showPerksPanel = !showPerksPanel}>
-              {showPerksPanel ? '▲' : '▼'}
+              {showPerksPanel ? '?' : '?'}
             </button>
           </div>
 
@@ -2344,7 +2351,7 @@ $: _appWaAvgTotal = (() => {
                                class="corruption-step-btn"
                                on:click={() => adjustStoredCorruption(-1)}
                                aria-label="Decrease Stored Corruption"
-                             >−</button>
+                             >?</button>
                             <input
                                type="number"
                                min="0"
@@ -2410,11 +2417,11 @@ $: _appWaAvgTotal = (() => {
               on:click={() => selectDraconicAbility('claw')}>
               <div class="dab-header">
                 <span class="dab-name">Dragon Claw</span>
-                {#if $build.draconicRuneInfusion === 'claw'}<Badge variant="draco" size="xs">✦ Selected</Badge>{/if}
+                {#if $build.draconicRuneInfusion === 'claw'}<Badge variant="draco" size="xs">? Selected</Badge>{/if}
                 <div class="dab-cds">
                   {#if draconicClawBubbleHasCDR}
                     <span class="dab-cd-old">{draconicBaseCDs.claw}s</span>
-                    <span class="dab-cd-arrow">→</span>
+                    <span class="dab-cd-arrow">?</span>
                     <span class="dab-cd">{draconicClawFinalCD}s</span>
                   {:else}
                     <span class="dab-cd">CD: {draconicBaseCDs.claw}s</span>
@@ -2444,11 +2451,11 @@ $: _appWaAvgTotal = (() => {
               on:click={() => selectDraconicAbility('infusion')}>
               <div class="dab-header">
                 <span class="dab-name">Dragon Infusion</span>
-                {#if $build.draconicRuneInfusion === 'infusion'}<Badge variant="draco" size="xs">✦ Selected</Badge>{/if}
+                {#if $build.draconicRuneInfusion === 'infusion'}<Badge variant="draco" size="xs">? Selected</Badge>{/if}
                 <div class="dab-cds">
                   {#if draconicHasCDR}
                     <span class="dab-cd-old">{draconicBaseCDs.infusion}s</span>
-                    <span class="dab-cd-arrow">→</span>
+                    <span class="dab-cd-arrow">?</span>
                     <span class="dab-cd">{draconicFinalCDs.infusion}s</span>
                   {:else}
                     <span class="dab-cd">CD: {draconicBaseCDs.infusion}s</span>
@@ -2487,11 +2494,11 @@ $: _appWaAvgTotal = (() => {
               on:click={() => selectDraconicAbility('bubble')}>
               <div class="dab-header">
                 <span class="dab-name">Dragon Bubble</span>
-                {#if $build.draconicRuneInfusion === 'bubble'}<Badge variant="draco" size="xs">✦ Selected</Badge>{/if}
+                {#if $build.draconicRuneInfusion === 'bubble'}<Badge variant="draco" size="xs">? Selected</Badge>{/if}
                 <div class="dab-cds">
                   {#if draconicClawBubbleHasCDR}
                     <span class="dab-cd-old">{draconicBaseCDs.bubble}s</span>
-                    <span class="dab-cd-arrow">→</span>
+                    <span class="dab-cd-arrow">?</span>
                     <span class="dab-cd">{draconicBubbleFinalCD}s</span>
                   {:else}
                     <span class="dab-cd">CD: {draconicBaseCDs.bubble}s</span>
@@ -2534,7 +2541,7 @@ $: _appWaAvgTotal = (() => {
             </button>
           {/if}
           <button class="details-collapse-btn" on:click={() => showDetailsPanel = !showDetailsPanel}>
-            {showDetailsPanel ? '▲' : '▼'}
+            {showDetailsPanel ? '?' : '?'}
           </button>
         </div>
 
@@ -2687,7 +2694,7 @@ $: _appWaAvgTotal = (() => {
         {#if hasWACDR}
           <Badge color="#34d399" size="sm">
             <span class="wa-cd-old">{_waCooldown}s</span>
-            <span class="wa-cd-arrow">→</span>
+            <span class="wa-cd-arrow">?</span>
             {Math.max(1, Math.floor(_waCooldown * cdr.waCDR))}s
           </Badge>
         {:else}
@@ -2885,7 +2892,7 @@ $: _appWaAvgTotal = (() => {
           {@const isOn = $build.cdrToggles?.[perkName] !== false}
           <button class="cdr-toggle-chip" class:cdr-toggle-chip--off={!isOn}
             on:click={() => toggleCdrPerk(perkName)}>
-            {isOn ? '✓' : '✕'} {perkName}
+            {isOn ? '?' : '?'} {perkName}
           </button>
         {/each}
       </div>
@@ -3063,7 +3070,7 @@ $: _appWaAvgTotal = (() => {
               {#if weaponResult.part1Name && weaponResult.part2Name}
                 <div class="weapon-combine weapon-combine--arrow">
                   <div class="weapon-combine-line"></div>
-                  <div class="weapon-combine-icon">→</div>
+                  <div class="weapon-combine-icon">?</div>
                   <div class="weapon-combine-line"></div>
                 </div>
                 <div class="weapon-combined-card" class:weapon-combined-card--monk={isMonk}>
@@ -3168,7 +3175,7 @@ $: _appWaAvgTotal = (() => {
       style="top:{potionPopPos.top}px; left:{potionPopPos.left}px">
       <div class="sg-potion-popover-head">
         <span class="sg-potion-popover-title">Potions</span>
-        <button class="sg-potion-popover-close" on:click={() => showPotionsDrawer = false}>✕</button>
+        <button class="sg-potion-popover-close" on:click={() => showPotionsDrawer = false}>?</button>
       </div>
       <div class="sg-potion-toggle-list">
         {#each POTIONS as potion}
@@ -3595,7 +3602,7 @@ $: _appWaAvgTotal = (() => {
   gap: 6px;
 }
 .ss-header::before {
-  content: '◈';
+  content: '?';
   font-size: .55rem;
   opacity: .45;
 }
@@ -4410,6 +4417,289 @@ $: _appWaAvgTotal = (() => {
   .sg-label { font-size: .6rem; }
   .summary-grid-wrap { overflow-x: auto; padding: 4px; user-select: none; }
   .summary-grid { min-width: 500px; }
+}
+
+/* Mobile overrides for share-card - ensure captured grid uses desktop layout */
+:global(.share-card) .summary-grid {
+  grid-template-columns: repeat(10, minmax(45px, 1fr)) !important;
+  min-width: unset !important;
+  width: 760px !important;
+  padding: 0 !important;
+  gap: 6px !important;
+}
+
+:global(.share-card) .sg-cell {
+  padding: 9px 11px !important;
+  min-height: 80px !important;
+  border-radius: 8px !important;
+  position: relative !important;
+  align-self: stretch !important;
+}
+
+:global(.share-card) .sg-label {
+  font-size: .65rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: .16em !important;
+  font-weight: 700 !important;
+}
+
+:global(.share-card) .sg-value {
+  font-size: .84rem !important;
+  font-weight: 700 !important;
+  color: var(--ink) !important;
+  line-height: 1.2 !important;
+}
+
+:global(.share-card) .sg-sub {
+  font-size: .67rem !important;
+  color: var(--ink-muted) !important;
+  line-height: 1.3 !important;
+  margin-top: 1px !important;
+}
+
+:global(.share-card) .sg-ench {
+  font-size: .62rem !important;
+  color: var(--accent3) !important;
+  margin-top: 1px !important;
+}
+
+:global(.share-card) .sg-cell.sg-empty {
+  border: 1px dashed rgba(255,255,255,.12) !important;
+  filter: brightness(0.45) saturate(0.85) !important;
+}
+
+:global(.share-card) .sg-cell.sg-empty .sg-value {
+  color: var(--ink-dim) !important;
+}
+
+:global(.share-card) .sg-clickable {
+  cursor: pointer !important;
+}
+
+:global(.share-card) .sg-clickable:hover {
+  filter: brightness(1.1) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.35) !important;
+}
+
+:global(.share-card) .sg-clear {
+  position: absolute !important;
+  top: 5px !important;
+  right: 5px !important;
+  width: 20px !important;
+  height: 20px !important;
+  border-radius: 4px !important;
+  background: rgba(248,113,113,.18) !important;
+  border: 1px solid rgba(248,113,113,.3) !important;
+  color: var(--neg) !important;
+  font-size: .6rem !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: background .15s !important;
+  line-height: 1 !important;
+  padding: 0 !important;
+}
+
+:global(.share-card) .sg-clear:hover {
+  background: rgba(248,113,113,.4) !important;
+}
+
+:global(.share-card) .sg-ench-btn {
+  position: absolute !important;
+  bottom: 5px !important;
+  right: 5px !important;
+  width: 20px !important;
+  height: 20px !important;
+  border-radius: 4px !important;
+  background: rgba(167,139,250,.15) !important;
+  border: 1px solid rgba(167,139,250,.25) !important;
+  color: var(--accent3) !important;
+  font-size: .65rem !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: background-color .15s, border-color .15s, color .15s, box-shadow .15s, transform .15s, opacity .15s !important;
+  line-height: 1 !important;
+  padding: 0 !important;
+}
+
+:global(.share-card) .sg-ench-btn:hover {
+  background: rgba(167,139,250,.3) !important;
+  border-color: var(--accent3) !important;
+}
+
+:global(.share-card) .sg-ench-btn--active {
+  background: rgba(167,139,250,.3) !important;
+  border-color: var(--accent3) !important;
+}
+
+:global(.share-card) .sg-ench-btn--swap-source {
+  background: rgba(251,191,36,.3) !important;
+  border-color: rgba(251,191,36,.8) !important;
+}
+
+:global(.share-card) .sg-ench-btn--swap-target {
+  background: rgba(74,222,128,.3) !important;
+  border-color: rgba(74,222,128,.8) !important;
+}
+
+:global(.share-card) .sg-weapon {
+  background: rgba(251,146,60,.08) !important;
+  border-color: rgba(251,146,60,.26) !important;
+}
+
+:global(.share-card) .sg-armor {
+  background: rgba(74,222,128,.06) !important;
+  border-color: rgba(74,222,128,.18) !important;
+}
+
+:global(.share-card) .sg-infusion {
+  background: rgba(56,189,248,.06) !important;
+  border-color: rgba(56,189,248,.2) !important;
+}
+
+:global(.share-card) .sg-blade {
+  background: rgba(251,146,60,.07) !important;
+  border-color: rgba(251,146,60,.22) !important;
+}
+
+:global(.share-card) .sg-handle {
+  background: rgba(52,211,153,.07) !important;
+  border-color: rgba(52,211,153,.22) !important;
+}
+
+:global(.share-card) .sg-item {
+  background: rgba(167,139,250,.06) !important;
+  border-color: rgba(167,139,250,.18) !important;
+}
+
+:global(.share-card) .sg-race {
+  background: rgba(56,189,248,.06) !important;
+  border-color: rgba(56,189,248,.18) !important;
+}
+
+:global(.share-card) .sg-guild {
+  background: rgba(245,158,11,.07) !important;
+  border-color: rgba(245,158,11,.22) !important;
+}
+
+:global(.share-card) .sg-monk-glove {
+  background: rgba(232,121,249,.07) !important;
+  border-color: rgba(232,121,249,.22) !important;
+}
+
+:global(.share-card) .sg-monk-essence {
+  background: rgba(129,140,248,.07) !important;
+  border-color: rgba(129,140,248,.22) !important;
+}
+
+:global(.share-card) .sg-clickable.sg-empty:hover {
+  filter: brightness(0.6) saturate(0.95) !important;
+}
+
+:global(.share-card) .sg-empty .sg-value {
+  color: var(--ink-muted) !important;
+}
+
+:global(.share-card) .sg-cell.sg-armor-dragging .sg-cell:not(.sg-selected):not(.sg-valid-target):not(.sg-clone-target):not(.sg-drop-target):not(.sg-weapon):not(.sg-race):not(.sg-guild) {
+  opacity: .35 !important;
+  cursor: not-allowed !important;
+}
+
+:global(.share-card) .sg-cell.sg-ring-dragging .sg-cell:not(.sg-selected):not(.sg-valid-target):not(.sg-clone-target):not(.sg-drop-target):not(.sg-weapon):not(.sg-race):not(.sg-guild) {
+  opacity: .35 !important;
+  cursor: not-allowed !important;
+}
+
+:global(.share-card) .sg-selected {
+  background: rgba(251,191,36,.3) !important;
+  border-color: rgba(251,191,36,.8) !important;
+}
+
+:global(.share-card) .sg-valid-target {
+  background: rgba(74,222,128,.3) !important;
+  border-color: rgba(74,222,128,.7) !important;
+}
+
+:global(.share-card) .sg-drop-target {
+  background: rgba(74,222,128,.4) !important;
+  border-color: rgba(74,222,128,.9) !important;
+  transform: scale(1.03) !important;
+}
+
+:global(.share-card) .sg-drop-target.sg-clone-target {
+  background: rgba(56,189,248,.35) !important;
+  border-color: rgba(56,189,248,.9) !important;
+}
+
+:global(.share-card) .sg-label.sg-weapon { color: var(--weapon-blade) !important; }
+:global(.share-card) .sg-label.sg-armor { color: var(--accent) !important; }
+:global(.share-card) .sg-label.sg-infusion { color: var(--infusion) !important; }
+:global(.share-card) .sg-label.sg-blade { color: var(--weapon-blade) !important; }
+:global(.share-card) .sg-label.sg-handle { color: var(--weapon-handle) !important; }
+:global(.share-card) .sg-label.sg-item { color: var(--accent3) !important; }
+:global(.share-card) .sg-label.sg-race { color: var(--infusion) !important; }
+:global(.share-card) .sg-label.sg-guild { color: var(--accent2) !important; }
+:global(.share-card) .sg-label.sg-monk-glove { color: var(--monk-glove) !important; }
+:global(.share-card) .sg-label.sg-monk-essence { color: var(--monk-essence) !important; }
+
+:global(.share-card) .sg-upgrade-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 1px 5px !important;
+  border-radius: 4px !important;
+  background: rgba(251,191,36,.12) !important;
+  border: 1px solid rgba(251,191,36,.22) !important;
+  color: var(--weapon-combined) !important;
+  font-size: .6rem !important;
+  font-weight: 800 !important;
+  cursor: pointer !important;
+  transition: background-color .15s, border-color .15s, color .15s, box-shadow .15s, transform .15s, opacity .15s !important;
+  line-height: 1 !important;
+  width: fit-content !important;
+  margin-top: 2px !important;
+}
+
+:global(.share-card) .sg-upgrade-btn:hover {
+  background: rgba(251,191,36,.25) !important;
+}
+
+:global(.share-card) .sg-upgrade-btn--maxed {
+  background: rgba(251,191,36,.22) !important;
+  border-color: rgba(251,191,36,.5) !important;
+}
+
+.share-summary-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: rgba(74,222,128,.08);
+  border: 1px solid rgba(74,222,128,.2);
+  border-radius: 8px;
+  color: #4ade80;
+  font-family: var(--font-body);
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all .15s ease;
+  margin-bottom: 12px;
+}
+
+.share-summary-btn:hover {
+  background: rgba(74,222,128,.14);
+  border-color: rgba(74,222,128,.4);
+}
+
+.share-summary-btn:active {
+  transform: scale(0.97);
 }
 
 :global(.grid-action-badge) {

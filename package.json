@@ -27,6 +27,7 @@
     "vitest": "^4.1.10"
   },
   "dependencies": {
+    "@zumer/snapdom": "^3.7.2",
     "font-awesome": "^4.7.0"
   }
 }
