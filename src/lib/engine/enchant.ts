@@ -1,5 +1,5 @@
 import type { StatKey, StatModifier, StatMap, Enchantment } from '../types'
-import { STAT_KEYS, PERCENT_STATS, applyUpgrade } from '../types'
+import { STAT_KEYS, PERCENT_STATS, FROZEN_NEGATIVE_EXEMPT, applyUpgrade } from '../types'
 import { getEnchant, enchantmentsRaw } from './data'
 import { round2 } from './_utils'
 
@@ -91,12 +91,13 @@ export function applyEnchantmentsToSlot(
     const preUpgradeArmorPen = currentStats.armorPenetration
     // keepNegativeStats armors: stats negative in base data stay frozen at
     // upgrade level 0 even after a selector enchant (Corrupt/Restored) flips
-    // them positive.
+    // them positive — except airBoost, which scales as a normal positive once
+    // flipped (game-verified).
     const frozen: StatMap = {}
     if (keepNegativeStats) {
       for (let j = 0; j < STAT_KEYS.length; j++) {
         const k = STAT_KEYS[j]
-        if ((baseStats[k] ?? 0) < 0) frozen[k] = currentStats[k] ?? 0
+        if ((baseStats[k] ?? 0) < 0 && !FROZEN_NEGATIVE_EXEMPT.has(k)) frozen[k] = currentStats[k] ?? 0
       }
     }
     currentStats = applyUpgrade(currentStats, upgradeLevel, keepNegativeStats)

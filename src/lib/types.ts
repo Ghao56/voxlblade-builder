@@ -22,6 +22,12 @@ export const PERCENT_STATS = new Set(
 
 export const STAT_KEYS = Object.keys(STAT_CONFIG) as StatKey[]
 
+// On keepNegativeStats armors (Steel Legion, Prisoner), base-negative stats stay
+// frozen at upgrade 0 even when Corrupt/Restored flips them positive — except
+// these, which scale as normal positives once flipped. Game-verified: airBoost
+// only; extend the list as more are verified in-game.
+export const FROZEN_NEGATIVE_EXEMPT: ReadonlySet<StatKey> = new Set(['airBoost'])
+
 export interface Race {
   name: string
   passive: string
